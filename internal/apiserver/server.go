@@ -501,9 +501,18 @@ func (s *Server) handleAdminRevoke(w http.ResponseWriter, r *http.Request) {
 
 func getPriceID(product, tier string) string {
 	// Convention: STRIPE_PRICE_{PRODUCT}_{TIER}
-	// e.g., STRIPE_PRICE_STOCKYARD_PRO, STRIPE_PRICE_COSTCAP_STARTER
+	// e.g., STRIPE_PRICE_STOCKYARD_PRO, STRIPE_PRICE_COSTCAP_STANDARD
+	//
+	// Fallback: if no product-specific price, check STRIPE_PRICE_DEFAULT_{TIER}
+	// This supports the simplified pricing model where all individual products
+	// share the same $9.99/mo price.
 	key := fmt.Sprintf("STRIPE_PRICE_%s_%s", strings.ToUpper(product), strings.ToUpper(tier))
-	return os.Getenv(key)
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	// Fallback to default price for this tier
+	fallback := fmt.Sprintf("STRIPE_PRICE_DEFAULT_%s", strings.ToUpper(tier))
+	return os.Getenv(fallback)
 }
 
 func maskKey(key string) string {

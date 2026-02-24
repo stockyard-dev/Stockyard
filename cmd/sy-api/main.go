@@ -27,11 +27,8 @@
 //
 // Stripe price ID examples:
 //
-//	STRIPE_PRICE_STOCKYARD_STARTER=price_1abc...  (Suite Starter $19/mo)
-//	STRIPE_PRICE_STOCKYARD_PRO=price_2def...      (Suite Pro $59/mo)
-//	STRIPE_PRICE_STOCKYARD_TEAM=price_3ghi...     (Suite Team $149/mo)
-//	STRIPE_PRICE_COSTCAP_STARTER=price_4jkl...    (CostCap Starter $9/mo)
-//	STRIPE_PRICE_COSTCAP_PRO=price_5mno...        (CostCap Pro $29/mo)
+//	STRIPE_PRICE_DEFAULT_STANDARD=price_1abc...   (Individual product $9.99/mo)
+//	STRIPE_PRICE_STOCKYARD_PRO=price_2def...      (Pro — all products $29.99/mo)
 package main
 
 import (

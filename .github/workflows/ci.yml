@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Verify modules
+        run: go mod verify
+
+      - name: Build shipping binaries
+        run: |
+          PRODUCTS="costcap llmcache jsonguard routefall rateshield promptreplay keypool promptguard modelswitch evalgate usagepulse promptpad tokentrim batchqueue multicall streamsnap llmtap contextpack retrypilot stockyard"
+          TOOLS="sy-keygen sy-api sy-docs"
+          for p in $PRODUCTS $TOOLS; do
+            echo "Building $p..."
+            go build -o /dev/null ./cmd/$p
+          done
+          echo "All 23 binaries compile."
+
+      - name: Run tests
+        run: go test ./... -count=1 -timeout 120s
+
+  release:
+    needs: test
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
