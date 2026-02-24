@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pricing — Stockyard</title>
-<meta name="description" content="Stockyard pricing. Individual products from $9/mo or all 125 tools for $59/mo. Free tier available.">
+<meta name="description" content="Stockyard pricing. One product free. $9.99 per product. Or $29.99 for everything.">
 <meta property="og:title" content="Pricing — Stockyard">
-<meta property="og:description" content="125 LLM proxy tools. Individual products from $9/mo or all 125 for $59/mo.">
+<meta property="og:description" content="20 LLM proxy tools. One free, $9.99 each, or $29.99 for all.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -31,8 +31,6 @@ a:hover{color:var(--gold)}
 .nav-links a:hover{color:var(--rust-light)}
 
 .btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
-.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
 .btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
 .btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
 .btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold);font-weight:600}
@@ -46,62 +44,48 @@ a:hover{color:var(--gold)}
 .page-header h1 .accent{color:var(--rust-light)}
 .page-header .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic}
 
-/* Toggle */
-.toggle-row{display:flex;justify-content:center;gap:1rem;align-items:center;margin-bottom:3rem;padding:0 2rem}
-.toggle-option{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);cursor:pointer;padding:0.4rem 1rem;border:1px solid transparent;transition:all 0.2s}
-.toggle-option.active{color:var(--cream);border-color:var(--rust);background:var(--bg2)}
-.toggle-label{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase}
-
-/* Suite pricing */
-.suite-section{padding:0 2rem 4rem;max-width:900px;margin:0 auto}
-.suite-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);margin-bottom:2rem;text-align:center}
-.suite-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem}
-.tier{padding:2rem;border:1px solid var(--bg3);background:var(--bg2);text-align:center;position:relative;transition:border-color 0.2s}
+.pricing-section{padding:0 2rem 4rem;max-width:960px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.tier{padding:2.5rem 2rem;border:1px solid var(--bg3);background:var(--bg2);text-align:center;position:relative;transition:border-color 0.2s}
 .tier:hover{border-color:var(--leather)}
-.tier.featured{border-color:var(--rust);background:var(--bg)}
-.tier.featured::after{content:'Most popular';position:absolute;top:-0.6rem;left:50%;transform:translateX(-50%);background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.6rem;padding:0.15rem 0.6rem;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.tier.featured{border-color:var(--rust);background:var(--bg);transform:scale(1.03)}
+.tier.featured::after{content:'Best value';position:absolute;top:-0.6rem;left:50%;transform:translateX(-50%);background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.6rem;padding:0.15rem 0.6rem;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
 .tier-name{font-family:var(--font-mono);font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--leather-light);margin-bottom:0.8rem}
-.tier-price{font-size:2.8rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
-.tier-price::before{content:'$';font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
-.tier-price-free{font-size:2.8rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
+.tier-price{font-size:3rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
+.tier-price .dollar{font-size:1.2rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
+.tier-price-free{font-size:3rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
 .tier-period{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-bottom:1.5rem}
-.tier-features{list-style:none;text-align:left;margin-bottom:1.5rem;font-size:0.85rem;color:var(--cream-dim)}
-.tier-features li{padding:0.3rem 0;padding-left:1.2rem;position:relative}
+.tier-features{list-style:none;text-align:left;margin-bottom:2rem;font-size:0.85rem;color:var(--cream-dim)}
+.tier-features li{padding:0.4rem 0;padding-left:1.4rem;position:relative}
 .tier-features li::before{content:'\2014';position:absolute;left:0;color:var(--rust)}
 .tier-cta{width:100%}
 
-/* Per-tool math */
-.per-tool{text-align:center;padding:2rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim)}
-.per-tool strong{color:var(--gold)}
+.savings{text-align:center;padding:2rem;max-width:700px;margin:0 auto}
+.savings-box{background:var(--bg2);border:1px solid var(--gold);padding:1.5rem 2rem;display:inline-block}
+.savings-box p{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)}
+.savings-box strong{color:var(--gold)}
 
-/* Individual products section */
-.individual-section{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.individual-inner{max-width:900px;margin:0 auto}
-.individual-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--leather-light);margin-bottom:1rem;text-align:center}
-.individual-sub{text-align:center;color:var(--cream-dim);font-size:0.9rem;font-style:italic;margin-bottom:2rem}
-.individual-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem}
-.ind-tier{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg);text-align:center}
-.ind-tier .tier-name{margin-bottom:0.5rem}
-.ind-tier .tier-price{font-size:2rem}
-.ind-tier .tier-features{font-size:0.8rem}
+.how{padding:4rem 2rem;max-width:700px;margin:0 auto}
+.how-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
+.how-step{display:flex;gap:1.5rem;margin-bottom:2rem;align-items:flex-start}
+.how-num{font-family:var(--font-mono);font-size:1.5rem;color:var(--rust);font-weight:700;min-width:2rem}
+.how-text h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}
+.how-text p{font-size:0.9rem;color:var(--cream-dim)}
+.how-text code{font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em}
 
-/* FAQ */
 .faq{padding:4rem 2rem;max-width:700px;margin:0 auto}
 .faq-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
 .faq-item{border-bottom:1px solid var(--bg3);padding:1.5rem 0}
 .faq-q{font-weight:700;margin-bottom:0.5rem;color:var(--cream)}
 .faq-a{font-size:0.9rem;color:var(--cream-dim)}
-
-/* Enterprise */
-.enterprise{padding:4rem 2rem;text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.enterprise-inner{max-width:600px;margin:0 auto}
+.faq-a code{font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em}
 
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 
-@media(max-width:600px){
-  .suite-grid{grid-template-columns:1fr}
-  .individual-grid{grid-template-columns:1fr}
+@media(max-width:700px){
+  .pricing-grid{grid-template-columns:1fr}
+  .tier.featured{transform:none}
 }
 </style>
 </head>
@@ -119,177 +103,138 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="page-header">
   <div class="eyebrow">Pricing</div>
-  <h1>One binary. <span class="accent">Pick your tier.</span></h1>
-  <p class="sub">Free tier available. No credit card required to start.</p>
+  <h1>Simple. <span class="accent">No surprises.</span></h1>
+  <p class="sub">One product free. Pay per product or get everything.</p>
 </section>
 
-<!-- Suite Pricing -->
-<section class="suite-section">
-  <div class="suite-label">Stockyard Suite &mdash; all 125 products</div>
-  <div class="suite-grid">
+<section class="pricing-section">
+  <div class="pricing-grid">
+
     <div class="tier">
       <div class="tier-name">Free</div>
       <div class="tier-price-free">Free</div>
       <div class="tier-period">forever</div>
       <ul class="tier-features">
+        <li>1 product of your choice</li>
         <li>1,000 requests/day</li>
-        <li>5 products enabled</li>
-        <li>Community support</li>
         <li>Dashboard included</li>
+        <li>Community support</li>
+        <li>No credit card required</li>
       </ul>
       <a href="https://github.com/stockyard-dev/stockyard" class="btn btn-secondary tier-cta">Download</a>
     </div>
 
     <div class="tier">
-      <div class="tier-name">Starter</div>
-      <div class="tier-price">19</div>
-      <div class="tier-period">per month</div>
+      <div class="tier-name">Per Product</div>
+      <div class="tier-price"><span class="dollar">$</span>9.99</div>
+      <div class="tier-period">per month / per product</div>
       <ul class="tier-features">
-        <li>10,000 requests/day</li>
-        <li>All 125 products</li>
-        <li>Email support</li>
+        <li>Pick the products you need</li>
+        <li>Unlimited requests</li>
+        <li>Full features</li>
         <li>Dashboard included</li>
+        <li>Email support</li>
       </ul>
-      <button onclick="checkout('stockyard','starter')" class="btn btn-secondary tier-cta">Get started</button>
+      <button onclick="checkout('individual','standard')" class="btn btn-secondary tier-cta">Get started</button>
     </div>
 
     <div class="tier featured">
       <div class="tier-name">Pro</div>
-      <div class="tier-price">59</div>
+      <div class="tier-price"><span class="dollar">$</span>29.99</div>
       <div class="tier-period">per month</div>
       <ul class="tier-features">
+        <li>All 20 products included</li>
         <li>Unlimited requests</li>
-        <li>All 125 products</li>
-        <li>Priority support</li>
-        <li>Data export</li>
-        <li>Dashboard included</li>
-      </ul>
-      <button onclick="checkout('stockyard','pro')" class="btn btn-gold tier-cta">Get started</button>
-    </div>
-
-    <div class="tier">
-      <div class="tier-name">Team</div>
-      <div class="tier-price">149</div>
-      <div class="tier-period">per month</div>
-      <ul class="tier-features">
-        <li>Unlimited requests</li>
-        <li>All 125 products</li>
-        <li>Multi-instance</li>
-        <li>Whitelabel</li>
-        <li>Priority support</li>
-        <li>Data export</li>
-      </ul>
-      <button onclick="checkout('stockyard','team')" class="btn btn-secondary tier-cta">Get started</button>
-    </div>
-  </div>
-
-  <div class="per-tool">Suite at $59/mo = <strong>$0.47 per tool</strong> per month. Buying just 3 individual products costs more.</div>
-</section>
-
-<!-- Individual Product Pricing -->
-<section class="individual-section">
-  <div class="individual-label">Individual Products</div>
-  <p class="individual-sub">Need just one or two tools? Buy them standalone.</p>
-  <div class="individual-grid">
-    <div class="ind-tier">
-      <div class="tier-name">Free</div>
-      <div class="tier-price-free">Free</div>
-      <div class="tier-period">forever</div>
-      <ul class="tier-features">
-        <li>1,000 requests/day</li>
-        <li>Basic features</li>
-        <li>Dashboard included</li>
-      </ul>
-    </div>
-    <div class="ind-tier">
-      <div class="tier-name">Starter</div>
-      <div class="tier-price">9</div>
-      <div class="tier-period">per month / per product</div>
-      <ul class="tier-features">
-        <li>10,000 requests/day</li>
         <li>Full features</li>
-        <li>Email support</li>
-      </ul>
-    </div>
-    <div class="ind-tier">
-      <div class="tier-name">Pro</div>
-      <div class="tier-price">29</div>
-      <div class="tier-period">per month / per product</div>
-      <ul class="tier-features">
-        <li>Unlimited requests</li>
+        <li>Priority support</li>
         <li>Data export</li>
-        <li>Priority support</li>
+        <li>Dashboard included</li>
       </ul>
+      <button onclick="checkout('stockyard','pro')" class="btn btn-gold tier-cta">Get everything</button>
     </div>
-    <div class="ind-tier">
-      <div class="tier-name">Team</div>
-      <div class="tier-price">79</div>
-      <div class="tier-period">per month / per product</div>
-      <ul class="tier-features">
-        <li>Unlimited requests</li>
-        <li>Multi-instance</li>
-        <li>Priority support</li>
-      </ul>
-    </div>
+
   </div>
-  <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;color:var(--cream-dim)">
-    Individual products are available on each <a href="/products/">product page</a>.
-  </p>
 </section>
 
-<!-- FAQ -->
+<section class="savings">
+  <div class="savings-box">
+    <p>Pro at $29.99/mo = <strong>$1.50 per tool</strong>. Buying 3 individual products costs the same as getting all 20.</p>
+  </div>
+</section>
+
+<section class="how">
+  <div class="how-label">How it works</div>
+
+  <div class="how-step">
+    <div class="how-num">1</div>
+    <div class="how-text">
+      <h3>Download the binary</h3>
+      <p>One command: <code>brew install stockyard-dev/tap/stockyard</code> or <code>npx</code>, <code>docker</code>, or <code>curl</code>.</p>
+    </div>
+  </div>
+
+  <div class="how-step">
+    <div class="how-num">2</div>
+    <div class="how-text">
+      <h3>Run it</h3>
+      <p>Set your LLM API key, run the binary. Dashboard appears at <code>localhost/ui</code>.</p>
+    </div>
+  </div>
+
+  <div class="how-step">
+    <div class="how-num">3</div>
+    <div class="how-text">
+      <h3>Activate your license (paid tiers)</h3>
+      <p>After purchase you get a license key by email. Set <code>STOCKYARD_LICENSE_KEY=SY-...</code> and restart. Validated offline, no phone-home.</p>
+    </div>
+  </div>
+</section>
+
 <section class="faq">
   <div class="faq-label">Common questions</div>
 
   <div class="faq-item">
+    <div class="faq-q">What do I get for free?</div>
+    <div class="faq-a">Pick any one product and use it free with up to 1,000 requests per day. No credit card, no time limit. Download and run.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Can I buy just the products I need?</div>
+    <div class="faq-a">Yes. At $9.99/mo per product, you pick exactly what you need. If you end up using 3 or more, Pro is a better deal.</div>
+  </div>
+
+  <div class="faq-item">
     <div class="faq-q">How does the license key work?</div>
-    <div class="faq-a">After purchase, you receive a license key via email. Set <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em">STOCKYARD_LICENSE_KEY=SY-...</code> in your environment. The proxy validates it offline using cryptographic signatures &mdash; no phone-home, no network dependency.</div>
+    <div class="faq-a">After purchase, you receive a license key via email. Set <code>STOCKYARD_LICENSE_KEY=SY-...</code> in your environment. The proxy validates it offline using cryptographic signatures &mdash; no phone-home, no network dependency.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q">What happens when my subscription expires?</div>
-    <div class="faq-a">Your proxy reverts to the free tier (1,000 requests/day). No data loss, no config changes. Re-subscribe anytime and your key activates instantly.</div>
-  </div>
-
-  <div class="faq-item">
-    <div class="faq-q">Can I switch between suite and individual products?</div>
-    <div class="faq-a">Yes. Suite keys unlock all 125 products. Individual keys unlock one product. You can upgrade to the suite at any time and your subscription is prorated.</div>
+    <div class="faq-a">Your proxy reverts to the free tier (1 product, 1,000 requests/day). No data loss, no config changes. Re-subscribe anytime.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q">What providers are supported?</div>
-    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, Google Vertex AI, and OpenRouter. Any provider with an OpenAI-compatible endpoint works out of the box.</div>
+    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, Google Vertex AI, and OpenRouter. Any OpenAI-compatible endpoint works out of the box.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q">Do I need to change my application code?</div>
-    <div class="faq-a">No. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em">OPENAI_BASE_URL</code> at the Stockyard proxy. Your existing OpenAI SDK calls work unchanged. The proxy handles everything transparently.</div>
+    <div class="faq-a">No. Point your <code>OPENAI_BASE_URL</code> at the Stockyard proxy. Your existing OpenAI SDK calls work unchanged.</div>
   </div>
 
   <div class="faq-item">
-    <div class="faq-q">Is there a free tier?</div>
-    <div class="faq-a">Yes. Every product includes a free tier with 1,000 requests per day. No credit card required. Download the binary and start using it immediately.</div>
-  </div>
-</section>
-
-<!-- Enterprise -->
-<section class="enterprise">
-  <div class="enterprise-inner">
-    <div class="suite-label">Enterprise</div>
-    <p style="font-size:1.1rem;margin-bottom:1rem">Custom deployments, SLAs, volume licensing, dedicated support.</p>
-    <p style="color:var(--cream-dim);font-size:0.9rem;margin-bottom:2rem;font-style:italic">Starting at $299/mo. On-prem or managed. Talk to us.</p>
-    <a href="mailto:enterprise@stockyard.dev" class="btn btn-secondary">Contact sales</a>
+    <div class="faq-q">Is there an enterprise plan?</div>
+    <div class="faq-a">For custom deployments, SLAs, volume licensing, or dedicated support, email <a href="mailto:enterprise@stockyard.dev">enterprise@stockyard.dev</a>.</div>
   </div>
 </section>
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/products/">125 products</a> &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/products/">20 products</a> &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
 </footer>
 
 <script>
-// Stockyard Checkout
-// Calls the sy-api backend to create a Stripe Checkout session, then redirects.
 const API_BASE = window.STOCKYARD_API || 'https://api.stockyard.dev';
 
 async function checkout(product, tier) {
