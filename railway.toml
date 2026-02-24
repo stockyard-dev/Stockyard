@@ -1,24 +1,5 @@
 [build]
-builder = "go"
 buildCommand = "go build -o sy-api ./cmd/sy-api"
 
 [deploy]
 startCommand = "./sy-api"
-healthcheckPath = "/health"
-healthcheckTimeout = 10
-
-[[services]]
-name = "sy-api"
-internalPort = 8080
-
-[variables]
-STRIPE_SECRET_KEY = ""
-STRIPE_WEBHOOK_SECRET = ""
-STOCKYARD_SIGNING_KEY = ""
-STOCKYARD_PUBLIC_KEY = ""
-RESEND_API_KEY = ""
-PORT = "8080"
-BASE_URL = "https://api.stockyard.dev"
-SITE_URL = "https://stockyard.dev"
-STRIPE_PRICE_DEFAULT_STANDARD = "price_1T4V74RkoFWvoLHJEWeqGTvg"
-STRIPE_PRICE_STOCKYARD_PRO = "price_1T4V7aRkoFWvoLHJF1iAcYC0"
