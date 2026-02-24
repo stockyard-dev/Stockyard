@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-cronllm",
+  "display_name": "Stockyard CronLLM",
+  "description": "Define scheduled prompts in YAML. Daily summaries, weekly reports, periodic checks. Runs through full proxy chain.",
+  "repository": "https://github.com/stockyard-dev/mcp-cronllm",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-cronllm"
+  ],
+  "tools": [
+    {
+      "name": "cronllm_stats",
+      "description": "Get job execution stats."
+    },
+    {
+      "name": "cronllm_jobs",
+      "description": "List scheduled jobs."
+    }
+  ],
+  "tags": [
+    "cron",
+    "schedule",
+    "automation",
+    "tasks",
+    "periodic"
+  ]
+}

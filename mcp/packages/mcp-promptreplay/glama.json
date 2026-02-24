@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-promptreplay",
+  "display_name": "Stockyard PromptReplay",
+  "description": "Full request/response logging for LLM APIs. Capture every prompt, completion, and token count. Replay past requests for debugging.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptreplay",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptreplay"
+  ],
+  "tools": [
+    {
+      "name": "promptreplay_list",
+      "description": "List recent logged LLM requests with timestamps, models, and costs."
+    },
+    {
+      "name": "promptreplay_get",
+      "description": "Get full details of a logged request including prompt and response."
+    },
+    {
+      "name": "promptreplay_replay",
+      "description": "Replay a previously logged LLM request."
+    },
+    {
+      "name": "promptreplay_stats",
+      "description": "Get logging statistics: total entries, storage size, requests by model."
+    },
+    {
+      "name": "promptreplay_proxy_status",
+      "description": "Check if the PromptReplay proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "logging",
+    "replay",
+    "debug",
+    "prompt",
+    "audit",
+    "openai",
+    "proxy"
+  ]
+}

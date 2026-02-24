@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-routefall",
+  "title": "FallbackRouter — LLM calls that never fail",
+  "description": "Automatic failover routing between LLM providers. When OpenAI is down, traffic auto-routes to Anthropic or Groq. Circuit breaker pattern included.",
+  "install": "npx @stockyard/mcp-routefall",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-routefall"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 4,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

@@ -1,0 +1,17 @@
+name: stockyard-webhookforge
+display_name: "Stockyard WebhookForge"
+description: "Visual flow builder. Trigger→transform→LLM→condition→action. History."
+icon: "⚒️"
+command: npx
+args:
+  - "@stockyard/mcp-webhookforge"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - webhook
+  - builder
+  - visual
+  - pipeline

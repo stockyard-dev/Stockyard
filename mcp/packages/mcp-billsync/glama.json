@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-billsync",
+  "display_name": "Stockyard BillSync",
+  "description": "Track usage per tenant. Apply markup. Generate invoice data. Stripe-compatible usage records.",
+  "repository": "https://github.com/stockyard-dev/mcp-billsync",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-billsync"
+  ],
+  "tools": [
+    {
+      "name": "billsync_stats",
+      "description": "Get billing stats: tenants, revenue, markup."
+    },
+    {
+      "name": "billsync_tenants",
+      "description": "List tenant billing summaries."
+    }
+  ],
+  "tags": [
+    "billing",
+    "invoice",
+    "tenant",
+    "markup",
+    "saas"
+  ]
+}

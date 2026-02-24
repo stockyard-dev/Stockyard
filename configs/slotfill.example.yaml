@@ -1,0 +1,15 @@
+# SlotFill — Form-filling conversation engine.
+# Copy to slotfill.yaml and set your API keys.
+
+port: 6210
+slotfill:
+  forms:
+    booking:
+      slots:
+        - { name: date, type: date, required: true }
+        - { name: guests, type: integer, min: 1, max: 20 }
+        - { name: notes, type: string, required: false }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

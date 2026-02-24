@@ -1,0 +1,29 @@
+# ContextPack — RAG Without the Vector Database
+port: 5400
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+contextpack:
+  enabled: true
+  sources:
+    - name: product_docs
+      type: directory
+      path: ./docs/
+      patterns: ["*.md", "*.txt"]
+      chunk_size: 500
+      overlap: 50
+  injection:
+    position: before_user
+    max_tokens: 2000
+    template: |
+      Relevant context:
+      ---
+      {{context}}
+      ---
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

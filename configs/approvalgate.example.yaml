@@ -1,0 +1,17 @@
+# ApprovalGate — Human approval for prompt changes.
+# Copy to approvalgate.yaml and set your API keys.
+
+port: 5850
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+approval:
+  enabled: true
+  approvers:
+    - admin@example.com
+  notify_webhook: ""
+  auto_approve_after: 0  # 0 = never auto-approve
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

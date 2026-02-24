@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-tableforge",
+  "display_name": "Stockyard TableForge",
+  "description": "Detect tables in output. Validate columns, types, completeness. Auto-repair and export.",
+  "repository": "https://github.com/stockyard-dev/mcp-tableforge",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-tableforge"
+  ],
+  "tools": [
+    {
+      "name": "tableforge_stats",
+      "description": "Get table validation stats."
+    }
+  ],
+  "tags": [
+    "table",
+    "csv",
+    "validation",
+    "structured"
+  ]
+}

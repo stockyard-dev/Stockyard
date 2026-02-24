@@ -1,0 +1,52 @@
+{
+  "name": "stockyard-stockyard",
+  "display_name": "Stockyard Stockyard",
+  "description": "All 125 Stockyard products in one binary. Cost control, caching, validation, routing, security, analytics, and more.",
+  "repository": "https://github.com/stockyard-dev/mcp-stockyard",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-stockyard"
+  ],
+  "tools": [
+    {
+      "name": "stockyard_status",
+      "description": "Get full suite status: all enabled features, health, and summary stats."
+    },
+    {
+      "name": "stockyard_spend",
+      "description": "Get current LLM spending across all projects."
+    },
+    {
+      "name": "stockyard_cache_stats",
+      "description": "Get cache hit/miss statistics and savings."
+    },
+    {
+      "name": "stockyard_providers",
+      "description": "Get health and routing status of all providers."
+    },
+    {
+      "name": "stockyard_analytics",
+      "description": "Get analytics overview: latency, error rates, costs, volume."
+    },
+    {
+      "name": "stockyard_logs",
+      "description": "List recent LLM request logs."
+    },
+    {
+      "name": "stockyard_proxy_status",
+      "description": "Check if the Stockyard suite is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "proxy",
+    "infrastructure",
+    "suite",
+    "openai",
+    "anthropic",
+    "cost",
+    "cache",
+    "routing",
+    "security"
+  ]
+}

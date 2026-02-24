@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-compliancelog",
+  "display_name": "Stockyard ComplianceLog",
+  "description": "Tamper-proof audit logging for LLM interactions. Hash-chained entries, configurable retention, SOC2/HIPAA-ready export formats.",
+  "repository": "https://github.com/stockyard-dev/mcp-compliancelog",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-compliancelog"
+  ],
+  "tools": [
+    {
+      "name": "compliancelog_stats",
+      "description": "Get audit log statistics: total entries, storage size, oldest/newest entry."
+    },
+    {
+      "name": "compliancelog_search",
+      "description": "Search audit logs by date range, model, user, or project."
+    },
+    {
+      "name": "compliancelog_verify",
+      "description": "Verify hash chain integrity. Detects tampering."
+    },
+    {
+      "name": "compliancelog_export",
+      "description": "Export audit logs in compliance format."
+    },
+    {
+      "name": "compliancelog_proxy_status",
+      "description": "Check if the ComplianceLog proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "audit",
+    "compliance",
+    "soc2",
+    "hipaa",
+    "logging",
+    "immutable",
+    "proxy"
+  ]
+}

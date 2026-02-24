@@ -1,0 +1,15 @@
+# FeedbackLoop — Collect user feedback. Close the loop.
+# Copy to feedbackloop.yaml and set your API keys.
+
+port: 5770
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+feedback:
+  enabled: true
+  endpoint: /api/feedback  # POST {request_id, rating, comment}
+  retention_days: 90
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

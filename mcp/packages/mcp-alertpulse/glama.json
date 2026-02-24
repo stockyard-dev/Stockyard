@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-alertpulse",
+  "display_name": "Stockyard AlertPulse",
+  "description": "Configurable alerting for LLM infrastructure. Rules for error rates, latency, cost thresholds. Notify via Slack, Discord, PagerDuty, email, or webhooks.",
+  "repository": "https://github.com/stockyard-dev/mcp-alertpulse",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-alertpulse"
+  ],
+  "tools": [
+    {
+      "name": "alertpulse_rules",
+      "description": "List all alert rules with current status (firing/OK)."
+    },
+    {
+      "name": "alertpulse_add_rule",
+      "description": "Add a new alert rule."
+    },
+    {
+      "name": "alertpulse_history",
+      "description": "Get alert history: recent firings and resolutions."
+    },
+    {
+      "name": "alertpulse_test",
+      "description": "Fire a test alert to verify notification channels work."
+    },
+    {
+      "name": "alertpulse_proxy_status",
+      "description": "Check if the AlertPulse proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "alerting",
+    "monitoring",
+    "slack",
+    "pagerduty",
+    "webhook",
+    "threshold",
+    "proxy"
+  ]
+}

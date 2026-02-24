@@ -1,0 +1,13 @@
+# ProxyLog — Structured logging for every proxy decision.
+# Copy to proxylog.yaml and set your API keys.
+
+port: 6490
+proxylog:
+  enabled: true
+  log_decisions: true
+  trace_header: X-Proxy-Trace
+  retention_days: 30
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

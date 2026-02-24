@@ -1,0 +1,22 @@
+# StreamSnap — SSE Response Capture & Replay
+port: 5200
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+streamsnap:
+  enabled: true
+  retention: 72h
+  metrics:
+    ttft: true
+    tps: true
+    completion_check: true
+  replay:
+    enabled: true
+    auth: api_key
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

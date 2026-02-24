@@ -1,0 +1,17 @@
+# EmbedCache — Never compute the same embedding twice.
+# Caches /v1/embeddings responses by content hash.
+# Part of the Stockyard LLM infrastructure suite.
+
+port: 5700
+log_level: info
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+
+embedcache:
+  enabled: true
+  max_entries: 100000      # max cached embeddings
+  ttl: 168h                # 7 days (embeddings are deterministic, cache long)
+  models: []               # empty = cache all models, or ["text-embedding-3-small"]

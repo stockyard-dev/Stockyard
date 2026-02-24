@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-regionroute",
+  "display_name": "Stockyard RegionRoute",
+  "description": "Route requests to region-specific endpoints. Keep EU data in EU. Geographic compliance made easy.",
+  "repository": "https://github.com/stockyard-dev/mcp-regionroute",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-regionroute"
+  ],
+  "tools": [
+    {
+      "name": "regionroute_stats",
+      "description": "Get routing stats: requests per region."
+    },
+    {
+      "name": "regionroute_routes",
+      "description": "List configured region routes."
+    }
+  ],
+  "tags": [
+    "gdpr",
+    "region",
+    "routing",
+    "compliance",
+    "data-residency"
+  ]
+}

@@ -1,0 +1,51 @@
+# MockLLM — Deterministic LLM responses for testing and CI/CD
+# Returns canned responses matched by prompt content. No real API calls needed.
+
+port: 5660
+
+# No providers needed — MockLLM intercepts everything by default.
+# Set passthrough: true and add providers if you want unmatched requests to hit real APIs.
+providers: []
+
+mockllm:
+  enabled: true
+  passthrough: false          # true = unmatched requests go to real provider
+  default_response: "No fixture matched this request."
+
+  fixtures:
+    - name: greeting
+      match_type: contains    # exact, contains, regex, any
+      pattern: "hello"
+      response: "Hello! I'm a mock LLM. How can I help you today?"
+
+    - name: json_test
+      match_type: contains
+      pattern: "json"
+      response: '{"status": "ok", "data": [1, 2, 3]}'
+
+    - name: slow_response
+      match_type: contains
+      pattern: "slow"
+      response: "This response was delayed by 2 seconds."
+      delay_ms: 2000
+
+    - name: error_simulation
+      match_type: contains
+      pattern: "error"
+      error_code: 500
+      error_message: "Simulated internal server error"
+
+    - name: model_specific
+      match_type: contains
+      pattern: "explain"
+      model: gpt-4o           # Only matches requests to this model
+      response: "This is a model-specific mock for gpt-4o explain requests."
+
+    - name: regex_match
+      match_type: regex
+      pattern: "\\b(summarize|summary)\\b"
+      response: "Here is a mock summary of the content you provided."
+
+    - name: catchall
+      match_type: any
+      response: "MockLLM caught this request. Add more fixtures to customize."

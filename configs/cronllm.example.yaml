@@ -1,0 +1,19 @@
+# CronLLM — Scheduled LLM tasks.
+# Copy to cronllm.yaml and set your API keys.
+
+port: 5940
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+cron:
+  jobs:
+    - name: daily_summary
+      schedule: "0 9 * * *"
+      model: gpt-4o-mini
+      prompt: "Summarize yesterday's key events in tech."
+      output: webhook
+      webhook_url: ${SLACK_WEBHOOK}
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

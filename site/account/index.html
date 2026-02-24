@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account — Stockyard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+
+.page{max-width:600px;margin:0 auto;padding:5rem 2rem}
+.page-header{text-align:center;margin-bottom:3rem}
+.eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1rem}
+.page h1{font-size:2rem;margin-bottom:0.5rem}
+.page .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic}
+
+.lookup-form{display:flex;gap:0.8rem;margin-bottom:2rem}
+.lookup-input{flex:1;font-family:var(--font-mono);font-size:0.85rem;padding:0.7rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);outline:none}
+.lookup-input:focus{border-color:var(--rust)}
+.lookup-input::placeholder{color:var(--leather)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.7rem 1.5rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn:disabled{opacity:0.5;cursor:wait}
+
+#results{margin-top:1rem}
+.result-empty{font-size:0.9rem;color:var(--cream-dim);font-style:italic;padding:1rem;border:1px solid var(--bg3);background:var(--bg2)}
+.license-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2);margin-bottom:1rem}
+.license-card.active{border-left:3px solid var(--gold)}
+.license-card.canceled{border-left:3px solid var(--leather);opacity:0.7}
+.lic-product{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.3rem}
+.lic-tier{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.5rem;display:inline-block;padding:0.15rem 0.5rem;border:1px solid var(--rust)}
+.lic-status{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;margin-left:0.5rem;display:inline-block;padding:0.15rem 0.5rem}
+.lic-status.active{color:var(--gold);border:1px solid var(--gold)}
+.lic-status.canceled{color:var(--leather);border:1px solid var(--leather)}
+.lic-key{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);margin-top:0.5rem}
+.lic-date{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem}
+
+.error-msg{color:var(--rust-light);font-size:0.85rem;padding:1rem;border:1px solid var(--rust-dark);background:var(--bg2)}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3);margin-top:4rem}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .lookup-form{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<section class="page">
+  <div class="page-header">
+    <div class="eyebrow">Account</div>
+    <h1>Find your license</h1>
+    <p class="sub">Enter the email you used at checkout.</p>
+  </div>
+
+  <div class="lookup-form">
+    <input type="email" id="email" class="lookup-input" placeholder="your@email.com" autocomplete="email">
+    <button onclick="lookup()" id="lookup-btn" class="btn btn-primary">Look up</button>
+  </div>
+
+  <div id="results"></div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/">Home</a></p>
+</footer>
+
+<script>
+const API_BASE = window.STOCKYARD_API || 'https://api.stockyard.dev';
+
+document.getElementById('email').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') lookup();
+});
+
+async function lookup() {
+  const email = document.getElementById('email').value.trim();
+  const results = document.getElementById('results');
+  const btn = document.getElementById('lookup-btn');
+
+  if (!email) { results.innerHTML = ''; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Looking up...';
+  results.innerHTML = '';
+
+  try {
+    const res = await fetch(API_BASE + '/api/license/lookup?email=' + encodeURIComponent(email));
+    const data = await res.json();
+
+    if (!data.found || !data.licenses || data.licenses.length === 0) {
+      results.innerHTML = '<div class="result-empty">No licenses found for this email. If you recently purchased, it may take a few minutes to appear.</div>';
+      return;
+    }
+
+    let html = '';
+    for (const lic of data.licenses) {
+      const statusClass = lic.status === 'active' ? 'active' : 'canceled';
+      html += '<div class="license-card ' + statusClass + '">';
+      html += '<div class="lic-product">' + esc(lic.product) + '</div>';
+      html += '<span class="lic-tier">' + esc(lic.tier) + '</span>';
+      html += '<span class="lic-status ' + statusClass + '">' + esc(lic.status) + '</span>';
+      html += '<div class="lic-key">Key: ' + esc(lic.key_masked) + '</div>';
+      html += '<div class="lic-date">Created: ' + esc(lic.created_at) + '</div>';
+      html += '</div>';
+    }
+    results.innerHTML = html;
+
+  } catch (e) {
+    results.innerHTML = '<div class="error-msg">Could not reach the license server. Please try again in a moment.</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Look up';
+  }
+}
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>

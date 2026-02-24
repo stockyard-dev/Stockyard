@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All 125 Products | Stockyard — Where LLM Traffic Gets Sorted</title>
+<meta name="description" content="125 LLM infrastructure tools. Cost control, caching, routing, safety, compliance, analytics, and more. Single Go binary.">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}
+.hero{max-width:900px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
+.hero h1{font-size:2.5rem;margin-bottom:1rem}.hero h1 .num{color:var(--rust-light)}
+.hero p{color:var(--cream-dim);font-style:italic;font-size:1.1rem;margin-bottom:2rem}
+.search{max-width:500px;margin:0 auto 3rem}
+.search input{width:100%;padding:0.8rem 1.2rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none}
+.search input:focus{border-color:var(--rust)}
+.search input::placeholder{color:var(--leather)}
+.grid{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.card{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s;display:block;color:var(--cream)}
+.card:hover{border-color:var(--rust);color:var(--cream)}
+.card-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem}
+.card-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)}
+.card-cat{font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--rust);margin-left:auto}
+.card-tagline{font-size:0.85rem;color:var(--cream-dim)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+</nav>
+<section class="hero">
+  <h1><span class="num">125</span> products. One binary.</h1>
+  <p>Every tool you need to run LLM traffic in production.</p>
+</section>
+<div class="search"><input type="text" id="search" placeholder="Search products..." oninput="filterCards(this.value)"></div>
+<div class="grid" id="grid">
+  <a href="/products/costcap/" class="card" data-search="costcap never get a surprise llm bill again cost control costcap">
+    <div class="card-top"><span class="card-name">CostCap</span><span class="card-cat">Cost Control</span></div>
+    <div class="card-tagline">Never get a surprise LLM bill again</div>
+  </a>
+  <a href="/products/llmcache/" class="card" data-search="cachelayer stop paying twice for the same llm response caching llmcache">
+    <div class="card-top"><span class="card-name">CacheLayer</span><span class="card-cat">Caching</span></div>
+    <div class="card-tagline">Stop paying twice for the same LLM response</div>
+  </a>
+  <a href="/products/jsonguard/" class="card" data-search="structuredshield llm responses that always parse validation jsonguard">
+    <div class="card-top"><span class="card-name">StructuredShield</span><span class="card-cat">Validation</span></div>
+    <div class="card-tagline">LLM responses that always parse</div>
+  </a>
+  <a href="/products/routefall/" class="card" data-search="fallbackrouter llm calls that never fail reliability routefall">
+    <div class="card-top"><span class="card-name">FallbackRouter</span><span class="card-cat">Reliability</span></div>
+    <div class="card-tagline">LLM calls that never fail</div>
+  </a>
+  <a href="/products/rateshield/" class="card" data-search="rateshield rate limiting that actually works for llms traffic control rateshield">
+    <div class="card-top"><span class="card-name">RateShield</span><span class="card-cat">Traffic Control</span></div>
+    <div class="card-tagline">Rate limiting that actually works for LLMs</div>
+  </a>
+  <a href="/products/promptreplay/" class="card" data-search="promptreplay every llm request, recorded and replayable logging promptreplay">
+    <div class="card-top"><span class="card-name">PromptReplay</span><span class="card-cat">Logging</span></div>
+    <div class="card-tagline">Every LLM request, recorded and replayable</div>
+  </a>
+  <a href="/products/stockyard/" class="card" data-search="stockyard suite 125 llm tools. one binary. $59/month. suite stockyard">
+    <div class="card-top"><span class="card-name">Stockyard Suite</span><span class="card-cat">Suite</span></div>
+    <div class="card-tagline">125 LLM tools. One binary. $59/month.</div>
+  </a>
+  <a href="/products/keypool/" class="card" data-search="keypool never hit api key rate limits again key management keypool">
+    <div class="card-top"><span class="card-name">KeyPool</span><span class="card-cat">Key Management</span></div>
+    <div class="card-tagline">Never hit API key rate limits again</div>
+  </a>
+  <a href="/products/promptguard/" class="card" data-search="promptguard pii never reaches the llm security promptguard">
+    <div class="card-top"><span class="card-name">PromptGuard</span><span class="card-cat">Security</span></div>
+    <div class="card-tagline">PII never reaches the LLM</div>
+  </a>
+  <a href="/products/modelswitch/" class="card" data-search="modelswitch smart model routing for every request routing modelswitch">
+    <div class="card-top"><span class="card-name">ModelSwitch</span><span class="card-cat">Routing</span></div>
+    <div class="card-tagline">Smart model routing for every request</div>
+  </a>
+  <a href="/products/evalgate/" class="card" data-search="evalgate catch bad llm responses before users see them quality evalgate">
+    <div class="card-top"><span class="card-name">EvalGate</span><span class="card-cat">Quality</span></div>
+    <div class="card-tagline">Catch bad LLM responses before users see them</div>
+  </a>
+  <a href="/products/usagepulse/" class="card" data-search="usagepulse know exactly who's using what metering usagepulse">
+    <div class="card-top"><span class="card-name">UsagePulse</span><span class="card-cat">Metering</span></div>
+    <div class="card-tagline">Know exactly who's using what</div>
+  </a>
+  <a href="/products/promptpad/" class="card" data-search="promptpad version control for your prompts prompt management promptpad">
+    <div class="card-top"><span class="card-name">PromptPad</span><span class="card-cat">Prompt Management</span></div>
+    <div class="card-tagline">Version control for your prompts</div>
+  </a>
+  <a href="/products/tokentrim/" class="card" data-search="tokentrim fit more into your context window optimization tokentrim">
+    <div class="card-top"><span class="card-name">TokenTrim</span><span class="card-cat">Optimization</span></div>
+    <div class="card-tagline">Fit more into your context window</div>
+  </a>
+  <a href="/products/batchqueue/" class="card" data-search="batchqueue async llm requests that don't overwhelm queueing batchqueue">
+    <div class="card-top"><span class="card-name">BatchQueue</span><span class="card-cat">Queueing</span></div>
+    <div class="card-tagline">Async LLM requests that don't overwhelm</div>
+  </a>
+  <a href="/products/multicall/" class="card" data-search="multicall ask multiple models, get the best answer comparison multicall">
+    <div class="card-top"><span class="card-name">MultiCall</span><span class="card-cat">Comparison</span></div>
+    <div class="card-tagline">Ask multiple models, get the best answer</div>
+  </a>
+  <a href="/products/streamsnap/" class="card" data-search="streamsnap capture and replay sse streams streaming streamsnap">
+    <div class="card-top"><span class="card-name">StreamSnap</span><span class="card-cat">Streaming</span></div>
+    <div class="card-tagline">Capture and replay SSE streams</div>
+  </a>
+  <a href="/products/llmtap/" class="card" data-search="llmtap full analytics for your llm stack analytics llmtap">
+    <div class="card-top"><span class="card-name">LLMTap</span><span class="card-cat">Analytics</span></div>
+    <div class="card-tagline">Full analytics for your LLM stack</div>
+  </a>
+  <a href="/products/contextpack/" class="card" data-search="contextpack poor man's rag in 30 seconds context contextpack">
+    <div class="card-top"><span class="card-name">ContextPack</span><span class="card-cat">Context</span></div>
+    <div class="card-tagline">Poor man's RAG in 30 seconds</div>
+  </a>
+  <a href="/products/retrypilot/" class="card" data-search="retrypilot intelligent retry that doesn't make things worse reliability retrypilot">
+    <div class="card-top"><span class="card-name">RetryPilot</span><span class="card-cat">Reliability</span></div>
+    <div class="card-tagline">Intelligent retry that doesn't make things worse</div>
+  </a>
+  <a href="/products/toxicfilter/" class="card" data-search="toxicfilter content moderation for llm outputs safety toxicfilter">
+    <div class="card-top"><span class="card-name">ToxicFilter</span><span class="card-cat">Safety</span></div>
+    <div class="card-tagline">Content moderation for LLM outputs</div>
+  </a>
+  <a href="/products/compliancelog/" class="card" data-search="compliancelog immutable audit trail for every llm call compliance compliancelog">
+    <div class="card-top"><span class="card-name">ComplianceLog</span><span class="card-cat">Compliance</span></div>
+    <div class="card-tagline">Immutable audit trail for every LLM call</div>
+  </a>
+  <a href="/products/secretscan/" class="card" data-search="secretscan catch api keys leaking through your llm security secretscan">
+    <div class="card-top"><span class="card-name">SecretScan</span><span class="card-cat">Security</span></div>
+    <div class="card-tagline">Catch API keys leaking through your LLM</div>
+  </a>
+  <a href="/products/tracelink/" class="card" data-search="tracelink distributed tracing for llm chains observability tracelink">
+    <div class="card-top"><span class="card-name">TraceLink</span><span class="card-cat">Observability</span></div>
+    <div class="card-tagline">Distributed tracing for LLM chains</div>
+  </a>
+  <a href="/products/ipfence/" class="card" data-search="ipfence ip allowlisting for your llm proxy security ipfence">
+    <div class="card-top"><span class="card-name">IPFence</span><span class="card-cat">Security</span></div>
+    <div class="card-tagline">IP allowlisting for your LLM proxy</div>
+  </a>
+  <a href="/products/embedcache/" class="card" data-search="embedcache never compute the same embedding twice caching embedcache">
+    <div class="card-top"><span class="card-name">EmbedCache</span><span class="card-cat">Caching</span></div>
+    <div class="card-tagline">Never compute the same embedding twice</div>
+  </a>
+  <a href="/products/anthrofit/" class="card" data-search="anthrofit use claude with openai sdks compatibility anthrofit">
+    <div class="card-top"><span class="card-name">AnthroFit</span><span class="card-cat">Compatibility</span></div>
+    <div class="card-tagline">Use Claude with OpenAI SDKs</div>
+  </a>
+  <a href="/products/alertpulse/" class="card" data-search="alertpulse pagerduty for your llm stack monitoring alertpulse">
+    <div class="card-top"><span class="card-name">AlertPulse</span><span class="card-cat">Monitoring</span></div>
+    <div class="card-tagline">PagerDuty for your LLM stack</div>
+  </a>
+  <a href="/products/chatmem/" class="card" data-search="chatmem persistent memory without eating context memory chatmem">
+    <div class="card-top"><span class="card-name">ChatMem</span><span class="card-cat">Memory</span></div>
+    <div class="card-tagline">Persistent memory without eating context</div>
+  </a>
+  <a href="/products/mockllm/" class="card" data-search="mockllm deterministic llm responses for testing testing mockllm">
+    <div class="card-top"><span class="card-name">MockLLM</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Deterministic LLM responses for testing</div>
+  </a>
+  <a href="/products/tenantwall/" class="card" data-search="tenantwall per-tenant isolation for multi-tenant llm apps multi-tenant tenantwall">
+    <div class="card-top"><span class="card-name">TenantWall</span><span class="card-cat">Multi-Tenant</span></div>
+    <div class="card-tagline">Per-tenant isolation for multi-tenant LLM apps</div>
+  </a>
+  <a href="/products/idlekill/" class="card" data-search="idlekill kill runaway llm requests cost control idlekill">
+    <div class="card-top"><span class="card-name">IdleKill</span><span class="card-cat">Cost Control</span></div>
+    <div class="card-tagline">Kill runaway LLM requests</div>
+  </a>
+  <a href="/products/agentguard/" class="card" data-search="agentguard safety rails for autonomous ai agents agent safety agentguard">
+    <div class="card-top"><span class="card-name">AgentGuard</span><span class="card-cat">Agent Safety</span></div>
+    <div class="card-tagline">Safety rails for autonomous AI agents</div>
+  </a>
+  <a href="/products/codefence/" class="card" data-search="codefence validate llm-generated code before it runs code safety codefence">
+    <div class="card-top"><span class="card-name">CodeFence</span><span class="card-cat">Code Safety</span></div>
+    <div class="card-tagline">Validate LLM-generated code before it runs</div>
+  </a>
+  <a href="/products/hallucicheck/" class="card" data-search="hallucicheck catch hallucinations before users do quality hallucicheck">
+    <div class="card-top"><span class="card-name">HalluciCheck</span><span class="card-cat">Quality</span></div>
+    <div class="card-tagline">Catch hallucinations before users do</div>
+  </a>
+  <a href="/products/tierdrop/" class="card" data-search="tierdrop auto-downgrade models when burning cash cost control tierdrop">
+    <div class="card-top"><span class="card-name">TierDrop</span><span class="card-cat">Cost Control</span></div>
+    <div class="card-tagline">Auto-downgrade models when burning cash</div>
+  </a>
+  <a href="/products/driftwatch/" class="card" data-search="driftwatch detect model behavior changes before users notice monitoring driftwatch">
+    <div class="card-top"><span class="card-name">DriftWatch</span><span class="card-cat">Monitoring</span></div>
+    <div class="card-tagline">Detect model behavior changes before users notice</div>
+  </a>
+  <a href="/products/feedbackloop/" class="card" data-search="feedbackloop close the llm improvement loop feedback feedbackloop">
+    <div class="card-top"><span class="card-name">FeedbackLoop</span><span class="card-cat">Feedback</span></div>
+    <div class="card-tagline">Close the LLM improvement loop</div>
+  </a>
+  <a href="/products/abrouter/" class="card" data-search="abrouter a/b test any llm variable experimentation abrouter">
+    <div class="card-top"><span class="card-name">ABRouter</span><span class="card-cat">Experimentation</span></div>
+    <div class="card-tagline">A/B test any LLM variable</div>
+  </a>
+  <a href="/products/guardrail/" class="card" data-search="guardrail keep your llm on-script safety guardrail">
+    <div class="card-top"><span class="card-name">GuardRail</span><span class="card-cat">Safety</span></div>
+    <div class="card-tagline">Keep your LLM on-script</div>
+  </a>
+  <a href="/products/geminishim/" class="card" data-search="geminishim tame gemini behind a clean api compatibility geminishim">
+    <div class="card-top"><span class="card-name">GeminiShim</span><span class="card-cat">Compatibility</span></div>
+    <div class="card-tagline">Tame Gemini behind a clean API</div>
+  </a>
+  <a href="/products/localsync/" class="card" data-search="localsync blend local and cloud models seamlessly hybrid localsync">
+    <div class="card-top"><span class="card-name">LocalSync</span><span class="card-cat">Hybrid</span></div>
+    <div class="card-tagline">Blend local and cloud models seamlessly</div>
+  </a>
+  <a href="/products/devproxy/" class="card" data-search="devproxy charles proxy for llm apis debugging devproxy">
+    <div class="card-top"><span class="card-name">DevProxy</span><span class="card-cat">Debugging</span></div>
+    <div class="card-tagline">Charles Proxy for LLM APIs</div>
+  </a>
+  <a href="/products/promptslim/" class="card" data-search="promptslim compress prompts 40-70% without losing meaning cost control promptslim">
+    <div class="card-top"><span class="card-name">PromptSlim</span><span class="card-cat">Cost Control</span></div>
+    <div class="card-tagline">Compress prompts 40-70% without losing meaning</div>
+  </a>
+  <a href="/products/promptlint/" class="card" data-search="promptlint catch prompt anti-patterns quality promptlint">
+    <div class="card-top"><span class="card-name">PromptLint</span><span class="card-cat">Quality</span></div>
+    <div class="card-tagline">Catch prompt anti-patterns</div>
+  </a>
+  <a href="/products/approvalgate/" class="card" data-search="approvalgate human approval for prompt changes governance approvalgate">
+    <div class="card-top"><span class="card-name">ApprovalGate</span><span class="card-cat">Governance</span></div>
+    <div class="card-tagline">Human approval for prompt changes</div>
+  </a>
+  <a href="/products/outputcap/" class="card" data-search="outputcap stop paying for unwanted verbosity cost control outputcap">
+    <div class="card-top"><span class="card-name">OutputCap</span><span class="card-cat">Cost Control</span></div>
+    <div class="card-tagline">Stop paying for unwanted verbosity</div>
+  </a>
+  <a href="/products/agegate/" class="card" data-search="agegate child safety for llm apps safety agegate">
+    <div class="card-top"><span class="card-name">AgeGate</span><span class="card-cat">Safety</span></div>
+    <div class="card-tagline">Child safety for LLM apps</div>
+  </a>
+  <a href="/products/voicebridge/" class="card" data-search="voicebridge llm middleware for voice pipelines voice voicebridge">
+    <div class="card-top"><span class="card-name">VoiceBridge</span><span class="card-cat">Voice</span></div>
+    <div class="card-tagline">LLM middleware for voice pipelines</div>
+  </a>
+  <a href="/products/imageproxy/" class="card" data-search="imageproxy proxy magic for image generation multimodal imageproxy">
+    <div class="card-top"><span class="card-name">ImageProxy</span><span class="card-cat">Multimodal</span></div>
+    <div class="card-tagline">Proxy magic for image generation</div>
+  </a>
+  <a href="/products/langbridge/" class="card" data-search="langbridge multilingual llm in one config line i18n langbridge">
+    <div class="card-top"><span class="card-name">LangBridge</span><span class="card-cat">i18n</span></div>
+    <div class="card-tagline">Multilingual LLM in one config line</div>
+  </a>
+  <a href="/products/contextwindow/" class="card" data-search="contextwindow visual context window debugger debugging contextwindow">
+    <div class="card-top"><span class="card-name">ContextWindow</span><span class="card-cat">Debugging</span></div>
+    <div class="card-tagline">Visual context window debugger</div>
+  </a>
+  <a href="/products/regionroute/" class="card" data-search="regionroute data residency routing for gdpr compliance regionroute">
+    <div class="card-top"><span class="card-name">RegionRoute</span><span class="card-cat">Compliance</span></div>
+    <div class="card-tagline">Data residency routing for GDPR</div>
+  </a>
+  <a href="/products/chainforge/" class="card" data-search="chainforge multi-step llm workflows as yaml workflow chainforge">
+    <div class="card-top"><span class="card-name">ChainForge</span><span class="card-cat">Workflow</span></div>
+    <div class="card-tagline">Multi-step LLM workflows as YAML</div>
+  </a>
+  <a href="/products/cronllm/" class="card" data-search="cronllm your ai cron job runner automation cronllm">
+    <div class="card-top"><span class="card-name">CronLLM</span><span class="card-cat">Automation</span></div>
+    <div class="card-tagline">Your AI cron job runner</div>
+  </a>
+  <a href="/products/webhookrelay/" class="card" data-search="webhookrelay webhook → llm → action in one config integration webhookrelay">
+    <div class="card-top"><span class="card-name">WebhookRelay</span><span class="card-cat">Integration</span></div>
+    <div class="card-tagline">Webhook → LLM → Action in one config</div>
+  </a>
+  <a href="/products/billsync/" class="card" data-search="billsync per-customer llm invoices automatically billing billsync">
+    <div class="card-top"><span class="card-name">BillSync</span><span class="card-cat">Billing</span></div>
+    <div class="card-tagline">Per-customer LLM invoices automatically</div>
+  </a>
+  <a href="/products/whitelabel/" class="card" data-search="whitelabel your brand on stockyard's engine branding whitelabel">
+    <div class="card-top"><span class="card-name">WhiteLabel</span><span class="card-cat">Branding</span></div>
+    <div class="card-tagline">Your brand on Stockyard's engine</div>
+  </a>
+  <a href="/products/trainexport/" class="card" data-search="trainexport export conversations as training data data trainexport">
+    <div class="card-top"><span class="card-name">TrainExport</span><span class="card-cat">Data</span></div>
+    <div class="card-tagline">Export conversations as training data</div>
+  </a>
+  <a href="/products/synthgen/" class="card" data-search="synthgen generate synthetic training data at scale data synthgen">
+    <div class="card-top"><span class="card-name">SynthGen</span><span class="card-cat">Data</span></div>
+    <div class="card-tagline">Generate synthetic training data at scale</div>
+  </a>
+  <a href="/products/diffprompt/" class="card" data-search="diffprompt git-style diff for prompt changes versioning diffprompt">
+    <div class="card-top"><span class="card-name">DiffPrompt</span><span class="card-cat">Versioning</span></div>
+    <div class="card-tagline">Git-style diff for prompt changes</div>
+  </a>
+  <a href="/products/llmbench/" class="card" data-search="llmbench benchmark models on your workload benchmarking llmbench">
+    <div class="card-top"><span class="card-name">LLMBench</span><span class="card-cat">Benchmarking</span></div>
+    <div class="card-tagline">Benchmark models on YOUR workload</div>
+  </a>
+  <a href="/products/maskmode/" class="card" data-search="maskmode demo mode with realistic fake data privacy maskmode">
+    <div class="card-top"><span class="card-name">MaskMode</span><span class="card-cat">Privacy</span></div>
+    <div class="card-tagline">Demo mode with realistic fake data</div>
+  </a>
+  <a href="/products/tokenmarket/" class="card" data-search="tokenmarket dynamic budget reallocation across teams budgets tokenmarket">
+    <div class="card-top"><span class="card-name">TokenMarket</span><span class="card-cat">Budgets</span></div>
+    <div class="card-tagline">Dynamic budget reallocation across teams</div>
+  </a>
+  <a href="/products/llmsync/" class="card" data-search="llmsync sync config across environments devops llmsync">
+    <div class="card-top"><span class="card-name">LLMSync</span><span class="card-cat">DevOps</span></div>
+    <div class="card-tagline">Sync config across environments</div>
+  </a>
+  <a href="/products/clustermode/" class="card" data-search="clustermode scale beyond one instance infrastructure clustermode">
+    <div class="card-top"><span class="card-name">ClusterMode</span><span class="card-cat">Infrastructure</span></div>
+    <div class="card-tagline">Scale beyond one instance</div>
+  </a>
+  <a href="/products/encryptvault/" class="card" data-search="encryptvault encrypt sensitive llm payloads security encryptvault">
+    <div class="card-top"><span class="card-name">EncryptVault</span><span class="card-cat">Security</span></div>
+    <div class="card-tagline">Encrypt sensitive LLM payloads</div>
+  </a>
+  <a href="/products/mirrortest/" class="card" data-search="mirrortest shadow test against production traffic testing mirrortest">
+    <div class="card-top"><span class="card-name">MirrorTest</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Shadow test against production traffic</div>
+  </a>
+  <a href="/products/extractml/" class="card" data-search="extractml turn prose into structured data structured data extractml">
+    <div class="card-top"><span class="card-name">ExtractML</span><span class="card-cat">Structured Data</span></div>
+    <div class="card-tagline">Turn prose into structured data</div>
+  </a>
+  <a href="/products/tableforge/" class="card" data-search="tableforge llm-powered csv with type validation structured data tableforge">
+    <div class="card-top"><span class="card-name">TableForge</span><span class="card-cat">Structured Data</span></div>
+    <div class="card-tagline">LLM-powered CSV with type validation</div>
+  </a>
+  <a href="/products/toolrouter/" class="card" data-search="toolrouter manage and version llm function calls function calling toolrouter">
+    <div class="card-top"><span class="card-name">ToolRouter</span><span class="card-cat">Function Calling</span></div>
+    <div class="card-tagline">Manage and version LLM function calls</div>
+  </a>
+  <a href="/products/toolshield/" class="card" data-search="toolshield sandbox llm tool calls function calling toolshield">
+    <div class="card-top"><span class="card-name">ToolShield</span><span class="card-cat">Function Calling</span></div>
+    <div class="card-tagline">Sandbox LLM tool calls</div>
+  </a>
+  <a href="/products/toolmock/" class="card" data-search="toolmock fake tool responses for testing testing toolmock">
+    <div class="card-top"><span class="card-name">ToolMock</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Fake tool responses for testing</div>
+  </a>
+  <a href="/products/authgate/" class="card" data-search="authgate api key management for your users auth authgate">
+    <div class="card-top"><span class="card-name">AuthGate</span><span class="card-cat">Auth</span></div>
+    <div class="card-tagline">API key management for YOUR users</div>
+  </a>
+  <a href="/products/scopeguard/" class="card" data-search="scopeguard fine-grained permissions per key auth scopeguard">
+    <div class="card-top"><span class="card-name">ScopeGuard</span><span class="card-cat">Auth</span></div>
+    <div class="card-tagline">Fine-grained permissions per key</div>
+  </a>
+  <a href="/products/visionproxy/" class="card" data-search="visionproxy proxy for vision/image apis multimodal visionproxy">
+    <div class="card-top"><span class="card-name">VisionProxy</span><span class="card-cat">Multimodal</span></div>
+    <div class="card-tagline">Proxy for vision/image APIs</div>
+  </a>
+  <a href="/products/audioproxy/" class="card" data-search="audioproxy proxy for stt/tts apis multimodal audioproxy">
+    <div class="card-top"><span class="card-name">AudioProxy</span><span class="card-cat">Multimodal</span></div>
+    <div class="card-tagline">Proxy for STT/TTS APIs</div>
+  </a>
+  <a href="/products/docparse/" class="card" data-search="docparse preprocess documents for llms multimodal docparse">
+    <div class="card-top"><span class="card-name">DocParse</span><span class="card-cat">Multimodal</span></div>
+    <div class="card-tagline">Preprocess documents for LLMs</div>
+  </a>
+  <a href="/products/framegrab/" class="card" data-search="framegrab video frames through vision llms multimodal framegrab">
+    <div class="card-top"><span class="card-name">FrameGrab</span><span class="card-cat">Multimodal</span></div>
+    <div class="card-tagline">Video frames through vision LLMs</div>
+  </a>
+  <a href="/products/sessionstore/" class="card" data-search="sessionstore managed conversation sessions sessions sessionstore">
+    <div class="card-top"><span class="card-name">SessionStore</span><span class="card-cat">Sessions</span></div>
+    <div class="card-tagline">Managed conversation sessions</div>
+  </a>
+  <a href="/products/convofork/" class="card" data-search="convofork branch conversations sessions convofork">
+    <div class="card-top"><span class="card-name">ConvoFork</span><span class="card-cat">Sessions</span></div>
+    <div class="card-tagline">Branch conversations</div>
+  </a>
+  <a href="/products/slotfill/" class="card" data-search="slotfill form-filling conversation engine sessions slotfill">
+    <div class="card-top"><span class="card-name">SlotFill</span><span class="card-cat">Sessions</span></div>
+    <div class="card-tagline">Form-filling conversation engine</div>
+  </a>
+  <a href="/products/semanticcache/" class="card" data-search="semanticcache cache similar prompts, not just identical caching semanticcache">
+    <div class="card-top"><span class="card-name">SemanticCache</span><span class="card-cat">Caching</span></div>
+    <div class="card-tagline">Cache similar prompts, not just identical</div>
+  </a>
+  <a href="/products/partialcache/" class="card" data-search="partialcache cache prompt prefixes caching partialcache">
+    <div class="card-top"><span class="card-name">PartialCache</span><span class="card-cat">Caching</span></div>
+    <div class="card-tagline">Cache prompt prefixes</div>
+  </a>
+  <a href="/products/streamcache/" class="card" data-search="streamcache cache streaming with realistic timing caching streamcache">
+    <div class="card-top"><span class="card-name">StreamCache</span><span class="card-cat">Caching</span></div>
+    <div class="card-tagline">Cache streaming with realistic timing</div>
+  </a>
+  <a href="/products/promptchain/" class="card" data-search="promptchain composable prompt blocks prompt management promptchain">
+    <div class="card-top"><span class="card-name">PromptChain</span><span class="card-cat">Prompt Management</span></div>
+    <div class="card-tagline">Composable prompt blocks</div>
+  </a>
+  <a href="/products/promptfuzz/" class="card" data-search="promptfuzz fuzz-test your prompts testing promptfuzz">
+    <div class="card-top"><span class="card-name">PromptFuzz</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Fuzz-test your prompts</div>
+  </a>
+  <a href="/products/promptmarket/" class="card" data-search="promptmarket community prompt library community promptmarket">
+    <div class="card-top"><span class="card-name">PromptMarket</span><span class="card-cat">Community</span></div>
+    <div class="card-tagline">Community prompt library</div>
+  </a>
+  <a href="/products/costpredict/" class="card" data-search="costpredict predict cost before sending cost intel costpredict">
+    <div class="card-top"><span class="card-name">CostPredict</span><span class="card-cat">Cost Intel</span></div>
+    <div class="card-tagline">Predict cost BEFORE sending</div>
+  </a>
+  <a href="/products/costmap/" class="card" data-search="costmap multi-dimensional cost attribution cost intel costmap">
+    <div class="card-top"><span class="card-name">CostMap</span><span class="card-cat">Cost Intel</span></div>
+    <div class="card-tagline">Multi-dimensional cost attribution</div>
+  </a>
+  <a href="/products/spotprice/" class="card" data-search="spotprice route to the cheapest model cost intel spotprice">
+    <div class="card-top"><span class="card-name">SpotPrice</span><span class="card-cat">Cost Intel</span></div>
+    <div class="card-tagline">Route to the cheapest model</div>
+  </a>
+  <a href="/products/loadforge/" class="card" data-search="loadforge load test your llm stack testing loadforge">
+    <div class="card-top"><span class="card-name">LoadForge</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Load test your LLM stack</div>
+  </a>
+  <a href="/products/snapshottest/" class="card" data-search="snapshottest snapshot testing for llm outputs testing snapshottest">
+    <div class="card-top"><span class="card-name">SnapshotTest</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Snapshot testing for LLM outputs</div>
+  </a>
+  <a href="/products/chaosllm/" class="card" data-search="chaosllm chaos engineering for llms testing chaosllm">
+    <div class="card-top"><span class="card-name">ChaosLLM</span><span class="card-cat">Testing</span></div>
+    <div class="card-tagline">Chaos engineering for LLMs</div>
+  </a>
+  <a href="/products/datamap/" class="card" data-search="datamap gdpr data flow mapping compliance datamap">
+    <div class="card-top"><span class="card-name">DataMap</span><span class="card-cat">Compliance</span></div>
+    <div class="card-tagline">GDPR data flow mapping</div>
+  </a>
+  <a href="/products/consentgate/" class="card" data-search="consentgate consent management for ai compliance consentgate">
+    <div class="card-top"><span class="card-name">ConsentGate</span><span class="card-cat">Compliance</span></div>
+    <div class="card-tagline">Consent management for AI</div>
+  </a>
+  <a href="/products/retentionwipe/" class="card" data-search="retentionwipe automated data retention compliance retentionwipe">
+    <div class="card-top"><span class="card-name">RetentionWipe</span><span class="card-cat">Compliance</span></div>
+    <div class="card-tagline">Automated data retention</div>
+  </a>
+  <a href="/products/policyengine/" class="card" data-search="policyengine ai governance as code compliance policyengine">
+    <div class="card-top"><span class="card-name">PolicyEngine</span><span class="card-cat">Compliance</span></div>
+    <div class="card-tagline">AI governance as code</div>
+  </a>
+  <a href="/products/streamsplit/" class="card" data-search="streamsplit fork streams to multiple destinations streaming streamsplit">
+    <div class="card-top"><span class="card-name">StreamSplit</span><span class="card-cat">Streaming</span></div>
+    <div class="card-tagline">Fork streams to multiple destinations</div>
+  </a>
+  <a href="/products/streamthrottle/" class="card" data-search="streamthrottle control streaming speed streaming streamthrottle">
+    <div class="card-top"><span class="card-name">StreamThrottle</span><span class="card-cat">Streaming</span></div>
+    <div class="card-tagline">Control streaming speed</div>
+  </a>
+  <a href="/products/streamtransform/" class="card" data-search="streamtransform transform streams mid-flight streaming streamtransform">
+    <div class="card-top"><span class="card-name">StreamTransform</span><span class="card-cat">Streaming</span></div>
+    <div class="card-tagline">Transform streams mid-flight</div>
+  </a>
+  <a href="/products/modelalias/" class="card" data-search="modelalias abstract away model names routing modelalias">
+    <div class="card-top"><span class="card-name">ModelAlias</span><span class="card-cat">Routing</span></div>
+    <div class="card-tagline">Abstract away model names</div>
+  </a>
+  <a href="/products/paramnorm/" class="card" data-search="paramnorm normalize params across providers compatibility paramnorm">
+    <div class="card-top"><span class="card-name">ParamNorm</span><span class="card-cat">Compatibility</span></div>
+    <div class="card-tagline">Normalize params across providers</div>
+  </a>
+  <a href="/products/quotasync/" class="card" data-search="quotasync track provider rate limits monitoring quotasync">
+    <div class="card-top"><span class="card-name">QuotaSync</span><span class="card-cat">Monitoring</span></div>
+    <div class="card-tagline">Track provider rate limits</div>
+  </a>
+  <a href="/products/errornorm/" class="card" data-search="errornorm normalize errors across providers compatibility errornorm">
+    <div class="card-top"><span class="card-name">ErrorNorm</span><span class="card-cat">Compatibility</span></div>
+    <div class="card-tagline">Normalize errors across providers</div>
+  </a>
+  <a href="/products/cohorttrack/" class="card" data-search="cohorttrack user cohort analytics analytics cohorttrack">
+    <div class="card-top"><span class="card-name">CohortTrack</span><span class="card-cat">Analytics</span></div>
+    <div class="card-tagline">User cohort analytics</div>
+  </a>
+  <a href="/products/promptrank/" class="card" data-search="promptrank rank prompts by roi analytics promptrank">
+    <div class="card-top"><span class="card-name">PromptRank</span><span class="card-cat">Analytics</span></div>
+    <div class="card-tagline">Rank prompts by ROI</div>
+  </a>
+  <a href="/products/anomalyradar/" class="card" data-search="anomalyradar ml-powered anomaly detection analytics anomalyradar">
+    <div class="card-top"><span class="card-name">AnomalyRadar</span><span class="card-cat">Analytics</span></div>
+    <div class="card-tagline">ML-powered anomaly detection</div>
+  </a>
+  <a href="/products/envsync/" class="card" data-search="envsync sync configs + secrets devops envsync">
+    <div class="card-top"><span class="card-name">EnvSync</span><span class="card-cat">DevOps</span></div>
+    <div class="card-tagline">Sync configs + secrets</div>
+  </a>
+  <a href="/products/proxylog/" class="card" data-search="proxylog log every proxy decision debugging proxylog">
+    <div class="card-top"><span class="card-name">ProxyLog</span><span class="card-cat">Debugging</span></div>
+    <div class="card-tagline">Log every proxy decision</div>
+  </a>
+  <a href="/products/clidash/" class="card" data-search="clidash terminal dashboard for your llm stack devops clidash">
+    <div class="card-top"><span class="card-name">CliDash</span><span class="card-cat">DevOps</span></div>
+    <div class="card-tagline">Terminal dashboard for your LLM stack</div>
+  </a>
+  <a href="/products/embedrouter/" class="card" data-search="embedrouter smart embedding request routing embeddings embedrouter">
+    <div class="card-top"><span class="card-name">EmbedRouter</span><span class="card-cat">Embeddings</span></div>
+    <div class="card-tagline">Smart embedding request routing</div>
+  </a>
+  <a href="/products/finetunetrack/" class="card" data-search="finetunetrack monitor fine-tuned model performance monitoring finetunetrack">
+    <div class="card-top"><span class="card-name">FineTuneTrack</span><span class="card-cat">Monitoring</span></div>
+    <div class="card-tagline">Monitor fine-tuned model performance</div>
+  </a>
+  <a href="/products/agentreplay/" class="card" data-search="agentreplay replay agent sessions step-by-step debugging agentreplay">
+    <div class="card-top"><span class="card-name">AgentReplay</span><span class="card-cat">Debugging</span></div>
+    <div class="card-tagline">Replay agent sessions step-by-step</div>
+  </a>
+  <a href="/products/summarizegate/" class="card" data-search="summarizegate auto-summarize long contexts optimization summarizegate">
+    <div class="card-top"><span class="card-name">SummarizeGate</span><span class="card-cat">Optimization</span></div>
+    <div class="card-tagline">Auto-summarize long contexts</div>
+  </a>
+  <a href="/products/codelang/" class="card" data-search="codelang language-aware code validation code safety codelang">
+    <div class="card-top"><span class="card-name">CodeLang</span><span class="card-cat">Code Safety</span></div>
+    <div class="card-tagline">Language-aware code validation</div>
+  </a>
+  <a href="/products/personaswitch/" class="card" data-search="personaswitch hot-swap ai personalities customization personaswitch">
+    <div class="card-top"><span class="card-name">PersonaSwitch</span><span class="card-cat">Customization</span></div>
+    <div class="card-tagline">Hot-swap AI personalities</div>
+  </a>
+  <a href="/products/warmpool/" class="card" data-search="warmpool pre-warm model connections performance warmpool">
+    <div class="card-top"><span class="card-name">WarmPool</span><span class="card-cat">Performance</span></div>
+    <div class="card-tagline">Pre-warm model connections</div>
+  </a>
+  <a href="/products/edgecache/" class="card" data-search="edgecache cdn-like caching for llm responses caching edgecache">
+    <div class="card-top"><span class="card-name">EdgeCache</span><span class="card-cat">Caching</span></div>
+    <div class="card-tagline">CDN-like caching for LLM responses</div>
+  </a>
+  <a href="/products/queuepriority/" class="card" data-search="queuepriority priority queues — vips first infrastructure queuepriority">
+    <div class="card-top"><span class="card-name">QueuePriority</span><span class="card-cat">Infrastructure</span></div>
+    <div class="card-tagline">Priority queues — VIPs first</div>
+  </a>
+  <a href="/products/geoprice/" class="card" data-search="geoprice regional pricing by purchasing power billing geoprice">
+    <div class="card-top"><span class="card-name">GeoPrice</span><span class="card-cat">Billing</span></div>
+    <div class="card-tagline">Regional pricing by purchasing power</div>
+  </a>
+  <a href="/products/tokenauction/" class="card" data-search="tokenauction dynamic pricing based on demand billing tokenauction">
+    <div class="card-top"><span class="card-name">TokenAuction</span><span class="card-cat">Billing</span></div>
+    <div class="card-tagline">Dynamic pricing based on demand</div>
+  </a>
+  <a href="/products/canarydeploy/" class="card" data-search="canarydeploy canary deployments for model changes deployment canarydeploy">
+    <div class="card-top"><span class="card-name">CanaryDeploy</span><span class="card-cat">Deployment</span></div>
+    <div class="card-tagline">Canary deployments for model changes</div>
+  </a>
+  <a href="/products/playbackstudio/" class="card" data-search="playbackstudio interactive playground for logged interactions analytics playbackstudio">
+    <div class="card-top"><span class="card-name">PlaybackStudio</span><span class="card-cat">Analytics</span></div>
+    <div class="card-tagline">Interactive playground for logged interactions</div>
+  </a>
+  <a href="/products/webhookforge/" class="card" data-search="webhookforge visual webhook→llm→action builder automation webhookforge">
+    <div class="card-top"><span class="card-name">WebhookForge</span><span class="card-cat">Automation</span></div>
+    <div class="card-tagline">Visual webhook→LLM→action builder</div>
+  </a>
+</div>
+<footer><p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard.</p><p style="margin-top:0.5rem">Where LLM traffic gets sorted.</p></footer>
+<script>
+function filterCards(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = c.dataset.search.includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

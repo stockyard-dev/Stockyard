@@ -1,0 +1,19 @@
+# CodeFence — Validate LLM-generated code before it runs.
+# Copy to codefence.yaml and set your API keys.
+
+port: 5730
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+codefence:
+  mode: warn  # block | warn
+  forbidden_patterns:
+    - "rm -rf"
+    - "eval("
+    - "exec("
+    - "DROP TABLE"
+  max_complexity: 50
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

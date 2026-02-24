@@ -1,0 +1,17 @@
+name: stockyard-costmap
+display_name: "Stockyard CostMap"
+description: "Tag requests with dimensions. Drill-down: by feature, user, prompt."
+icon: "🗺️"
+command: npx
+args:
+  - "@stockyard/mcp-costmap"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - cost
+  - attribution
+  - analytics
+  - drill-down

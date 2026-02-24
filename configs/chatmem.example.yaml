@@ -1,0 +1,17 @@
+# ChatMem — Persistent conversation memory without eating context window
+# Manages per-session conversation history with sliding window eviction.
+
+port: 5650
+
+providers:
+  - name: openai
+    url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    default: true
+
+chatmem:
+  enabled: true
+  strategy: sliding_window   # sliding_window, importance, or default (simple truncation)
+  max_messages: 50           # Max messages to retain per session
+  inject_memory: true        # Inject past conversation into new requests
+  session_ttl: 1h            # Auto-expire idle sessions after this duration

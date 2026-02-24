@@ -1,0 +1,16 @@
+name: stockyard-errornorm
+display_name: "Stockyard ErrorNorm"
+description: "Single error schema: code, message, provider, retry_after, is_retryable."
+icon: "⚠️"
+command: npx
+args:
+  - "@stockyard/mcp-errornorm"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - errors
+  - normalization
+  - consistency

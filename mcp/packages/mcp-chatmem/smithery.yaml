@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-chatmem
+display_name: "Stockyard ChatMem"
+description: "Conversation memory middleware. Sliding window, summarization, and importance-based strategies. Persist memory across sessions without eating context windows."
+icon: "🧠"
+command: npx
+args:
+  - "@stockyard/mcp-chatmem"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - memory
+  - conversation
+  - context
+  - session
+  - chatbot
+  - persistence
+  - proxy

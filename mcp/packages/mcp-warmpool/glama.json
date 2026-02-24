@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-warmpool",
+  "display_name": "Stockyard WarmPool",
+  "description": "Persistent connections. Health checks. Keep-alive for Ollama.",
+  "repository": "https://github.com/stockyard-dev/mcp-warmpool",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-warmpool"
+  ],
+  "tools": [
+    {
+      "name": "warmpool_stats",
+      "description": "Get connection pool stats."
+    }
+  ],
+  "tags": [
+    "warmup",
+    "connections",
+    "latency",
+    "performance"
+  ]
+}

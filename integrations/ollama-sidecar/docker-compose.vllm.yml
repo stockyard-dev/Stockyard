@@ -1,0 +1,29 @@
+# vLLM + Stockyard Sidecar
+# Adds auth, rate limiting, cost tracking, and analytics to vLLM.
+# Usage: docker compose up
+# vLLM API (direct): http://localhost:8000 | Stockyard proxy: http://localhost:4000/v1
+
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    ports: ["8000:8000"]
+    command: ["--model", "${MODEL:-meta-llama/Llama-3.1-8B-Instruct}", "--host", "0.0.0.0"]
+    volumes: [huggingface-cache:/root/.cache/huggingface]
+    deploy:
+      resources:
+        reservations:
+          devices: [{ driver: nvidia, count: all, capabilities: [gpu] }]
+
+  stockyard:
+    image: ghcr.io/stockyard-dev/stockyard:latest
+    ports: ["4000:4000"]
+    environment:
+      - VLLM_BASE_URL=http://vllm:8000
+    volumes:
+      - stockyard-data:/data
+      - ./stockyard-vllm.yaml:/etc/stockyard/config.yaml:ro
+    depends_on: [vllm]
+
+volumes:
+  huggingface-cache:
+  stockyard-data:

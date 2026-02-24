@@ -1,0 +1,17 @@
+name: LLM Tests
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start Stockyard MockLLM
+        run: |
+          curl -fsSL https://stockyard.dev/install.sh | sh
+          stockyard --product mockllm --config test/mockllm.yml &
+          sleep 2
+      - name: Run tests
+        env:
+          OPENAI_API_BASE: http://localhost:4000/v1
+          OPENAI_API_KEY: test-key
+        run: npm test

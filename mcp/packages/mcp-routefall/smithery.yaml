@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-routefall
+display_name: "Stockyard FallbackRouter"
+description: "Automatic failover routing between LLM providers. When OpenAI is down, traffic auto-routes to Anthropic or Groq. Circuit breaker pattern included."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-routefall"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - failover
+  - fallback
+  - routing
+  - circuit-breaker
+  - openai
+  - anthropic
+  - proxy

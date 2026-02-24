@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-codefence",
+  "title": "CodeFence — Validate LLM-generated code before it runs",
+  "description": "Scan LLM code output for dangerous patterns: shell injection, file access, crypto mining. Block or flag unsafe code.",
+  "install": "npx @stockyard/mcp-codefence",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-codefence"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 5,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

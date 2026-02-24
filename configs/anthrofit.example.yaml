@@ -1,0 +1,17 @@
+# AnthroFit — Use Claude with OpenAI SDKs.
+# Copy to anthrofit.yaml and set your API keys.
+
+port: 5710
+providers:
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+anthrofit:
+  enabled: true
+  default_model: claude-sonnet-4-20250514
+  model_map:
+    gpt-4o: claude-sonnet-4-20250514
+    gpt-4o-mini: claude-haiku-4-5-20251001
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

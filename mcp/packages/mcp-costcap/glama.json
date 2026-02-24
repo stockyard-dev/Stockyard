@@ -1,0 +1,38 @@
+{
+  "name": "stockyard-costcap",
+  "display_name": "Stockyard CostCap",
+  "description": "LLM spending caps and budget tracking. Set daily/monthly limits, get alerts, and auto-block when budgets are hit.",
+  "repository": "https://github.com/stockyard-dev/mcp-costcap",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-costcap"
+  ],
+  "tools": [
+    {
+      "name": "costcap_get_spend",
+      "description": "Get current LLM spending for a project. Returns today's spend, this month's spend, and remaining budget."
+    },
+    {
+      "name": "costcap_set_budget",
+      "description": "Set daily and/or monthly spending caps for a project."
+    },
+    {
+      "name": "costcap_get_usage",
+      "description": "Get detailed usage breakdown by model, showing token counts and costs."
+    },
+    {
+      "name": "costcap_proxy_status",
+      "description": "Check if the CostCap proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "cost",
+    "budget",
+    "spending",
+    "caps",
+    "openai",
+    "anthropic",
+    "proxy"
+  ]
+}

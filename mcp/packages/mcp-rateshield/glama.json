@@ -1,0 +1,37 @@
+{
+  "name": "stockyard-rateshield",
+  "display_name": "Stockyard RateShield",
+  "description": "Rate limiting and request queuing for LLM APIs. Token bucket algorithm with configurable limits per-key, per-model, or per-user.",
+  "repository": "https://github.com/stockyard-dev/mcp-rateshield",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-rateshield"
+  ],
+  "tools": [
+    {
+      "name": "rateshield_limit_status",
+      "description": "Get current rate limit status: remaining requests, tokens, reset time."
+    },
+    {
+      "name": "rateshield_set_limits",
+      "description": "Update rate limits dynamically."
+    },
+    {
+      "name": "rateshield_queue_stats",
+      "description": "Get request queue statistics: queued, processing, rejected, avg wait time."
+    },
+    {
+      "name": "rateshield_proxy_status",
+      "description": "Check if the RateShield proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "rate-limit",
+    "throttle",
+    "queue",
+    "token-bucket",
+    "openai",
+    "proxy"
+  ]
+}

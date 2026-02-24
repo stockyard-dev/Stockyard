@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-canarydeploy",
+  "display_name": "Stockyard CanaryDeploy",
+  "description": "Gradual rollout: 5%→25%→100%. Auto-promote if quality holds. Auto-rollback.",
+  "repository": "https://github.com/stockyard-dev/mcp-canarydeploy",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-canarydeploy"
+  ],
+  "tools": [
+    {
+      "name": "canarydeploy_stats",
+      "description": "Get canary deployment stats."
+    }
+  ],
+  "tags": [
+    "canary",
+    "deployment",
+    "rollout",
+    "gradual"
+  ]
+}

@@ -1,0 +1,35 @@
+# AlertPulse — PagerDuty for your LLM stack
+# Monitors error rates, latency, and cost; fires webhooks on threshold breach.
+
+port: 5640
+
+providers:
+  - name: openai
+    url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    default: true
+
+alertpulse:
+  enabled: true
+  window_duration: 5m       # Sliding window for metric evaluation
+  cooldown: 5m              # Min time between repeat alerts for same rule
+  default_webhook: ""       # Fallback webhook URL if rule doesn't specify one
+
+  rules:
+    - name: high_error_rate
+      metric: error_rate       # Percentage of failed requests in window
+      threshold: 25            # Fire when >25% of requests fail
+      channel: webhook
+      webhook_url: ${ALERT_WEBHOOK_URL}
+
+    - name: slow_responses
+      metric: latency_p95      # 95th percentile latency in ms
+      threshold: 5000          # Fire when p95 >5 seconds
+      channel: webhook
+      webhook_url: ${ALERT_WEBHOOK_URL}
+
+    - name: cost_spike
+      metric: cost_per_min     # Estimated spend per minute
+      threshold: 1.0           # Fire when >$1/min burn rate
+      channel: webhook
+      webhook_url: ${ALERT_WEBHOOK_URL}

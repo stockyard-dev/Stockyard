@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-geminishim",
+  "display_name": "Stockyard GeminiShim",
+  "description": "Handle Gemini safety filter blocks with auto-retry. Normalize token counts. OpenAI-compatible surface for Gemini.",
+  "repository": "https://github.com/stockyard-dev/mcp-geminishim",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-geminishim"
+  ],
+  "tools": [
+    {
+      "name": "geminishim_stats",
+      "description": "Get Gemini compatibility stats: retries, safety blocks, normalizations."
+    }
+  ],
+  "tags": [
+    "gemini",
+    "google",
+    "compatibility",
+    "shim",
+    "safety-filter"
+  ]
+}

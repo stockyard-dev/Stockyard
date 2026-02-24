@@ -1,0 +1,20 @@
+# LLMBench — Benchmark any model on YOUR workload.
+# Copy to llmbench.yaml and set your API keys.
+
+port: 6010
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+bench:
+  models:
+    - gpt-4o
+    - gpt-4o-mini
+    - claude-sonnet-4-20250514
+  test_suite: ./benchmarks/
+  runs_per_test: 3
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

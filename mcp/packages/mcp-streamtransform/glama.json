@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-streamtransform",
+  "display_name": "Stockyard StreamTransform",
+  "description": "Pipeline on chunks: strip markdown, redact PII, translate. Minimal latency.",
+  "repository": "https://github.com/stockyard-dev/mcp-streamtransform",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-streamtransform"
+  ],
+  "tools": [
+    {
+      "name": "streamtransform_stats",
+      "description": "Get transform stats."
+    }
+  ],
+  "tags": [
+    "streaming",
+    "transform",
+    "pipeline",
+    "real-time"
+  ]
+}

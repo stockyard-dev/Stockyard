@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-keypool",
+  "display_name": "Stockyard KeyPool",
+  "description": "API key pooling and rotation for LLM providers. Round-robin, least-used, or random strategies. Auto-rotate on 429 rate limits.",
+  "repository": "https://github.com/stockyard-dev/mcp-keypool",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-keypool"
+  ],
+  "tools": [
+    {
+      "name": "keypool_status",
+      "description": "Get status of all pooled API keys: active, cooldown, usage counts, last error."
+    },
+    {
+      "name": "keypool_add_key",
+      "description": "Add a new API key to the pool."
+    },
+    {
+      "name": "keypool_remove_key",
+      "description": "Remove an API key from the pool by name."
+    },
+    {
+      "name": "keypool_set_strategy",
+      "description": "Change the key rotation strategy."
+    },
+    {
+      "name": "keypool_stats",
+      "description": "Get pool statistics: requests per key, 429 counts, rotation events."
+    },
+    {
+      "name": "keypool_proxy_status",
+      "description": "Check if the KeyPool proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "api-key",
+    "pool",
+    "rotation",
+    "rate-limit",
+    "429",
+    "openai",
+    "proxy"
+  ]
+}

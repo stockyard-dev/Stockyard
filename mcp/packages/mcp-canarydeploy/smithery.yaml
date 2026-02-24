@@ -1,0 +1,17 @@
+name: stockyard-canarydeploy
+display_name: "Stockyard CanaryDeploy"
+description: "Gradual rollout: 5%→25%→100%. Auto-promote if quality holds. Auto-rollback."
+icon: "🐤"
+command: npx
+args:
+  - "@stockyard/mcp-canarydeploy"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - canary
+  - deployment
+  - rollout
+  - gradual

@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-outputcap",
+  "display_name": "Stockyard OutputCap",
+  "description": "Cap output length at natural sentence boundaries. No more 500-token essays when you asked for one word.",
+  "repository": "https://github.com/stockyard-dev/mcp-outputcap",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-outputcap"
+  ],
+  "tools": [
+    {
+      "name": "outputcap_stats",
+      "description": "Get capping stats: tokens saved, avg reduction."
+    }
+  ],
+  "tags": [
+    "output",
+    "length",
+    "cap",
+    "cost",
+    "truncation"
+  ]
+}

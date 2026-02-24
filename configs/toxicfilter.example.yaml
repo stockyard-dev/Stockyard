@@ -1,0 +1,61 @@
+# ToxicFilter — Content moderation middleware for LLM outputs
+# Scans inputs and/or outputs for harmful content using rule engine
+# Theme: dark red #C0392B
+
+port: 5600
+data_dir: ~/.stockyard
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+toxicfilter:
+  enabled: true
+
+  # Scan directions — typically you want output scanning at minimum
+  scan_input: false   # Scan user messages before sending to LLM
+  scan_output: true   # Scan LLM responses before returning to user
+
+  # Default action when toxic content detected: block, redact, flag
+  action: flag
+
+  # Built-in category patterns with per-category action overrides
+  categories:
+    - name: harmful
+      enabled: true
+      action: block        # Override: always block dangerous content
+
+    - name: hate_speech
+      enabled: true
+      action: block        # Override: always block hate speech
+
+    - name: violence
+      enabled: true
+      action: flag         # Flag graphic violence for review
+
+    - name: self_harm
+      enabled: true
+      action: block        # Override: always block self-harm content
+
+    - name: sexual
+      enabled: true
+      action: redact       # Redact explicit sexual content
+
+    - name: profanity
+      enabled: true
+      action: flag         # Flag but allow profanity
+
+  # Custom moderation rules (regex patterns)
+  custom:
+    - name: competitor_mention
+      pattern: "(?i)\\b(switch to|use instead)\\s+(chatgpt|gemini|copilot)\\b"
+      action: flag
+
+  # Optional webhook for alerts on blocked/flagged content
+  # webhook: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+logging:
+  store_bodies: true
+  retention_days: 30

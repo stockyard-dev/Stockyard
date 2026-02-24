@@ -1,0 +1,14 @@
+# AuthGate — API key management for YOUR users.
+# Copy to authgate.yaml and set your API keys.
+
+port: 6130
+authgate:
+  enabled: true
+  keys:
+    - id: customer-1
+      key: sk-cust-abc123
+      limits: { daily_tokens: 100000 }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

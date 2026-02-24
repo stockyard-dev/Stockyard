@@ -1,0 +1,18 @@
+# WebhookRelay — Trigger LLM calls from any webhook.
+# Copy to webhookrelay.yaml and set your API keys.
+
+port: 5950
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+webhooks:
+  github_summarize:
+    trigger: /webhook/github
+    extract: "body.issue.body"
+    prompt: "Summarize this GitHub issue: {{extracted}}"
+    model: gpt-4o-mini
+    forward: ${SLACK_WEBHOOK}
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

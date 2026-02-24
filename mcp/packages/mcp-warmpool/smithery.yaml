@@ -1,0 +1,17 @@
+name: stockyard-warmpool
+display_name: "Stockyard WarmPool"
+description: "Persistent connections. Health checks. Keep-alive for Ollama."
+icon: "🔥"
+command: npx
+args:
+  - "@stockyard/mcp-warmpool"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - warmup
+  - connections
+  - latency
+  - performance

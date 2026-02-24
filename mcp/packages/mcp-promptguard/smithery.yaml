@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-promptguard
+display_name: "Stockyard PromptGuard"
+description: "PII redaction and prompt injection detection for LLM APIs. Regex-based redaction with restore capability. Block or sanitize dangerous prompts."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-promptguard"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - pii
+  - redaction
+  - security
+  - injection
+  - privacy
+  - openai
+  - proxy

@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-toolshield",
+  "title": "ToolShield — Validate and sandbox LLM tool calls",
+  "description": "Intercept tool_use. Validate args. Per-tool permissions and rate limits.",
+  "install": "npx @stockyard/mcp-toolshield",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-toolshield"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 3,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

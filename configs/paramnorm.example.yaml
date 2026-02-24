@@ -1,0 +1,14 @@
+# ParamNorm — Normalize parameters across providers.
+# Copy to paramnorm.yaml and set your API keys.
+
+port: 6420
+paramnorm:
+  calibration:
+    temperature:
+      gpt-4o: { scale: 1.0 }
+      claude-sonnet: { scale: 0.8 }
+      gemini-pro: { scale: 1.2 }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

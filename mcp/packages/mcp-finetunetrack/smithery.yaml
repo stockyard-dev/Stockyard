@@ -1,0 +1,17 @@
+name: stockyard-finetunetrack
+display_name: "Stockyard FineTuneTrack"
+description: "Eval suite. Run periodically. Track scores. Compare to base model."
+icon: "📉"
+command: npx
+args:
+  - "@stockyard/mcp-finetunetrack"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - fine-tune
+  - monitoring
+  - evaluation
+  - drift

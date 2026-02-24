@@ -1,0 +1,18 @@
+# GeminiShim — Tame Gemini's quirks.
+# Copy to geminishim.yaml and set your API keys.
+
+port: 5800
+providers:
+  gemini:
+    api_key: ${GEMINI_API_KEY}
+geminishim:
+  retry_safety_blocks: true
+  max_safety_retries: 3
+  normalize_json: true
+  model_map:
+    gpt-4o: gemini-1.5-pro
+    gpt-4o-mini: gemini-1.5-flash
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

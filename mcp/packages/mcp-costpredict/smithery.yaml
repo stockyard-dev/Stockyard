@@ -1,0 +1,17 @@
+name: stockyard-costpredict
+display_name: "Stockyard CostPredict"
+description: "Count input tokens. Estimate output. Calculate cost. X-Estimated-Cost header."
+icon: "🔮"
+command: npx
+args:
+  - "@stockyard/mcp-costpredict"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - cost
+  - prediction
+  - estimate
+  - budget

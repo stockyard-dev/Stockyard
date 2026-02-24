@@ -1,0 +1,14 @@
+# CanaryDeploy — Canary deployments for model changes.
+# Copy to canarydeploy.yaml and set your API keys.
+
+port: 6620
+canary:
+  old: gpt-4o
+  new: gpt-4o-2025-02
+  stages: [5, 25, 50, 100]
+  promote_threshold: 0.95
+  rollback_threshold: 0.80
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

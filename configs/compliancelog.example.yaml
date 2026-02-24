@@ -1,0 +1,40 @@
+# ComplianceLog — Immutable audit trail for every LLM interaction
+# Append-only logging with SHA256 hash chains for tamper detection
+# Theme: navy #2C3E50
+
+port: 5610
+data_dir: ~/.stockyard
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+compliancelog:
+  enabled: true
+
+  # Hash algorithm for chain integrity (sha256 is the only supported value)
+  hash_algorithm: sha256
+
+  # How long to retain audit entries (days). 0 = forever.
+  retention_days: 365
+
+  # Export formats available via API: json, csv, soc2
+  export_formats:
+    - json
+    - csv
+    - soc2
+
+  # What to include in each audit entry
+  include_headers: true   # Log request headers (sanitized)
+  include_bodies: true    # Log request/response bodies
+  max_body_size: 100000   # Max body size per entry (bytes)
+
+  # Verify chain integrity on startup (detects tampering)
+  verify_on_startup: true
+
+logging:
+  store_bodies: true
+  retention_days: 365
+  max_body_size: 100000

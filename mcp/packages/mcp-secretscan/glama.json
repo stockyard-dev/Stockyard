@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-secretscan",
+  "display_name": "Stockyard SecretScan",
+  "description": "Detect and redact API keys, AWS credentials, tokens, and secrets in LLM requests and responses. TruffleHog-style pattern matching.",
+  "repository": "https://github.com/stockyard-dev/mcp-secretscan",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-secretscan"
+  ],
+  "tools": [
+    {
+      "name": "secretscan_stats",
+      "description": "Get scan statistics: total scanned, detections by type, blocks/redactions."
+    },
+    {
+      "name": "secretscan_test",
+      "description": "Test a text string for secret patterns without sending to LLM."
+    },
+    {
+      "name": "secretscan_patterns",
+      "description": "List active secret detection patterns."
+    },
+    {
+      "name": "secretscan_set_action",
+      "description": "Change what happens when a secret is detected."
+    },
+    {
+      "name": "secretscan_recent",
+      "description": "List recent secret detections."
+    },
+    {
+      "name": "secretscan_proxy_status",
+      "description": "Check if the SecretScan proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "security",
+    "secrets",
+    "api-key",
+    "credential",
+    "leak",
+    "redaction",
+    "proxy"
+  ]
+}

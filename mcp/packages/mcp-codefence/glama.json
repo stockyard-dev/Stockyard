@@ -1,0 +1,31 @@
+{
+  "name": "stockyard-codefence",
+  "display_name": "Stockyard CodeFence",
+  "description": "Scan LLM code output for dangerous patterns: shell injection, file access, crypto mining. Block or flag unsafe code.",
+  "repository": "https://github.com/stockyard-dev/mcp-codefence",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-codefence"
+  ],
+  "tools": [
+    {
+      "name": "codefence_stats",
+      "description": "Get code validation stats: scanned, flagged, blocked."
+    },
+    {
+      "name": "codefence_patterns",
+      "description": "List active forbidden patterns."
+    },
+    {
+      "name": "codefence_add_pattern",
+      "description": "Add a custom forbidden code pattern."
+    }
+  ],
+  "tags": [
+    "code",
+    "security",
+    "validation",
+    "sandbox",
+    "patterns"
+  ]
+}

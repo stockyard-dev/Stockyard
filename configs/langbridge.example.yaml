@@ -1,0 +1,16 @@
+# LangBridge — Multilingual LLM middleware.
+# Copy to langbridge.yaml and set your API keys.
+
+port: 5900
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+langbridge:
+  enabled: true
+  model_language: en
+  cache_translations: true
+  supported_languages: [es, fr, de, ja, ko, zh, pt, it]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

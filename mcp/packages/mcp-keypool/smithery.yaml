@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-keypool
+display_name: "Stockyard KeyPool"
+description: "API key pooling and rotation for LLM providers. Round-robin, least-used, or random strategies. Auto-rotate on 429 rate limits."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-keypool"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - api-key
+  - pool
+  - rotation
+  - rate-limit
+  - 429
+  - openai
+  - proxy

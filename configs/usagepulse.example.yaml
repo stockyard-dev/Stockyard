@@ -1,0 +1,47 @@
+# UsagePulse — Per-User & Per-Feature Token Metering
+# Know exactly who's spending what on your LLM calls.
+
+port: 4410
+data_dir: ~/.stockyard
+log_level: info
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+usagepulse:
+  enabled: true
+
+  dimensions:
+    - name: user_id
+      source: header
+      header: X-User-ID
+
+    - name: feature
+      source: header
+      header: X-Feature-Tag
+
+    - name: team
+      source: header
+      header: X-Team-ID
+
+  caps:
+    - dimension: user_id
+      period: daily
+      limit: 5.00     # $5/day per user
+      action: block
+
+    - dimension: feature
+      period: monthly
+      limit: 500.00   # $500/month per feature
+      action: warn
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini
+    caps:
+      daily: 50.00
+      monthly: 500.00

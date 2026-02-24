@@ -1,0 +1,13 @@
+# ScopeGuard — Fine-grained permissions per API key.
+# Copy to scopeguard.yaml and set your API keys.
+
+port: 6140
+scopeguard:
+  roles:
+    free: { models: [gpt-4o-mini], max_tokens: 1000 }
+    pro: { models: [gpt-4o, gpt-4o-mini], max_tokens: 10000 }
+    admin: { models: ["*"], max_tokens: 0 }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

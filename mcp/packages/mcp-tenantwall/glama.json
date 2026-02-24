@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-tenantwall",
+  "display_name": "Stockyard TenantWall",
+  "description": "Tenant isolation middleware. Per-tenant rate limits, spend caps, model access, and cache isolation. Build multi-tenant AI products without custom infrastructure.",
+  "repository": "https://github.com/stockyard-dev/mcp-tenantwall",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-tenantwall"
+  ],
+  "tools": [
+    {
+      "name": "tenantwall_tenants",
+      "description": "List all known tenants with usage summary."
+    },
+    {
+      "name": "tenantwall_tenant_usage",
+      "description": "Get detailed usage for a specific tenant."
+    },
+    {
+      "name": "tenantwall_set_limits",
+      "description": "Set rate limits and spend caps for a tenant."
+    },
+    {
+      "name": "tenantwall_block",
+      "description": "Block a tenant from making LLM requests."
+    },
+    {
+      "name": "tenantwall_stats",
+      "description": "Get multi-tenant statistics: active tenants, total spend, top consumers."
+    },
+    {
+      "name": "tenantwall_proxy_status",
+      "description": "Check if the TenantWall proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "multi-tenant",
+    "saas",
+    "isolation",
+    "rate-limit",
+    "per-tenant",
+    "b2b",
+    "proxy"
+  ]
+}

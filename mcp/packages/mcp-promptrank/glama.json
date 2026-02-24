@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-promptrank",
+  "display_name": "Stockyard PromptRank",
+  "description": "Per template: cost, quality, latency, volume, feedback. ROI leaderboard.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptrank",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptrank"
+  ],
+  "tools": [
+    {
+      "name": "promptrank_stats",
+      "description": "Get prompt rankings."
+    }
+  ],
+  "tags": [
+    "analytics",
+    "prompt",
+    "roi",
+    "ranking"
+  ]
+}

@@ -1,0 +1,17 @@
+# CacheLayer — Same prompt? Instant response. 90% cost savings.
+port: 4101
+product: llmcache
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+
+cache:
+  enabled: true
+  strategy: exact   # exact | semantic
+  ttl: 1h
+  max_entries: 10000
+
+logging:
+  store_bodies: true
+  retention_days: 7

@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-alertpulse
+display_name: "Stockyard AlertPulse"
+description: "Configurable alerting for LLM infrastructure. Rules for error rates, latency, cost thresholds. Notify via Slack, Discord, PagerDuty, email, or webhooks."
+icon: "🚨"
+command: npx
+args:
+  - "@stockyard/mcp-alertpulse"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - alerting
+  - monitoring
+  - slack
+  - pagerduty
+  - webhook
+  - threshold
+  - proxy

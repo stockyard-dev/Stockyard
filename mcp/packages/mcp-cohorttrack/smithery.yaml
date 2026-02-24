@@ -1,0 +1,17 @@
+name: stockyard-cohorttrack
+display_name: "Stockyard CohortTrack"
+description: "Cohorts by signup, plan, feature. Retention, cost per cohort. BI export."
+icon: "👥"
+command: npx
+args:
+  - "@stockyard/mcp-cohorttrack"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - analytics
+  - cohort
+  - retention
+  - users

@@ -1,0 +1,21 @@
+# Smithery Marketplace Configuration
+name: stockyard-rateshield
+display_name: "Stockyard RateShield"
+description: "Rate limiting and request queuing for LLM APIs. Token bucket algorithm with configurable limits per-key, per-model, or per-user."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-rateshield"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - rate-limit
+  - throttle
+  - queue
+  - token-bucket
+  - openai
+  - proxy

@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-batchqueue
+display_name: "Stockyard BatchQueue"
+description: "Async job queue for LLM requests with priority levels, concurrency control, and retry. Queue thousands of requests and process them reliably."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-batchqueue"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - batch
+  - queue
+  - async
+  - job
+  - background
+  - concurrency
+  - proxy

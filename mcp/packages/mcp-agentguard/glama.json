@@ -1,0 +1,32 @@
+{
+  "name": "stockyard-agentguard",
+  "display_name": "Stockyard AgentGuard",
+  "description": "Per-session limits for AI agents: max calls, cost, duration. Kill runaway agent sessions before they drain your budget.",
+  "repository": "https://github.com/stockyard-dev/mcp-agentguard",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-agentguard"
+  ],
+  "tools": [
+    {
+      "name": "agentguard_sessions",
+      "description": "List active agent sessions with call counts, cost, and duration."
+    },
+    {
+      "name": "agentguard_kill",
+      "description": "Kill a specific agent session by ID."
+    },
+    {
+      "name": "agentguard_stats",
+      "description": "Get aggregate stats: sessions tracked, killed, costs saved."
+    }
+  ],
+  "tags": [
+    "agent",
+    "safety",
+    "session",
+    "limits",
+    "autonomous",
+    "cost-control"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-promptchain",
+  "display_name": "Stockyard PromptChain",
+  "description": "Define reusable blocks. Compose: [tone.helpful, format.json, domain.ecommerce]. Auto-update.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptchain",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptchain"
+  ],
+  "tools": [
+    {
+      "name": "promptchain_stats",
+      "description": "Get composition stats."
+    },
+    {
+      "name": "promptchain_blocks",
+      "description": "List defined blocks."
+    }
+  ],
+  "tags": [
+    "prompt",
+    "components",
+    "composable",
+    "reusable"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-webhookrelay",
+  "display_name": "Stockyard WebhookRelay",
+  "description": "Receive webhooks, extract data, build prompts, call LLM, send results. GitHub→summarize→Slack in one config.",
+  "repository": "https://github.com/stockyard-dev/mcp-webhookrelay",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-webhookrelay"
+  ],
+  "tools": [
+    {
+      "name": "webhookrelay_stats",
+      "description": "Get relay stats: webhooks received, calls triggered."
+    },
+    {
+      "name": "webhookrelay_triggers",
+      "description": "List configured webhook triggers."
+    }
+  ],
+  "tags": [
+    "webhook",
+    "trigger",
+    "event-driven",
+    "automation"
+  ]
+}

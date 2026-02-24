@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-tracelink",
+  "display_name": "Stockyard TraceLink",
+  "description": "Link related LLM calls into trace trees. Correlate multi-step agent workflows. OpenTelemetry-compatible trace propagation with waterfall visualization.",
+  "repository": "https://github.com/stockyard-dev/mcp-tracelink",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-tracelink"
+  ],
+  "tools": [
+    {
+      "name": "tracelink_traces",
+      "description": "List recent traces with root span info, total duration, and span count."
+    },
+    {
+      "name": "tracelink_get",
+      "description": "Get full trace tree with all spans for a trace ID."
+    },
+    {
+      "name": "tracelink_stats",
+      "description": "Get tracing statistics: total traces, avg spans per trace, avg duration."
+    },
+    {
+      "name": "tracelink_search",
+      "description": "Search traces by model, duration, or span count."
+    },
+    {
+      "name": "tracelink_proxy_status",
+      "description": "Check if the TraceLink proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "tracing",
+    "observability",
+    "opentelemetry",
+    "distributed",
+    "agent",
+    "correlation",
+    "proxy"
+  ]
+}

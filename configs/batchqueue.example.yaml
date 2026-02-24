@@ -1,0 +1,26 @@
+# BatchQueue — Async Request Batching & Queue
+port: 5000
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+batchqueue:
+  enabled: true
+  concurrency:
+    default: 5
+    per_provider:
+      openai: 10
+      anthropic: 5
+  retry:
+    max_attempts: 3
+    backoff: exponential
+  delivery:
+    mode: poll
+  priority_levels: [urgent, normal, batch]
+  retention: 168h
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

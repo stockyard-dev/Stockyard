@@ -1,0 +1,12 @@
+# SessionStore — Managed conversation sessions.
+# Copy to sessionstore.yaml and set your API keys.
+
+port: 6190
+sessionstore:
+  max_sessions_per_user: 100
+  max_history: 1000
+  auto_expire: 30d
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,46 @@
+# UsagePulse — Per-User & Per-Feature Token Metering
+# Track exactly who's spending what across your LLM infrastructure.
+
+port: 4704
+data_dir: ~/.stockyard
+log_level: info
+product: usagepulse
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+usagepulse:
+  enabled: true
+  dimensions:
+    - user        # Track per X-User-Id header
+    - project     # Track per X-Project header
+    - model       # Track per model used
+    - feature     # Track per X-Feature header
+    - team        # Track per X-Team header
+  export_format: json  # json | csv
+
+  # Optional: per-dimension spend caps
+  caps:
+    - dimension: user
+      key: "*"             # Wildcard: applies to all users
+      daily: 5.00
+      monthly: 100.00
+
+    - dimension: team
+      key: "engineering"
+      daily: 50.00
+      monthly: 1000.00
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini
+    caps:
+      daily: 10.00
+      monthly: 200.00
+
+logging:
+  retention_days: 30

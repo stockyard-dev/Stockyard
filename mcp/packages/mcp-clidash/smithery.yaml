@@ -1,0 +1,17 @@
+name: stockyard-clidash
+display_name: "Stockyard CliDash"
+description: "Real-time TUI: req/sec, models, cache, spend, errors. SSH-accessible."
+icon: "🖥️"
+command: npx
+args:
+  - "@stockyard/mcp-clidash"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - terminal
+  - dashboard
+  - tui
+  - monitoring

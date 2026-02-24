@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-canarydeploy",
+  "title": "CanaryDeploy — Canary deployments for prompt/model changes",
+  "description": "Gradual rollout: 5%→25%→100%. Auto-promote if quality holds. Auto-rollback.",
+  "install": "npx @stockyard/mcp-canarydeploy",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-canarydeploy"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 3,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

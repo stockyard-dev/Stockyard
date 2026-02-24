@@ -1,0 +1,17 @@
+# VoiceBridge — LLM output optimized for voice.
+# Copy to voicebridge.yaml and set your API keys.
+
+port: 5880
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+voicebridge:
+  strip_markdown: true
+  convert_lists: true
+  remove_code: true
+  max_length: 300  # characters
+  style: conversational
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

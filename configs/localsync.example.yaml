@@ -1,0 +1,19 @@
+# LocalSync — Blend local and cloud models seamlessly.
+# Copy to localsync.yaml and set your API keys.
+
+port: 5810
+providers:
+  local:
+    base_url: http://localhost:11434/v1  # Ollama
+    api_key: not-needed
+    health_check: true
+  openai:
+    api_key: ${OPENAI_API_KEY}
+localsync:
+  prefer_local: true
+  health_interval: 10s
+  fallback_provider: openai
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

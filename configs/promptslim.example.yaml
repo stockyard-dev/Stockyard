@@ -1,0 +1,15 @@
+# PromptSlim — Compress prompts by 40-70% without losing meaning.
+# Copy to promptslim.yaml and set your API keys.
+
+port: 5830
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+promptslim:
+  aggressiveness: medium  # low | medium | high
+  preserve_code_blocks: true
+  preserve_urls: true
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

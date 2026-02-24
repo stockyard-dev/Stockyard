@@ -1,0 +1,16 @@
+name: stockyard-paramnorm
+display_name: "Stockyard ParamNorm"
+description: "Calibration profiles per model. Map normalized params to model-specific ranges."
+icon: "⚖️"
+command: npx
+args:
+  - "@stockyard/mcp-paramnorm"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - parameters
+  - normalization
+  - calibration

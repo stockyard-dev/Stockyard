@@ -1,0 +1,17 @@
+name: stockyard-partialcache
+display_name: "Stockyard PartialCache"
+description: "Detect static system prompt prefix. Use native prefix caching where supported."
+icon: "🧩"
+command: npx
+args:
+  - "@stockyard/mcp-partialcache"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - cache
+  - prefix
+  - optimization
+  - tokens

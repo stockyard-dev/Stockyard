@@ -1,0 +1,70 @@
+{
+  "name": "Stockyard",
+  "description": "LLM infrastructure suite — cost caps, caching, rate limiting, analytics, and more. Route your Coze bot's LLM calls through Stockyard for complete control.",
+  "version": "0.1.0",
+  "icon": "https://stockyard.dev/icon.png",
+  "author": "Stockyard",
+  "homepage": "https://stockyard.dev",
+  "api": {
+    "type": "openapi",
+    "url": "https://stockyard.dev/coze/openapi.json"
+  },
+  "auth": {
+    "type": "none"
+  },
+  "actions": [
+    {
+      "name": "get_spend",
+      "description": "Get current LLM spending — today's cost, monthly cost, and remaining budget.",
+      "method": "GET",
+      "path": "/api/spend",
+      "parameters": [
+        { "name": "project", "in": "query", "type": "string", "default": "default" }
+      ]
+    },
+    {
+      "name": "get_cache_stats",
+      "description": "Get cache hit/miss statistics and estimated cost savings.",
+      "method": "GET",
+      "path": "/api/cache/stats"
+    },
+    {
+      "name": "get_analytics",
+      "description": "Get usage analytics overview: requests, latency, errors, costs.",
+      "method": "GET",
+      "path": "/api/analytics/overview",
+      "parameters": [
+        { "name": "period", "in": "query", "type": "string", "enum": ["1h", "24h", "7d", "30d"], "default": "24h" }
+      ]
+    },
+    {
+      "name": "get_provider_status",
+      "description": "Check health of all configured LLM providers.",
+      "method": "GET",
+      "path": "/api/providers/status"
+    },
+    {
+      "name": "flush_cache",
+      "description": "Clear the response cache.",
+      "method": "POST",
+      "path": "/api/cache/flush"
+    },
+    {
+      "name": "test_pii",
+      "description": "Scan text for PII (emails, phones, SSNs) without sending to LLM.",
+      "method": "POST",
+      "path": "/api/guard/test",
+      "parameters": [
+        { "name": "text", "in": "body", "type": "string", "required": true }
+      ]
+    }
+  ],
+  "settings": {
+    "base_url": {
+      "label": "Stockyard Proxy URL",
+      "type": "string",
+      "default": "http://localhost:4000",
+      "description": "Base URL of your Stockyard proxy"
+    }
+  }
+}

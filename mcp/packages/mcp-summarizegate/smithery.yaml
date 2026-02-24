@@ -1,0 +1,17 @@
+name: stockyard-summarizegate
+display_name: "Stockyard SummarizeGate"
+description: "Score relevance per section. Keep high-relevance verbatim. Summarize low-relevance."
+icon: "📝"
+command: npx
+args:
+  - "@stockyard/mcp-summarizegate"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - summarize
+  - context
+  - tokens
+  - optimization

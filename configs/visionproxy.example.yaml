@@ -1,0 +1,13 @@
+# VisionProxy — Proxy for vision/image-understanding APIs.
+# Copy to visionproxy.yaml and set your API keys.
+
+port: 6150
+visionproxy:
+  cache: true
+  resize_max: 2048
+  compress_quality: 85
+  cost_per_image: { gpt-4o: 0.01 }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

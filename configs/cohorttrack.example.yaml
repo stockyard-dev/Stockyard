@@ -1,0 +1,11 @@
+# CohortTrack — User cohort analytics for LLM products.
+# Copy to cohorttrack.yaml and set your API keys.
+
+port: 6450
+cohorttrack:
+  dimensions: [signup_month, plan, feature]
+  retention_windows: [7d, 30d, 90d]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

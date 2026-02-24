@@ -1,0 +1,24 @@
+# LLMTap — Developer API Analytics Portal
+port: 5300
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+llmtap:
+  enabled: true
+  latency_percentiles: [50, 95, 99]
+  cost_granularity: hourly
+  retention: 720h
+  alerts:
+    - name: latency_spike
+      condition: "p95_latency > 5s"
+      notify: webhook
+    - name: cost_alert
+      condition: "daily_cost > 50"
+      notify: webhook
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

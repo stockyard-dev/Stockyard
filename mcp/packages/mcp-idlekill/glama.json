@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-idlekill",
+  "display_name": "Stockyard IdleKill",
+  "description": "Request watchdog middleware. Kill LLM requests exceeding time, token, or cost limits. Stop agent loops, hanging streams, and runaway completions.",
+  "repository": "https://github.com/stockyard-dev/mcp-idlekill",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-idlekill"
+  ],
+  "tools": [
+    {
+      "name": "idlekill_stats",
+      "description": "Get watchdog statistics: total monitored, killed, reasons for kills."
+    },
+    {
+      "name": "idlekill_active",
+      "description": "List currently active LLM requests being monitored."
+    },
+    {
+      "name": "idlekill_set_limits",
+      "description": "Update kill thresholds."
+    },
+    {
+      "name": "idlekill_recent_kills",
+      "description": "List recently killed requests with reasons."
+    },
+    {
+      "name": "idlekill_proxy_status",
+      "description": "Check if the IdleKill proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "timeout",
+    "watchdog",
+    "runaway",
+    "cost",
+    "agent",
+    "kill",
+    "proxy"
+  ]
+}

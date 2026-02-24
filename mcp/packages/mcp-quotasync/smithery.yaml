@@ -1,0 +1,17 @@
+name: stockyard-quotasync
+display_name: "Stockyard QuotaSync"
+description: "Parse rate limit headers. Track per model/endpoint. Alert near limits."
+icon: "📈"
+command: npx
+args:
+  - "@stockyard/mcp-quotasync"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - quota
+  - rate-limit
+  - tracking
+  - provider

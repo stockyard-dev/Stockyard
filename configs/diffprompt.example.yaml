@@ -1,0 +1,16 @@
+# DiffPrompt — Git-style diff for prompt changes.
+# Copy to diffprompt.yaml and set your API keys.
+
+port: 6000
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+diffprompt:
+  test_inputs:
+    - "What is machine learning?"
+    - "Explain recursion."
+    - "Write a haiku about coding."
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

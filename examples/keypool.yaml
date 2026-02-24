@@ -1,0 +1,42 @@
+# KeyPool — API Key Pooling & Rotation
+# Load-balance requests across multiple API keys to avoid rate limits.
+
+port: 4700
+data_dir: ~/.stockyard
+log_level: info
+product: keypool
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}  # Fallback key
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+keypool:
+  enabled: true
+  strategy: least-used  # round-robin | least-used | random
+  cooldown: 60s         # How long to bench a key after a 429
+
+  keys:
+    - name: primary
+      key: ${OPENAI_KEY_1}
+      provider: openai
+      weight: 2           # Gets 2x traffic share
+
+    - name: secondary
+      key: ${OPENAI_KEY_2}
+      provider: openai
+      weight: 1
+
+    - name: burst
+      key: ${OPENAI_KEY_3}
+      provider: openai
+      weight: 1
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini
+
+logging:
+  retention_days: 7

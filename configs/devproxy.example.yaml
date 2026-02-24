@@ -1,0 +1,17 @@
+# DevProxy — Charles Proxy for LLM APIs.
+# Copy to devproxy.yaml and set your API keys.
+
+port: 5820
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+devproxy:
+  capture: true
+  breakpoints:
+    - pattern: "DELETE"
+    - header: "x-debug: true"
+  websocket_port: 5821
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

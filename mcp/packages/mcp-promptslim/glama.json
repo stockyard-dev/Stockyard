@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-promptslim",
+  "display_name": "Stockyard PromptSlim",
+  "description": "Remove redundant whitespace, filler words, articles. Configurable aggressiveness. See before/after token savings.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptslim",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptslim"
+  ],
+  "tools": [
+    {
+      "name": "promptslim_stats",
+      "description": "Get compression stats: chars saved, tokens saved, compression ratio."
+    }
+  ],
+  "tags": [
+    "prompt",
+    "compression",
+    "tokens",
+    "cost",
+    "optimization"
+  ]
+}

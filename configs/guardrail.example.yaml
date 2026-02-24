@@ -1,0 +1,21 @@
+# GuardRail — Keep your LLM on-script.
+# Copy to guardrail.yaml and set your API keys.
+
+port: 5790
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+guardrail:
+  allowed_topics:
+    - customer_support
+    - product_info
+    - billing
+  denied_topics:
+    - medical_advice
+    - legal_advice
+    - financial_advice
+  fallback_message: "I can only help with product-related questions."
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

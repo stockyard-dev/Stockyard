@@ -1,0 +1,45 @@
+{
+  "name": "stockyard-retrypilot",
+  "display_name": "Stockyard RetryPilot",
+  "description": "Smart retry engine with exponential backoff, circuit breakers, deadline awareness, and automatic model downgrade on failures.",
+  "repository": "https://github.com/stockyard-dev/mcp-retrypilot",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-retrypilot"
+  ],
+  "tools": [
+    {
+      "name": "retrypilot_stats",
+      "description": "Get retry statistics: total retries, success rate, avg retries per request."
+    },
+    {
+      "name": "retrypilot_circuit_status",
+      "description": "Get circuit breaker status for each model: closed, open, or half-open."
+    },
+    {
+      "name": "retrypilot_reset_circuit",
+      "description": "Manually reset a tripped circuit breaker."
+    },
+    {
+      "name": "retrypilot_set_config",
+      "description": "Update retry configuration dynamically."
+    },
+    {
+      "name": "retrypilot_budget",
+      "description": "Get retry budget status: retries used this minute, remaining."
+    },
+    {
+      "name": "retrypilot_proxy_status",
+      "description": "Check if the RetryPilot proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "retry",
+    "circuit-breaker",
+    "backoff",
+    "resilience",
+    "failover",
+    "proxy"
+  ]
+}

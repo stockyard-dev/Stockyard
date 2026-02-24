@@ -1,0 +1,17 @@
+name: stockyard-slotfill
+display_name: "Stockyard SlotFill"
+description: "Declarative slot definitions. Track filled/missing. Reprompt. Completion funnels."
+icon: "📋"
+command: npx
+args:
+  - "@stockyard/mcp-slotfill"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - forms
+  - slots
+  - conversation
+  - intake

@@ -1,0 +1,16 @@
+# TrainExport — Export conversations as fine-tuning datasets.
+# Copy to trainexport.yaml and set your API keys.
+
+port: 5980
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+export:
+  format: openai_jsonl  # openai_jsonl | anthropic | sharegpt | alpaca
+  min_quality_score: 0.7
+  redact_pii: true
+  output_dir: ./training_data/
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,17 @@
+name: stockyard-visionproxy
+display_name: "Stockyard VisionProxy"
+description: "Caching, cost tracking, and failover for GPT-4V, Claude vision."
+icon: "👁️"
+command: npx
+args:
+  - "@stockyard/mcp-visionproxy"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - vision
+  - image
+  - multimodal
+  - cache

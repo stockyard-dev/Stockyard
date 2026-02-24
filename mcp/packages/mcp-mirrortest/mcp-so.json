@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-mirrortest",
+  "title": "MirrorTest — Shadow test new models against production traffic",
+  "description": "Send production traffic to a shadow model. Compare quality, latency, cost. Zero user impact.",
+  "install": "npx @stockyard/mcp-mirrortest",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-mirrortest"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 3,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

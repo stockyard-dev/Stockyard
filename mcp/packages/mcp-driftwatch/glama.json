@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-driftwatch",
+  "display_name": "Stockyard DriftWatch",
+  "description": "Track latency and output patterns per model over time. Alert when behavior drifts beyond thresholds.",
+  "repository": "https://github.com/stockyard-dev/mcp-driftwatch",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-driftwatch"
+  ],
+  "tools": [
+    {
+      "name": "driftwatch_stats",
+      "description": "Get drift detection stats per model."
+    },
+    {
+      "name": "driftwatch_baselines",
+      "description": "View current baselines for tracked models."
+    }
+  ],
+  "tags": [
+    "drift",
+    "monitoring",
+    "quality",
+    "baseline",
+    "regression"
+  ]
+}

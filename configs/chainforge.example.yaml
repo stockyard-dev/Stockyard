@@ -1,0 +1,20 @@
+# ChainForge — Multi-step LLM workflows as YAML.
+# Copy to chainforge.yaml and set your API keys.
+
+port: 5930
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+pipelines:
+  summarize_and_translate:
+    steps:
+      - name: summarize
+        model: gpt-4o
+        prompt: "Summarize: {{input}}"
+      - name: translate
+        model: gpt-4o-mini
+        prompt: "Translate to Spanish: {{summarize.output}}"
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

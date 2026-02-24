@@ -1,0 +1,11 @@
+# QuotaSync — Track provider rate limits in real-time.
+# Copy to quotasync.yaml and set your API keys.
+
+port: 6430
+quotasync:
+  track_providers: [openai, anthropic]
+  alert_at_percent: 80
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

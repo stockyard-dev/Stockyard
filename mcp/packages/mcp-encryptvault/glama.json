@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-encryptvault",
+  "display_name": "Stockyard EncryptVault",
+  "description": "AES-GCM encryption for sensitive fields. Customer-managed keys. HIPAA/SOC2 compliance ready.",
+  "repository": "https://github.com/stockyard-dev/mcp-encryptvault",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-encryptvault"
+  ],
+  "tools": [
+    {
+      "name": "encryptvault_stats",
+      "description": "Get encryption stats: fields encrypted/decrypted."
+    }
+  ],
+  "tags": [
+    "encryption",
+    "security",
+    "hipaa",
+    "compliance",
+    "vault"
+  ]
+}

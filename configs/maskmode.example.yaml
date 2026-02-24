@@ -1,0 +1,15 @@
+# MaskMode — Demo mode with realistic fake data.
+# Copy to maskmode.yaml and set your API keys.
+
+port: 6020
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+maskmode:
+  enabled: true
+  locale: en_US
+  fields: [name, email, phone, address, ssn]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

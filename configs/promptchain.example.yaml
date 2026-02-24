@@ -1,0 +1,15 @@
+# PromptChain — Composable prompt blocks.
+# Copy to promptchain.yaml and set your API keys.
+
+port: 6250
+promptchain:
+  blocks:
+    tone.helpful: "You are a helpful, concise assistant."
+    format.json: "Always respond in valid JSON."
+    domain.support: "You handle customer support for our SaaS."
+  compose:
+    default: [tone.helpful, format.json]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

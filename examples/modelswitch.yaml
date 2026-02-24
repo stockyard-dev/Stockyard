@@ -1,0 +1,56 @@
+# ModelSwitch — Smart Model Routing
+# Route requests to the optimal model based on content and cost.
+
+port: 4702
+data_dir: ~/.stockyard
+log_level: info
+product: modelswitch
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+modelswitch:
+  enabled: true
+  default: gpt-4o-mini    # Fallback when no rule matches
+
+  rules:
+    # Route large contexts to capable models
+    - name: large-context
+      condition: token_count
+      operator: gt
+      value: "4000"
+      model: gpt-4o
+      weight: 100
+
+    # Route code requests to specialized models
+    - name: code-tasks
+      condition: pattern
+      operator: matches
+      value: "(?i)(write|debug|fix|refactor|implement).*code"
+      model: gpt-4o
+      weight: 100
+
+    # A/B test: 30% of simple queries go to mini
+    - name: ab-simple
+      condition: token_count
+      operator: lt
+      value: "500"
+      model: gpt-4o-mini
+      weight: 70
+
+    # Catch-all for everything else
+    - name: default-route
+      condition: always
+      model: gpt-4o-mini
+      weight: 100
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini
+
+logging:
+  retention_days: 7

@@ -1,0 +1,15 @@
+# AudioProxy — Proxy for speech-to-text and TTS APIs.
+# Copy to audioproxy.yaml and set your API keys.
+
+port: 6160
+audioproxy:
+  tts_cache: true
+  stt_providers:
+    - whisper
+  tts_providers:
+    - openai
+    - elevenlabs
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

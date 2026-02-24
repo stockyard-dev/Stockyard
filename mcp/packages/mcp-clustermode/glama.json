@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-clustermode",
+  "display_name": "Stockyard ClusterMode",
+  "description": "Multi-instance coordination. Leader-follower with shared cache. Scale beyond single-instance SQLite.",
+  "repository": "https://github.com/stockyard-dev/mcp-clustermode",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-clustermode"
+  ],
+  "tools": [
+    {
+      "name": "clustermode_stats",
+      "description": "Get cluster stats: nodes, requests distributed."
+    },
+    {
+      "name": "clustermode_nodes",
+      "description": "List cluster nodes and their status."
+    }
+  ],
+  "tags": [
+    "cluster",
+    "scale",
+    "multi-instance",
+    "coordination"
+  ]
+}

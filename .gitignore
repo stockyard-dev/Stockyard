@@ -1,0 +1,39 @@
+# Binaries
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test
+coverage.out
+*.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data
+*.db
+*.sqlite
+data/
+
+# Config with secrets
+stockyard.yaml
+!configs/*.yaml
+
+# Node
+node_modules/
+
+# Generated site
+docs-site/
+
+# GoReleaser
+__debug_bin*

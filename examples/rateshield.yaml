@@ -1,0 +1,16 @@
+# RateShield — Protect your API keys from abuse and runaway loops.
+port: 4104
+product: rateshield
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+
+rate_limit:
+  enabled: true
+  default:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    burst: 10
+  per_ip: true
+  per_user: true

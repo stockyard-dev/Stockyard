@@ -1,0 +1,25 @@
+# AnthroFit — Use Claude with OpenAI SDKs.
+# Deep Anthropic compatibility layer. Point your OpenAI SDK at this proxy.
+# Part of the Stockyard LLM infrastructure suite.
+
+port: 5710
+log_level: info
+
+providers:
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+    base_url: https://api.anthropic.com
+
+anthrofit:
+  enabled: true
+  system_prompt_mode: auto    # auto, separate, merge
+  tool_translation: true      # translate OpenAI tool schemas to Anthropic format
+  stream_normalize: true      # normalize streaming SSE format to OpenAI style
+  max_tokens_default: 4096    # Anthropic requires max_tokens; inject if missing
+  cache_control: true         # enable Anthropic prompt caching for long system prompts
+
+# Optional: failover to OpenAI if Anthropic is down
+failover:
+  enabled: false
+  strategy: priority
+  providers: [anthropic, openai]

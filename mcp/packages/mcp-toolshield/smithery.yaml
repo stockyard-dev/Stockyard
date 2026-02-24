@@ -1,0 +1,17 @@
+name: stockyard-toolshield
+display_name: "Stockyard ToolShield"
+description: "Intercept tool_use. Validate args. Per-tool permissions and rate limits."
+icon: "🛡️"
+command: npx
+args:
+  - "@stockyard/mcp-toolshield"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - tools
+  - validation
+  - sandbox
+  - permissions

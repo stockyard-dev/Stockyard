@@ -1,0 +1,12 @@
+# SummarizeGate — Auto-summarize long contexts to save tokens.
+# Copy to summarizegate.yaml and set your API keys.
+
+port: 6540
+summarizegate:
+  relevance_threshold: 0.6
+  summarize_model: gpt-4o-mini
+  max_summary_ratio: 0.3
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,13 @@
+{
+  "name": "@stockyard/idlekill",
+  "version": "0.1.0",
+  "description": "Kill runaway LLM requests burning money doing nothing",
+  "bin": { "idlekill": "bin/run.js" },
+  "scripts": { "postinstall": "node bin/install.js" },
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["x64", "arm64"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/stockyard-dev/idlekill" },
+  "homepage": "https://stockyard.dev/idlekill",
+  "keywords": ["llm","proxy","cost","safety","timeout"]
+}

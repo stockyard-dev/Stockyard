@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-chainforge",
+  "display_name": "Stockyard ChainForge",
+  "description": "Define extract→analyze→summarize→format pipelines. Conditional branching, parallel execution, cost tracking per pipeline.",
+  "repository": "https://github.com/stockyard-dev/mcp-chainforge",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-chainforge"
+  ],
+  "tools": [
+    {
+      "name": "chainforge_stats",
+      "description": "Get pipeline execution stats."
+    },
+    {
+      "name": "chainforge_pipelines",
+      "description": "List configured pipelines."
+    }
+  ],
+  "tags": [
+    "pipeline",
+    "workflow",
+    "chain",
+    "multi-step",
+    "orchestration"
+  ]
+}

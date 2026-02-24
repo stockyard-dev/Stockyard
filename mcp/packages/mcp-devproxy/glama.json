@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-devproxy",
+  "display_name": "Stockyard DevProxy",
+  "description": "Interactive debugging proxy. Log headers, bodies, latency for every request. Development inspection tool.",
+  "repository": "https://github.com/stockyard-dev/mcp-devproxy",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-devproxy"
+  ],
+  "tools": [
+    {
+      "name": "devproxy_stats",
+      "description": "Get debug stats: requests logged, avg latency."
+    },
+    {
+      "name": "devproxy_recent",
+      "description": "List recent requests with headers and timing."
+    }
+  ],
+  "tags": [
+    "debug",
+    "inspect",
+    "development",
+    "logging",
+    "headers"
+  ]
+}

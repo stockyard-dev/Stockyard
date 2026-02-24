@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-chatmem",
+  "display_name": "Stockyard ChatMem",
+  "description": "Conversation memory middleware. Sliding window, summarization, and importance-based strategies. Persist memory across sessions without eating context windows.",
+  "repository": "https://github.com/stockyard-dev/mcp-chatmem",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-chatmem"
+  ],
+  "tools": [
+    {
+      "name": "chatmem_sessions",
+      "description": "List active conversation sessions with message counts and last activity."
+    },
+    {
+      "name": "chatmem_get",
+      "description": "Get memory state for a specific session."
+    },
+    {
+      "name": "chatmem_clear",
+      "description": "Clear memory for a specific session."
+    },
+    {
+      "name": "chatmem_stats",
+      "description": "Get memory statistics: active sessions, total messages stored, token savings."
+    },
+    {
+      "name": "chatmem_set_strategy",
+      "description": "Change memory management strategy."
+    },
+    {
+      "name": "chatmem_proxy_status",
+      "description": "Check if the ChatMem proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "memory",
+    "conversation",
+    "context",
+    "session",
+    "chatbot",
+    "persistence",
+    "proxy"
+  ]
+}

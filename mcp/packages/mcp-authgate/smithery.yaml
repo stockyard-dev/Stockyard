@@ -1,0 +1,17 @@
+name: stockyard-authgate
+display_name: "Stockyard AuthGate"
+description: "Issue/revoke keys to your customers. Per-key limits and usage tracking."
+icon: "🔑"
+command: npx
+args:
+  - "@stockyard/mcp-authgate"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - auth
+  - api-keys
+  - management
+  - customers

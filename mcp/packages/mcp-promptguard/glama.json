@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-promptguard",
+  "display_name": "Stockyard PromptGuard",
+  "description": "PII redaction and prompt injection detection for LLM APIs. Regex-based redaction with restore capability. Block or sanitize dangerous prompts.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptguard",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptguard"
+  ],
+  "tools": [
+    {
+      "name": "promptguard_stats",
+      "description": "Get guard statistics: total scanned, PII detections by type, injection blocks."
+    },
+    {
+      "name": "promptguard_test",
+      "description": "Test a prompt against PII detection and injection rules without sending to LLM."
+    },
+    {
+      "name": "promptguard_set_mode",
+      "description": "Change the guard mode: redact, redact-restore, or block."
+    },
+    {
+      "name": "promptguard_set_sensitivity",
+      "description": "Set injection detection sensitivity level."
+    },
+    {
+      "name": "promptguard_proxy_status",
+      "description": "Check if the PromptGuard proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "pii",
+    "redaction",
+    "security",
+    "injection",
+    "privacy",
+    "openai",
+    "proxy"
+  ]
+}

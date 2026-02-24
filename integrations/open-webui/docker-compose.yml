@@ -1,0 +1,41 @@
+# Open WebUI + Stockyard Sidecar
+# All your LLM calls get cost caps, caching, rate limiting, and analytics automatically.
+#
+# Usage:
+#   OPENAI_API_KEY=sk-... docker compose up
+#
+# Then open http://localhost:3000 (Open WebUI)
+# Stockyard dashboard at http://localhost:4000/ui
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports: ["3000:8080"]
+    environment:
+      - OPENAI_API_BASE_URL=http://stockyard:4000/v1
+      - OPENAI_API_KEY=passthrough
+      - WEBUI_AUTH=false
+    volumes:
+      - open-webui-data:/app/backend/data
+    depends_on:
+      stockyard:
+        condition: service_healthy
+
+  stockyard:
+    image: ghcr.io/stockyard-dev/stockyard:latest
+    ports: ["4000:4000"]
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+    volumes:
+      - stockyard-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  open-webui-data:
+  stockyard-data:

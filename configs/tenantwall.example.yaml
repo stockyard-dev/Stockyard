@@ -1,0 +1,36 @@
+# TenantWall — Per-tenant isolation for multi-tenant LLM apps
+# Enforces rate limits, spend caps, and model access per tenant.
+
+port: 5670
+
+providers:
+  - name: openai
+    url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    default: true
+
+tenantwall:
+  enabled: true
+  require_tenant: true          # Reject requests without tenant ID
+  use_project_as_tenant: true   # Use X-Project header as tenant ID
+  key_prefix_mode: false        # Extract tenant from "tenant:key" format
+  window_duration: 1h           # Rolling window for limits
+  default_max_requests: 1000    # Default requests per window
+  default_max_spend: 10.0       # Default spend cap per window ($)
+  default_allowed_models:       # Default model allowlist (* = all)
+    - "*"
+
+  tenants:
+    - id: acme-corp
+      max_requests_per_window: 5000
+      max_spend_per_window: 50.0
+      allowed_models:
+        - gpt-4o
+        - gpt-4o-mini
+        - claude-sonnet-4-20250514
+
+    - id: free-tier
+      max_requests_per_window: 100
+      max_spend_per_window: 1.0
+      allowed_models:
+        - gpt-4o-mini

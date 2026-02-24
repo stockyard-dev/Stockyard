@@ -1,0 +1,17 @@
+name: stockyard-promptchain
+display_name: "Stockyard PromptChain"
+description: "Define reusable blocks. Compose: [tone.helpful, format.json, domain.ecommerce]. Auto-update."
+icon: "🔗"
+command: npx
+args:
+  - "@stockyard/mcp-promptchain"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - prompt
+  - components
+  - composable
+  - reusable

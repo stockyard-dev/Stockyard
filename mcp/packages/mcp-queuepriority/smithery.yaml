@@ -1,0 +1,17 @@
+name: stockyard-queuepriority
+display_name: "Stockyard QueuePriority"
+description: "Priority levels per key/tenant. Reserved capacity. SLA tracking."
+icon: "👑"
+command: npx
+args:
+  - "@stockyard/mcp-queuepriority"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - queue
+  - priority
+  - vip
+  - sla

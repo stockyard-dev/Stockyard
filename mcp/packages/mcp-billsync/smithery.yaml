@@ -1,0 +1,18 @@
+name: stockyard-billsync
+display_name: "Stockyard BillSync"
+description: "Track usage per tenant. Apply markup. Generate invoice data. Stripe-compatible usage records."
+icon: "💰"
+command: npx
+args:
+  - "@stockyard/mcp-billsync"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - billing
+  - invoice
+  - tenant
+  - markup
+  - saas

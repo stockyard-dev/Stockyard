@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-chaosllm",
+  "display_name": "Stockyard ChaosLLM",
+  "description": "Inject realistic failures: 429s, timeouts, malformed JSON, truncated streams.",
+  "repository": "https://github.com/stockyard-dev/mcp-chaosllm",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-chaosllm"
+  ],
+  "tools": [
+    {
+      "name": "chaosllm_stats",
+      "description": "Get chaos injection stats."
+    }
+  ],
+  "tags": [
+    "chaos",
+    "testing",
+    "resilience",
+    "fault-injection"
+  ]
+}

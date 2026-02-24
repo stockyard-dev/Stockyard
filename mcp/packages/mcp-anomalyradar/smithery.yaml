@@ -1,0 +1,17 @@
+name: stockyard-anomalyradar
+display_name: "Stockyard AnomalyRadar"
+description: "Build statistical baselines. Z-score deviation detection. Auto-adjusting thresholds."
+icon: "📡"
+command: npx
+args:
+  - "@stockyard/mcp-anomalyradar"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - anomaly
+  - detection
+  - monitoring
+  - ml

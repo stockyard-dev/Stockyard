@@ -1,0 +1,17 @@
+name: stockyard-semanticcache
+display_name: "Stockyard SemanticCache"
+description: "Embed prompts. Cosine similarity. Configurable threshold. 10x hit rate."
+icon: "🧠"
+command: npx
+args:
+  - "@stockyard/mcp-semanticcache"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - cache
+  - semantic
+  - similarity
+  - embeddings

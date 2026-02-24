@@ -1,0 +1,17 @@
+name: stockyard-streamcache
+display_name: "Stockyard StreamCache"
+description: "Store original chunk timing. Replay cached SSE with original pacing."
+icon: "📺"
+command: npx
+args:
+  - "@stockyard/mcp-streamcache"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - cache
+  - streaming
+  - sse
+  - replay

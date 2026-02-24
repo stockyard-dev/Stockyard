@@ -1,0 +1,17 @@
+# AgentGuard — Safety rails for autonomous agents.
+# Copy to agentguard.yaml and set your API keys.
+
+port: 5720
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+agentguard:
+  session_header: X-Session-ID
+  max_calls: 50
+  max_cost: 5.00
+  max_duration: 300s
+  allowed_tools: []  # empty = all allowed
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

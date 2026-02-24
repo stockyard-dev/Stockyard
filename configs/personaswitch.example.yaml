@@ -1,0 +1,17 @@
+# PersonaSwitch — Hot-swap AI personalities.
+# Copy to personaswitch.yaml and set your API keys.
+
+port: 6560
+personas:
+  formal:
+    system_prompt: "You are a professional business assistant."
+    temperature: 0.3
+  casual:
+    system_prompt: "You're a friendly, casual helper. Keep it chill."
+    temperature: 0.8
+default: formal
+route_by: header  # X-Persona header
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

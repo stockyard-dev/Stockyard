@@ -1,0 +1,7 @@
+# Stockyard OTLP config
+telemetry:
+  otlp:
+    endpoint: "http://localhost:4317"  # OTLP gRPC endpoint
+    # or: "http://localhost:4318"      # OTLP HTTP endpoint
+    service_name: "stockyard"
+    # Works with: Jaeger, Datadog, New Relic, Honeycomb, Grafana Tempo

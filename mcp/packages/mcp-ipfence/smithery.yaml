@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-ipfence
+display_name: "Stockyard IPFence"
+description: "IP-level access control for LLM proxy endpoints. Allowlist, denylist, CIDR ranges. Block unauthorized access before any request processing."
+icon: "🧱"
+command: npx
+args:
+  - "@stockyard/mcp-ipfence"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - security
+  - ip
+  - allowlist
+  - firewall
+  - access-control
+  - cidr
+  - proxy

@@ -1,0 +1,17 @@
+name: stockyard-streamsplit
+display_name: "Stockyard StreamSplit"
+description: "Tee SSE chunks to logger, quality checker, webhook. Zero latency for primary."
+icon: "🔱"
+command: npx
+args:
+  - "@stockyard/mcp-streamsplit"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - streaming
+  - fork
+  - multiplex
+  - sse

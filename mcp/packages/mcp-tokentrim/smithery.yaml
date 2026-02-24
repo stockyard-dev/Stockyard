@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-tokentrim
+display_name: "Stockyard TokenTrim"
+description: "Automatic context window management. Truncates prompts using middle-out, oldest-first, or newest-first strategies when they exceed model limits."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-tokentrim"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - token
+  - context
+  - truncation
+  - window
+  - optimization
+  - openai
+  - proxy

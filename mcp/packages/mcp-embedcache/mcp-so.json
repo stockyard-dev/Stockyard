@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-embedcache",
+  "title": "EmbedCache — Never compute the same embedding twice",
+  "description": "Embedding response caching for /v1/embeddings. Content-hash deduplication, per-input cache splitting, 7-day TTL. Slash embedding costs for RAG pipelines.",
+  "install": "npx @stockyard/mcp-embedcache",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-embedcache"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 5,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

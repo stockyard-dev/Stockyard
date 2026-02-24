@@ -1,0 +1,8 @@
+llm-tests:
+  image: ubuntu:24.04
+  before_script:
+    - curl -fsSL https://stockyard.dev/install.sh | sh
+    - stockyard --product mockllm --config test/mockllm.yml &
+    - sleep 2
+  script:
+    - OPENAI_API_BASE=http://localhost:4000/v1 npm test

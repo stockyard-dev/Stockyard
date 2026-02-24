@@ -1,0 +1,33 @@
+{
+  "name": "stockyard-guard-skill",
+  "display_name": "Stockyard Guard",
+  "description": "PII redaction and prompt injection detection. Your personal data never reaches the LLM provider.",
+  "version": "0.1.0",
+  "author": "Stockyard",
+  "homepage": "https://github.com/stockyard-dev/stockyard-guard-skill",
+  "main": "index.js",
+  "tools": [
+    {
+      "name": "guard_stats",
+      "description": "Show redaction statistics",
+      "parameters": {}
+    },
+    {
+      "name": "guard_test",
+      "description": "Test text for PII",
+      "parameters": {
+        "text": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ],
+  "tags": [
+    "llm",
+    "proxy",
+    "cost",
+    "openai"
+  ],
+  "license": "MIT"
+}

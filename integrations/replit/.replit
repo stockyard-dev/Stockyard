@@ -1,0 +1,12 @@
+run = "./stockyard"
+entrypoint = "main.go"
+
+[nix]
+channel = "stable-24_05"
+
+[env]
+OPENAI_API_KEY = ""
+
+[[ports]]
+localPort = 4000
+externalPort = 80

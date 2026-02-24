@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-promptreplay
+display_name: "Stockyard PromptReplay"
+description: "Full request/response logging for LLM APIs. Capture every prompt, completion, and token count. Replay past requests for debugging."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-promptreplay"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - logging
+  - replay
+  - debug
+  - prompt
+  - audit
+  - openai
+  - proxy

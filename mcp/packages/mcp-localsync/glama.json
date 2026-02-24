@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-localsync",
+  "display_name": "Stockyard LocalSync",
+  "description": "Route to Ollama locally when available. Auto-failover to cloud when local is down. Track cost savings.",
+  "repository": "https://github.com/stockyard-dev/mcp-localsync",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-localsync"
+  ],
+  "tools": [
+    {
+      "name": "localsync_stats",
+      "description": "Get routing stats: local vs cloud, savings, failovers."
+    },
+    {
+      "name": "localsync_health",
+      "description": "Check local endpoint health."
+    }
+  ],
+  "tags": [
+    "local",
+    "ollama",
+    "hybrid",
+    "failover",
+    "cost"
+  ]
+}

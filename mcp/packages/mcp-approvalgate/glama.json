@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-approvalgate",
+  "display_name": "Stockyard ApprovalGate",
+  "description": "Approval workflow for prompt modifications. Track who approved what and when. Audit trail included.",
+  "repository": "https://github.com/stockyard-dev/mcp-approvalgate",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-approvalgate"
+  ],
+  "tools": [
+    {
+      "name": "approvalgate_stats",
+      "description": "Get approval stats: pending, approved, rejected."
+    },
+    {
+      "name": "approvalgate_pending",
+      "description": "List pending approval requests."
+    }
+  ],
+  "tags": [
+    "approval",
+    "workflow",
+    "governance",
+    "audit"
+  ]
+}

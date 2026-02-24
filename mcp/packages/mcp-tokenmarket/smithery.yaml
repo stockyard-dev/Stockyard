@@ -1,0 +1,17 @@
+name: stockyard-tokenmarket
+display_name: "Stockyard TokenMarket"
+description: "Pool-based budgets. Teams request capacity. Auto-rebalance. Priority queuing for high-value requests."
+icon: "🏪"
+command: npx
+args:
+  - "@stockyard/mcp-tokenmarket"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - budget
+  - pool
+  - reallocation
+  - teams

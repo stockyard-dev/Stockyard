@@ -1,0 +1,13 @@
+# PolicyEngine — Codify AI governance as enforceable rules.
+# Copy to policyengine.yaml and set your API keys.
+
+port: 6370
+policies:
+  - name: no_pii_to_cloud
+    rule: "if provider.type == cloud then require promptguard.enabled"
+  - name: log_everything
+    rule: "require compliancelog.enabled"
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,17 @@
+name: stockyard-tokenauction
+display_name: "Stockyard TokenAuction"
+description: "Monitor costs, queue, errors. Time-of-day pricing. Surge pricing."
+icon: "🏷️"
+command: npx
+args:
+  - "@stockyard/mcp-tokenauction"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - pricing
+  - dynamic
+  - auction
+  - demand

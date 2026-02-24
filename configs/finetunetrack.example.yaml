@@ -1,0 +1,14 @@
+# FineTuneTrack — Monitor fine-tuned model performance.
+# Copy to finetunetrack.yaml and set your API keys.
+
+port: 6520
+finetunetrack:
+  models:
+    - id: ft:gpt-4o-mini:my-org:custom:id
+      eval_suite: ./evals/
+      schedule: "0 0 * * 0"  # weekly
+      baseline: gpt-4o-mini
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

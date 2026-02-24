@@ -1,0 +1,18 @@
+# AgeGate — Child safety middleware for LLM apps.
+# Copy to agegate.yaml and set your API keys.
+
+port: 5870
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+agegate:
+  default_tier: adult
+  tiers:
+    child:    { max_age: 12, filter: strict }
+    teen:     { max_age: 17, filter: moderate }
+    adult:    { max_age: 999, filter: none }
+  age_header: X-User-Age
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

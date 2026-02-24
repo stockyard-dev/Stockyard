@@ -1,0 +1,17 @@
+name: stockyard-langbridge
+display_name: "Stockyard LangBridge"
+description: "Auto-detect language, translate to English for model, translate response back. Seamless multilingual support."
+icon: "🌐"
+command: npx
+args:
+  - "@stockyard/mcp-langbridge"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - translation
+  - multilingual
+  - language
+  - i18n

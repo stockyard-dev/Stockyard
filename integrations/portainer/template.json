@@ -1,0 +1,11 @@
+{
+  "version": "2",
+  "templates": [{
+    "type": 1,
+    "title": "Stockyard",
+    "description": "LLM infrastructure proxy — 125 tools",
+    "image": "stockyard/stockyard:latest",
+    "ports": ["4000/tcp"],
+    "env": [{"name": "OPENAI_API_KEY", "label": "OpenAI API Key"}]
+  }]
+}

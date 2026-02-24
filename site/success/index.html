@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Stockyard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+
+.success{max-width:650px;margin:0 auto;padding:6rem 2rem;text-align:center}
+.success-mark{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:2rem}
+.success-mark::before{content:'';display:block;width:40px;height:1px;background:var(--gold);margin:0 auto 1rem}
+.success h1{font-size:2.2rem;margin-bottom:1rem}
+.success .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+
+.steps{text-align:left;max-width:550px;margin:0 auto 3rem}
+.step{padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);margin-bottom:0.8rem}
+.step-num{font-family:var(--font-mono);font-size:0.65rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem}
+.step-text{font-size:0.9rem;color:var(--cream-dim)}
+.step code{font-family:var(--font-mono);background:var(--bg);padding:0.15rem 0.5rem;font-size:0.8rem;color:var(--leather-light);border:1px solid var(--bg3)}
+
+.note{font-size:0.85rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem;padding:1rem;border-left:2px solid var(--gold)}
+.note strong{color:var(--cream);font-style:normal}
+
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3);margin-top:4rem}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="success">
+  <div class="success-mark">Purchase confirmed</div>
+  <h1>You're in.</h1>
+  <p class="sub">Your license key is on its way to your inbox. Here's what to do next.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">Step 1 &mdash; Check your email</div>
+      <div class="step-text">Your license key will arrive in the next few minutes. It starts with <code>SY-</code> and looks like a long encoded string.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 2 &mdash; Set the environment variable</div>
+      <div class="step-text">Add it to your shell profile for persistence:<br><br><code>export STOCKYARD_LICENSE_KEY=SY-your-key-here</code></div>
+    </div>
+    <div class="step">
+      <div class="step-num">Step 3 &mdash; Start the proxy</div>
+      <div class="step-text">The proxy reads the key on startup and unlocks your tier automatically.<br><br><code>stockyard --config stockyard.yaml</code></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Didn't get the email?</strong> Check your spam folder. If it's not there, look up your license at <a href="/account/">stockyard.dev/account</a> using your email address. The key is also stored in your account and can be retrieved at any time.
+  </div>
+
+  <div class="cta-group">
+    <a href="/docs/" class="btn btn-primary">Read the docs</a>
+    <a href="/products/" class="btn btn-secondary">Browse products</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted.</p>
+</footer>
+
+</body>
+</html>

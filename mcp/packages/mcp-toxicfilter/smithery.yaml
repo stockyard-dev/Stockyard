@@ -1,0 +1,21 @@
+# Smithery Marketplace Configuration
+name: stockyard-toxicfilter
+display_name: "Stockyard ToxicFilter"
+description: "Content moderation middleware for LLM responses. Block, redact, or flag harmful, hateful, or unsafe content before it reaches users."
+icon: "🛡️"
+command: npx
+args:
+  - "@stockyard/mcp-toxicfilter"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - moderation
+  - safety
+  - toxic
+  - content-filter
+  - harmful
+  - proxy

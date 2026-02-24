@@ -1,0 +1,20 @@
+# ABRouter — A/B test any LLM variable with statistical rigor.
+# Copy to abrouter.yaml and set your API keys.
+
+port: 5780
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+experiments:
+  model_test:
+    variable: model
+    variants:
+      control: gpt-4o
+      challenger: gpt-4o-mini
+    split: [50, 50]
+    metric: quality_score
+    min_samples: 100
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

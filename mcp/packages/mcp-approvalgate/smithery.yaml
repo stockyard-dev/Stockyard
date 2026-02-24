@@ -1,0 +1,17 @@
+name: stockyard-approvalgate
+display_name: "Stockyard ApprovalGate"
+description: "Approval workflow for prompt modifications. Track who approved what and when. Audit trail included."
+icon: "✅"
+command: npx
+args:
+  - "@stockyard/mcp-approvalgate"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - approval
+  - workflow
+  - governance
+  - audit

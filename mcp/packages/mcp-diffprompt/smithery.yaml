@@ -1,0 +1,17 @@
+name: stockyard-diffprompt
+display_name: "Stockyard DiffPrompt"
+description: "Track system prompt changes. Hash-based detection. See which models had prompt modifications."
+icon: "📝"
+command: npx
+args:
+  - "@stockyard/mcp-diffprompt"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - diff
+  - prompt
+  - versioning
+  - change-detection

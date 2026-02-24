@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-promptpad",
+  "display_name": "Stockyard PromptPad",
+  "description": "Prompt template versioning and A/B testing. Store, version, and test prompt templates. Track which variants perform best.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptpad",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptpad"
+  ],
+  "tools": [
+    {
+      "name": "promptpad_list",
+      "description": "List all prompt templates with version numbers and usage stats."
+    },
+    {
+      "name": "promptpad_get",
+      "description": "Get a specific prompt template by name and optional version."
+    },
+    {
+      "name": "promptpad_save",
+      "description": "Save or update a prompt template. Automatically versions."
+    },
+    {
+      "name": "promptpad_render",
+      "description": "Render a template with variables and optionally send to LLM."
+    },
+    {
+      "name": "promptpad_ab_stats",
+      "description": "Get A/B test results for prompt variants."
+    },
+    {
+      "name": "promptpad_proxy_status",
+      "description": "Check if the PromptPad proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "prompt",
+    "template",
+    "versioning",
+    "a/b-test",
+    "management",
+    "openai",
+    "proxy"
+  ]
+}

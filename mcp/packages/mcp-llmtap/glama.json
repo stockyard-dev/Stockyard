@@ -1,0 +1,45 @@
+{
+  "name": "stockyard-llmtap",
+  "display_name": "Stockyard LLMTap",
+  "description": "API analytics portal for LLM traffic. Latency percentiles (p50/p95/p99), error rates, cost breakdown by model, and volume tracking.",
+  "repository": "https://github.com/stockyard-dev/mcp-llmtap",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-llmtap"
+  ],
+  "tools": [
+    {
+      "name": "llmtap_overview",
+      "description": "Get analytics overview: total requests, latency percentiles, error rate, cost."
+    },
+    {
+      "name": "llmtap_latency",
+      "description": "Get detailed latency breakdown: p50, p95, p99 by model."
+    },
+    {
+      "name": "llmtap_errors",
+      "description": "Get error breakdown by type, model, and time window."
+    },
+    {
+      "name": "llmtap_costs",
+      "description": "Get cost analytics: spend per model, per endpoint, trends."
+    },
+    {
+      "name": "llmtap_volume",
+      "description": "Get request volume over time for charting."
+    },
+    {
+      "name": "llmtap_proxy_status",
+      "description": "Check if the LLMTap proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "analytics",
+    "monitoring",
+    "latency",
+    "dashboard",
+    "observability",
+    "proxy"
+  ]
+}

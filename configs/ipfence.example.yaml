@@ -1,0 +1,19 @@
+# IPFence — IP allowlisting for your LLM endpoints.
+# Copy to ipfence.yaml and set your API keys.
+
+port: 5690
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+ipfence:
+  mode: allowlist  # allowlist | denylist
+  allow:
+    - 10.0.0.0/8
+    - 192.168.0.0/16
+    - 203.0.113.50
+  deny: []
+  block_countries: []  # e.g. [CN, RU]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

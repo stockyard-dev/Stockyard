@@ -1,0 +1,22 @@
+# RegionRoute — Data residency routing for GDPR.
+# Copy to regionroute.yaml and set your API keys.
+
+port: 5920
+providers:
+  openai_us:
+    base_url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+  openai_eu:
+    base_url: https://eu.api.openai.com/v1
+    api_key: ${OPENAI_API_KEY_EU}
+regionroute:
+  rules:
+    - region: EU
+      provider: openai_eu
+    - region: "*"
+      provider: openai_us
+  detect_by: header  # header | ip | tenant
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

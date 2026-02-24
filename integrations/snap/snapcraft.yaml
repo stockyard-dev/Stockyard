@@ -1,0 +1,14 @@
+name: stockyard
+version: '0.1.0'
+summary: LLM infrastructure proxy
+description: 125 LLM tools in one binary.
+base: core22
+confinement: strict
+apps:
+  stockyard:
+    command: stockyard
+    plugs: [network, network-bind]
+parts:
+  stockyard:
+    plugin: dump
+    source: https://github.com/stockyard-dev/stockyard/releases/download/v0.1.0/stockyard_linux_amd64.tar.gz

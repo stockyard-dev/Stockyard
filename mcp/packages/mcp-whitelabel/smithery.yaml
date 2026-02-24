@@ -1,0 +1,17 @@
+name: stockyard-whitelabel
+display_name: "Stockyard WhiteLabel"
+description: "Custom branding for resellers. Logo, colors, domain. Sell LLM infrastructure under your own brand."
+icon: "🏷️"
+command: npx
+args:
+  - "@stockyard/mcp-whitelabel"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - branding
+  - white-label
+  - reseller
+  - custom

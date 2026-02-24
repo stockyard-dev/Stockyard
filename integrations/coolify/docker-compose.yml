@@ -1,0 +1,12 @@
+version: "3"
+services:
+  stockyard:
+    image: stockyard/stockyard:latest
+    ports:
+      - "4000:4000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - stockyard-data:/data
+volumes:
+  stockyard-data:

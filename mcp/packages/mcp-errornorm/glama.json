@@ -1,0 +1,21 @@
+{
+  "name": "stockyard-errornorm",
+  "display_name": "Stockyard ErrorNorm",
+  "description": "Single error schema: code, message, provider, retry_after, is_retryable.",
+  "repository": "https://github.com/stockyard-dev/mcp-errornorm",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-errornorm"
+  ],
+  "tools": [
+    {
+      "name": "errornorm_stats",
+      "description": "Get error normalization stats."
+    }
+  ],
+  "tags": [
+    "errors",
+    "normalization",
+    "consistency"
+  ]
+}

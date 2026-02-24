@@ -1,0 +1,19 @@
+# StructuredShield — Your LLM responses always match your schema.
+port: 4102
+product: jsonguard
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+
+validation:
+  enabled: true
+  max_retries: 3
+  schemas:
+    user_profile:
+      type: object
+      required: [name, email, age]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        age: { type: integer, minimum: 0 }

@@ -1,0 +1,18 @@
+name: stockyard-abrouter
+display_name: "Stockyard ABRouter"
+description: "Run experiments across models, prompts, temperatures. Weighted traffic splits with automatic significance testing."
+icon: "🧪"
+command: npx
+args:
+  - "@stockyard/mcp-abrouter"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - ab-test
+  - experiment
+  - statistics
+  - split
+  - optimization

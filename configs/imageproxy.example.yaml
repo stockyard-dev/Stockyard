@@ -1,0 +1,18 @@
+# ImageProxy — Proxy magic for image generation APIs.
+# Copy to imageproxy.yaml and set your API keys.
+
+port: 5890
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+imageproxy:
+  cache: true
+  default_size: 1024x1024
+  max_per_day: 100
+  cost_per_image:
+    dall-e-3: 0.04
+    dall-e-2: 0.02
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

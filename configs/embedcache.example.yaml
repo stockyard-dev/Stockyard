@@ -1,0 +1,15 @@
+# EmbedCache — Never compute the same embedding twice.
+# Copy to embedcache.yaml and set your API keys.
+
+port: 5700
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+embedcache:
+  enabled: true
+  ttl: 0          # 0 = never expire (embeddings are deterministic)
+  max_entries: 100000
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

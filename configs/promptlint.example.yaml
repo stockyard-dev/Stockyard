@@ -1,0 +1,19 @@
+# PromptLint — Catch prompt anti-patterns before they cost you.
+# Copy to promptlint.yaml and set your API keys.
+
+port: 5840
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+promptlint:
+  mode: warn  # warn | block
+  checks:
+    - redundancy
+    - conflicts
+    - injection_risk
+    - missing_format
+  min_score: 0.5
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

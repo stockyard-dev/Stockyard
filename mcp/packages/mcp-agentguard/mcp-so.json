@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-agentguard",
+  "title": "AgentGuard — Safety rails for autonomous AI agents",
+  "description": "Per-session limits for AI agents: max calls, cost, duration. Kill runaway agent sessions before they drain your budget.",
+  "install": "npx @stockyard/mcp-agentguard",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-agentguard"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 5,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

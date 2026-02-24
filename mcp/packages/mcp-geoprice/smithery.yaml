@@ -1,0 +1,17 @@
+name: stockyard-geoprice
+display_name: "Stockyard GeoPrice"
+description: "PPP-adjusted pricing. Anti-VPN. Revenue by region dashboard."
+icon: "💱"
+command: npx
+args:
+  - "@stockyard/mcp-geoprice"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - pricing
+  - geo
+  - ppp
+  - regional

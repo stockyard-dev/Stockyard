@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-hallucicheck",
+  "display_name": "Stockyard HalluciCheck",
+  "description": "Validate URLs, emails, and citations in LLM responses. Flag or retry when models invent non-existent references.",
+  "repository": "https://github.com/stockyard-dev/mcp-hallucicheck",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-hallucicheck"
+  ],
+  "tools": [
+    {
+      "name": "hallucicheck_stats",
+      "description": "Get hallucination detection stats: checked, invalid URLs/emails found."
+    },
+    {
+      "name": "hallucicheck_recent",
+      "description": "List recent hallucination detections with details."
+    }
+  ],
+  "tags": [
+    "hallucination",
+    "validation",
+    "urls",
+    "fact-check",
+    "quality"
+  ]
+}

@@ -1,0 +1,35 @@
+# PromptGuard — PII Redaction & Prompt Injection Detection
+# Stop PII leaks and prompt injection before they happen.
+
+port: 4800
+data_dir: ~/.stockyard
+log_level: info
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+promptguard:
+  enabled: true
+  pii:
+    mode: redact-restore  # redact | redact-restore | block
+    patterns:
+      - email
+      - ssn
+      - phone
+      - credit_card
+    custom:
+      - name: internal_id
+        pattern: "CUST-[A-Z0-9]{8}"
+
+  injection:
+    enabled: true
+    sensitivity: medium  # low | medium | high
+    action: block        # block | warn | log
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

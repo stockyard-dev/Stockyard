@@ -1,0 +1,17 @@
+name: stockyard-synthgen
+display_name: "Stockyard SynthGen"
+description: "Templates + seed examples → synthetic training data at scale. Quality-checked through EvalGate."
+icon: "🧬"
+command: npx
+args:
+  - "@stockyard/mcp-synthgen"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - synthetic
+  - training
+  - generation
+  - data

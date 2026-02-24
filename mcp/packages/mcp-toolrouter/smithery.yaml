@@ -1,0 +1,17 @@
+name: stockyard-toolrouter
+display_name: "Stockyard ToolRouter"
+description: "Versioned tool schemas. Route calls. Shadow-test. Usage analytics."
+icon: "🔀"
+command: npx
+args:
+  - "@stockyard/mcp-toolrouter"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - tools
+  - function-calling
+  - routing
+  - versioning

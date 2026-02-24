@@ -1,0 +1,76 @@
+{
+  "identifier": "stockyard",
+  "api": [
+    {
+      "url": "http://localhost:4000/api/spend",
+      "name": "getSpend",
+      "description": "Get current LLM spending — today's cost, monthly cost, and remaining budget.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project": { "type": "string", "default": "default", "description": "Project name" }
+        }
+      }
+    },
+    {
+      "url": "http://localhost:4000/api/cache/stats",
+      "name": "getCacheStats",
+      "description": "Get cache hit/miss statistics and estimated cost savings."
+    },
+    {
+      "url": "http://localhost:4000/api/analytics/overview",
+      "name": "getAnalytics",
+      "description": "Get usage analytics: total requests, latency percentiles, error rate, and cost breakdown.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "period": { "type": "string", "enum": ["1h", "24h", "7d", "30d"], "default": "24h" }
+        }
+      }
+    },
+    {
+      "url": "http://localhost:4000/api/providers/status",
+      "name": "getProviderStatus",
+      "description": "Check health status of all configured LLM providers."
+    },
+    {
+      "url": "http://localhost:4000/api/guard/test",
+      "name": "testPII",
+      "description": "Test a text string for PII detection without sending to any LLM.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string", "description": "Text to scan for PII" }
+        },
+        "required": ["text"]
+      }
+    }
+  ],
+  "gateway": "http://localhost:4000/v1",
+  "manifest": {
+    "schema_version": "v1",
+    "name_for_human": "Stockyard",
+    "name_for_model": "stockyard",
+    "description_for_human": "LLM infrastructure suite — cost caps, caching, rate limiting, PII redaction, smart routing, and analytics.",
+    "description_for_model": "Query Stockyard for LLM cost tracking, cache stats, analytics, provider health, and PII detection. Stockyard is a proxy that sits between LobeChat and LLM providers.",
+    "auth": { "type": "none" },
+    "logo_url": "https://stockyard.dev/icon.png",
+    "contact_email": "hello@stockyard.dev",
+    "legal_info_url": "https://stockyard.dev/legal"
+  },
+  "settings": [
+    {
+      "name": "proxyUrl",
+      "label": "Stockyard Proxy URL",
+      "type": "input",
+      "default": "http://localhost:4000",
+      "description": "Base URL of your Stockyard proxy"
+    }
+  ],
+  "meta": {
+    "title": "Stockyard",
+    "description": "Cost caps, caching, and analytics for your LLM calls",
+    "tags": ["llm", "proxy", "cost", "cache", "analytics"],
+    "avatar": "🔧"
+  }
+}

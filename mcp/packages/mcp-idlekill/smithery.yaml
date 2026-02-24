@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-idlekill
+display_name: "Stockyard IdleKill"
+description: "Request watchdog middleware. Kill LLM requests exceeding time, token, or cost limits. Stop agent loops, hanging streams, and runaway completions."
+icon: "⏱️"
+command: npx
+args:
+  - "@stockyard/mcp-idlekill"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - timeout
+  - watchdog
+  - runaway
+  - cost
+  - agent
+  - kill
+  - proxy

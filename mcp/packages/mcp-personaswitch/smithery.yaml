@@ -1,0 +1,17 @@
+name: stockyard-personaswitch
+display_name: "Stockyard PersonaSwitch"
+description: "Define personas. Route by header/key/segment. Each: prompt, temperature, rules."
+icon: "🎭"
+command: npx
+args:
+  - "@stockyard/mcp-personaswitch"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - persona
+  - personality
+  - routing
+  - customization

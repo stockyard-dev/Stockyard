@@ -1,0 +1,21 @@
+# LLMSync — Sync configs across environments.
+# Copy to llmsync.yaml and set your API keys.
+
+port: 6040
+environments:
+  dev:
+    extends: base
+    overrides:
+      costcap.daily: 1.00
+  staging:
+    extends: base
+    overrides:
+      costcap.daily: 10.00
+  production:
+    extends: base
+    overrides:
+      costcap.daily: 100.00
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

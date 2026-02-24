@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-diffprompt",
+  "display_name": "Stockyard DiffPrompt",
+  "description": "Track system prompt changes. Hash-based detection. See which models had prompt modifications.",
+  "repository": "https://github.com/stockyard-dev/mcp-diffprompt",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-diffprompt"
+  ],
+  "tools": [
+    {
+      "name": "diffprompt_stats",
+      "description": "Get change detection stats: prompts checked, changes detected."
+    }
+  ],
+  "tags": [
+    "diff",
+    "prompt",
+    "versioning",
+    "change-detection"
+  ]
+}

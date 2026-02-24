@@ -1,0 +1,17 @@
+name: stockyard-retentionwipe
+display_name: "Stockyard RetentionWipe"
+description: "Retention periods per data type. Auto-purge. Per-user deletion. Deletion certificates."
+icon: "🧹"
+command: npx
+args:
+  - "@stockyard/mcp-retentionwipe"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - retention
+  - deletion
+  - gdpr
+  - compliance

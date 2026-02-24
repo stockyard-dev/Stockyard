@@ -1,0 +1,13 @@
+# DocParse — Preprocess documents for LLM context.
+# Copy to docparse.yaml and set your API keys.
+
+port: 6170
+docparse:
+  chunk_size: 1000
+  chunk_overlap: 200
+  clean_artifacts: true
+  supported: [pdf, docx, html, txt, md]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

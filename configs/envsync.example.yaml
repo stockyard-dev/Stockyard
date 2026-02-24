@@ -1,0 +1,12 @@
+# EnvSync — Sync configs and secrets across environments.
+# Copy to envsync.yaml and set your API keys.
+
+port: 6480
+envsync:
+  environments: [dev, staging, production]
+  secret_encryption: true
+  promotion_chain: dev -> staging -> production
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,18 @@
+name: stockyard-docparse
+display_name: "Stockyard DocParse"
+description: "PDF/Word/HTML text extraction. Smart chunking. Clean artifacts."
+icon: "📄"
+command: npx
+args:
+  - "@stockyard/mcp-docparse"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - document
+  - parsing
+  - chunking
+  - pdf
+  - rag

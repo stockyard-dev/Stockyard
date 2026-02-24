@@ -1,0 +1,17 @@
+name: stockyard-consentgate
+display_name: "Stockyard ConsentGate"
+description: "Check consent per user. Block non-consented. Track timestamps. Support withdrawal."
+icon: "✋"
+command: npx
+args:
+  - "@stockyard/mcp-consentgate"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - consent
+  - gdpr
+  - eu-ai-act
+  - compliance

@@ -1,0 +1,17 @@
+name: stockyard-snapshottest
+display_name: "Stockyard SnapshotTest"
+description: "Record baselines. Semantic diff. Configurable threshold. CI-friendly."
+icon: "📸"
+command: npx
+args:
+  - "@stockyard/mcp-snapshottest"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - snapshot
+  - testing
+  - regression
+  - ci-cd

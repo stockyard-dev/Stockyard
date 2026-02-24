@@ -1,0 +1,21 @@
+# Smithery Marketplace Configuration
+name: stockyard-retrypilot
+display_name: "Stockyard RetryPilot"
+description: "Smart retry engine with exponential backoff, circuit breakers, deadline awareness, and automatic model downgrade on failures."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-retrypilot"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - retry
+  - circuit-breaker
+  - backoff
+  - resilience
+  - failover
+  - proxy

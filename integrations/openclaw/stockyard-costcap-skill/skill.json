@@ -1,0 +1,32 @@
+{
+  "name": "stockyard-costcap-skill",
+  "display_name": "Stockyard Cost Caps",
+  "description": "Real-time spend tracking and budget caps. Never get a surprise LLM bill again.",
+  "version": "0.1.0",
+  "author": "Stockyard",
+  "homepage": "https://github.com/stockyard-dev/stockyard-costcap-skill",
+  "main": "index.js",
+  "tools": [
+    {
+      "name": "spend_query",
+      "description": "Check current spending",
+      "parameters": {}
+    },
+    {
+      "name": "budget_set",
+      "description": "Set daily/monthly budget",
+      "parameters": {
+        "amount": {
+          "type": "string"
+        }
+      }
+    }
+  ],
+  "tags": [
+    "llm",
+    "proxy",
+    "cost",
+    "openai"
+  ],
+  "license": "MIT"
+}

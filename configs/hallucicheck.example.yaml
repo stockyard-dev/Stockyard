@@ -1,0 +1,17 @@
+# HalluciCheck — Catch hallucinations before your users do.
+# Copy to hallucicheck.yaml and set your API keys.
+
+port: 5740
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+hallucicheck:
+  check_urls: true
+  check_emails: true
+  check_citations: true
+  mode: flag  # flag | retry | block
+  confidence_threshold: 0.7
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

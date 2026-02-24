@@ -1,0 +1,38 @@
+{
+  "name": "stockyard-llmcache",
+  "display_name": "Stockyard CacheLayer",
+  "description": "Intelligent LLM response caching. Exact-match caching with configurable TTL. Reduces costs and latency for repeated prompts.",
+  "repository": "https://github.com/stockyard-dev/mcp-cache",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-cache"
+  ],
+  "tools": [
+    {
+      "name": "cache_stats",
+      "description": "Get cache hit/miss statistics. Shows hit rate, total entries, and estimated savings."
+    },
+    {
+      "name": "cache_flush",
+      "description": "Clear the entire cache or cache entries matching a pattern."
+    },
+    {
+      "name": "cache_set_ttl",
+      "description": "Change the cache TTL (time-to-live) for new entries."
+    },
+    {
+      "name": "cache_proxy_status",
+      "description": "Check if the CacheLayer proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "cache",
+    "caching",
+    "cost",
+    "latency",
+    "openai",
+    "proxy",
+    "redis-free"
+  ]
+}

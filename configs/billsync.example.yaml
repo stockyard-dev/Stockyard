@@ -1,0 +1,17 @@
+# BillSync — Per-customer LLM invoicing.
+# Copy to billsync.yaml and set your API keys.
+
+port: 5960
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+billing:
+  markup: 1.5           # 50% markup
+  period: monthly
+  currency: usd
+  stripe_key: ${STRIPE_KEY}
+  invoice_format: pdf
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

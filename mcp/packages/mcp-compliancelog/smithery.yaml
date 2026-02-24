@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-compliancelog
+display_name: "Stockyard ComplianceLog"
+description: "Tamper-proof audit logging for LLM interactions. Hash-chained entries, configurable retention, SOC2/HIPAA-ready export formats."
+icon: "📋"
+command: npx
+args:
+  - "@stockyard/mcp-compliancelog"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - audit
+  - compliance
+  - soc2
+  - hipaa
+  - logging
+  - immutable
+  - proxy

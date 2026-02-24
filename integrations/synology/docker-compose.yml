@@ -1,0 +1,12 @@
+version: "3"
+services:
+  stockyard:
+    image: stockyard/stockyard:latest
+    container_name: stockyard
+    ports:
+      - "4000:4000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - /volume1/docker/stockyard:/data
+    restart: unless-stopped

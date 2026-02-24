@@ -1,0 +1,19 @@
+# FallbackRouter — Your app never goes down because OpenAI did.
+port: 4103
+product: routefall
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+  groq:
+    api_key: ${GROQ_API_KEY}
+
+failover:
+  enabled: true
+  strategy: priority  # priority | round-robin | least-latency
+  providers: [openai, anthropic, groq]
+  circuit_breaker:
+    failure_threshold: 3
+    recovery_timeout: 30s

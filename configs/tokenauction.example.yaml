@@ -1,0 +1,12 @@
+# TokenAuction — Dynamic pricing based on demand.
+# Copy to tokenauction.yaml and set your API keys.
+
+port: 6610
+tokenauction:
+  base_price: 0.001
+  surge_multiplier: 2.0
+  surge_threshold: 0.8  # queue 80% full
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

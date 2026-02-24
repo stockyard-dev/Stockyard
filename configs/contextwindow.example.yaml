@@ -1,0 +1,14 @@
+# ContextWindow — Visual context window debugger.
+# Copy to contextwindow.yaml and set your API keys.
+
+port: 5910
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+contextwindow:
+  enabled: true
+  track_sections: true
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

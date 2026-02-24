@@ -1,0 +1,18 @@
+groups:
+  - name: stockyard
+    rules:
+      - alert: HighErrorRate
+        expr: rate(stockyard_requests_errors_total[5m]) > 0.1
+        for: 2m
+        labels: { severity: warning }
+        annotations: { summary: "Stockyard error rate above 10%" }
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(stockyard_request_duration_seconds_bucket[5m])) > 5
+        for: 3m
+        labels: { severity: warning }
+        annotations: { summary: "Stockyard p95 latency above 5s" }
+      - alert: BudgetNearLimit
+        expr: stockyard_spend_ratio > 0.9
+        for: 1m
+        labels: { severity: critical }
+        annotations: { summary: "Stockyard budget above 90%" }

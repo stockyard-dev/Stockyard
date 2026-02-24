@@ -1,0 +1,14 @@
+# RetentionWipe — Automated data retention and deletion.
+# Copy to retentionwipe.yaml and set your API keys.
+
+port: 6360
+retentionwipe:
+  retention:
+    logs: 90d
+    analytics: 365d
+    audit: 730d
+  deletion_api: true
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

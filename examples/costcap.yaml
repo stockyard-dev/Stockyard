@@ -1,0 +1,24 @@
+# CostCap — Never get a surprise LLM bill again.
+# Run: costcap costcap.yaml
+# Then: curl http://localhost:4100/v1/chat/completions ...
+
+port: 4100
+product: costcap
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+
+projects:
+  default:
+    caps:
+      daily: 5.00    # Hard stop at $5/day
+      monthly: 50.00  # Hard stop at $50/month
+    alerts:
+      webhook: ""  # Slack/Discord webhook URL
+      thresholds: [50, 80, 95]  # Alert at 50%, 80%, 95% of cap
+
+logging:
+  retention_days: 30

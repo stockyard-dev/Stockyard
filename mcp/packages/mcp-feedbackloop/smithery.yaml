@@ -1,0 +1,17 @@
+name: stockyard-feedbackloop
+display_name: "Stockyard FeedbackLoop"
+description: "Collect user ratings and feedback linked to specific LLM requests. Track quality trends over time."
+icon: "👍"
+command: npx
+args:
+  - "@stockyard/mcp-feedbackloop"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - feedback
+  - ratings
+  - quality
+  - improvement

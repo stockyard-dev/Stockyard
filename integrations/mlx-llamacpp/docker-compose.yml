@@ -1,0 +1,18 @@
+version: "3"
+services:
+  llamacpp:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/models
+    command: -m /models/model.gguf --port 8080
+
+  stockyard:
+    image: stockyard/stockyard:latest
+    ports:
+      - "4000:4000"
+    environment:
+      - STOCKYARD_PROVIDERS_LOCAL_BASE_URL=http://llamacpp:8080/v1
+    depends_on:
+      - llamacpp

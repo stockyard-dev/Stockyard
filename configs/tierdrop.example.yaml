@@ -1,0 +1,20 @@
+# TierDrop — Auto-downgrade models when burning cash.
+# Copy to tierdrop.yaml and set your API keys.
+
+port: 5750
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+tierdrop:
+  tiers:
+    - model: gpt-4o
+      max_spend_percent: 70
+    - model: gpt-4o-mini
+      max_spend_percent: 90
+    - model: gpt-3.5-turbo
+      max_spend_percent: 100
+  daily_budget: 10.00
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

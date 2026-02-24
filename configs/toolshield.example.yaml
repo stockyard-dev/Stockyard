@@ -1,0 +1,13 @@
+# ToolShield — Validate tool calls before execution.
+# Copy to toolshield.yaml and set your API keys.
+
+port: 6110
+toolshield:
+  rules:
+    delete_user: { blocked: true }
+    send_email: { rate_limit: 10/hour }
+    read_file: { allowed_paths: ["/safe/"] }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

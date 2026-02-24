@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-spotprice",
+  "display_name": "Stockyard SpotPrice",
+  "description": "Live pricing DB. Route to cheapest model meeting quality threshold.",
+  "repository": "https://github.com/stockyard-dev/mcp-spotprice",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-spotprice"
+  ],
+  "tools": [
+    {
+      "name": "spotprice_stats",
+      "description": "Get pricing stats."
+    }
+  ],
+  "tags": [
+    "pricing",
+    "cost",
+    "routing",
+    "optimization"
+  ]
+}

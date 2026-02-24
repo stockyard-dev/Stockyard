@@ -1,0 +1,48 @@
+{
+  "version": "0.1.0",
+  "type": "extension",
+  "author": "Stockyard",
+  "name": "stockyard",
+  "label": {
+    "en_US": "Stockyard",
+    "zh_Hans": "Stockyard"
+  },
+  "description": {
+    "en_US": "Route LLM calls through Stockyard proxy for cost caps, caching, rate limiting, PII redaction, smart routing, and analytics.",
+    "zh_Hans": "通过Stockyard代理路由LLM调用，实现成本上限、缓存、速率限制、PII脱敏、智能路由和分析。"
+  },
+  "icon": "icon.svg",
+  "category": "tool",
+  "created_at": "2026-02-23T00:00:00.000Z",
+  "resource": {
+    "memory": 64,
+    "permission": {
+      "tool": {
+        "enabled": true
+      },
+      "model": {
+        "enabled": true,
+        "llm": true
+      },
+      "endpoint": {
+        "enabled": true
+      }
+    }
+  },
+  "plugins": [
+    "endpoints/stockyard_proxy.py",
+    "tools/stockyard_spend.py",
+    "tools/stockyard_cache.py",
+    "tools/stockyard_analytics.py",
+    "models/stockyard_provider.py"
+  ],
+  "meta": {
+    "runner": {
+      "language": "python",
+      "version": "3.12",
+      "entrypoint": "endpoints/stockyard_proxy.py"
+    }
+  },
+  "privacy_policy": "https://stockyard.dev/privacy",
+  "tags": ["llm", "proxy", "cost", "cache", "analytics", "rate-limit"]
+}

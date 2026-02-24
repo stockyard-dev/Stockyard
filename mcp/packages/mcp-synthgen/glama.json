@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-synthgen",
+  "display_name": "Stockyard SynthGen",
+  "description": "Templates + seed examples → synthetic training data at scale. Quality-checked through EvalGate.",
+  "repository": "https://github.com/stockyard-dev/mcp-synthgen",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-synthgen"
+  ],
+  "tools": [
+    {
+      "name": "synthgen_stats",
+      "description": "Get generation stats: samples generated, batches run."
+    }
+  ],
+  "tags": [
+    "synthetic",
+    "training",
+    "generation",
+    "data"
+  ]
+}

@@ -1,0 +1,17 @@
+name: stockyard-streamtransform
+display_name: "Stockyard StreamTransform"
+description: "Pipeline on chunks: strip markdown, redact PII, translate. Minimal latency."
+icon: "🔄"
+command: npx
+args:
+  - "@stockyard/mcp-streamtransform"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - streaming
+  - transform
+  - pipeline
+  - real-time

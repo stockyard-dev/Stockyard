@@ -1,0 +1,9 @@
+providers:
+  azure:
+    type: azure
+    endpoint: https://your-resource.openai.azure.com
+    api_key: ${AZURE_OPENAI_KEY}
+    api_version: "2024-02-15-preview"
+    deployment_map:
+      gpt-4o: your-gpt4o-deployment
+      gpt-4o-mini: your-mini-deployment

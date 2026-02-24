@@ -1,0 +1,17 @@
+name: stockyard-clustermode
+display_name: "Stockyard ClusterMode"
+description: "Multi-instance coordination. Leader-follower with shared cache. Scale beyond single-instance SQLite."
+icon: "🏗️"
+command: npx
+args:
+  - "@stockyard/mcp-clustermode"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - cluster
+  - scale
+  - multi-instance
+  - coordination

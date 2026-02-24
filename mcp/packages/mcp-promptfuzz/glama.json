@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-promptfuzz",
+  "display_name": "Stockyard PromptFuzz",
+  "description": "Generate adversarial, multilingual, edge-case inputs. Score with EvalGate. Report failures.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptfuzz",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptfuzz"
+  ],
+  "tools": [
+    {
+      "name": "promptfuzz_stats",
+      "description": "Get fuzz test stats."
+    }
+  ],
+  "tags": [
+    "fuzz",
+    "testing",
+    "adversarial",
+    "prompt",
+    "security"
+  ]
+}

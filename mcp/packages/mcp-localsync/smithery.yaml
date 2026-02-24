@@ -1,0 +1,18 @@
+name: stockyard-localsync
+display_name: "Stockyard LocalSync"
+description: "Route to Ollama locally when available. Auto-failover to cloud when local is down. Track cost savings."
+icon: "🏠"
+command: npx
+args:
+  - "@stockyard/mcp-localsync"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - local
+  - ollama
+  - hybrid
+  - failover
+  - cost

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Stockyard</Name>
+  <Repository>stockyard/stockyard:latest</Repository>
+  <Network>bridge</Network>
+  <Port>
+    <ContainerPort>4000</ContainerPort>
+    <HostPort>4000</HostPort>
+    <Protocol>tcp</Protocol>
+  </Port>
+  <Config Name="OpenAI Key" Target="OPENAI_API_KEY" Default="" Mode="" Description="Your OpenAI API key" Type="Variable" Display="always" Required="true"/>
+</Container>

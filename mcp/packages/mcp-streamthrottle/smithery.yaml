@@ -1,0 +1,17 @@
+name: stockyard-streamthrottle
+display_name: "Stockyard StreamThrottle"
+description: "Max tokens/sec. Buffer fast streams. Per endpoint/model/client."
+icon: "🚦"
+command: npx
+args:
+  - "@stockyard/mcp-streamthrottle"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - streaming
+  - throttle
+  - speed
+  - ux

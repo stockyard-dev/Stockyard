@@ -1,0 +1,13 @@
+# FrameGrab — Video frame extraction for vision LLMs.
+# Copy to framegrab.yaml and set your API keys.
+
+port: 6180
+framegrab:
+  extract_mode: scene_change
+  max_frames: 20
+  cache: true
+  vision_model: gpt-4o
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,13 @@
+# CostMap — Multi-dimensional cost attribution.
+# Copy to costmap.yaml and set your API keys.
+
+port: 6290
+costmap:
+  dimensions:
+    - header: x-feature
+    - header: x-team
+    - model
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

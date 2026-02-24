@@ -1,0 +1,24 @@
+# Smithery Marketplace Configuration
+name: stockyard-stockyard
+display_name: "Stockyard Stockyard"
+description: "All 125 Stockyard products in one binary. Cost control, caching, validation, routing, security, analytics, and more."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-stockyard"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - proxy
+  - infrastructure
+  - suite
+  - openai
+  - anthropic
+  - cost
+  - cache
+  - routing
+  - security

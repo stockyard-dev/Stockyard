@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-modelswitch
+display_name: "Stockyard ModelSwitch"
+description: "Smart model routing based on token count, prompt patterns, and headers. Route complex queries to GPT-4o and simple ones to GPT-4o-mini."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-modelswitch"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - routing
+  - model
+  - smart
+  - cost
+  - optimization
+  - a/b-test
+  - proxy

@@ -1,0 +1,17 @@
+name: stockyard-loadforge
+display_name: "Stockyard LoadForge"
+description: "Define load profiles. Measure TTFT, TPS, p50/p95/p99, errors."
+icon: "⚡"
+command: npx
+args:
+  - "@stockyard/mcp-loadforge"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - load-test
+  - performance
+  - benchmark
+  - stress

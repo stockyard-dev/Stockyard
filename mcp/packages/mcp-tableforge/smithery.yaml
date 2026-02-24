@@ -1,0 +1,17 @@
+name: stockyard-tableforge
+display_name: "Stockyard TableForge"
+description: "Detect tables in output. Validate columns, types, completeness. Auto-repair and export."
+icon: "📊"
+command: npx
+args:
+  - "@stockyard/mcp-tableforge"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - table
+  - csv
+  - validation
+  - structured

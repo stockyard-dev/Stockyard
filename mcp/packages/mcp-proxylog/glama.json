@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-proxylog",
+  "display_name": "Stockyard ProxyLog",
+  "description": "Each middleware emits decision log. Per-request trace. X-Proxy-Trace header.",
+  "repository": "https://github.com/stockyard-dev/mcp-proxylog",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-proxylog"
+  ],
+  "tools": [
+    {
+      "name": "proxylog_stats",
+      "description": "Get logging stats."
+    }
+  ],
+  "tags": [
+    "logging",
+    "decisions",
+    "trace",
+    "debug"
+  ]
+}

@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-usagepulse
+display_name: "Stockyard UsagePulse"
+description: "Per-user and per-feature token metering. Multi-dimensional tracking, spend caps, and billing export in CSV/JSON."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-usagepulse"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - usage
+  - metering
+  - billing
+  - tokens
+  - analytics
+  - openai
+  - proxy

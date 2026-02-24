@@ -1,0 +1,17 @@
+name: stockyard-extractml
+display_name: "Stockyard ExtractML"
+description: "Force extraction from free-text into JSON when models return prose."
+icon: "🧲"
+command: npx
+args:
+  - "@stockyard/mcp-extractml"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - extraction
+  - structured
+  - json
+  - parsing

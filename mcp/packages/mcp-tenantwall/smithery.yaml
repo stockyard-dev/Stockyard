@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-tenantwall
+display_name: "Stockyard TenantWall"
+description: "Tenant isolation middleware. Per-tenant rate limits, spend caps, model access, and cache isolation. Build multi-tenant AI products without custom infrastructure."
+icon: "🏢"
+command: npx
+args:
+  - "@stockyard/mcp-tenantwall"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - multi-tenant
+  - saas
+  - isolation
+  - rate-limit
+  - per-tenant
+  - b2b
+  - proxy

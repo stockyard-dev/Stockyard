@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-mockllm
+display_name: "Stockyard MockLLM"
+description: "Mock LLM server with canned responses for CI/CD pipelines. Define fixtures, simulate errors, control latency. Never hit real APIs in tests."
+icon: "🧪"
+command: npx
+args:
+  - "@stockyard/mcp-mockllm"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - mock
+  - testing
+  - ci-cd
+  - fixtures
+  - deterministic
+  - simulation
+  - proxy

@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-quotasync",
+  "display_name": "Stockyard QuotaSync",
+  "description": "Parse rate limit headers. Track per model/endpoint. Alert near limits.",
+  "repository": "https://github.com/stockyard-dev/mcp-quotasync",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-quotasync"
+  ],
+  "tools": [
+    {
+      "name": "quotasync_stats",
+      "description": "Get quota tracking stats."
+    }
+  ],
+  "tags": [
+    "quota",
+    "rate-limit",
+    "tracking",
+    "provider"
+  ]
+}

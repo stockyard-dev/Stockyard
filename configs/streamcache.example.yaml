@@ -1,0 +1,12 @@
+# StreamCache — Cache streaming responses with timing.
+# Copy to streamcache.yaml and set your API keys.
+
+port: 6240
+streamcache:
+  store_timing: true
+  replay_mode: realistic  # realistic | instant
+  ttl: 3600
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

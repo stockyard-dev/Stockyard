@@ -1,0 +1,19 @@
+# ChaosLLM — Chaos engineering for LLM stacks.
+# Copy to chaosllm.yaml and set your API keys.
+
+port: 6330
+chaosllm:
+  failure_rate: 0.1  # 10% of requests fail
+  failures:
+    - type: 429
+      weight: 40
+    - type: timeout
+      weight: 30
+    - type: malformed_json
+      weight: 20
+    - type: truncated_stream
+      weight: 10
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-tokenmarket",
+  "display_name": "Stockyard TokenMarket",
+  "description": "Pool-based budgets. Teams request capacity. Auto-rebalance. Priority queuing for high-value requests.",
+  "repository": "https://github.com/stockyard-dev/mcp-tokenmarket",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-tokenmarket"
+  ],
+  "tools": [
+    {
+      "name": "tokenmarket_stats",
+      "description": "Get market stats: pool balances, transactions."
+    },
+    {
+      "name": "tokenmarket_pools",
+      "description": "List budget pools with current balances."
+    }
+  ],
+  "tags": [
+    "budget",
+    "pool",
+    "reallocation",
+    "teams"
+  ]
+}

@@ -1,0 +1,25 @@
+replicaCount: 1
+image:
+  repository: stockyard/stockyard
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 4000
+env:
+  - name: OPENAI_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: stockyard-secrets
+        key: openai-api-key
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi

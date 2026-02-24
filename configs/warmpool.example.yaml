@@ -1,0 +1,14 @@
+# WarmPool — Pre-warm model connections.
+# Copy to warmpool.yaml and set your API keys.
+
+port: 6570
+warmpool:
+  providers:
+    - openai
+    - ollama
+  health_interval: 30s
+  keep_alive: true
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

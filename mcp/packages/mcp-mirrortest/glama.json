@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-mirrortest",
+  "display_name": "Stockyard MirrorTest",
+  "description": "Send production traffic to a shadow model. Compare quality, latency, cost. Zero user impact.",
+  "repository": "https://github.com/stockyard-dev/mcp-mirrortest",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-mirrortest"
+  ],
+  "tools": [
+    {
+      "name": "mirrortest_stats",
+      "description": "Get shadow test stats: requests mirrored, success rates."
+    }
+  ],
+  "tags": [
+    "shadow",
+    "testing",
+    "comparison",
+    "canary"
+  ]
+}

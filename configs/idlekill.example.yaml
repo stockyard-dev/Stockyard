@@ -1,0 +1,20 @@
+# IdleKill — Kill runaway LLM requests burning money doing nothing
+# Monitors request duration, tokens, and cost in real-time. Kills on breach.
+
+port: 5680
+
+providers:
+  - name: openai
+    url: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+    default: true
+
+idlekill:
+  enabled: true
+  max_duration: 120s           # Kill requests exceeding this duration
+  max_tokens_per_request: 50000 # Kill if response exceeds this token count
+  max_cost_per_request: 0.50   # Kill if estimated cost exceeds this ($)
+  loop_detection: true         # Detect repeated identical requests (agent loops)
+  loop_window: 60s             # Time window for loop detection
+  loop_threshold: 5            # Number of identical requests to trigger kill
+  webhook_url: ${IDLEKILL_WEBHOOK_URL}  # Alert on kill events (optional)

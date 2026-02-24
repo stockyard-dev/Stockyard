@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-streamsplit",
+  "display_name": "Stockyard StreamSplit",
+  "description": "Tee SSE chunks to logger, quality checker, webhook. Zero latency for primary.",
+  "repository": "https://github.com/stockyard-dev/mcp-streamsplit",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-streamsplit"
+  ],
+  "tools": [
+    {
+      "name": "streamsplit_stats",
+      "description": "Get stream split stats."
+    }
+  ],
+  "tags": [
+    "streaming",
+    "fork",
+    "multiplex",
+    "sse"
+  ]
+}

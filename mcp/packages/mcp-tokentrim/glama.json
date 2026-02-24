@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-tokentrim",
+  "display_name": "Stockyard TokenTrim",
+  "description": "Automatic context window management. Truncates prompts using middle-out, oldest-first, or newest-first strategies when they exceed model limits.",
+  "repository": "https://github.com/stockyard-dev/mcp-tokentrim",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-tokentrim"
+  ],
+  "tools": [
+    {
+      "name": "tokentrim_stats",
+      "description": "Get trimming statistics: total trimmed, tokens saved, trim rate."
+    },
+    {
+      "name": "tokentrim_count",
+      "description": "Count tokens in a text string without sending to LLM."
+    },
+    {
+      "name": "tokentrim_set_strategy",
+      "description": "Change the truncation strategy."
+    },
+    {
+      "name": "tokentrim_set_limit",
+      "description": "Set a custom token limit for a model."
+    },
+    {
+      "name": "tokentrim_proxy_status",
+      "description": "Check if the TokenTrim proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "token",
+    "context",
+    "truncation",
+    "window",
+    "optimization",
+    "openai",
+    "proxy"
+  ]
+}

@@ -1,0 +1,18 @@
+name: stockyard-promptslim
+display_name: "Stockyard PromptSlim"
+description: "Remove redundant whitespace, filler words, articles. Configurable aggressiveness. See before/after token savings."
+icon: "✂️"
+command: npx
+args:
+  - "@stockyard/mcp-promptslim"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - prompt
+  - compression
+  - tokens
+  - cost
+  - optimization

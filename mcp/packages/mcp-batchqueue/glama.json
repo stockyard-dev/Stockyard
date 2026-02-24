@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-batchqueue",
+  "display_name": "Stockyard BatchQueue",
+  "description": "Async job queue for LLM requests with priority levels, concurrency control, and retry. Queue thousands of requests and process them reliably.",
+  "repository": "https://github.com/stockyard-dev/mcp-batchqueue",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-batchqueue"
+  ],
+  "tools": [
+    {
+      "name": "batchqueue_submit",
+      "description": "Submit a new LLM request to the queue. Returns a job ID."
+    },
+    {
+      "name": "batchqueue_status",
+      "description": "Get status of a queued job by ID."
+    },
+    {
+      "name": "batchqueue_result",
+      "description": "Get the result of a completed job."
+    },
+    {
+      "name": "batchqueue_queue_stats",
+      "description": "Get queue statistics: pending, processing, completed, failed."
+    },
+    {
+      "name": "batchqueue_cancel",
+      "description": "Cancel a pending or processing job."
+    },
+    {
+      "name": "batchqueue_proxy_status",
+      "description": "Check if the BatchQueue proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "batch",
+    "queue",
+    "async",
+    "job",
+    "background",
+    "concurrency",
+    "proxy"
+  ]
+}

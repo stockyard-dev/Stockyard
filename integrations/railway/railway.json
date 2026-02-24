@@ -1,0 +1,8 @@
+{
+  "build": { "dockerfilePath": "Dockerfile" },
+  "deploy": {
+    "startCommand": "./stockyard",
+    "healthcheckPath": "/health",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}

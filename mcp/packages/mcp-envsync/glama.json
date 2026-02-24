@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-envsync",
+  "display_name": "Stockyard EnvSync",
+  "description": "Push/promote/diff. Encrypted secrets. Pre-promotion validation. Rollback.",
+  "repository": "https://github.com/stockyard-dev/mcp-envsync",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-envsync"
+  ],
+  "tools": [
+    {
+      "name": "envsync_stats",
+      "description": "Get sync stats."
+    }
+  ],
+  "tags": [
+    "sync",
+    "secrets",
+    "environment",
+    "deployment"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "stockyard-multicall",
+  "display_name": "Stockyard MultiCall",
+  "description": "Send the same prompt to multiple LLMs simultaneously. Pick the fastest, cheapest, longest, or consensus response.",
+  "repository": "https://github.com/stockyard-dev/mcp-multicall",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-multicall"
+  ],
+  "tools": [
+    {
+      "name": "multicall_stats",
+      "description": "Get multi-call statistics: wins per model, avg latency, cost comparison."
+    },
+    {
+      "name": "multicall_routes",
+      "description": "List configured multi-call routes and their strategies."
+    },
+    {
+      "name": "multicall_add_route",
+      "description": "Add a new multi-call route."
+    },
+    {
+      "name": "multicall_compare",
+      "description": "Send a prompt to all models and return all responses for comparison."
+    },
+    {
+      "name": "multicall_proxy_status",
+      "description": "Check if the MultiCall proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "multi-model",
+    "consensus",
+    "comparison",
+    "a/b-test",
+    "routing",
+    "proxy"
+  ]
+}

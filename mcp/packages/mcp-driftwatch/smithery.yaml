@@ -1,0 +1,18 @@
+name: stockyard-driftwatch
+display_name: "Stockyard DriftWatch"
+description: "Track latency and output patterns per model over time. Alert when behavior drifts beyond thresholds."
+icon: "📊"
+command: npx
+args:
+  - "@stockyard/mcp-driftwatch"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - drift
+  - monitoring
+  - quality
+  - baseline
+  - regression

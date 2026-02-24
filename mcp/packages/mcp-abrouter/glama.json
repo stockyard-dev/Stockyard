@@ -1,0 +1,31 @@
+{
+  "name": "stockyard-abrouter",
+  "display_name": "Stockyard ABRouter",
+  "description": "Run experiments across models, prompts, temperatures. Weighted traffic splits with automatic significance testing.",
+  "repository": "https://github.com/stockyard-dev/mcp-abrouter",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-abrouter"
+  ],
+  "tools": [
+    {
+      "name": "abrouter_experiments",
+      "description": "List active experiments with variant stats."
+    },
+    {
+      "name": "abrouter_create",
+      "description": "Create a new A/B experiment."
+    },
+    {
+      "name": "abrouter_results",
+      "description": "Get statistical results for an experiment."
+    }
+  ],
+  "tags": [
+    "ab-test",
+    "experiment",
+    "statistics",
+    "split",
+    "optimization"
+  ]
+}

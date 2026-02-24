@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-ipfence",
+  "display_name": "Stockyard IPFence",
+  "description": "IP-level access control for LLM proxy endpoints. Allowlist, denylist, CIDR ranges. Block unauthorized access before any request processing.",
+  "repository": "https://github.com/stockyard-dev/mcp-ipfence",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-ipfence"
+  ],
+  "tools": [
+    {
+      "name": "ipfence_stats",
+      "description": "Get access control statistics: requests checked, blocked, allowed, unique IPs."
+    },
+    {
+      "name": "ipfence_add_allow",
+      "description": "Add an IP or CIDR range to the allowlist."
+    },
+    {
+      "name": "ipfence_add_deny",
+      "description": "Add an IP or CIDR range to the denylist."
+    },
+    {
+      "name": "ipfence_check",
+      "description": "Check if a specific IP would be allowed or blocked."
+    },
+    {
+      "name": "ipfence_recent",
+      "description": "List recent access events (allowed and blocked)."
+    },
+    {
+      "name": "ipfence_proxy_status",
+      "description": "Check if the IPFence proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "security",
+    "ip",
+    "allowlist",
+    "firewall",
+    "access-control",
+    "cidr",
+    "proxy"
+  ]
+}

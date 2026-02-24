@@ -1,0 +1,39 @@
+# Ollama + Stockyard Sidecar
+# Adds auth, rate limiting, cost tracking, and analytics to your local Ollama instance.
+# None of these exist in Ollama natively.
+#
+# Usage:
+#   docker compose up
+#
+# Ollama API: http://localhost:11434 (direct)
+# Stockyard proxy: http://localhost:4000/v1 (with all protections)
+# Dashboard: http://localhost:4000/ui
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes:
+      - ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  stockyard:
+    image: ghcr.io/stockyard-dev/stockyard:latest
+    ports: ["4000:4000"]
+    environment:
+      # Point Stockyard at local Ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - stockyard-data:/data
+      - ./stockyard-ollama.yaml:/etc/stockyard/config.yaml:ro
+    depends_on: [ollama]
+
+volumes:
+  ollama-data:
+  stockyard-data:

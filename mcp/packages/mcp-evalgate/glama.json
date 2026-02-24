@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-evalgate",
+  "display_name": "Stockyard EvalGate",
+  "description": "Response quality scoring and auto-retry. Validate JSON, check length, match regex, run custom expressions. Auto-retry on failure.",
+  "repository": "https://github.com/stockyard-dev/mcp-evalgate",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-evalgate"
+  ],
+  "tools": [
+    {
+      "name": "evalgate_stats",
+      "description": "Get evaluation statistics: pass/fail rate, retry counts, validator breakdown."
+    },
+    {
+      "name": "evalgate_validators",
+      "description": "List active validators and their pass rates."
+    },
+    {
+      "name": "evalgate_add_validator",
+      "description": "Add a new response validator."
+    },
+    {
+      "name": "evalgate_test",
+      "description": "Test a response string against all active validators."
+    },
+    {
+      "name": "evalgate_proxy_status",
+      "description": "Check if the EvalGate proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "eval",
+    "quality",
+    "validation",
+    "retry",
+    "scoring",
+    "openai",
+    "proxy"
+  ]
+}

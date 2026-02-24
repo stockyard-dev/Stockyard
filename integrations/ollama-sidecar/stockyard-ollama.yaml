@@ -1,0 +1,46 @@
+# Stockyard config for Ollama sidecar
+# Routes local Ollama requests through Stockyard for rate limiting, analytics, and caching.
+port: 4000
+data_dir: /data
+log_level: info
+product: stockyard
+
+providers:
+  ollama:
+    base_url: ${OLLAMA_BASE_URL:-http://ollama:11434}
+    api_key: "ollama"  # Ollama doesn't need a key, but Stockyard requires non-empty
+
+projects:
+  default:
+    provider: ollama
+    model: llama3.1
+
+# Rate limiting — protect your GPU from overload
+rate_limits:
+  enabled: true
+  requests_per_minute: 30
+  tokens_per_minute: 50000
+  strategy: token_bucket
+
+# Cache — identical prompts return instantly
+cache:
+  enabled: true
+  ttl: 24h
+  max_entries: 50000
+
+# Analytics — see what models are being used and how
+llm_tap:
+  enabled: true
+  percentiles: [50, 95, 99]
+  granularity: hourly
+  retention: 30d
+
+# Spend tracking — even local LLMs have compute costs
+spend_tracking:
+  enabled: true
+
+# Request logging
+request_logging:
+  enabled: true
+  full_body: false  # Don't log full prompts by default
+  retention: 7d

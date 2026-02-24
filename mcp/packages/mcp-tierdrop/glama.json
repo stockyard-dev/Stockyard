@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-tierdrop",
+  "display_name": "Stockyard TierDrop",
+  "description": "Gracefully degrade from GPT-4 to GPT-3.5 when approaching budget limits. Cost-aware model selection.",
+  "repository": "https://github.com/stockyard-dev/mcp-tierdrop",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-tierdrop"
+  ],
+  "tools": [
+    {
+      "name": "tierdrop_stats",
+      "description": "Get downgrade stats: triggers, models switched, savings."
+    },
+    {
+      "name": "tierdrop_tiers",
+      "description": "List configured cost tiers and thresholds."
+    }
+  ],
+  "tags": [
+    "cost",
+    "downgrade",
+    "model",
+    "budget",
+    "tier"
+  ]
+}

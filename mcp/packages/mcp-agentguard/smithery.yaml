@@ -1,0 +1,19 @@
+name: stockyard-agentguard
+display_name: "Stockyard AgentGuard"
+description: "Per-session limits for AI agents: max calls, cost, duration. Kill runaway agent sessions before they drain your budget."
+icon: "🛡️"
+command: npx
+args:
+  - "@stockyard/mcp-agentguard"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - agent
+  - safety
+  - session
+  - limits
+  - autonomous
+  - cost-control

@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-promptpad
+display_name: "Stockyard PromptPad"
+description: "Prompt template versioning and A/B testing. Store, version, and test prompt templates. Track which variants perform best."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-promptpad"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - prompt
+  - template
+  - versioning
+  - a/b-test
+  - management
+  - openai
+  - proxy

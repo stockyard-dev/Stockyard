@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-sessionstore",
+  "display_name": "Stockyard SessionStore",
+  "description": "Create/resume/list/delete sessions. Full history. Metadata. Concurrent limits.",
+  "repository": "https://github.com/stockyard-dev/mcp-sessionstore",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-sessionstore"
+  ],
+  "tools": [
+    {
+      "name": "sessionstore_stats",
+      "description": "Get session stats."
+    },
+    {
+      "name": "sessionstore_sessions",
+      "description": "List active sessions."
+    }
+  ],
+  "tags": [
+    "session",
+    "conversation",
+    "history",
+    "management"
+  ]
+}

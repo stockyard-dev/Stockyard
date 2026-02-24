@@ -1,0 +1,25 @@
+# TokenTrim — Context Window Optimizer
+port: 4900
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+tokentrim:
+  enabled: true
+  default_strategy: middle-out
+  safety_margin: 500
+  models:
+    gpt-4o:
+      max_context: 128000
+      strategy: priority
+    gpt-4o-mini:
+      max_context: 128000
+      strategy: middle-out
+  protect:
+    - system
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

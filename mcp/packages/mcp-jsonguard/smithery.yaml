@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-jsonguard
+display_name: "Stockyard StructuredShield"
+description: "JSON schema validation for LLM responses. Automatically retries when responses don't match your schema."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-jsonguard"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - json
+  - schema
+  - validation
+  - structured
+  - output
+  - openai
+  - proxy

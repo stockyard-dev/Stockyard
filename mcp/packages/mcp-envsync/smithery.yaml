@@ -1,0 +1,17 @@
+name: stockyard-envsync
+display_name: "Stockyard EnvSync"
+description: "Push/promote/diff. Encrypted secrets. Pre-promotion validation. Rollback."
+icon: "🔐"
+command: npx
+args:
+  - "@stockyard/mcp-envsync"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - sync
+  - secrets
+  - environment
+  - deployment

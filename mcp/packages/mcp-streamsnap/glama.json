@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-streamsnap",
+  "display_name": "Stockyard StreamSnap",
+  "description": "SSE stream capture with zero latency overhead. Record TTFT, tokens/sec, and full responses. Replay captured streams for testing.",
+  "repository": "https://github.com/stockyard-dev/mcp-streamsnap",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-streamsnap"
+  ],
+  "tools": [
+    {
+      "name": "streamsnap_captures",
+      "description": "List recent stream captures with TTFT, tokens/sec, and metadata."
+    },
+    {
+      "name": "streamsnap_get",
+      "description": "Get full captured stream content by ID."
+    },
+    {
+      "name": "streamsnap_metrics",
+      "description": "Get aggregated streaming metrics: avg TTFT, avg tokens/sec, completion rate."
+    },
+    {
+      "name": "streamsnap_replay",
+      "description": "Replay a captured stream as if it were live."
+    },
+    {
+      "name": "streamsnap_proxy_status",
+      "description": "Check if the StreamSnap proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "stream",
+    "sse",
+    "capture",
+    "replay",
+    "ttft",
+    "latency",
+    "proxy"
+  ]
+}

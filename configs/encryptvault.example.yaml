@@ -1,0 +1,17 @@
+# EncryptVault — End-to-end encryption for LLM payloads.
+# Copy to encryptvault.yaml and set your API keys.
+
+port: 6060
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+encryption:
+  enabled: true
+  algorithm: aes-256-gcm
+  key: ${ENCRYPTION_KEY}
+  encrypt_fields: [request_body, response_body]
+  key_rotation_days: 90
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-anthrofit
+display_name: "Stockyard AnthroFit"
+description: "Deep Anthropic compatibility layer. System prompt consolidation, max_tokens injection, tool schema translation, streaming normalization. Drop-in Claude support for OpenAI apps."
+icon: "🔄"
+command: npx
+args:
+  - "@stockyard/mcp-anthrofit"
+env:
+  ANTHROPIC_API_KEY:
+    description: "Anthropic API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - anthropic
+  - claude
+  - openai
+  - compatibility
+  - adapter
+  - translation
+  - proxy

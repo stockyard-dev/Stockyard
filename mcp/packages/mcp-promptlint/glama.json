@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-promptlint",
+  "display_name": "Stockyard PromptLint",
+  "description": "Static analysis for prompts: detect redundancy, injection patterns, excessive length. Score and suggest improvements.",
+  "repository": "https://github.com/stockyard-dev/mcp-promptlint",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-promptlint"
+  ],
+  "tools": [
+    {
+      "name": "promptlint_stats",
+      "description": "Get lint stats: issues found by severity, top patterns."
+    }
+  ],
+  "tags": [
+    "prompt",
+    "lint",
+    "analysis",
+    "quality",
+    "patterns"
+  ]
+}

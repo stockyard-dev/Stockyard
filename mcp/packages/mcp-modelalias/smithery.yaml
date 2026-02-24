@@ -1,0 +1,17 @@
+name: stockyard-modelalias
+display_name: "Stockyard ModelAlias"
+description: "Aliases: fast→gpt-4o-mini, smart→claude-sonnet. Change mapping, all apps update."
+icon: "🏷️"
+command: npx
+args:
+  - "@stockyard/mcp-modelalias"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - alias
+  - model
+  - abstraction
+  - mapping

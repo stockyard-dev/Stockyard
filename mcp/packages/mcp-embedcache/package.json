@@ -1,0 +1,48 @@
+{
+  "name": "@stockyard/mcp-embedcache",
+  "version": "0.1.0",
+  "description": "Embedding response caching for /v1/embeddings. Content-hash deduplication, per-input cache splitting, 7-day TTL. Slash embedding costs for RAG pipelines.",
+  "main": "index.js",
+  "bin": {
+    "mcp-stockyard-embedcache": "index.js"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "llm",
+    "embedding",
+    "cache",
+    "rag",
+    "vector",
+    "deduplication",
+    "cost",
+    "proxy",
+    "stockyard",
+    "model-context-protocol",
+    "cursor",
+    "claude-desktop"
+  ],
+  "author": "Stockyard",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stockyard-dev/mcp-embedcache"
+  },
+  "homepage": "https://stockyard.dev/mcp/embedcache",
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "index.js",
+    "README.md"
+  ]
+}

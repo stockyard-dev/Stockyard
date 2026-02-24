@@ -1,0 +1,17 @@
+name: stockyard-promptmarket
+display_name: "Stockyard PromptMarket"
+description: "Publish, browse, rate, fork prompts. Track which community prompts you use."
+icon: "🏪"
+command: npx
+args:
+  - "@stockyard/mcp-promptmarket"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - prompt
+  - marketplace
+  - community
+  - sharing

@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-personaswitch",
+  "display_name": "Stockyard PersonaSwitch",
+  "description": "Define personas. Route by header/key/segment. Each: prompt, temperature, rules.",
+  "repository": "https://github.com/stockyard-dev/mcp-personaswitch",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-personaswitch"
+  ],
+  "tools": [
+    {
+      "name": "personaswitch_stats",
+      "description": "Get persona stats."
+    },
+    {
+      "name": "personaswitch_personas",
+      "description": "List personas."
+    }
+  ],
+  "tags": [
+    "persona",
+    "personality",
+    "routing",
+    "customization"
+  ]
+}

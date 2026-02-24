@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-anthrofit",
+  "display_name": "Stockyard AnthroFit",
+  "description": "Deep Anthropic compatibility layer. System prompt consolidation, max_tokens injection, tool schema translation, streaming normalization. Drop-in Claude support for OpenAI apps.",
+  "repository": "https://github.com/stockyard-dev/mcp-anthrofit",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-anthrofit"
+  ],
+  "tools": [
+    {
+      "name": "anthrofit_stats",
+      "description": "Get translation statistics: requests processed, system prompts fixed, tools translated, errors."
+    },
+    {
+      "name": "anthrofit_test",
+      "description": "Test OpenAI→Anthropic translation on a request without sending."
+    },
+    {
+      "name": "anthrofit_set_mode",
+      "description": "Change system prompt handling mode."
+    },
+    {
+      "name": "anthrofit_config",
+      "description": "Get current AnthroFit configuration."
+    },
+    {
+      "name": "anthrofit_proxy_status",
+      "description": "Check if the AnthroFit proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "anthropic",
+    "claude",
+    "openai",
+    "compatibility",
+    "adapter",
+    "translation",
+    "proxy"
+  ]
+}

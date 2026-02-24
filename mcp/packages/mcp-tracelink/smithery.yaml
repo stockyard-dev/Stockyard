@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-tracelink
+display_name: "Stockyard TraceLink"
+description: "Link related LLM calls into trace trees. Correlate multi-step agent workflows. OpenTelemetry-compatible trace propagation with waterfall visualization."
+icon: "🔗"
+command: npx
+args:
+  - "@stockyard/mcp-tracelink"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - tracing
+  - observability
+  - opentelemetry
+  - distributed
+  - agent
+  - correlation
+  - proxy

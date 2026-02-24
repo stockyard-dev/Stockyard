@@ -1,0 +1,14 @@
+# QueuePriority — Priority queues for LLM requests.
+# Copy to queuepriority.yaml and set your API keys.
+
+port: 6590
+queuepriority:
+  levels:
+    critical: { weight: 10, reserved: 5 }
+    high: { weight: 5 }
+    normal: { weight: 1 }
+    low: { weight: 0 }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

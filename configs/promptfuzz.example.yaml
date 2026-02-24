@@ -1,0 +1,12 @@
+# PromptFuzz — Fuzz-test your prompts.
+# Copy to promptfuzz.yaml and set your API keys.
+
+port: 6260
+promptfuzz:
+  categories: [adversarial, multilingual, edge_case, injection]
+  runs_per_category: 50
+  target_prompt: "You are a helpful assistant."
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

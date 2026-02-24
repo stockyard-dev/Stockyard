@@ -1,0 +1,23 @@
+{
+  "name": "stockyard-audioproxy",
+  "display_name": "Stockyard AudioProxy",
+  "description": "Cache TTS, track per-minute costs, failover between STT/TTS providers.",
+  "repository": "https://github.com/stockyard-dev/mcp-audioproxy",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-audioproxy"
+  ],
+  "tools": [
+    {
+      "name": "audioproxy_stats",
+      "description": "Get audio proxy stats."
+    }
+  ],
+  "tags": [
+    "audio",
+    "stt",
+    "tts",
+    "speech",
+    "whisper"
+  ]
+}

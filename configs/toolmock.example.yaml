@@ -1,0 +1,14 @@
+# ToolMock — Fake tool responses for testing.
+# Copy to toolmock.yaml and set your API keys.
+
+port: 6120
+toolmock:
+  mocks:
+    get_weather:
+      response: { temp: 72, condition: sunny }
+    search:
+      response: { results: [{ title: "Mock result" }] }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

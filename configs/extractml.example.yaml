@@ -1,0 +1,14 @@
+# ExtractML — Force structured data from free-text responses.
+# Copy to extractml.yaml and set your API keys.
+
+port: 6080
+extractml:
+  schema:
+    type: object
+    properties:
+      name: { type: string }
+      age: { type: integer }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

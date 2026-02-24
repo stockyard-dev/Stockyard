@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-trainexport",
+  "display_name": "Stockyard TrainExport",
+  "description": "Collect input/output pairs from live traffic. Export as OpenAI JSONL, Anthropic, or Alpaca format.",
+  "repository": "https://github.com/stockyard-dev/mcp-trainexport",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-trainexport"
+  ],
+  "tools": [
+    {
+      "name": "trainexport_stats",
+      "description": "Get collection stats: pairs collected, storage used."
+    },
+    {
+      "name": "trainexport_export",
+      "description": "Export collected pairs in specified format."
+    }
+  ],
+  "tags": [
+    "training",
+    "fine-tuning",
+    "export",
+    "dataset",
+    "jsonl"
+  ]
+}

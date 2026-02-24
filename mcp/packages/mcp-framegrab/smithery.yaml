@@ -1,0 +1,17 @@
+name: stockyard-framegrab
+display_name: "Stockyard FrameGrab"
+description: "Scene detection. Batch frames. Smart frame selection. Cost per frame."
+icon: "🎬"
+command: npx
+args:
+  - "@stockyard/mcp-framegrab"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - video
+  - frames
+  - vision
+  - analysis

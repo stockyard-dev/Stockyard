@@ -1,0 +1,17 @@
+name: stockyard-policyengine
+display_name: "Stockyard PolicyEngine"
+description: "YAML policy rules compiled to middleware. Audit log. Compliance rate dashboard."
+icon: "📜"
+command: npx
+args:
+  - "@stockyard/mcp-policyengine"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - policy
+  - governance
+  - compliance
+  - rules

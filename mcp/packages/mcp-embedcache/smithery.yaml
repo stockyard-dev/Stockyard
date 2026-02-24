@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-embedcache
+display_name: "Stockyard EmbedCache"
+description: "Embedding response caching for /v1/embeddings. Content-hash deduplication, per-input cache splitting, 7-day TTL. Slash embedding costs for RAG pipelines."
+icon: "💎"
+command: npx
+args:
+  - "@stockyard/mcp-embedcache"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - embedding
+  - cache
+  - rag
+  - vector
+  - deduplication
+  - cost
+  - proxy

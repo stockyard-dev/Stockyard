@@ -1,0 +1,11 @@
+# CodeLang — Language-aware code validation.
+# Copy to codelang.yaml and set your API keys.
+
+port: 6550
+codelang:
+  languages: [python, javascript, go, rust]
+  checks: [syntax, undefined_refs, suspicious_patterns]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

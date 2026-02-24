@@ -1,0 +1,25 @@
+# MultiCall — Multi-Model Consensus & Comparison
+port: 5100
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+    base_url: https://api.anthropic.com
+    timeout: 60s
+multicall:
+  enabled: true
+  routes:
+    - name: critical
+      models: [gpt-4o, claude-sonnet-4-20250514]
+      strategy: consensus
+      timeout: 30s
+      on_disagree: return_longest
+  fallback_on_timeout: fastest_available
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

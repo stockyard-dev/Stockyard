@@ -1,0 +1,993 @@
+// Package engine provides shared bootstrap logic for all Stockyard products.
+// Each cmd/*/main.go calls engine.Boot() with product-specific options.
+package engine
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/api"
+	"github.com/stockyard-dev/stockyard/internal/config"
+	"github.com/stockyard-dev/stockyard/internal/dashboard"
+	"github.com/stockyard-dev/stockyard/internal/features"
+	"github.com/stockyard-dev/stockyard/internal/provider"
+	"github.com/stockyard-dev/stockyard/internal/proxy"
+	"github.com/stockyard-dev/stockyard/internal/storage"
+	"github.com/stockyard-dev/stockyard/internal/tracker"
+)
+
+// Features flags control which middleware is enabled per product.
+type Features struct {
+	SpendTracking  bool
+	SpendCaps      bool
+	Alerts         bool
+	Cache          bool
+	Validation     bool
+	Failover       bool
+	RateLimiting   bool
+	RequestLogging bool // always true, but controls body storage
+	FullBodyLog    bool // store full request/response bodies
+
+	// Phase 1 expansion
+	KeyPool     bool
+	PromptGuard bool
+	ModelSwitch bool
+	EvalGate    bool
+	UsagePulse  bool
+
+	// Phase 2 expansion
+	PromptPad   bool
+	TokenTrim   bool
+	BatchQueue  bool
+	MultiCall   bool
+	StreamSnap  bool
+	LLMTap      bool
+	ContextPack bool
+	RetryPilot  bool
+
+	// Phase 3 expansion
+	ToxicFilter   bool
+	ComplianceLog bool
+	SecretScan    bool
+	TraceLink     bool
+	IPFence       bool
+	EmbedCache    bool
+	AnthroFit     bool
+	AlertPulse    bool
+	ChatMem       bool
+	MockLLM       bool
+	TenantWall    bool
+	IdleKill      bool
+
+	// Phase 3 P2 expansion
+	AgentGuard    bool
+	CodeFence     bool
+	HalluciCheck  bool
+	TierDrop      bool
+	DriftWatch    bool
+	FeedbackLoop  bool
+	ABRouter      bool
+	GuardRail     bool
+	GeminiShim    bool
+	LocalSync     bool
+	DevProxy      bool
+	PromptSlim    bool
+	PromptLint    bool
+	ApprovalGate  bool
+	OutputCap     bool
+	AgeGate       bool
+	VoiceBridge   bool
+	ImageProxy    bool
+	LangBridge    bool
+	ContextWindow bool
+	RegionRoute   bool
+
+	// Phase 3 P3 expansion
+	ChainForge    bool
+	CronLLM       bool
+	WebhookRelay  bool
+	BillSync      bool
+	WhiteLabel    bool
+	TrainExport   bool
+	SynthGen      bool
+	DiffPrompt    bool
+	LLMBench      bool
+	MaskMode      bool
+	TokenMarket   bool
+	LLMSync       bool
+	ClusterMode   bool
+	EncryptVault  bool
+	MirrorTest    bool
+
+	// Phase 4 expansion
+	ExtractML      bool
+	TableForge     bool
+	ToolRouter     bool
+	ToolShield     bool
+	ToolMock       bool
+	AuthGate       bool
+	ScopeGuard     bool
+	VisionProxy    bool
+	AudioProxy     bool
+	DocParse       bool
+	FrameGrab      bool
+	SessionStore   bool
+	ConvoFork      bool
+	SlotFill       bool
+	SemanticCache  bool
+	PartialCache   bool
+	StreamCache    bool
+	PromptChain    bool
+	PromptFuzz     bool
+	PromptMarket   bool
+	CostPredict    bool
+	CostMap        bool
+	SpotPrice      bool
+	LoadForge      bool
+	SnapshotTest   bool
+	ChaosLLM       bool
+	DataMap        bool
+	ConsentGate    bool
+	RetentionWipe  bool
+	PolicyEngine   bool
+	StreamSplit    bool
+	StreamThrottle bool
+	StreamTransform bool
+	ModelAlias     bool
+	ParamNorm      bool
+	QuotaSync      bool
+	ErrorNorm      bool
+	CohortTrack    bool
+	PromptRank     bool
+	AnomalyRadar   bool
+	EnvSync        bool
+	ProxyLog       bool
+	CliDash        bool
+	EmbedRouter    bool
+	FineTuneTrack  bool
+	AgentReplay    bool
+	SummarizeGate  bool
+	CodeLang       bool
+	PersonaSwitch  bool
+	WarmPool       bool
+	EdgeCache      bool
+	QueuePriority  bool
+	GeoPrice       bool
+	TokenAuction   bool
+	CanaryDeploy   bool
+	PlaybackStudio bool
+	WebhookForge   bool
+}
+
+// ProductConfig defines a product's identity and feature set.
+type ProductConfig struct {
+	Name     string
+	Product  string // config key: costcap, llmcache, etc.
+	Version  string // set via ldflags at build time
+	Features Features
+}
+
+// Boot initializes and starts a product. This is the single entry point
+// that all 7 cmd/*/main.go files call.
+func Boot(pc ProductConfig) {
+	// Handle --version / -v flag
+	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "-v" || os.Args[1] == "version") {
+		v := pc.Version
+		if v == "" {
+			v = "dev"
+		}
+		fmt.Printf("%s %s\n", pc.Product, v)
+		os.Exit(0)
+	}
+
+	// Handle --health flag (for Homebrew test, scripts, etc.)
+	if len(os.Args) > 1 && (os.Args[1] == "--health" || os.Args[1] == "health") {
+		fmt.Println("ok")
+		os.Exit(0)
+	}
+
+	log.SetFlags(log.Ltime | log.Lshortfile)
+
+	// Load config
+	configPath := ""
+	if len(os.Args) > 1 && os.Args[1] != "serve" {
+		configPath = os.Args[1]
+	}
+	cfg, err := config.LoadOrDefault(configPath, pc.Product)
+	if err != nil {
+		log.Fatalf("config: %v", err)
+	}
+
+	// Open database
+	db, err := storage.Open(cfg.DataDir)
+	if err != nil {
+		log.Fatalf("database: %v", err)
+	}
+
+	// Initialize providers
+	providers := initProviders(cfg)
+
+	// Initialize shared components
+	counter := tracker.NewSpendCounter()
+	broadcaster := dashboard.NewBroadcaster()
+
+	// Build the send handler (innermost — actually calls the provider)
+	sendHandler := makeSendHandler(providers)
+
+	// Build middleware chain based on product features
+	middlewares := buildMiddlewares(pc, cfg, db, counter, broadcaster, providers)
+
+	// Compose the handler
+	handler := proxy.Chain(sendHandler, middlewares...)
+
+	// Build streaming pre-flight checks (so streaming requests also get
+	// rate limit and cap enforcement instead of bypassing middleware)
+	preFlight := buildPreFlight(pc, cfg, counter)
+
+	// Create and configure the server
+	var embedCache proxy.EmbeddingCacheProcessor
+	if pc.Features.EmbedCache && cfg.EmbedCache.Enabled {
+		embedCache = features.NewEmbedCache(cfg.EmbedCache)
+		log.Printf("[embedcache] enabled: max_entries=%d ttl=%s", cfg.EmbedCache.MaxEntries, cfg.EmbedCache.TTL.Duration)
+	}
+
+	srv := proxy.NewServer(proxy.ServerConfig{
+		Port:        cfg.Port,
+		ProductName: pc.Name,
+		Handler:     handler,
+		Providers:   providers,
+		PreFlight:   preFlight,
+		EmbedCache:  embedCache,
+	})
+
+	// Register dashboard, SSE, and management API
+	dashboard.Register(srv.Mux(), pc.Product)
+	broadcaster.RegisterSSE(srv.Mux())
+	mgmtAPI := api.New(db, counter, pc.Product)
+	mgmtAPI.SetHandler(handler) // Enable replay functionality
+	mgmtAPI.Register(srv.Mux())
+
+	// Start data retention cleanup loop
+	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
+
+	// Start spend flusher (writes in-memory counters to SQLite every 5s)
+	flushCtx, flushCancel := context.WithCancel(context.Background())
+	flusher := tracker.NewFlusher(counter, db, 5*time.Second)
+	go flusher.Start(flushCtx)
+
+	// Graceful shutdown
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	go func() {
+		if err := srv.Start(); err != nil {
+			log.Fatalf("server: %v", err)
+		}
+	}()
+
+	log.Printf("══════════════════════════════════════")
+	log.Printf("  %s is running", pc.Name)
+	log.Printf("  Proxy:     http://localhost:%d/v1", cfg.Port)
+	log.Printf("  Dashboard: http://localhost:%d/ui", cfg.Port)
+	log.Printf("  API:       http://localhost:%d/api", cfg.Port)
+	log.Printf("══════════════════════════════════════")
+
+	<-ctx.Done()
+	log.Println("shutting down...")
+	flushCancel()
+	srv.Shutdown(context.Background())
+	db.Close()
+}
+
+// makeSendHandler creates the innermost handler that sends to the resolved provider.
+func makeSendHandler(providers map[string]provider.Provider) proxy.Handler {
+	return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
+		name := req.Provider
+		if name == "" {
+			name = provider.ProviderForModel(req.Model)
+		}
+		p, ok := providers[name]
+		if !ok {
+			// Try the first available provider as fallback
+			for n, prov := range providers {
+				p = prov
+				name = n
+				break
+			}
+			if p == nil {
+				return nil, &providerError{msg: "no providers configured. Set OPENAI_API_KEY or other provider keys."}
+			}
+		}
+		resp, err := p.Send(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		if resp.Provider == "" {
+			resp.Provider = name
+		}
+		return resp, nil
+	}
+}
+
+// buildMiddlewares constructs the middleware chain based on product features.
+// Applied in order: outermost first → innermost last.
+// Chain reverses them, so the first middleware listed runs first.
+func buildMiddlewares(
+	pc ProductConfig,
+	cfg *config.Config,
+	db *storage.DB,
+	counter *tracker.SpendCounter,
+	broadcaster *dashboard.Broadcaster,
+	providers map[string]provider.Provider,
+) []proxy.Middleware {
+	var mw []proxy.Middleware
+
+	// IPFence — block unauthorized IPs before any processing (outermost)
+	if pc.Features.IPFence && cfg.IPFence.Enabled {
+		fence := features.NewIPFence(cfg.IPFence)
+		mw = append(mw, features.IPFenceMiddleware(fence))
+		log.Printf("ipfence: mode=%s action=%s allowlist=%d denylist=%d trust_proxy=%v",
+			cfg.IPFence.Mode, cfg.IPFence.Action, len(cfg.IPFence.Allowlist), len(cfg.IPFence.Denylist), cfg.IPFence.TrustProxy)
+	}
+
+	// Rate limiting (outermost — reject before any work)
+	if pc.Features.RateLimiting && cfg.RateLimit.Enabled {
+		limiter := features.NewRateLimiter(features.RateLimitConfig{
+			Enabled:           true,
+			RequestsPerMinute: cfg.RateLimit.Default.RequestsPerMinute,
+			RequestsPerHour:   cfg.RateLimit.Default.RequestsPerHour,
+			Burst:             cfg.RateLimit.Default.Burst,
+			PerIP:             cfg.RateLimit.PerIP,
+			PerUser:           cfg.RateLimit.PerUser,
+		})
+		mw = append(mw, features.RateLimitMiddleware(limiter))
+	}
+
+	// KeyPool — rotate API keys before anything else touches the request
+	if pc.Features.KeyPool && cfg.KeyPool.Enabled {
+		pool := features.NewKeyPool(cfg.KeyPool)
+		if pool.KeyCount() > 0 {
+			mw = append(mw, features.KeyPoolMiddleware(pool))
+			log.Printf("keypool: %d keys loaded, strategy=%s", pool.KeyCount(), cfg.KeyPool.Strategy)
+		}
+	}
+
+	// TenantWall — per-tenant isolation (rate limits, budgets, model access)
+	if pc.Features.TenantWall && cfg.TenantWall.Enabled {
+		tw := features.NewTenantWall(cfg.TenantWall)
+		mw = append(mw, features.TenantWallMiddleware(tw))
+		log.Printf("tenantwall: require=%v window=%s default_max_req=%d default_max_spend=$%.2f tenants=%d",
+			cfg.TenantWall.RequireTenant, cfg.TenantWall.WindowDuration.Duration,
+			cfg.TenantWall.DefaultMaxRequests, cfg.TenantWall.DefaultMaxSpend, len(cfg.TenantWall.Tenants))
+	}
+
+	// PromptGuard — redact PII and detect injection before caching/logging
+	if pc.Features.PromptGuard && cfg.PromptGuard.Enabled {
+		guard := features.NewPromptGuard(cfg.PromptGuard)
+		mw = append(mw, features.PromptGuardMiddleware(guard, cfg.PromptGuard.Injection.Enabled))
+		log.Printf("promptguard: mode=%s injection=%v", cfg.PromptGuard.PII.Mode, cfg.PromptGuard.Injection.Enabled)
+	}
+
+	// SecretScan — catch API keys and secrets in requests (before caching/logging)
+	if pc.Features.SecretScan && cfg.SecretScan.Enabled {
+		scanner := features.NewSecretScanner(cfg.SecretScan)
+		mw = append(mw, features.SecretScanMiddleware(scanner))
+		log.Printf("secretscan: patterns=%d action=%s scan_input=%v scan_output=%v",
+			scanner.PatternCount(), cfg.SecretScan.Action, cfg.SecretScan.ScanInput, cfg.SecretScan.ScanOutput)
+	}
+
+	// TokenTrim — context window optimization (before cache/send)
+	if pc.Features.TokenTrim && cfg.TokenTrim.Enabled {
+		trimmer := features.NewTokenTrimmer(cfg.TokenTrim)
+		mw = append(mw, features.TokenTrimMiddleware(trimmer))
+		log.Printf("tokentrim: strategy=%s safety_margin=%d", cfg.TokenTrim.DefaultStrat, cfg.TokenTrim.SafetyMargin)
+	}
+
+	// ContextPack — inject relevant context (before cache, after trim)
+	if pc.Features.ContextPack && cfg.ContextPack.Enabled {
+		packer := features.NewContextPacker(cfg.ContextPack)
+		mw = append(mw, features.ContextPackMiddleware(packer))
+		log.Printf("contextpack: %d sources configured", len(cfg.ContextPack.Sources))
+	}
+
+	// ChatMem — inject conversation memory (after context, before prompt template)
+	if pc.Features.ChatMem && cfg.ChatMem.Enabled {
+		mem := features.NewChatMem(cfg.ChatMem)
+		mw = append(mw, features.ChatMemMiddleware(mem))
+		log.Printf("chatmem: strategy=%s max_messages=%d inject=%v ttl=%s",
+			cfg.ChatMem.Strategy, cfg.ChatMem.MaxMessages, cfg.ChatMem.InjectMemory, cfg.ChatMem.SessionTTL.Duration)
+	}
+
+	// PromptPad — template management and A/B testing (before cache)
+	if pc.Features.PromptPad && cfg.PromptPad.Enabled {
+		pad := features.NewPromptPad(cfg.PromptPad)
+		mw = append(mw, features.PromptPadMiddleware(pad))
+		log.Printf("promptpad: %d templates loaded", len(cfg.PromptPad.Templates))
+	}
+
+	// IdleKill — kill runaway requests (timeout watchdog, before cache/provider)
+	if pc.Features.IdleKill && cfg.IdleKill.Enabled {
+		ik := features.NewIdleKill(cfg.IdleKill)
+		mw = append(mw, features.IdleKillMiddleware(ik))
+		log.Printf("idlekill: max_duration=%s max_tokens=%d max_cost=$%.2f loop=%v",
+			cfg.IdleKill.MaxDuration.Duration, cfg.IdleKill.MaxTokensPerRequest,
+			cfg.IdleKill.MaxCostPerRequest, cfg.IdleKill.LoopDetection)
+	}
+
+	// Cache (before spending/logging — cache hits skip the provider)
+	if pc.Features.Cache && cfg.Cache.Enabled {
+		cache := features.NewCache(features.CacheConfig{
+			Enabled:    true,
+			Strategy:   cfg.Cache.Strategy,
+			TTL:        cfg.Cache.TTL.Duration,
+			MaxEntries: cfg.Cache.MaxEntries,
+		})
+		mw = append(mw, features.CacheMiddleware(cache))
+	}
+
+	// Logging (captures everything including cache hits)
+	if pc.Features.RequestLogging {
+		bodySize := cfg.Logging.MaxBodySize
+		if bodySize == 0 {
+			bodySize = 50000
+		}
+		mw = append(mw, features.LoggingMiddleware(features.LoggingConfig{
+			StoreBodies: pc.Features.FullBodyLog || cfg.Logging.StoreBodies,
+			MaxBodySize: bodySize,
+			DB:          db,
+			Broadcaster: broadcaster,
+		}))
+	}
+
+	// Spend tracking
+	if pc.Features.SpendTracking {
+		caps := buildCaps(cfg)
+		var alerter *features.Alerter
+		if pc.Features.Alerts {
+			alerter = buildAlerter(cfg)
+		}
+		mw = append(mw, features.SpendMiddleware(features.SpendConfig{
+			Counter:     counter,
+			Alerter:     alerter,
+			Caps:        caps,
+			Broadcaster: broadcaster,
+		}))
+	}
+
+	// Cap enforcement (pre-request check — blocks BEFORE sending)
+	if pc.Features.SpendCaps {
+		caps := buildCaps(cfg)
+		mw = append(mw, features.CapsMiddleware(caps, counter))
+	}
+
+	// UsagePulse — multi-dimensional metering (after caps, before routing)
+	if pc.Features.UsagePulse && cfg.UsagePulse.Enabled {
+		pulse := features.NewUsagePulse(cfg.UsagePulse)
+		mw = append(mw, features.UsagePulseMiddleware(pulse))
+		log.Printf("usagepulse: dimensions=%v", cfg.UsagePulse.Dimensions)
+	}
+
+	// ModelSwitch — smart routing (before failover, replaces model on request)
+	if pc.Features.ModelSwitch && cfg.ModelSwitch.Enabled {
+		router := features.NewModelRouter(cfg.ModelSwitch)
+		mw = append(mw, features.ModelSwitchMiddleware(router, cfg.ModelSwitch.Default))
+		log.Printf("modelswitch: %d rules loaded", len(cfg.ModelSwitch.Rules))
+	}
+
+	// MultiCall — multi-model consensus (fans out to multiple models)
+	if pc.Features.MultiCall && cfg.MultiCall.Enabled {
+		mc := features.NewMultiCaller(cfg.MultiCall)
+		mw = append(mw, features.MultiCallMiddleware(mc, providers))
+		log.Printf("multicall: %d routes configured", len(cfg.MultiCall.Routes))
+	}
+
+	// AnthroFit — deep Anthropic compatibility (before failover/routing)
+	if pc.Features.AnthroFit && cfg.AnthroFit.Enabled {
+		af := features.NewAnthroFit(cfg.AnthroFit)
+		mw = append(mw, features.AnthroFitMiddleware(af))
+		log.Printf("anthrofit: system_prompt=%s tools=%v stream_norm=%v max_tokens_default=%d",
+			cfg.AnthroFit.SystemPromptMode, cfg.AnthroFit.ToolTranslation, cfg.AnthroFit.StreamNormalize, cfg.AnthroFit.MaxTokensDefault)
+	}
+
+	// MockLLM — deterministic fixture responses for testing/CI (intercepts before provider)
+	if pc.Features.MockLLM && cfg.MockLLM.Enabled {
+		mock := features.NewMockLLM(cfg.MockLLM)
+		mw = append(mw, features.MockLLMMiddleware(mock))
+		log.Printf("mockllm: %d fixtures, passthrough=%v", len(cfg.MockLLM.Fixtures), cfg.MockLLM.Passthrough)
+	}
+
+	// Failover routing
+	if pc.Features.Failover && cfg.Failover.Enabled {
+		router := features.NewFailoverRouter(features.FailoverConfig{
+			Enabled:          true,
+			Strategy:         cfg.Failover.Strategy,
+			Providers:        cfg.Failover.Providers,
+			FailureThreshold: cfg.Failover.CircuitBreaker.FailureThreshold,
+			RecoveryTimeout:  cfg.Failover.CircuitBreaker.RecoveryTimeout.Duration,
+		})
+		for name, p := range providers {
+			prov := p
+			router.RegisterSender(name, func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
+				return prov.Send(ctx, req)
+			})
+		}
+		mw = append(mw, features.FailoverMiddleware(router))
+	}
+
+	// EvalGate — quality scoring + auto-retry (after provider sends, before final return)
+	if pc.Features.EvalGate && cfg.EvalGate.Enabled {
+		gate := features.NewEvalGate(cfg.EvalGate)
+		mw = append(mw, features.EvalGateMiddleware(gate))
+		log.Printf("evalgate: %d validators, retry_budget=%d", len(cfg.EvalGate.Validators), cfg.EvalGate.RetryBudget)
+	}
+
+	// ToxicFilter — content moderation on outputs (after eval, before logging)
+	if pc.Features.ToxicFilter && cfg.ToxicFilter.Enabled {
+		filter := features.NewToxicFilter(cfg.ToxicFilter)
+		mw = append(mw, features.ToxicFilterMiddleware(filter))
+		log.Printf("toxicfilter: action=%s scan_input=%v scan_output=%v categories=%d",
+			cfg.ToxicFilter.Action, cfg.ToxicFilter.ScanInput, cfg.ToxicFilter.ScanOutput, len(cfg.ToxicFilter.Categories))
+	}
+
+	// TraceLink — distributed tracing (wraps request lifecycle)
+	if pc.Features.TraceLink && cfg.TraceLink.Enabled {
+		tracer := features.NewTraceLinker(cfg.TraceLink)
+		mw = append(mw, features.TraceLinkMiddleware(tracer))
+		log.Printf("tracelink: service=%s sample_rate=%.2f w3c=%v", cfg.TraceLink.ServiceName, cfg.TraceLink.SampleRate, cfg.TraceLink.PropagateW3C)
+	}
+
+	// StreamSnap — SSE response capture and metrics
+	if pc.Features.StreamSnap && cfg.StreamSnap.Enabled {
+		snapper := features.NewStreamSnapper(cfg.StreamSnap)
+		mw = append(mw, features.StreamSnapMiddleware(snapper))
+		log.Printf("streamsnap: capture enabled, metrics ttft=%v tps=%v", cfg.StreamSnap.Metrics.TTFT, cfg.StreamSnap.Metrics.TPS)
+	}
+
+	// LLMTap — analytics recording (outermost post-request, captures everything)
+	if pc.Features.LLMTap && cfg.LLMTap.Enabled {
+		tap := features.NewLLMTap(cfg.LLMTap)
+		mw = append(mw, features.LLMTapMiddleware(tap))
+		log.Printf("llmtap: analytics enabled, percentiles=%v", cfg.LLMTap.Percentiles)
+	}
+
+	// ComplianceLog — immutable audit trail with hash chains (after all processing)
+	if pc.Features.ComplianceLog && cfg.ComplianceLog.Enabled {
+		cl := features.NewComplianceLogger(cfg.ComplianceLog)
+		mw = append(mw, features.ComplianceLogMiddleware(cl))
+		log.Printf("compliancelog: hash=%s retention=%dd exports=%v",
+			cfg.ComplianceLog.HashAlgorithm, cfg.ComplianceLog.RetentionDays, cfg.ComplianceLog.ExportFormats)
+	}
+
+	// AlertPulse — alerting engine for error rates, latency, cost spikes
+	if pc.Features.AlertPulse && cfg.AlertPulse.Enabled {
+		ap := features.NewAlertPulse(cfg.AlertPulse)
+		mw = append(mw, features.AlertPulseMiddleware(ap))
+		log.Printf("alertpulse: %d rules, window=%s cooldown=%s",
+			len(cfg.AlertPulse.Rules), cfg.AlertPulse.WindowDuration.Duration, cfg.AlertPulse.Cooldown.Duration)
+	}
+
+	// RetryPilot — intelligent retry with circuit breaking (replaces basic retry)
+	if pc.Features.RetryPilot && cfg.RetryPilot.Enabled {
+		pilot := features.NewRetryPilot(cfg.RetryPilot)
+		mw = append(mw, features.RetryPilotMiddleware(pilot))
+		log.Printf("retrypilot: max_retries=%d jitter=%s downgrade=%v", cfg.RetryPilot.MaxRetries, cfg.RetryPilot.Jitter, cfg.RetryPilot.Downgrade.Enabled)
+	} else {
+		// Basic retry (innermost middleware, closest to the provider send)
+		retries := 2
+		for _, p := range cfg.Providers {
+			if p.MaxRetries > 0 {
+				retries = p.MaxRetries
+				break
+			}
+		}
+		mw = append(mw, features.RetryMiddleware(retries))
+	}
+
+	// Note: BatchQueue operates as an API endpoint (POST /api/batch) rather than inline middleware.
+	// It's registered separately in engine.Boot() when enabled.
+
+	// ── Phase 3 P2 middleware ──
+
+	// PromptSlim — compress prompts (before cache/send)
+	if pc.Features.PromptSlim && cfg.PromptSlim.Enabled {
+		slim := features.NewPromptSlim(cfg.PromptSlim)
+		mw = append(mw, features.PromptSlimMiddleware(slim))
+		log.Printf("promptslim: aggressiveness=%.1f", cfg.PromptSlim.Aggressiveness)
+	}
+
+	// PromptLint — check prompt quality (before cache/send)
+	if pc.Features.PromptLint && cfg.PromptLint.Enabled {
+		lint := features.NewPromptLint(cfg.PromptLint)
+		mw = append(mw, features.PromptLintMiddleware(lint))
+		log.Printf("promptlint: block_on_fail=%v", cfg.PromptLint.BlockOnFail)
+	}
+
+	// ApprovalGate — prompt change approval (before send)
+	if pc.Features.ApprovalGate && cfg.ApprovalGate.Enabled {
+		gate := features.NewApprovalGate(cfg.ApprovalGate)
+		mw = append(mw, features.ApprovalGateMiddleware(gate))
+		log.Printf("approvalgate: approvers=%d", len(cfg.ApprovalGate.Approvers))
+	}
+
+	// ContextWindow — visual context window debugger (before send)
+	if pc.Features.ContextWindow && cfg.ContextWindow.Enabled {
+		cw := features.NewContextWindow(cfg.ContextWindow)
+		mw = append(mw, features.ContextWindowMiddleware(cw))
+		log.Printf("contextwindow: enabled")
+	}
+
+	// TierDrop — auto-downgrade models when near budget (before routing)
+	if pc.Features.TierDrop && cfg.TierDrop.Enabled {
+		td := features.NewTierDrop(cfg.TierDrop)
+		mw = append(mw, features.TierDropMiddleware(td))
+		log.Printf("tierdrop: %d tiers configured", len(cfg.TierDrop.Tiers))
+	}
+
+	// ABRouter — A/B testing experiments (before routing)
+	if pc.Features.ABRouter && cfg.ABRouter.Enabled {
+		ab := features.NewABRouter(cfg.ABRouter)
+		mw = append(mw, features.ABRouterMiddleware(ab))
+		log.Printf("abrouter: %d experiments", len(cfg.ABRouter.Experiments))
+	}
+
+	// LangBridge — cross-language translation (before send)
+	if pc.Features.LangBridge && cfg.LangBridge.Enabled {
+		lb := features.NewLangBridge(cfg.LangBridge)
+		mw = append(mw, features.LangBridgeMiddleware(lb))
+		log.Printf("langbridge: target=%s", cfg.LangBridge.TargetLang)
+	}
+
+	// GeminiShim — Gemini compatibility (before failover)
+	if pc.Features.GeminiShim && cfg.GeminiShim.Enabled {
+		gs := features.NewGeminiShim(cfg.GeminiShim)
+		mw = append(mw, features.GeminiShimMiddleware(gs))
+		log.Printf("geminishim: auto_retry_safety=%v normalize=%v", cfg.GeminiShim.AutoRetrySafety, cfg.GeminiShim.NormalizeTokens)
+	}
+
+	// LocalSync — local/cloud model blending (before failover)
+	if pc.Features.LocalSync && cfg.LocalSync.Enabled {
+		ls := features.NewLocalSync(cfg.LocalSync)
+		mw = append(mw, features.LocalSyncMiddleware(ls))
+		log.Printf("localsync: local=%s fallback=%v", cfg.LocalSync.LocalEndpoint, cfg.LocalSync.FallbackToCloud)
+	}
+
+	// RegionRoute — data residency routing (before failover)
+	if pc.Features.RegionRoute && cfg.RegionRoute.Enabled {
+		rr := features.NewRegionRoute(cfg.RegionRoute)
+		mw = append(mw, features.RegionRouteMiddleware(rr))
+		log.Printf("regionroute: %d routes", len(cfg.RegionRoute.Routes))
+	}
+
+	// AgentGuard — agent session safety rails (wraps request lifecycle)
+	if pc.Features.AgentGuard && cfg.AgentGuard.Enabled {
+		ag := features.NewAgentGuard(cfg.AgentGuard)
+		mw = append(mw, features.AgentGuardMiddleware(ag))
+		log.Printf("agentguard: max_calls=%d max_cost=$%.2f max_duration=%s",
+			cfg.AgentGuard.MaxCalls, cfg.AgentGuard.MaxCost, cfg.AgentGuard.MaxDuration.Duration)
+	}
+
+	// DevProxy — developer debugging (wraps request lifecycle)
+	if pc.Features.DevProxy && cfg.DevProxy.Enabled {
+		dp := features.NewDevProxy(cfg.DevProxy)
+		mw = append(mw, features.DevProxyMiddleware(dp))
+		log.Printf("devproxy: log_headers=%v log_bodies=%v", cfg.DevProxy.LogHeaders, cfg.DevProxy.LogBodies)
+	}
+
+	// DriftWatch — model drift detection (post-response)
+	if pc.Features.DriftWatch && cfg.DriftWatch.Enabled {
+		dw := features.NewDriftWatch(cfg.DriftWatch)
+		mw = append(mw, features.DriftWatchMiddleware(dw))
+		log.Printf("driftwatch: threshold=%.0f%%", cfg.DriftWatch.DriftThreshold)
+	}
+
+	// CodeFence — code validation (post-response)
+	if pc.Features.CodeFence && cfg.CodeFence.Enabled {
+		cf := features.NewCodeFence(cfg.CodeFence)
+		mw = append(mw, features.CodeFenceMiddleware(cf))
+		log.Printf("codefence: patterns=%d action=%s", len(cfg.CodeFence.ForbiddenPatterns), cfg.CodeFence.Action)
+	}
+
+	// HalluciCheck — hallucination detection (post-response)
+	if pc.Features.HalluciCheck && cfg.HalluciCheck.Enabled {
+		hc := features.NewHalluciCheck(cfg.HalluciCheck)
+		mw = append(mw, features.HalluciCheckMiddleware(hc))
+		log.Printf("hallucicheck: urls=%v emails=%v", cfg.HalluciCheck.CheckURLs, cfg.HalluciCheck.CheckEmails)
+	}
+
+	// GuardRail — topic fencing (post-response)
+	if pc.Features.GuardRail && cfg.GuardRail.Enabled {
+		gr := features.NewGuardRail(cfg.GuardRail)
+		mw = append(mw, features.GuardRailMiddleware(gr))
+		log.Printf("guardrail: allowed=%d denied=%d", len(cfg.GuardRail.AllowedTopics), len(cfg.GuardRail.DeniedTopics))
+	}
+
+	// AgeGate — child safety filtering (post-response)
+	if pc.Features.AgeGate && cfg.AgeGate.Enabled {
+		ag := features.NewAgeGate(cfg.AgeGate)
+		mw = append(mw, features.AgeGateMiddleware(ag))
+		log.Printf("agegate: tier=%s", cfg.AgeGate.Tier)
+	}
+
+	// OutputCap — output length capping (post-response)
+	if pc.Features.OutputCap && cfg.OutputCap.Enabled {
+		oc := features.NewOutputCap(cfg.OutputCap)
+		mw = append(mw, features.OutputCapMiddleware(oc))
+		log.Printf("outputcap: max_chars=%d", cfg.OutputCap.MaxChars)
+	}
+
+	// VoiceBridge — voice pipeline optimization (post-response)
+	if pc.Features.VoiceBridge && cfg.VoiceBridge.Enabled {
+		vb := features.NewVoiceBridge(cfg.VoiceBridge)
+		mw = append(mw, features.VoiceBridgeMiddleware(vb))
+		log.Printf("voicebridge: max_length=%d", cfg.VoiceBridge.MaxLength)
+	}
+
+	// ImageProxy — image generation proxy (passthrough)
+	if pc.Features.ImageProxy && cfg.ImageProxy.Enabled {
+		ip := features.NewImageProxy(cfg.ImageProxy)
+		mw = append(mw, features.ImageProxyMiddleware(ip))
+		log.Printf("imageproxy: cache=%v", cfg.ImageProxy.CacheEnabled)
+	}
+
+	// FeedbackLoop — user feedback collection (passthrough)
+	if pc.Features.FeedbackLoop && cfg.FeedbackLoop.Enabled {
+		fl := features.NewFeedbackLoop(cfg.FeedbackLoop)
+		mw = append(mw, features.FeedbackLoopMiddleware(fl))
+		log.Printf("feedbackloop: endpoint=%s", cfg.FeedbackLoop.Endpoint)
+	}
+
+	// ── Phase 3 P3 middleware ──
+
+	// ChainForge — multi-step LLM workflows
+	if pc.Features.ChainForge && cfg.ChainForge.Enabled {
+		cf := features.NewChainForge(cfg.ChainForge)
+		mw = append(mw, features.ChainForgeMiddleware(cf))
+		log.Printf("chainforge: %d pipelines", len(cfg.ChainForge.Pipelines))
+	}
+
+	// CronLLM — scheduled LLM tasks
+	if pc.Features.CronLLM && cfg.CronLLM.Enabled {
+		cl := features.NewCronLLM(cfg.CronLLM)
+		mw = append(mw, features.CronLLMMiddleware(cl))
+		log.Printf("cronllm: %d jobs configured", len(cfg.CronLLM.Jobs))
+	}
+
+	// WebhookRelay — webhook-to-LLM relay
+	if pc.Features.WebhookRelay && cfg.WebhookRelay.Enabled {
+		wr := features.NewWebhookRelay(cfg.WebhookRelay)
+		mw = append(mw, features.WebhookRelayMiddleware(wr))
+		log.Printf("webhookrelay: %d triggers", len(cfg.WebhookRelay.Triggers))
+	}
+
+	// BillSync — per-customer invoicing
+	if pc.Features.BillSync && cfg.BillSync.Enabled {
+		bs := features.NewBillSync(cfg.BillSync)
+		mw = append(mw, features.BillSyncMiddleware(bs))
+		log.Printf("billsync: markup=%.0f%% currency=%s", cfg.BillSync.MarkupPct, cfg.BillSync.Currency)
+	}
+
+	// WhiteLabel — custom branding (passthrough, brand applies to dashboard)
+	if pc.Features.WhiteLabel && cfg.WhiteLabel.Enabled {
+		wl := features.NewWhiteLabel(cfg.WhiteLabel)
+		mw = append(mw, features.WhiteLabelMiddleware(wl))
+		log.Printf("whitelabel: brand=%s", cfg.WhiteLabel.BrandName)
+	}
+
+	// TrainExport — training data collection
+	if pc.Features.TrainExport && cfg.TrainExport.Enabled {
+		te := features.NewTrainExport(cfg.TrainExport)
+		mw = append(mw, features.TrainExportMiddleware(te))
+		log.Printf("trainexport: format=%s max_pairs=%d", cfg.TrainExport.Format, cfg.TrainExport.MaxPairs)
+	}
+
+	// SynthGen — synthetic data generation
+	if pc.Features.SynthGen && cfg.SynthGen.Enabled {
+		sg := features.NewSynthGen(cfg.SynthGen)
+		mw = append(mw, features.SynthGenMiddleware(sg))
+		log.Printf("synthgen: batch_size=%d", cfg.SynthGen.BatchSize)
+	}
+
+	// DiffPrompt — prompt change detection
+	if pc.Features.DiffPrompt && cfg.DiffPrompt.Enabled {
+		dp := features.NewDiffPrompt(cfg.DiffPrompt)
+		mw = append(mw, features.DiffPromptMiddleware(dp))
+		log.Printf("diffprompt: enabled")
+	}
+
+	// LLMBench — model benchmarking
+	if pc.Features.LLMBench && cfg.LLMBench.Enabled {
+		lb := features.NewLLMBench(cfg.LLMBench)
+		mw = append(mw, features.LLMBenchMiddleware(lb))
+		log.Printf("llmbench: enabled")
+	}
+
+	// MaskMode — demo mode with fake data
+	if pc.Features.MaskMode && cfg.MaskMode.Enabled {
+		mm := features.NewMaskMode(cfg.MaskMode)
+		mw = append(mw, features.MaskModeMiddleware(mm))
+		log.Printf("maskmode: names=%v email=%v phone=%v", cfg.MaskMode.MaskNames, cfg.MaskMode.MaskEmail, cfg.MaskMode.MaskPhone)
+	}
+
+	// TokenMarket — dynamic budget reallocation
+	if pc.Features.TokenMarket && cfg.TokenMarket.Enabled {
+		tm := features.NewTokenMarket(cfg.TokenMarket)
+		mw = append(mw, features.TokenMarketMiddleware(tm))
+		log.Printf("tokenmarket: %d pools", len(cfg.TokenMarket.Pools))
+	}
+
+	// LLMSync — config sync (passthrough)
+	if pc.Features.LLMSync && cfg.LLMSync.Enabled {
+		ls := features.NewLLMSync(cfg.LLMSync)
+		mw = append(mw, features.LLMSyncMiddleware(ls))
+		log.Printf("llmsync: env=%s", cfg.LLMSync.Environment)
+	}
+
+	// ClusterMode — multi-instance coordination (passthrough)
+	if pc.Features.ClusterMode && cfg.ClusterMode.Enabled {
+		cm := features.NewClusterMode(cfg.ClusterMode)
+		mw = append(mw, features.ClusterModeMiddleware(cm))
+		log.Printf("clustermode: node=%s peers=%d", cfg.ClusterMode.NodeID, len(cfg.ClusterMode.Peers))
+	}
+
+	// EncryptVault — encryption (passthrough)
+	if pc.Features.EncryptVault && cfg.EncryptVault.Enabled {
+		ev := features.NewEncryptVault(cfg.EncryptVault)
+		mw = append(mw, features.EncryptVaultMiddleware(ev))
+		log.Printf("encryptvault: active=%v", cfg.EncryptVault.Key != "")
+	}
+
+	// MirrorTest — shadow testing (needs providers for shadow calls)
+	if pc.Features.MirrorTest && cfg.MirrorTest.Enabled {
+		mt := features.NewMirrorTest(cfg.MirrorTest)
+		mw = append(mw, features.MirrorTestMiddleware(mt, providers))
+		log.Printf("mirrortest: shadow=%s sample=%.0f%%", cfg.MirrorTest.ShadowModel, cfg.MirrorTest.SampleRate*100)
+	}
+
+	// ── Phase 4 middleware ──
+	mw = buildPhase4Middlewares(pc, cfg, providers, mw)
+
+	return mw
+}
+
+// buildCaps extracts cap configuration from the config.
+func buildCaps(cfg *config.Config) map[string]features.CapConfig {
+	caps := make(map[string]features.CapConfig)
+	for name, proj := range cfg.Projects {
+		caps[name] = features.CapConfig{
+			DailyCap:   proj.Caps.Daily,
+			MonthlyCap: proj.Caps.Monthly,
+		}
+	}
+	return caps
+}
+
+// buildAlerter creates an alerter from config.
+func buildAlerter(cfg *config.Config) *features.Alerter {
+	// Find the first project with a webhook configured
+	for _, proj := range cfg.Projects {
+		if proj.Alerts.Webhook != "" {
+			return features.NewAlerter(features.AlertConfig{
+				WebhookURL: proj.Alerts.Webhook,
+				Thresholds: proj.Alerts.Thresholds,
+			})
+		}
+	}
+	// Return a no-op alerter (no webhook configured)
+	return features.NewAlerter(features.AlertConfig{})
+}
+
+// initProviders creates provider instances from config.
+func initProviders(cfg *config.Config) map[string]provider.Provider {
+	providers := make(map[string]provider.Provider)
+
+	if p, ok := cfg.Providers["openai"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
+		providers["openai"] = provider.NewOpenAI(provider.ProviderConfig{
+			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
+		})
+	}
+	if p, ok := cfg.Providers["anthropic"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
+		providers["anthropic"] = provider.NewAnthropic(provider.ProviderConfig{
+			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
+		})
+	}
+	if p, ok := cfg.Providers["groq"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
+		providers["groq"] = provider.NewGroq(provider.ProviderConfig{
+			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
+		})
+	}
+	if p, ok := cfg.Providers["gemini"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
+		providers["gemini"] = provider.NewGemini(provider.ProviderConfig{
+			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
+		})
+	}
+
+	if len(providers) == 0 {
+		log.Println("⚠️  No API keys configured. Set OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.")
+	}
+
+	return providers
+}
+
+// isTemplate checks if a value is still an unresolved env var template.
+func isTemplate(s string) bool {
+	return len(s) > 3 && s[0] == '$' && s[1] == '{'
+}
+
+// buildPreFlight creates pre-flight checks for streaming requests.
+// These mirror the middleware chain's rate limit and cap enforcement.
+func buildPreFlight(pc ProductConfig, cfg *config.Config, counter *tracker.SpendCounter) proxy.StreamPreFlight {
+	pf := proxy.StreamPreFlight{}
+
+	// Rate limit check for streaming
+	if pc.Features.RateLimiting && cfg.RateLimit.Enabled {
+		limiter := features.NewRateLimiter(features.RateLimitConfig{
+			Enabled:           true,
+			RequestsPerMinute: cfg.RateLimit.Default.RequestsPerMinute,
+			RequestsPerHour:   cfg.RateLimit.Default.RequestsPerHour,
+			Burst:             cfg.RateLimit.Default.Burst,
+			PerIP:             cfg.RateLimit.PerIP,
+			PerUser:           cfg.RateLimit.PerUser,
+		})
+		pf.CheckRateLimit = func(req *provider.Request) error {
+			key := req.Project
+			if req.UserID != "" {
+				key = req.UserID
+			}
+			if !limiter.Allow(key) {
+				return fmt.Errorf("rate limit exceeded for %s", key)
+			}
+			return nil
+		}
+	}
+
+	// Cap check for streaming
+	if pc.Features.SpendCaps {
+		caps := buildCaps(cfg)
+		pf.CheckCaps = func(req *provider.Request) error {
+			capCfg, ok := caps[req.Project]
+			if !ok {
+				capCfg = caps["default"]
+			}
+			spend := counter.Get(req.Project)
+			if capCfg.DailyCap > 0 && spend.Today >= capCfg.DailyCap && !capCfg.SoftCap {
+				return fmt.Errorf("daily cap exceeded: spent $%.4f of $%.2f cap", spend.Today, capCfg.DailyCap)
+			}
+			if capCfg.MonthlyCap > 0 && spend.Month >= capCfg.MonthlyCap && !capCfg.SoftCap {
+				return fmt.Errorf("monthly cap exceeded: spent $%.4f of $%.2f cap", spend.Month, capCfg.MonthlyCap)
+			}
+			return nil
+		}
+	}
+
+	// Failover chain for streaming
+	if pc.Features.Failover && cfg.Failover.Enabled {
+		pf.ResolveProvider = func(req *provider.Request) []string {
+			return cfg.Failover.Providers
+		}
+	}
+
+	// Post-stream spend tracking (so streaming requests count toward spend)
+	if pc.Features.SpendTracking {
+		pf.OnStreamComplete = func(req *provider.Request, providerName string, outputTokens int) {
+			inputTokens := tracker.CountInputTokens(req.Model, req.Messages)
+			cost := provider.CalculateCost(req.Model, inputTokens, outputTokens)
+			counter.Add(req.Project, cost)
+			log.Printf("stream spend: project=%s model=%s tokens_in=%d tokens_out=%d cost=$%.6f provider=%s",
+				req.Project, req.Model, inputTokens, outputTokens, cost, providerName)
+		}
+	}
+
+	return pf
+}
+
+// providerError is a simple error type for provider issues.
+type providerError struct {
+	msg string
+}
+
+func (e *providerError) Error() string { return e.msg }

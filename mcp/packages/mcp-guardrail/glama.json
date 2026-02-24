@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-guardrail",
+  "display_name": "Stockyard GuardRail",
+  "description": "Topic fencing middleware. Define allowed/denied topics. Block off-topic responses with custom fallback messages.",
+  "repository": "https://github.com/stockyard-dev/mcp-guardrail",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-guardrail"
+  ],
+  "tools": [
+    {
+      "name": "guardrail_stats",
+      "description": "Get topic enforcement stats: blocked, allowed, violations."
+    },
+    {
+      "name": "guardrail_topics",
+      "description": "List allowed and denied topic patterns."
+    }
+  ],
+  "tags": [
+    "guardrail",
+    "topic",
+    "filter",
+    "boundary",
+    "safety"
+  ]
+}

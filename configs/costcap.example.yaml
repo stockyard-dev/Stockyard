@@ -1,0 +1,35 @@
+# CostCap — Never get a surprise LLM bill again.
+# Copy this file to costcap.yaml and set your API keys.
+
+port: 4100
+data_dir: ~/.stockyard
+log_level: info
+product: costcap
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+    max_retries: 3
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+    timeout: 30s
+  groq:
+    api_key: ${GROQ_API_KEY}
+    timeout: 10s
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini
+    caps:
+      daily: 5.00    # USD — hard block when reached
+      monthly: 50.00
+    alerts:
+      webhook: ""    # Your Slack/Discord webhook URL
+      thresholds: [0.5, 0.8, 1.0]  # Alert at 50%, 80%, 100% of cap
+
+logging:
+  store_bodies: false
+  retention_days: 7

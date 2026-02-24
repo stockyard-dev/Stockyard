@@ -1,0 +1,21 @@
+# Smithery Marketplace Configuration
+name: stockyard-llmtap
+display_name: "Stockyard LLMTap"
+description: "API analytics portal for LLM traffic. Latency percentiles (p50/p95/p99), error rates, cost breakdown by model, and volume tracking."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-llmtap"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - analytics
+  - monitoring
+  - latency
+  - dashboard
+  - observability
+  - proxy

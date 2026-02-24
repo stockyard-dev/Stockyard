@@ -1,0 +1,12 @@
+# AgentReplay — Record and replay agent sessions.
+# Copy to agentreplay.yaml and set your API keys.
+
+port: 6530
+agentreplay:
+  source: tracelink
+  max_session_length: 100
+  export_format: jsonl
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

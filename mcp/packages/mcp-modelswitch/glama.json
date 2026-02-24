@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-modelswitch",
+  "display_name": "Stockyard ModelSwitch",
+  "description": "Smart model routing based on token count, prompt patterns, and headers. Route complex queries to GPT-4o and simple ones to GPT-4o-mini.",
+  "repository": "https://github.com/stockyard-dev/mcp-modelswitch",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-modelswitch"
+  ],
+  "tools": [
+    {
+      "name": "modelswitch_stats",
+      "description": "Get routing statistics: requests per model, cost per route, A/B test results."
+    },
+    {
+      "name": "modelswitch_rules",
+      "description": "List current routing rules and their match counts."
+    },
+    {
+      "name": "modelswitch_add_rule",
+      "description": "Add a new routing rule."
+    },
+    {
+      "name": "modelswitch_test",
+      "description": "Test which model a prompt would be routed to."
+    },
+    {
+      "name": "modelswitch_proxy_status",
+      "description": "Check if the ModelSwitch proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "routing",
+    "model",
+    "smart",
+    "cost",
+    "optimization",
+    "a/b-test",
+    "proxy"
+  ]
+}

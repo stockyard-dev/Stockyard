@@ -1,0 +1,17 @@
+name: stockyard-codelang
+display_name: "Stockyard CodeLang"
+description: "Tree-sitter parsing. Syntax errors, undefined refs, suspicious patterns."
+icon: "💻"
+command: npx
+args:
+  - "@stockyard/mcp-codelang"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - code
+  - syntax
+  - validation
+  - parsing

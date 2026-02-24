@@ -1,0 +1,21 @@
+# Smithery Marketplace Configuration
+name: stockyard-multicall
+display_name: "Stockyard MultiCall"
+description: "Send the same prompt to multiple LLMs simultaneously. Pick the fastest, cheapest, longest, or consensus response."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-multicall"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - multi-model
+  - consensus
+  - comparison
+  - a/b-test
+  - routing
+  - proxy

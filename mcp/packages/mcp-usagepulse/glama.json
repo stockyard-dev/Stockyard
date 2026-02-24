@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-usagepulse",
+  "display_name": "Stockyard UsagePulse",
+  "description": "Per-user and per-feature token metering. Multi-dimensional tracking, spend caps, and billing export in CSV/JSON.",
+  "repository": "https://github.com/stockyard-dev/mcp-usagepulse",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-usagepulse"
+  ],
+  "tools": [
+    {
+      "name": "usagepulse_usage",
+      "description": "Get usage breakdown by dimension (user, feature, team)."
+    },
+    {
+      "name": "usagepulse_user_usage",
+      "description": "Get usage for a specific user."
+    },
+    {
+      "name": "usagepulse_set_cap",
+      "description": "Set a spending cap for a user or team."
+    },
+    {
+      "name": "usagepulse_export",
+      "description": "Export usage data as CSV or JSON for billing."
+    },
+    {
+      "name": "usagepulse_proxy_status",
+      "description": "Check if the UsagePulse proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "usage",
+    "metering",
+    "billing",
+    "tokens",
+    "analytics",
+    "openai",
+    "proxy"
+  ]
+}

@@ -1,0 +1,17 @@
+name: stockyard-toolmock
+display_name: "Stockyard ToolMock"
+description: "Canned responses by tool+args. Simulate errors, timeouts, partial results."
+icon: "🃏"
+command: npx
+args:
+  - "@stockyard/mcp-toolmock"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - tools
+  - mock
+  - testing
+  - simulation

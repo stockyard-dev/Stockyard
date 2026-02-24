@@ -1,0 +1,23 @@
+# LobeChat + Stockyard Sidecar
+# Usage: OPENAI_API_KEY=sk-... docker compose up
+# LobeChat: http://localhost:3210 | Stockyard Dashboard: http://localhost:4000/ui
+
+services:
+  lobechat:
+    image: lobehub/lobe-chat:latest
+    ports: ["3210:3210"]
+    environment:
+      - OPENAI_PROXY_URL=http://stockyard:4000/v1
+      - OPENAI_API_KEY=passthrough
+    depends_on: [stockyard]
+
+  stockyard:
+    image: ghcr.io/stockyard-dev/stockyard:latest
+    ports: ["4000:4000"]
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    volumes: [stockyard-data:/data]
+
+volumes:
+  stockyard-data:

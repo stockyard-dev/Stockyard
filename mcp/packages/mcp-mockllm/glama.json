@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-mockllm",
+  "display_name": "Stockyard MockLLM",
+  "description": "Mock LLM server with canned responses for CI/CD pipelines. Define fixtures, simulate errors, control latency. Never hit real APIs in tests.",
+  "repository": "https://github.com/stockyard-dev/mcp-mockllm",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-mockllm"
+  ],
+  "tools": [
+    {
+      "name": "mockllm_fixtures",
+      "description": "List all configured mock fixtures with match patterns."
+    },
+    {
+      "name": "mockllm_add_fixture",
+      "description": "Add a new mock fixture. Matched prompts return the canned response."
+    },
+    {
+      "name": "mockllm_remove_fixture",
+      "description": "Remove a mock fixture by ID."
+    },
+    {
+      "name": "mockllm_stats",
+      "description": "Get mock server stats: total requests, fixture match rate, error simulations."
+    },
+    {
+      "name": "mockllm_set_mode",
+      "description": "Switch mock mode: fixture (canned), passthrough (forward to real), record (capture + replay)."
+    },
+    {
+      "name": "mockllm_proxy_status",
+      "description": "Check if the MockLLM proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "mock",
+    "testing",
+    "ci-cd",
+    "fixtures",
+    "deterministic",
+    "simulation",
+    "proxy"
+  ]
+}

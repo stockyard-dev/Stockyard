@@ -1,0 +1,17 @@
+name: stockyard-mirrortest
+display_name: "Stockyard MirrorTest"
+description: "Send production traffic to a shadow model. Compare quality, latency, cost. Zero user impact."
+icon: "🪞"
+command: npx
+args:
+  - "@stockyard/mcp-mirrortest"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - shadow
+  - testing
+  - comparison
+  - canary

@@ -1,0 +1,18 @@
+name: stockyard-guardrail
+display_name: "Stockyard GuardRail"
+description: "Topic fencing middleware. Define allowed/denied topics. Block off-topic responses with custom fallback messages."
+icon: "🚧"
+command: npx
+args:
+  - "@stockyard/mcp-guardrail"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - guardrail
+  - topic
+  - filter
+  - boundary
+  - safety

@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-datamap",
+  "display_name": "Stockyard DataMap",
+  "description": "Auto-classify data. Map flows: source→proxy→provider→storage. Generate GDPR records.",
+  "repository": "https://github.com/stockyard-dev/mcp-datamap",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-datamap"
+  ],
+  "tools": [
+    {
+      "name": "datamap_stats",
+      "description": "Get data mapping stats."
+    }
+  ],
+  "tags": [
+    "gdpr",
+    "compliance",
+    "data-flow",
+    "mapping"
+  ]
+}

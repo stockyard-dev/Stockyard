@@ -1,0 +1,17 @@
+name: stockyard-llmsync
+display_name: "Stockyard LLMSync"
+description: "Environment hierarchy with config inheritance. Diff, promote, rollback. Git-friendly YAML management."
+icon: "🔄"
+command: npx
+args:
+  - "@stockyard/mcp-llmsync"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - sync
+  - config
+  - environment
+  - deployment

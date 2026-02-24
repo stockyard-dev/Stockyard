@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-webhookrelay",
+  "title": "WebhookRelay — Trigger LLM calls from any webhook",
+  "description": "Receive webhooks, extract data, build prompts, call LLM, send results. GitHub→summarize→Slack in one config.",
+  "install": "npx @stockyard/mcp-webhookrelay",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-webhookrelay"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 4,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

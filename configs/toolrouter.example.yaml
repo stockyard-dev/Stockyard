@@ -1,0 +1,13 @@
+# ToolRouter — Manage and version LLM function calls.
+# Copy to toolrouter.yaml and set your API keys.
+
+port: 6100
+toolrouter:
+  registry:
+    get_weather:
+      version: v2
+      schema: { type: object, properties: { location: { type: string } } }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

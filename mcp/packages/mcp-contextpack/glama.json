@@ -1,0 +1,46 @@
+{
+  "name": "stockyard-contextpack",
+  "display_name": "Stockyard ContextPack",
+  "description": "Rule-based context injection from local files. Keyword-matched chunks injected into prompts automatically. No embeddings, no vector DB.",
+  "repository": "https://github.com/stockyard-dev/mcp-contextpack",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-contextpack"
+  ],
+  "tools": [
+    {
+      "name": "contextpack_sources",
+      "description": "List configured context sources and their chunk counts."
+    },
+    {
+      "name": "contextpack_add_source",
+      "description": "Add a new context source."
+    },
+    {
+      "name": "contextpack_search",
+      "description": "Search context sources for relevant chunks. Preview what would be injected."
+    },
+    {
+      "name": "contextpack_stats",
+      "description": "Get context injection statistics: total injections, avg chunks, token overhead."
+    },
+    {
+      "name": "contextpack_reindex",
+      "description": "Re-index all context sources after adding new files."
+    },
+    {
+      "name": "contextpack_proxy_status",
+      "description": "Check if the ContextPack proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "rag",
+    "context",
+    "injection",
+    "files",
+    "knowledge",
+    "retrieval",
+    "proxy"
+  ]
+}

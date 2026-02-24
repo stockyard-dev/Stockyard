@@ -1,0 +1,17 @@
+name: stockyard-spotprice
+display_name: "Stockyard SpotPrice"
+description: "Live pricing DB. Route to cheapest model meeting quality threshold."
+icon: "💱"
+command: npx
+args:
+  - "@stockyard/mcp-spotprice"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - pricing
+  - cost
+  - routing
+  - optimization

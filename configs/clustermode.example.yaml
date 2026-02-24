@@ -1,0 +1,15 @@
+# ClusterMode — Multi-instance Stockyard with shared state.
+# Copy to clustermode.yaml and set your API keys.
+
+port: 6050
+cluster:
+  enabled: true
+  mode: litefs  # litefs | gossip
+  peers:
+    - stockyard-1:6050
+    - stockyard-2:6050
+  leader_election: true
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

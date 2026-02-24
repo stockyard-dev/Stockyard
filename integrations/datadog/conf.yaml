@@ -1,0 +1,12 @@
+# /etc/datadog-agent/conf.d/stockyard.d/conf.yaml
+init_config:
+
+instances:
+  - openmetrics_endpoint: http://localhost:4000/metrics
+    namespace: stockyard
+    metrics:
+      - stockyard_requests_total
+      - stockyard_request_duration_seconds
+      - stockyard_tokens_total
+      - stockyard_spend_today_usd
+      - stockyard_cache_hit_rate

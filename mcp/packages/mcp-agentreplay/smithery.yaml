@@ -1,0 +1,17 @@
+name: stockyard-agentreplay
+display_name: "Stockyard AgentReplay"
+description: "Step-by-step playback on TraceLink data. What-if mode. Export as test cases."
+icon: "🎬"
+command: npx
+args:
+  - "@stockyard/mcp-agentreplay"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - agent
+  - replay
+  - debug
+  - session

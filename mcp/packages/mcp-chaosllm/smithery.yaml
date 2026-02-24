@@ -1,0 +1,17 @@
+name: stockyard-chaosllm
+display_name: "Stockyard ChaosLLM"
+description: "Inject realistic failures: 429s, timeouts, malformed JSON, truncated streams."
+icon: "💥"
+command: npx
+args:
+  - "@stockyard/mcp-chaosllm"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - chaos
+  - testing
+  - resilience
+  - fault-injection

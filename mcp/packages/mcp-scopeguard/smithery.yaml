@@ -1,0 +1,17 @@
+name: stockyard-scopeguard
+display_name: "Stockyard ScopeGuard"
+description: "Role-based access control. Map keys to allowed models, endpoints, features."
+icon: "🎯"
+command: npx
+args:
+  - "@stockyard/mcp-scopeguard"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - permissions
+  - rbac
+  - scope
+  - access-control

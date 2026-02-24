@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-secretscan",
+  "title": "SecretScan — Catch API keys leaking through LLM calls",
+  "description": "Detect and redact API keys, AWS credentials, tokens, and secrets in LLM requests and responses. TruffleHog-style pattern matching.",
+  "install": "npx @stockyard/mcp-secretscan",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-secretscan"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 6,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "stockyard-analytics-skill",
+  "display_name": "Stockyard Analytics",
+  "description": "LLM usage analytics and reporting. Ask 'show my usage' for cost breakdowns and trends.",
+  "version": "0.1.0",
+  "author": "Stockyard",
+  "homepage": "https://github.com/stockyard-dev/stockyard-analytics-skill",
+  "main": "index.js",
+  "tools": [
+    {
+      "name": "analytics_query",
+      "description": "Get usage overview",
+      "parameters": {}
+    },
+    {
+      "name": "usage_report",
+      "description": "Detailed usage by model",
+      "parameters": {}
+    }
+  ],
+  "tags": [
+    "llm",
+    "proxy",
+    "cost",
+    "openai"
+  ],
+  "license": "MIT"
+}

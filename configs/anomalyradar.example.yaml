@@ -1,0 +1,12 @@
+# AnomalyRadar — ML-powered anomaly detection.
+# Copy to anomalyradar.yaml and set your API keys.
+
+port: 6470
+anomalyradar:
+  metrics: [latency, cost, error_rate, token_volume]
+  sensitivity: 2.5  # z-score threshold
+  baseline_window: 7d
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

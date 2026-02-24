@@ -1,0 +1,33 @@
+{
+  "name": "stockyard-router-skill",
+  "display_name": "Stockyard Router",
+  "description": "Smart model routing. Simple questions → cheap models. Complex reasoning → powerful models. Save 40-70%.",
+  "version": "0.1.0",
+  "author": "Stockyard",
+  "homepage": "https://github.com/stockyard-dev/stockyard-router-skill",
+  "main": "index.js",
+  "tools": [
+    {
+      "name": "routing_stats",
+      "description": "Show routing savings",
+      "parameters": {}
+    },
+    {
+      "name": "routing_test",
+      "description": "Test which model a prompt would use",
+      "parameters": {
+        "text": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ],
+  "tags": [
+    "llm",
+    "proxy",
+    "cost",
+    "openai"
+  ],
+  "license": "MIT"
+}

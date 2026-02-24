@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-toolrouter",
+  "display_name": "Stockyard ToolRouter",
+  "description": "Versioned tool schemas. Route calls. Shadow-test. Usage analytics.",
+  "repository": "https://github.com/stockyard-dev/mcp-toolrouter",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-toolrouter"
+  ],
+  "tools": [
+    {
+      "name": "toolrouter_stats",
+      "description": "Get tool routing stats."
+    },
+    {
+      "name": "toolrouter_tools",
+      "description": "List registered tools."
+    }
+  ],
+  "tags": [
+    "tools",
+    "function-calling",
+    "routing",
+    "versioning"
+  ]
+}

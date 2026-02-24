@@ -1,0 +1,14 @@
+# StreamSplit — Fork streams to multiple destinations.
+# Copy to streamsplit.yaml and set your API keys.
+
+port: 6380
+streamsplit:
+  destinations:
+    - type: primary
+    - type: webhook
+      url: ${LOG_WEBHOOK}
+    - type: quality_check
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

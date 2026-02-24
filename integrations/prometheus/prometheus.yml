@@ -1,0 +1,7 @@
+# Add to your prometheus.yml scrape_configs
+scrape_configs:
+  - job_name: stockyard
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["localhost:4000"]
+    metrics_path: /metrics

@@ -1,0 +1,12 @@
+# EdgeCache — CDN-like distributed caching.
+# Copy to edgecache.yaml and set your API keys.
+
+port: 6580
+edgecache:
+  backend: litefs  # litefs | redis
+  redis_url: ""
+  replication_lag_max: 100ms
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

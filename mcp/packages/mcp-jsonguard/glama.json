@@ -1,0 +1,34 @@
+{
+  "name": "stockyard-jsonguard",
+  "display_name": "Stockyard StructuredShield",
+  "description": "JSON schema validation for LLM responses. Automatically retries when responses don't match your schema.",
+  "repository": "https://github.com/stockyard-dev/mcp-jsonguard",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-jsonguard"
+  ],
+  "tools": [
+    {
+      "name": "jsonguard_stats",
+      "description": "Get validation statistics: total requests, pass rate, retry rate, common failure patterns."
+    },
+    {
+      "name": "jsonguard_set_schema",
+      "description": "Register a named JSON schema for automatic validation of responses."
+    },
+    {
+      "name": "jsonguard_proxy_status",
+      "description": "Check if the StructuredShield proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "json",
+    "schema",
+    "validation",
+    "structured",
+    "output",
+    "openai",
+    "proxy"
+  ]
+}

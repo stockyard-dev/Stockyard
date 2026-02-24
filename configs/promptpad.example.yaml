@@ -1,0 +1,29 @@
+# PromptPad — Prompt Template Manager & A/B Testing
+port: 4800
+data_dir: ~/.stockyard
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+promptpad:
+  enabled: true
+  storage: sqlite
+  api_prefix: /api/prompts
+  templates:
+    - name: summarizer
+      version: "1.0"
+      template: |
+        Summarize the following in {{language}}.
+        Keep it under {{max_words}} words.
+      variants:
+        - name: concise
+          weight: 70
+          override: "Be extremely concise. Bullet points only."
+        - name: narrative
+          weight: 30
+          override: "Write as flowing prose."
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

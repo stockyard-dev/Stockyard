@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-embedrouter",
+  "display_name": "Stockyard EmbedRouter",
+  "description": "Batch over 50ms window. Deduplicate. Route by content type.",
+  "repository": "https://github.com/stockyard-dev/mcp-embedrouter",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-embedrouter"
+  ],
+  "tools": [
+    {
+      "name": "embedrouter_stats",
+      "description": "Get embedding routing stats."
+    }
+  ],
+  "tags": [
+    "embeddings",
+    "routing",
+    "batch",
+    "dedup"
+  ]
+}

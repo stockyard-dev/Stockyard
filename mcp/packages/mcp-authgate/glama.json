@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-authgate",
+  "display_name": "Stockyard AuthGate",
+  "description": "Issue/revoke keys to your customers. Per-key limits and usage tracking.",
+  "repository": "https://github.com/stockyard-dev/mcp-authgate",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-authgate"
+  ],
+  "tools": [
+    {
+      "name": "authgate_stats",
+      "description": "Get auth stats."
+    },
+    {
+      "name": "authgate_keys",
+      "description": "List API keys."
+    }
+  ],
+  "tags": [
+    "auth",
+    "api-keys",
+    "management",
+    "customers"
+  ]
+}

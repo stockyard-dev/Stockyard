@@ -1,0 +1,42 @@
+{
+  "name": "stockyard-embedcache",
+  "display_name": "Stockyard EmbedCache",
+  "description": "Embedding response caching for /v1/embeddings. Content-hash deduplication, per-input cache splitting, 7-day TTL. Slash embedding costs for RAG pipelines.",
+  "repository": "https://github.com/stockyard-dev/mcp-embedcache",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-embedcache"
+  ],
+  "tools": [
+    {
+      "name": "embedcache_stats",
+      "description": "Get cache statistics: entries, hit rate, bytes saved, evictions."
+    },
+    {
+      "name": "embedcache_flush",
+      "description": "Clear the embedding cache."
+    },
+    {
+      "name": "embedcache_lookup",
+      "description": "Check if a specific text has a cached embedding."
+    },
+    {
+      "name": "embedcache_set_ttl",
+      "description": "Change cache TTL for new entries."
+    },
+    {
+      "name": "embedcache_proxy_status",
+      "description": "Check if the EmbedCache proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "embedding",
+    "cache",
+    "rag",
+    "vector",
+    "deduplication",
+    "cost",
+    "proxy"
+  ]
+}

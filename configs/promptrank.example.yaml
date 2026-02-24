@@ -1,0 +1,11 @@
+# PromptRank — Rank prompts by ROI.
+# Copy to promptrank.yaml and set your API keys.
+
+port: 6460
+promptrank:
+  metrics: [cost, quality, latency, volume, feedback]
+  weight: { quality: 0.4, cost: 0.3, latency: 0.2, volume: 0.1 }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,17 @@
+name: stockyard-convofork
+display_name: "Stockyard ConvoFork"
+description: "Fork at any message. Independent history per branch. Tree visualization."
+icon: "🌿"
+command: npx
+args:
+  - "@stockyard/mcp-convofork"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - fork
+  - branch
+  - conversation
+  - parallel

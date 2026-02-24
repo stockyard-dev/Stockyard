@@ -1,0 +1,15 @@
+# OutputCap — Stop paying for responses you don't need.
+# Copy to outputcap.yaml and set your API keys.
+
+port: 5860
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+outputcap:
+  max_tokens: 500
+  cut_at: sentence  # sentence | paragraph | word
+  warn_header: true  # Add X-Output-Capped header
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

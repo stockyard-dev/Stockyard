@@ -1,0 +1,26 @@
+{
+  "name": "stockyard-modelalias",
+  "display_name": "Stockyard ModelAlias",
+  "description": "Aliases: fast→gpt-4o-mini, smart→claude-sonnet. Change mapping, all apps update.",
+  "repository": "https://github.com/stockyard-dev/mcp-modelalias",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-modelalias"
+  ],
+  "tools": [
+    {
+      "name": "modelalias_stats",
+      "description": "Get alias resolution stats."
+    },
+    {
+      "name": "modelalias_list",
+      "description": "List active aliases."
+    }
+  ],
+  "tags": [
+    "alias",
+    "model",
+    "abstraction",
+    "mapping"
+  ]
+}

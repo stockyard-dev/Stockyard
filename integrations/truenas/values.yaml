@@ -1,0 +1,12 @@
+image:
+  repository: stockyard/stockyard
+  tag: latest
+service:
+  main:
+    ports:
+      main:
+        port: 4000
+persistence:
+  data:
+    enabled: true
+    mountPath: /data

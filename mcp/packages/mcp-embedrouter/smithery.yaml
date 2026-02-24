@@ -1,0 +1,17 @@
+name: stockyard-embedrouter
+display_name: "Stockyard EmbedRouter"
+description: "Batch over 50ms window. Deduplicate. Route by content type."
+icon: "🔀"
+command: npx
+args:
+  - "@stockyard/mcp-embedrouter"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - embeddings
+  - routing
+  - batch
+  - dedup

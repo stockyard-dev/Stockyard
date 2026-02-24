@@ -1,0 +1,17 @@
+name: stockyard-playbackstudio
+display_name: "Stockyard PlaybackStudio"
+description: "Advanced filters. Conversation threads. Side-by-side. Bulk actions."
+icon: "🎪"
+command: npx
+args:
+  - "@stockyard/mcp-playbackstudio"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - playground
+  - explore
+  - logs
+  - interactive

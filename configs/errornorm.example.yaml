@@ -1,0 +1,11 @@
+# ErrorNorm — Normalize errors across providers.
+# Copy to errornorm.yaml and set your API keys.
+
+port: 6440
+errornorm:
+  enabled: true
+  schema: { error_code: int, message: string, provider: string, retry_after: int, retryable: bool }
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

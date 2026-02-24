@@ -1,0 +1,12 @@
+# CostPredict — Predict request cost before sending.
+# Copy to costpredict.yaml and set your API keys.
+
+port: 6280
+costpredict:
+  enabled: true
+  block_above: 1.00
+  output_estimate_ratio: 0.5
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-secretscan
+display_name: "Stockyard SecretScan"
+description: "Detect and redact API keys, AWS credentials, tokens, and secrets in LLM requests and responses. TruffleHog-style pattern matching."
+icon: "🔐"
+command: npx
+args:
+  - "@stockyard/mcp-secretscan"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - security
+  - secrets
+  - api-key
+  - credential
+  - leak
+  - redaction
+  - proxy

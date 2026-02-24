@@ -1,0 +1,11 @@
+# CliDash — Terminal dashboard for your LLM stack.
+# Copy to clidash.yaml and set your API keys.
+
+port: 6500
+clidash:
+  refresh_interval: 1s
+  panels: [requests, cache, spend, errors, models]
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

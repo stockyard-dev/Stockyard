@@ -1,0 +1,38 @@
+{
+  "name": "stockyard-routefall",
+  "display_name": "Stockyard FallbackRouter",
+  "description": "Automatic failover routing between LLM providers. When OpenAI is down, traffic auto-routes to Anthropic or Groq. Circuit breaker pattern included.",
+  "repository": "https://github.com/stockyard-dev/mcp-routefall",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-routefall"
+  ],
+  "tools": [
+    {
+      "name": "routefall_provider_status",
+      "description": "Get health status of all configured LLM providers."
+    },
+    {
+      "name": "routefall_routing_stats",
+      "description": "Get routing statistics: requests per provider, failover counts, circuit breaker trips."
+    },
+    {
+      "name": "routefall_set_primary",
+      "description": "Change the primary provider for routing."
+    },
+    {
+      "name": "routefall_proxy_status",
+      "description": "Check if the FallbackRouter proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "failover",
+    "fallback",
+    "routing",
+    "circuit-breaker",
+    "openai",
+    "anthropic",
+    "proxy"
+  ]
+}

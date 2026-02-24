@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-toolshield",
+  "display_name": "Stockyard ToolShield",
+  "description": "Intercept tool_use. Validate args. Per-tool permissions and rate limits.",
+  "repository": "https://github.com/stockyard-dev/mcp-toolshield",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-toolshield"
+  ],
+  "tools": [
+    {
+      "name": "toolshield_stats",
+      "description": "Get tool validation stats."
+    }
+  ],
+  "tags": [
+    "tools",
+    "validation",
+    "sandbox",
+    "permissions"
+  ]
+}

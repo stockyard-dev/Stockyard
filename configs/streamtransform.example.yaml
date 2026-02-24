@@ -1,0 +1,13 @@
+# StreamTransform — Transform streams mid-flight.
+# Copy to streamtransform.yaml and set your API keys.
+
+port: 6400
+streamtransform:
+  pipeline:
+    - strip_markdown
+    - redact_pii
+  buffer_size: 5  # chunks
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

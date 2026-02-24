@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-streamsnap
+display_name: "Stockyard StreamSnap"
+description: "SSE stream capture with zero latency overhead. Record TTFT, tokens/sec, and full responses. Replay captured streams for testing."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-streamsnap"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - stream
+  - sse
+  - capture
+  - replay
+  - ttft
+  - latency
+  - proxy

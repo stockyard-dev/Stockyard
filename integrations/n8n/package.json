@@ -1,0 +1,39 @@
+{
+  "name": "n8n-nodes-stockyard",
+  "version": "0.1.0",
+  "description": "n8n community node for Stockyard — LLM cost caps, caching, rate limiting, and analytics",
+  "keywords": ["n8n-community-node-package", "n8n", "llm", "openai", "proxy", "cost", "cache", "stockyard"],
+  "license": "MIT",
+  "homepage": "https://stockyard.dev/n8n",
+  "author": {
+    "name": "Stockyard",
+    "url": "https://stockyard.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stockyard-dev/n8n-nodes-stockyard"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes credentials --ext .ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/StockyardApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Stockyard/Stockyard.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "n8n-workflow": "*",
+    "typescript": "^5.0.0"
+  }
+}

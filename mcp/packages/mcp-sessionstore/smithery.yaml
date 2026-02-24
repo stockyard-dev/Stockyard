@@ -1,0 +1,17 @@
+name: stockyard-sessionstore
+display_name: "Stockyard SessionStore"
+description: "Create/resume/list/delete sessions. Full history. Metadata. Concurrent limits."
+icon: "💬"
+command: npx
+args:
+  - "@stockyard/mcp-sessionstore"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - session
+  - conversation
+  - history
+  - management

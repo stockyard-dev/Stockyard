@@ -1,0 +1,17 @@
+# SynthGen — Generate synthetic training data.
+# Copy to synthgen.yaml and set your API keys.
+
+port: 5990
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+synthgen:
+  template: "Generate a customer support conversation about {{topic}}"
+  topics: [billing, shipping, returns, product_info]
+  samples_per_topic: 100
+  min_quality: 0.8
+  deduplicate: true
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

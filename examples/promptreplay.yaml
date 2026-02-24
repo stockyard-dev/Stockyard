@@ -1,0 +1,13 @@
+# PromptReplay — See every LLM call your app made. Replay any of them.
+port: 4105
+product: promptreplay
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+
+logging:
+  store_bodies: true
+  retention_days: 90

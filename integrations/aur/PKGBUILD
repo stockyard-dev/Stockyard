@@ -1,0 +1,13 @@
+pkgname=stockyard
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="LLM infrastructure proxy — 125 tools in one binary"
+arch=('x86_64' 'aarch64')
+url="https://stockyard.dev"
+license=('MIT')
+source_x86_64=("https://github.com/stockyard-dev/stockyard/releases/download/v${pkgver}/stockyard_linux_amd64.tar.gz")
+source_aarch64=("https://github.com/stockyard-dev/stockyard/releases/download/v${pkgver}/stockyard_linux_arm64.tar.gz")
+
+package() {
+  install -Dm755 stockyard "${pkgdir}/usr/bin/stockyard"
+}

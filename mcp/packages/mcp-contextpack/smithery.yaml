@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-contextpack
+display_name: "Stockyard ContextPack"
+description: "Rule-based context injection from local files. Keyword-matched chunks injected into prompts automatically. No embeddings, no vector DB."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-contextpack"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - rag
+  - context
+  - injection
+  - files
+  - knowledge
+  - retrieval
+  - proxy

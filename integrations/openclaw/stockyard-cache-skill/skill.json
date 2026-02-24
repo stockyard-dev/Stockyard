@@ -1,0 +1,28 @@
+{
+  "name": "stockyard-cache-skill",
+  "display_name": "Stockyard Cache",
+  "description": "Response caching for your LLM calls. Same question = instant cached answer, saves 30-50%.",
+  "version": "0.1.0",
+  "author": "Stockyard",
+  "homepage": "https://github.com/stockyard-dev/stockyard-cache-skill",
+  "main": "index.js",
+  "tools": [
+    {
+      "name": "cache_stats",
+      "description": "Show cache hit rate and savings",
+      "parameters": {}
+    },
+    {
+      "name": "cache_clear",
+      "description": "Clear the cache",
+      "parameters": {}
+    }
+  ],
+  "tags": [
+    "llm",
+    "proxy",
+    "cost",
+    "openai"
+  ],
+  "license": "MIT"
+}

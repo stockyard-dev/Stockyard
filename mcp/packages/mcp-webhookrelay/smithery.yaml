@@ -1,0 +1,17 @@
+name: stockyard-webhookrelay
+display_name: "Stockyard WebhookRelay"
+description: "Receive webhooks, extract data, build prompts, call LLM, send results. GitHub→summarize→Slack in one config."
+icon: "🔗"
+command: npx
+args:
+  - "@stockyard/mcp-webhookrelay"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - webhook
+  - trigger
+  - event-driven
+  - automation

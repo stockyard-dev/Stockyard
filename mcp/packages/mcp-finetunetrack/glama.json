@@ -1,0 +1,22 @@
+{
+  "name": "stockyard-finetunetrack",
+  "display_name": "Stockyard FineTuneTrack",
+  "description": "Eval suite. Run periodically. Track scores. Compare to base model.",
+  "repository": "https://github.com/stockyard-dev/mcp-finetunetrack",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-finetunetrack"
+  ],
+  "tools": [
+    {
+      "name": "finetunetrack_stats",
+      "description": "Get fine-tune tracking stats."
+    }
+  ],
+  "tags": [
+    "fine-tune",
+    "monitoring",
+    "evaluation",
+    "drift"
+  ]
+}

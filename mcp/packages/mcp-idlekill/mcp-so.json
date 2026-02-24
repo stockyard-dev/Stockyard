@@ -1,0 +1,21 @@
+{
+  "name": "@stockyard/mcp-idlekill",
+  "title": "IdleKill — Kill runaway LLM requests before they drain your wallet",
+  "description": "Request watchdog middleware. Kill LLM requests exceeding time, token, or cost limits. Stop agent loops, hanging streams, and runaway completions.",
+  "install": "npx @stockyard/mcp-idlekill",
+  "config": {
+    "command": "npx",
+    "args": [
+      "@stockyard/mcp-idlekill"
+    ],
+    "env": {
+      "OPENAI_API_KEY": "your-key"
+    }
+  },
+  "tools_count": 5,
+  "categories": [
+    "llm",
+    "proxy",
+    "developer-tools"
+  ]
+}

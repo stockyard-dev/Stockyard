@@ -1,0 +1,14 @@
+# LoadForge — Load test your LLM stack.
+# Copy to loadforge.yaml and set your API keys.
+
+port: 6310
+loadforge:
+  profile:
+    concurrent: 50
+    duration: 60s
+    ramp_up: 10s
+  target: http://localhost:4000/v1
+
+# Common settings
+data_dir: ~/.stockyard
+log_level: info

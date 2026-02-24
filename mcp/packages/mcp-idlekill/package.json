@@ -1,0 +1,48 @@
+{
+  "name": "@stockyard/mcp-idlekill",
+  "version": "0.1.0",
+  "description": "Request watchdog middleware. Kill LLM requests exceeding time, token, or cost limits. Stop agent loops, hanging streams, and runaway completions.",
+  "main": "index.js",
+  "bin": {
+    "mcp-stockyard-idlekill": "index.js"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "llm",
+    "timeout",
+    "watchdog",
+    "runaway",
+    "cost",
+    "agent",
+    "kill",
+    "proxy",
+    "stockyard",
+    "model-context-protocol",
+    "cursor",
+    "claude-desktop"
+  ],
+  "author": "Stockyard",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stockyard-dev/mcp-idlekill"
+  },
+  "homepage": "https://stockyard.dev/mcp/idlekill",
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "index.js",
+    "README.md"
+  ]
+}

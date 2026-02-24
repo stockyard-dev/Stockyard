@@ -1,0 +1,46 @@
+# EvalGate — Response Quality Scoring & Auto-Retry
+# Never ship a broken LLM response to your users.
+
+port: 4110
+data_dir: ~/.stockyard
+log_level: info
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    base_url: https://api.openai.com/v1
+    timeout: 30s
+
+evalgate:
+  enabled: true
+  retry_budget: 3  # max total retries per request
+
+  validators:
+    - name: json_valid
+      type: json_parse
+      on_fail: retry
+
+    - name: min_length
+      type: min_tokens
+      value: 50
+      on_fail: retry
+
+    - name: no_refusal
+      type: regex_absent
+      pattern: "I cannot|I'm unable|As an AI"
+      on_fail: retry
+
+    - name: max_length
+      type: max_tokens
+      value: 4000
+      on_fail: log
+
+  retry:
+    max_attempts: 3
+    fallback_model: gpt-4o
+    timeout: 30s
+
+projects:
+  default:
+    provider: openai
+    model: gpt-4o-mini

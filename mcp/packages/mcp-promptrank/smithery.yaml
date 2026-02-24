@@ -1,0 +1,17 @@
+name: stockyard-promptrank
+display_name: "Stockyard PromptRank"
+description: "Per template: cost, quality, latency, volume, feedback. ROI leaderboard."
+icon: "🏆"
+command: npx
+args:
+  - "@stockyard/mcp-promptrank"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - analytics
+  - prompt
+  - roi
+  - ranking

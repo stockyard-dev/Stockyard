@@ -1,0 +1,27 @@
+{
+  "name": "stockyard-llmbench",
+  "display_name": "Stockyard LLMBench",
+  "description": "Per-model performance tracking: latency, cost, tokens. Compare models on your actual traffic.",
+  "repository": "https://github.com/stockyard-dev/mcp-llmbench",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-llmbench"
+  ],
+  "tools": [
+    {
+      "name": "llmbench_stats",
+      "description": "Get benchmark results per model."
+    },
+    {
+      "name": "llmbench_compare",
+      "description": "Compare two models side by side."
+    }
+  ],
+  "tags": [
+    "benchmark",
+    "performance",
+    "comparison",
+    "latency",
+    "cost"
+  ]
+}

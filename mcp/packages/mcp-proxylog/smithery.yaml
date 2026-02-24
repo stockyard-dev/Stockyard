@@ -1,0 +1,17 @@
+name: stockyard-proxylog
+display_name: "Stockyard ProxyLog"
+description: "Each middleware emits decision log. Per-request trace. X-Proxy-Trace header."
+icon: "📋"
+command: npx
+args:
+  - "@stockyard/mcp-proxylog"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - logging
+  - decisions
+  - trace
+  - debug

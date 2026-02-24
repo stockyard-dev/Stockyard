@@ -1,0 +1,41 @@
+{
+  "name": "stockyard-toxicfilter",
+  "display_name": "Stockyard ToxicFilter",
+  "description": "Content moderation middleware for LLM responses. Block, redact, or flag harmful, hateful, or unsafe content before it reaches users.",
+  "repository": "https://github.com/stockyard-dev/mcp-toxicfilter",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-toxicfilter"
+  ],
+  "tools": [
+    {
+      "name": "toxicfilter_stats",
+      "description": "Get moderation statistics: total scanned, blocks, flags, breakdown by category."
+    },
+    {
+      "name": "toxicfilter_test",
+      "description": "Test a text string against moderation rules without sending to LLM."
+    },
+    {
+      "name": "toxicfilter_set_action",
+      "description": "Change the default moderation action."
+    },
+    {
+      "name": "toxicfilter_categories",
+      "description": "List active moderation categories and their rules."
+    },
+    {
+      "name": "toxicfilter_proxy_status",
+      "description": "Check if the ToxicFilter proxy is running and healthy."
+    }
+  ],
+  "tags": [
+    "llm",
+    "moderation",
+    "safety",
+    "toxic",
+    "content-filter",
+    "harmful",
+    "proxy"
+  ]
+}

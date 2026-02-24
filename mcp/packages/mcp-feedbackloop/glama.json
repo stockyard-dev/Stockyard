@@ -1,0 +1,30 @@
+{
+  "name": "stockyard-feedbackloop",
+  "display_name": "Stockyard FeedbackLoop",
+  "description": "Collect user ratings and feedback linked to specific LLM requests. Track quality trends over time.",
+  "repository": "https://github.com/stockyard-dev/mcp-feedbackloop",
+  "command": "npx",
+  "args": [
+    "@stockyard/mcp-feedbackloop"
+  ],
+  "tools": [
+    {
+      "name": "feedbackloop_stats",
+      "description": "Get feedback stats: total ratings, average score, trends."
+    },
+    {
+      "name": "feedbackloop_submit",
+      "description": "Submit feedback for a request."
+    },
+    {
+      "name": "feedbackloop_recent",
+      "description": "List recent feedback entries."
+    }
+  ],
+  "tags": [
+    "feedback",
+    "ratings",
+    "quality",
+    "improvement"
+  ]
+}

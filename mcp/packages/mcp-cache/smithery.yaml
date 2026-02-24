@@ -1,0 +1,22 @@
+# Smithery Marketplace Configuration
+name: stockyard-llmcache
+display_name: "Stockyard CacheLayer"
+description: "Intelligent LLM response caching. Exact-match caching with configurable TTL. Reduces costs and latency for repeated prompts."
+icon: "🔧"
+command: npx
+args:
+  - "@stockyard/mcp-cache"
+env:
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+    secret: true
+tags:
+  - llm
+  - cache
+  - caching
+  - cost
+  - latency
+  - openai
+  - proxy
+  - redis-free
