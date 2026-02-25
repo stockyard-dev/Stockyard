@@ -1,24 +1,19 @@
-.PHONY: all build test clean snapshot release docker-build npm-publish export-site check-links
-
-# Officially shipping products (see PRODUCTS_SHIPPING.md)
-PRODUCTS = costcap llmcache jsonguard routefall rateshield promptreplay \
-           keypool promptguard modelswitch evalgate usagepulse \
-           promptpad tokentrim batchqueue multicall streamsnap llmtap contextpack retrypilot \
-           stockyard
-
-# Infrastructure tools
-TOOLS = sy-keygen sy-api sy-docs
+.PHONY: all build test clean run dev check lint
 
 VERSION ?= dev
 
 all: build
 
+# Build the unified binary
 build:
-	@for p in $(PRODUCTS) $(TOOLS); do \
-		echo "Building $$p..."; \
-		CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/$$p ./cmd/$$p; \
-	done
-	@echo "Done. $(words $(PRODUCTS)) products + $(words $(TOOLS)) tools in dist/"
+	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard ./cmd/stockyard
+	@echo "Built dist/stockyard ($(VERSION))"
+
+# Build all binaries (unified + tools)
+build-all: build
+	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-api ./cmd/sy-api
+	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-keygen ./cmd/sy-keygen
+	@echo "Built 3 binaries in dist/"
 
 test:
 	go test ./... -count=1 -race -timeout 120s
@@ -37,48 +32,27 @@ lint:
 clean:
 	rm -rf dist/ coverage.out
 
-# Run individual products
-run-%:
-	go run ./cmd/$*
+# Run locally
+run:
+	go run ./cmd/stockyard
 
-# Verify all shipping binaries compile
+dev:
+	STOCKYARD_ADMIN_KEY=dev go run ./cmd/stockyard
+
+# Verify it compiles
 check:
-	@for p in $(PRODUCTS) $(TOOLS); do \
-		echo -n "$$p: "; \
-		CGO_ENABLED=0 go build -o /dev/null ./cmd/$$p && echo "ok" || echo "FAIL"; \
-	done
+	CGO_ENABLED=0 go build -o /dev/null ./cmd/stockyard && echo "stockyard: ok"
+	CGO_ENABLED=0 go build -o /dev/null ./cmd/sy-api && echo "sy-api: ok"
 
-# Export documentation + product pages as static site
-export-site:
-	./export-site.sh
-
-# Check for broken internal links in dist/
-check-links:
-	./check-links.sh
-
-# GoReleaser
-snapshot:
-	goreleaser build --snapshot --clean
-
-release:
-	goreleaser release --clean
+# Cross-compile for releases
+release-build:
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_linux_amd64 ./cmd/stockyard
+	GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_linux_arm64 ./cmd/stockyard
+	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_darwin_amd64 ./cmd/stockyard
+	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_darwin_arm64 ./cmd/stockyard
+	@echo "Built 4 release binaries in dist/"
 
 # Docker
-docker-build:
-	@for p in $(PRODUCTS); do \
-		echo "Building Docker image for $$p..."; \
-		docker build --build-arg PRODUCT=$$p --build-arg VERSION=$(VERSION) -t ghcr.io/stockyard-dev/$$p:$(VERSION) .; \
-		docker tag ghcr.io/stockyard-dev/$$p:$(VERSION) ghcr.io/stockyard-dev/$$p:latest; \
-	done
-
-docker-push:
-	@for p in $(PRODUCTS); do \
-		docker push ghcr.io/stockyard-dev/$$p:$(VERSION); \
-		docker push ghcr.io/stockyard-dev/$$p:latest; \
-	done
-
-npm-publish:
-	@for p in $(PRODUCTS); do \
-		echo "Publishing @stockyard/$$p..."; \
-		cd npm/$$p && npm version $(VERSION) --no-git-tag-version && npm publish --access public && cd ../..; \
-	done
+docker:
+	docker build -t stockyard:$(VERSION) .
+	docker tag stockyard:$(VERSION) stockyard:latest
