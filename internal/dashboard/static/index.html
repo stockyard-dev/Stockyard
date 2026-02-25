@@ -3,494 +3,408 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>__PRODUCT_NAME__ Dashboard</title>
+<title>__PRODUCT_NAME__ Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script type="module">
-import{h,render}from'https://esm.sh/preact@10.19.3';import{useState,useEffect,useRef,useCallback}from'https://esm.sh/preact@10.19.3/hooks';import htm from'https://esm.sh/htm@3.1.1';
+import{h,render}from'https://esm.sh/preact@10.19.3';import{useState,useEffect,useCallback}from'https://esm.sh/preact@10.19.3/hooks';import htm from'https://esm.sh/htm@3.1.1';
 const html=htm.bind(h);
 
-const PRODUCTS={
-  costcap:{name:'CostCap',icon:'$',badge:'FREE'},
-  llmcache:{name:'CacheLayer',icon:'\u26A1',badge:'FREE'},
-  jsonguard:{name:'StructuredShield',icon:'\u2713',badge:'FREE'},
-  routefall:{name:'FallbackRouter',icon:'\u21C4',badge:'FREE'},
-  rateshield:{name:'RateShield',icon:'\u2298',badge:'FREE'},
-  promptreplay:{name:'PromptReplay',icon:'\u25B6',badge:'FREE'},
-  llmkit:{name:'LLMKit',icon:'\u25C6',badge:'SUITE'}
+// ─── Config ────────────────────────────────────────────────────────────
+const APPS={
+  overview:{id:'overview',name:'Overview',icon:'\u25A3',desc:'System status and health'},
+  proxy:{id:'proxy',name:'Proxy',icon:'\u25C8',desc:'Middleware chain & providers',accent:'#06B6D4',
+    tabs:['modules','providers','routes'],
+    endpoints:{modules:'/api/proxy/modules',providers:'/api/proxy/providers',routes:'/api/proxy/routes',status:'/api/proxy/status'}},
+  observe:{id:'observe',name:'Observe',icon:'\u25CE',desc:'Traces, costs & anomalies',accent:'#F59E0B',
+    tabs:['traces','costs','alerts','anomalies'],
+    endpoints:{overview:'/api/observe/overview',traces:'/api/observe/traces',costs:'/api/observe/costs',daily:'/api/observe/costs/daily',alerts:'/api/observe/alerts',anomalies:'/api/observe/anomalies'}},
+  trust:{id:'trust',name:'Trust',icon:'\u2B21',desc:'Audit ledger & compliance',accent:'#10B981',
+    tabs:['ledger','evidence','policies'],
+    endpoints:{ledger:'/api/trust/ledger',verify:'/api/trust/ledger/verify',evidence:'/api/trust/evidence',policies:'/api/trust/policies',status:'/api/trust/status'}},
+  studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts, experiments & benchmarks',accent:'#A78BFA',
+    tabs:['templates','experiments','benchmarks','snapshots'],
+    endpoints:{templates:'/api/studio/templates',experiments:'/api/studio/experiments',benchmarks:'/api/studio/benchmarks',snapshots:'/api/studio/snapshots',status:'/api/studio/status'}},
+  forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows, tools & sessions',accent:'#F43F5E',
+    tabs:['workflows','runs','tools','sessions'],
+    endpoints:{workflows:'/api/forge/workflows',runs:'/api/forge/runs',tools:'/api/forge/tools',sessions:'/api/forge/sessions',batch:'/api/forge/batch',status:'/api/forge/status'}},
+  exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Packs, environments & sync',accent:'#3B82F6',
+    tabs:['packs','installed','environments'],
+    endpoints:{packs:'/api/exchange/packs',installed:'/api/exchange/installed',environments:'/api/exchange/environments',synclog:'/api/exchange/sync-log',status:'/api/exchange/status'}},
 };
-const PK=document.documentElement.dataset.product||'costcap';
-const P=PRODUCTS[PK]||PRODUCTS.costcap;
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange'];
 
-async function api(p){try{const r=await fetch('/api'+p);if(!r.ok)return null;return await r.json()}catch{return null}}
-
-function useSSE(onEvent){
-  const[connected,setConnected]=useState(false);
-  const cb=useRef(onEvent);cb.current=onEvent;
-  useEffect(()=>{
-    let es,rt;
-    function connect(){
-      es=new EventSource('/ui/events');
-      es.onopen=()=>setConnected(true);
-      es.onmessage=(e)=>{try{cb.current(JSON.parse(e.data))}catch{}};
-      es.onerror=()=>{setConnected(false);es.close();rt=setTimeout(connect,3000)};
-    }
-    connect();
-    return()=>{es&&es.close();clearTimeout(rt)};
-  },[]);
-  return connected;
-}
-
-function useTheme(){
-  const[theme,set]=useState(()=>localStorage.getItem('llmkit-theme')||'dark');
-  const apply=useCallback(t=>{document.documentElement.dataset.theme=t;localStorage.setItem('llmkit-theme',t);set(t)},[]);
-  useEffect(()=>{document.documentElement.dataset.theme=theme},[]);
-  return{theme,toggle:useCallback(()=>apply(theme==='dark'?'light':'dark'),[theme,apply])};
-}
+async function api(path){try{const r=await fetch(path);if(!r.ok)return{_error:r.status};return await r.json()}catch(e){return{_error:e.message}}}
 
 const fmt={
-  usd:v=>v<0.01?'$'+v.toFixed(4):'$'+v.toFixed(2),
-  compact:v=>v>=1000?(v/1000).toFixed(1)+'K':String(v),
-  ms:v=>v>=1000?(v/1000).toFixed(1)+'s':v+'ms',
-  pct:(v,t)=>t>0?Math.round(v/t*100)+'%':'0%',
-  time:ts=>{if(!ts)return'--:--:--';return new Date(ts).toLocaleTimeString('en-US',{hour12:false})}
+  usd:v=>v==null?'\u2014':v<0.01&&v>0?'$'+v.toFixed(4):'$'+v.toFixed(2),
+  num:v=>v==null?'\u2014':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(1)+'K':String(v),
+  ms:v=>v==null?'\u2014':v>=1000?(v/1000).toFixed(1)+'s':Math.round(v)+'ms',
+  ago:ts=>{if(!ts)return'\u2014';const s=Math.floor((Date.now()-new Date(ts))/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'},
+  trunc:(s,n=60)=>s&&s.length>n?s.substring(0,n)+'\u2026':s||'\u2014',
+  hash:s=>s?s.substring(0,12)+'\u2026':'\u2014',
 };
 
-function StatusDot({active}){return html`<span class="status-dot ${active?'active':''}"></span>`}
-
-function MetricCard({label,value,sub,progress,accent}){
-  return html`<div class="metric-card">
-    <div class="metric-label">${label}</div>
-    <div class="metric-value ${accent?'accent':''}">${value}</div>
-    ${sub&&html`<div class="metric-sub">${sub}</div>`}
-    ${progress&&html`<div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill ${progress.pct>90?'danger':progress.pct>70?'warn':''}" style="width:${Math.min(progress.pct,100)}%"></div></div>
-      <div class="progress-labels"><span>${progress.min}</span><span>${progress.max}</span></div>
-    </div>`}
-  </div>`;
+// ─── Shared components ─────────────────────────────────────────────────
+function Stat({label,value,sub,accent}){
+  return html`<div class="stat"><div class="stat-label">${label}</div><div class="stat-value ${accent?'accent':''}">${value}</div>${sub&&html`<div class="stat-sub">${sub}</div>`}</div>`;
 }
 
-function BarChart({data,label:cl}){
-  if(!data||!data.length)return null;
-  const mx=Math.max(...data.map(d=>d.value),0.01);
-  return html`<div class="card">
-    <div class="card-header"><span class="card-title">${cl}</span><span class="card-action">Export \u2197</span></div>
-    <div class="bar-chart">${data.map((d,i)=>html`<div class="bar-group" key=${i}>
-      <div class="bar ${d.highlight?'today':''}" style="height:${Math.max(d.value/mx*100,3)}%"><span class="bar-tooltip">${fmt.usd(d.value)}</span></div>
-      <span class="bar-label" style="${d.highlight?'color:var(--accent);font-weight:600':''}}">${d.label}</span>
+function Badge({text,variant}){return html`<span class="badge ${variant||''}">${text}</span>`}
+
+function TabBar({tabs,active,onChange}){
+  return html`<div class="tab-bar">${tabs.map(t=>html`<button key=${t} class="tab ${active===t?'active':''}" onClick=${()=>onChange(t)}>${t}</button>`)}</div>`;
+}
+
+function DataTable({columns,rows,emptyMsg}){
+  if(!rows||rows.length===0)return html`<div class="empty-state">${emptyMsg||'No data yet'}</div>`;
+  const gc=columns.map(c=>c.width||'1fr').join(' ');
+  return html`<div class="data-table">
+    <div class="dt-head" style="grid-template-columns:${gc}">${columns.map(c=>html`<span key=${c.key}>${c.label}</span>`)}</div>
+    <div class="dt-body">${rows.map((row,i)=>html`<div key=${row.id||i} class="dt-row" style="grid-template-columns:${gc}">
+      ${columns.map(c=>html`<span key=${c.key} class="${c.mono?'mono':''} ${c.accent?'dt-accent':''}">${c.render?c.render(row):row[c.key]||'\u2014'}</span>`)}
     </div>`)}</div>
   </div>`;
 }
 
-function ModelBreakdown({models}){
-  if(!models||!models.length)return null;
-  const total=models.reduce((s,m)=>s+m.cost,0);
-  return html`<div class="card">
-    <div class="card-header"><span class="card-title">Top Models by Cost</span><span class="card-action">This month \u25BE</span></div>
-    <div class="model-list">
-      ${models.map(m=>html`<div class="model-row" key=${m.name}>
-        <div class="model-info"><span class="model-name">${m.name}</span><span class="model-cost">${fmt.usd(m.cost)} <span class="model-percent">${fmt.pct(m.cost,total)}</span></span></div>
-        <div class="model-bar"><div class="model-bar-fill" style="width:${total>0?m.cost/total*100:0}%"></div></div>
-      </div>`)}
-      <div class="model-row" style="margin-top:6px;padding-top:12px;border-top:1px solid var(--border-subtle)">
-        <div class="model-info"><span class="model-name" style="color:var(--text-tertiary);font-weight:400">Total</span><span class="model-cost" style="color:var(--text-primary);font-weight:700">${fmt.usd(total)}</span></div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function LogTable({rows}){
-  return html`<div class="log-card">
-    <div class="log-header">
-      <span class="log-title"><span class="live-dot"></span>Recent Requests</span>
-      <div class="log-search"><span class="log-search-icon">\u2315</span><input type="text" placeholder="Search requests..."/></div>
-    </div>
-    <div class="log-table">
-      <div class="log-table-head"><span>Time</span><span>Prompt</span><span>Model</span><span>Tokens</span><span>Latency</span><span>Cost</span></div>
-      <div class="log-rows">
-        ${rows.map((r,i)=>html`<div class="log-row ${i===0?'new':''}" key=${r.id||i}>
-          <span class="log-time">${fmt.time(r.timestamp)}</span>
-          <span class="log-prompt">${r.prompt||'\u2014'}</span>
-          <span class="log-model">${r.model||'\u2014'}</span>
-          <span class="log-tokens">${r.tokens_in||0} \u2192 ${r.tokens_out||0}</span>
-          <span class="log-latency">${fmt.ms(r.latency_ms||0)}</span>
-          <span class="log-cost">${fmt.usd(r.cost_usd||0)}</span>
-        </div>`)}
-        ${rows.length===0&&html`<div class="log-empty">No requests yet. Point your app at this proxy to get started.</div>`}
-      </div>
-    </div>
-  </div>`;
-}
-
-function Sidebar({theme,onThemeToggle,connected,activeView,onNavigate}){
-  const navItems={
-    costcap:[{id:'overview',icon:'\u25C9',label:'Overview'},{id:'projects',icon:'\u229E',label:'Projects'},{id:'logs',icon:'\u2261',label:'Request Log'}],
-    llmcache:[{id:'overview',icon:'\u25C9',label:'Overview'},{id:'entries',icon:'\u229E',label:'Cache Entries'},{id:'logs',icon:'\u2261',label:'Request Log'}],
-    jsonguard:[{id:'overview',icon:'\u25C9',label:'Overview'},{id:'schemas',icon:'\u229E',label:'Schemas'},{id:'logs',icon:'\u2261',label:'Failures'}],
-    routefall:[{id:'overview',icon:'\u25C9',label:'Overview'},{id:'health',icon:'\u2665',label:'Provider Health'},{id:'logs',icon:'\u2261',label:'Events'}],
-    rateshield:[{id:'overview',icon:'\u25C9',label:'Overview'},{id:'rules',icon:'\u229E',label:'Rate Rules'},{id:'logs',icon:'\u2261',label:'Events'}],
-    promptreplay:[{id:'overview',icon:'\u25C9',label:'All Requests'},{id:'replay',icon:'\u25B6',label:'Replay'}],
-    llmkit:[{id:'overview',icon:'\u25C9',label:'Overview'},{id:'spend',icon:'$',label:'Spend'},{id:'cache',icon:'\u26A1',label:'Cache'},{id:'routing',icon:'\u21C4',label:'Routing'},{id:'logs',icon:'\u2261',label:'Request Log'}]
-  };
-  const items=navItems[PK]||navItems.costcap;
-  return html`<nav class="sidebar">
-    <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">${P.icon}</div>
-      <span class="sidebar-brand-name">${P.name}</span>
-      <span class="sidebar-brand-badge">${P.badge}</span>
-    </div>
-    <div class="sidebar-section-label">Dashboard</div>
-    ${items.map(item=>html`<a key=${item.id} class="sidebar-item ${activeView===item.id?'active':''}" onClick=${()=>onNavigate(item.id)}>
-      <span class="sidebar-item-icon">${item.icon}</span>${item.label}
-      ${item.id==='overview'&&html`<${StatusDot} active=${connected}/>`}
-    </a>`)}
-    <div class="sidebar-section-label">Configure</div>
-    <a class="sidebar-item" onClick=${()=>onNavigate('providers')}><span class="sidebar-item-icon">\u2B21</span>Providers</a>
-    <a class="sidebar-item" onClick=${()=>onNavigate('settings')}><span class="sidebar-item-icon">\u2699</span>Settings</a>
-    <div class="sidebar-spacer"></div>
-    <div class="sidebar-footer">
-      <div class="theme-toggle" onClick=${onThemeToggle}>
-        <span class="sidebar-item-icon">${theme==='dark'?'\u263E':'\u2600'}</span>
-        <span>${theme==='dark'?'Dark mode':'Light mode'}</span>
-        <div class="theme-toggle-track"><div class="theme-toggle-thumb"></div></div>
-      </div>
-      <a class="sidebar-item" style="margin-top:4px" href="https://llmkit.dev/docs" target="_blank"><span class="sidebar-item-icon">?</span>Docs</a>
-    </div>
-  </nav>`;
-}
-
-function CostCapOverview({spend,logs,history,models}){
-  const td=spend.today||0,mo=spend.month||0,dc=spend.dailyCap||5,mc=spend.monthlyCap||100;
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Today'];
-  const chart=(history||[]).length>0?history.slice(-7).map((d,i,a)=>({label:i===a.length-1?'Today':new Date(d.date).toLocaleDateString('en-US',{weekday:'short'}),value:d.cost||0,highlight:i===a.length-1})):days.map((d,i)=>({label:d,value:i===days.length-1?td:Math.random()*td*1.5,highlight:i===days.length-1}));
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Today's Spend" value=${fmt.usd(td)} accent progress=${{pct:dc>0?td/dc*100:0,min:'$0',max:'cap: '+fmt.usd(dc)}}/>
-      <${MetricCard} label="This Month" value=${fmt.usd(mo)} progress=${{pct:mc>0?mo/mc*100:0,min:'$0',max:'cap: '+fmt.usd(mc)}}/>
-      <${MetricCard} label="Requests Today" value=${fmt.compact(logs.length)} sub=${logs.length>0?'avg '+fmt.usd(td/logs.length)+'/req':'waiting for requests...'}/>
-    </div>
-    <div class="content-grid">
-      <${BarChart} data=${chart} label="Daily Spend \u2014 Last 7 Days"/>
-      <${ModelBreakdown} models=${models}/>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function CacheOverview({cacheStats,logs}){
-  const hr=cacheStats.hitRate||0,sv=cacheStats.costSaved||0,en=cacheStats.entries||0;
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Cache Hit Rate" value=${hr+'%'} accent progress=${{pct:hr,min:'0%',max:'100%'}}/>
-      <${MetricCard} label="Cost Saved" value=${fmt.usd(sv)} sub="this month"/>
-      <${MetricCard} label="Cache Entries" value=${fmt.compact(en)} sub=${(cacheStats.sizeMB||0)+' MB'}/>
-    </div>
-    <div class="content-grid">
-      <div class="card"><div class="card-header"><span class="card-title">Latency Comparison</span></div>
-        <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px">
-          <div><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span class="model-name">Uncached</span><span class="model-cost">${fmt.ms(cacheStats.avgLatencyMiss||1240)}</span></div><div class="model-bar"><div class="model-bar-fill" style="width:100%;opacity:0.4"></div></div></div>
-          <div><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span class="model-name">Cached</span><span class="model-cost" style="color:var(--accent)">${fmt.ms(cacheStats.avgLatencyHit||48)}</span></div><div class="model-bar"><div class="model-bar-fill" style="width:${Math.max(4,(cacheStats.avgLatencyHit||48)/(cacheStats.avgLatencyMiss||1240)*100)}%"></div></div></div>
-        </div>
-      </div>
-      <div class="card"><div class="card-header"><span class="card-title">Cache Info</span><span class="card-action" onClick=${()=>fetch('/api/cache',{method:'DELETE'})}>Clear Cache</span></div>
-        <div class="model-list">
-          <div class="model-row"><div class="model-info"><span class="model-name" style="font-family:var(--font-body)">Entries</span><span class="model-cost">${fmt.compact(en)}</span></div></div>
-          <div class="model-row"><div class="model-info"><span class="model-name" style="font-family:var(--font-body)">Strategy</span><span class="model-cost">exact-match</span></div></div>
-          <div class="model-row"><div class="model-info"><span class="model-name" style="font-family:var(--font-body)">TTL</span><span class="model-cost">1 hour</span></div></div>
-        </div>
-      </div>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function ShieldOverview({spend,logs}){
-  const total=logs.length||0;
-  const passed=logs.filter(r=>r.status===200).length;
-  const retried=logs.filter(r=>r.validation_retries>0).length;
-  const failed=total-passed;
-  const passRate=total>0?Math.round(passed/total*100):100;
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Pass Rate" value=${passRate+'%'} accent progress=${{pct:passRate,min:'0%',max:'100%'}}/>
-      <${MetricCard} label="Auto-Fixed" value=${String(retried)} sub="retries that saved the day"/>
-      <${MetricCard} label="Hard Failures" value=${String(failed)} sub=${total>0?fmt.pct(failed,total)+' of requests':'no failures yet'}/>
-    </div>
-    <div class="content-grid">
-      <div class="card"><div class="card-header"><span class="card-title">Validation Over Time</span></div>
-        <div style="display:flex;align-items:center;justify-content:center;height:140px;color:var(--text-tertiary);font-size:0.85rem">Chart updates with live data</div>
-      </div>
-      <div class="card"><div class="card-header"><span class="card-title">Schema Stats</span><span class="card-action">Manage \u2197</span></div>
-        <div class="model-list">
-          <div class="model-row"><div class="model-info"><span class="model-name" style="font-family:var(--font-body)">Total Validated</span><span class="model-cost">${fmt.compact(total)}</span></div></div>
-          <div class="model-row"><div class="model-info"><span class="model-name" style="font-family:var(--font-body)">Pass Rate</span><span class="model-cost" style="color:var(--accent)">${passRate}%</span></div></div>
-          <div class="model-row"><div class="model-info"><span class="model-name" style="font-family:var(--font-body)">Retry Success</span><span class="model-cost">${retried>0?Math.round(retried/(retried+failed)*100):100}%</span></div></div>
-        </div>
-      </div>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function RouterOverview({spend,logs}){
-  const total=logs.length||0;
-  const failovers=logs.filter(r=>r.failover_used).length;
-  const uptime=total>0?((total-failovers)/total*100).toFixed(2):'100.00';
-  const providerCounts={};
-  logs.forEach(r=>{const p=r.provider||'unknown';providerCounts[p]=(providerCounts[p]||0)+1});
-  const providers=Object.entries(providerCounts).map(([n,c])=>({name:n,count:c})).sort((a,b)=>b.count-a.count);
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Effective Uptime" value=${uptime+'%'} accent/>
-      <${MetricCard} label="Failovers Today" value=${String(failovers)} sub=${failovers>0?'provider switches':'all providers healthy'}/>
-      <${MetricCard} label="Total Requests" value=${fmt.compact(total)}/>
-    </div>
-    <div class="content-grid">
-      <div class="card"><div class="card-header"><span class="card-title">Provider Health</span></div>
-        <div class="model-list">
-          ${['openai','anthropic','groq','gemini'].map(p=>html`<div class="model-row" key=${p}>
-            <div class="model-info"><span class="model-name"><span style="margin-right:8px">\u{1F7E2}</span>${p}</span><span class="model-cost">healthy</span></div>
-          </div>`)}
-        </div>
-      </div>
-      <div class="card"><div class="card-header"><span class="card-title">Traffic Distribution</span></div>
-        <div class="model-list">
-          ${providers.map(p=>html`<div class="model-row" key=${p.name}>
-            <div class="model-info"><span class="model-name">${p.name}</span><span class="model-cost">${fmt.pct(p.count,total)}</span></div>
-            <div class="model-bar"><div class="model-bar-fill" style="width:${total>0?p.count/total*100:0}%"></div></div>
-          </div>`)}
-          ${providers.length===0&&html`<div style="color:var(--text-tertiary);font-size:0.85rem;padding:12px 0">No traffic yet</div>`}
-        </div>
-      </div>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function RateShieldOverview({spend,logs}){
-  const total=logs.length||0;
-  const throttled=logs.filter(r=>r.status===429).length;
-  const blocked=logs.filter(r=>r.status===403).length;
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Requests/min" value=${fmt.compact(Math.round(total/Math.max(1,1)))} accent sub=${fmt.compact(total)+'/hr'}/>
-      <${MetricCard} label="Throttled" value=${String(throttled)} sub=${throttled>0?'today':'no throttling yet'}/>
-      <${MetricCard} label="Blocked" value=${String(blocked)} sub=${blocked>0?'abuse detected':'all clear'}/>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function ReplayOverview({logs}){
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Logged Requests" value=${fmt.compact(logs.length)} accent/>
-      <${MetricCard} label="Models Used" value=${String(new Set(logs.map(r=>r.model)).size)}/>
-      <${MetricCard} label="Total Cost" value=${fmt.usd(logs.reduce((s,r)=>s+(r.cost_usd||0),0))}/>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function SuiteOverview({spend,logs,history,models,cacheStats}){
-  const[tab,setTab]=useState('overview');
-  const tabs=['overview','spend','cache','routing','logs'];
-  if(tab==='spend')return html`<${CostCapOverview} spend=${spend} logs=${logs} history=${history} models=${models}/>`;
-  if(tab==='cache')return html`<${CacheOverview} cacheStats=${cacheStats} logs=${logs}/>`;
-  if(tab==='routing')return html`<${RouterOverview} spend=${spend} logs=${logs}/>`;
-  if(tab==='logs')return html`<${LogTable} rows=${logs}/>`;
-  const td=spend.today||0,hr=cacheStats.hitRate||0;
-  return html`
-    <div class="tab-bar">${tabs.map(t=>html`<button key=${t} class="tab-btn ${tab===t?'active':''}" onClick=${()=>setTab(t)}>${t.charAt(0).toUpperCase()+t.slice(1)}</button>`)}</div>
-    <div class="metrics-row">
-      <${MetricCard} label="Today's Spend" value=${fmt.usd(td)} accent/>
-      <${MetricCard} label="Cache Hit Rate" value=${hr+'%'}/>
-      <${MetricCard} label="Total Requests" value=${fmt.compact(logs.length)}/>
-    </div>
-    <div class="content-grid">
-      <${BarChart} data=${(history||[]).slice(-7).map((d,i,a)=>({label:i===a.length-1?'Today':new Date(d.date).toLocaleDateString('en-US',{weekday:'short'}),value:d.cost||0,highlight:i===a.length-1}))} label="Daily Spend"/>
-      <${ModelBreakdown} models=${models}/>
-    </div>
-    <${LogTable} rows=${logs.slice(0,10)}/>`;
-}
-
-function GenericOverview({spend,logs}){
-  return html`
-    <div class="metrics-row">
-      <${MetricCard} label="Today's Spend" value=${fmt.usd(spend.today||0)} accent/>
-      <${MetricCard} label="This Month" value=${fmt.usd(spend.month||0)}/>
-      <${MetricCard} label="Total Requests" value=${fmt.compact(logs.length)}/>
-    </div>
-    <${LogTable} rows=${logs}/>`;
-}
-
-function App(){
-  const{theme,toggle}=useTheme();
-  const[view,setView]=useState('overview');
-  const[spend,setSpend]=useState({today:0,month:0,dailyCap:5,monthlyCap:100});
-  const[logs,setLogs]=useState([]);
-  const[history,setHistory]=useState([]);
-  const[models,setModels]=useState([]);
-  const[cacheStats,setCache]=useState({});
-  const[project,setProject]=useState('');
-
-  const connected=useSSE(useCallback(ev=>{
-    if(ev.type==='request_logged'){
-      setLogs(prev=>[{id:ev.id,timestamp:new Date().toISOString(),model:ev.model,tokens_in:ev.tokens||0,tokens_out:0,latency_ms:ev.latency||0,cost_usd:ev.cost||0,cache_hit:ev.cache_hit},...prev].slice(0,100));
-    }
-    if(ev.type==='spend_update'){
-      setSpend(prev=>({...prev,today:ev.today||prev.today,month:ev.month||prev.month}));
-    }
-  },[]));
-
+// ─── Overview ──────────────────────────────────────────────────────────
+function OverviewView(){
+  const[apps,setApps]=useState(null);
+  const[stats,setStats]=useState({});
   useEffect(()=>{(async()=>{
-    const[sd,ld,hd,cd]=await Promise.all([api('/spend'),api('/logs?limit=50'),api('/spend/history?days=7'),api('/cache/stats')]);
-    if(sd?.projects){let t=0,m=0;for(const p of Object.values(sd.projects)){t+=p.today||0;m+=p.month||0}setSpend(prev=>({...prev,today:t,month:m}))}
-    if(ld?.requests){
-      setLogs(ld.requests.map(r=>({id:r.id,timestamp:r.timestamp,model:r.model,prompt:r.request_body?(r.request_body.substring(0,80)+'...'):'',tokens_in:r.tokens_in,tokens_out:r.tokens_out,latency_ms:r.latency_ms,cost_usd:r.cost_usd})));
-      const mm={};ld.requests.forEach(r=>{if(!mm[r.model])mm[r.model]=0;mm[r.model]+=r.cost_usd||0});
-      setModels(Object.entries(mm).map(([n,c])=>({name:n,cost:c})).sort((a,b)=>b.cost-a.cost).slice(0,5));
+    const a=await api('/api/apps');setApps(a.apps||[]);
+    const st={};
+    for(const id of['proxy','observe','trust','studio','forge','exchange']){
+      const ep=APPS[id]?.endpoints?.status;if(ep)st[id]=await api(ep);
     }
-    if(hd?.daily)setHistory(hd.daily);
-    if(cd)setCache(cd);
-  })()},[project]);
+    setStats(st);
+  })()},[]);
+  if(!apps)return html`<div class="loading">Loading\u2026</div>`;
+  return html`
+    <div class="page-header"><h2>System Overview</h2><span class="page-sub">All 6 apps \u2022 single binary</span></div>
+    <div class="stats-row">
+      <${Stat} label="Apps" value=${apps.length} accent/>
+      <${Stat} label="Endpoints" value="69"/>
+      <${Stat} label="Middleware" value="134"/>
+      <${Stat} label="Status" value="Operational" accent/>
+    </div>
+    <div class="app-grid">${apps.map(a=>{const cfg=APPS[a.name];const st=stats[a.name]||{};
+      return html`<div key=${a.name} class="app-card" style="--card-accent:${cfg?.accent||'#a1a1aa'}">
+        <div class="app-card-head"><span class="app-card-icon">${cfg?.icon||'\u25C6'}</span><span class="app-card-name">${a.name}</span><${Badge} text=${st._error?'error':'live'} variant=${st._error?'danger':'success'}/></div>
+        <div class="app-card-desc">${a.description}</div>
+        <div class="app-card-api mono">${a.api}</div>
+      </div>`})}</div>`;
+}
 
-  function renderView(){
-    if(view==='overview'){
-      switch(PK){
-        case'costcap':return html`<${CostCapOverview} spend=${spend} logs=${logs} history=${history} models=${models}/>`;
-        case'llmcache':return html`<${CacheOverview} cacheStats=${cacheStats} logs=${logs}/>`;
-        case'jsonguard':return html`<${ShieldOverview} spend=${spend} logs=${logs}/>`;
-        case'routefall':return html`<${RouterOverview} spend=${spend} logs=${logs}/>`;
-        case'rateshield':return html`<${RateShieldOverview} spend=${spend} logs=${logs}/>`;
-        case'promptreplay':return html`<${ReplayOverview} logs=${logs}/>`;
-        case'llmkit':return html`<${SuiteOverview} spend=${spend} logs=${logs} history=${history} models=${models} cacheStats=${cacheStats}/>`;
-        default:return html`<${GenericOverview} spend=${spend} logs=${logs}/>`;
-      }
-    }
-    if(view==='logs')return html`<${LogTable} rows=${logs}/>`;
-    return html`<div class="card" style="padding:40px;text-align:center;color:var(--text-tertiary)"><p style="font-size:1.1rem;margin-bottom:8px">${view} view</p><p>Coming soon.</p></div>`;
-  }
+// ─── Proxy ─────────────────────────────────────────────────────────────
+function ProxyView(){
+  const[tab,setTab]=useState('modules');
+  const[data,setData]=useState({});
+  useEffect(()=>{(async()=>{
+    const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);
+    setData({modules:m.modules||m||[],providers:p.providers||p||[],routes:r.routes||r||[]});
+  })()},[]);
+  const d=k=>Array.isArray(data[k])?data[k]:[];
+  return html`
+    <div class="page-header"><h2>Proxy</h2><span class="page-sub">Middleware chain, providers & routing</span></div>
+    <div class="stats-row">
+      <${Stat} label="Modules" value=${d('modules').length} accent/>
+      <${Stat} label="Providers" value=${d('providers').length}/>
+      <${Stat} label="Routes" value=${d('routes').length}/>
+    </div>
+    <${TabBar} tabs=${['modules','providers','routes']} active=${tab} onChange=${setTab}/>
+    ${tab==='modules'?html`<${DataTable} columns=${[
+      {key:'name',label:'Module',width:'1.5fr',mono:true},
+      {key:'enabled',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.enabled?'on':'off'} variant=${r.enabled?'success':'muted'}/>`},
+      {key:'priority',label:'Priority',width:'100px',mono:true}]} rows=${d('modules')} emptyMsg="No modules registered"/>`:
+    tab==='providers'?html`<${DataTable} columns=${[
+      {key:'name',label:'Provider',width:'1fr',mono:true},
+      {key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant="success"/>`}]} rows=${d('providers')} emptyMsg="No providers configured"/>`:
+    html`<${DataTable} columns=${[
+      {key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},
+      {key:'path',label:'Path',width:'1.5fr',mono:true},
+      {key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes registered"/>`}`;
+}
 
-  return html`<div class="app">
-    <${Sidebar} theme=${theme} onThemeToggle=${toggle} connected=${connected} activeView=${view} onNavigate=${setView}/>
-    <main class="main">
-      <div class="main-header">
-        <h1 class="main-title">${view==='overview'?'Overview':view.charAt(0).toUpperCase()+view.slice(1)}</h1>
-        <div class="connected-badge"><span class="live-dot" style="${!connected?'background:var(--text-tertiary);animation:none':''}"></span>${connected?'Connected':'Connecting...'}</div>
-        <select class="project-selector" value=${project} onChange=${e=>setProject(e.target.value)}><option value="">All Projects</option></select>
+// ─── Observe ───────────────────────────────────────────────────────────
+function ObserveView(){
+  const[tab,setTab]=useState('traces');
+  const[data,setData]=useState({});
+  useEffect(()=>{(async()=>{
+    const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces'),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);
+    setData({overview:ov||{},traces:t.traces||t||[],costs:c.costs||c||[],alerts:al.alerts||al||[],anomalies:an.anomalies||an||[]});
+  })()},[]);
+  const d=k=>Array.isArray(data[k])?data[k]:[];
+  return html`
+    <div class="page-header"><h2>Observe</h2><span class="page-sub">Analytics, traces & cost attribution</span></div>
+    <div class="stats-row">
+      <${Stat} label="Traces" value=${fmt.num(d('traces').length)} accent/>
+      <${Stat} label="Today's Cost" value=${fmt.usd((data.overview||{}).today_cost||0)}/>
+      <${Stat} label="Alerts" value=${d('alerts').length}/>
+      <${Stat} label="Anomalies" value=${d('anomalies').length}/>
+    </div>
+    <${TabBar} tabs=${['traces','costs','alerts','anomalies']} active=${tab} onChange=${setTab}/>
+    ${tab==='traces'?html`<${DataTable} columns=${[
+      {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},
+      {key:'model',label:'Model',width:'1fr',mono:true},
+      {key:'provider',label:'Provider',width:'110px',mono:true},
+      {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},
+      {key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
+      {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.latency_ms)},
+      {key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)}]} rows=${d('traces')} emptyMsg="No traces yet \u2014 send a request through the proxy"/>`:
+    tab==='costs'?html`<${DataTable} columns=${[
+      {key:'date',label:'Date',width:'1fr',render:r=>r.date||fmt.ago(r.created_at)},
+      {key:'model',label:'Model',width:'1fr',mono:true},
+      {key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},
+      {key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost)}]} rows=${d('costs')} emptyMsg="No cost data yet"/>`:
+    tab==='alerts'?html`<${DataTable} columns=${[
+      {key:'name',label:'Alert',width:'1.5fr'},
+      {key:'metric',label:'Metric',width:'1fr',mono:true},
+      {key:'threshold',label:'Threshold',width:'110px',mono:true},
+      {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'active'} variant=${r.status==='firing'?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured"/>`:
+    html`<${DataTable} columns=${[
+      {key:'ts',label:'Detected',width:'110px',render:r=>fmt.ago(r.detected_at||r.created_at)},
+      {key:'metric',label:'Metric',width:'1fr',mono:true},
+      {key:'val',label:'Value',width:'90px',mono:true},
+      {key:'z',label:'Z-Score',width:'90px',mono:true,render:r=>(r.z_score||0).toFixed(2)},
+      {key:'sev',label:'Severity',width:'100px',render:r=>html`<${Badge} text=${r.severity||'medium'} variant=${r.severity==='high'?'danger':'warn'}/>`}]} rows=${d('anomalies')} emptyMsg="No anomalies detected"/>`}`;
+}
+
+// ─── Trust ─────────────────────────────────────────────────────────────
+function TrustView(){
+  const[tab,setTab]=useState('ledger');
+  const[data,setData]=useState({});
+  useEffect(()=>{(async()=>{
+    const[l,e,p,v]=await Promise.all([api('/api/trust/ledger'),api('/api/trust/evidence'),api('/api/trust/policies'),api('/api/trust/ledger/verify')]);
+    setData({ledger:l.events||l||[],evidence:e.evidence||e||[],policies:p.policies||p||[],verified:v});
+  })()},[]);
+  const d=k=>Array.isArray(data[k])?data[k]:[];
+  return html`
+    <div class="page-header"><h2>Trust</h2><span class="page-sub">Audit ledger, compliance & evidence</span></div>
+    <div class="stats-row">
+      <${Stat} label="Ledger Events" value=${fmt.num(d('ledger').length)} accent/>
+      <${Stat} label="Evidence" value=${d('evidence').length}/>
+      <${Stat} label="Policies" value=${d('policies').length}/>
+      <${Stat} label="Chain" value=${(data.verified||{}).valid?'Verified':'Empty'} accent/>
+    </div>
+    <${TabBar} tabs=${['ledger','evidence','policies']} active=${tab} onChange=${setTab}/>
+    ${tab==='ledger'?html`<${DataTable} columns=${[
+      {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},
+      {key:'action',label:'Action',width:'1fr'},
+      {key:'actor',label:'Actor',width:'1fr',mono:true},
+      {key:'hash',label:'Hash',width:'150px',mono:true,render:r=>fmt.hash(r.hash||r.event_hash)}]} rows=${d('ledger')} emptyMsg="No audit events \u2014 send a request through the proxy"/>`:
+    tab==='evidence'?html`<${DataTable} columns=${[
+      {key:'name',label:'Pack',width:'1.5fr'},
+      {key:'type',label:'Type',width:'1fr',mono:true},
+      {key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)},
+      {key:'size',label:'Events',width:'90px',mono:true}]} rows=${d('evidence')} emptyMsg="No evidence packs"/>`:
+    html`<${DataTable} columns=${[
+      {key:'name',label:'Policy',width:'1.5fr'},
+      {key:'type',label:'Type',width:'1fr',mono:true},
+      {key:'action',label:'Action',width:'1fr'},
+      {key:'enabled',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.enabled!==false?'active':'off'} variant=${r.enabled!==false?'success':'muted'}/>`}]} rows=${d('policies')} emptyMsg="No policies defined"/>`}`;
+}
+
+// ─── Studio ────────────────────────────────────────────────────────────
+function StudioView(){
+  const[tab,setTab]=useState('templates');
+  const[data,setData]=useState({});
+  useEffect(()=>{(async()=>{
+    const[t,e,b,s]=await Promise.all([api('/api/studio/templates'),api('/api/studio/experiments'),api('/api/studio/benchmarks'),api('/api/studio/snapshots')]);
+    setData({templates:t.templates||t||[],experiments:e.experiments||e||[],benchmarks:b.benchmarks||b||[],snapshots:s.snapshots||s||[]});
+  })()},[]);
+  const d=k=>Array.isArray(data[k])?data[k]:[];
+  return html`
+    <div class="page-header"><h2>Studio</h2><span class="page-sub">Prompt engineering & experimentation</span></div>
+    <div class="stats-row">
+      <${Stat} label="Templates" value=${d('templates').length} accent/>
+      <${Stat} label="Experiments" value=${d('experiments').length}/>
+      <${Stat} label="Benchmarks" value=${d('benchmarks').length}/>
+      <${Stat} label="Snapshots" value=${d('snapshots').length}/>
+    </div>
+    <${TabBar} tabs=${['templates','experiments','benchmarks','snapshots']} active=${tab} onChange=${setTab}/>
+    ${tab==='templates'?html`<${DataTable} columns=${[
+      {key:'slug',label:'Slug',width:'1fr',mono:true},{key:'name',label:'Name',width:'1.5fr'},
+      {key:'model',label:'Model',width:'1fr',mono:true},{key:'version',label:'Ver',width:'80px',mono:true},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('templates')} emptyMsg="No templates \u2014 POST /api/studio/templates"/>`:
+    tab==='experiments'?html`<${DataTable} columns=${[
+      {key:'name',label:'Experiment',width:'1.5fr'},
+      {key:'status',label:'Status',width:'110px',render:r=>html`<${Badge} text=${r.status||'draft'} variant=${r.status==='running'?'warn':r.status==='done'?'success':'muted'}/>`},
+      {key:'variants',label:'Variants',width:'90px',mono:true,render:r=>r.variants||0},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('experiments')} emptyMsg="No experiments"/>`:
+    tab==='benchmarks'?html`<${DataTable} columns=${[
+      {key:'name',label:'Benchmark',width:'1.5fr'},{key:'model',label:'Model',width:'1fr',mono:true},
+      {key:'score',label:'Score',width:'90px',mono:true,accent:true},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('benchmarks')} emptyMsg="No benchmarks"/>`:
+    html`<${DataTable} columns=${[
+      {key:'name',label:'Snapshot',width:'1.5fr'},{key:'template_slug',label:'Template',width:'1fr',mono:true},
+      {key:'pass',label:'Result',width:'90px',render:r=>html`<${Badge} text=${r.pass?'pass':'fail'} variant=${r.pass?'success':'danger'}/>`},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('snapshots')} emptyMsg="No snapshots"/>`}`;
+}
+
+// ─── Forge ─────────────────────────────────────────────────────────────
+function ForgeView(){
+  const[tab,setTab]=useState('workflows');
+  const[data,setData]=useState({});
+  useEffect(()=>{(async()=>{
+    const[w,r,t,s]=await Promise.all([api('/api/forge/workflows'),api('/api/forge/runs'),api('/api/forge/tools'),api('/api/forge/sessions')]);
+    setData({workflows:w.workflows||w||[],runs:r.runs||r||[],tools:t.tools||t||[],sessions:s.sessions||s||[]});
+  })()},[]);
+  const d=k=>Array.isArray(data[k])?data[k]:[];
+  return html`
+    <div class="page-header"><h2>Forge</h2><span class="page-sub">Workflow engine, tools & sessions</span></div>
+    <div class="stats-row">
+      <${Stat} label="Workflows" value=${d('workflows').length} accent/>
+      <${Stat} label="Runs" value=${d('runs').length}/>
+      <${Stat} label="Tools" value=${d('tools').length}/>
+      <${Stat} label="Sessions" value=${d('sessions').length}/>
+    </div>
+    <${TabBar} tabs=${['workflows','runs','tools','sessions']} active=${tab} onChange=${setTab}/>
+    ${tab==='workflows'?html`<${DataTable} columns=${[
+      {key:'slug',label:'Slug',width:'1fr',mono:true},{key:'name',label:'Name',width:'1.5fr'},
+      {key:'steps',label:'Steps',width:'80px',mono:true,render:r=>(r.steps||[]).length||r.step_count||0},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('workflows')} emptyMsg="No workflows \u2014 POST /api/forge/workflows"/>`:
+    tab==='runs'?html`<${DataTable} columns=${[
+      {key:'id',label:'Run',width:'80px',mono:true,render:r=>'#'+(r.id||'\u2014')},
+      {key:'workflow_slug',label:'Workflow',width:'1fr',mono:true},
+      {key:'status',label:'Status',width:'110px',render:r=>html`<${Badge} text=${r.status||'queued'} variant=${r.status==='success'?'success':r.status==='running'?'warn':'muted'}/>`},
+      {key:'ts',label:'Started',width:'100px',render:r=>fmt.ago(r.started_at||r.created_at)}]} rows=${d('runs')} emptyMsg="No workflow runs"/>`:
+    tab==='tools'?html`<${DataTable} columns=${[
+      {key:'name',label:'Tool',width:'1.5fr'},{key:'type',label:'Type',width:'1fr',mono:true},
+      {key:'desc',label:'Description',width:'2fr',render:r=>fmt.trunc(r.description,80)}]} rows=${d('tools')} emptyMsg="No tools registered"/>`:
+    html`<${DataTable} columns=${[
+      {key:'id',label:'Session',width:'80px',mono:true,render:r=>'#'+(r.id||'\u2014')},
+      {key:'name',label:'Name',width:'1.5fr'},
+      {key:'msgs',label:'Messages',width:'90px',mono:true,render:r=>r.message_count||0},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('sessions')} emptyMsg="No sessions"/>`}`;
+}
+
+// ─── Exchange ──────────────────────────────────────────────────────────
+function ExchangeView(){
+  const[tab,setTab]=useState('packs');
+  const[data,setData]=useState({});
+  useEffect(()=>{(async()=>{
+    const[p,i,e]=await Promise.all([api('/api/exchange/packs'),api('/api/exchange/installed'),api('/api/exchange/environments')]);
+    setData({packs:p.packs||p||[],installed:i.installed||i||[],environments:e.environments||e||[]});
+  })()},[]);
+  const d=k=>Array.isArray(data[k])?data[k]:[];
+  return html`
+    <div class="page-header"><h2>Exchange</h2><span class="page-sub">Pack marketplace & environment sync</span></div>
+    <div class="stats-row">
+      <${Stat} label="Packs" value=${d('packs').length} accent/>
+      <${Stat} label="Installed" value=${d('installed').length}/>
+      <${Stat} label="Environments" value=${d('environments').length}/>
+    </div>
+    <${TabBar} tabs=${['packs','installed','environments']} active=${tab} onChange=${setTab}/>
+    ${tab==='packs'?html`<${DataTable} columns=${[
+      {key:'slug',label:'Slug',width:'1fr',mono:true},{key:'name',label:'Name',width:'1.5fr'},
+      {key:'version',label:'Version',width:'90px',mono:true},
+      {key:'downloads',label:'DLs',width:'80px',mono:true,render:r=>fmt.num(r.downloads)},
+      {key:'ts',label:'Created',width:'100px',render:r=>fmt.ago(r.created_at)}]} rows=${d('packs')} emptyMsg="No packs \u2014 POST /api/exchange/packs"/>`:
+    tab==='installed'?html`<${DataTable} columns=${[
+      {key:'pack_slug',label:'Pack',width:'1fr',mono:true},{key:'version',label:'Version',width:'90px',mono:true},
+      {key:'ts',label:'Installed',width:'110px',render:r=>fmt.ago(r.installed_at||r.created_at)}]} rows=${d('installed')} emptyMsg="No packs installed"/>`:
+    html`<${DataTable} columns=${[
+      {key:'name',label:'Environment',width:'1.5fr'},{key:'target',label:'Target',width:'1fr',mono:true},
+      {key:'sync',label:'Last Sync',width:'110px',render:r=>fmt.ago(r.last_sync)},
+      {key:'status',label:'Status',width:'90px',render:r=>html`<${Badge} text=${r.status||'idle'} variant=${r.status==='synced'?'success':'muted'}/>`}]} rows=${d('environments')} emptyMsg="No environments \u2014 POST /api/exchange/environments"/>`}`;
+}
+
+// ─── View map ──────────────────────────────────────────────────────────
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView};
+
+// ─── App shell ─────────────────────────────────────────────────────────
+function App(){
+  const[active,setActive]=useState('overview');
+  const[theme,setTheme]=useState(()=>{try{return localStorage.getItem('sy-theme')||'dark'}catch{return'dark'}});
+  useEffect(()=>{document.documentElement.dataset.theme=theme;try{localStorage.setItem('sy-theme',theme)}catch{}},[theme]);
+  const View=VIEWS[active]||OverviewView;
+
+  return html`<div class="shell">
+    <nav class="nav">
+      <div class="nav-brand" onClick=${()=>setActive('overview')}>
+        <div class="nav-logo">SY</div>
+        <span class="nav-title">Stockyard</span>
       </div>
-      ${renderView()}
-    </main>
+      <div class="nav-section">Apps</div>
+      ${APP_ORDER.map(id=>{const a=APPS[id];return html`
+        <button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)} style="${active===id&&a.accent?'--item-accent:'+a.accent:''}">
+          <span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span>
+          ${active===id&&html`<span class="nav-active-mark"></span>`}
+        </button>`})}
+      <div class="nav-spacer"></div>
+      <div class="nav-section">System</div>
+      <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">API</span></a>
+      <button class="nav-item" onClick=${()=>setTheme(t=>t==='dark'?'light':'dark')}><span class="nav-icon">${theme==='dark'?'\u25D0':'\u25D1'}</span><span class="nav-label">${theme==='dark'?'Dark':'Light'}</span></button>
+      <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 6 apps \u00B7 69 endpoints</span></div>
+    </nav>
+    <main class="content"><${View} key=${active}/></main>
   </div>`;
 }
 
 render(html`<${App}/>`,document.getElementById('root'));
 </script>
 <style>
-:root{--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--font-body:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;--font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;--transition:0.2s cubic-bezier(0.4,0,0.2,1);--sidebar-width:220px}
-[data-product="costcap"]{--accent:#F59E0B;--accent-soft:#F59E0B22;--accent-mid:#F59E0B44}
-[data-product="llmcache"]{--accent:#06B6D4;--accent-soft:#06B6D422;--accent-mid:#06B6D444}
-[data-product="jsonguard"]{--accent:#10B981;--accent-soft:#10B98122;--accent-mid:#10B98144}
-[data-product="routefall"]{--accent:#8B5CF6;--accent-soft:#8B5CF622;--accent-mid:#8B5CF644}
-[data-product="rateshield"]{--accent:#F43F5E;--accent-soft:#F43F5E22;--accent-mid:#F43F5E44}
-[data-product="promptreplay"]{--accent:#3B82F6;--accent-soft:#3B82F622;--accent-mid:#3B82F644}
-[data-product="llmkit"]{--accent:#A78BFA;--accent-soft:#A78BFA22;--accent-mid:#A78BFA44}
-[data-theme="dark"]{--bg-root:#0c0e14;--bg-surface:#141720;--bg-raised:#1a1e2a;--bg-hover:#222738;--bg-input:#1a1e2a;--border:#262b3a;--border-subtle:#1e2232;--text-primary:#f0f1f4;--text-secondary:#8b90a0;--text-tertiary:#5c6178;--text-on-accent:#0c0e14;--success:#34D399;--danger:#FB7185;--warning:#FBBF24;--bar-bg:#1e2232;--shadow-card:0 1px 3px rgba(0,0,0,0.3),0 0 0 1px var(--border-subtle)}
-[data-theme="light"]{--bg-root:#f5f5f7;--bg-surface:#ffffff;--bg-raised:#f9fafb;--bg-hover:#f0f1f4;--bg-input:#f5f5f7;--border:#e2e4ea;--border-subtle:#eceef2;--text-primary:#111318;--text-secondary:#5c6178;--text-tertiary:#8b90a0;--text-on-accent:#ffffff;--success:#059669;--danger:#E11D48;--warning:#D97706;--bar-bg:#e8eaef;--shadow-card:0 1px 3px rgba(0,0,0,0.06),0 0 0 1px var(--border-subtle)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px}
-body{font-family:var(--font-body);background:var(--bg-root);color:var(--text-primary);line-height:1.5;-webkit-font-smoothing:antialiased;transition:background var(--transition),color var(--transition)}
-.app{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:var(--sidebar-width);min-width:var(--sidebar-width);background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 12px;gap:4px;transition:background var(--transition),border-color var(--transition)}
-.sidebar-brand{display:flex;align-items:center;gap:10px;padding:4px 10px 16px;border-bottom:1px solid var(--border-subtle);margin-bottom:8px}
-.sidebar-brand-icon{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-on-accent);font-weight:700;flex-shrink:0}
-.sidebar-brand-name{font-weight:700;font-size:1.05rem;letter-spacing:-0.01em}
-.sidebar-brand-badge{font-size:0.65rem;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--accent-soft);color:var(--accent);letter-spacing:0.02em;margin-left:auto}
-.sidebar-section-label{font-size:0.7rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;padding:16px 10px 6px}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:0.9rem;font-weight:500;cursor:pointer;transition:all var(--transition);text-decoration:none;position:relative}
-.sidebar-item:hover{background:var(--bg-hover);color:var(--text-primary)}
-.sidebar-item.active{background:var(--accent-soft);color:var(--accent)}
-.sidebar-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;border-radius:0 3px 3px 0;background:var(--accent)}
-.sidebar-item-icon{width:18px;text-align:center;font-size:0.95rem;flex-shrink:0}
-.sidebar-spacer{flex:1}
-.sidebar-footer{border-top:1px solid var(--border-subtle);padding-top:12px;margin-top:8px}
-.theme-toggle{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.9rem;font-weight:500;color:var(--text-secondary);transition:all var(--transition)}
-.theme-toggle:hover{background:var(--bg-hover);color:var(--text-primary)}
-.theme-toggle-track{width:36px;height:20px;border-radius:10px;background:var(--border);position:relative;margin-left:auto;transition:background var(--transition)}
-.theme-toggle-thumb{width:16px;height:16px;border-radius:50%;background:var(--text-primary);position:absolute;top:2px;left:2px;transition:transform var(--transition)}
-[data-theme="light"] .theme-toggle-thumb{transform:translateX(16px)}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-tertiary);margin-left:auto;flex-shrink:0;position:relative}
-.status-dot.active{background:var(--success)}
-.status-dot.active::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:var(--success);opacity:0.3;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:0.3}50%{transform:scale(1.5);opacity:0}}
-.main{flex:1;overflow-y:auto;padding:28px 32px;display:flex;flex-direction:column;gap:24px}
-.main-header{display:flex;align-items:center;gap:16px}
-.main-title{font-size:1.5rem;font-weight:700;letter-spacing:-0.02em}
-.project-selector{margin-left:auto;padding:7px 14px;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border);color:var(--text-primary);font-family:var(--font-body);font-size:0.85rem;font-weight:500;cursor:pointer;transition:all var(--transition)}
-.project-selector:hover{border-color:var(--accent)}
-.connected-badge{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--success);font-weight:500}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;margin-right:6px;animation:pulse 2s ease-in-out infinite}
-.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.metric-card{background:var(--bg-surface);border-radius:var(--radius-lg);padding:22px 24px;box-shadow:var(--shadow-card);transition:all var(--transition);position:relative;overflow:hidden}
-.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity var(--transition)}
-.metric-card:hover::before{opacity:1}
-.metric-label{font-size:0.75rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
-.metric-value{font-family:var(--font-mono);font-size:2.2rem;font-weight:700;letter-spacing:-0.03em;line-height:1.1;color:var(--text-primary);transition:color var(--transition)}
-.metric-value.accent{color:var(--accent)}
-.metric-sub{font-size:0.8rem;color:var(--text-secondary);margin-top:6px;display:flex;align-items:center;gap:6px}
-.progress-wrap{margin-top:14px}
-.progress-bar{height:8px;border-radius:4px;background:var(--bar-bg);overflow:hidden}
-.progress-fill{height:100%;border-radius:4px;background:var(--accent);transition:width 1s cubic-bezier(0.4,0,0.2,1)}
-.progress-fill.warn{background:var(--warning)}
-.progress-fill.danger{background:var(--danger)}
-.progress-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-tertiary);font-family:var(--font-mono);margin-top:6px}
-.content-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
-.card{background:var(--bg-surface);border-radius:var(--radius-lg);padding:22px 24px;box-shadow:var(--shadow-card);transition:all var(--transition)}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.card-title{font-size:0.85rem;font-weight:600;color:var(--text-secondary)}
-.card-action{font-size:0.75rem;color:var(--accent);font-weight:500;cursor:pointer;padding:4px 10px;border-radius:6px;transition:background var(--transition)}
-.card-action:hover{background:var(--accent-soft)}
-.bar-chart{display:flex;align-items:flex-end;gap:8px;height:140px;padding-top:10px}
-.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
-.bar{width:100%;border-radius:6px 6px 4px 4px;background:var(--accent);transition:height 0.8s cubic-bezier(0.4,0,0.2,1),opacity var(--transition);min-height:4px;opacity:0.55;position:relative;cursor:pointer}
-.bar:hover{opacity:1}
-.bar.today{opacity:1}
-.bar-label{font-size:0.68rem;color:var(--text-tertiary);font-weight:500}
-.bar-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid var(--border);padding:4px 9px;border-radius:6px;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-primary);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity var(--transition)}
-.bar:hover .bar-tooltip{opacity:1}
-.model-list{display:flex;flex-direction:column;gap:14px}
-.model-row{display:flex;flex-direction:column;gap:6px}
-.model-info{display:flex;align-items:center;justify-content:space-between}
-.model-name{font-family:var(--font-mono);font-size:0.82rem;font-weight:500;color:var(--text-primary)}
-.model-cost{font-family:var(--font-mono);font-size:0.82rem;font-weight:600;color:var(--text-secondary)}
-.model-bar{height:6px;border-radius:3px;background:var(--bar-bg);overflow:hidden}
-.model-bar-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
-.model-percent{font-size:0.7rem;color:var(--text-tertiary);font-family:var(--font-mono)}
-.log-card{background:var(--bg-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);overflow:hidden;transition:all var(--transition)}
-.log-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px}
-.log-title{font-size:0.85rem;font-weight:600;color:var(--text-secondary)}
-.log-search{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--radius-sm);background:var(--bg-input);border:1px solid var(--border-subtle);transition:border-color var(--transition)}
-.log-search:focus-within{border-color:var(--accent)}
-.log-search input{border:none;background:transparent;color:var(--text-primary);font-family:var(--font-body);font-size:0.82rem;outline:none;width:160px}
-.log-search input::placeholder{color:var(--text-tertiary)}
-.log-search-icon{color:var(--text-tertiary);font-size:0.85rem}
-.log-table-head{display:grid;grid-template-columns:90px 1fr 140px 90px 80px 90px;padding:8px 24px;border-bottom:1px solid var(--border-subtle);font-size:0.7rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em}
-.log-row{display:grid;grid-template-columns:90px 1fr 140px 90px 80px 90px;padding:11px 24px;border-bottom:1px solid var(--border-subtle);font-size:0.82rem;align-items:center;transition:background var(--transition);cursor:pointer}
-.log-row:hover{background:var(--bg-hover)}
-.log-row:last-child{border-bottom:none}
-.log-time{font-family:var(--font-mono);font-size:0.78rem;color:var(--text-tertiary)}
-.log-model{font-family:var(--font-mono);font-size:0.8rem;font-weight:500}
-.log-prompt{color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:12px}
-.log-tokens{font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary)}
-.log-latency{font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary)}
-.log-cost{font-family:var(--font-mono);font-size:0.78rem;font-weight:600;color:var(--accent)}
-.log-empty{padding:40px 24px;text-align:center;color:var(--text-tertiary);font-size:0.9rem}
-@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.log-row.new{animation:slideIn 0.3s ease-out}
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
-@media(max-width:900px){.sidebar{display:none}.metrics-row{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}}
-.tab-bar{display:flex;gap:4px;padding:4px;background:var(--bg-surface);border-radius:var(--radius-md);box-shadow:var(--shadow-card);width:fit-content}
-.tab-btn{padding:7px 16px;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--text-secondary);font-family:var(--font-body);font-size:0.85rem;font-weight:500;cursor:pointer;transition:all var(--transition)}
-.tab-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
-.tab-btn.active{background:var(--accent-soft);color:var(--accent)}
+:root{--font:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,sans-serif;--mono:'IBM Plex Mono','SF Mono',monospace;--nav-w:232px;--radius:8px;--tr:0.15s ease}
+[data-theme="dark"]{--bg-0:#09090b;--bg-1:#111114;--bg-2:#18181b;--bg-3:#222225;--border:#27272a;--border-s:#1e1e21;--tx-1:#fafafa;--tx-2:#a1a1aa;--tx-3:#63636e;--accent:#06B6D4;--accent-s:rgba(6,182,212,0.12);--success:#22c55e;--success-s:rgba(34,197,94,0.12);--warn:#f59e0b;--warn-s:rgba(245,158,11,0.12);--danger:#ef4444;--danger-s:rgba(239,68,68,0.12);--muted-s:rgba(161,161,170,0.1);--shadow:0 1px 2px rgba(0,0,0,0.4)}
+[data-theme="light"]{--bg-0:#fafafa;--bg-1:#ffffff;--bg-2:#f4f4f5;--bg-3:#e4e4e7;--border:#e4e4e7;--border-s:#ececee;--tx-1:#09090b;--tx-2:#52525b;--tx-3:#a1a1aa;--accent:#0891b2;--accent-s:rgba(8,145,178,0.1);--success:#16a34a;--success-s:rgba(22,163,74,0.1);--warn:#d97706;--warn-s:rgba(217,119,6,0.1);--danger:#dc2626;--danger-s:rgba(220,38,38,0.1);--muted-s:rgba(113,113,122,0.08);--shadow:0 1px 2px rgba(0,0,0,0.06)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px}
+body{font-family:var(--font);background:var(--bg-0);color:var(--tx-1);line-height:1.5;-webkit-font-smoothing:antialiased}
+.mono{font-family:var(--mono)}
+.shell{display:flex;height:100vh;overflow:hidden}
+.nav{width:var(--nav-w);min-width:var(--nav-w);background:var(--bg-1);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 10px;gap:2px;overflow-y:auto;transition:background var(--tr),border var(--tr)}
+.nav-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 20px;cursor:pointer}
+.nav-logo{width:30px;height:30px;border-radius:7px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:0.04em;flex-shrink:0}
+.nav-title{font-weight:700;font-size:1.05rem;letter-spacing:-0.02em;color:var(--tx-1)}
+.nav-section{font-size:0.68rem;font-weight:600;color:var(--tx-3);text-transform:uppercase;letter-spacing:0.08em;padding:18px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:var(--tx-2);font-size:0.88rem;font-weight:500;cursor:pointer;transition:all var(--tr);border:none;background:none;text-decoration:none;width:100%;text-align:left;font-family:var(--font);position:relative}
+.nav-item:hover{background:var(--bg-3);color:var(--tx-1)}
+.nav-item.active{background:var(--accent-s);color:var(--item-accent,var(--accent))}
+.nav-active-mark{position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:16px;border-radius:0 3px 3px 0;background:var(--item-accent,var(--accent))}
+.nav-icon{width:18px;text-align:center;font-size:1rem;flex-shrink:0}
+.nav-spacer{flex:1}
+.nav-footer{padding:12px 8px 4px;border-top:1px solid var(--border-s);margin-top:8px}
+.nav-version{font-size:0.72rem;color:var(--tx-3);font-family:var(--mono)}
+.content{flex:1;overflow-y:auto;padding:28px 36px;display:flex;flex-direction:column;gap:20px}
+.page-header{display:flex;align-items:baseline;gap:14px}
+.page-header h2{font-size:1.6rem;font-weight:700;letter-spacing:-0.03em}
+.page-sub{font-size:0.88rem;color:var(--tx-3)}
+.stats-row{display:flex;gap:12px}
+.stat{flex:1;background:var(--bg-1);border:1px solid var(--border-s);border-radius:var(--radius);padding:16px 20px;transition:all var(--tr)}
+.stat:hover{border-color:var(--border)}
+.stat-label{font-size:0.72rem;font-weight:600;color:var(--tx-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.stat-value{font-family:var(--mono);font-size:1.8rem;font-weight:700;letter-spacing:-0.03em;color:var(--tx-1);line-height:1.2}
+.stat-value.accent{color:var(--accent)}
+.stat-sub{font-size:0.78rem;color:var(--tx-3);margin-top:2px}
+.tab-bar{display:flex;gap:2px;padding:3px;background:var(--bg-2);border-radius:var(--radius);width:fit-content}
+.tab{padding:6px 16px;border-radius:6px;border:none;background:transparent;color:var(--tx-2);font-family:var(--font);font-size:0.82rem;font-weight:500;cursor:pointer;transition:all var(--tr);text-transform:capitalize}
+.tab:hover{color:var(--tx-1)}.tab.active{background:var(--bg-1);color:var(--tx-1);box-shadow:var(--shadow)}
+.data-table{background:var(--bg-1);border:1px solid var(--border-s);border-radius:var(--radius);overflow:hidden}
+.dt-head{display:grid;padding:10px 20px;font-size:0.7rem;font-weight:600;color:var(--tx-3);text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border-s);background:var(--bg-2)}
+.dt-body{max-height:480px;overflow-y:auto}
+.dt-row{display:grid;padding:10px 20px;font-size:0.84rem;align-items:center;border-bottom:1px solid var(--border-s);transition:background var(--tr);cursor:default}
+.dt-row:last-child{border-bottom:none}.dt-row:hover{background:var(--bg-2)}
+.dt-row .mono{font-family:var(--mono);font-size:0.8rem}
+.dt-accent{color:var(--accent)!important;font-weight:600}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.72rem;font-weight:600;letter-spacing:0.02em;text-transform:uppercase;font-family:var(--mono)}
+.badge.success{background:var(--success-s);color:var(--success)}
+.badge.warn{background:var(--warn-s);color:var(--warn)}
+.badge.danger{background:var(--danger-s);color:var(--danger)}
+.badge.muted{background:var(--muted-s);color:var(--tx-3)}
+.badge:not(.success):not(.warn):not(.danger):not(.muted){background:var(--accent-s);color:var(--accent)}
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.app-card{background:var(--bg-1);border:1px solid var(--border-s);border-radius:var(--radius);padding:20px;transition:all var(--tr);position:relative;overflow:hidden}
+.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-accent);opacity:0;transition:opacity var(--tr)}
+.app-card:hover{border-color:var(--border)}.app-card:hover::before{opacity:1}
+.app-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.app-card-icon{font-size:1.1rem;width:20px;text-align:center}
+.app-card-name{font-weight:700;font-size:0.95rem;text-transform:capitalize}
+.app-card-desc{font-size:0.82rem;color:var(--tx-2);margin-bottom:10px}
+.app-card-api{font-size:0.76rem;color:var(--tx-3)}
+.empty-state{background:var(--bg-1);border:1px dashed var(--border);border-radius:var(--radius);padding:48px 24px;text-align:center;color:var(--tx-3);font-size:0.9rem}
+.loading{padding:48px;text-align:center;color:var(--tx-3);font-size:0.9rem}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--tx-3)}
+@media(max-width:900px){.nav{display:none}.stats-row{flex-wrap:wrap}.stats-row .stat{min-width:45%}.app-grid{grid-template-columns:1fr}.content{padding:20px 16px}}
 </style>
 </head>
 <body><div id="root"></div></body>
