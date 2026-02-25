@@ -27,7 +27,18 @@ const APPS={
 };
 const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange'];
 
-async function api(path){try{const r=await fetch(path);if(!r.ok)return{_error:r.status};return await r.json()}catch(e){return{_error:e.message}}}
+async function api(path,opts={}){
+  const key=sessionStorage.getItem('sy_admin_key');
+  const headers=opts.headers||{};
+  if(key)headers['X-Admin-Key']=key;
+  if(opts.body)headers['Content-Type']='application/json';
+  try{
+    const r=await fetch(path,{...opts,headers});
+    if(r.status===401||r.status===403){window.__authFailed=true;return{_error:r.status}}
+    if(!r.ok)return{_error:r.status};
+    return await r.json()
+  }catch(e){return{_error:e.message}}
+}
 
 const fmt={
   usd:v=>v==null?'\u2014':v<0.01&&v>0?'$'+v.toFixed(4):'$'+v.toFixed(2),
@@ -314,9 +325,42 @@ function ExchangeView(){
 const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView};
 
 // ─── App ───────────────────────────────────────────────────────────────
+function AuthGate({onAuth}){
+  const[key,setKey]=useState('');
+  const[err,setErr]=useState('');
+  const tryAuth=async()=>{
+    sessionStorage.setItem('sy_admin_key',key);
+    const r=await api('/api/proxy/modules');
+    if(r._error===401||r._error===403){setErr('Invalid key');sessionStorage.removeItem('sy_admin_key');return}
+    onAuth();
+  };
+  return html`<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)">
+    <div style="width:360px;padding:2rem;border:1px solid var(--bg3);background:var(--bg2)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem;text-align:center">Stockyard Console</div>
+      <div style="margin-bottom:1rem">
+        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light);margin-bottom:0.4rem">Admin Key</div>
+        <input type="password" value=${key} onInput=${e=>setKey(e.target.value)} onKeyDown=${e=>e.key==='Enter'&&tryAuth()}
+          style="width:100%;padding:0.6rem 0.8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none" placeholder="sk-..."/>
+      </div>
+      ${err&&html`<div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red);margin-bottom:0.8rem">${err}</div>`}
+      <button onClick=${tryAuth} style="width:100%;padding:0.7rem;background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-family:var(--font-mono);font-size:0.85rem;cursor:pointer">Authenticate</button>
+    </div>
+  </div>`;
+}
+
 function App(){
   const[active,setActive]=useState('overview');
+  const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));
   const View=VIEWS[active]||OverviewView;
+
+  // Check if auth is needed on first load
+  useEffect(()=>{(async()=>{
+    const r=await api('/api/proxy/modules');
+    if(r._error===401||r._error===403){setAuthed(false);return}
+    setAuthed(true);
+  })()},[]);
+
+  if(!authed) return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
 
   return html`<div class="shell">
     <nav class="nav">
