@@ -28,9 +28,10 @@ var (
 
 func main() {
 	engine.Boot(engine.ProductConfig{
-		Name:    "Stockyard",
-		Product: "stockyard",
-		Version: version,
+		Name:            "Stockyard",
+		Product:         "stockyard",
+		Version:         version,
+		EnableAPIServer: true,
 		Apps: []platform.App{
 			proxyapp.New(nil),
 			observe.New(nil),

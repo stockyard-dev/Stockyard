@@ -108,6 +108,54 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("OPTIONS /", s.handleCORS)
 }
 
+// Mux returns the server's HTTP mux (for testing).
+func (s *Server) Mux() *http.ServeMux { return s.mux }
+
+// RegisterOnMux mounts all apiserver routes onto an external mux.
+// This is used when running inside the unified stockyard binary so that
+// billing, licensing, cloud, and exchange endpoints share the same port
+// as the proxy and 6 flagship apps.
+func (s *Server) RegisterOnMux(mux *http.ServeMux) {
+	// Stripe webhook
+	mux.HandleFunc("POST /webhooks/stripe", s.webhook.HandleWebhook)
+
+	// Checkout & portal
+	mux.HandleFunc("POST /api/checkout", s.handleCheckout)
+	mux.HandleFunc("POST /api/portal", s.handlePortal)
+
+	// License validation
+	mux.HandleFunc("GET /api/license/validate", s.handleValidateLicense)
+	mux.HandleFunc("GET /api/license/lookup", s.handleLookupLicense)
+
+	// Product catalog
+	mux.HandleFunc("GET /api/products", s.handleProducts)
+	mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
+
+	// Admin
+	mux.HandleFunc("GET /api/admin/stats", s.adminAuth(s.handleAdminStats))
+	mux.HandleFunc("GET /api/admin/licenses", s.adminAuth(s.handleAdminLicenses))
+	mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
+	mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
+
+	// Cloud
+	mux.HandleFunc("POST /api/cloud/signup", s.handleCloudSignup)
+	mux.HandleFunc("GET /api/cloud/tenant", s.handleCloudGetTenant)
+	mux.HandleFunc("PUT /api/cloud/keys", s.handleCloudUpdateKeys)
+	mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
+	mux.HandleFunc("GET /api/cloud/usage", s.handleCloudUsage)
+	mux.HandleFunc("POST /api/cloud/upgrade", s.handleCloudUpgrade)
+
+	// Exchange (marketplace)
+	mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
+	mux.HandleFunc("GET /api/exchange/featured", s.handleExchangeFeatured)
+	mux.HandleFunc("GET /api/exchange/stats", s.handleExchangeStats)
+	mux.HandleFunc("GET /api/exchange/{slug}", s.handleExchangeGet)
+	mux.HandleFunc("POST /api/exchange", s.handleExchangeCreate)
+	mux.HandleFunc("POST /api/exchange/{slug}/download", s.handleExchangeDownload)
+	mux.HandleFunc("POST /api/exchange/{slug}/star", s.handleExchangeStar)
+	mux.HandleFunc("POST /api/exchange/{slug}/fork", s.handleExchangeFork)
+}
+
 // Start starts the HTTP server.
 func (s *Server) Start() error {
 	srv := &http.Server{

@@ -169,11 +169,12 @@ type Features struct {
 
 // ProductConfig defines a product's identity and feature set.
 type ProductConfig struct {
-	Name     string
-	Product  string // config key: costcap, llmcache, etc.
-	Version  string // set via ldflags at build time
-	Features Features
-	Apps     []platform.App // 6 flagship apps (registered in cmd/stockyard/main.go)
+	Name            string
+	Product         string // config key: costcap, llmcache, etc.
+	Version         string // set via ldflags at build time
+	Features        Features
+	Apps            []platform.App // 6 flagship apps (registered in cmd/stockyard/main.go)
+	EnableAPIServer bool           // mount sy-api billing/licensing/cloud/exchange routes
 }
 
 // Boot initializes and starts a product. This is the single entry point
@@ -290,6 +291,11 @@ func Boot(pc ProductConfig) {
 		log.Printf("  Apps:      %d registered (/api/apps)", len(pc.Apps))
 	}
 
+	// Mount sy-api billing/licensing/cloud/exchange routes (if enabled)
+	if pc.EnableAPIServer {
+		mountAPIServer(srv.Mux(), cfg.DataDir)
+	}
+
 	// Start data retention cleanup loop
 	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
 
@@ -313,6 +319,11 @@ func Boot(pc ProductConfig) {
 	log.Printf("  Proxy:     http://localhost:%d/v1", cfg.Port)
 	log.Printf("  Dashboard: http://localhost:%d/ui", cfg.Port)
 	log.Printf("  API:       http://localhost:%d/api", cfg.Port)
+	if pc.EnableAPIServer {
+		log.Printf("  Billing:   http://localhost:%d/api/checkout", cfg.Port)
+		log.Printf("  Cloud:     http://localhost:%d/api/cloud/signup", cfg.Port)
+		log.Printf("  Exchange:  http://localhost:%d/api/exchange", cfg.Port)
+	}
 	log.Printf("══════════════════════════════════════")
 
 	<-ctx.Done()
