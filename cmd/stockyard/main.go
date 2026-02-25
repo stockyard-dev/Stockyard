@@ -1,7 +1,24 @@
-// Stockyard — "The complete LLM proxy toolkit."
+// Stockyard — "Where LLM traffic gets sorted."
+//
+// Single binary shipping all 6 flagship apps:
+//   - Proxy:    Core reverse-proxy, middleware chain, provider dispatch
+//   - Observe:  Analytics, traces, alerts, anomaly detection, cost attribution
+//   - Trust:    Audit ledger, compliance, evidence packs, replay lab
+//   - Studio:   Prompt templates, experiments, benchmarks, snapshot tests
+//   - Forge:    Workflow engine, tool registry, triggers, sessions, batch
+//   - Exchange: Pack marketplace, config sharing, environment sync
 package main
 
-import "github.com/stockyard-dev/stockyard/internal/engine"
+import (
+	"github.com/stockyard-dev/stockyard/internal/apps/exchange"
+	"github.com/stockyard-dev/stockyard/internal/apps/forge"
+	"github.com/stockyard-dev/stockyard/internal/apps/observe"
+	proxyapp "github.com/stockyard-dev/stockyard/internal/apps/proxy"
+	"github.com/stockyard-dev/stockyard/internal/apps/studio"
+	"github.com/stockyard-dev/stockyard/internal/apps/trust"
+	"github.com/stockyard-dev/stockyard/internal/engine"
+	"github.com/stockyard-dev/stockyard/internal/platform"
+)
 
 var (
 	version = "dev"
@@ -14,6 +31,14 @@ func main() {
 		Name:    "Stockyard",
 		Product: "stockyard",
 		Version: version,
+		Apps: []platform.App{
+			proxyapp.New(nil),
+			observe.New(nil),
+			trust.New(nil),
+			studio.New(nil),
+			forge.New(nil),
+			exchange.New(nil),
+		},
 		Features: engine.Features{
 			SpendTracking:  true,
 			SpendCaps:      true,
@@ -24,13 +49,11 @@ func main() {
 			RateLimiting:   true,
 			RequestLogging: true,
 			FullBodyLog:    true,
-			// Phase 1 expansion
 			KeyPool:     true,
 			PromptGuard: true,
 			ModelSwitch: true,
 			EvalGate:    true,
 			UsagePulse:  true,
-			// Phase 2 expansion
 			PromptPad:   true,
 			TokenTrim:   true,
 			BatchQueue:  true,
@@ -39,7 +62,6 @@ func main() {
 			LLMTap:      true,
 			ContextPack: true,
 			RetryPilot:  true,
-			// Phase 3 expansion
 			ToxicFilter:   true,
 			ComplianceLog: true,
 			SecretScan:    true,
@@ -52,7 +74,6 @@ func main() {
 			MockLLM:       true,
 			TenantWall:    true,
 			IdleKill:      true,
-			// Phase 3 P2 expansion
 			AgentGuard:    true,
 			CodeFence:     true,
 			HalluciCheck:  true,
@@ -74,7 +95,6 @@ func main() {
 			LangBridge:    true,
 			ContextWindow: true,
 			RegionRoute:   true,
-			// Phase 3 P3 expansion
 			ChainForge:    true,
 			CronLLM:       true,
 			WebhookRelay:  true,
@@ -90,7 +110,6 @@ func main() {
 			ClusterMode:   true,
 			EncryptVault:  true,
 			MirrorTest:    true,
-			// Phase 4 expansion
 			ExtractML:      true,
 			TableForge:     true,
 			ToolRouter:     true,

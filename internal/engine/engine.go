@@ -229,6 +229,11 @@ func Boot(pc ProductConfig) {
 	// Compose the handler
 	handler := proxy.Chain(sendHandler, middlewares...)
 
+	// Wrap with app hooks (Observe traces + Trust audit) if apps are configured
+	if len(pc.Apps) > 0 {
+		handler = appHooksMiddleware(db.Conn())(handler)
+	}
+
 	// Build streaming pre-flight checks (so streaming requests also get
 	// rate limit and cap enforcement instead of bypassing middleware)
 	preFlight := buildPreFlight(pc, cfg, counter)
@@ -266,6 +271,11 @@ func Boot(pc ProductConfig) {
 		if err := registry.MigrateAll(db.Conn()); err != nil {
 			log.Printf("app migrations: %v", err)
 		}
+
+		// Seed proxy modules from feature flags and providers
+		seedProxyModules(db.Conn(), pc)
+		seedProxyProviders(db.Conn(), providers)
+
 		// Mount all app routes on the shared mux
 		registry.RegisterAllRoutes(srv.Mux())
 
