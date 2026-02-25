@@ -9,16 +9,24 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/toggle"
 )
 
 // App implements platform.App for the Proxy application.
 type App struct {
-	conn *sql.DB
+	conn   *sql.DB
+	toggle *toggle.Registry
 }
 
 // New creates a new Proxy app instance.
 func New(conn *sql.DB) *App {
 	return &App{conn: conn}
+}
+
+// SetToggleRegistry connects the proxy app to the runtime middleware toggle.
+func (a *App) SetToggleRegistry(reg *toggle.Registry) {
+	a.toggle = reg
 }
 
 func (a *App) Name() string        { return "proxy" }
@@ -117,6 +125,10 @@ func (a *App) handleUpdateModule(w http.ResponseWriter, r *http.Request) {
 		enabled := 0
 		if *req.Enabled { enabled = 1 }
 		a.conn.Exec("UPDATE proxy_modules SET enabled = ?, updated_at = ? WHERE name = ?", enabled, time.Now().Format(time.RFC3339), name)
+		// Toggle live middleware chain
+		if a.toggle != nil {
+			a.toggle.Set(name, *req.Enabled)
+		}
 	}
 	if req.Config != nil {
 		j, _ := json.Marshal(req.Config)
