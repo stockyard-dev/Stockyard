@@ -227,16 +227,23 @@ func (a *App) handleAddVersion(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleInstallPack(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
-	var id, ver string
-	err := a.conn.QueryRow("SELECT id, current_version FROM exchange_packs WHERE slug = ?", slug).Scan(&id, &ver)
+
+	// Run the full installer
+	result, err := a.Install(slug)
 	if err != nil {
 		w.WriteHeader(404)
-		writeJSON(w, map[string]string{"error": "pack not found"})
+		writeJSON(w, map[string]string{"error": err.Error()})
 		return
 	}
-	a.conn.Exec("INSERT INTO exchange_installed (pack_id, pack_slug, version) VALUES (?,?,?)", id, slug, ver)
-	a.conn.Exec("UPDATE exchange_packs SET installs = installs + 1 WHERE id = ?", id)
-	writeJSON(w, map[string]any{"status": "installed", "slug": slug, "version": ver})
+
+	writeJSON(w, map[string]any{
+		"status":  "installed",
+		"slug":    result.PackSlug,
+		"version": result.Version,
+		"applied": result.Applied,
+		"skipped": result.Skipped,
+		"errors":  result.Errors,
+	})
 }
 
 // --- Installed ---
@@ -260,8 +267,15 @@ func (a *App) handleListInstalled(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleUninstall(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	a.conn.Exec("DELETE FROM exchange_installed WHERE id = ?", id)
-	writeJSON(w, map[string]string{"status": "uninstalled"})
+	var idInt int
+	fmt.Sscanf(id, "%d", &idInt)
+	result, err := a.Uninstall(idInt)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, map[string]any{"status": "uninstalled", "removed": result.Applied})
 }
 
 // --- Environments ---

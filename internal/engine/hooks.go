@@ -254,3 +254,161 @@ func genTraceID() string {
 	rand.Read(b)
 	return "tr_" + hex.EncodeToString(b)
 }
+
+// seedExchangePacks creates starter packs in the exchange marketplace.
+func seedExchangePacks(conn *sql.DB) {
+	var count int
+	conn.QueryRow("SELECT COUNT(*) FROM exchange_packs").Scan(&count)
+	if count > 0 {
+		return
+	}
+
+	type pack struct {
+		slug, name, desc, author, tags string
+		content                        string
+	}
+
+	packs := []pack{
+		{
+			slug: "safety-essentials", name: "Safety Essentials", author: "Stockyard",
+			desc: "Core safety modules: PII redaction, content filtering, prompt injection detection, and trust policies",
+			tags: `["safety","trust","recommended"]`,
+			content: `{
+				"modules": [
+					{"name": "pii_redactor", "enabled": true},
+					{"name": "content_filter", "enabled": true},
+					{"name": "prompt_injection", "enabled": true},
+					{"name": "toxicity_filter", "enabled": true}
+				],
+				"policies": [
+					{"name": "block-pii-leak", "policy_type": "block", "pattern": "ssn|credit.card|password", "description": "Block responses containing PII patterns", "enabled": true},
+					{"name": "warn-high-toxicity", "policy_type": "warn", "pattern": "toxicity_score > 0.8", "description": "Flag high-toxicity completions", "enabled": true}
+				],
+				"alerts": [
+					{"name": "pii-leak-alert", "metric": "pii_detections", "condition": "gt", "threshold": 0, "window": "5m", "channel": "default", "enabled": true},
+					{"name": "injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 5, "window": "1h", "channel": "default", "enabled": true}
+				]
+			}`,
+		},
+		{
+			slug: "cost-control", name: "Cost Control Pack", author: "Stockyard",
+			desc: "Rate limiting, cost caps, token budgets, and cost alerting — keep your LLM spend under control",
+			tags: `["cost","billing","recommended"]`,
+			content: `{
+				"modules": [
+					{"name": "rateshield", "enabled": true},
+					{"name": "cost_cap", "enabled": true},
+					{"name": "token_budget", "enabled": true},
+					{"name": "cache", "enabled": true}
+				],
+				"alerts": [
+					{"name": "daily-cost-limit", "metric": "cost", "condition": "gt", "threshold": 50.0, "window": "24h", "channel": "default", "enabled": true},
+					{"name": "high-token-request", "metric": "tokens", "condition": "gt", "threshold": 100000, "window": "5m", "channel": "default", "enabled": true},
+					{"name": "rate-limit-spike", "metric": "rate_limited", "condition": "gt", "threshold": 20, "window": "5m", "channel": "default", "enabled": true}
+				]
+			}`,
+		},
+		{
+			slug: "openai-quickstart", name: "OpenAI Quickstart", author: "Stockyard",
+			desc: "Pre-configured OpenAI provider with model routing, caching, and a starter prompt template",
+			tags: `["openai","quickstart","provider"]`,
+			content: `{
+				"providers": [
+					{"name": "openai", "base_url": "https://api.openai.com/v1", "auth_type": "bearer", "priority": 1, "models": "gpt-4o,gpt-4o-mini,gpt-4-turbo,o1,o1-mini,o3-mini"}
+				],
+				"routes": [
+					{"pattern": "gpt-*", "provider": "openai", "priority": 1, "enabled": true},
+					{"pattern": "o1*", "provider": "openai", "priority": 1, "enabled": true},
+					{"pattern": "o3*", "provider": "openai", "priority": 1, "enabled": true}
+				],
+				"modules": [
+					{"name": "cache", "enabled": true},
+					{"name": "retry", "enabled": true}
+				],
+				"templates": [
+					{"slug": "general-assistant", "name": "General Assistant", "description": "Versatile assistant template with system instructions", "template": "You are a helpful, accurate, and concise assistant. Answer the user's question directly.\n\nUser: {{input}}", "model": "gpt-4o-mini", "tags": "general,starter"}
+				]
+			}`,
+		},
+		{
+			slug: "anthropic-quickstart", name: "Anthropic Quickstart", author: "Stockyard",
+			desc: "Pre-configured Anthropic provider with Claude model routing and prompt template",
+			tags: `["anthropic","quickstart","provider"]`,
+			content: `{
+				"providers": [
+					{"name": "anthropic", "base_url": "https://api.anthropic.com/v1", "auth_type": "header", "priority": 1, "models": "claude-sonnet-4-20250514,claude-haiku-4-5-20251001,claude-opus-4-5-20250918"}
+				],
+				"routes": [
+					{"pattern": "claude-*", "provider": "anthropic", "priority": 1, "enabled": true}
+				],
+				"modules": [
+					{"name": "cache", "enabled": true},
+					{"name": "retry", "enabled": true}
+				],
+				"templates": [
+					{"slug": "claude-analyst", "name": "Claude Analyst", "description": "Analysis-focused template for Claude", "template": "Analyze the following and provide structured insights:\n\n{{input}}", "model": "claude-sonnet-4-20250514", "tags": "analysis,claude"}
+				]
+			}`,
+		},
+		{
+			slug: "multi-provider-failover", name: "Multi-Provider Failover", author: "Stockyard",
+			desc: "Configure OpenAI + Anthropic with automatic failover, health checks, and load balancing",
+			tags: `["failover","reliability","advanced"]`,
+			content: `{
+				"providers": [
+					{"name": "openai", "base_url": "https://api.openai.com/v1", "auth_type": "bearer", "priority": 1, "models": "gpt-4o,gpt-4o-mini"},
+					{"name": "anthropic", "base_url": "https://api.anthropic.com/v1", "auth_type": "header", "priority": 2, "models": "claude-sonnet-4-20250514,claude-haiku-4-5-20251001"}
+				],
+				"modules": [
+					{"name": "failover", "enabled": true},
+					{"name": "healthcheck", "enabled": true},
+					{"name": "loadbalance", "enabled": true},
+					{"name": "retry", "enabled": true},
+					{"name": "circuit_breaker", "enabled": true}
+				],
+				"alerts": [
+					{"name": "provider-down", "metric": "error_rate", "condition": "gt", "threshold": 0.5, "window": "5m", "channel": "default", "enabled": true},
+					{"name": "failover-triggered", "metric": "failovers", "condition": "gt", "threshold": 0, "window": "5m", "channel": "default", "enabled": true}
+				]
+			}`,
+		},
+		{
+			slug: "eval-suite", name: "Evaluation Suite", author: "Stockyard",
+			desc: "Workflows and templates for systematic LLM evaluation: accuracy, hallucination detection, and regression testing",
+			tags: `["eval","testing","studio"]`,
+			content: `{
+				"workflows": [
+					{
+						"slug": "eval-accuracy", "name": "Accuracy Evaluator",
+						"description": "Run a prompt through an LLM then grade the response for accuracy",
+						"steps": [
+							{"id": "generate", "type": "llm", "config": {"model": "gpt-4o-mini", "prompt": "{{input}}"}},
+							{"id": "grade", "type": "llm", "depends_on": ["generate"], "config": {"model": "gpt-4o", "system": "You are an evaluator. Grade the response for accuracy on a scale of 1-10. Respond with JSON: {\"score\": N, \"reasoning\": \"...\"}", "prompt": "Original question: {{input}}\n\nResponse to grade:\n{{steps.generate.output}}"}},
+							{"id": "result", "type": "transform", "depends_on": ["grade"], "config": {"expression": "extract_json"}}
+						]
+					},
+					{
+						"slug": "hallucination-check", "name": "Hallucination Detector",
+						"description": "Generate a response then check for hallucinated claims",
+						"steps": [
+							{"id": "respond", "type": "llm", "config": {"model": "gpt-4o-mini", "prompt": "{{input}}"}},
+							{"id": "check", "type": "llm", "depends_on": ["respond"], "config": {"model": "gpt-4o", "system": "Identify any claims in the response that appear fabricated, unverifiable, or inconsistent. List each with confidence level.", "prompt": "Response to check:\n{{steps.respond.output}}"}}
+						]
+					}
+				],
+				"templates": [
+					{"slug": "eval-rubric", "name": "Eval Rubric", "description": "Rubric-based evaluation template", "template": "Evaluate the following response using this rubric:\n- Accuracy (1-10)\n- Completeness (1-10)\n- Clarity (1-10)\n- Relevance (1-10)\n\nResponse:\n{{input}}\n\nProvide scores as JSON.", "model": "gpt-4o", "tags": "eval,grading"}
+				]
+			}`,
+		},
+	}
+
+	for _, p := range packs {
+		id := "pk_" + p.slug
+		conn.Exec(`INSERT OR IGNORE INTO exchange_packs (id, slug, name, description, author, pack_type, tags_json) VALUES (?,?,?,?,?,?,?)`,
+			id, p.slug, p.name, p.desc, p.author, "config", p.tags)
+		conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
+			id, "1.0.0", p.content)
+	}
+	log.Printf("[exchange] seeded %d starter packs", len(packs))
+}
