@@ -61,6 +61,10 @@ type RunContext struct {
 // Execute runs a workflow's steps in dependency order.
 // Called in a goroutine from handleRunWorkflow.
 func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, input any, proxyPort int) {
+	// 5-minute max timeout for entire workflow run
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
+
 	inputJSON, _ := json.Marshal(input)
 	rc := &RunContext{
 		RunID:    runID,
@@ -161,11 +165,14 @@ func executeLLMStep(ctx context.Context, rc *RunContext, step Step, start time.T
 
 	reqBody, _ := json.Marshal(body)
 
-	// Call the local proxy
-	req, _ := http.NewRequestWithContext(ctx, "POST", rc.ProxyURL+"/v1/chat/completions", bytes.NewReader(reqBody))
+	// Call the local proxy with a 30s timeout
+	stepCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	req, _ := http.NewRequestWithContext(stepCtx, "POST", rc.ProxyURL+"/v1/chat/completions", bytes.NewReader(reqBody))
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
 	latency := time.Since(start).Milliseconds()
 	if err != nil {
 		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: latency}
