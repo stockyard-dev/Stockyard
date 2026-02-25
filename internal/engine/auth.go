@@ -12,24 +12,46 @@ import (
 // on management API routes (/api/*). Proxy routes (/v1/*), health checks,
 // and the dashboard (/ui) are exempt.
 //
+// Also handles CORS for all routes.
+//
 // Set STOCKYARD_ADMIN_KEY to enable. If unset, all routes are open (dev mode).
 func adminAuthMiddleware(next http.Handler) http.Handler {
 	adminKey := os.Getenv("STOCKYARD_ADMIN_KEY")
 	if adminKey == "" {
 		log.Println("⚠️  STOCKYARD_ADMIN_KEY not set — management API is unauthenticated")
-		return next
+	} else {
+		log.Println("🔒 Admin API key auth enabled")
 	}
-	log.Println("🔒 Admin API key auth enabled")
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
-		// Exempt paths: proxy endpoints, health, dashboard, CORS preflight
-		if r.Method == "OPTIONS" ||
-			strings.HasPrefix(path, "/v1/") ||
+		// CORS headers on all responses
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Key")
+			w.Header().Set("Access-Control-Max-Age", "86400")
+		}
+
+		// Handle CORS preflight
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(204)
+			return
+		}
+
+		// Exempt paths: proxy endpoints, health, dashboard
+		if strings.HasPrefix(path, "/v1/") ||
 			path == "/health" ||
 			path == "/ui" ||
 			strings.HasPrefix(path, "/ui/") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// If no admin key set, pass through (dev mode)
+		if adminKey == "" {
 			next.ServeHTTP(w, r)
 			return
 		}
