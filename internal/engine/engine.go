@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -206,6 +207,13 @@ func Boot(pc ProductConfig) {
 	cfg, err := config.LoadOrDefault(configPath, pc.Product)
 	if err != nil {
 		log.Fatalf("config: %v", err)
+	}
+
+	// Allow PORT env var to override config (Railway, Heroku, etc.)
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		if p, err := strconv.Atoi(envPort); err == nil {
+			cfg.Port = p
+		}
 	}
 
 	// Open database
