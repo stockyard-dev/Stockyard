@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docs — Stockyard</title>
+<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0;transition:color 0.15s}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+.content pre .comment{color:#5a5040}
+.content pre .cmd{color:var(--cream)}
+.content pre .key{color:var(--rust-light)}
+.content pre .val{color:var(--gold)}
+.content pre .str{color:var(--green-light)}
+.content pre .kw{color:var(--rust-light)}
+
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+
+.endpoint-table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:0.8rem}
+.endpoint-table th,.endpoint-table td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.endpoint-table th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.endpoint-table td{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.75rem}
+.endpoint-table .method{color:var(--green-light);font-weight:600}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:700px){
+  .docs-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .content{padding:2rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="docs-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Getting Started</div>
+      <a href="#quickstart" class="active">Quickstart</a>
+      <a href="#configuration">Configuration</a>
+      <a href="#dashboard">Console</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Proxy</div>
+      <a href="#proxy">Overview</a>
+      <a href="#modules">Modules</a>
+      <a href="#providers">Providers</a>
+      <a href="#routes">Routes</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Apps</div>
+      <a href="#observe">Observe</a>
+      <a href="#trust">Trust</a>
+      <a href="#studio">Studio</a>
+      <a href="#forge">Forge</a>
+      <a href="#exchange">Exchange</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">API</div>
+      <a href="#api">API Reference</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <h1>Documentation</h1>
+    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+
+    <h2 id="quickstart">Quickstart</h2>
+    <p>Get Stockyard running in under a minute.</p>
+    <pre>
+<span class="comment"># Install the binary</span>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+
+<span class="comment"># Start the platform (all 6 apps on port 4200)</span>
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Point your app at the proxy</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+
+<span class="comment"># Make a request (goes through the full middleware chain)</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">  -H "Content-Type: application/json" \</span>
+<span class="cmd">  -H "Authorization: Bearer $OPENAI_API_KEY" \</span>
+<span class="cmd">  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</span>
+</pre>
+    <p>Open <code>http://localhost:4200/ui</code> for the web console. Open <code>http://localhost:4200/api/apps</code> to see all registered apps.</p>
+
+    <div class="note"><strong>Note</strong><br>Stockyard is a transparent proxy. It reads your existing <code>Authorization</code> header and passes it to the upstream provider. You don't configure API keys in Stockyard itself.</div>
+
+    <h2 id="configuration">Configuration</h2>
+    <p>Stockyard works with zero configuration. All 50+ middleware modules are registered on boot with sensible defaults. You can toggle modules on/off at runtime via the API:</p>
+    <pre>
+<span class="comment"># List all modules</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/modules</span>
+
+<span class="comment"># Disable a module</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \</span>
+<span class="cmd">  -d '{"enabled": false}'</span>
+
+<span class="comment"># Re-enable it</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \</span>
+<span class="cmd">  -d '{"enabled": true}'</span>
+</pre>
+    <p>Module state persists in the embedded SQLite database. Changes take effect immediately &mdash; no restart needed.</p>
+
+    <h2 id="dashboard">Console</h2>
+    <p>The web console is served at <code>/ui</code> and gives you a real-time view of all six apps. It shows modules, providers, routes, traces, costs, alerts, templates, workflows, packs, and installed status.</p>
+    <p>The console is built with Preact and has zero external dependencies. It's embedded in the binary and served alongside the API.</p>
+
+    <h2 id="proxy">Proxy</h2>
+    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 50+ toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
+
+    <h2 id="modules">Modules</h2>
+    <p>Modules are organized by category:</p>
+    <table class="endpoint-table">
+      <tr><th>Category</th><th>Modules</th><th>Purpose</th></tr>
+      <tr><td>routing</td><td>fallbackrouter, modelswitch, regionroute, localsync, abrouter</td><td>Provider failover, model aliasing, geo routing</td></tr>
+      <tr><td>caching</td><td>cachelayer, embedcache, semanticcache</td><td>Response and embedding caching</td></tr>
+      <tr><td>cost</td><td>costcap, tierdrop, idlekill, outputcap, usagepulse, rateshield</td><td>Spending limits, rate limiting, usage reporting</td></tr>
+      <tr><td>safety</td><td>promptguard, toxicfilter, guardrail, agegate, hallucicheck, secretscan, agentguard</td><td>Content moderation, injection detection, PII</td></tr>
+      <tr><td>transform</td><td>promptslim, tokentrim, contextpack, chatmem, langbridge, voicebridge</td><td>Prompt compression, context management</td></tr>
+      <tr><td>validate</td><td>structuredshield, evalgate, codefence</td><td>JSON validation, quality gating</td></tr>
+      <tr><td>shims</td><td>anthrofit, geminishim</td><td>Use Claude/Gemini with OpenAI SDK</td></tr>
+      <tr><td>observe</td><td>llmtap, tracelink, alertpulse, driftwatch</td><td>Logging, tracing, alerting, drift detection</td></tr>
+    </table>
+    <p>Every module is wrapped with <code>toggle.Wrap</code> and checks enabled state on every request. Disable a module and it's bypassed instantly.</p>
+
+    <h2 id="providers">Providers</h2>
+    <p>Stockyard supports 17 LLM providers out of the box: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Cohere, AI21, Together, Fireworks, Perplexity, Ollama, LM Studio, vLLM, Azure OpenAI, AWS Bedrock, Replicate, and DeepSeek.</p>
+    <pre>
+<span class="comment"># List configured providers</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/providers</span>
+</pre>
+
+    <h2 id="routes">Routes</h2>
+    <p>Routes map model patterns to providers. When a request comes in for <code>gpt-4o</code>, the router checks the routes table and sends it to the matching provider.</p>
+    <pre>
+<span class="comment"># List routes</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/routes</span>
+</pre>
+
+    <h2 id="observe">Observe</h2>
+    <p>Every proxy request is automatically traced. Observe records model, tokens, cost, latency, and status for every call.</p>
+    <pre>
+<span class="comment"># Get recent traces</span>
+<span class="cmd">curl http://localhost:4200/api/observe/traces?limit=20</span>
+
+<span class="comment"># Daily cost breakdown</span>
+<span class="cmd">curl http://localhost:4200/api/observe/costs</span>
+
+<span class="comment"># Create an alert</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/observe/alerts \</span>
+<span class="cmd">  -d '{"name":"cost-spike","metric":"cost","condition":"gt","threshold":10}'</span>
+</pre>
+
+    <h2 id="trust">Trust</h2>
+    <p>Trust maintains a hash-chained audit ledger. Every proxy request gets an entry with a SHA-256 hash linking it to the previous entry. This creates a tamper-evident log.</p>
+    <pre>
+<span class="comment"># View the audit ledger</span>
+<span class="cmd">curl http://localhost:4200/api/trust/ledger?limit=10</span>
+
+<span class="comment"># List policies</span>
+<span class="cmd">curl http://localhost:4200/api/trust/policies</span>
+</pre>
+
+    <h2 id="studio">Studio</h2>
+    <p>Studio manages versioned prompt templates, A/B experiments, and benchmarks.</p>
+    <pre>
+<span class="comment"># List templates</span>
+<span class="cmd">curl http://localhost:4200/api/studio/templates</span>
+
+<span class="comment"># Create a template</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \</span>
+<span class="cmd">  -d '{"slug":"summarizer","name":"Summarizer","description":"Summarize text"}'</span>
+</pre>
+
+    <h2 id="forge">Forge</h2>
+    <p>Forge is a DAG workflow engine. Define multi-step workflows where each step can be an LLM call, a transform, or a tool call. Steps declare dependencies and execute in topological order.</p>
+    <pre>
+<span class="comment"># Create a workflow</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \</span>
+<span class="cmd">  -d '{</span>
+<span class="cmd">    "slug": "draft-and-critique",</span>
+<span class="cmd">    "name": "Draft + Critique",</span>
+<span class="cmd">    "steps": [</span>
+<span class="cmd">      {"id":"draft","type":"llm","config":{"model":"gpt-4o-mini","prompt":"Write about {{input}}"}},</span>
+<span class="cmd">      {"id":"critique","type":"llm","depends_on":["draft"],</span>
+<span class="cmd">       "config":{"prompt":"Critique: {{steps.draft.output}}"}},</span>
+<span class="cmd">      {"id":"final","type":"transform","depends_on":["draft","critique"],</span>
+<span class="cmd">       "config":{"expression":"concat"}}</span>
+<span class="cmd">    ]</span>
+<span class="cmd">  }'</span>
+
+<span class="comment"># Run it</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows/draft-and-critique/run \</span>
+<span class="cmd">  -d '{"input": "the future of AI"}'</span>
+
+<span class="comment"># Check status</span>
+<span class="cmd">curl http://localhost:4200/api/forge/runs/{run_id}</span>
+</pre>
+    <p>Step types: <code>llm</code> (calls the proxy), <code>transform</code> (concat, extract_json, first_line), <code>tool</code> (external tool calls).</p>
+    <p>Template variables: <code>{{input}}</code> for the run input, <code>{{steps.step_id.output}}</code> for dependency outputs.</p>
+
+    <h2 id="exchange">Exchange</h2>
+    <p>Exchange is a config pack marketplace. Packs bundle providers, modules, routes, workflows, templates, policies, and alerts into one installable unit.</p>
+    <pre>
+<span class="comment"># List available packs</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/packs</span>
+
+<span class="comment"># Install a pack (applies all contents to the system)</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/safety-essentials/install</span>
+
+<span class="comment"># View installed packs</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/installed</span>
+
+<span class="comment"># Uninstall (cleanly removes everything the pack added)</span>
+<span class="cmd">curl -X DELETE http://localhost:4200/api/exchange/installed/1</span>
+</pre>
+    <div class="note"><strong>Starter packs</strong><br>6 packs ship by default: Safety Essentials, Cost Control, OpenAI Quickstart, Anthropic Quickstart, Multi-Provider Failover, and Evaluation Suite.</div>
+
+    <h2 id="api">API Reference</h2>
+    <p>All endpoints are served on the same port as the proxy. No separate API server required.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
+      <tr><td class="method">GET</td><td>/health</td><td>Health check</td></tr>
+      <tr><td class="method">POST</td><td>/v1/chat/completions</td><td>Proxy LLM request</td></tr>
+      <tr><td class="method">GET</td><td>/api/proxy/modules</td><td>List modules</td></tr>
+      <tr><td class="method">PUT</td><td>/api/proxy/modules/{name}</td><td>Toggle module</td></tr>
+      <tr><td class="method">GET</td><td>/api/proxy/providers</td><td>List providers</td></tr>
+      <tr><td class="method">GET</td><td>/api/proxy/routes</td><td>List routes</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/traces</td><td>Recent traces</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/costs</td><td>Cost rollups</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/alerts</td><td>Alert rules</td></tr>
+      <tr><td class="method">POST</td><td>/api/observe/alerts</td><td>Create alert</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/anomalies</td><td>Detected anomalies</td></tr>
+      <tr><td class="method">GET</td><td>/api/trust/ledger</td><td>Audit ledger</td></tr>
+      <tr><td class="method">GET</td><td>/api/trust/policies</td><td>Trust policies</td></tr>
+      <tr><td class="method">POST</td><td>/api/trust/policies</td><td>Create policy</td></tr>
+      <tr><td class="method">GET</td><td>/api/trust/evidence</td><td>Evidence packs</td></tr>
+      <tr><td class="method">GET</td><td>/api/studio/templates</td><td>Prompt templates</td></tr>
+      <tr><td class="method">POST</td><td>/api/studio/templates</td><td>Create template</td></tr>
+      <tr><td class="method">GET</td><td>/api/studio/experiments</td><td>Experiments</td></tr>
+      <tr><td class="method">GET</td><td>/api/forge/workflows</td><td>List workflows</td></tr>
+      <tr><td class="method">POST</td><td>/api/forge/workflows</td><td>Create workflow</td></tr>
+      <tr><td class="method">POST</td><td>/api/forge/workflows/{slug}/run</td><td>Run workflow</td></tr>
+      <tr><td class="method">GET</td><td>/api/forge/runs/{id}</td><td>Get run status</td></tr>
+      <tr><td class="method">GET</td><td>/api/forge/tools</td><td>Tool registry</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/packs</td><td>Available packs</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/packs/{slug}</td><td>Pack detail</td></tr>
+      <tr><td class="method">POST</td><td>/api/exchange/packs/{slug}/install</td><td>Install pack</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/installed</td><td>Installed packs</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/exchange/installed/{id}</td><td>Uninstall pack</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/environments</td><td>Environments</td></tr>
+      <tr><td class="method">POST</td><td>/api/exchange/environments/{name}/sync</td><td>Sync environment</td></tr>
+    </table>
+  </main>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+
+</body>
+</html>
