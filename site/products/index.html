@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>All 20 Products | Stockyard — Where LLM Traffic Gets Sorted</title>
-<meta name="description" content="20 LLM infrastructure tools. Cost control, caching, routing, safety, compliance, analytics, and more. Single Go binary.">
+<title>All Products | Stockyard — Where LLM Traffic Gets Sorted</title>
+<meta name="description" content="125 LLM infrastructure tools. 20 available now, more coming soon. Cost control, caching, routing, safety, compliance, analytics, and more. Single Go binary.">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -16,539 +16,709 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}
 .hero{max-width:900px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
 .hero h1{font-size:2.5rem;margin-bottom:1rem}.hero h1 .num{color:var(--rust-light)}
-.hero p{color:var(--cream-dim);font-style:italic;font-size:1.1rem;margin-bottom:2rem}
-.search{max-width:500px;margin:0 auto 3rem}
+.hero p{color:var(--cream-dim);font-style:italic;font-size:1.1rem;margin-bottom:0.5rem}
+.hero .count-note{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);margin-bottom:2rem}
+.search-section{max-width:700px;margin:0 auto 3rem;padding:0 2rem}
+.ai-search{margin-bottom:1.5rem}
+.ai-search-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:0.8rem;text-align:center}
+.ai-input-row{display:flex;gap:0.5rem}
+.ai-input-row input{flex:1;padding:0.8rem 1.2rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-serif);font-size:0.9rem;outline:none}
+.ai-input-row input:focus{border-color:var(--rust)}
+.ai-input-row input::placeholder{color:var(--leather);font-style:italic}
+.ai-btn{padding:0.8rem 1.5rem;background:var(--rust);color:var(--cream);border:none;font-family:var(--font-mono);font-size:0.8rem;cursor:pointer;white-space:nowrap;transition:background 0.2s}
+.ai-btn:hover{background:var(--rust-light)}
+.ai-btn:disabled{opacity:0.5;cursor:wait}
+.ai-results{margin-top:1rem}
+.ai-match{background:var(--bg2);border:1px solid var(--rust);padding:1rem 1.2rem;margin-bottom:0.5rem;display:flex;gap:1rem;align-items:flex-start}
+.ai-match-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--rust-light);min-width:120px;flex-shrink:0}
+.ai-match-name a{color:var(--rust-light)}
+.ai-match-reason{font-size:0.85rem;color:var(--cream-dim)}
+.ai-match-badge{font-family:var(--font-mono);font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;padding:0.1rem 0.4rem;margin-left:0.5rem}
+.ai-match-badge.available{background:var(--rust);color:var(--cream)}
+.ai-match-badge.soon{background:var(--bg3);color:var(--leather)}
+.ai-thinking{text-align:center;padding:1.5rem;color:var(--leather);font-style:italic;font-size:0.9rem}
+.search-divider{text-align:center;margin:1.5rem 0;position:relative}
+.search-divider::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--bg3)}
+.search-divider span{background:var(--bg);padding:0 1rem;position:relative;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);text-transform:uppercase;letter-spacing:2px}
+.search{max-width:500px;margin:0 auto 1rem}
 .search input{width:100%;padding:0.8rem 1.2rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none}
 .search input:focus{border-color:var(--rust)}
 .search input::placeholder{color:var(--leather)}
+.filter-bar{max-width:500px;margin:0 auto 3rem;display:flex;gap:0.5rem;justify-content:center;font-family:var(--font-mono);font-size:0.7rem}
+.filter-btn{background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);padding:0.3rem 0.8rem;cursor:pointer;transition:all 0.2s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--rust);color:var(--rust-light)}
 .grid{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-.card{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s;display:block;color:var(--cream)}
+.card{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s;display:block;color:var(--cream);position:relative}
 .card:hover{border-color:var(--rust);color:var(--cream)}
+.card.coming-soon{opacity:0.5}
+.card.coming-soon:hover{opacity:0.7;border-color:var(--bg3)}
 .card-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem}
 .card-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)}
 .card-cat{font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--rust);margin-left:auto}
 .card-tagline{font-size:0.85rem;color:var(--cream-dim)}
+.badge-soon{font-family:var(--font-mono);font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;background:var(--bg3);color:var(--leather);padding:0.15rem 0.5rem;margin-left:0.5rem;white-space:nowrap}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 </style>
 </head>
 <body>
 <nav class="nav">
   <a href="/" class="nav-brand">Stockyard</a>
-  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
 </nav>
 <section class="hero">
-  <h1><span class="num">20/span> products. One binary.</h1>
+  <h1><span class="num">125</span> products. One binary.</h1>
   <p>Every tool you need to run LLM traffic in production.</p>
+  <div class="count-note">20 available now &middot; 105 coming soon</div>
 </section>
-<div class="search"><input type="text" id="search" placeholder="Search products..." oninput="filterCards(this.value)"></div>
+<div class="search-section">
+  <div class="ai-search">
+    <div class="ai-search-label">Describe your problem</div>
+    <div class="ai-input-row">
+      <input type="text" id="ai-query" placeholder="e.g. &quot;My chatbot keeps going off-topic&quot; or &quot;I'm spending too much on GPT-4&quot;">
+      <button class="ai-btn" onclick="aiSearch()" id="ai-btn">Find products</button>
+    </div>
+    <div id="ai-results" class="ai-results"></div>
+  </div>
+  <div class="search-divider"><span>or browse</span></div>
+  <div class="search"><input type="text" id="search" placeholder="Filter by name..." oninput="filterCards()"></div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('all')">All</button>
+    <button class="filter-btn" onclick="setFilter('available')">Available now</button>
+    <button class="filter-btn" onclick="setFilter('coming-soon')">Coming soon</button>
+  </div>
+</div>
 <div class="grid" id="grid">
-  <a href="/products/costcap/" class="card" data-search="costcap never get a surprise llm bill again cost control costcap">
+  <!-- ===== AVAILABLE NOW (20 products) ===== -->
+  <a href="/products/costcap/" class="card" data-status="available" data-search="costcap never get a surprise llm bill again cost control">
     <div class="card-top"><span class="card-name">CostCap</span><span class="card-cat">Cost Control</span></div>
     <div class="card-tagline">Never get a surprise LLM bill again</div>
   </a>
-  <a href="/products/llmcache/" class="card" data-search="cachelayer stop paying twice for the same llm response caching llmcache">
+  <a href="/products/llmcache/" class="card" data-status="available" data-search="cachelayer stop paying twice for the same llm response caching">
     <div class="card-top"><span class="card-name">CacheLayer</span><span class="card-cat">Caching</span></div>
     <div class="card-tagline">Stop paying twice for the same LLM response</div>
   </a>
-  <a href="/products/jsonguard/" class="card" data-search="structuredshield llm responses that always parse validation jsonguard">
+  <a href="/products/jsonguard/" class="card" data-status="available" data-search="structuredshield llm responses that always parse validation">
     <div class="card-top"><span class="card-name">StructuredShield</span><span class="card-cat">Validation</span></div>
     <div class="card-tagline">LLM responses that always parse</div>
   </a>
-  <a href="/products/routefall/" class="card" data-search="fallbackrouter llm calls that never fail reliability routefall">
+  <a href="/products/routefall/" class="card" data-status="available" data-search="fallbackrouter llm calls that never fail reliability">
     <div class="card-top"><span class="card-name">FallbackRouter</span><span class="card-cat">Reliability</span></div>
     <div class="card-tagline">LLM calls that never fail</div>
   </a>
-  <a href="/products/rateshield/" class="card" data-search="rateshield rate limiting that actually works for llms traffic control rateshield">
+  <a href="/products/rateshield/" class="card" data-status="available" data-search="rateshield rate limiting that actually works for llms traffic control">
     <div class="card-top"><span class="card-name">RateShield</span><span class="card-cat">Traffic Control</span></div>
     <div class="card-tagline">Rate limiting that actually works for LLMs</div>
   </a>
-  <a href="/products/promptreplay/" class="card" data-search="promptreplay every llm request, recorded and replayable logging promptreplay">
+  <a href="/products/promptreplay/" class="card" data-status="available" data-search="promptreplay every llm request recorded and replayable logging">
     <div class="card-top"><span class="card-name">PromptReplay</span><span class="card-cat">Logging</span></div>
     <div class="card-tagline">Every LLM request, recorded and replayable</div>
   </a>
-  <a href="/products/stockyard/" class="card" data-search="stockyard suite 20 llm tools. one binary. $29.99/month. suite stockyard">
+  <a href="/products/stockyard/" class="card" data-status="available" data-search="stockyard suite 20 llm tools one binary suite">
     <div class="card-top"><span class="card-name">Stockyard Suite</span><span class="card-cat">Suite</span></div>
     <div class="card-tagline">20 LLM tools. One binary. $29.99/month.</div>
   </a>
-  <a href="/products/keypool/" class="card" data-search="keypool never hit api key rate limits again key management keypool">
+  <a href="/products/keypool/" class="card" data-status="available" data-search="keypool never hit api key rate limits again key management">
     <div class="card-top"><span class="card-name">KeyPool</span><span class="card-cat">Key Management</span></div>
     <div class="card-tagline">Never hit API key rate limits again</div>
   </a>
-  <a href="/products/promptguard/" class="card" data-search="promptguard pii never reaches the llm security promptguard">
+  <a href="/products/promptguard/" class="card" data-status="available" data-search="promptguard pii never reaches the llm security">
     <div class="card-top"><span class="card-name">PromptGuard</span><span class="card-cat">Security</span></div>
     <div class="card-tagline">PII never reaches the LLM</div>
   </a>
-  <a href="/products/modelswitch/" class="card" data-search="modelswitch smart model routing for every request routing modelswitch">
+  <a href="/products/modelswitch/" class="card" data-status="available" data-search="modelswitch smart model routing for every request routing">
     <div class="card-top"><span class="card-name">ModelSwitch</span><span class="card-cat">Routing</span></div>
     <div class="card-tagline">Smart model routing for every request</div>
   </a>
-  <a href="/products/evalgate/" class="card" data-search="evalgate catch bad llm responses before users see them quality evalgate">
+  <a href="/products/evalgate/" class="card" data-status="available" data-search="evalgate catch bad llm responses before users see them quality">
     <div class="card-top"><span class="card-name">EvalGate</span><span class="card-cat">Quality</span></div>
     <div class="card-tagline">Catch bad LLM responses before users see them</div>
   </a>
-  <a href="/products/usagepulse/" class="card" data-search="usagepulse know exactly who's using what metering usagepulse">
+  <a href="/products/usagepulse/" class="card" data-status="available" data-search="usagepulse know exactly who is using what metering">
     <div class="card-top"><span class="card-name">UsagePulse</span><span class="card-cat">Metering</span></div>
     <div class="card-tagline">Know exactly who's using what</div>
   </a>
-  <a href="/products/promptpad/" class="card" data-search="promptpad version control for your prompts prompt management promptpad">
+  <a href="/products/promptpad/" class="card" data-status="available" data-search="promptpad version control for your prompts prompt management">
     <div class="card-top"><span class="card-name">PromptPad</span><span class="card-cat">Prompt Management</span></div>
     <div class="card-tagline">Version control for your prompts</div>
   </a>
-  <a href="/products/tokentrim/" class="card" data-search="tokentrim fit more into your context window optimization tokentrim">
+  <a href="/products/tokentrim/" class="card" data-status="available" data-search="tokentrim fit more into your context window optimization">
     <div class="card-top"><span class="card-name">TokenTrim</span><span class="card-cat">Optimization</span></div>
     <div class="card-tagline">Fit more into your context window</div>
   </a>
-  <a href="/products/batchqueue/" class="card" data-search="batchqueue async llm requests that don't overwhelm queueing batchqueue">
+  <a href="/products/batchqueue/" class="card" data-status="available" data-search="batchqueue async llm requests that dont overwhelm queueing">
     <div class="card-top"><span class="card-name">BatchQueue</span><span class="card-cat">Queueing</span></div>
     <div class="card-tagline">Async LLM requests that don't overwhelm</div>
   </a>
-  <a href="/products/multicall/" class="card" data-search="multicall ask multiple models, get the best answer comparison multicall">
+  <a href="/products/multicall/" class="card" data-status="available" data-search="multicall ask multiple models get the best answer comparison">
     <div class="card-top"><span class="card-name">MultiCall</span><span class="card-cat">Comparison</span></div>
     <div class="card-tagline">Ask multiple models, get the best answer</div>
   </a>
-  <a href="/products/streamsnap/" class="card" data-search="streamsnap capture and replay sse streams streaming streamsnap">
+  <a href="/products/streamsnap/" class="card" data-status="available" data-search="streamsnap capture and replay sse streams streaming">
     <div class="card-top"><span class="card-name">StreamSnap</span><span class="card-cat">Streaming</span></div>
     <div class="card-tagline">Capture and replay SSE streams</div>
   </a>
-  <a href="/products/llmtap/" class="card" data-search="llmtap full analytics for your llm stack analytics llmtap">
+  <a href="/products/llmtap/" class="card" data-status="available" data-search="llmtap full analytics for your llm stack analytics">
     <div class="card-top"><span class="card-name">LLMTap</span><span class="card-cat">Analytics</span></div>
     <div class="card-tagline">Full analytics for your LLM stack</div>
   </a>
-  <a href="/products/contextpack/" class="card" data-search="contextpack poor man's rag in 30 seconds context contextpack">
+  <a href="/products/contextpack/" class="card" data-status="available" data-search="contextpack poor mans rag in 30 seconds context">
     <div class="card-top"><span class="card-name">ContextPack</span><span class="card-cat">Context</span></div>
     <div class="card-tagline">Poor man's RAG in 30 seconds</div>
   </a>
-  <a href="/products/retrypilot/" class="card" data-search="retrypilot intelligent retry that doesn't make things worse reliability retrypilot">
+  <a href="/products/retrypilot/" class="card" data-status="available" data-search="retrypilot intelligent retry that doesnt make things worse reliability">
     <div class="card-top"><span class="card-name">RetryPilot</span><span class="card-cat">Reliability</span></div>
     <div class="card-tagline">Intelligent retry that doesn't make things worse</div>
   </a>
-  <a href="/products/toxicfilter/" class="card" data-search="toxicfilter content moderation for llm outputs safety toxicfilter">
-    <div class="card-top"><span class="card-name">ToxicFilter</span><span class="card-cat">Safety</span></div>
+
+  <!-- ===== COMING SOON (105 products) ===== -->
+  <a href="/products/toxicfilter/" class="card coming-soon" data-status="coming-soon" data-search="toxicfilter content moderation for llm outputs safety">
+    <div class="card-top"><span class="card-name">ToxicFilter</span><span class="badge-soon">Coming soon</span><span class="card-cat">Safety</span></div>
     <div class="card-tagline">Content moderation for LLM outputs</div>
   </a>
-  <a href="/products/compliancelog/" class="card" data-search="compliancelog immutable audit trail for every llm call compliance compliancelog">
-    <div class="card-top"><span class="card-name">ComplianceLog</span><span class="card-cat">Compliance</span></div>
+  <a href="/products/compliancelog/" class="card coming-soon" data-status="coming-soon" data-search="compliancelog immutable audit trail for every llm call compliance">
+    <div class="card-top"><span class="card-name">ComplianceLog</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compliance</span></div>
     <div class="card-tagline">Immutable audit trail for every LLM call</div>
   </a>
-  <a href="/products/secretscan/" class="card" data-search="secretscan catch api keys leaking through your llm security secretscan">
-    <div class="card-top"><span class="card-name">SecretScan</span><span class="card-cat">Security</span></div>
+  <a href="/products/secretscan/" class="card coming-soon" data-status="coming-soon" data-search="secretscan catch api keys leaking through your llm security">
+    <div class="card-top"><span class="card-name">SecretScan</span><span class="badge-soon">Coming soon</span><span class="card-cat">Security</span></div>
     <div class="card-tagline">Catch API keys leaking through your LLM</div>
   </a>
-  <a href="/products/tracelink/" class="card" data-search="tracelink distributed tracing for llm chains observability tracelink">
-    <div class="card-top"><span class="card-name">TraceLink</span><span class="card-cat">Observability</span></div>
+  <a href="/products/tracelink/" class="card coming-soon" data-status="coming-soon" data-search="tracelink distributed tracing for llm chains observability">
+    <div class="card-top"><span class="card-name">TraceLink</span><span class="badge-soon">Coming soon</span><span class="card-cat">Observability</span></div>
     <div class="card-tagline">Distributed tracing for LLM chains</div>
   </a>
-  <a href="/products/ipfence/" class="card" data-search="ipfence ip allowlisting for your llm proxy security ipfence">
-    <div class="card-top"><span class="card-name">IPFence</span><span class="card-cat">Security</span></div>
+  <a href="/products/ipfence/" class="card coming-soon" data-status="coming-soon" data-search="ipfence ip allowlisting for your llm proxy security">
+    <div class="card-top"><span class="card-name">IPFence</span><span class="badge-soon">Coming soon</span><span class="card-cat">Security</span></div>
     <div class="card-tagline">IP allowlisting for your LLM proxy</div>
   </a>
-  <a href="/products/embedcache/" class="card" data-search="embedcache never compute the same embedding twice caching embedcache">
-    <div class="card-top"><span class="card-name">EmbedCache</span><span class="card-cat">Caching</span></div>
+  <a href="/products/embedcache/" class="card coming-soon" data-status="coming-soon" data-search="embedcache never compute the same embedding twice caching">
+    <div class="card-top"><span class="card-name">EmbedCache</span><span class="badge-soon">Coming soon</span><span class="card-cat">Caching</span></div>
     <div class="card-tagline">Never compute the same embedding twice</div>
   </a>
-  <a href="/products/anthrofit/" class="card" data-search="anthrofit use claude with openai sdks compatibility anthrofit">
-    <div class="card-top"><span class="card-name">AnthroFit</span><span class="card-cat">Compatibility</span></div>
+  <a href="/products/anthrofit/" class="card coming-soon" data-status="coming-soon" data-search="anthrofit use claude with openai sdks compatibility">
+    <div class="card-top"><span class="card-name">AnthroFit</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compatibility</span></div>
     <div class="card-tagline">Use Claude with OpenAI SDKs</div>
   </a>
-  <a href="/products/alertpulse/" class="card" data-search="alertpulse pagerduty for your llm stack monitoring alertpulse">
-    <div class="card-top"><span class="card-name">AlertPulse</span><span class="card-cat">Monitoring</span></div>
+  <a href="/products/alertpulse/" class="card coming-soon" data-status="coming-soon" data-search="alertpulse pagerduty for your llm stack monitoring">
+    <div class="card-top"><span class="card-name">AlertPulse</span><span class="badge-soon">Coming soon</span><span class="card-cat">Monitoring</span></div>
     <div class="card-tagline">PagerDuty for your LLM stack</div>
   </a>
-  <a href="/products/chatmem/" class="card" data-search="chatmem persistent memory without eating context memory chatmem">
-    <div class="card-top"><span class="card-name">ChatMem</span><span class="card-cat">Memory</span></div>
+  <a href="/products/chatmem/" class="card coming-soon" data-status="coming-soon" data-search="chatmem persistent memory without eating context memory">
+    <div class="card-top"><span class="card-name">ChatMem</span><span class="badge-soon">Coming soon</span><span class="card-cat">Memory</span></div>
     <div class="card-tagline">Persistent memory without eating context</div>
   </a>
-  <a href="/products/mockllm/" class="card" data-search="mockllm deterministic llm responses for testing testing mockllm">
-    <div class="card-top"><span class="card-name">MockLLM</span><span class="card-cat">Testing</span></div>
+  <a href="/products/mockllm/" class="card coming-soon" data-status="coming-soon" data-search="mockllm deterministic llm responses for testing testing">
+    <div class="card-top"><span class="card-name">MockLLM</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Deterministic LLM responses for testing</div>
   </a>
-  <a href="/products/tenantwall/" class="card" data-search="tenantwall per-tenant isolation for multi-tenant llm apps multi-tenant tenantwall">
-    <div class="card-top"><span class="card-name">TenantWall</span><span class="card-cat">Multi-Tenant</span></div>
+  <a href="/products/tenantwall/" class="card coming-soon" data-status="coming-soon" data-search="tenantwall per-tenant isolation for multi-tenant llm apps multi-tenant">
+    <div class="card-top"><span class="card-name">TenantWall</span><span class="badge-soon">Coming soon</span><span class="card-cat">Multi-Tenant</span></div>
     <div class="card-tagline">Per-tenant isolation for multi-tenant LLM apps</div>
   </a>
-  <a href="/products/idlekill/" class="card" data-search="idlekill kill runaway llm requests cost control idlekill">
-    <div class="card-top"><span class="card-name">IdleKill</span><span class="card-cat">Cost Control</span></div>
+  <a href="/products/idlekill/" class="card coming-soon" data-status="coming-soon" data-search="idlekill kill runaway llm requests cost control">
+    <div class="card-top"><span class="card-name">IdleKill</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Control</span></div>
     <div class="card-tagline">Kill runaway LLM requests</div>
   </a>
-  <a href="/products/agentguard/" class="card" data-search="agentguard safety rails for autonomous ai agents agent safety agentguard">
-    <div class="card-top"><span class="card-name">AgentGuard</span><span class="card-cat">Agent Safety</span></div>
+  <a href="/products/agentguard/" class="card coming-soon" data-status="coming-soon" data-search="agentguard safety rails for autonomous ai agents agent safety">
+    <div class="card-top"><span class="card-name">AgentGuard</span><span class="badge-soon">Coming soon</span><span class="card-cat">Agent Safety</span></div>
     <div class="card-tagline">Safety rails for autonomous AI agents</div>
   </a>
-  <a href="/products/codefence/" class="card" data-search="codefence validate llm-generated code before it runs code safety codefence">
-    <div class="card-top"><span class="card-name">CodeFence</span><span class="card-cat">Code Safety</span></div>
+  <a href="/products/codefence/" class="card coming-soon" data-status="coming-soon" data-search="codefence validate llm-generated code before it runs code safety">
+    <div class="card-top"><span class="card-name">CodeFence</span><span class="badge-soon">Coming soon</span><span class="card-cat">Code Safety</span></div>
     <div class="card-tagline">Validate LLM-generated code before it runs</div>
   </a>
-  <a href="/products/hallucicheck/" class="card" data-search="hallucicheck catch hallucinations before users do quality hallucicheck">
-    <div class="card-top"><span class="card-name">HalluciCheck</span><span class="card-cat">Quality</span></div>
+  <a href="/products/hallucicheck/" class="card coming-soon" data-status="coming-soon" data-search="hallucicheck catch hallucinations before users do quality">
+    <div class="card-top"><span class="card-name">HalluciCheck</span><span class="badge-soon">Coming soon</span><span class="card-cat">Quality</span></div>
     <div class="card-tagline">Catch hallucinations before users do</div>
   </a>
-  <a href="/products/tierdrop/" class="card" data-search="tierdrop auto-downgrade models when burning cash cost control tierdrop">
-    <div class="card-top"><span class="card-name">TierDrop</span><span class="card-cat">Cost Control</span></div>
+  <a href="/products/tierdrop/" class="card coming-soon" data-status="coming-soon" data-search="tierdrop auto-downgrade models when burning cash cost control">
+    <div class="card-top"><span class="card-name">TierDrop</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Control</span></div>
     <div class="card-tagline">Auto-downgrade models when burning cash</div>
   </a>
-  <a href="/products/driftwatch/" class="card" data-search="driftwatch detect model behavior changes before users notice monitoring driftwatch">
-    <div class="card-top"><span class="card-name">DriftWatch</span><span class="card-cat">Monitoring</span></div>
+  <a href="/products/driftwatch/" class="card coming-soon" data-status="coming-soon" data-search="driftwatch detect model behavior changes monitoring">
+    <div class="card-top"><span class="card-name">DriftWatch</span><span class="badge-soon">Coming soon</span><span class="card-cat">Monitoring</span></div>
     <div class="card-tagline">Detect model behavior changes before users notice</div>
   </a>
-  <a href="/products/feedbackloop/" class="card" data-search="feedbackloop close the llm improvement loop feedback feedbackloop">
-    <div class="card-top"><span class="card-name">FeedbackLoop</span><span class="card-cat">Feedback</span></div>
+  <a href="/products/feedbackloop/" class="card coming-soon" data-status="coming-soon" data-search="feedbackloop close the llm improvement loop feedback">
+    <div class="card-top"><span class="card-name">FeedbackLoop</span><span class="badge-soon">Coming soon</span><span class="card-cat">Feedback</span></div>
     <div class="card-tagline">Close the LLM improvement loop</div>
   </a>
-  <a href="/products/abrouter/" class="card" data-search="abrouter a/b test any llm variable experimentation abrouter">
-    <div class="card-top"><span class="card-name">ABRouter</span><span class="card-cat">Experimentation</span></div>
+  <a href="/products/abrouter/" class="card coming-soon" data-status="coming-soon" data-search="abrouter a/b test any llm variable experimentation">
+    <div class="card-top"><span class="card-name">ABRouter</span><span class="badge-soon">Coming soon</span><span class="card-cat">Experimentation</span></div>
     <div class="card-tagline">A/B test any LLM variable</div>
   </a>
-  <a href="/products/guardrail/" class="card" data-search="guardrail keep your llm on-script safety guardrail">
-    <div class="card-top"><span class="card-name">GuardRail</span><span class="card-cat">Safety</span></div>
+  <a href="/products/guardrail/" class="card coming-soon" data-status="coming-soon" data-search="guardrail keep your llm on-script safety">
+    <div class="card-top"><span class="card-name">GuardRail</span><span class="badge-soon">Coming soon</span><span class="card-cat">Safety</span></div>
     <div class="card-tagline">Keep your LLM on-script</div>
   </a>
-  <a href="/products/geminishim/" class="card" data-search="geminishim tame gemini behind a clean api compatibility geminishim">
-    <div class="card-top"><span class="card-name">GeminiShim</span><span class="card-cat">Compatibility</span></div>
+  <a href="/products/geminishim/" class="card coming-soon" data-status="coming-soon" data-search="geminishim tame gemini behind a clean api compatibility">
+    <div class="card-top"><span class="card-name">GeminiShim</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compatibility</span></div>
     <div class="card-tagline">Tame Gemini behind a clean API</div>
   </a>
-  <a href="/products/localsync/" class="card" data-search="localsync blend local and cloud models seamlessly hybrid localsync">
-    <div class="card-top"><span class="card-name">LocalSync</span><span class="card-cat">Hybrid</span></div>
+  <a href="/products/localsync/" class="card coming-soon" data-status="coming-soon" data-search="localsync blend local and cloud models seamlessly hybrid">
+    <div class="card-top"><span class="card-name">LocalSync</span><span class="badge-soon">Coming soon</span><span class="card-cat">Hybrid</span></div>
     <div class="card-tagline">Blend local and cloud models seamlessly</div>
   </a>
-  <a href="/products/devproxy/" class="card" data-search="devproxy charles proxy for llm apis debugging devproxy">
-    <div class="card-top"><span class="card-name">DevProxy</span><span class="card-cat">Debugging</span></div>
+  <a href="/products/devproxy/" class="card coming-soon" data-status="coming-soon" data-search="devproxy charles proxy for llm apis debugging">
+    <div class="card-top"><span class="card-name">DevProxy</span><span class="badge-soon">Coming soon</span><span class="card-cat">Debugging</span></div>
     <div class="card-tagline">Charles Proxy for LLM APIs</div>
   </a>
-  <a href="/products/promptslim/" class="card" data-search="promptslim compress prompts 40-70% without losing meaning cost control promptslim">
-    <div class="card-top"><span class="card-name">PromptSlim</span><span class="card-cat">Cost Control</span></div>
-    <div class="card-tagline">Compress prompts 40-70% without losing meaning</div>
+  <a href="/products/promptslim/" class="card coming-soon" data-status="coming-soon" data-search="promptslim compress prompts 40-70% without losing meaning cost">
+    <div class="card-top"><span class="card-name">PromptSlim</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Control</span></div>
+    <div class="card-tagline">Compress prompts 40–70% without losing meaning</div>
   </a>
-  <a href="/products/promptlint/" class="card" data-search="promptlint catch prompt anti-patterns quality promptlint">
-    <div class="card-top"><span class="card-name">PromptLint</span><span class="card-cat">Quality</span></div>
+  <a href="/products/promptlint/" class="card coming-soon" data-status="coming-soon" data-search="promptlint catch prompt anti-patterns quality">
+    <div class="card-top"><span class="card-name">PromptLint</span><span class="badge-soon">Coming soon</span><span class="card-cat">Quality</span></div>
     <div class="card-tagline">Catch prompt anti-patterns</div>
   </a>
-  <a href="/products/approvalgate/" class="card" data-search="approvalgate human approval for prompt changes governance approvalgate">
-    <div class="card-top"><span class="card-name">ApprovalGate</span><span class="card-cat">Governance</span></div>
+  <a href="/products/approvalgate/" class="card coming-soon" data-status="coming-soon" data-search="approvalgate human approval for prompt changes governance">
+    <div class="card-top"><span class="card-name">ApprovalGate</span><span class="badge-soon">Coming soon</span><span class="card-cat">Governance</span></div>
     <div class="card-tagline">Human approval for prompt changes</div>
   </a>
-  <a href="/products/outputcap/" class="card" data-search="outputcap stop paying for unwanted verbosity cost control outputcap">
-    <div class="card-top"><span class="card-name">OutputCap</span><span class="card-cat">Cost Control</span></div>
+  <a href="/products/outputcap/" class="card coming-soon" data-status="coming-soon" data-search="outputcap stop paying for unwanted verbosity cost">
+    <div class="card-top"><span class="card-name">OutputCap</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Control</span></div>
     <div class="card-tagline">Stop paying for unwanted verbosity</div>
   </a>
-  <a href="/products/agegate/" class="card" data-search="agegate child safety for llm apps safety agegate">
-    <div class="card-top"><span class="card-name">AgeGate</span><span class="card-cat">Safety</span></div>
+  <a href="/products/agegate/" class="card coming-soon" data-status="coming-soon" data-search="agegate child safety for llm apps safety">
+    <div class="card-top"><span class="card-name">AgeGate</span><span class="badge-soon">Coming soon</span><span class="card-cat">Safety</span></div>
     <div class="card-tagline">Child safety for LLM apps</div>
   </a>
-  <a href="/products/voicebridge/" class="card" data-search="voicebridge llm middleware for voice pipelines voice voicebridge">
-    <div class="card-top"><span class="card-name">VoiceBridge</span><span class="card-cat">Voice</span></div>
+  <a href="/products/voicebridge/" class="card coming-soon" data-status="coming-soon" data-search="voicebridge llm middleware for voice pipelines voice">
+    <div class="card-top"><span class="card-name">VoiceBridge</span><span class="badge-soon">Coming soon</span><span class="card-cat">Voice</span></div>
     <div class="card-tagline">LLM middleware for voice pipelines</div>
   </a>
-  <a href="/products/imageproxy/" class="card" data-search="imageproxy proxy magic for image generation multimodal imageproxy">
-    <div class="card-top"><span class="card-name">ImageProxy</span><span class="card-cat">Multimodal</span></div>
+  <a href="/products/imageproxy/" class="card coming-soon" data-status="coming-soon" data-search="imageproxy proxy magic for image generation multimodal">
+    <div class="card-top"><span class="card-name">ImageProxy</span><span class="badge-soon">Coming soon</span><span class="card-cat">Multimodal</span></div>
     <div class="card-tagline">Proxy magic for image generation</div>
   </a>
-  <a href="/products/langbridge/" class="card" data-search="langbridge multilingual llm in one config line i18n langbridge">
-    <div class="card-top"><span class="card-name">LangBridge</span><span class="card-cat">i18n</span></div>
+  <a href="/products/langbridge/" class="card coming-soon" data-status="coming-soon" data-search="langbridge multilingual llm in one config line i18n">
+    <div class="card-top"><span class="card-name">LangBridge</span><span class="badge-soon">Coming soon</span><span class="card-cat">i18n</span></div>
     <div class="card-tagline">Multilingual LLM in one config line</div>
   </a>
-  <a href="/products/contextwindow/" class="card" data-search="contextwindow visual context window debugger debugging contextwindow">
-    <div class="card-top"><span class="card-name">ContextWindow</span><span class="card-cat">Debugging</span></div>
+  <a href="/products/contextwindow/" class="card coming-soon" data-status="coming-soon" data-search="contextwindow visual context window debugger debugging">
+    <div class="card-top"><span class="card-name">ContextWindow</span><span class="badge-soon">Coming soon</span><span class="card-cat">Debugging</span></div>
     <div class="card-tagline">Visual context window debugger</div>
   </a>
-  <a href="/products/regionroute/" class="card" data-search="regionroute data residency routing for gdpr compliance regionroute">
-    <div class="card-top"><span class="card-name">RegionRoute</span><span class="card-cat">Compliance</span></div>
+  <a href="/products/regionroute/" class="card coming-soon" data-status="coming-soon" data-search="regionroute data residency routing for gdpr compliance">
+    <div class="card-top"><span class="card-name">RegionRoute</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compliance</span></div>
     <div class="card-tagline">Data residency routing for GDPR</div>
   </a>
-  <a href="/products/chainforge/" class="card" data-search="chainforge multi-step llm workflows as yaml workflow chainforge">
-    <div class="card-top"><span class="card-name">ChainForge</span><span class="card-cat">Workflow</span></div>
+  <a href="/products/chainforge/" class="card coming-soon" data-status="coming-soon" data-search="chainforge multi-step llm workflows as yaml workflow">
+    <div class="card-top"><span class="card-name">ChainForge</span><span class="badge-soon">Coming soon</span><span class="card-cat">Workflow</span></div>
     <div class="card-tagline">Multi-step LLM workflows as YAML</div>
   </a>
-  <a href="/products/cronllm/" class="card" data-search="cronllm your ai cron job runner automation cronllm">
-    <div class="card-top"><span class="card-name">CronLLM</span><span class="card-cat">Automation</span></div>
+  <a href="/products/cronllm/" class="card coming-soon" data-status="coming-soon" data-search="cronllm your ai cron job runner automation">
+    <div class="card-top"><span class="card-name">CronLLM</span><span class="badge-soon">Coming soon</span><span class="card-cat">Automation</span></div>
     <div class="card-tagline">Your AI cron job runner</div>
   </a>
-  <a href="/products/webhookrelay/" class="card" data-search="webhookrelay webhook → llm → action in one config integration webhookrelay">
-    <div class="card-top"><span class="card-name">WebhookRelay</span><span class="card-cat">Integration</span></div>
-    <div class="card-tagline">Webhook → LLM → Action in one config</div>
+  <a href="/products/webhookrelay/" class="card coming-soon" data-status="coming-soon" data-search="webhookrelay webhook llm action in one config integration">
+    <div class="card-top"><span class="card-name">WebhookRelay</span><span class="badge-soon">Coming soon</span><span class="card-cat">Integration</span></div>
+    <div class="card-tagline">Webhook &rarr; LLM &rarr; Action in one config</div>
   </a>
-  <a href="/products/billsync/" class="card" data-search="billsync per-customer llm invoices automatically billing billsync">
-    <div class="card-top"><span class="card-name">BillSync</span><span class="card-cat">Billing</span></div>
+  <a href="/products/billsync/" class="card coming-soon" data-status="coming-soon" data-search="billsync per-customer llm invoices automatically billing">
+    <div class="card-top"><span class="card-name">BillSync</span><span class="badge-soon">Coming soon</span><span class="card-cat">Billing</span></div>
     <div class="card-tagline">Per-customer LLM invoices automatically</div>
   </a>
-  <a href="/products/whitelabel/" class="card" data-search="whitelabel your brand on stockyard's engine branding whitelabel">
-    <div class="card-top"><span class="card-name">WhiteLabel</span><span class="card-cat">Branding</span></div>
+  <a href="/products/whitelabel/" class="card coming-soon" data-status="coming-soon" data-search="whitelabel your brand on stockyard engine branding">
+    <div class="card-top"><span class="card-name">WhiteLabel</span><span class="badge-soon">Coming soon</span><span class="card-cat">Branding</span></div>
     <div class="card-tagline">Your brand on Stockyard's engine</div>
   </a>
-  <a href="/products/trainexport/" class="card" data-search="trainexport export conversations as training data data trainexport">
-    <div class="card-top"><span class="card-name">TrainExport</span><span class="card-cat">Data</span></div>
+  <a href="/products/trainexport/" class="card coming-soon" data-status="coming-soon" data-search="trainexport export conversations as training data">
+    <div class="card-top"><span class="card-name">TrainExport</span><span class="badge-soon">Coming soon</span><span class="card-cat">Data</span></div>
     <div class="card-tagline">Export conversations as training data</div>
   </a>
-  <a href="/products/synthgen/" class="card" data-search="synthgen generate synthetic training data at scale data synthgen">
-    <div class="card-top"><span class="card-name">SynthGen</span><span class="card-cat">Data</span></div>
+  <a href="/products/synthgen/" class="card coming-soon" data-status="coming-soon" data-search="synthgen generate synthetic training data at scale data">
+    <div class="card-top"><span class="card-name">SynthGen</span><span class="badge-soon">Coming soon</span><span class="card-cat">Data</span></div>
     <div class="card-tagline">Generate synthetic training data at scale</div>
   </a>
-  <a href="/products/diffprompt/" class="card" data-search="diffprompt git-style diff for prompt changes versioning diffprompt">
-    <div class="card-top"><span class="card-name">DiffPrompt</span><span class="card-cat">Versioning</span></div>
+  <a href="/products/diffprompt/" class="card coming-soon" data-status="coming-soon" data-search="diffprompt git-style diff for prompt changes versioning">
+    <div class="card-top"><span class="card-name">DiffPrompt</span><span class="badge-soon">Coming soon</span><span class="card-cat">Versioning</span></div>
     <div class="card-tagline">Git-style diff for prompt changes</div>
   </a>
-  <a href="/products/llmbench/" class="card" data-search="llmbench benchmark models on your workload benchmarking llmbench">
-    <div class="card-top"><span class="card-name">LLMBench</span><span class="card-cat">Benchmarking</span></div>
+  <a href="/products/llmbench/" class="card coming-soon" data-status="coming-soon" data-search="llmbench benchmark models on your workload benchmarking">
+    <div class="card-top"><span class="card-name">LLMBench</span><span class="badge-soon">Coming soon</span><span class="card-cat">Benchmarking</span></div>
     <div class="card-tagline">Benchmark models on YOUR workload</div>
   </a>
-  <a href="/products/maskmode/" class="card" data-search="maskmode demo mode with realistic fake data privacy maskmode">
-    <div class="card-top"><span class="card-name">MaskMode</span><span class="card-cat">Privacy</span></div>
+  <a href="/products/maskmode/" class="card coming-soon" data-status="coming-soon" data-search="maskmode demo mode with realistic fake data privacy">
+    <div class="card-top"><span class="card-name">MaskMode</span><span class="badge-soon">Coming soon</span><span class="card-cat">Privacy</span></div>
     <div class="card-tagline">Demo mode with realistic fake data</div>
   </a>
-  <a href="/products/tokenmarket/" class="card" data-search="tokenmarket dynamic budget reallocation across teams budgets tokenmarket">
-    <div class="card-top"><span class="card-name">TokenMarket</span><span class="card-cat">Budgets</span></div>
+  <a href="/products/tokenmarket/" class="card coming-soon" data-status="coming-soon" data-search="tokenmarket dynamic budget reallocation across teams budgets">
+    <div class="card-top"><span class="card-name">TokenMarket</span><span class="badge-soon">Coming soon</span><span class="card-cat">Budgets</span></div>
     <div class="card-tagline">Dynamic budget reallocation across teams</div>
   </a>
-  <a href="/products/llmsync/" class="card" data-search="llmsync sync config across environments devops llmsync">
-    <div class="card-top"><span class="card-name">LLMSync</span><span class="card-cat">DevOps</span></div>
+  <a href="/products/llmsync/" class="card coming-soon" data-status="coming-soon" data-search="llmsync sync config across environments devops">
+    <div class="card-top"><span class="card-name">LLMSync</span><span class="badge-soon">Coming soon</span><span class="card-cat">DevOps</span></div>
     <div class="card-tagline">Sync config across environments</div>
   </a>
-  <a href="/products/clustermode/" class="card" data-search="clustermode scale beyond one instance infrastructure clustermode">
-    <div class="card-top"><span class="card-name">ClusterMode</span><span class="card-cat">Infrastructure</span></div>
+  <a href="/products/clustermode/" class="card coming-soon" data-status="coming-soon" data-search="clustermode scale beyond one instance infrastructure">
+    <div class="card-top"><span class="card-name">ClusterMode</span><span class="badge-soon">Coming soon</span><span class="card-cat">Infrastructure</span></div>
     <div class="card-tagline">Scale beyond one instance</div>
   </a>
-  <a href="/products/encryptvault/" class="card" data-search="encryptvault encrypt sensitive llm payloads security encryptvault">
-    <div class="card-top"><span class="card-name">EncryptVault</span><span class="card-cat">Security</span></div>
+  <a href="/products/encryptvault/" class="card coming-soon" data-status="coming-soon" data-search="encryptvault encrypt sensitive llm payloads security">
+    <div class="card-top"><span class="card-name">EncryptVault</span><span class="badge-soon">Coming soon</span><span class="card-cat">Security</span></div>
     <div class="card-tagline">Encrypt sensitive LLM payloads</div>
   </a>
-  <a href="/products/mirrortest/" class="card" data-search="mirrortest shadow test against production traffic testing mirrortest">
-    <div class="card-top"><span class="card-name">MirrorTest</span><span class="card-cat">Testing</span></div>
+  <a href="/products/mirrortest/" class="card coming-soon" data-status="coming-soon" data-search="mirrortest shadow test against production traffic testing">
+    <div class="card-top"><span class="card-name">MirrorTest</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Shadow test against production traffic</div>
   </a>
-  <a href="/products/extractml/" class="card" data-search="extractml turn prose into structured data structured data extractml">
-    <div class="card-top"><span class="card-name">ExtractML</span><span class="card-cat">Structured Data</span></div>
+  <a href="/products/extractml/" class="card coming-soon" data-status="coming-soon" data-search="extractml turn prose into structured data">
+    <div class="card-top"><span class="card-name">ExtractML</span><span class="badge-soon">Coming soon</span><span class="card-cat">Structured Data</span></div>
     <div class="card-tagline">Turn prose into structured data</div>
   </a>
-  <a href="/products/tableforge/" class="card" data-search="tableforge llm-powered csv with type validation structured data tableforge">
-    <div class="card-top"><span class="card-name">TableForge</span><span class="card-cat">Structured Data</span></div>
+  <a href="/products/tableforge/" class="card coming-soon" data-status="coming-soon" data-search="tableforge llm-powered csv with type validation structured">
+    <div class="card-top"><span class="card-name">TableForge</span><span class="badge-soon">Coming soon</span><span class="card-cat">Structured Data</span></div>
     <div class="card-tagline">LLM-powered CSV with type validation</div>
   </a>
-  <a href="/products/toolrouter/" class="card" data-search="toolrouter manage and version llm function calls function calling toolrouter">
-    <div class="card-top"><span class="card-name">ToolRouter</span><span class="card-cat">Function Calling</span></div>
+  <a href="/products/toolrouter/" class="card coming-soon" data-status="coming-soon" data-search="toolrouter manage and version llm function calls">
+    <div class="card-top"><span class="card-name">ToolRouter</span><span class="badge-soon">Coming soon</span><span class="card-cat">Function Calling</span></div>
     <div class="card-tagline">Manage and version LLM function calls</div>
   </a>
-  <a href="/products/toolshield/" class="card" data-search="toolshield sandbox llm tool calls function calling toolshield">
-    <div class="card-top"><span class="card-name">ToolShield</span><span class="card-cat">Function Calling</span></div>
+  <a href="/products/toolshield/" class="card coming-soon" data-status="coming-soon" data-search="toolshield sandbox llm tool calls function calling">
+    <div class="card-top"><span class="card-name">ToolShield</span><span class="badge-soon">Coming soon</span><span class="card-cat">Function Calling</span></div>
     <div class="card-tagline">Sandbox LLM tool calls</div>
   </a>
-  <a href="/products/toolmock/" class="card" data-search="toolmock fake tool responses for testing testing toolmock">
-    <div class="card-top"><span class="card-name">ToolMock</span><span class="card-cat">Testing</span></div>
+  <a href="/products/toolmock/" class="card coming-soon" data-status="coming-soon" data-search="toolmock fake tool responses for testing">
+    <div class="card-top"><span class="card-name">ToolMock</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Fake tool responses for testing</div>
   </a>
-  <a href="/products/authgate/" class="card" data-search="authgate api key management for your users auth authgate">
-    <div class="card-top"><span class="card-name">AuthGate</span><span class="card-cat">Auth</span></div>
+  <a href="/products/authgate/" class="card coming-soon" data-status="coming-soon" data-search="authgate api key management for your users auth">
+    <div class="card-top"><span class="card-name">AuthGate</span><span class="badge-soon">Coming soon</span><span class="card-cat">Auth</span></div>
     <div class="card-tagline">API key management for YOUR users</div>
   </a>
-  <a href="/products/scopeguard/" class="card" data-search="scopeguard fine-grained permissions per key auth scopeguard">
-    <div class="card-top"><span class="card-name">ScopeGuard</span><span class="card-cat">Auth</span></div>
+  <a href="/products/scopeguard/" class="card coming-soon" data-status="coming-soon" data-search="scopeguard fine-grained permissions per key auth">
+    <div class="card-top"><span class="card-name">ScopeGuard</span><span class="badge-soon">Coming soon</span><span class="card-cat">Auth</span></div>
     <div class="card-tagline">Fine-grained permissions per key</div>
   </a>
-  <a href="/products/visionproxy/" class="card" data-search="visionproxy proxy for vision/image apis multimodal visionproxy">
-    <div class="card-top"><span class="card-name">VisionProxy</span><span class="card-cat">Multimodal</span></div>
+  <a href="/products/visionproxy/" class="card coming-soon" data-status="coming-soon" data-search="visionproxy proxy for vision image apis multimodal">
+    <div class="card-top"><span class="card-name">VisionProxy</span><span class="badge-soon">Coming soon</span><span class="card-cat">Multimodal</span></div>
     <div class="card-tagline">Proxy for vision/image APIs</div>
   </a>
-  <a href="/products/audioproxy/" class="card" data-search="audioproxy proxy for stt/tts apis multimodal audioproxy">
-    <div class="card-top"><span class="card-name">AudioProxy</span><span class="card-cat">Multimodal</span></div>
+  <a href="/products/audioproxy/" class="card coming-soon" data-status="coming-soon" data-search="audioproxy proxy for stt tts apis multimodal">
+    <div class="card-top"><span class="card-name">AudioProxy</span><span class="badge-soon">Coming soon</span><span class="card-cat">Multimodal</span></div>
     <div class="card-tagline">Proxy for STT/TTS APIs</div>
   </a>
-  <a href="/products/docparse/" class="card" data-search="docparse preprocess documents for llms multimodal docparse">
-    <div class="card-top"><span class="card-name">DocParse</span><span class="card-cat">Multimodal</span></div>
+  <a href="/products/docparse/" class="card coming-soon" data-status="coming-soon" data-search="docparse preprocess documents for llms multimodal">
+    <div class="card-top"><span class="card-name">DocParse</span><span class="badge-soon">Coming soon</span><span class="card-cat">Multimodal</span></div>
     <div class="card-tagline">Preprocess documents for LLMs</div>
   </a>
-  <a href="/products/framegrab/" class="card" data-search="framegrab video frames through vision llms multimodal framegrab">
-    <div class="card-top"><span class="card-name">FrameGrab</span><span class="card-cat">Multimodal</span></div>
+  <a href="/products/framegrab/" class="card coming-soon" data-status="coming-soon" data-search="framegrab video frames through vision llms multimodal">
+    <div class="card-top"><span class="card-name">FrameGrab</span><span class="badge-soon">Coming soon</span><span class="card-cat">Multimodal</span></div>
     <div class="card-tagline">Video frames through vision LLMs</div>
   </a>
-  <a href="/products/sessionstore/" class="card" data-search="sessionstore managed conversation sessions sessions sessionstore">
-    <div class="card-top"><span class="card-name">SessionStore</span><span class="card-cat">Sessions</span></div>
+  <a href="/products/sessionstore/" class="card coming-soon" data-status="coming-soon" data-search="sessionstore managed conversation sessions">
+    <div class="card-top"><span class="card-name">SessionStore</span><span class="badge-soon">Coming soon</span><span class="card-cat">Sessions</span></div>
     <div class="card-tagline">Managed conversation sessions</div>
   </a>
-  <a href="/products/convofork/" class="card" data-search="convofork branch conversations sessions convofork">
-    <div class="card-top"><span class="card-name">ConvoFork</span><span class="card-cat">Sessions</span></div>
+  <a href="/products/convofork/" class="card coming-soon" data-status="coming-soon" data-search="convofork branch conversations sessions">
+    <div class="card-top"><span class="card-name">ConvoFork</span><span class="badge-soon">Coming soon</span><span class="card-cat">Sessions</span></div>
     <div class="card-tagline">Branch conversations</div>
   </a>
-  <a href="/products/slotfill/" class="card" data-search="slotfill form-filling conversation engine sessions slotfill">
-    <div class="card-top"><span class="card-name">SlotFill</span><span class="card-cat">Sessions</span></div>
+  <a href="/products/slotfill/" class="card coming-soon" data-status="coming-soon" data-search="slotfill form-filling conversation engine sessions">
+    <div class="card-top"><span class="card-name">SlotFill</span><span class="badge-soon">Coming soon</span><span class="card-cat">Sessions</span></div>
     <div class="card-tagline">Form-filling conversation engine</div>
   </a>
-  <a href="/products/semanticcache/" class="card" data-search="semanticcache cache similar prompts, not just identical caching semanticcache">
-    <div class="card-top"><span class="card-name">SemanticCache</span><span class="card-cat">Caching</span></div>
+  <a href="/products/semanticcache/" class="card coming-soon" data-status="coming-soon" data-search="semanticcache cache similar prompts not just identical caching">
+    <div class="card-top"><span class="card-name">SemanticCache</span><span class="badge-soon">Coming soon</span><span class="card-cat">Caching</span></div>
     <div class="card-tagline">Cache similar prompts, not just identical</div>
   </a>
-  <a href="/products/partialcache/" class="card" data-search="partialcache cache prompt prefixes caching partialcache">
-    <div class="card-top"><span class="card-name">PartialCache</span><span class="card-cat">Caching</span></div>
+  <a href="/products/partialcache/" class="card coming-soon" data-status="coming-soon" data-search="partialcache cache prompt prefixes caching">
+    <div class="card-top"><span class="card-name">PartialCache</span><span class="badge-soon">Coming soon</span><span class="card-cat">Caching</span></div>
     <div class="card-tagline">Cache prompt prefixes</div>
   </a>
-  <a href="/products/streamcache/" class="card" data-search="streamcache cache streaming with realistic timing caching streamcache">
-    <div class="card-top"><span class="card-name">StreamCache</span><span class="card-cat">Caching</span></div>
+  <a href="/products/streamcache/" class="card coming-soon" data-status="coming-soon" data-search="streamcache cache streaming with realistic timing caching">
+    <div class="card-top"><span class="card-name">StreamCache</span><span class="badge-soon">Coming soon</span><span class="card-cat">Caching</span></div>
     <div class="card-tagline">Cache streaming with realistic timing</div>
   </a>
-  <a href="/products/promptchain/" class="card" data-search="promptchain composable prompt blocks prompt management promptchain">
-    <div class="card-top"><span class="card-name">PromptChain</span><span class="card-cat">Prompt Management</span></div>
+  <a href="/products/promptchain/" class="card coming-soon" data-status="coming-soon" data-search="promptchain composable prompt blocks prompt management">
+    <div class="card-top"><span class="card-name">PromptChain</span><span class="badge-soon">Coming soon</span><span class="card-cat">Prompt Management</span></div>
     <div class="card-tagline">Composable prompt blocks</div>
   </a>
-  <a href="/products/promptfuzz/" class="card" data-search="promptfuzz fuzz-test your prompts testing promptfuzz">
-    <div class="card-top"><span class="card-name">PromptFuzz</span><span class="card-cat">Testing</span></div>
+  <a href="/products/promptfuzz/" class="card coming-soon" data-status="coming-soon" data-search="promptfuzz fuzz-test your prompts testing">
+    <div class="card-top"><span class="card-name">PromptFuzz</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Fuzz-test your prompts</div>
   </a>
-  <a href="/products/promptmarket/" class="card" data-search="promptmarket community prompt library community promptmarket">
-    <div class="card-top"><span class="card-name">PromptMarket</span><span class="card-cat">Community</span></div>
+  <a href="/products/promptmarket/" class="card coming-soon" data-status="coming-soon" data-search="promptmarket community prompt library community">
+    <div class="card-top"><span class="card-name">PromptMarket</span><span class="badge-soon">Coming soon</span><span class="card-cat">Community</span></div>
     <div class="card-tagline">Community prompt library</div>
   </a>
-  <a href="/products/costpredict/" class="card" data-search="costpredict predict cost before sending cost intel costpredict">
-    <div class="card-top"><span class="card-name">CostPredict</span><span class="card-cat">Cost Intel</span></div>
+  <a href="/products/costpredict/" class="card coming-soon" data-status="coming-soon" data-search="costpredict predict cost before sending cost intel">
+    <div class="card-top"><span class="card-name">CostPredict</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Intel</span></div>
     <div class="card-tagline">Predict cost BEFORE sending</div>
   </a>
-  <a href="/products/costmap/" class="card" data-search="costmap multi-dimensional cost attribution cost intel costmap">
-    <div class="card-top"><span class="card-name">CostMap</span><span class="card-cat">Cost Intel</span></div>
+  <a href="/products/costmap/" class="card coming-soon" data-status="coming-soon" data-search="costmap multi-dimensional cost attribution cost intel">
+    <div class="card-top"><span class="card-name">CostMap</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Intel</span></div>
     <div class="card-tagline">Multi-dimensional cost attribution</div>
   </a>
-  <a href="/products/spotprice/" class="card" data-search="spotprice route to the cheapest model cost intel spotprice">
-    <div class="card-top"><span class="card-name">SpotPrice</span><span class="card-cat">Cost Intel</span></div>
+  <a href="/products/spotprice/" class="card coming-soon" data-status="coming-soon" data-search="spotprice route to the cheapest model cost intel">
+    <div class="card-top"><span class="card-name">SpotPrice</span><span class="badge-soon">Coming soon</span><span class="card-cat">Cost Intel</span></div>
     <div class="card-tagline">Route to the cheapest model</div>
   </a>
-  <a href="/products/loadforge/" class="card" data-search="loadforge load test your llm stack testing loadforge">
-    <div class="card-top"><span class="card-name">LoadForge</span><span class="card-cat">Testing</span></div>
+  <a href="/products/loadforge/" class="card coming-soon" data-status="coming-soon" data-search="loadforge load test your llm stack testing">
+    <div class="card-top"><span class="card-name">LoadForge</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Load test your LLM stack</div>
   </a>
-  <a href="/products/snapshottest/" class="card" data-search="snapshottest snapshot testing for llm outputs testing snapshottest">
-    <div class="card-top"><span class="card-name">SnapshotTest</span><span class="card-cat">Testing</span></div>
+  <a href="/products/snapshottest/" class="card coming-soon" data-status="coming-soon" data-search="snapshottest snapshot testing for llm outputs testing">
+    <div class="card-top"><span class="card-name">SnapshotTest</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Snapshot testing for LLM outputs</div>
   </a>
-  <a href="/products/chaosllm/" class="card" data-search="chaosllm chaos engineering for llms testing chaosllm">
-    <div class="card-top"><span class="card-name">ChaosLLM</span><span class="card-cat">Testing</span></div>
+  <a href="/products/chaosllm/" class="card coming-soon" data-status="coming-soon" data-search="chaosllm chaos engineering for llms testing">
+    <div class="card-top"><span class="card-name">ChaosLLM</span><span class="badge-soon">Coming soon</span><span class="card-cat">Testing</span></div>
     <div class="card-tagline">Chaos engineering for LLMs</div>
   </a>
-  <a href="/products/datamap/" class="card" data-search="datamap gdpr data flow mapping compliance datamap">
-    <div class="card-top"><span class="card-name">DataMap</span><span class="card-cat">Compliance</span></div>
+  <a href="/products/datamap/" class="card coming-soon" data-status="coming-soon" data-search="datamap gdpr data flow mapping compliance">
+    <div class="card-top"><span class="card-name">DataMap</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compliance</span></div>
     <div class="card-tagline">GDPR data flow mapping</div>
   </a>
-  <a href="/products/consentgate/" class="card" data-search="consentgate consent management for ai compliance consentgate">
-    <div class="card-top"><span class="card-name">ConsentGate</span><span class="card-cat">Compliance</span></div>
+  <a href="/products/consentgate/" class="card coming-soon" data-status="coming-soon" data-search="consentgate consent management for ai compliance">
+    <div class="card-top"><span class="card-name">ConsentGate</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compliance</span></div>
     <div class="card-tagline">Consent management for AI</div>
   </a>
-  <a href="/products/retentionwipe/" class="card" data-search="retentionwipe automated data retention compliance retentionwipe">
-    <div class="card-top"><span class="card-name">RetentionWipe</span><span class="card-cat">Compliance</span></div>
+  <a href="/products/retentionwipe/" class="card coming-soon" data-status="coming-soon" data-search="retentionwipe automated data retention compliance">
+    <div class="card-top"><span class="card-name">RetentionWipe</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compliance</span></div>
     <div class="card-tagline">Automated data retention</div>
   </a>
-  <a href="/products/policyengine/" class="card" data-search="policyengine ai governance as code compliance policyengine">
-    <div class="card-top"><span class="card-name">PolicyEngine</span><span class="card-cat">Compliance</span></div>
+  <a href="/products/policyengine/" class="card coming-soon" data-status="coming-soon" data-search="policyengine ai governance as code compliance">
+    <div class="card-top"><span class="card-name">PolicyEngine</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compliance</span></div>
     <div class="card-tagline">AI governance as code</div>
   </a>
-  <a href="/products/streamsplit/" class="card" data-search="streamsplit fork streams to multiple destinations streaming streamsplit">
-    <div class="card-top"><span class="card-name">StreamSplit</span><span class="card-cat">Streaming</span></div>
+  <a href="/products/streamsplit/" class="card coming-soon" data-status="coming-soon" data-search="streamsplit fork streams to multiple destinations streaming">
+    <div class="card-top"><span class="card-name">StreamSplit</span><span class="badge-soon">Coming soon</span><span class="card-cat">Streaming</span></div>
     <div class="card-tagline">Fork streams to multiple destinations</div>
   </a>
-  <a href="/products/streamthrottle/" class="card" data-search="streamthrottle control streaming speed streaming streamthrottle">
-    <div class="card-top"><span class="card-name">StreamThrottle</span><span class="card-cat">Streaming</span></div>
+  <a href="/products/streamthrottle/" class="card coming-soon" data-status="coming-soon" data-search="streamthrottle control streaming speed streaming">
+    <div class="card-top"><span class="card-name">StreamThrottle</span><span class="badge-soon">Coming soon</span><span class="card-cat">Streaming</span></div>
     <div class="card-tagline">Control streaming speed</div>
   </a>
-  <a href="/products/streamtransform/" class="card" data-search="streamtransform transform streams mid-flight streaming streamtransform">
-    <div class="card-top"><span class="card-name">StreamTransform</span><span class="card-cat">Streaming</span></div>
+  <a href="/products/streamtransform/" class="card coming-soon" data-status="coming-soon" data-search="streamtransform transform streams mid-flight streaming">
+    <div class="card-top"><span class="card-name">StreamTransform</span><span class="badge-soon">Coming soon</span><span class="card-cat">Streaming</span></div>
     <div class="card-tagline">Transform streams mid-flight</div>
   </a>
-  <a href="/products/modelalias/" class="card" data-search="modelalias abstract away model names routing modelalias">
-    <div class="card-top"><span class="card-name">ModelAlias</span><span class="card-cat">Routing</span></div>
+  <a href="/products/modelalias/" class="card coming-soon" data-status="coming-soon" data-search="modelalias abstract away model names routing">
+    <div class="card-top"><span class="card-name">ModelAlias</span><span class="badge-soon">Coming soon</span><span class="card-cat">Routing</span></div>
     <div class="card-tagline">Abstract away model names</div>
   </a>
-  <a href="/products/paramnorm/" class="card" data-search="paramnorm normalize params across providers compatibility paramnorm">
-    <div class="card-top"><span class="card-name">ParamNorm</span><span class="card-cat">Compatibility</span></div>
+  <a href="/products/paramnorm/" class="card coming-soon" data-status="coming-soon" data-search="paramnorm normalize params across providers compatibility">
+    <div class="card-top"><span class="card-name">ParamNorm</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compatibility</span></div>
     <div class="card-tagline">Normalize params across providers</div>
   </a>
-  <a href="/products/quotasync/" class="card" data-search="quotasync track provider rate limits monitoring quotasync">
-    <div class="card-top"><span class="card-name">QuotaSync</span><span class="card-cat">Monitoring</span></div>
+  <a href="/products/quotasync/" class="card coming-soon" data-status="coming-soon" data-search="quotasync track provider rate limits monitoring">
+    <div class="card-top"><span class="card-name">QuotaSync</span><span class="badge-soon">Coming soon</span><span class="card-cat">Monitoring</span></div>
     <div class="card-tagline">Track provider rate limits</div>
   </a>
-  <a href="/products/errornorm/" class="card" data-search="errornorm normalize errors across providers compatibility errornorm">
-    <div class="card-top"><span class="card-name">ErrorNorm</span><span class="card-cat">Compatibility</span></div>
+  <a href="/products/errornorm/" class="card coming-soon" data-status="coming-soon" data-search="errornorm normalize errors across providers compatibility">
+    <div class="card-top"><span class="card-name">ErrorNorm</span><span class="badge-soon">Coming soon</span><span class="card-cat">Compatibility</span></div>
     <div class="card-tagline">Normalize errors across providers</div>
   </a>
-  <a href="/products/cohorttrack/" class="card" data-search="cohorttrack user cohort analytics analytics cohorttrack">
-    <div class="card-top"><span class="card-name">CohortTrack</span><span class="card-cat">Analytics</span></div>
+  <a href="/products/cohorttrack/" class="card coming-soon" data-status="coming-soon" data-search="cohorttrack user cohort analytics">
+    <div class="card-top"><span class="card-name">CohortTrack</span><span class="badge-soon">Coming soon</span><span class="card-cat">Analytics</span></div>
     <div class="card-tagline">User cohort analytics</div>
   </a>
-  <a href="/products/promptrank/" class="card" data-search="promptrank rank prompts by roi analytics promptrank">
-    <div class="card-top"><span class="card-name">PromptRank</span><span class="card-cat">Analytics</span></div>
+  <a href="/products/promptrank/" class="card coming-soon" data-status="coming-soon" data-search="promptrank rank prompts by roi analytics">
+    <div class="card-top"><span class="card-name">PromptRank</span><span class="badge-soon">Coming soon</span><span class="card-cat">Analytics</span></div>
     <div class="card-tagline">Rank prompts by ROI</div>
   </a>
-  <a href="/products/anomalyradar/" class="card" data-search="anomalyradar ml-powered anomaly detection analytics anomalyradar">
-    <div class="card-top"><span class="card-name">AnomalyRadar</span><span class="card-cat">Analytics</span></div>
+  <a href="/products/anomalyradar/" class="card coming-soon" data-status="coming-soon" data-search="anomalyradar ml-powered anomaly detection analytics">
+    <div class="card-top"><span class="card-name">AnomalyRadar</span><span class="badge-soon">Coming soon</span><span class="card-cat">Analytics</span></div>
     <div class="card-tagline">ML-powered anomaly detection</div>
   </a>
-  <a href="/products/envsync/" class="card" data-search="envsync sync configs + secrets devops envsync">
-    <div class="card-top"><span class="card-name">EnvSync</span><span class="card-cat">DevOps</span></div>
+  <a href="/products/envsync/" class="card coming-soon" data-status="coming-soon" data-search="envsync sync configs secrets devops">
+    <div class="card-top"><span class="card-name">EnvSync</span><span class="badge-soon">Coming soon</span><span class="card-cat">DevOps</span></div>
     <div class="card-tagline">Sync configs + secrets</div>
   </a>
-  <a href="/products/proxylog/" class="card" data-search="proxylog log every proxy decision debugging proxylog">
-    <div class="card-top"><span class="card-name">ProxyLog</span><span class="card-cat">Debugging</span></div>
+  <a href="/products/proxylog/" class="card coming-soon" data-status="coming-soon" data-search="proxylog log every proxy decision debugging">
+    <div class="card-top"><span class="card-name">ProxyLog</span><span class="badge-soon">Coming soon</span><span class="card-cat">Debugging</span></div>
     <div class="card-tagline">Log every proxy decision</div>
   </a>
-  <a href="/products/clidash/" class="card" data-search="clidash terminal dashboard for your llm stack devops clidash">
-    <div class="card-top"><span class="card-name">CliDash</span><span class="card-cat">DevOps</span></div>
+  <a href="/products/clidash/" class="card coming-soon" data-status="coming-soon" data-search="clidash terminal dashboard for your llm stack devops">
+    <div class="card-top"><span class="card-name">CliDash</span><span class="badge-soon">Coming soon</span><span class="card-cat">DevOps</span></div>
     <div class="card-tagline">Terminal dashboard for your LLM stack</div>
   </a>
-  <a href="/products/embedrouter/" class="card" data-search="embedrouter smart embedding request routing embeddings embedrouter">
-    <div class="card-top"><span class="card-name">EmbedRouter</span><span class="card-cat">Embeddings</span></div>
+  <a href="/products/embedrouter/" class="card coming-soon" data-status="coming-soon" data-search="embedrouter smart embedding request routing embeddings">
+    <div class="card-top"><span class="card-name">EmbedRouter</span><span class="badge-soon">Coming soon</span><span class="card-cat">Embeddings</span></div>
     <div class="card-tagline">Smart embedding request routing</div>
   </a>
-  <a href="/products/finetunetrack/" class="card" data-search="finetunetrack monitor fine-tuned model performance monitoring finetunetrack">
-    <div class="card-top"><span class="card-name">FineTuneTrack</span><span class="card-cat">Monitoring</span></div>
+  <a href="/products/finetunetrack/" class="card coming-soon" data-status="coming-soon" data-search="finetunetrack monitor fine-tuned model performance monitoring">
+    <div class="card-top"><span class="card-name">FineTuneTrack</span><span class="badge-soon">Coming soon</span><span class="card-cat">Monitoring</span></div>
     <div class="card-tagline">Monitor fine-tuned model performance</div>
   </a>
-  <a href="/products/agentreplay/" class="card" data-search="agentreplay replay agent sessions step-by-step debugging agentreplay">
-    <div class="card-top"><span class="card-name">AgentReplay</span><span class="card-cat">Debugging</span></div>
+  <a href="/products/agentreplay/" class="card coming-soon" data-status="coming-soon" data-search="agentreplay replay agent sessions step-by-step debugging">
+    <div class="card-top"><span class="card-name">AgentReplay</span><span class="badge-soon">Coming soon</span><span class="card-cat">Debugging</span></div>
     <div class="card-tagline">Replay agent sessions step-by-step</div>
   </a>
-  <a href="/products/summarizegate/" class="card" data-search="summarizegate auto-summarize long contexts optimization summarizegate">
-    <div class="card-top"><span class="card-name">SummarizeGate</span><span class="card-cat">Optimization</span></div>
+  <a href="/products/summarizegate/" class="card coming-soon" data-status="coming-soon" data-search="summarizegate auto-summarize long contexts optimization">
+    <div class="card-top"><span class="card-name">SummarizeGate</span><span class="badge-soon">Coming soon</span><span class="card-cat">Optimization</span></div>
     <div class="card-tagline">Auto-summarize long contexts</div>
   </a>
-  <a href="/products/codelang/" class="card" data-search="codelang language-aware code validation code safety codelang">
-    <div class="card-top"><span class="card-name">CodeLang</span><span class="card-cat">Code Safety</span></div>
+  <a href="/products/codelang/" class="card coming-soon" data-status="coming-soon" data-search="codelang language-aware code validation code safety">
+    <div class="card-top"><span class="card-name">CodeLang</span><span class="badge-soon">Coming soon</span><span class="card-cat">Code Safety</span></div>
     <div class="card-tagline">Language-aware code validation</div>
   </a>
-  <a href="/products/personaswitch/" class="card" data-search="personaswitch hot-swap ai personalities customization personaswitch">
-    <div class="card-top"><span class="card-name">PersonaSwitch</span><span class="card-cat">Customization</span></div>
+  <a href="/products/personaswitch/" class="card coming-soon" data-status="coming-soon" data-search="personaswitch hot-swap ai personalities customization">
+    <div class="card-top"><span class="card-name">PersonaSwitch</span><span class="badge-soon">Coming soon</span><span class="card-cat">Customization</span></div>
     <div class="card-tagline">Hot-swap AI personalities</div>
   </a>
-  <a href="/products/warmpool/" class="card" data-search="warmpool pre-warm model connections performance warmpool">
-    <div class="card-top"><span class="card-name">WarmPool</span><span class="card-cat">Performance</span></div>
+  <a href="/products/warmpool/" class="card coming-soon" data-status="coming-soon" data-search="warmpool pre-warm model connections performance">
+    <div class="card-top"><span class="card-name">WarmPool</span><span class="badge-soon">Coming soon</span><span class="card-cat">Performance</span></div>
     <div class="card-tagline">Pre-warm model connections</div>
   </a>
-  <a href="/products/edgecache/" class="card" data-search="edgecache cdn-like caching for llm responses caching edgecache">
-    <div class="card-top"><span class="card-name">EdgeCache</span><span class="card-cat">Caching</span></div>
+  <a href="/products/edgecache/" class="card coming-soon" data-status="coming-soon" data-search="edgecache cdn-like caching for llm responses caching">
+    <div class="card-top"><span class="card-name">EdgeCache</span><span class="badge-soon">Coming soon</span><span class="card-cat">Caching</span></div>
     <div class="card-tagline">CDN-like caching for LLM responses</div>
   </a>
-  <a href="/products/queuepriority/" class="card" data-search="queuepriority priority queues — vips first infrastructure queuepriority">
-    <div class="card-top"><span class="card-name">QueuePriority</span><span class="card-cat">Infrastructure</span></div>
-    <div class="card-tagline">Priority queues — VIPs first</div>
+  <a href="/products/queuepriority/" class="card coming-soon" data-status="coming-soon" data-search="queuepriority priority queues vips first infrastructure">
+    <div class="card-top"><span class="card-name">QueuePriority</span><span class="badge-soon">Coming soon</span><span class="card-cat">Infrastructure</span></div>
+    <div class="card-tagline">Priority queues &mdash; VIPs first</div>
   </a>
-  <a href="/products/geoprice/" class="card" data-search="geoprice regional pricing by purchasing power billing geoprice">
-    <div class="card-top"><span class="card-name">GeoPrice</span><span class="card-cat">Billing</span></div>
+  <a href="/products/geoprice/" class="card coming-soon" data-status="coming-soon" data-search="geoprice regional pricing by purchasing power billing">
+    <div class="card-top"><span class="card-name">GeoPrice</span><span class="badge-soon">Coming soon</span><span class="card-cat">Billing</span></div>
     <div class="card-tagline">Regional pricing by purchasing power</div>
   </a>
-  <a href="/products/tokenauction/" class="card" data-search="tokenauction dynamic pricing based on demand billing tokenauction">
-    <div class="card-top"><span class="card-name">TokenAuction</span><span class="card-cat">Billing</span></div>
+  <a href="/products/tokenauction/" class="card coming-soon" data-status="coming-soon" data-search="tokenauction dynamic pricing based on demand billing">
+    <div class="card-top"><span class="card-name">TokenAuction</span><span class="badge-soon">Coming soon</span><span class="card-cat">Billing</span></div>
     <div class="card-tagline">Dynamic pricing based on demand</div>
   </a>
-  <a href="/products/canarydeploy/" class="card" data-search="canarydeploy canary deployments for model changes deployment canarydeploy">
-    <div class="card-top"><span class="card-name">CanaryDeploy</span><span class="card-cat">Deployment</span></div>
+  <a href="/products/canarydeploy/" class="card coming-soon" data-status="coming-soon" data-search="canarydeploy canary deployments for model changes deployment">
+    <div class="card-top"><span class="card-name">CanaryDeploy</span><span class="badge-soon">Coming soon</span><span class="card-cat">Deployment</span></div>
     <div class="card-tagline">Canary deployments for model changes</div>
   </a>
-  <a href="/products/playbackstudio/" class="card" data-search="playbackstudio interactive playground for logged interactions analytics playbackstudio">
-    <div class="card-top"><span class="card-name">PlaybackStudio</span><span class="card-cat">Analytics</span></div>
+  <a href="/products/playbackstudio/" class="card coming-soon" data-status="coming-soon" data-search="playbackstudio interactive playground for logged interactions analytics">
+    <div class="card-top"><span class="card-name">PlaybackStudio</span><span class="badge-soon">Coming soon</span><span class="card-cat">Analytics</span></div>
     <div class="card-tagline">Interactive playground for logged interactions</div>
   </a>
-  <a href="/products/webhookforge/" class="card" data-search="webhookforge visual webhook→llm→action builder automation webhookforge">
-    <div class="card-top"><span class="card-name">WebhookForge</span><span class="card-cat">Automation</span></div>
-    <div class="card-tagline">Visual webhook→LLM→action builder</div>
+  <a href="/products/webhookforge/" class="card coming-soon" data-status="coming-soon" data-search="webhookforge visual webhook llm action builder automation">
+    <div class="card-top"><span class="card-name">WebhookForge</span><span class="badge-soon">Coming soon</span><span class="card-cat">Automation</span></div>
+    <div class="card-tagline">Visual webhook&rarr;LLM&rarr;action builder</div>
   </a>
 </div>
 <footer><p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard.</p><p style="margin-top:0.5rem">Where LLM traffic gets sorted.</p></footer>
 <script>
-function filterCards(q) {
-  q = q.toLowerCase();
+// Smart product matcher — zero API calls, instant results
+const PRODUCTS = [
+  {id:"costcap",name:"CostCap",status:"available",tags:"cost money spend budget bill expensive limit cap track pricing overspend surprise charges billing dollars tokens usage",why:"Tracks spend in real-time and enforces hard/soft caps per model, key, or time period"},
+  {id:"llmcache",name:"CacheLayer",status:"available",tags:"cache duplicate repeat same request twice paying double slow speed fast performance latency",why:"Caches identical responses so you never pay twice for the same prompt"},
+  {id:"jsonguard",name:"StructuredShield",status:"available",tags:"json parse structure schema validate format broken invalid output response data extract type",why:"Validates JSON responses against your schema and auto-retries on parse failures"},
+  {id:"routefall",name:"FallbackRouter",status:"available",tags:"fail down outage fallback backup provider switch failover reliable uptime availability error 500 timeout",why:"Automatically fails over to backup providers when your primary goes down"},
+  {id:"rateshield",name:"RateShield",status:"available",tags:"rate limit 429 throttle too many requests slow down abuse spam flood ddos",why:"Enforces rate limits with token bucket algorithm — per-key, per-model, or global"},
+  {id:"promptreplay",name:"PromptReplay",status:"available",tags:"log record debug replay history audit trace request response what happened review",why:"Records every request and response so you can replay and debug issues"},
+  {id:"stockyard",name:"Stockyard Suite",status:"available",tags:"everything all suite bundle complete full package deal value",why:"All 20 tools in one binary for $29.99/month — the whole ranch"},
+  {id:"keypool",name:"KeyPool",status:"available",tags:"key api rotate pool multiple keys 429 rate limit round robin load balance distribute",why:"Pools multiple API keys and auto-rotates on rate limit hits"},
+  {id:"promptguard",name:"PromptGuard",status:"available",tags:"pii personal data email phone ssn privacy redact injection attack jailbreak hack security leak sensitive",why:"Redacts PII and detects prompt injection attacks before they reach the model"},
+  {id:"modelswitch",name:"ModelSwitch",status:"available",tags:"route model switch choose select smart routing ab test different models gpt claude gemini cheap expensive",why:"Routes requests to the right model based on token count, patterns, or custom rules"},
+  {id:"evalgate",name:"EvalGate",status:"available",tags:"quality bad response check score validate evaluate good enough retry poor output garbage",why:"Scores response quality and auto-retries when output doesn't meet your standards"},
+  {id:"usagepulse",name:"UsagePulse",status:"available",tags:"usage meter track who team user feature department billing report analytics per-user per-team attribution",why:"Tracks exactly who's using what — per user, team, or feature with spend caps"},
+  {id:"promptpad",name:"PromptPad",status:"available",tags:"prompt template version manage change update edit system prompt ab test versioning deploy",why:"Version-controls your prompts with A/B testing so changes don't break things"},
+  {id:"tokentrim",name:"TokenTrim",status:"available",tags:"context window full long too much truncate fit token limit overflow 128k 32k 4k compress",why:"Intelligently truncates content to fit your context window without losing meaning"},
+  {id:"batchqueue",name:"BatchQueue",status:"available",tags:"batch queue async concurrent parallel overwhelm too many simultaneous requests background job",why:"Queues requests with concurrency control so you don't overwhelm providers"},
+  {id:"multicall",name:"MultiCall",status:"available",tags:"compare multiple models consensus best answer vote ensemble aggregate quality",why:"Sends to multiple models and picks the best answer via consensus"},
+  {id:"streamsnap",name:"StreamSnap",status:"available",tags:"stream sse capture record replay streaming response time first token ttft latency",why:"Captures streaming responses for replay and measures time-to-first-token"},
+  {id:"llmtap",name:"LLMTap",status:"available",tags:"analytics dashboard metrics p50 p95 p99 latency cost trends monitor performance stats",why:"Full analytics portal with latency percentiles, cost trends, and model breakdowns"},
+  {id:"contextpack",name:"ContextPack",status:"available",tags:"rag context inject file document knowledge base retrieval augmented generation simple easy quick",why:"Injects context from files, SQLite, or URLs — RAG in 30 seconds, no vector DB"},
+  {id:"retrypilot",name:"RetryPilot",status:"available",tags:"retry fail error 500 timeout jitter backoff circuit breaker recover graceful degrade downgrade",why:"Retries intelligently with jitter and circuit breakers — can downgrade models on failure"},
+  {id:"toxicfilter",name:"ToxicFilter",status:"coming-soon",tags:"toxic harmful content moderation filter safety offensive inappropriate output block nsfw",why:"Scans LLM outputs for harmful content and blocks or redacts before reaching users"},
+  {id:"compliancelog",name:"ComplianceLog",status:"coming-soon",tags:"audit compliance soc2 hipaa gdpr log immutable tamper proof enterprise regulation record",why:"Creates tamper-evident audit trails for every LLM interaction — SOC2/HIPAA ready"},
+  {id:"secretscan",name:"SecretScan",status:"coming-soon",tags:"secret api key leak password aws credential token expose sensitive scan detect",why:"Catches API keys, passwords, and secrets before they leak through your LLM"},
+  {id:"tracelink",name:"TraceLink",status:"coming-soon",tags:"trace distributed tracing chain agent multi-step correlate parent child request opentelemetry",why:"Links multi-step LLM calls into trace trees — see the full chain of an agent's work"},
+  {id:"ipfence",name:"IPFence",status:"coming-soon",tags:"ip allowlist whitelist block geo fence access control unauthorized origin firewall",why:"Blocks unauthorized IPs from accessing your proxy with allowlists and geofencing"},
+  {id:"embedcache",name:"EmbedCache",status:"coming-soon",tags:"embedding cache vector rag duplicate recompute same document",why:"Caches embeddings so RAG pipelines never recompute the same document twice"},
+  {id:"anthrofit",name:"AnthroFit",status:"coming-soon",tags:"anthropic claude openai sdk compatible translate convert api format different",why:"Translates between OpenAI and Anthropic API formats so you can use Claude with any OpenAI SDK"},
+  {id:"alertpulse",name:"AlertPulse",status:"coming-soon",tags:"alert notify monitor down outage slack discord pagerduty email webhook warning threshold",why:"Fires alerts to Slack/Discord/PagerDuty when error rates, latency, or costs spike"},
+  {id:"chatmem",name:"ChatMem",status:"coming-soon",tags:"memory conversation history context remember forget chatbot session persistent long-term",why:"Manages conversation memory with smart strategies so chatbots remember without burning tokens"},
+  {id:"mockllm",name:"MockLLM",status:"coming-soon",tags:"mock test ci cd deterministic fake fixture unit test integration test development local",why:"Returns deterministic responses for testing — no API calls, no cost, no flakiness in CI"},
+  {id:"tenantwall",name:"TenantWall",status:"coming-soon",tags:"tenant multi-tenant saas customer isolate separate per-customer per-tenant limit",why:"Isolates each tenant with their own rate limits, spend caps, and model access"},
+  {id:"idlekill",name:"IdleKill",status:"coming-soon",tags:"runaway loop infinite hang stuck timeout kill abort agent expensive burn money waste",why:"Kills requests that hang or loop — stops agents from burning $50 in 10 minutes"},
+  {id:"agentguard",name:"AgentGuard",status:"coming-soon",tags:"agent autonomous safety limit session rogue loop cost duration calls",why:"Enforces per-session limits on agent calls, cost, and duration — kills rogue agents"},
+  {id:"codefence",name:"CodeFence",status:"coming-soon",tags:"code generate validate security vulnerability malicious pattern syntax check",why:"Validates LLM-generated code for security issues and syntax errors before execution"},
+  {id:"hallucicheck",name:"HalluciCheck",status:"coming-soon",tags:"hallucination fact check url verify citation fake invented wrong inaccurate",why:"Catches hallucinated URLs, citations, and facts before they reach your users"},
+  {id:"tierdrop",name:"TierDrop",status:"coming-soon",tags:"cost downgrade degrade graceful budget model tier cheap expensive gpt-4 gpt-3.5 mini",why:"Automatically switches to cheaper models when you're approaching budget limits"},
+  {id:"guardrail",name:"GuardRail",status:"coming-soon",tags:"topic off-topic fence boundary scope stay on script focus wander irrelevant",why:"Keeps your LLM on-topic — blocks off-script responses with configurable topic rules"},
+  {id:"geminishim",name:"GeminiShim",status:"coming-soon",tags:"gemini google safety filter block quirk format normalize compatible",why:"Handles Gemini's safety filter quirks and normalizes its API to be OpenAI-compatible"},
+  {id:"localsync",name:"LocalSync",status:"coming-soon",tags:"local ollama cloud hybrid blend mix fallback self-hosted private on-premise",why:"Routes to local Ollama when available, auto-fails over to cloud — save money on common queries"},
+  {id:"devproxy",name:"DevProxy",status:"coming-soon",tags:"debug inspect charles proxy fiddler see what sent header body request response examine",why:"Interactive request inspector — see exactly what your app sends and what comes back"},
+  {id:"promptslim",name:"PromptSlim",status:"coming-soon",tags:"compress prompt shorter smaller reduce tokens save money filler redundant long system",why:"Compresses prompts 40-70% by removing filler and redundancy — same meaning, fewer tokens"},
+  {id:"abrouter",name:"ABRouter",status:"coming-soon",tags:"ab test experiment compare split traffic statistical significance model temperature prompt",why:"A/B tests any LLM variable with proper statistical analysis and auto-promotion"},
+];
+
+function aiSearch() {
+  const query = document.getElementById('ai-query').value.trim().toLowerCase();
+  if (!query) return;
+
+  const results = document.getElementById('ai-results');
+  const words = query.split(/\s+/).filter(w => w.length > 2);
+
+  // Score each product
+  const scored = PRODUCTS.map(p => {
+    let score = 0;
+    const searchable = (p.tags + ' ' + p.name + ' ' + p.why).toLowerCase();
+
+    words.forEach(word => {
+      // Exact word match in tags
+      if (p.tags.includes(word)) score += 3;
+      // Partial match in tags
+      else if (p.tags.split(' ').some(t => t.startsWith(word) || word.startsWith(t))) score += 2;
+      // Match in description
+      if (p.why.toLowerCase().includes(word)) score += 1;
+    });
+
+    // Bonus for available products
+    if (p.status === 'available' && score > 0) score += 0.5;
+
+    return { ...p, score };
+  })
+  .filter(p => p.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 5);
+
+  if (!scored.length) {
+    results.innerHTML = '<div class="ai-thinking">No matches found. Try different words — describe the pain point you\'re facing.</div>';
+    return;
+  }
+
+  results.innerHTML = scored.map(m => `
+    <div class="ai-match">
+      <div class="ai-match-name">
+        <a href="/products/${m.id}/">${m.name}</a>
+        <span class="ai-match-badge ${m.status === 'available' ? 'available' : 'soon'}">${m.status === 'available' ? 'Available' : 'Soon'}</span>
+      </div>
+      <div class="ai-match-reason">${m.why}</div>
+    </div>
+  `).join('');
+
+  // Highlight matched cards in grid
+  const matchIds = scored.map(m => m.id);
   document.querySelectorAll('.card').forEach(c => {
-    c.style.display = c.dataset.search.includes(q) ? '' : 'none';
+    const href = c.getAttribute('href') || '';
+    const cardId = href.split('/products/')[1]?.replace('/', '');
+    if (matchIds.includes(cardId)) {
+      c.style.order = '-1';
+      c.style.borderColor = 'var(--rust)';
+      if (c.classList.contains('coming-soon')) c.style.opacity = '0.8';
+    } else {
+      c.style.order = '';
+      c.style.borderColor = '';
+      if (c.classList.contains('coming-soon')) c.style.opacity = '';
+    }
+  });
+}
+
+// Also trigger on Enter key
+document.getElementById('ai-query')?.addEventListener('keydown', e => { if (e.key === 'Enter') aiSearch(); });
+
+// Keyword filter
+let currentFilter = 'all';
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  filterCards();
+}
+function filterCards() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    const matchesSearch = !q || c.dataset.search.includes(q);
+    const matchesFilter = currentFilter === 'all' || c.dataset.status === currentFilter;
+    c.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
   });
 }
 </script>
