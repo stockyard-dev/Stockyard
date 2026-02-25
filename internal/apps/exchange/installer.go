@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -155,16 +156,18 @@ func shortID() string {
 
 func (a *App) installProviders(specs []ProviderSpec, r *InstallResult) {
 	for _, s := range specs {
-		// Check if provider already exists
 		var exists int
 		a.conn.QueryRow("SELECT COUNT(*) FROM proxy_providers WHERE name = ?", s.Name).Scan(&exists)
 		if exists > 0 {
 			r.Skipped["providers"]++
 			continue
 		}
-		_, err := a.conn.Exec(`INSERT INTO proxy_providers (id, name, base_url, auth_type, priority, models, enabled, created_at)
-			VALUES (?, ?, ?, ?, ?, ?, 1, ?)`,
-			"prov_"+shortID(), s.Name, s.BaseURL, s.AuthType, s.Priority, s.Models, time.Now().Format(time.RFC3339))
+		// Schema: id (autoincrement), name, base_url, status, config_json
+		configJSON, _ := json.Marshal(map[string]any{
+			"auth_type": s.AuthType, "priority": s.Priority, "models": s.Models,
+		})
+		_, err := a.conn.Exec(`INSERT INTO proxy_providers (name, base_url, status, config_json) VALUES (?, ?, 'active', ?)`,
+			s.Name, s.BaseURL, string(configJSON))
 		if err != nil {
 			r.Errors["providers"] = append(r.Errors["providers"], fmt.Sprintf("%s: %v", s.Name, err))
 			continue
@@ -176,7 +179,7 @@ func (a *App) installProviders(specs []ProviderSpec, r *InstallResult) {
 func (a *App) installRoutes(specs []RouteSpec, r *InstallResult) {
 	for _, s := range specs {
 		var exists int
-		a.conn.QueryRow("SELECT COUNT(*) FROM proxy_routes WHERE pattern = ?", s.Pattern).Scan(&exists)
+		a.conn.QueryRow("SELECT COUNT(*) FROM proxy_routes WHERE path = ?", s.Pattern).Scan(&exists)
 		if exists > 0 {
 			r.Skipped["routes"]++
 			continue
@@ -185,9 +188,9 @@ func (a *App) installRoutes(specs []RouteSpec, r *InstallResult) {
 		if s.Enabled {
 			enabled = 1
 		}
-		_, err := a.conn.Exec(`INSERT INTO proxy_routes (id, pattern, provider, priority, enabled, created_at)
-			VALUES (?, ?, ?, ?, ?, ?)`,
-			"rt_"+shortID(), s.Pattern, s.Provider, s.Priority, enabled, time.Now().Format(time.RFC3339))
+		// Schema: id (autoincrement), path, method, provider, model, enabled
+		_, err := a.conn.Exec(`INSERT INTO proxy_routes (path, method, provider, enabled) VALUES (?, 'POST', ?, ?)`,
+			s.Pattern, s.Provider, enabled)
 		if err != nil {
 			r.Errors["routes"] = append(r.Errors["routes"], fmt.Sprintf("%s: %v", s.Pattern, err))
 			continue
@@ -245,17 +248,18 @@ func (a *App) installWorkflows(specs []WorkflowSpec, r *InstallResult) {
 func (a *App) installTools(specs []ToolSpec, r *InstallResult) {
 	for _, s := range specs {
 		var exists int
-		a.conn.QueryRow("SELECT COUNT(*) FROM forge_tools WHERE slug = ?", s.Slug).Scan(&exists)
+		a.conn.QueryRow("SELECT COUNT(*) FROM forge_tools WHERE name = ?", s.Name).Scan(&exists)
 		if exists > 0 {
 			r.Skipped["tools"]++
 			continue
 		}
 		schema, _ := json.Marshal(s.SchemaJSON)
-		_, err := a.conn.Exec(`INSERT INTO forge_tools (slug, name, tool_type, endpoint, schema_json, enabled, created_at)
-			VALUES (?, ?, ?, ?, ?, 1, ?)`,
-			s.Slug, s.Name, s.ToolType, s.Endpoint, string(schema), time.Now().Format(time.RFC3339))
+		// Schema: id (autoincrement), name, description, type, schema_json, handler, enabled
+		_, err := a.conn.Exec(`INSERT INTO forge_tools (name, description, type, schema_json, handler, enabled)
+			VALUES (?, ?, ?, ?, ?, 1)`,
+			s.Name, s.Slug, s.ToolType, string(schema), s.Endpoint)
 		if err != nil {
-			r.Errors["tools"] = append(r.Errors["tools"], fmt.Sprintf("%s: %v", s.Slug, err))
+			r.Errors["tools"] = append(r.Errors["tools"], fmt.Sprintf("%s: %v", s.Name, err))
 			continue
 		}
 		r.Applied["tools"]++
@@ -270,17 +274,19 @@ func (a *App) installTemplates(specs []TemplateSpec, r *InstallResult) {
 			r.Skipped["templates"]++
 			continue
 		}
-		id := fmt.Sprintf("tmpl_%s_%s", s.Slug, shortID())
-		_, err := a.conn.Exec(`INSERT INTO studio_templates (id, slug, name, description, model, tags, created_at, updated_at)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-			id, s.Slug, s.Name, s.Description, s.Model, s.Tags, time.Now().Format(time.RFC3339), time.Now().Format(time.RFC3339))
+		tagsJSON, _ := json.Marshal(strings.Split(s.Tags, ","))
+		// Schema: id (autoincrement), slug, name, description, current_version, tags_json, status
+		res, err := a.conn.Exec(`INSERT INTO studio_templates (slug, name, description, current_version, tags_json, status)
+			VALUES (?, ?, ?, 1, ?, 'active')`,
+			s.Slug, s.Name, s.Description, string(tagsJSON))
 		if err != nil {
 			r.Errors["templates"] = append(r.Errors["templates"], fmt.Sprintf("%s: %v", s.Slug, err))
 			continue
 		}
-		// Insert template version
-		a.conn.Exec(`INSERT INTO studio_template_versions (template_id, version, template_text, created_at)
-			VALUES (?, ?, ?, ?)`, id, "1.0.0", s.TemplateStr, time.Now().Format(time.RFC3339))
+		tmplID, _ := res.LastInsertId()
+		// Insert template version: content, variables_json, model, author
+		a.conn.Exec(`INSERT INTO studio_template_versions (template_id, version, content, model, author)
+			VALUES (?, 1, ?, ?, 'exchange')`, tmplID, s.TemplateStr, s.Model)
 		r.Applied["templates"]++
 	}
 }
@@ -297,9 +303,10 @@ func (a *App) installPolicies(specs []PolicySpec, r *InstallResult) {
 		if s.Enabled {
 			enabled = 1
 		}
-		_, err := a.conn.Exec(`INSERT INTO trust_policies (id, name, policy_type, pattern, description, enabled, created_at)
-			VALUES (?, ?, ?, ?, ?, ?, ?)`,
-			"pol_"+shortID(), s.Name, s.PolicyType, s.Pattern, s.Description, enabled, time.Now().Format(time.RFC3339))
+		// Schema: id (autoincrement), name, type, config_json, enabled
+		configJSON, _ := json.Marshal(map[string]string{"pattern": s.Pattern, "description": s.Description})
+		_, err := a.conn.Exec(`INSERT INTO trust_policies (name, type, config_json, enabled) VALUES (?, ?, ?, ?)`,
+			s.Name, s.PolicyType, string(configJSON), enabled)
 		if err != nil {
 			r.Errors["policies"] = append(r.Errors["policies"], fmt.Sprintf("%s: %v", s.Name, err))
 			continue
@@ -320,14 +327,33 @@ func (a *App) installAlerts(specs []AlertSpec, r *InstallResult) {
 		if s.Enabled {
 			enabled = 1
 		}
-		_, err := a.conn.Exec(`INSERT INTO observe_alert_rules (id, name, metric, condition, threshold, window, channel, enabled, created_at)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-			"alert_"+shortID(), s.Name, s.Metric, s.Condition, s.Threshold, s.Window, s.Channel, enabled, time.Now().Format(time.RFC3339))
+		// Convert window string to seconds
+		windowSec := parseWindow(s.Window)
+		_, err := a.conn.Exec(`INSERT INTO observe_alert_rules (name, metric, condition, threshold, window_seconds, channel, enabled)
+			VALUES (?, ?, ?, ?, ?, ?, ?)`,
+			s.Name, s.Metric, s.Condition, s.Threshold, windowSec, s.Channel, enabled)
 		if err != nil {
 			r.Errors["alerts"] = append(r.Errors["alerts"], fmt.Sprintf("%s: %v", s.Name, err))
 			continue
 		}
 		r.Applied["alerts"]++
+	}
+}
+
+func parseWindow(w string) int {
+	switch w {
+	case "1m":
+		return 60
+	case "5m":
+		return 300
+	case "15m":
+		return 900
+	case "1h":
+		return 3600
+	case "24h":
+		return 86400
+	default:
+		return 300 // default 5 minutes
 	}
 }
 
@@ -369,7 +395,7 @@ func (a *App) Uninstall(installID int) (*InstallResult, error) {
 		result.Applied["providers"]++
 	}
 	for _, s := range content.Routes {
-		a.conn.Exec("DELETE FROM proxy_routes WHERE pattern = ?", s.Pattern)
+		a.conn.Exec("DELETE FROM proxy_routes WHERE path = ?", s.Pattern)
 		result.Applied["routes"]++
 	}
 	for _, s := range content.Workflows {
@@ -377,10 +403,14 @@ func (a *App) Uninstall(installID int) (*InstallResult, error) {
 		result.Applied["workflows"]++
 	}
 	for _, s := range content.Tools {
-		a.conn.Exec("DELETE FROM forge_tools WHERE slug = ?", s.Slug)
+		a.conn.Exec("DELETE FROM forge_tools WHERE name = ?", s.Name)
 		result.Applied["tools"]++
 	}
 	for _, s := range content.Templates {
+		// Delete version first, then template
+		var tmplID int
+		a.conn.QueryRow("SELECT id FROM studio_templates WHERE slug = ?", s.Slug).Scan(&tmplID)
+		a.conn.Exec("DELETE FROM studio_template_versions WHERE template_id = ?", tmplID)
 		a.conn.Exec("DELETE FROM studio_templates WHERE slug = ?", s.Slug)
 		result.Applied["templates"]++
 	}
