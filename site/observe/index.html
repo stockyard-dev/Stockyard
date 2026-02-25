@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observe — Stockyard</title>
+<meta name="description" content="LLM observability built in. Every request traced, every dollar tracked, every anomaly caught. No extra tooling required.">
+<meta property="og:title" content="Stockyard Observe">
+<meta property="og:description" content="LLM observability that ships with your proxy. Traces, costs, alerts, anomalies — zero setup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--red:#b84233;--amber:#c49a3c;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* Hero */
+.obs-hero{max-width:750px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.obs-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.obs-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.obs-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.obs-hero h1 .accent{color:var(--rust-light)}
+.obs-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto 2.5rem}
+
+/* Live demo */
+.demo{padding:3rem 2rem 5rem;max-width:800px;margin:0 auto}
+.demo-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-bottom:1rem}
+.demo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.demo-title{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.demo-badge{font-family:var(--font-mono);font-size:0.65rem;padding:0.2rem 0.6rem;border:1px solid}
+.badge-green{color:var(--green);border-color:var(--green)}
+.badge-amber{color:var(--amber);border-color:var(--amber)}
+.badge-red{color:var(--red);border-color:var(--red)}
+.demo-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.75rem}
+.demo-table th{text-align:left;padding:0.5rem 0.8rem;color:var(--leather);font-weight:400;letter-spacing:1px;text-transform:uppercase;font-size:0.6rem;border-bottom:1px solid var(--bg3)}
+.demo-table td{padding:0.5rem 0.8rem;color:var(--cream-dim);border-bottom:1px solid var(--bg3)}
+.demo-table .model{color:var(--cream)}
+.demo-table .cost{color:var(--gold)}
+.demo-table .latency{color:var(--leather-light)}
+.demo-table .status-ok{color:var(--green)}
+.demo-table .status-err{color:var(--red)}
+.cost-total{display:flex;justify-content:space-between;align-items:center;padding:1rem 0 0}
+.cost-label{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);text-transform:uppercase;letter-spacing:1px}
+.cost-amount{font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--gold)}
+
+/* Features */
+.features{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.features-inner{max-width:800px;margin:0 auto}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+.feat{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg)}
+.feat-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
+.feat-desc{font-size:0.8rem;color:var(--cream-dim);line-height:1.6}
+
+/* API */
+.api-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+.code-block .key{color:var(--rust-light)}
+.code-block .val{color:var(--gold)}
+.code-block .str{color:var(--green)}
+
+/* CTA */
+.obs-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.obs-cta h2{font-size:2rem;margin-bottom:1rem}
+.obs-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .obs-hero{padding:5rem 1.5rem 3rem}
+  .feat-grid{grid-template-columns:1fr}
+  .cta-group{flex-direction:column;align-items:center}
+  .demo-table{font-size:0.65rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="obs-hero">
+  <div class="eyebrow">App 02 &mdash; Observe</div>
+  <h1>See everything. <span class="accent">Miss nothing.</span></h1>
+  <p class="sub">Every LLM request traced automatically. Costs rolled up daily. Anomalies caught in real time. No extra tools, no extra config.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="#api" class="btn btn-secondary">See the API</a>
+  </div>
+</section>
+
+<section class="demo">
+  <div class="demo-card">
+    <div class="demo-header">
+      <span class="demo-title">Recent traces</span>
+      <span class="demo-badge badge-green">Live</span>
+    </div>
+    <table class="demo-table" id="traces-table">
+      <tr><th>Trace</th><th>Model</th><th>Tokens</th><th>Cost</th><th>Latency</th><th>Status</th></tr>
+      <tr><td>tr_8a4f2c</td><td class="model">gpt-4o</td><td>1,247</td><td class="cost">$0.0187</td><td class="latency">842ms</td><td class="status-ok">200</td></tr>
+      <tr><td>tr_3b7e1a</td><td class="model">claude-sonnet-4-20250514</td><td>3,891</td><td class="cost">$0.0467</td><td class="latency">2.1s</td><td class="status-ok">200</td></tr>
+      <tr><td>tr_c91d5f</td><td class="model">gpt-4o-mini</td><td>412</td><td class="cost">$0.0006</td><td class="latency">310ms</td><td class="status-ok">200</td></tr>
+      <tr><td>tr_f2a8b4</td><td class="model">gpt-4o</td><td>0</td><td class="cost">$0.00</td><td class="latency">28.3s</td><td class="status-err">429</td></tr>
+      <tr><td>tr_71e3c9</td><td class="model">gpt-4o-mini</td><td>876</td><td class="cost">$0.0013</td><td class="latency">445ms</td><td class="status-ok">200</td></tr>
+    </table>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Today's cost</span>
+      </div>
+      <div class="cost-total">
+        <span class="cost-label">Total spend</span>
+        <span class="cost-amount">$4.23</span>
+      </div>
+      <div style="margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light)">
+        gpt-4o: $2.91 &bull; claude-sonnet-4-20250514: $0.89 &bull; gpt-4o-mini: $0.43
+      </div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Alerts</span>
+        <span class="demo-badge badge-amber">2 active</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;line-height:2">
+        <div style="color:var(--amber)">&#9679; daily-cost-limit: $4.23 &gt; $4.00</div>
+        <div style="color:var(--amber)">&#9679; rate-limit-spike: 23 blocks in 5m</div>
+        <div style="color:var(--green)">&#9675; provider-down: all healthy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <div class="section-label leather">What Observe does</div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="feat-name">Request Tracing</div>
+        <div class="feat-desc">Every LLM request logged automatically with model, tokens, cost, latency, and status. Full request/response bodies optional.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-name">Cost Rollups</div>
+        <div class="feat-desc">Daily cost aggregation by model. See exactly where your money goes. Historical trends and per-model breakdowns.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-name">Alert Rules</div>
+        <div class="feat-desc">Set thresholds on cost, latency, error rate, or token usage. Get notified when something crosses the line.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-name">Anomaly Detection</div>
+        <div class="feat-desc">Automatic detection of latency spikes, cost anomalies, and error rate changes. Catches problems before users notice.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-name">Latency Tracking</div>
+        <div class="feat-desc">P50, P95, P99 latency per model and provider. Identify slow endpoints and optimize routing decisions.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-name">Zero Config</div>
+        <div class="feat-desc">Observe hooks into every proxy request automatically. No code changes, no SDK, no agent to install.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="api-section" id="api">
+  <div class="section-label">The API</div>
+  <p style="color:var(--cream-dim);font-size:0.95rem">Everything in Observe is queryable via REST. Pull traces into your own dashboards, pipe alerts to Slack, export costs to your billing system.</p>
+
+  <div class="code-block">
+<span class="comment"># Get recent traces</span>
+<span class="cmd">curl https://your-instance.stockyard.dev/api/observe/traces?limit=50</span>
+
+<span class="comment"># Cost breakdown for today</span>
+<span class="cmd">curl https://your-instance.stockyard.dev/api/observe/costs</span>
+
+<span class="comment"># Create an alert rule</span>
+<span class="cmd">curl -X POST /api/observe/alerts \</span>
+<span class="cmd">  -d '{"name":"cost-spike", "metric":"cost", "condition":"gt",</span>
+<span class="cmd">       "threshold":10.0, "window":"1h", "channel":"slack"}'</span>
+
+<span class="comment"># Get detected anomalies</span>
+<span class="cmd">curl https://your-instance.stockyard.dev/api/observe/anomalies</span>
+  </div>
+</section>
+
+<section class="obs-cta">
+  <h2>Stop flying blind.</h2>
+  <p>Observe ships with every Stockyard instance. Self-hosted or Cloud.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/" class="btn btn-secondary">Back to platform</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/exchange/">Exchange</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+
+</body>
+</html>

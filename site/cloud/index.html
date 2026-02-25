@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud — Stockyard</title>
+<meta name="description" content="Managed Stockyard. Full platform, zero ops. Sign up and get a proxy endpoint in 30 seconds.">
+<meta property="og:title" content="Stockyard Cloud">
+<meta property="og:description" content="Managed LLM infrastructure. Six apps, zero ops, one endpoint.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.btn-lg{padding:1rem 3rem;font-size:0.95rem}
+
+/* Hero */
+.cloud-hero{max-width:700px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.cloud-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.cloud-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.cloud-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.cloud-hero h1 .accent{color:var(--rust-light)}
+.cloud-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto 2.5rem}
+
+/* Signup form */
+.signup-box{max-width:480px;margin:0 auto;padding:2.5rem;background:var(--bg2);border:1px solid var(--bg3)}
+.signup-box h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1.5rem;text-align:center}
+.form-group{margin-bottom:1.2rem}
+.form-group label{display:block;font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem}
+.form-group input,.form-group select{width:100%;padding:0.7rem 1rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none;transition:border-color 0.2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--rust)}
+.form-group input::placeholder{color:var(--leather)}
+.form-group select option{background:var(--bg);color:var(--cream)}
+.signup-btn{width:100%;padding:0.9rem;background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-family:var(--font-mono);font-size:0.9rem;cursor:pointer;transition:all 0.2s;margin-top:0.5rem}
+.signup-btn:hover{background:var(--rust-light);border-color:var(--rust-light)}
+.signup-note{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);text-align:center;margin-top:1rem}
+.signup-success{display:none;text-align:center;padding:2rem}
+.signup-success .checkmark{font-size:3rem;margin-bottom:1rem}
+.signup-success h3{color:var(--cream);margin-bottom:0.5rem}
+.signup-success p{color:var(--cream-dim);font-size:0.9rem}
+.signup-success .endpoint{font-family:var(--font-mono);font-size:0.8rem;color:var(--gold);background:var(--bg);padding:0.6rem 1rem;border:1px solid var(--bg3);display:inline-block;margin-top:1rem}
+
+/* What you get */
+.includes{padding:5rem 2rem;border-top:1px solid var(--bg3)}
+.includes-inner{max-width:700px;margin:0 auto}
+.includes-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.include-item{padding-left:1rem;border-left:2px solid var(--bg3)}
+.include-item:hover{border-left-color:var(--rust)}
+.include-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.3rem}
+.include-desc{font-size:0.8rem;color:var(--cream-dim)}
+
+/* Pricing */
+.cloud-pricing{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);text-align:center}
+.plan-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:700px;margin-left:auto;margin-right:auto}
+.plan{flex:1;min-width:200px;max-width:320px;padding:2.5rem 2rem;border:1px solid var(--bg3);text-align:left}
+.plan-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.5rem}
+.plan-price{font-size:3rem;font-weight:700;color:var(--cream)}
+.plan-price.has-dollar::before{content:'$';font-size:1.2rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
+.plan-period{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-bottom:1.5rem;display:block}
+.plan-feat{font-size:0.8rem;color:var(--cream-dim);line-height:2;font-family:var(--font-mono)}
+.plan-feat span{color:var(--green-light);margin-right:0.4rem}
+.plan-highlight{border-color:var(--rust)}
+
+/* Endpoint preview */
+.endpoint-preview{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .cloud-hero{padding:5rem 1.5rem 3rem}
+  .includes-grid{grid-template-columns:1fr}
+  .plan-row{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="cloud-hero">
+  <div class="eyebrow">Stockyard Cloud</div>
+  <h1>Full platform. <span class="accent">Zero ops.</span></h1>
+  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 50+ modules, hosted and scaled for you.</p>
+</section>
+
+<div class="signup-box" id="signup-form">
+  <h2>Create your instance</h2>
+  <form onsubmit="handleSignup(event)">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@company.com" required>
+    </div>
+    <div class="form-group">
+      <label>Organization name</label>
+      <input type="text" id="org" placeholder="acme-corp" required>
+    </div>
+    <div class="form-group">
+      <label>Region</label>
+      <select id="region">
+        <option value="us-east">US East (Virginia)</option>
+        <option value="us-west">US West (Oregon)</option>
+        <option value="eu-west">EU West (Ireland)</option>
+        <option value="ap-south">AP South (Singapore)</option>
+      </select>
+    </div>
+    <button type="submit" class="signup-btn">Create instance &rarr;</button>
+  </form>
+  <p class="signup-note">Free 14-day trial. No credit card required.</p>
+</div>
+
+<div class="signup-box" id="signup-success" style="display:none;max-width:480px;margin:0 auto;">
+  <div class="signup-success" style="display:block">
+    <div class="checkmark">&#10003;</div>
+    <h3>Instance created</h3>
+    <p>Your Stockyard Cloud endpoint is ready.</p>
+    <div class="endpoint" id="endpoint-url"></div>
+    <p style="margin-top:1.5rem;font-size:0.8rem;color:var(--leather)">Check your email for API keys and console access.</p>
+  </div>
+</div>
+
+<section class="includes">
+  <div class="includes-inner">
+    <div class="section-label leather">Everything included</div>
+    <div class="includes-grid">
+      <div class="include-item">
+        <div class="include-name">Proxy</div>
+        <div class="include-desc">50+ middleware modules with runtime toggles. Route to any provider.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">Observe</div>
+        <div class="include-desc">Request tracing, cost dashboards, latency tracking, alerting.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">Trust</div>
+        <div class="include-desc">Hash-chained audit ledger, policy engine, evidence packs.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">Studio</div>
+        <div class="include-desc">Versioned prompt templates, A/B experiments, benchmarks.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">Forge</div>
+        <div class="include-desc">DAG workflow engine with topological execution and tool calls.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">Exchange</div>
+        <div class="include-desc">Install config packs in one click. Environment sync built in.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">Console</div>
+        <div class="include-desc">Web dashboard for all six apps. Real-time data, no extra process.</div>
+      </div>
+      <div class="include-item">
+        <div class="include-name">API</div>
+        <div class="include-desc">Full REST API. 69 endpoints. Manage everything programmatically.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="endpoint-preview">
+  <div class="section-label">Drop-in replacement</div>
+  <p style="color:var(--cream-dim);font-size:0.95rem">Point your existing OpenAI SDK at Stockyard. One line change, zero code rewrites.</p>
+  <div class="code-block">
+<span class="comment"># Before (direct to OpenAI)</span>
+<span class="cmd">export OPENAI_BASE_URL=https://api.openai.com/v1</span>
+
+<span class="comment"># After (through Stockyard Cloud)</span>
+<span class="cmd">export OPENAI_BASE_URL=https://acme-corp.stockyard.dev/v1</span>
+
+<span class="comment"># That's it. Your app doesn't change.</span>
+<span class="comment"># You get caching, safety, cost caps, logging, and 50+ more features.</span>
+  </div>
+</section>
+
+<section class="cloud-pricing">
+  <div class="section-label gold">Cloud pricing</div>
+  <div class="plan-row">
+    <div class="plan plan-highlight">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price has-dollar">29</div>
+      <span class="plan-period">per month</span>
+      <div class="plan-feat">
+        <span>&#10003;</span> All 6 apps<br>
+        <span>&#10003;</span> 50+ modules<br>
+        <span>&#10003;</span> 100k requests/mo<br>
+        <span>&#10003;</span> 30-day trace retention<br>
+        <span>&#10003;</span> Email support
+      </div>
+    </div>
+    <div class="plan">
+      <div class="plan-name">Team</div>
+      <div class="plan-price has-dollar">99</div>
+      <span class="plan-period">per month</span>
+      <div class="plan-feat">
+        <span>&#10003;</span> Everything in Starter<br>
+        <span>&#10003;</span> 1M requests/mo<br>
+        <span>&#10003;</span> 90-day retention<br>
+        <span>&#10003;</span> Multi-tenant isolation<br>
+        <span>&#10003;</span> Priority support
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+
+<script>
+const API = 'https://stockyard-production.up.railway.app';
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const org = document.getElementById('org').value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  const region = document.getElementById('region').value;
+
+  try {
+    const res = await fetch(API + '/api/cloud/tenants', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, org_slug: org, region, plan: 'starter' })
+    });
+    const data = await res.json();
+    if (data.error) { alert(data.error); return; }
+
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('signup-success').style.display = 'block';
+    document.getElementById('endpoint-url').textContent = 'https://' + org + '.stockyard.dev/v1';
+  } catch (err) {
+    alert('Signup failed. Please try again.');
+  }
+}
+</script>
+
+</body>
+</html>

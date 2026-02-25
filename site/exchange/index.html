@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exchange — Stockyard</title>
+<meta name="description" content="Config packs for Stockyard. Install providers, modules, workflows, policies, and alerts in one click. Uninstall cleanly.">
+<meta property="og:title" content="Stockyard Exchange">
+<meta property="og:description" content="One-click config packs. Install a full stack — providers, modules, alerts, workflows — in seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* Hero */
+.ex-hero{max-width:750px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.ex-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.ex-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.ex-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.ex-hero h1 .accent{color:var(--rust-light)}
+.ex-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto 2.5rem}
+
+/* Pack cards */
+.packs{padding:3rem 2rem 5rem;max-width:900px;margin:0 auto}
+.pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+.pack-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2);transition:border-color 0.2s;position:relative}
+.pack-card:hover{border-color:var(--rust)}
+.pack-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;padding:0.15rem 0.5rem;border:1px solid;display:inline-block;margin-bottom:0.8rem}
+.pack-badge.rec{color:var(--green-light);border-color:var(--green)}
+.pack-badge.prov{color:var(--gold);border-color:var(--gold)}
+.pack-badge.adv{color:var(--rust-light);border-color:var(--rust)}
+.pack-name{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.4rem}
+.pack-author{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.6rem}
+.pack-desc{font-size:0.8rem;color:var(--cream-dim);line-height:1.5;margin-bottom:1rem}
+.pack-contents{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather-light);line-height:1.8}
+.pack-install{font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem 1rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);cursor:pointer;transition:all 0.2s;margin-top:1rem;width:100%;text-align:center}
+.pack-install:hover{border-color:var(--rust);color:var(--cream)}
+.pack-install.installed{border-color:var(--green);color:var(--green-light);cursor:default}
+
+/* How it works */
+.how{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.how-inner{max-width:700px;margin:0 auto}
+.code-block{background:var(--bg);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+.code-block .key{color:var(--rust-light)}
+.code-block .val{color:var(--gold)}
+.code-block .str{color:var(--green-light)}
+
+/* What packs contain */
+.anatomy{padding:5rem 2rem;max-width:800px;margin:0 auto}
+.anatomy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-top:2rem}
+.anatomy-item{padding:1rem;border:1px solid var(--bg3);text-align:center}
+.anatomy-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream);margin-bottom:0.3rem}
+.anatomy-table{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase}
+
+/* CTA */
+.ex-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.ex-cta h2{font-size:2rem;margin-bottom:1rem}
+.ex-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .ex-hero{padding:5rem 1.5rem 3rem}
+  .pack-grid{grid-template-columns:1fr}
+  .anatomy-grid{grid-template-columns:1fr 1fr}
+  .cta-group{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand">Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="ex-hero">
+  <div class="eyebrow">App 06 &mdash; Exchange</div>
+  <h1>Install a stack <span class="accent">in one click.</span></h1>
+  <p class="sub">Config packs bundle providers, modules, routes, workflows, policies, and alerts together. Install once, apply everywhere. Uninstall cleanly.</p>
+</section>
+
+<section class="packs">
+  <div class="section-label leather">Starter packs</div>
+  <div class="pack-grid" id="pack-grid">
+
+    <div class="pack-card">
+      <div class="pack-badge rec">Recommended</div>
+      <div class="pack-name">Safety Essentials</div>
+      <div class="pack-author">by Stockyard</div>
+      <div class="pack-desc">PII redaction, content filtering, prompt injection detection, and trust policies. The baseline for production.</div>
+      <div class="pack-contents">4 modules &bull; 2 policies &bull; 2 alerts</div>
+      <button class="pack-install" onclick="installPack('safety-essentials', this)">Install</button>
+    </div>
+
+    <div class="pack-card">
+      <div class="pack-badge rec">Recommended</div>
+      <div class="pack-name">Cost Control</div>
+      <div class="pack-author">by Stockyard</div>
+      <div class="pack-desc">Rate limiting, spending caps, token budgets, and caching. Keep your LLM spend predictable.</div>
+      <div class="pack-contents">4 modules &bull; 3 alerts</div>
+      <button class="pack-install" onclick="installPack('cost-control', this)">Install</button>
+    </div>
+
+    <div class="pack-card">
+      <div class="pack-badge prov">Provider</div>
+      <div class="pack-name">OpenAI Quickstart</div>
+      <div class="pack-author">by Stockyard</div>
+      <div class="pack-desc">Pre-configured OpenAI with model routing, caching, retry logic, and a starter prompt template.</div>
+      <div class="pack-contents">1 provider &bull; 3 routes &bull; 2 modules &bull; 1 template</div>
+      <button class="pack-install" onclick="installPack('openai-quickstart', this)">Install</button>
+    </div>
+
+    <div class="pack-card">
+      <div class="pack-badge prov">Provider</div>
+      <div class="pack-name">Anthropic Quickstart</div>
+      <div class="pack-author">by Stockyard</div>
+      <div class="pack-desc">Claude model routing with caching and an analysis-focused prompt template.</div>
+      <div class="pack-contents">1 provider &bull; 1 route &bull; 2 modules &bull; 1 template</div>
+      <button class="pack-install" onclick="installPack('anthropic-quickstart', this)">Install</button>
+    </div>
+
+    <div class="pack-card">
+      <div class="pack-badge adv">Advanced</div>
+      <div class="pack-name">Multi-Provider Failover</div>
+      <div class="pack-author">by Stockyard</div>
+      <div class="pack-desc">OpenAI + Anthropic with automatic failover, health checks, circuit breakers, and load balancing.</div>
+      <div class="pack-contents">2 providers &bull; 5 modules &bull; 2 alerts</div>
+      <button class="pack-install" onclick="installPack('multi-provider-failover', this)">Install</button>
+    </div>
+
+    <div class="pack-card">
+      <div class="pack-badge adv">Advanced</div>
+      <div class="pack-name">Evaluation Suite</div>
+      <div class="pack-author">by Stockyard</div>
+      <div class="pack-desc">DAG workflows for accuracy evaluation and hallucination detection. Systematic LLM testing.</div>
+      <div class="pack-contents">2 workflows &bull; 1 template</div>
+      <button class="pack-install" onclick="installPack('eval-suite', this)">Install</button>
+    </div>
+
+  </div>
+</section>
+
+<section class="anatomy">
+  <div class="section-label">What packs can contain</div>
+  <p style="color:var(--cream-dim);font-size:0.95rem;margin-bottom:0.5rem">A single pack can provision resources across all six Stockyard apps.</p>
+  <div class="anatomy-grid">
+    <div class="anatomy-item">
+      <div class="anatomy-label">Providers</div>
+      <div class="anatomy-table">Proxy</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Routes</div>
+      <div class="anatomy-table">Proxy</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Modules</div>
+      <div class="anatomy-table">Proxy</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Workflows</div>
+      <div class="anatomy-table">Forge</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Tools</div>
+      <div class="anatomy-table">Forge</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Templates</div>
+      <div class="anatomy-table">Studio</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Policies</div>
+      <div class="anatomy-table">Trust</div>
+    </div>
+    <div class="anatomy-item">
+      <div class="anatomy-label">Alerts</div>
+      <div class="anatomy-table">Observe</div>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="how-inner">
+    <div class="section-label">Install via API</div>
+    <div class="code-block">
+<span class="comment"># List available packs</span>
+<span class="cmd">curl https://your-instance.stockyard.dev/api/exchange/packs</span>
+
+<span class="comment"># Install a pack (applies providers, modules, alerts, etc.)</span>
+<span class="cmd">curl -X POST /api/exchange/packs/<span class="val">safety-essentials</span>/install</span>
+
+<span class="comment"># Response shows exactly what was applied</span>
+<span class="str">{</span>
+<span class="str">  "status": "installed",</span>
+<span class="str">  "applied": { "modules": 4, "policies": 2, "alerts": 2 },</span>
+<span class="str">  "skipped": {},</span>
+<span class="str">  "errors": {}</span>
+<span class="str">}</span>
+
+<span class="comment"># Clean uninstall (removes everything the pack added)</span>
+<span class="cmd">curl -X DELETE /api/exchange/installed/<span class="val">1</span></span>
+    </div>
+  </div>
+</section>
+
+<section class="ex-cta">
+  <h2>Skip the boilerplate.</h2>
+  <p>One pack, one click. Production-ready config in seconds.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/" class="btn btn-secondary">Back to platform</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/observe/">Observe</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+
+<script>
+const API = 'https://stockyard-production.up.railway.app';
+
+async function installPack(slug, btn) {
+  if (btn.classList.contains('installed')) return;
+  btn.textContent = 'Installing...';
+  try {
+    const res = await fetch(API + '/api/exchange/packs/' + slug + '/install', { method: 'POST' });
+    const data = await res.json();
+    if (data.error) { btn.textContent = 'Error'; return; }
+    btn.textContent = 'Installed ✓';
+    btn.classList.add('installed');
+  } catch (e) {
+    btn.textContent = 'Install';
+  }
+}
+</script>
+
+</body>
+</html>

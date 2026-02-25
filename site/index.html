@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stockyard — Where LLM traffic gets sorted</title>
-<meta name="description" content="20 LLM proxy tools. Single Go binary. No dependencies. Cost control, caching, routing, safety, observability — everything between your app and the LLM.">
+<meta name="description" content="Six apps. One binary. Zero dependencies. The complete LLM infrastructure platform — proxy, observe, trust, studio, forge, and exchange.">
 <meta property="og:title" content="Stockyard — Where LLM traffic gets sorted">
-<meta property="og:description" content="20 LLM proxy tools. Single Go binary. No dependencies. The complete infrastructure layer for LLM-powered applications.">
+<meta property="og:description" content="Six apps. One binary. Zero dependencies. The complete infrastructure layer for LLM-powered applications.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
 <meta name="twitter:card" content="summary_large_image">
@@ -38,7 +38,7 @@ a:hover{color:var(--gold)}
 .hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
 .hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;margin-bottom:1.5rem;color:var(--cream)}
 .hero h1 .accent{color:var(--rust-light)}
-.hero-sub{font-size:1.2rem;color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 3rem}
+.hero-sub{font-size:1.15rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto 3rem}
 .hero-stats{display:flex;gap:3rem;justify-content:center;margin-bottom:3rem;flex-wrap:wrap}
 .stat{text-align:center}
 .stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--cream);display:block}
@@ -50,64 +50,58 @@ a:hover{color:var(--gold)}
 .btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
 .btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
 .btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
-.install-cmd{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);background:var(--bg2);padding:0.5rem 1.5rem;border-radius:4px;display:inline-block;border:1px solid var(--bg3)}
+.install-cmd{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);background:var(--bg2);padding:0.5rem 1.5rem;display:inline-block;border:1px solid var(--bg3)}
 
-/* Problem/Solution */
-.problem{background:var(--bg2);padding:5rem 2rem;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.problem-inner{max-width:700px;margin:0 auto}
 .section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
 .section-label.gold{color:var(--gold)}
 .section-label.leather{color:var(--leather-light)}
-.problem-text{font-size:1.1rem;color:var(--cream-dim);line-height:1.9}
 
+.problem{background:var(--bg2);padding:5rem 2rem;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.problem-inner{max-width:700px;margin:0 auto}
+.problem-text{font-size:1.1rem;color:var(--cream-dim);line-height:1.9}
 .solution{padding:5rem 2rem;max-width:700px;margin:0 auto}
 .solution-text{font-size:1.05rem;color:var(--cream);line-height:1.9}
 
-/* Categories */
-.categories{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.categories-inner{max-width:900px;margin:0 auto}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;margin-top:2rem}
-.cat-card{padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.2s}
-.cat-card:hover{border-color:var(--leather)}
-.cat-card a{text-decoration:none;display:block}
-.cat-name{font-family:var(--font-mono);font-size:0.8rem;letter-spacing:1px;color:var(--cream);margin-bottom:0.3rem}
-.cat-count{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:1px}
-.cat-desc{font-size:0.85rem;color:var(--cream-dim);margin-top:0.5rem}
+.apps{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.apps-inner{max-width:960px;margin:0 auto}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:2rem}
+.app-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.2s}
+.app-card:hover{border-color:var(--rust)}
+.app-card a{text-decoration:none;display:block}
+.app-num{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;color:var(--leather);text-transform:uppercase;display:block;margin-bottom:0.4rem}
+.app-name{font-family:var(--font-mono);font-size:1rem;letter-spacing:1px;color:var(--cream);margin-bottom:0.5rem;display:block}
+.app-tagline{font-size:0.85rem;color:var(--cream-dim);font-style:italic;display:block;margin-bottom:0.6rem}
+.app-features{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light);line-height:1.7}
 
-/* Product showcase */
-.showcase{padding:5rem 2rem;max-width:900px;margin:0 auto}
-.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin-top:2rem}
-.product-card{padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);transition:all 0.2s}
-.product-card:hover{border-color:var(--rust);transform:translateY(-2px)}
-.product-card a{text-decoration:none}
-.product-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.3rem}
-.product-tagline{font-size:0.8rem;color:var(--cream-dim);font-style:italic}
-.product-category{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.5rem;display:block}
-
-/* How it works */
-.how{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.how{padding:5rem 2rem}
 .how-inner{max-width:700px;margin:0 auto}
-.code-block{background:var(--bg);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
 .code-block .comment{color:#5a5040}
 .code-block .cmd{color:var(--cream)}
 
-/* Compare */
+.modules{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.modules-inner{max-width:700px;margin:0 auto}
+.module-row{display:flex;justify-content:space-between;align-items:center;padding:0.7rem 0;border-bottom:1px solid var(--bg3)}
+.module-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
+.module-cat{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase}
+
 .compare{padding:5rem 2rem;max-width:700px;margin:0 auto}
 .compare-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.85rem}
 .compare-table th,.compare-table td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
 .compare-table th{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
-.compare-table td{color:var(--cream-dim)}
 .compare-table .us{color:var(--cream);font-weight:700}
 .compare-table .them{color:var(--cream-dim)}
 
-/* Pricing teaser */
 .pricing-teaser{padding:5rem 2rem;text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.price-big{font-size:4rem;font-weight:700;color:var(--cream);font-family:var(--font-serif)}
-.price-big::before{content:'$';font-size:1.5rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
-.price-sub{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);margin-top:0.5rem}
-.price-context{font-size:0.9rem;color:var(--cream-dim);font-style:italic;margin-top:1rem;max-width:500px;margin-left:auto;margin-right:auto}
+.tier-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:800px;margin-left:auto;margin-right:auto}
+.tier{flex:1;min-width:200px;max-width:240px;padding:2rem 1.5rem;border:1px solid var(--bg3);text-align:center}
+.tier-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
+.tier-price{font-size:2.5rem;font-weight:700;color:var(--cream)}
+.tier-price.has-dollar::before{content:'$';font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
+.tier-period{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem}
+.tier-desc{font-size:0.8rem;color:var(--cream-dim);font-style:italic;margin-top:0.8rem}
+.tier-highlight{border-color:var(--rust)}
 
-/* Footer CTA */
 .footer-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
 .footer-cta h2{font-size:2rem;margin-bottom:1rem}
 .footer-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
@@ -118,9 +112,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 @media(max-width:600px){
   .hero{padding:5rem 1.5rem 3rem}
   .hero-stats{gap:1.5rem}
-  .cat-grid,.product-grid{grid-template-columns:1fr}
+  .app-grid{grid-template-columns:1fr}
   .cta-group{flex-direction:column;align-items:center}
   .compare-table{font-size:0.75rem}
+  .tier-row{flex-direction:column;align-items:center}
 }
 </style>
 </head>
@@ -130,26 +125,27 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <a href="/" class="nav-brand">Stockyard</a>
   <div class="nav-links">
     <a href="/products/">Products</a>
+    <a href="/cloud/">Cloud</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
   </div>
 </nav>
 
 <section class="hero">
   <div class="hero-eyebrow">Where LLM traffic gets sorted</div>
-  <h1>Everything between your app <span class="accent">and the LLM.</span></h1>
-  <p class="hero-sub">20 proxy tools. Single Go binary. No dependencies. Cost control, caching, routing, safety, observability &mdash; pick what you need or take the whole ranch.</p>
+  <h1>Six apps. One binary. <span class="accent">Zero dependencies.</span></h1>
+  <p class="hero-sub">The complete LLM infrastructure platform &mdash; proxy, observe, trust, studio, forge, and exchange. Everything between your app and the model.</p>
 
   <div class="hero-stats">
-    <div class="stat"><span class="stat-num">20</span><span class="stat-label">Products</span></div>
-    <div class="stat"><span class="stat-num">17+</span><span class="stat-label">Providers</span></div>
+    <div class="stat"><span class="stat-num">6</span><span class="stat-label">Apps</span></div>
+    <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Modules</span></div>
+    <div class="stat"><span class="stat-num">17</span><span class="stat-label">Providers</span></div>
     <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
   </div>
 
   <div class="cta-group">
-    <a href="/pricing/" class="btn btn-primary">Get started</a>
-    <a href="/products/" class="btn btn-secondary">Browse products</a>
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="#apps" class="btn btn-secondary">See the platform</a>
   </div>
   <code class="install-cmd">curl -sSL stockyard.dev/install | sh</code>
 </section>
@@ -158,7 +154,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="problem-inner">
     <div class="section-label">The problem</div>
     <p class="problem-text">
-      You shipped an app with LLM calls. Now you've got surprise bills, flaky providers, no caching, no rate limits, no visibility into what's happening. You need infrastructure, but you're one person with a weekend project &mdash; you're not going to set up Kubernetes and Redis just to add a spending cap.
+      You shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, workflow orchestration, and a way to share configs across environments. You're not going to set up six different tools with Redis and Postgres just to stop surprise bills.
     </p>
   </div>
 </section>
@@ -166,58 +162,49 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="solution">
   <div class="section-label gold">The fix</div>
   <p class="solution-text">
-    Stockyard sits between your app and the LLM provider. One binary, one config file. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get spending caps, caching, fallback routing, rate limiting, logging, and 120 more tools &mdash; all without changing a line of application code. It works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 12 more providers.
+    Stockyard is one Go binary that gives you six integrated apps. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get a full platform &mdash; proxy with 50+ middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 12 more providers.
   </p>
 </section>
 
-<section class="categories">
-  <div class="categories-inner">
-    <div class="section-label leather">What's in the box</div>
-    <div class="cat-grid">
-      <div class="cat-card"><a href="/products/?cat=cost">
-        <div class="cat-name">Cost Control</div>
-        <div class="cat-count">8 products</div>
-        <div class="cat-desc">Spending caps, cost prediction, tier auto-downgrade, idle request killing</div>
+<section class="apps" id="apps">
+  <div class="apps-inner">
+    <div class="section-label leather">The platform</div>
+    <div class="app-grid">
+      <div class="app-card"><a href="/products/">
+        <span class="app-num">App 01</span>
+        <span class="app-name">Proxy</span>
+        <span class="app-tagline">The gateway layer. 50+ middleware modules, runtime toggles.</span>
+        <span class="app-features">Caching &bull; Rate limiting &bull; Cost caps &bull; Failover &bull; PII redaction &bull; Content filter &bull; Retry &bull; Load balancing &bull; Circuit breakers</span>
       </a></div>
-      <div class="cat-card"><a href="/products/?cat=reliability">
-        <div class="cat-name">Reliability</div>
-        <div class="cat-count">6 products</div>
-        <div class="cat-desc">Provider failover, intelligent retry, circuit breakers, load balancing</div>
+      <div class="app-card"><a href="/observe/">
+        <span class="app-num">App 02</span>
+        <span class="app-name">Observe</span>
+        <span class="app-tagline">See everything. Every request, every dollar, every anomaly.</span>
+        <span class="app-features">Request tracing &bull; Cost rollups &bull; Latency tracking &bull; Alert rules &bull; Anomaly detection &bull; Daily dashboards</span>
       </a></div>
-      <div class="cat-card"><a href="/products/?cat=safety">
-        <div class="cat-name">Safety &amp; Moderation</div>
-        <div class="cat-count">5 products</div>
-        <div class="cat-desc">Content filtering, hallucination detection, topic fencing, age gating</div>
-      </a></div>
-      <div class="cat-card"><a href="/products/?cat=security">
-        <div class="cat-name">Security</div>
-        <div class="cat-count">6 products</div>
-        <div class="cat-desc">PII redaction, secret scanning, IP fencing, encryption at rest, key rotation</div>
-      </a></div>
-      <div class="cat-card"><a href="/products/?cat=observability">
-        <div class="cat-name">Observability</div>
-        <div class="cat-count">7 products</div>
-        <div class="cat-desc">Analytics, distributed tracing, alerting, drift detection, anomaly radar</div>
-      </a></div>
-      <div class="cat-card"><a href="/products/?cat=performance">
-        <div class="cat-name">Performance</div>
-        <div class="cat-count">8 products</div>
-        <div class="cat-desc">Response caching, semantic cache, stream caching, embedding cache, prefix cache</div>
-      </a></div>
-      <div class="cat-card"><a href="/products/?cat=devex">
-        <div class="cat-name">Developer Experience</div>
-        <div class="cat-count">7 products</div>
-        <div class="cat-desc">Mock server, prompt diff, load testing, chaos engineering, interactive debugger</div>
-      </a></div>
-      <div class="cat-card"><a href="/products/?cat=compliance">
-        <div class="cat-name">Compliance</div>
-        <div class="cat-count">6 products</div>
-        <div class="cat-desc">Audit trails, data mapping, consent management, retention policies, governance</div>
-      </a></div>
-      <div class="cat-card"><a href="/products/">
-        <div class="cat-name">And more...</div>
-        <div class="cat-count">72 more products</div>
-        <div class="cat-desc">Prompt management, provider adapters, multi-tenant SaaS, workflows, multimodal, sessions, A/B testing</div>
+      <div class="app-card">
+        <span class="app-num">App 03</span>
+        <span class="app-name">Trust</span>
+        <span class="app-tagline">Append-only audit ledger. Hash-chained. Tamper-evident.</span>
+        <span class="app-features">Audit trails &bull; Evidence packs &bull; Policy engine &bull; Feedback capture &bull; Compliance reports &bull; Replay</span>
+      </div>
+      <div class="app-card">
+        <span class="app-num">App 04</span>
+        <span class="app-name">Studio</span>
+        <span class="app-tagline">Prompt engineering, versioned. Experiment, benchmark, snapshot.</span>
+        <span class="app-features">Prompt templates &bull; A/B experiments &bull; Benchmarks &bull; Snapshot comparison &bull; Version history</span>
+      </div>
+      <div class="app-card">
+        <span class="app-num">App 05</span>
+        <span class="app-name">Forge</span>
+        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
+        <span class="app-features">Topological execution &bull; Template variables &bull; Transform steps &bull; Tool integration &bull; Batch processing</span>
+      </div>
+      <div class="app-card"><a href="/exchange/">
+        <span class="app-num">App 06</span>
+        <span class="app-name">Exchange</span>
+        <span class="app-tagline">Config packs. Install a stack in one click.</span>
+        <span class="app-features">Starter packs &bull; One-click install &bull; Clean uninstall &bull; Environment sync &bull; Version control</span>
       </a></div>
     </div>
   </div>
@@ -231,68 +218,34 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="comment"># Install</span>
 <span class="cmd">curl -sSL stockyard.dev/install | sh</span>
 
-<span class="comment"># Run (starts proxy on :4000 with dashboard at /ui)</span>
-<span class="cmd">stockyard --config stockyard.yaml</span>
+<span class="comment"># Run (starts all 6 apps on :4200 with console at /ui)</span>
+<span class="cmd">stockyard</span>
 
 <span class="comment"># Point your app at the proxy</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4000/v1</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
 
-<span class="comment"># That's it. Every LLM call now flows through Stockyard.</span>
-<span class="comment"># Open http://localhost:4000/ui for the live dashboard.</span>
+<span class="comment"># That's it. Every LLM call now flows through the platform.</span>
+<span class="comment"># Open http://localhost:4200/ui for the live console.</span>
     </div>
   </div>
 </section>
 
-<section class="showcase">
-  <div class="section-label">Most popular</div>
-  <div class="product-grid">
-    <div class="product-card"><a href="/products/costcap/">
-      <span class="product-name">CostCap</span>
-      <span class="product-tagline">Never get a surprise LLM bill again.</span>
-      <span class="product-category">Cost Control</span>
-    </a></div>
-    <div class="product-card"><a href="/products/llmcache/">
-      <span class="product-name">CacheLayer</span>
-      <span class="product-tagline">Stop paying for the same answer twice.</span>
-      <span class="product-category">Performance</span>
-    </a></div>
-    <div class="product-card"><a href="/products/routefall/">
-      <span class="product-name">FallbackRouter</span>
-      <span class="product-tagline">When OpenAI goes down, your app doesn't.</span>
-      <span class="product-category">Reliability</span>
-    </a></div>
-    <div class="product-card"><a href="/products/promptguard/">
-      <span class="product-name">PromptGuard</span>
-      <span class="product-tagline">PII redaction + injection detection.</span>
-      <span class="product-category">Security</span>
-    </a></div>
-    <div class="product-card"><a href="/products/tracelink/">
-      <span class="product-name">TraceLink</span>
-      <span class="product-tagline">Distributed tracing for LLM chains.</span>
-      <span class="product-category">Observability</span>
-    </a></div>
-    <div class="product-card"><a href="/products/toxicfilter/">
-      <span class="product-name">ToxicFilter</span>
-      <span class="product-tagline">Content moderation for LLM outputs.</span>
-      <span class="product-category">Safety</span>
-    </a></div>
-    <div class="product-card"><a href="/products/mockllm/">
-      <span class="product-name">MockLLM</span>
-      <span class="product-tagline">Deterministic LLM responses for CI/CD.</span>
-      <span class="product-category">Developer Experience</span>
-    </a></div>
-    <div class="product-card"><a href="/products/retrypilot/">
-      <span class="product-name">RetryPilot</span>
-      <span class="product-tagline">Intelligent retry with model downgrade.</span>
-      <span class="product-category">Reliability</span>
-    </a></div>
-    <div class="product-card"><a href="/products/anthrofit/">
-      <span class="product-name">AnthroFit</span>
-      <span class="product-tagline">Use Claude with OpenAI SDKs.</span>
-      <span class="product-category">Provider</span>
-    </a></div>
+<section class="modules">
+  <div class="modules-inner">
+    <div class="section-label leather">50+ middleware modules</div>
+    <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. Install packs to configure groups at once.</p>
+    <div class="module-row"><span class="module-name">rateshield</span><span class="module-cat">Cost</span></div>
+    <div class="module-row"><span class="module-name">cost_cap</span><span class="module-cat">Cost</span></div>
+    <div class="module-row"><span class="module-name">cache</span><span class="module-cat">Performance</span></div>
+    <div class="module-row"><span class="module-name">failover</span><span class="module-cat">Reliability</span></div>
+    <div class="module-row"><span class="module-name">pii_redactor</span><span class="module-cat">Security</span></div>
+    <div class="module-row"><span class="module-name">content_filter</span><span class="module-cat">Safety</span></div>
+    <div class="module-row"><span class="module-name">prompt_injection</span><span class="module-cat">Safety</span></div>
+    <div class="module-row"><span class="module-name">circuit_breaker</span><span class="module-cat">Reliability</span></div>
+    <div class="module-row"><span class="module-name">retry</span><span class="module-cat">Reliability</span></div>
+    <div class="module-row"><span class="module-name">token_budget</span><span class="module-cat">Cost</span></div>
+    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 50+ modules &rarr;</a></p>
   </div>
-  <p style="text-align:center;margin-top:2rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.85rem">Browse all 20 products &rarr;</a></p>
 </section>
 
 <section class="compare">
@@ -302,18 +255,36 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td></tr>
     <tr><td>Binary</td><td class="us">Single static binary</td><td class="them">pip install + runtime</td></tr>
     <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td></tr>
-    <tr><td>Dashboard</td><td class="us">Embedded (no extra process)</td><td class="them">Separate UI service</td></tr>
-    <tr><td>Products</td><td class="us">20 specialized tools</td><td class="them">One proxy</td></tr>
-    <tr><td>Memory footprint</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
-    <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds (Python import)</td></tr>
+    <tr><td>Dashboard</td><td class="us">Embedded console</td><td class="them">Separate UI service</td></tr>
+    <tr><td>Platform</td><td class="us">6 integrated apps</td><td class="them">One proxy</td></tr>
+    <tr><td>Middleware</td><td class="us">50+ toggleable modules</td><td class="them">Limited callbacks</td></tr>
+    <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
+    <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td></tr>
   </table>
 </section>
 
 <section class="pricing-teaser">
   <div class="section-label gold">Pricing</div>
-  <div class="price-big">29.99</div>
-  <div class="price-sub">per month &middot; all 20 products</div>
-  <p class="price-context">That's $1.50 per tool. Buying 3 individual products costs the same as getting everything.</p>
+  <div class="tier-row">
+    <div class="tier">
+      <div class="tier-name">Self-Hosted</div>
+      <div class="tier-price">Free</div>
+      <div class="tier-period">forever</div>
+      <div class="tier-desc">Full platform. Your infrastructure.</div>
+    </div>
+    <div class="tier tier-highlight">
+      <div class="tier-name">Cloud</div>
+      <div class="tier-price has-dollar">29</div>
+      <div class="tier-period">per month</div>
+      <div class="tier-desc">Managed hosting. Zero ops.</div>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Enterprise</div>
+      <div class="tier-price">Custom</div>
+      <div class="tier-period">&nbsp;</div>
+      <div class="tier-desc">SSO, SLA, dedicated support.</div>
+    </div>
+  </div>
   <div class="cta-group" style="margin-top:2rem">
     <a href="/pricing/" class="btn btn-primary">See pricing</a>
   </div>
@@ -321,16 +292,16 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="footer-cta">
   <h2>Ship with confidence.</h2>
-  <p>Single binary. No dependencies. Works in 30 seconds.</p>
+  <p>Six apps. One binary. No dependencies. Works in 30 seconds.</p>
   <div class="cta-group">
-    <a href="/pricing/" class="btn btn-primary">Get started</a>
-    <a href="/products/" class="btn btn-secondary">Browse all 20 products</a>
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/products/" class="btn btn-secondary">Browse all modules</a>
   </div>
 </section>
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/products/">20 products</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/observe/">Observe</a> &nbsp;&middot;&nbsp; <a href="/exchange/">Exchange</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
 </footer>
 
 </body>
