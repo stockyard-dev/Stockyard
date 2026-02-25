@@ -298,6 +298,10 @@ func Boot(pc ProductConfig) {
 			if setter, ok := app.(interface{ SetToggleRegistry(*toggle.Registry) }); ok {
 				setter.SetToggleRegistry(toggleReg)
 			}
+			// Wire proxy port into forge app for workflow executor
+			if setter, ok := app.(interface{ SetProxyPort(int) }); ok {
+				setter.SetProxyPort(cfg.Port)
+			}
 		}
 
 		// Mount all app routes on the shared mux

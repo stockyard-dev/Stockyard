@@ -2,6 +2,7 @@
 package forge
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -11,10 +12,14 @@ import (
 )
 
 type App struct {
-	conn *sql.DB
+	conn      *sql.DB
+	proxyPort int
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
+
+// SetProxyPort tells the executor which port to call for LLM requests.
+func (a *App) SetProxyPort(port int) { a.proxyPort = port }
 
 func (a *App) Name() string        { return "forge" }
 func (a *App) Description() string { return "Workflow engine, tool registry, triggers, sessions, batch" }
@@ -220,8 +225,14 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]string{"error": "workflow not found or disabled"})
 		return
 	}
-	var steps []any
-	json.Unmarshal([]byte(stepsJSON), &steps)
+
+	// Parse steps into typed structs for the executor
+	var steps []Step
+	if err := json.Unmarshal([]byte(stepsJSON), &steps); err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": fmt.Sprintf("invalid steps_json: %v", err)})
+		return
+	}
 
 	var input struct {
 		Input any `json:"input"`
@@ -232,6 +243,15 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 	runID := fmt.Sprintf("run_%s", time.Now().Format("20060102150405.000"))
 	a.conn.Exec("INSERT INTO forge_runs (id, workflow_id, status, input_json, steps_total) VALUES (?,?,?,?,?)",
 		runID, wfID, "running", string(inputJSON), len(steps))
+
+	// Determine proxy port — default to 4200 (Stockyard default)
+	port := a.proxyPort
+	if port == 0 {
+		port = 4200
+	}
+
+	// Launch the executor in a goroutine — non-blocking
+	go Execute(context.Background(), a.conn, runID, steps, input.Input, port)
 
 	writeJSON(w, map[string]any{"status": "started", "run_id": runID, "steps_total": len(steps)})
 }
