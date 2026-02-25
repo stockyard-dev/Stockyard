@@ -4,8 +4,10 @@ package engine
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +17,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
 	"github.com/stockyard-dev/stockyard/internal/features"
+	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 	"github.com/stockyard-dev/stockyard/internal/storage"
@@ -170,6 +173,7 @@ type ProductConfig struct {
 	Product  string // config key: costcap, llmcache, etc.
 	Version  string // set via ldflags at build time
 	Features Features
+	Apps     []platform.App // 6 flagship apps (registered in cmd/stockyard/main.go)
 }
 
 // Boot initializes and starts a product. This is the single entry point
@@ -251,6 +255,30 @@ func Boot(pc ProductConfig) {
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
+
+	// Register 6 flagship apps (if configured)
+	if len(pc.Apps) > 0 {
+		registry := platform.NewRegistry()
+		for _, app := range pc.Apps {
+			registry.Register(app)
+		}
+		// Run app-specific migrations on the shared database
+		if err := registry.MigrateAll(db.Conn()); err != nil {
+			log.Printf("app migrations: %v", err)
+		}
+		// Mount all app routes on the shared mux
+		registry.RegisterAllRoutes(srv.Mux())
+
+		// /api/apps — list all registered apps
+		srv.Mux().HandleFunc("GET /api/apps", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"apps":  registry.AppList(),
+				"count": len(registry.Apps()),
+			})
+		})
+		log.Printf("  Apps:      %d registered (/api/apps)", len(pc.Apps))
+	}
 
 	// Start data retention cleanup loop
 	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
