@@ -235,6 +235,7 @@ func Boot(pc ProductConfig) {
 
 	// Create middleware toggle registry (allows runtime enable/disable via API)
 	toggleReg := toggle.New()
+	toggle.Global = toggleReg
 
 	// Build middleware chain based on product features
 	middlewares := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers)
