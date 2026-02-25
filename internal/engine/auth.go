@@ -50,6 +50,12 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// Public-safe read routes (needed by website, signup, marketplace)
+		if isPublicRoute(r.Method, path) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		// If no admin key set, pass through (dev mode)
 		if adminKey == "" {
 			next.ServeHTTP(w, r)
@@ -94,4 +100,29 @@ func extractAdminKey(r *http.Request) string {
 	}
 
 	return ""
+}
+
+// isPublicRoute returns true for routes that should be accessible without admin auth.
+// These are read-only informational endpoints and the cloud signup endpoint.
+func isPublicRoute(method, path string) bool {
+	// Public GET endpoints (informational / marketing)
+	if method == "GET" {
+		switch {
+		case path == "/api/apps":
+			return true
+		case path == "/api/exchange/packs":
+			return true
+		case strings.HasPrefix(path, "/api/exchange/packs/") && !strings.Contains(path, "/install"):
+			return true // GET /api/exchange/packs/{slug} — pack detail
+		case path == "/api/exchange/status":
+			return true
+		case path == "/api/products" || strings.HasPrefix(path, "/api/products/"):
+			return true
+		}
+	}
+	// Cloud signup (POST /api/cloud/tenants)
+	if method == "POST" && path == "/api/cloud/tenants" {
+		return true
+	}
+	return false
 }
