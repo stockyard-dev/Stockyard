@@ -2,177 +2,198 @@
 
 **Where LLM traffic gets sorted.**
 
-Stockyard is a Go proxy engine that sits between your app and any LLM provider. 20 tools for cost tracking, caching, rate limiting, failover, observability, and more. Each is a single binary with an embedded dashboard. No Python, no Redis, no Postgres, no dependencies.
+Six apps. One Go binary. Zero dependencies. The complete LLM infrastructure platform — proxy, observe, trust, studio, forge, and exchange.
 
 ```
-Your App  -->  Stockyard  -->  OpenAI / Anthropic / Gemini / Groq / Ollama
-                   |
-             Dashboard (localhost/ui)
+Your App  →  Stockyard  →  OpenAI / Anthropic / Gemini / Groq / Ollama / 12 more
+                 │
+    Console (localhost:4200/ui)
+    ├── Proxy     50+ middleware modules, runtime toggles
+    ├── Observe   Traces, costs, alerts, anomaly detection
+    ├── Trust     Hash-chained audit ledger, policies
+    ├── Studio    Versioned prompts, A/B experiments
+    ├── Forge     DAG workflow engine
+    └── Exchange  Config pack marketplace
 ```
 
-## Install (10 seconds)
+## Install
 
 ```bash
-brew install stockyard-dev/tap/stockyard
-# or
-npx @stockyard/stockyard
-# or
-curl -fsSL https://get.stockyard.dev | sh
-# or
-docker run -p 4000:4000 ghcr.io/stockyard-dev/stockyard
+curl -sSL stockyard.dev/install | sh
 ```
 
-## Quick Start
+Or build from source:
 
 ```bash
-export OPENAI_API_KEY=sk-...
+git clone https://github.com/stockyard-dev/stockyard
+cd stockyard
+go build -o stockyard ./cmd/stockyard
+```
+
+## Quickstart
+
+```bash
+# Start the platform (all 6 apps on port 4200)
 stockyard
-# Dashboard at http://localhost:4000/ui
+
+# Point your app at the proxy
+export OPENAI_BASE_URL=http://localhost:4200/v1
+
+# Make a request — goes through the full middleware chain
+curl http://localhost:4200/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'
 ```
 
-Point any OpenAI SDK at `http://localhost:4000/v1` and everything works. Cost tracking, caching, rate limiting, failover — all automatic.
+Open `http://localhost:4200/ui` for the web console.
 
-## Products
+## The Platform
 
-Every product is a standalone binary or part of the unified suite. All share the same OpenAI-compatible API surface.
+### Proxy (App 01)
+50+ middleware modules in a chain, every one toggleable at runtime:
 
-### Cost and Billing
+| Category | Modules |
+|----------|---------|
+| Routing | fallbackrouter, modelswitch, regionroute, abrouter, localsync |
+| Caching | cachelayer, embedcache, semanticcache |
+| Cost | costcap, tierdrop, rateshield, idlekill, outputcap, usagepulse |
+| Safety | promptguard, toxicfilter, guardrail, agegate, hallucicheck, secretscan, agentguard |
+| Transform | promptslim, tokentrim, contextpack, chatmem, langbridge, voicebridge |
+| Validate | structuredshield, evalgate, codefence |
+| Observe | llmtap, tracelink, alertpulse, driftwatch |
+| Shims | anthrofit (Claude→OpenAI SDK), geminishim (Gemini→OpenAI SDK) |
 
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| CostCap | `costcap` | 4100 | Spend tracking with hard/soft caps per model, key, time period |
-| UsagePulse | `usagepulse` | 4740 | Per-user and per-team token metering with billing export |
+Toggle any module at runtime:
+```bash
+# Disable a module (immediate, no restart)
+curl -X PUT localhost:4200/api/proxy/modules/toxicfilter -d '{"enabled":false}'
 
-### Caching
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| CacheLayer | `llmcache` | 4200 | Exact and semantic response caching with TTL |
-
-### Reliability
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| FallbackRouter | `routefall` | 4400 | Provider failover with circuit breaker and health checks |
-| RateShield | `rateshield` | 4500 | Rate limiting with token bucket and per-key limits |
-| RetryPilot | `retrypilot` | 5500 | Intelligent retry with jitter, circuit breaker, model downgrade |
-| KeyPool | `keypool` | 4700 | API key pooling and rotation |
-
-### Quality and Safety
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| StructuredShield | `jsonguard` | 4300 | JSON schema validation with auto-retry on parse failure |
-| EvalGate | `evalgate` | 4730 | Response quality scoring with auto-retry |
-| PromptGuard | `promptguard` | 4710 | PII redaction and prompt injection detection |
-
-### Prompt Engineering
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| PromptPad | `promptpad` | 4800 | Versioned prompt templates with A/B testing |
-| TokenTrim | `tokentrim` | 4900 | Context window optimizer with truncation strategies |
-| ContextPack | `contextpack` | 5400 | File, SQLite, and URL context injection |
-
-### Routing
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| ModelSwitch | `modelswitch` | 4720 | Smart model routing by token count, patterns, and headers |
-
-### Observability
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| LLMTap | `llmtap` | 5300 | Full analytics portal with p50, p95, p99 latency and cost trends |
-| PromptReplay | `promptreplay` | 4600 | Request logging, replay, and export |
-| StreamSnap | `streamsnap` | 5200 | SSE stream capture, replay, and TTFT metrics |
-
-### Async and Multi-Model
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| BatchQueue | `batchqueue` | 5000 | Async request queue with concurrency control |
-| MultiCall | `multicall` | 5100 | Multi-model consensus and comparison |
-
-### Suite
-
-| Product | Binary | Port | What it does |
-|---------|--------|------|-------------|
-| **Stockyard Suite** | `stockyard` | 4000 | All 20 products in one binary |
-
-## Configuration
-
-```yaml
-# stockyard.yaml
-listen: ":4000"
-
-providers:
-  - name: openai
-    url: https://api.openai.com/v1
-    api_key: ${OPENAI_API_KEY}
-  - name: anthropic
-    url: https://api.anthropic.com/v1
-    api_key: ${ANTHROPIC_API_KEY}
-    adapter: anthropic
-
-cache:
-  enabled: true
-  ttl: 1h
-  semantic: true
-
-cost:
-  daily_limit: 50.00
-  alert_threshold: 0.8
-
-rate_limit:
-  requests_per_minute: 60
-  per_key: true
-
-fallback:
-  strategy: priority
-  providers: [openai, anthropic]
+# Re-enable it
+curl -X PUT localhost:4200/api/proxy/modules/toxicfilter -d '{"enabled":true}'
 ```
+
+### Observe (App 02)
+Every proxy request is automatically traced with model, tokens, cost, latency, and status.
+
+```bash
+curl localhost:4200/api/observe/traces?limit=10  # Recent traces
+curl localhost:4200/api/observe/costs             # Daily cost rollups
+curl localhost:4200/api/observe/alerts            # Alert rules
+curl localhost:4200/api/observe/anomalies         # Detected anomalies
+```
+
+### Trust (App 03)
+Append-only audit ledger with SHA-256 hash chain. Every request gets a tamper-evident record.
+
+```bash
+curl localhost:4200/api/trust/ledger?limit=10     # Audit trail
+curl localhost:4200/api/trust/policies             # Trust policies
+```
+
+### Studio (App 04)
+Versioned prompt templates, A/B experiments, benchmarks, and snapshot comparison.
+
+```bash
+curl localhost:4200/api/studio/templates           # Prompt templates
+curl localhost:4200/api/studio/experiments          # A/B experiments
+```
+
+### Forge (App 05)
+DAG workflow engine. Chain LLM calls with dependency ordering and template variables.
+
+```bash
+# Create a multi-step workflow
+curl -X POST localhost:4200/api/forge/workflows -d '{
+  "slug": "draft-and-critique",
+  "name": "Draft + Critique",
+  "steps": [
+    {"id":"draft","type":"llm","config":{"model":"gpt-4o-mini","prompt":"Write about {{input}}"}},
+    {"id":"critique","type":"llm","depends_on":["draft"],
+     "config":{"prompt":"Critique: {{steps.draft.output}}"}},
+    {"id":"final","type":"transform","depends_on":["draft","critique"],
+     "config":{"expression":"concat"}}
+  ]
+}'
+
+# Run it
+curl -X POST localhost:4200/api/forge/workflows/draft-and-critique/run \
+  -d '{"input":"the future of AI"}'
+```
+
+### Exchange (App 06)
+Config pack marketplace. Install providers, modules, routes, workflows, policies, and alerts in one click.
+
+```bash
+curl localhost:4200/api/exchange/packs                              # List packs
+curl -X POST localhost:4200/api/exchange/packs/safety-essentials/install  # Install
+curl -X DELETE localhost:4200/api/exchange/installed/1               # Uninstall
+```
+
+**6 starter packs included:** Safety Essentials, Cost Control, OpenAI Quickstart, Anthropic Quickstart, Multi-Provider Failover, Evaluation Suite.
+
+## Auth
+
+Set `STOCKYARD_ADMIN_KEY` to protect the management API:
+
+```bash
+export STOCKYARD_ADMIN_KEY=sk-your-secret-key
+stockyard
+```
+
+With the key set:
+- `/api/*` endpoints require `Authorization: Bearer <key>` or `X-Admin-Key: <key>`
+- `/v1/*` proxy endpoints pass through (they use your LLM provider's key)
+- `/health` and `/ui` remain open
+
+Without the key, all endpoints are open (dev mode).
 
 ## Providers
 
-Works with 17+ LLM providers out of the box:
+Stockyard supports 17 LLM providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Cohere, AI21, Together, Fireworks, Perplexity, Ollama, LM Studio, vLLM, Azure OpenAI, AWS Bedrock, Replicate, and DeepSeek.
 
-OpenAI, Anthropic, Google Gemini, Groq, Ollama, Mistral, Cohere, DeepSeek, xAI/Grok, Together AI, Fireworks AI, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, Google Vertex AI, OpenRouter
+The proxy is a transparent pass-through — set your provider's API key in the `Authorization` header and Stockyard forwards it upstream.
 
-## Architecture
+## API
 
-- **Language:** Go, no CGO, single static binary
-- **Storage:** SQLite via modernc.org/sqlite, no external database
-- **Dashboard:** Preact and TypeScript embedded via go:embed
-- **API:** OpenAI-compatible (/v1/chat/completions, /v1/completions, /v1/embeddings)
-- **Streaming:** Full SSE pass-through with mid-stream token counting
-- **Config:** YAML with environment variable interpolation
+69 REST endpoints across all 6 apps. Key endpoints:
 
-## Pricing
+```
+GET  /health                              Health check
+GET  /api/apps                            List apps
+POST /v1/chat/completions                 Proxy LLM request
+GET  /api/proxy/modules                   List modules
+PUT  /api/proxy/modules/{name}            Toggle module
+GET  /api/proxy/providers                 List providers
+GET  /api/observe/traces                  Recent traces
+GET  /api/observe/costs                   Cost rollups
+POST /api/observe/alerts                  Create alert
+GET  /api/trust/ledger                    Audit trail
+GET  /api/studio/templates                Prompt templates
+POST /api/forge/workflows                 Create workflow
+POST /api/forge/workflows/{slug}/run      Run workflow
+GET  /api/exchange/packs                  Available packs
+POST /api/exchange/packs/{slug}/install   Install pack
+```
 
-| Tier | Individual Product | Suite (20 products) |
-|------|-------------------|-------------------|
-| Free | Limited usage | 5 products max |
-| Starter | $9/mo | $19/mo |
-| Pro | $29/mo | $59/mo |
-| Team | $79/mo | $149/mo |
+## Why not LiteLLM?
 
-Suite at $59/mo = $2.95 per tool. Buying 3 individual products costs more than the entire suite.
+| | Stockyard | LiteLLM |
+|---|---|---|
+| Language | Go | Python |
+| Binary | Single static binary | pip install + runtime |
+| Dependencies | Zero | Redis, Postgres |
+| Platform | 6 integrated apps | One proxy |
+| Middleware | 50+ toggleable modules | Limited callbacks |
+| Memory | ~12MB | ~200MB+ |
+| Cold start | <50ms | Seconds |
 
-## Documentation
+## Links
 
-Full docs at [stockyard.dev/docs](https://stockyard.dev/docs):
-
-- [Installation](https://stockyard.dev/docs/install)
-- [Quick Start](https://stockyard.dev/docs/quickstart)
-- [Configuration](https://stockyard.dev/docs/config)
-- [API Reference](https://stockyard.dev/docs/api)
-- [Deployment](https://stockyard.dev/docs/deploy)
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Website:** [stockyard.dev](https://stockyard.dev)
+- **Cloud:** [stockyard.dev/cloud](https://stockyard.dev/cloud)
+- **Docs:** [stockyard.dev/docs](https://stockyard.dev/docs)
+- **Live demo:** [stockyard-production.up.railway.app](https://stockyard-production.up.railway.app/health)
 
 ## License
 

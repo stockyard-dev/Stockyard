@@ -93,3 +93,9 @@ func (s *Server) Shutdown(ctx context.Context) error {
 func (s *Server) Mux() *http.ServeMux {
 	return s.mux
 }
+
+// WrapHandler wraps the server's HTTP handler with middleware.
+// Call after all routes are registered but before Start().
+func (s *Server) WrapHandler(wrapper func(http.Handler) http.Handler) {
+	s.httpServer.Handler = wrapper(s.httpServer.Handler)
+}

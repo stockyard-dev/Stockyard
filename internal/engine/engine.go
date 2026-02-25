@@ -324,6 +324,9 @@ func Boot(pc ProductConfig) {
 		mountAPIServer(srv.Mux(), cfg.DataDir)
 	}
 
+	// Wrap with admin auth (reads STOCKYARD_ADMIN_KEY env var)
+	srv.WrapHandler(adminAuthMiddleware)
+
 	// Start data retention cleanup loop
 	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
 
