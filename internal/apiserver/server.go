@@ -25,13 +25,13 @@ func readAll(r io.Reader) ([]byte, error) {
 
 // Server is the Stockyard API backend HTTP server.
 type Server struct {
-	db      *DB
-	stripe  *StripeClient
-	keyPair *license.KeyPair
-	mailer  Mailer
-	webhook *WebhookHandler
-	mux     *http.ServeMux
-	port    int
+	db       *SqliteDB
+	stripe   *StripeClient
+	keyPair  *license.KeyPair
+	mailer   Mailer
+	webhook  *WebhookHandler
+	mux      *http.ServeMux
+	port     int
 	adminKey string // simple admin API key for protected endpoints
 }
 
@@ -43,7 +43,7 @@ type ServerConfig struct {
 }
 
 // NewServer creates and configures the API backend server.
-func NewServer(cfg ServerConfig, db *DB, stripe *StripeClient, kp *license.KeyPair, mailer Mailer) *Server {
+func NewServer(cfg ServerConfig, db *SqliteDB, stripe *StripeClient, kp *license.KeyPair, mailer Mailer) *Server {
 	s := &Server{
 		db:       db,
 		stripe:   stripe,
@@ -55,6 +55,7 @@ func NewServer(cfg ServerConfig, db *DB, stripe *StripeClient, kp *license.KeyPa
 		adminKey: cfg.AdminKey,
 	}
 
+	s.seedExchange()
 	s.registerRoutes()
 	return s
 }
@@ -84,6 +85,24 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/admin/licenses", s.adminAuth(s.handleAdminLicenses))
 	s.mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
 	s.mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
+
+	// Cloud API
+	s.mux.HandleFunc("POST /api/cloud/signup", s.handleCloudSignup)
+	s.mux.HandleFunc("GET /api/cloud/tenant", s.handleCloudGetTenant)
+	s.mux.HandleFunc("PUT /api/cloud/keys", s.handleCloudUpdateKeys)
+	s.mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
+	s.mux.HandleFunc("GET /api/cloud/usage", s.handleCloudUsage)
+	s.mux.HandleFunc("POST /api/cloud/upgrade", s.handleCloudUpgrade)
+
+	// Exchange API
+	s.mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
+	s.mux.HandleFunc("GET /api/exchange/featured", s.handleExchangeFeatured)
+	s.mux.HandleFunc("GET /api/exchange/stats", s.handleExchangeStats)
+	s.mux.HandleFunc("GET /api/exchange/{slug}", s.handleExchangeGet)
+	s.mux.HandleFunc("POST /api/exchange", s.handleExchangeCreate)
+	s.mux.HandleFunc("POST /api/exchange/{slug}/download", s.handleExchangeDownload)
+	s.mux.HandleFunc("POST /api/exchange/{slug}/star", s.handleExchangeStar)
+	s.mux.HandleFunc("POST /api/exchange/{slug}/fork", s.handleExchangeFork)
 
 	// CORS preflight
 	s.mux.HandleFunc("OPTIONS /", s.handleCORS)
@@ -370,6 +389,8 @@ func (s *Server) handleProductBySlug(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleAdminStats(w http.ResponseWriter, r *http.Request) {
 	stats := s.db.Stats()
 	stats["product_count"] = CatalogCount()
+	stats["cloud"] = s.db.CloudStats()
+	stats["exchange"] = s.db.ExchangeStats()
 	writeOK(w, stats)
 }
 
@@ -495,6 +516,339 @@ func (s *Server) handleAdminRevoke(w http.ResponseWriter, r *http.Request) {
 	s.db.UpdateLicenseStatusByID(rec.ID, "revoked")
 
 	writeOK(w, map[string]any{"status": "revoked", "id": rec.ID})
+}
+
+// --- Cloud endpoints ---
+
+func (s *Server) handleCloudSignup(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Email string `json:"email"`
+		Name  string `json:"name"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+	if req.Email == "" {
+		writeErr(w, http.StatusBadRequest, "email required")
+		return
+	}
+
+	tenant, err := s.db.CreateTenant(req.Email, req.Name)
+	if err != nil {
+		if strings.Contains(err.Error(), "already registered") {
+			writeErr(w, http.StatusConflict, err.Error())
+			return
+		}
+		writeErr(w, http.StatusInternalServerError, "failed to create tenant")
+		return
+	}
+
+	writeOK(w, tenant)
+}
+
+func (s *Server) handleCloudGetTenant(w http.ResponseWriter, r *http.Request) {
+	apiKey := r.Header.Get("Authorization")
+	apiKey = strings.TrimPrefix(apiKey, "Bearer ")
+	if apiKey == "" {
+		apiKey = r.URL.Query().Get("api_key")
+	}
+	if apiKey == "" {
+		writeErr(w, http.StatusUnauthorized, "API key required")
+		return
+	}
+
+	tenant, err := s.db.GetTenantByAPIKey(apiKey)
+	if err != nil {
+		writeErr(w, http.StatusUnauthorized, "invalid API key")
+		return
+	}
+
+	writeOK(w, tenant)
+}
+
+func (s *Server) handleCloudUpdateKeys(w http.ResponseWriter, r *http.Request) {
+	apiKey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if apiKey == "" {
+		writeErr(w, http.StatusUnauthorized, "API key required")
+		return
+	}
+
+	var keys map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&keys); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+
+	if _, err := s.db.GetTenantByAPIKey(apiKey); err != nil {
+		writeErr(w, http.StatusUnauthorized, "invalid API key")
+		return
+	}
+
+	if err := s.db.UpdateProviderKeys(apiKey, keys); err != nil {
+		writeErr(w, http.StatusInternalServerError, "failed to update keys")
+		return
+	}
+
+	writeOK(w, map[string]string{"status": "updated"})
+}
+
+func (s *Server) handleCloudUpdateConfig(w http.ResponseWriter, r *http.Request) {
+	apiKey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if apiKey == "" {
+		writeErr(w, http.StatusUnauthorized, "API key required")
+		return
+	}
+
+	var config map[string]any
+	if err := json.NewDecoder(r.Body).Decode(&config); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+
+	if _, err := s.db.GetTenantByAPIKey(apiKey); err != nil {
+		writeErr(w, http.StatusUnauthorized, "invalid API key")
+		return
+	}
+
+	if err := s.db.UpdateProxyConfig(apiKey, config); err != nil {
+		writeErr(w, http.StatusInternalServerError, "failed to update config")
+		return
+	}
+
+	writeOK(w, map[string]string{"status": "updated"})
+}
+
+func (s *Server) handleCloudUsage(w http.ResponseWriter, r *http.Request) {
+	apiKey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if apiKey == "" {
+		writeErr(w, http.StatusUnauthorized, "API key required")
+		return
+	}
+
+	tenant, err := s.db.GetTenantByAPIKey(apiKey)
+	if err != nil {
+		writeErr(w, http.StatusUnauthorized, "invalid API key")
+		return
+	}
+
+	start := r.URL.Query().Get("start")
+	end := r.URL.Query().Get("end")
+
+	if start == "" || end == "" {
+		// Default to today
+		usage := s.db.GetUsageToday(tenant.ID)
+		writeOK(w, usage)
+		return
+	}
+
+	usage := s.db.GetUsageRange(tenant.ID, start, end)
+	writeOK(w, map[string]any{
+		"tenant_id": tenant.ID,
+		"start":     start,
+		"end":       end,
+		"usage":     usage,
+	})
+}
+
+func (s *Server) handleCloudUpgrade(w http.ResponseWriter, r *http.Request) {
+	apiKey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if apiKey == "" {
+		writeErr(w, http.StatusUnauthorized, "API key required")
+		return
+	}
+
+	tenant, err := s.db.GetTenantByAPIKey(apiKey)
+	if err != nil {
+		writeErr(w, http.StatusUnauthorized, "invalid API key")
+		return
+	}
+
+	if tenant.Plan == "pro" {
+		writeOK(w, map[string]string{"status": "already_pro"})
+		return
+	}
+
+	// Create Stripe checkout for Cloud Pro
+	priceID := getPriceID("cloud", "pro")
+	if priceID == "" {
+		writeErr(w, http.StatusInternalServerError, "cloud pro price not configured")
+		return
+	}
+
+	url, err := s.stripe.CreateCheckoutSession("cloud", "pro", tenant.Email, priceID)
+	if err != nil {
+		writeErr(w, http.StatusInternalServerError, "failed to create checkout")
+		return
+	}
+
+	writeOK(w, map[string]string{"url": url})
+}
+
+// --- Exchange endpoints ---
+
+func (s *Server) handleExchangeList(w http.ResponseWriter, r *http.Request) {
+	itemType := r.URL.Query().Get("type")
+	tag := r.URL.Query().Get("tag")
+	sort := r.URL.Query().Get("sort")
+	limit := 20
+	offset := 0
+
+	if l := r.URL.Query().Get("limit"); l != "" {
+		fmt.Sscanf(l, "%d", &limit)
+	}
+	if o := r.URL.Query().Get("offset"); o != "" {
+		fmt.Sscanf(o, "%d", &offset)
+	}
+
+	items := s.db.ListExchangeItems(itemType, tag, sort, limit, offset)
+	writeOK(w, map[string]any{
+		"count": len(items),
+		"items": items,
+	})
+}
+
+func (s *Server) handleExchangeGet(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	item, err := s.db.GetExchangeItem(slug)
+	if err != nil {
+		writeErr(w, http.StatusNotFound, "item not found")
+		return
+	}
+	writeOK(w, item)
+}
+
+func (s *Server) handleExchangeCreate(w http.ResponseWriter, r *http.Request) {
+	var item ExchangeItem
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+	if item.Slug == "" || item.Title == "" || item.Content == "" {
+		writeErr(w, http.StatusBadRequest, "slug, title, and content required")
+		return
+	}
+
+	if err := s.db.CreateExchangeItem(&item); err != nil {
+		if strings.Contains(err.Error(), "UNIQUE") {
+			writeErr(w, http.StatusConflict, "slug already exists")
+			return
+		}
+		writeErr(w, http.StatusInternalServerError, "failed to create item")
+		return
+	}
+
+	writeOK(w, item)
+}
+
+func (s *Server) handleExchangeDownload(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	if err := s.db.IncrementExchangeDownloads(slug); err != nil {
+		writeErr(w, http.StatusNotFound, "item not found")
+		return
+	}
+	writeOK(w, map[string]string{"status": "downloaded"})
+}
+
+func (s *Server) handleExchangeStar(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	var req struct {
+		Email string `json:"email"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Email == "" {
+		writeErr(w, http.StatusBadRequest, "email required")
+		return
+	}
+
+	stars, starred, err := s.db.ToggleExchangeStar(slug, req.Email)
+	if err != nil {
+		writeErr(w, http.StatusInternalServerError, "failed to toggle star")
+		return
+	}
+
+	writeOK(w, map[string]any{
+		"stars":   stars,
+		"starred": starred,
+	})
+}
+
+func (s *Server) handleExchangeFork(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	var req struct {
+		NewSlug string `json:"new_slug"`
+		Email   string `json:"email"`
+		Name    string `json:"name"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+	if req.NewSlug == "" || req.Email == "" {
+		writeErr(w, http.StatusBadRequest, "new_slug and email required")
+		return
+	}
+
+	fork, err := s.db.ForkExchangeItem(slug, req.NewSlug, req.Email, req.Name)
+	if err != nil {
+		writeErr(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	writeOK(w, fork)
+}
+
+func (s *Server) handleExchangeFeatured(w http.ResponseWriter, r *http.Request) {
+	items := s.db.FeaturedExchangeItems()
+	writeOK(w, map[string]any{
+		"count": len(items),
+		"items": items,
+	})
+}
+
+func (s *Server) handleExchangeStats(w http.ResponseWriter, r *http.Request) {
+	writeOK(w, s.db.ExchangeStats())
+}
+
+// --- Seed Exchange ---
+
+func (s *Server) seedExchange() {
+	if s.db.ExchangeItemCount() > 0 {
+		return
+	}
+
+	seeds := []ExchangeItem{
+		{
+			Slug:        "quickstart-openai",
+			Type:        "config",
+			Title:       "OpenAI Quickstart",
+			Description: "Minimal config to proxy OpenAI with cost capping and rate limiting.",
+			AuthorEmail: "hello@stockyard.dev",
+			AuthorName:  "Stockyard",
+			Content:     "listen: :4000\nproviders:\n  openai:\n    api_key: ${OPENAI_API_KEY}\nmiddleware:\n  - costcap:\n      daily_limit_usd: 10\n  - rateshield:\n      rpm: 60\n",
+			Tags:        []string{"starter", "openai"},
+			Products:    []string{"costcap", "rateshield"},
+			Providers:   []string{"openai"},
+			Status:      "featured",
+		},
+		{
+			Slug:        "multi-provider-fallback",
+			Type:        "chain",
+			Title:       "Multi-Provider Fallback Chain",
+			Description: "Route traffic across OpenAI, Anthropic, and Gemini with automatic fallback.",
+			AuthorEmail: "hello@stockyard.dev",
+			AuthorName:  "Stockyard",
+			Content:     "listen: :4000\nproviders:\n  openai:\n    api_key: ${OPENAI_API_KEY}\n  anthropic:\n    api_key: ${ANTHROPIC_API_KEY}\n  gemini:\n    api_key: ${GEMINI_API_KEY}\nmiddleware:\n  - fallbackrouter:\n      primary: openai\n      fallbacks: [anthropic, gemini]\n  - costcap:\n      daily_limit_usd: 50\n",
+			Tags:        []string{"multi-provider", "fallback", "production"},
+			Products:    []string{"fallbackrouter", "costcap"},
+			Providers:   []string{"openai", "anthropic", "gemini"},
+			Status:      "featured",
+		},
+	}
+
+	for i := range seeds {
+		s.db.CreateExchangeItem(&seeds[i])
+	}
+	log.Printf("exchange: seeded %d starter items", len(seeds))
 }
 
 // --- Helpers ---

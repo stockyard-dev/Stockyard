@@ -13,7 +13,7 @@
 // Optional:
 //
 //	PORT                    HTTP port (default: 8080)
-//	DATABASE_PATH           SQLite database path (default: ./stockyard-api.db)
+//	DATABASE_PATH           SQLite database path (default: ./stockyard-api.sqlite)
 //	STOCKYARD_ADMIN_KEY     Admin API key for protected endpoints
 //	SMTP_HOST               SMTP server for email delivery
 //	SMTP_PORT               SMTP port (default: 587)
@@ -35,6 +35,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/stockyard-dev/stockyard/internal/apiserver"
@@ -79,7 +80,7 @@ func main() {
 
 	dbPath := os.Getenv("DATABASE_PATH")
 	if dbPath == "" {
-		dbPath = "./stockyard-api.db"
+		dbPath = "./stockyard-api.sqlite"
 	}
 
 	// Validate required env vars
@@ -113,11 +114,16 @@ func main() {
 	}
 
 	// Open database
-	db, err := apiserver.OpenDB(dbPath)
+	db, err := apiserver.OpenSqliteDB(dbPath)
 	if err != nil {
 		log.Fatalf("database: %v", err)
 	}
 	defer db.Close()
+
+	// Auto-import any legacy JSON files from the same directory
+	if err := db.ImportLegacyJSON(filepath.Dir(dbPath)); err != nil {
+		log.Printf("legacy import: %v", err)
+	}
 
 	// Initialize components
 	stripeCfg := apiserver.GetStripeConfigFromEnv()

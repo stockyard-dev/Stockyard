@@ -235,14 +235,14 @@ const (
 
 // WebhookHandler processes Stripe webhook events.
 type WebhookHandler struct {
-	db       *DB
+	db       *SqliteDB
 	stripe   *StripeClient
 	keyPair  *license.KeyPair
 	mailer   Mailer
 }
 
 // NewWebhookHandler creates a new webhook processor.
-func NewWebhookHandler(db *DB, stripe *StripeClient, kp *license.KeyPair, mailer Mailer) *WebhookHandler {
+func NewWebhookHandler(db *SqliteDB, stripe *StripeClient, kp *license.KeyPair, mailer Mailer) *WebhookHandler {
 	return &WebhookHandler{
 		db:      db,
 		stripe:  stripe,
