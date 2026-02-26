@@ -58,7 +58,8 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			path == "/account/" ||
 			path == "/success/" ||
 			strings.HasPrefix(path, "/site-assets/") ||
-			path == "/install.sh" {
+			path == "/install.sh" ||
+			path == "/api/license" {
 			next.ServeHTTP(w, r)
 			return
 		}
