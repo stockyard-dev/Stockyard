@@ -39,6 +39,11 @@ type ServerConfig struct {
 	Providers   map[string]provider.Provider
 	PreFlight   StreamPreFlight
 	EmbedCache  EmbeddingCacheProcessor // nil if embedding caching disabled
+
+	// ProviderResolver optionally resolves a provider using per-user keys.
+	// If set, streaming will try this before falling back to the global Providers map.
+	// Signature: func(ctx context.Context, providerName string) (provider.Provider, error)
+	ProviderResolver func(ctx context.Context, name string) (provider.Provider, error)
 }
 
 // Server is the main HTTP server that proxies LLM requests.

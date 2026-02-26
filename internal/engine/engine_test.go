@@ -7,6 +7,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/storage"
+	"github.com/stockyard-dev/stockyard/internal/toggle"
 	"github.com/stockyard-dev/stockyard/internal/tracker"
 )
 
@@ -28,8 +29,9 @@ func TestBuildMiddlewares(t *testing.T) {
 			counter := tracker.NewSpendCounter()
 			broadcaster := dashboard.NewBroadcaster()
 			providers := map[string]provider.Provider{}
+			reg := toggle.New()
 
-			mw := buildMiddlewares(pc, cfg, nil, counter, broadcaster, providers)
+			mw := buildMiddlewares(reg, pc, cfg, nil, counter, broadcaster, providers)
 			if len(mw) == 0 {
 				t.Error("expected at least one middleware")
 			}
@@ -67,7 +69,7 @@ func TestInitProvidersNoKeys(t *testing.T) {
 }
 
 func TestMakeSendHandlerNoProviders(t *testing.T) {
-	handler := makeSendHandler(map[string]provider.Provider{})
+	handler := makeSendHandler(map[string]provider.Provider{}, nil)
 	_, err := handler(nil, &provider.Request{Model: "gpt-4o-mini", Messages: []provider.Message{{Role: "user", Content: "hi"}}})
 	if err == nil {
 		t.Error("expected error with no providers configured")
@@ -99,7 +101,8 @@ func TestLoggingMiddlewareNilDB(t *testing.T) {
 	broadcaster := dashboard.NewBroadcaster()
 
 	// Pass nil DB — should not panic
-	mw := buildMiddlewares(products[0], cfg, nil, counter, broadcaster, map[string]provider.Provider{})
+	reg := toggle.New()
+	mw := buildMiddlewares(reg, products[0], cfg, nil, counter, broadcaster, map[string]provider.Provider{})
 	if len(mw) == 0 {
 		t.Error("expected middlewares even with nil DB")
 	}

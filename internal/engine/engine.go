@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/api"
+	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
 	"github.com/stockyard-dev/stockyard/internal/features"
@@ -253,12 +254,19 @@ func Boot(pc ProductConfig) {
 	// Initialize providers
 	providers := initProviders(cfg)
 
+	// Initialize auth system (users, API keys, provider keys)
+	authStore, err := auth.NewStore(db.Conn())
+	if err != nil {
+		log.Fatalf("auth store: %v", err)
+	}
+	providerFactory := auth.NewProviderFactory(authStore, providers)
+
 	// Initialize shared components
 	counter := tracker.NewSpendCounter()
 	broadcaster := dashboard.NewBroadcaster()
 
 	// Build the send handler (innermost — actually calls the provider)
-	sendHandler := makeSendHandler(providers)
+	sendHandler := makeSendHandler(providers, providerFactory)
 
 	// Create middleware toggle registry (allows runtime enable/disable via API)
 	toggleReg := toggle.New()
@@ -287,12 +295,13 @@ func Boot(pc ProductConfig) {
 	}
 
 	srv := proxy.NewServer(proxy.ServerConfig{
-		Port:        cfg.Port,
-		ProductName: pc.Name,
-		Handler:     handler,
-		Providers:   providers,
-		PreFlight:   preFlight,
-		EmbedCache:  embedCache,
+		Port:             cfg.Port,
+		ProductName:      pc.Name,
+		Handler:          handler,
+		Providers:        providers,
+		PreFlight:        preFlight,
+		EmbedCache:       embedCache,
+		ProviderResolver: providerFactory.ResolveProvider,
 	})
 
 	// Register dashboard, SSE, and management API
@@ -351,6 +360,17 @@ func Boot(pc ProductConfig) {
 		mountAPIServer(srv.Mux(), cfg.DataDir)
 	}
 
+	// Register auth API routes (user management, key management, provider keys)
+	authAPI := auth.NewAPI(authStore)
+	authAPI.Register(srv.Mux())
+
+	// Wrap with self-service auth (/api/auth/me/* uses API key, not admin key)
+	srv.WrapHandler(auth.SelfServiceAuthMiddleware(authStore))
+
+	// Wrap with proxy auth (authenticates /v1/* requests with sk-sy- keys)
+	proxyAuthMode := auth.GetProxyAuthMode()
+	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode))
+
 	// Wrap with admin auth (reads STOCKYARD_ADMIN_KEY env var)
 	srv.WrapHandler(adminAuthMiddleware)
 
@@ -377,6 +397,12 @@ func Boot(pc ProductConfig) {
 	log.Printf("  Proxy:     http://localhost:%d/v1", cfg.Port)
 	log.Printf("  Dashboard: http://localhost:%d/ui", cfg.Port)
 	log.Printf("  API:       http://localhost:%d/api", cfg.Port)
+	log.Printf("  Auth:      http://localhost:%d/api/auth (signup: POST /api/auth/signup)", cfg.Port)
+	if proxyAuthMode == auth.ProxyAuthRequired {
+		log.Printf("  🔒 Proxy auth: REQUIRED (set STOCKYARD_REQUIRE_AUTH=false to disable)")
+	} else {
+		log.Printf("  🔓 Proxy auth: open (set STOCKYARD_REQUIRE_AUTH=true to require API keys)")
+	}
 	if pc.EnableAPIServer {
 		log.Printf("  Billing:   http://localhost:%d/api/checkout", cfg.Port)
 		log.Printf("  Cloud:     http://localhost:%d/api/cloud/signup", cfg.Port)
@@ -392,12 +418,28 @@ func Boot(pc ProductConfig) {
 }
 
 // makeSendHandler creates the innermost handler that sends to the resolved provider.
-func makeSendHandler(providers map[string]provider.Provider) proxy.Handler {
+func makeSendHandler(providers map[string]provider.Provider, factory *auth.ProviderFactory) proxy.Handler {
 	return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 		name := req.Provider
 		if name == "" {
 			name = provider.ProviderForModel(req.Model)
 		}
+
+		// Try user-specific provider first (via factory)
+		if factory != nil {
+			if p, err := factory.ResolveProvider(ctx, name); err == nil && p != nil {
+				resp, err := p.Send(ctx, req)
+				if err != nil {
+					return nil, err
+				}
+				if resp.Provider == "" {
+					resp.Provider = name
+				}
+				return resp, nil
+			}
+		}
+
+		// Fall back to global providers
 		p, ok := providers[name]
 		if !ok {
 			// Try the first available provider as fallback

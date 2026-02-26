@@ -69,9 +69,20 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 	var usedProvider string
 
 	for _, name := range providerChain {
-		p, ok := s.config.Providers[name]
-		if !ok {
-			continue
+		// Try user-specific provider first (via resolver)
+		var p provider.Provider
+		if s.config.ProviderResolver != nil {
+			if resolved, err := s.config.ProviderResolver(r.Context(), name); err == nil && resolved != nil {
+				p = resolved
+			}
+		}
+		// Fall back to global providers
+		if p == nil {
+			var ok bool
+			p, ok = s.config.Providers[name]
+			if !ok {
+				continue
+			}
 		}
 
 		stream, streamErr = p.SendStream(r.Context(), req)

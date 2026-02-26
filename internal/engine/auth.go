@@ -103,8 +103,14 @@ func extractAdminKey(r *http.Request) string {
 }
 
 // isPublicRoute returns true for routes that should be accessible without admin auth.
-// These are read-only informational endpoints and the cloud signup endpoint.
+// These are read-only informational endpoints, the cloud signup endpoint,
+// and self-service auth routes (which use their own API key auth).
 func isPublicRoute(method, path string) bool {
+	// Self-service auth routes (authenticated by API key, not admin key)
+	if strings.HasPrefix(path, "/api/auth/me") {
+		return true
+	}
+
 	// Public GET endpoints (informational / marketing)
 	if method == "GET" {
 		switch {
@@ -122,6 +128,10 @@ func isPublicRoute(method, path string) bool {
 	}
 	// Cloud signup (POST /api/cloud/tenants)
 	if method == "POST" && path == "/api/cloud/tenants" {
+		return true
+	}
+	// User signup (POST /api/auth/signup)
+	if method == "POST" && path == "/api/auth/signup" {
 		return true
 	}
 	return false
