@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stockyard Playground — Try it Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--bg4:#382f25;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;--green:#34d399;--red:#ef4444;--blue:#60a5fa;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);overflow:hidden;height:100vh}
+a{color:var(--rust-light);text-decoration:none}
+
+/* NAV */
+.nav{height:48px;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bg3);background:var(--bg2);flex-shrink:0}
+.nav-left{display:flex;align-items:center;gap:1.5rem}
+.nav-brand{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
+.nav-tag{font-family:var(--font-mono);font-size:0.6rem;background:var(--rust);color:var(--cream);padding:2px 8px;letter-spacing:1px;text-transform:uppercase}
+.nav-right{display:flex;gap:1rem;align-items:center}
+.nav-link{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)}
+.nav-link:hover{color:var(--rust-light)}
+
+/* SETUP OVERLAY */
+.setup{position:fixed;inset:0;background:rgba(10,8,6,0.92);z-index:100;display:flex;align-items:center;justify-content:center}
+.setup-box{background:var(--bg2);border:1px solid var(--bg3);padding:2.5rem;max-width:520px;width:90%}
+.setup h2{font-size:1.4rem;margin-bottom:0.3rem}
+.setup-sub{color:var(--cream-dim);font-style:italic;font-size:0.9rem;margin-bottom:2rem}
+.setup-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem;display:block}
+.setup-input{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;padding:0.7rem 1rem;margin-bottom:0.6rem;outline:none}
+.setup-input:focus{border-color:var(--rust)}
+.setup-detect{font-family:var(--font-mono);font-size:0.75rem;color:var(--green);margin-bottom:1.5rem;min-height:1.2em}
+.setup-detect.err{color:var(--red)}
+.setup-model{margin-bottom:1.5rem}
+.setup-model select{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;padding:0.7rem 1rem;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer}
+.setup-btn{width:100%;background:var(--rust);color:var(--cream);border:none;font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:background 0.2s}
+.setup-btn:hover{background:var(--rust-light)}
+.setup-btn:disabled{opacity:0.5;cursor:not-allowed}
+.setup-note{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:1.2rem;line-height:1.6;text-align:center}
+.setup-providers{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem}
+.setup-prov{font-family:var(--font-mono);font-size:0.65rem;padding:3px 8px;border:1px solid var(--bg3);color:var(--cream-dim);background:var(--bg)}
+.setup-prov.active{border-color:var(--green);color:var(--green)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 340px;height:calc(100vh - 48px)}
+
+/* CHAT PANEL */
+.chat{display:flex;flex-direction:column;border-right:1px solid var(--bg3)}
+.chat-header{padding:0.8rem 1.2rem;border-bottom:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;background:var(--bg2);flex-shrink:0}
+.chat-model{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream)}
+.chat-provider{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);padding:2px 6px;border:1px solid var(--bg3)}
+.chat-messages{flex:1;overflow-y:auto;padding:1.5rem}
+.msg{margin-bottom:1.5rem;max-width:85%}
+.msg-user{margin-left:auto}
+.msg-role{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
+.msg-user .msg-role{text-align:right;color:var(--rust-light)}
+.msg-body{font-size:0.9rem;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.msg-user .msg-body{background:var(--bg2);padding:0.8rem 1rem;border:1px solid var(--bg3)}
+.msg-assistant .msg-body{padding:0.8rem 0}
+.msg-meta{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);margin-top:0.4rem}
+.msg-user .msg-meta{text-align:right}
+.msg-error{color:var(--red);font-family:var(--font-mono);font-size:0.8rem;padding:0.8rem;border:1px solid var(--red);background:rgba(239,68,68,0.1)}
+.chat-typing{padding:0.8rem 1.5rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)}
+.chat-input-wrap{padding:1rem;border-top:1px solid var(--bg3);background:var(--bg2);flex-shrink:0}
+.chat-input-row{display:flex;gap:0.5rem}
+.chat-input{flex:1;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-serif);font-size:0.9rem;padding:0.7rem 1rem;outline:none;resize:none;min-height:44px;max-height:120px}
+.chat-input:focus{border-color:var(--rust)}
+.chat-send{background:var(--rust);color:var(--cream);border:none;font-family:var(--font-mono);font-size:0.8rem;padding:0 1.2rem;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.chat-send:hover{background:var(--rust-light)}
+.chat-send:disabled{opacity:0.5;cursor:not-allowed}
+
+/* RIGHT PANEL */
+.panel{display:flex;flex-direction:column;overflow:hidden;background:var(--bg2)}
+.panel-tabs{display:flex;border-bottom:1px solid var(--bg3);flex-shrink:0}
+.panel-tab{flex:1;padding:0.6rem 0.5rem;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;text-align:center;cursor:pointer;color:var(--cream-dim);border-bottom:2px solid transparent;transition:all 0.2s;background:transparent;border-left:none;border-right:none;border-top:none}
+.panel-tab:hover{color:var(--cream)}
+.panel-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.panel-content{flex:1;overflow-y:auto;padding:1rem}
+.panel-empty{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);text-align:center;padding:2rem 1rem}
+
+/* TRACES TAB */
+.trace{padding:0.7rem;border:1px solid var(--bg3);margin-bottom:0.5rem;cursor:pointer;transition:border-color 0.2s;background:var(--bg)}
+.trace:hover{border-color:var(--leather)}
+.trace-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem}
+.trace-model{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream)}
+.trace-status{font-family:var(--font-mono);font-size:0.6rem;padding:1px 5px}
+.trace-status.ok{color:var(--green);border:1px solid var(--green)}
+.trace-status.err{color:var(--red);border:1px solid var(--red)}
+.trace-stats{display:flex;gap:0.8rem;font-family:var(--font-mono);font-size:0.65rem;color:var(--leather-light)}
+.trace-stat .label{color:var(--leather)}
+
+/* MODULES TAB */
+.mod{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.6rem;border-bottom:1px solid var(--bg3)}
+.mod-name{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream)}
+.mod-cat{font-family:var(--font-mono);font-size:0.55rem;color:var(--leather)}
+.mod-toggle{position:relative;width:32px;height:18px;cursor:pointer}
+.mod-toggle input{opacity:0;width:0;height:0}
+.mod-slider{position:absolute;inset:0;background:var(--bg);border:1px solid var(--bg3);border-radius:9px;transition:all 0.2s}
+.mod-slider::before{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--cream-dim);left:2px;top:2px;transition:all 0.2s}
+.mod-toggle input:checked+.mod-slider{background:var(--rust-dark);border-color:var(--rust)}
+.mod-toggle input:checked+.mod-slider::before{transform:translateX(14px);background:var(--cream)}
+.mod-filter{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem;margin-bottom:0.8rem;outline:none}
+
+/* EXPERIMENT TAB */
+.exp-form{display:flex;flex-direction:column;gap:0.8rem}
+.exp-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem;display:block}
+.exp-models{display:flex;flex-wrap:wrap;gap:0.3rem}
+.exp-model-chip{font-family:var(--font-mono);font-size:0.65rem;padding:3px 8px;border:1px solid var(--bg3);color:var(--cream-dim);cursor:pointer;background:var(--bg);transition:all 0.2s}
+.exp-model-chip.selected{border-color:var(--rust);color:var(--cream);background:var(--rust-dark)}
+.exp-select{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem;outline:none}
+.exp-btn{background:var(--gold);color:var(--bg);border:none;font-family:var(--font-mono);font-size:0.75rem;padding:0.6rem;cursor:pointer;letter-spacing:1px;text-transform:uppercase;width:100%}
+.exp-btn:hover{opacity:0.9}
+.exp-btn:disabled{opacity:0.5;cursor:not-allowed}
+.exp-result{margin-top:0.8rem;padding:0.8rem;border:1px solid var(--bg3);background:var(--bg)}
+.exp-result h4{font-family:var(--font-mono);font-size:0.7rem;color:var(--gold);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px}
+.exp-variant{padding:0.5rem 0;border-bottom:1px solid var(--bg3)}
+.exp-variant:last-child{border-bottom:none}
+.exp-variant-head{display:flex;justify-content:space-between;align-items:center}
+.exp-variant-model{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream)}
+.exp-winner-badge{font-family:var(--font-mono);font-size:0.55rem;background:var(--gold);color:var(--bg);padding:1px 6px;letter-spacing:1px}
+.exp-variant-stats{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather-light);margin-top:0.2rem}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--bg4)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}
+  .panel{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-left">
+    <a href="/" class="nav-brand">Stockyard</a>
+    <span class="nav-tag">Playground</span>
+  </div>
+  <div class="nav-right">
+    <a href="/ui" class="nav-link">Console</a>
+    <a href="https://github.com/stockyard-dev/stockyard" class="nav-link">GitHub</a>
+    <button onclick="resetPlayground()" class="nav-link" style="background:none;border:none;cursor:pointer;font:inherit">Reset</button>
+  </div>
+</nav>
+
+<!-- SETUP -->
+<div class="setup" id="setup">
+  <div class="setup-box">
+    <h2>Try Stockyard Live</h2>
+    <p class="setup-sub">Paste your API key. Your first request routes through 50+ middleware modules. No signup. No data stored.</p>
+
+    <label class="setup-label">Your API Key</label>
+    <input type="password" class="setup-input" id="apiKey" placeholder="sk-... or sk-ant-... or gsk_..." autocomplete="off" spellcheck="false">
+    <div class="setup-detect" id="detect"></div>
+
+    <label class="setup-label">Supported Providers</label>
+    <div class="setup-providers" id="provBadges"></div>
+
+    <div class="setup-model">
+      <label class="setup-label">Model</label>
+      <select class="setup-input" id="modelSelect" style="padding:0.7rem">
+        <option value="">— paste key first —</option>
+      </select>
+    </div>
+
+    <button class="setup-btn" id="startBtn" disabled onclick="startPlayground()">Launch Playground</button>
+    <p class="setup-note">Your key is sent directly to the provider through Stockyard's proxy.<br>Keys are never stored. Session expires when you close this tab.</p>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout" id="main" style="display:none">
+  <!-- CHAT -->
+  <div class="chat">
+    <div class="chat-header">
+      <span class="chat-model" id="activeModel">—</span>
+      <span class="chat-provider" id="activeProvider">—</span>
+    </div>
+    <div class="chat-messages" id="messages"></div>
+    <div class="chat-input-wrap">
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" rows="1" placeholder="Send a message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+        <button class="chat-send" id="sendBtn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel">
+    <div class="panel-tabs">
+      <button class="panel-tab active" onclick="showTab('traces')">Traces</button>
+      <button class="panel-tab" onclick="showTab('modules')">Modules</button>
+      <button class="panel-tab" onclick="showTab('experiment')">A/B Test</button>
+    </div>
+    <div class="panel-content" id="panelContent">
+      <div class="panel-empty">Send a message to see traces appear here.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ─────────────────────────────────────────────────────
+const state = {
+  apiKey: '',
+  provider: '',
+  model: '',
+  messages: [],     // {role, content, meta}
+  traces: [],
+  modules: [],
+  currentTab: 'traces',
+  sending: false,
+  experimentModels: new Set()
+};
+
+const PROVIDERS = {
+  openai:     { prefix: ['sk-proj-','sk-svcacct-','sk-'], label: 'OpenAI', models: ['gpt-4o','gpt-4o-mini','gpt-4.1','gpt-4.1-mini','gpt-4.1-nano','o3-mini'] },
+  anthropic:  { prefix: ['sk-ant-'], label: 'Anthropic', models: ['claude-sonnet-4-5-20250929','claude-haiku-4-5-20251001'] },
+  groq:       { prefix: ['gsk_'], label: 'Groq', models: ['llama-3.3-70b-versatile','llama-3.1-8b-instant','mixtral-8x7b-32768'] },
+  fireworks:  { prefix: ['fw_'], label: 'Fireworks', models: ['accounts/fireworks/models/llama-v3p3-70b-instruct'] },
+  perplexity: { prefix: ['pplx-'], label: 'Perplexity', models: ['sonar-pro','sonar'] },
+  xai:        { prefix: ['xai-'], label: 'xAI', models: ['grok-3','grok-3-mini','grok-2'] },
+  mistral:    { prefix: [], label: 'Mistral', models: ['mistral-large-latest','mistral-small-latest','codestral-latest'] },
+  deepseek:   { prefix: [], label: 'DeepSeek', models: ['deepseek-chat','deepseek-reasoner'] },
+  together:   { prefix: [], label: 'Together', models: ['meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo'] },
+  cohere:     { prefix: [], label: 'Cohere', models: ['command-r-plus','command-r'] },
+};
+
+const BASE = window.location.origin;
+let adminKey = '';
+
+// ─── SETUP ─────────────────────────────────────────────────────
+function initSetup() {
+  // Show provider badges
+  const badges = document.getElementById('provBadges');
+  Object.entries(PROVIDERS).forEach(([key, p]) => {
+    const el = document.createElement('span');
+    el.className = 'setup-prov';
+    el.id = 'prov-' + key;
+    el.textContent = p.label;
+    badges.appendChild(el);
+  });
+
+  document.getElementById('apiKey').addEventListener('input', onKeyInput);
+}
+
+function detectProvider(key) {
+  if (!key) return '';
+  // Order matters: check longer prefixes first
+  for (const [name, p] of Object.entries(PROVIDERS)) {
+    for (const pfx of p.prefix) {
+      if (key.startsWith(pfx)) return name;
+    }
+  }
+  return '';
+}
+
+function onKeyInput(e) {
+  const key = e.target.value.trim();
+  const det = document.getElementById('detect');
+  const btn = document.getElementById('startBtn');
+  const sel = document.getElementById('modelSelect');
+
+  // Reset all badges
+  document.querySelectorAll('.setup-prov').forEach(b => b.classList.remove('active'));
+
+  if (!key) {
+    det.textContent = '';
+    det.className = 'setup-detect';
+    btn.disabled = true;
+    sel.innerHTML = '<option value="">— paste key first —</option>';
+    return;
+  }
+
+  const prov = detectProvider(key);
+  if (prov) {
+    det.textContent = '✓ Detected: ' + PROVIDERS[prov].label;
+    det.className = 'setup-detect';
+    document.getElementById('prov-' + prov).classList.add('active');
+
+    // Populate models
+    sel.innerHTML = '';
+    PROVIDERS[prov].models.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      sel.appendChild(opt);
+    });
+    btn.disabled = false;
+    state.provider = prov;
+  } else {
+    det.textContent = 'Provider not auto-detected. Enter model name manually or use a supported key prefix.';
+    det.className = 'setup-detect err';
+    // Show all models
+    sel.innerHTML = '<option value="">Select a model...</option>';
+    Object.values(PROVIDERS).forEach(p => {
+      p.models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m; opt.textContent = m;
+        sel.appendChild(opt);
+      });
+    });
+    btn.disabled = false;
+    state.provider = 'openai'; // default fallback
+  }
+}
+
+function startPlayground() {
+  const key = document.getElementById('apiKey').value.trim();
+  const model = document.getElementById('modelSelect').value;
+  if (!key || !model) return;
+
+  state.apiKey = key;
+  state.model = model;
+
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main').style.display = 'grid';
+  document.getElementById('activeModel').textContent = model;
+  document.getElementById('activeProvider').textContent = PROVIDERS[state.provider]?.label || state.provider;
+  document.getElementById('chatInput').focus();
+
+  loadModules();
+}
+
+function resetPlayground() {
+  state.apiKey = '';
+  state.provider = '';
+  state.model = '';
+  state.messages = [];
+  state.traces = [];
+  state.sending = false;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('apiKey').value = '';
+  document.getElementById('setup').style.display = 'flex';
+  document.getElementById('main').style.display = 'none';
+}
+
+// ─── CHAT ──────────────────────────────────────────────────────
+async function sendMessage() {
+  if (state.sending) return;
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  state.sending = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  // Add user message
+  addMessage('user', text);
+
+  // Build request
+  const msgs = state.messages.map(m => ({role: m.role, content: m.content}));
+  const start = performance.now();
+
+  try {
+    const resp = await fetch(BASE + '/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + state.apiKey,
+      },
+      body: JSON.stringify({
+        model: state.model,
+        messages: msgs,
+        stream: true,
+      }),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.text();
+      addMessage('error', 'Error ' + resp.status + ': ' + err);
+      return;
+    }
+
+    // Stream SSE
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let assistantContent = '';
+    let buffer = '';
+    const msgEl = addMessage('assistant', '', true);
+
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, {stream: true});
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6);
+        if (data === '[DONE]') break;
+
+        try {
+          const chunk = JSON.parse(data);
+          const delta = chunk.choices?.[0]?.delta?.content;
+          if (delta) {
+            assistantContent += delta;
+            msgEl.querySelector('.msg-body').textContent = assistantContent;
+            // Auto-scroll
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+          }
+        } catch(e) {}
+      }
+    }
+
+    const latency = Math.round(performance.now() - start);
+    state.messages.push({role: 'assistant', content: assistantContent});
+
+    // Add meta
+    msgEl.querySelector('.msg-meta').textContent = latency + 'ms · ' + state.model;
+
+    // Add trace
+    addTrace({
+      model: state.model,
+      provider: state.provider,
+      status: 'ok',
+      latency_ms: latency,
+      tokens_est: Math.round(assistantContent.length / 4),
+    });
+
+  } catch(e) {
+    addMessage('error', 'Request failed: ' + e.message);
+    addTrace({
+      model: state.model,
+      provider: state.provider,
+      status: 'error',
+      latency_ms: Math.round(performance.now() - start),
+      error: e.message,
+    });
+  } finally {
+    state.sending = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('chatInput').focus();
+  }
+}
+
+function addMessage(role, content, streaming = false) {
+  if (role === 'user') {
+    state.messages.push({role, content});
+  }
+
+  const el = document.createElement('div');
+  el.className = 'msg msg-' + role;
+
+  if (role === 'error') {
+    el.innerHTML = '<div class="msg-error">' + escapeHtml(content) + '</div>';
+  } else {
+    el.innerHTML = `
+      <div class="msg-role">${role}</div>
+      <div class="msg-body">${escapeHtml(content)}</div>
+      <div class="msg-meta">${streaming ? '...' : ''}</div>
+    `;
+  }
+
+  document.getElementById('messages').appendChild(el);
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+  return el;
+}
+
+function addTrace(t) {
+  state.traces.unshift(t);
+  if (state.currentTab === 'traces') renderTraces();
+}
+
+// ─── PANEL TABS ────────────────────────────────────────────────
+function showTab(tab) {
+  state.currentTab = tab;
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (tab === 'traces') renderTraces();
+  else if (tab === 'modules') renderModules();
+  else if (tab === 'experiment') renderExperiment();
+}
+
+// ─── TRACES ────────────────────────────────────────────────────
+function renderTraces() {
+  const el = document.getElementById('panelContent');
+  if (state.traces.length === 0) {
+    el.innerHTML = '<div class="panel-empty">Send a message to see traces appear here.</div>';
+    return;
+  }
+
+  el.innerHTML = state.traces.map((t, i) => `
+    <div class="trace">
+      <div class="trace-head">
+        <span class="trace-model">${escapeHtml(t.model)}</span>
+        <span class="trace-status ${t.status === 'ok' ? 'ok' : 'err'}">${t.status}</span>
+      </div>
+      <div class="trace-stats">
+        <span class="trace-stat"><span class="label">latency</span> ${t.latency_ms}ms</span>
+        <span class="trace-stat"><span class="label">tokens</span> ~${t.tokens_est || 0}</span>
+        <span class="trace-stat"><span class="label">via</span> ${t.provider}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── MODULES ───────────────────────────────────────────────────
+async function loadModules() {
+  try {
+    const resp = await fetch(BASE + '/api/proxy/modules');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    state.modules = data.modules || [];
+  } catch(e) {
+    state.modules = [];
+  }
+}
+
+function renderModules() {
+  const el = document.getElementById('panelContent');
+  if (state.modules.length === 0) {
+    el.innerHTML = '<div class="panel-empty">No modules loaded.</div>';
+    return;
+  }
+
+  const filter = '<input class="mod-filter" placeholder="Filter modules..." oninput="filterModules(this.value)">';
+  const mods = state.modules.map(m => `
+    <div class="mod" data-name="${m.name}" data-cat="${m.category}">
+      <div>
+        <div class="mod-name">${m.name}</div>
+        <div class="mod-cat">${m.category}</div>
+      </div>
+      <label class="mod-toggle">
+        <input type="checkbox" ${m.enabled ? 'checked' : ''} onchange="toggleModule('${m.name}', this.checked)">
+        <span class="mod-slider"></span>
+      </label>
+    </div>
+  `).join('');
+
+  el.innerHTML = filter + mods;
+}
+
+function filterModules(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.mod').forEach(el => {
+    const name = el.dataset.name.toLowerCase();
+    const cat = el.dataset.cat.toLowerCase();
+    el.style.display = (name.includes(q) || cat.includes(q)) ? 'flex' : 'none';
+  });
+}
+
+async function toggleModule(name, enabled) {
+  try {
+    await fetch(BASE + '/api/proxy/modules/' + name, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({enabled}),
+    });
+    // Update local state
+    const m = state.modules.find(m => m.name === name);
+    if (m) m.enabled = enabled;
+  } catch(e) {}
+}
+
+// ─── EXPERIMENT ────────────────────────────────────────────────
+function renderExperiment() {
+  const el = document.getElementById('panelContent');
+
+  // Get all available models for the detected provider + a few popular cross-provider ones
+  const allModels = [];
+  const seen = new Set();
+  // Current provider first
+  if (PROVIDERS[state.provider]) {
+    PROVIDERS[state.provider].models.forEach(m => { if (!seen.has(m)) { seen.add(m); allModels.push(m); } });
+  }
+  // Add all others
+  Object.values(PROVIDERS).forEach(p => {
+    p.models.forEach(m => { if (!seen.has(m)) { seen.add(m); allModels.push(m); } });
+  });
+
+  const chips = allModels.map(m =>
+    `<span class="exp-model-chip ${state.experimentModels.has(m) ? 'selected' : ''}"
+           onclick="toggleExpModel('${m}', this)">${m.split('/').pop()}</span>`
+  ).join('');
+
+  el.innerHTML = `
+    <div class="exp-form">
+      <div>
+        <label class="exp-label">Select Models to Compare</label>
+        <div class="exp-models">${chips}</div>
+      </div>
+      <div>
+        <label class="exp-label">Evaluation Method</label>
+        <select class="exp-select" id="expEval">
+          <option value="">None (compare by cost)</option>
+          <option value="length">Length (longer = better)</option>
+          <option value="concise">Concise (shorter = better)</option>
+          <option value="contains">Contains keyword</option>
+          <option value="json">Valid JSON output</option>
+        </select>
+      </div>
+      <div>
+        <label class="exp-label">Runs per Model</label>
+        <select class="exp-select" id="expRuns">
+          <option value="1">1</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <button class="exp-btn" id="expBtn" onclick="runExperiment()">
+        Run A/B Test with Last Message
+      </button>
+      <div id="expResults"></div>
+    </div>
+  `;
+}
+
+function toggleExpModel(model, el) {
+  if (state.experimentModels.has(model)) {
+    state.experimentModels.delete(model);
+    el.classList.remove('selected');
+  } else {
+    state.experimentModels.add(model);
+    el.classList.add('selected');
+  }
+}
+
+async function runExperiment() {
+  const models = Array.from(state.experimentModels);
+  if (models.length < 2) {
+    document.getElementById('expResults').innerHTML =
+      '<div class="msg-error" style="margin-top:0.5rem;font-size:0.75rem">Select at least 2 models to compare.</div>';
+    return;
+  }
+
+  const lastUser = [...state.messages].reverse().find(m => m.role === 'user');
+  if (!lastUser) {
+    document.getElementById('expResults').innerHTML =
+      '<div class="msg-error" style="margin-top:0.5rem;font-size:0.75rem">Send a message first, then run the A/B test.</div>';
+    return;
+  }
+
+  const evalMethod = document.getElementById('expEval').value;
+  const runs = parseInt(document.getElementById('expRuns').value);
+  const btn = document.getElementById('expBtn');
+  btn.disabled = true;
+  btn.textContent = 'Running...';
+  document.getElementById('expResults').innerHTML =
+    '<div class="panel-empty">Sending requests to ' + models.length + ' models × ' + runs + ' runs...</div>';
+
+  const totalStart = performance.now();
+  const variants = [];
+
+  for (const model of models) {
+    const variant = { model, runs: [], errors: 0, avg_latency_ms: 0, avg_tokens_out: 0, avg_cost_usd: 0, eval_score: 0 };
+    let totalLat = 0, totalTok = 0, totalEval = 0;
+
+    for (let i = 0; i < runs; i++) {
+      try {
+        const start = performance.now();
+        const resp = await fetch(BASE + '/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + state.apiKey,
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{role: 'user', content: lastUser.content}],
+          }),
+        });
+
+        const latency = Math.round(performance.now() - start);
+
+        if (!resp.ok) {
+          variant.errors++;
+          continue;
+        }
+
+        const data = await resp.json();
+        const content = data.choices?.[0]?.message?.content || '';
+        const tokOut = data.usage?.completion_tokens || Math.round(content.length / 4);
+
+        let score = 1.0;
+        if (evalMethod === 'length') score = Math.min(content.length / 2000, 1);
+        else if (evalMethod === 'concise') score = Math.max(1 - content.length / 2000, 0);
+        else if (evalMethod === 'json') { try { JSON.parse(content); score = 1; } catch(e) { score = 0; } }
+        else if (evalMethod === 'contains') score = content.toLowerCase().includes((document.getElementById('expEvalArg')?.value || '').toLowerCase()) ? 1 : 0;
+
+        totalLat += latency;
+        totalTok += tokOut;
+        totalEval += score;
+        variant.runs.push({ latency, tokens_out: tokOut, score, content: content.slice(0, 200) });
+
+      } catch(e) {
+        variant.errors++;
+      }
+    }
+
+    const good = runs - variant.errors;
+    if (good > 0) {
+      variant.avg_latency_ms = totalLat / good;
+      variant.avg_tokens_out = Math.round(totalTok / good);
+      variant.eval_score = totalEval / good;
+    }
+    variants.push(variant);
+  }
+
+  // Determine winner
+  let winner = '';
+  let bestScore = -1;
+  for (const v of variants) {
+    if (v.errors === 0 && v.eval_score > bestScore) {
+      bestScore = v.eval_score;
+      winner = v.model;
+    }
+  }
+  if (!winner && evalMethod === '') {
+    // Pick by lowest latency
+    let bestLat = Infinity;
+    for (const v of variants) {
+      if (v.errors === 0 && v.avg_latency_ms < bestLat) {
+        bestLat = v.avg_latency_ms;
+        winner = v.model;
+      }
+    }
+  }
+
+  const totalDuration = Math.round(performance.now() - totalStart);
+
+  renderExpResults({
+    name: 'playground-' + Date.now(),
+    variants,
+    winner,
+    total_cost_usd: 0,
+    duration_ms: totalDuration,
+  });
+
+  // Add traces for each variant
+  for (const v of variants) {
+    addTrace({
+      model: v.model + ' (A/B)',
+      provider: state.provider,
+      status: v.errors > 0 ? 'error' : 'ok',
+      latency_ms: Math.round(v.avg_latency_ms),
+      tokens_est: v.avg_tokens_out,
+    });
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Run A/B Test with Last Message';
+}
+
+function renderExpResults(data) {
+  const el = document.getElementById('expResults');
+  if (!data.variants || data.variants.length === 0) {
+    el.innerHTML = '<div class="panel-empty">No results.</div>';
+    return;
+  }
+
+  const variants = data.variants.map(v => `
+    <div class="exp-variant">
+      <div class="exp-variant-head">
+        <span class="exp-variant-model">${escapeHtml(v.model)}</span>
+        ${v.model === data.winner ? '<span class="exp-winner-badge">WINNER</span>' : ''}
+      </div>
+      <div class="exp-variant-stats">
+        ${Math.round(v.avg_latency_ms)}ms · $${v.avg_cost_usd.toFixed(5)} · ${v.avg_tokens_out} tok
+        ${v.errors > 0 ? ' · <span style="color:var(--red)">' + v.errors + ' errors</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+
+  el.innerHTML = `
+    <div class="exp-result">
+      <h4>Results — ${escapeHtml(data.name)}</h4>
+      ${variants}
+      <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);margin-top:0.5rem;text-align:right">
+        total: $${data.total_cost_usd.toFixed(5)} · ${Math.round(data.duration_ms)}ms
+      </div>
+    </div>
+  `;
+}
+
+// ─── UTILS ─────────────────────────────────────────────────────
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── INIT ──────────────────────────────────────────────────────
+initSetup();
+</script>
+</body>
+</html>

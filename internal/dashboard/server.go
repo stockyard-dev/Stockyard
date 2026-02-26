@@ -172,6 +172,22 @@ func Register(mux *http.ServeMux, product string) {
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Write(rendered)
 	})
+
+	// Serve the playground (public, no auth)
+	pgBytes, pgErr := staticFiles.ReadFile("static/playground.html")
+	if pgErr == nil {
+		pgHTML := pgBytes
+		mux.HandleFunc("GET /playground", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Header().Set("Cache-Control", "no-cache")
+			w.Write(pgHTML)
+		})
+		mux.HandleFunc("GET /playground/", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Header().Set("Cache-Control", "no-cache")
+			w.Write(pgHTML)
+		})
+	}
 }
 
 func fallbackHTML(product string) string {

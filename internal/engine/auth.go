@@ -45,7 +45,9 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 		if strings.HasPrefix(path, "/v1/") ||
 			path == "/health" ||
 			path == "/ui" ||
-			strings.HasPrefix(path, "/ui/") {
+			strings.HasPrefix(path, "/ui/") ||
+			path == "/playground" ||
+			strings.HasPrefix(path, "/playground/") {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -111,11 +113,13 @@ func isPublicRoute(method, path string) bool {
 		return true
 	}
 
-	// Public GET endpoints (informational / marketing)
+	// Public GET endpoints (informational / marketing / playground)
 	if method == "GET" {
 		switch {
 		case path == "/api/apps":
 			return true
+		case path == "/api/proxy/modules":
+			return true // Playground needs module list
 		case path == "/api/exchange/packs":
 			return true
 		case strings.HasPrefix(path, "/api/exchange/packs/") && !strings.Contains(path, "/install"):
@@ -142,6 +146,10 @@ func isPublicRoute(method, path string) bool {
 	}
 	// Stripe webhooks
 	if method == "POST" && path == "/webhooks/stripe" {
+		return true
+	}
+	// Module toggles (playground)
+	if method == "PUT" && strings.HasPrefix(path, "/api/proxy/modules/") {
 		return true
 	}
 	return false
