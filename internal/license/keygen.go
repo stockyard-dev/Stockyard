@@ -97,17 +97,6 @@ func (kp *KeyPair) Issue(req IssueRequest) (string, error) {
 	return key, nil
 }
 
-// IssueStarter creates a starter-tier key for the given product.
-func (kp *KeyPair) IssueStarter(product, customerID, email string) (string, error) {
-	return kp.Issue(IssueRequest{
-		Product:    product,
-		Tier:       TierStarter,
-		CustomerID: customerID,
-		Email:      email,
-		Duration:   365 * 24 * time.Hour, // 1 year
-	})
-}
-
 // IssuePro creates a pro-tier key for the given product.
 func (kp *KeyPair) IssuePro(product, customerID, email string) (string, error) {
 	return kp.Issue(IssueRequest{
@@ -119,29 +108,25 @@ func (kp *KeyPair) IssuePro(product, customerID, email string) (string, error) {
 	})
 }
 
-// IssueTeam creates a team-tier key for the given product with seat count.
-func (kp *KeyPair) IssueTeam(product, customerID, email string, seats int) (string, error) {
+// IssueCloud creates a cloud-tier key.
+func (kp *KeyPair) IssueCloud(customerID, email string) (string, error) {
 	return kp.Issue(IssueRequest{
-		Product:    product,
-		Tier:       TierTeam,
+		Product:    "stockyard",
+		Tier:       TierCloud,
+		CustomerID: customerID,
+		Email:      email,
+		Duration:   365 * 24 * time.Hour,
+	})
+}
+
+// IssueEnterprise creates an enterprise-tier key with seat count.
+func (kp *KeyPair) IssueEnterprise(customerID, email string, seats int) (string, error) {
+	return kp.Issue(IssueRequest{
+		Product:    "stockyard",
+		Tier:       TierEnterprise,
 		CustomerID: customerID,
 		Email:      email,
 		Duration:   365 * 24 * time.Hour,
 		MaxSeats:   seats,
 	})
-}
-
-// IssueSuiteStarter creates a starter-tier suite key.
-func (kp *KeyPair) IssueSuiteStarter(customerID, email string) (string, error) {
-	return kp.IssueStarter("stockyard", customerID, email)
-}
-
-// IssueSuitePro creates a pro-tier suite key.
-func (kp *KeyPair) IssueSuitePro(customerID, email string) (string, error) {
-	return kp.IssuePro("stockyard", customerID, email)
-}
-
-// IssueSuiteTeam creates a team-tier suite key.
-func (kp *KeyPair) IssueSuiteTeam(customerID, email string, seats int) (string, error) {
-	return kp.IssueTeam("stockyard", customerID, email, seats)
 }

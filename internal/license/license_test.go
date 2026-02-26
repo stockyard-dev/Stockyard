@@ -73,7 +73,7 @@ func TestExpiredKey(t *testing.T) {
 		Valid: true,
 		Payload: Payload{
 			Product:    "costcap",
-			Tier:       TierStarter,
+			Tier:       TierPro,
 			CustomerID: "cus_expired",
 			ExpiresAt:  time.Now().Add(-1 * time.Hour).Unix(),
 		},
@@ -85,7 +85,7 @@ func TestExpiredKey(t *testing.T) {
 
 	// Also test that enforcer treats expired license as free tier
 	e := NewEnforcer(lic)
-	if e.Tier() != TierFree {
+	if e.Tier() != TierCommunity {
 		t.Errorf("expired license tier should be free, got %s", e.Tier())
 	}
 }
@@ -155,45 +155,46 @@ func TestCoversProduct(t *testing.T) {
 }
 
 func TestTierLimits(t *testing.T) {
-	free := Limits(TierFree)
-	if free.MaxRequestsPerDay != 1000 {
-		t.Errorf("free daily limit = %d, want 1000", free.MaxRequestsPerDay)
+	community := Limits(TierCommunity)
+	if community.MaxRequestsPerMonth != 10_000 {
+		t.Errorf("community monthly limit = %d, want 10000", community.MaxRequestsPerMonth)
 	}
-	if free.WhiteLabel {
-		t.Error("free should not have whitelabel")
+	if community.MaxUsers != 3 {
+		t.Errorf("community max users = %d, want 3", community.MaxUsers)
 	}
-
-	starter := Limits(TierStarter)
-	if starter.MaxRequestsPerDay != 10_000 {
-		t.Errorf("starter daily limit = %d, want 10000", starter.MaxRequestsPerDay)
+	if community.EmailAlerts {
+		t.Error("community should not have email alerts")
 	}
 
 	pro := Limits(TierPro)
-	if pro.MaxRequestsPerDay != 0 {
-		t.Error("pro should have unlimited daily requests")
+	if pro.MaxRequestsPerMonth != 0 {
+		t.Error("pro should have unlimited monthly requests")
 	}
-	if !pro.ExportAccess {
-		t.Error("pro should have export access")
+	if pro.MaxUsers != 0 {
+		t.Error("pro should have unlimited users")
+	}
+	if !pro.EmailAlerts {
+		t.Error("pro should have email alerts")
 	}
 
-	team := Limits(TierTeam)
-	if !team.MultiInstance {
-		t.Error("team should have multi-instance")
+	enterprise := Limits(TierEnterprise)
+	if enterprise.MaxRequestsPerMonth != 0 {
+		t.Error("enterprise should have unlimited requests")
 	}
-	if !team.WhiteLabel {
-		t.Error("team should have whitelabel")
+	if enterprise.RetentionDays != 365 {
+		t.Errorf("enterprise retention = %d, want 365", enterprise.RetentionDays)
 	}
 }
 
-func TestEnforcerDailyLimit(t *testing.T) {
+func TestEnforcerMonthlyLimit(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Product: "costcap", Tier: TierFree, CustomerID: "test"},
+		Payload: Payload{Product: "stockyard", Tier: TierCommunity, CustomerID: "test"},
 	}
 	e := NewEnforcer(lic)
 
-	// Free tier = 1000/day. Burn through them.
-	for i := int64(0); i < 1000; i++ {
+	// Community tier = 10,000/month. Burn through them.
+	for i := int64(0); i < 10_000; i++ {
 		if err := e.Check(); err != nil {
 			t.Fatalf("request %d should be allowed: %v", i, err)
 		}
@@ -202,10 +203,10 @@ func TestEnforcerDailyLimit(t *testing.T) {
 	// Next one should be blocked
 	err := e.Check()
 	if err == nil {
-		t.Fatal("request 1001 should be blocked")
+		t.Fatal("request 10001 should be blocked")
 	}
-	if !strings.Contains(err.Error(), "daily request limit") {
-		t.Errorf("error should mention daily limit, got: %v", err)
+	if !strings.Contains(err.Error(), "monthly request limit") {
+		t.Errorf("error should mention monthly limit, got: %v", err)
 	}
 	if !strings.Contains(err.Error(), "stockyard.dev/pricing") {
 		t.Error("error should include upgrade URL")
@@ -215,7 +216,7 @@ func TestEnforcerDailyLimit(t *testing.T) {
 func TestEnforcerProUnlimited(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Product: "costcap", Tier: TierPro, CustomerID: "test"},
+		Payload: Payload{Product: "stockyard", Tier: TierPro, CustomerID: "test"},
 	}
 	e := NewEnforcer(lic)
 
@@ -230,7 +231,7 @@ func TestEnforcerProUnlimited(t *testing.T) {
 func TestEnforcerStats(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Product: "costcap", Tier: TierStarter, CustomerID: "cus_123"},
+		Payload: Payload{Product: "stockyard", Tier: TierPro, CustomerID: "cus_123"},
 	}
 	e := NewEnforcer(lic)
 
@@ -239,21 +240,21 @@ func TestEnforcerStats(t *testing.T) {
 	}
 
 	stats := e.Stats()
-	if stats["tier"] != "starter" {
-		t.Errorf("tier = %v, want starter", stats["tier"])
+	if stats["tier"] != "pro" {
+		t.Errorf("tier = %v, want pro", stats["tier"])
 	}
-	if stats["requests_today"].(int64) != 50 {
-		t.Errorf("requests_today = %v, want 50", stats["requests_today"])
+	if stats["requests_month"].(int64) != 50 {
+		t.Errorf("requests_month = %v, want 50", stats["requests_month"])
 	}
-	if stats["daily_limit"].(int64) != 10_000 {
-		t.Errorf("daily_limit = %v, want 10000", stats["daily_limit"])
+	if stats["monthly_limit"].(int64) != 0 {
+		t.Errorf("monthly_limit = %v, want 0 (unlimited)", stats["monthly_limit"])
 	}
 }
 
 func TestMiddlewareBlocks(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Product: "costcap", Tier: TierFree, CustomerID: "test"},
+		Payload: Payload{Product: "stockyard", Tier: TierCommunity, CustomerID: "test"},
 	}
 	e := NewEnforcer(lic)
 
@@ -263,12 +264,12 @@ func TestMiddlewareBlocks(t *testing.T) {
 		return &provider.Response{ID: "ok"}, nil
 	})
 
-	// Exhaust free tier
-	for i := 0; i < 1000; i++ {
+	// Exhaust community tier (10k/month)
+	for i := 0; i < 10_000; i++ {
 		handler(context.Background(), &provider.Request{Model: "gpt-4o"})
 	}
-	if called != 1000 {
-		t.Errorf("expected 1000 calls, got %d", called)
+	if called != 10_000 {
+		t.Errorf("expected 10000 calls, got %d", called)
 	}
 
 	// Next should be blocked
@@ -279,7 +280,7 @@ func TestMiddlewareBlocks(t *testing.T) {
 	if !IsLicenseError(err) {
 		t.Errorf("should be LicenseError, got %T", err)
 	}
-	if called != 1000 {
+	if called != 10_000 {
 		t.Error("handler should not have been called again")
 	}
 }
@@ -304,43 +305,43 @@ func TestFromEnvNoKey(t *testing.T) {
 	if !lic.Valid {
 		t.Error("no key should return valid free license")
 	}
-	if lic.Payload.Tier != TierFree {
-		t.Errorf("no key tier = %s, want free", lic.Payload.Tier)
+	if lic.Payload.Tier != TierCommunity {
+		t.Errorf("no key tier = %s, want community", lic.Payload.Tier)
 	}
 }
 
 func TestHelperMethods(t *testing.T) {
 	kp, _ := GenerateKeyPair()
 
-	key, err := kp.IssueStarter("costcap", "cus_1", "a@b.com")
+	key, err := kp.IssuePro("stockyard", "cus_1", "a@b.com")
 	if err != nil {
 		t.Fatal(err)
 	}
 	lic := Validate(key)
-	if lic.Payload.Tier != TierStarter {
-		t.Error("IssueStarter should produce starter tier")
+	if lic.Payload.Tier != TierPro {
+		t.Error("IssuePro should produce pro tier")
 	}
 
-	key, _ = kp.IssueSuitePro("cus_2", "b@c.com")
+	key, _ = kp.IssuePro("stockyard", "cus_2", "b@c.com")
 	lic = Validate(key)
 	if lic.Payload.Product != "stockyard" {
-		t.Error("IssueSuitePro should produce stockyard product")
+		t.Error("IssuePro(stockyard) should produce stockyard product")
 	}
 	if lic.Payload.Tier != TierPro {
-		t.Error("IssueSuitePro should produce pro tier")
+		t.Error("IssuePro should produce pro tier")
 	}
 
-	key, _ = kp.IssueTeam("costcap", "cus_3", "c@d.com", 10)
+	key, _ = kp.IssueEnterprise("cus_3", "c@d.com", 10)
 	lic = Validate(key)
 	if lic.Payload.MaxSeats != 10 {
-		t.Errorf("IssueTeam seats = %d, want 10", lic.Payload.MaxSeats)
+		t.Errorf("IssueEnterprise seats = %d, want 10", lic.Payload.MaxSeats)
 	}
 }
 
 func TestUpgradeNudge(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Tier: TierFree, CustomerID: "test"},
+		Payload: Payload{Tier: TierCommunity, CustomerID: "test"},
 	}
 	e := NewEnforcer(lic)
 	nudge := NewUpgradeNudge(e)
@@ -388,15 +389,15 @@ func TestKeyPairB64Roundtrip(t *testing.T) {
 
 func TestTierFromString(t *testing.T) {
 	tests := []struct{ input string; want Tier }{
-		{"free", TierFree},
-		{"starter", TierStarter},
-		{"Starter", TierStarter},
+		{"community", TierCommunity},
 		{"pro", TierPro},
+		{"Pro", TierPro},
 		{"PRO", TierPro},
-		{"team", TierTeam},
+		{"cloud", TierCloud},
 		{"enterprise", TierEnterprise},
-		{"unknown", TierFree},
-		{"", TierFree},
+		{"Enterprise", TierEnterprise},
+		{"unknown", TierCommunity},
+		{"", TierCommunity},
 	}
 	for _, tt := range tests {
 		if got := TierFromString(tt.input); got != tt.want {

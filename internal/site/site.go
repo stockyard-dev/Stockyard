@@ -57,6 +57,18 @@ func Register(mux *http.ServeMux) {
 		})
 	}
 
+	// Serve install script
+	mux.HandleFunc("GET /install.sh", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "install.sh")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+
 	// Serve static assets (JS, CSS, images) from site/js/ etc.
 	fileServer := http.FileServer(http.FS(sub))
 	mux.HandleFunc("GET /site-assets/", func(w http.ResponseWriter, r *http.Request) {

@@ -57,7 +57,8 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			path == "/observe/" ||
 			path == "/account/" ||
 			path == "/success/" ||
-			strings.HasPrefix(path, "/site-assets/") {
+			strings.HasPrefix(path, "/site-assets/") ||
+			path == "/install.sh" {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -139,6 +140,8 @@ func isPublicRoute(method, path string) bool {
 		case path == "/api/products" || strings.HasPrefix(path, "/api/products/"):
 			return true
 		case path == "/api/plans":
+		case path == "/api/license":
+			return true
 			return true
 		}
 	}

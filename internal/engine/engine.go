@@ -21,6 +21,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
 	"github.com/stockyard-dev/stockyard/internal/features"
+	"github.com/stockyard-dev/stockyard/internal/license"
 	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
@@ -288,6 +289,11 @@ func Boot(pc ProductConfig) {
 	// Build middleware chain based on product features
 	middlewares := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers)
 
+	// License enforcement — first in chain (prepend so it runs before everything)
+	lic := license.FromEnv()
+	licEnforcer := license.NewEnforcer(lic)
+	middlewares = append([]proxy.Middleware{licEnforcer.Middleware()}, middlewares...)
+
 	// Compose the handler
 	handler := proxy.Chain(sendHandler, middlewares...)
 
@@ -392,6 +398,13 @@ func Boot(pc ProductConfig) {
 
 	// Register marketing website (/, /docs/, /pricing/, etc.)
 	site.Register(srv.Mux())
+
+	// License status endpoint (uses same enforcer as middleware for accurate counts)
+	srv.Mux().HandleFunc("GET /api/license", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(licEnforcer.Stats())
+	})
+	log.Printf("  License:   tier=%s valid=%v", licEnforcer.Tier(), lic.Valid)
 
 	// Seed demo data if database is empty (populates traces, costs, experiments)
 	db.SeedDemoData(pc.Product)
@@ -515,6 +528,7 @@ func buildMiddlewares(reg *toggle.Registry,
 	providers map[string]provider.Provider,
 ) []proxy.Middleware {
 	var mw []proxy.Middleware
+
 	add := func(name string, m proxy.Middleware) {
 		mw = append(mw, toggle.Wrap(name, reg, m))
 	}

@@ -1,5 +1,7 @@
 # Stockyard
 
+[![CI](https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml/badge.svg)](https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml)
+
 **Where LLM traffic gets sorted.**
 
 Six apps. One Go binary. Zero dependencies. The complete LLM infrastructure platform — proxy, observe, trust, studio, forge, and exchange.
@@ -22,6 +24,12 @@ Your App  →  Stockyard  →  OpenAI / Anthropic / Gemini / Groq / Mistral / 11
 
 ```bash
 curl -sSL stockyard.dev/install | sh
+```
+
+Or run with Docker:
+
+```bash
+docker run -d -p 4200:4200 -v stockyard-data:/data ghcr.io/stockyard-dev/stockyard
 ```
 
 Or build from source:
@@ -271,6 +279,27 @@ GET  /api/plans                           Pricing plans
 | Middleware | 50+ toggleable modules | Limited callbacks |
 | Memory | ~12MB | ~200MB+ |
 | Cold start | <50ms | Seconds |
+
+## Pricing
+
+| Tier | Price | Requests | Users | Retention |
+|------|-------|----------|-------|-----------|
+| **Community** | Free | 10k/mo | 3 | 7 days |
+| **Pro** | $9.99/mo | Unlimited | Unlimited | Unlimited |
+| **Cloud** | $29.99/mo | 100k/mo | Unlimited | 30 days |
+| **Enterprise** | Custom | Unlimited | Unlimited | 1 year |
+
+All tiers include all 6 apps, 50+ modules, and 16 providers. No per-token markup.
+
+**License keys** (Pro/Cloud/Enterprise): Set `STOCKYARD_LICENSE_KEY` to remove Community tier limits. Check status at `GET /api/license`.
+
+```bash
+# Check current tier and usage
+curl localhost:4200/api/license
+
+# Upgrade: set your license key
+export STOCKYARD_LICENSE_KEY="SY-eyJ..."
+```
 
 ## Links
 

@@ -169,6 +169,13 @@ func (s *Store) GetUserByEmail(email string) (*User, error) {
 }
 
 // ListUsers returns all users.
+// CountUsers returns the total number of users.
+func (s *Store) CountUsers() int {
+	var count int
+	s.db.QueryRow("SELECT COUNT(*) FROM auth_users").Scan(&count)
+	return count
+}
+
 func (s *Store) ListUsers() ([]User, error) {
 	rows, err := s.db.Query(`SELECT id, email, name, tier, created_at FROM users ORDER BY id`)
 	if err != nil {
@@ -450,12 +457,20 @@ func hashKey(key string) string {
 
 // API provides HTTP handlers for user and key management.
 type API struct {
-	store *Store
+	store       *Store
+	licEnforcer interface {
+		CheckUserLimit(currentUsers int) error
+	}
 }
 
 // NewAPI creates a new auth API handler.
 func NewAPI(store *Store) *API {
 	return &API{store: store}
+}
+
+// SetLicenseEnforcer sets the license enforcer for user cap checks.
+func (a *API) SetLicenseEnforcer(e interface{ CheckUserLimit(int) error }) {
+	a.licEnforcer = e
 }
 
 // Register mounts auth API routes on the given mux.

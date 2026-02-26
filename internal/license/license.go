@@ -20,22 +20,21 @@ import (
 type Tier string
 
 const (
-	TierFree       Tier = "free"
-	TierStarter    Tier = "starter"
+	TierCommunity  Tier = "community"
 	TierPro        Tier = "pro"
-	TierTeam       Tier = "team"
+	TierCloud      Tier = "cloud"
 	TierEnterprise Tier = "enterprise"
 )
 
 // Payload is the data embedded in a license key.
 type Payload struct {
-	Product    string `json:"p"`             // product slug ("costcap", "stockyard" for suite) or "*" for any
+	Product    string `json:"p"`             // "stockyard" or "*"
 	Tier       Tier   `json:"t"`             // pricing tier
 	CustomerID string `json:"c"`             // Stripe customer ID or internal ID
 	Email      string `json:"e,omitempty"`   // customer email (optional, for display)
 	IssuedAt   int64  `json:"i"`             // unix timestamp
 	ExpiresAt  int64  `json:"x"`             // unix timestamp (0 = never)
-	MaxSeats   int    `json:"s,omitempty"`   // max concurrent instances (team/enterprise)
+	MaxSeats   int    `json:"s,omitempty"`   // max users (0 = use tier default)
 }
 
 // License is a validated license with parsed payload.
@@ -164,24 +163,24 @@ func FromEnv() *License {
 	if key == "" {
 		return &License{
 			Valid:   true,
-			Payload: Payload{Product: "*", Tier: TierFree, CustomerID: "free"},
+			Payload: Payload{Product: "*", Tier: TierCommunity, CustomerID: "free"},
 		}
 	}
 	return Validate(key)
 }
 
-// TierFromString parses a tier string, defaulting to free.
+// TierFromString parses a tier string, defaulting to community.
 func TierFromString(s string) Tier {
 	switch strings.ToLower(s) {
-	case "starter":
-		return TierStarter
+	case "community":
+		return TierCommunity
 	case "pro":
 		return TierPro
-	case "team":
-		return TierTeam
+	case "cloud":
+		return TierCloud
 	case "enterprise":
 		return TierEnterprise
 	default:
-		return TierFree
+		return TierCommunity
 	}
 }

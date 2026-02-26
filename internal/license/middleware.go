@@ -57,21 +57,14 @@ func NewUpgradeNudge(e *Enforcer) *UpgradeNudge {
 }
 
 // ShouldNudge returns true + a message if it's time to show an upgrade prompt.
-// Nudges on every 100th request for free tier, every 500th for starter.
+// Nudges on every 100th request for community tier.
 func (u *UpgradeNudge) ShouldNudge() (bool, string) {
 	count := u.requestCount.Add(1)
 	tier := u.enforcer.Tier()
 
-	switch tier {
-	case TierFree:
-		if count%100 == 0 {
-			remaining := u.enforcer.limits.MaxRequestsPerDay - u.enforcer.dayCount.Load()
-			return true, fmt.Sprintf("Free tier: %d requests remaining today. Upgrade at stockyard.dev/pricing", remaining)
-		}
-	case TierStarter:
-		if count%500 == 0 {
-			return true, "Unlock unlimited requests + exports with Pro. stockyard.dev/pricing"
-		}
+	if tier == TierCommunity && count%100 == 0 {
+		remaining := u.enforcer.limits.MaxRequestsPerMonth - u.enforcer.monthCount.Load()
+		return true, fmt.Sprintf("Community tier: %d requests remaining this month. Upgrade at stockyard.dev/pricing", remaining)
 	}
 	return false, ""
 }

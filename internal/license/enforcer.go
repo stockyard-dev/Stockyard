@@ -9,68 +9,52 @@ import (
 
 // TierLimits defines the operational limits for a pricing tier.
 type TierLimits struct {
-	MaxRequestsPerDay   int64 // 0 = unlimited
 	MaxRequestsPerMonth int64 // 0 = unlimited
-	MaxProductsEnabled  int   // suite only: 0 = unlimited
-	MultiInstance       bool  // can run multiple instances
-	WhiteLabel          bool  // can customize branding
+	MaxUsers            int   // 0 = unlimited
+	RetentionDays       int   // 0 = unlimited
+	EmailAlerts         bool
+	AutoBackups         bool
 	PrioritySupport     bool
-	DashboardAccess     bool
-	APIAccess           bool
-	ExportAccess        bool // training export, compliance export
 }
 
 // Limits returns the TierLimits for a given tier.
 func Limits(tier Tier) TierLimits {
 	switch tier {
-	case TierStarter:
-		return TierLimits{
-			MaxRequestsPerDay:   10_000,
-			MaxRequestsPerMonth: 250_000,
-			MaxProductsEnabled:  0, // unlimited for individual; suite starter = all
-			DashboardAccess:     true,
-			APIAccess:           true,
-		}
 	case TierPro:
 		return TierLimits{
-			MaxRequestsPerDay:   0, // unlimited
-			MaxRequestsPerMonth: 0,
-			MaxProductsEnabled:  0,
-			DashboardAccess:     true,
-			APIAccess:           true,
-			ExportAccess:        true,
-		}
-	case TierTeam:
-		return TierLimits{
-			MaxRequestsPerDay:   0,
-			MaxRequestsPerMonth: 0,
-			MaxProductsEnabled:  0,
-			MultiInstance:        true,
-			WhiteLabel:           true,
+			MaxRequestsPerMonth: 0, // unlimited
+			MaxUsers:            0, // unlimited
+			RetentionDays:       0, // unlimited
+			EmailAlerts:         true,
+			AutoBackups:         true,
 			PrioritySupport:     true,
-			DashboardAccess:     true,
-			APIAccess:           true,
-			ExportAccess:        true,
+		}
+	case TierCloud:
+		return TierLimits{
+			MaxRequestsPerMonth: 100_000,
+			MaxUsers:            0, // unlimited
+			RetentionDays:       30,
+			EmailAlerts:         true,
+			AutoBackups:         true,
+			PrioritySupport:     true,
 		}
 	case TierEnterprise:
 		return TierLimits{
-			MaxRequestsPerDay:   0,
 			MaxRequestsPerMonth: 0,
-			MaxProductsEnabled:  0,
-			MultiInstance:        true,
-			WhiteLabel:           true,
+			MaxUsers:            0,
+			RetentionDays:       365,
+			EmailAlerts:         true,
+			AutoBackups:         true,
 			PrioritySupport:     true,
-			DashboardAccess:     true,
-			APIAccess:           true,
-			ExportAccess:        true,
 		}
-	default: // TierFree
+	default: // TierCommunity (no license key)
 		return TierLimits{
-			MaxRequestsPerDay:   1_000,
 			MaxRequestsPerMonth: 10_000,
-			MaxProductsEnabled:  5, // suite only
-			DashboardAccess:     true,
-			APIAccess:           true,
+			MaxUsers:            3,
+			RetentionDays:       7,
+			EmailAlerts:         false,
+			AutoBackups:         false,
+			PrioritySupport:     false,
 		}
 	}
 }
@@ -80,59 +64,41 @@ type Enforcer struct {
 	license *License
 	limits  TierLimits
 
-	mu       sync.Mutex
-	dayStart time.Time
-	moStart  time.Time
+	mu      sync.Mutex
+	moStart time.Time
 
-	dayCount   atomic.Int64
 	monthCount atomic.Int64
 	totalCount atomic.Int64
-
-	blocked atomic.Int64
+	blocked    atomic.Int64
 }
 
 // NewEnforcer creates an Enforcer for the given license.
 func NewEnforcer(lic *License) *Enforcer {
 	now := time.Now()
 	return &Enforcer{
-		license:  lic,
-		limits:   Limits(lic.Payload.Tier),
-		dayStart: startOfDay(now),
-		moStart:  startOfMonth(now),
+		license: lic,
+		limits:  Limits(lic.Payload.Tier),
+		moStart: startOfMonth(now),
 	}
 }
 
 // Check determines if a request is allowed under the current tier limits.
 // Returns nil if allowed, or an error describing why the request was blocked.
 func (e *Enforcer) Check() error {
-	// Expired license = free tier limits
+	// Expired license = community tier limits
 	if e.license.IsExpired() {
-		return fmt.Errorf("license expired on %s — operating in free tier", e.license.ExpiresAt.Format("2006-01-02"))
+		return fmt.Errorf("license expired on %s — operating in community tier", e.license.ExpiresAt.Format("2006-01-02"))
 	}
 
 	now := time.Now()
 
-	// Reset counters on day/month rollover
+	// Reset counter on month rollover
 	e.mu.Lock()
-	if now.After(e.dayStart.Add(24 * time.Hour)) {
-		e.dayCount.Store(0)
-		e.dayStart = startOfDay(now)
-	}
 	if now.After(e.moStart.AddDate(0, 1, 0)) {
 		e.monthCount.Store(0)
 		e.moStart = startOfMonth(now)
 	}
 	e.mu.Unlock()
-
-	// Check daily limit
-	if e.limits.MaxRequestsPerDay > 0 {
-		current := e.dayCount.Load()
-		if current >= e.limits.MaxRequestsPerDay {
-			e.blocked.Add(1)
-			return fmt.Errorf("daily request limit reached (%d/%d) — upgrade at stockyard.dev/pricing",
-				current, e.limits.MaxRequestsPerDay)
-		}
-	}
 
 	// Check monthly limit
 	if e.limits.MaxRequestsPerMonth > 0 {
@@ -145,10 +111,18 @@ func (e *Enforcer) Check() error {
 	}
 
 	// Allowed — increment counters
-	e.dayCount.Add(1)
 	e.monthCount.Add(1)
 	e.totalCount.Add(1)
 
+	return nil
+}
+
+// CheckUserLimit returns an error if adding a user would exceed the tier's user cap.
+func (e *Enforcer) CheckUserLimit(currentUsers int) error {
+	if e.limits.MaxUsers > 0 && currentUsers >= e.limits.MaxUsers {
+		return fmt.Errorf("user limit reached (%d/%d) — upgrade at stockyard.dev/pricing",
+			currentUsers, e.limits.MaxUsers)
+	}
 	return nil
 }
 
@@ -160,15 +134,14 @@ func (e *Enforcer) Stats() map[string]any {
 		"product":          e.license.Payload.Product,
 		"customer_id":      e.license.Payload.CustomerID,
 		"valid":            e.license.Valid,
-		"requests_today":   e.dayCount.Load(),
 		"requests_month":   e.monthCount.Load(),
 		"requests_total":   e.totalCount.Load(),
 		"requests_blocked": e.blocked.Load(),
-		"daily_limit":      lim.MaxRequestsPerDay,
 		"monthly_limit":    lim.MaxRequestsPerMonth,
-		"whitelabel":       lim.WhiteLabel,
-		"multi_instance":   lim.MultiInstance,
-		"export_access":    lim.ExportAccess,
+		"max_users":        lim.MaxUsers,
+		"retention_days":   lim.RetentionDays,
+		"email_alerts":     lim.EmailAlerts,
+		"auto_backups":     lim.AutoBackups,
 	}
 	if !e.license.ExpiresAt.IsZero() {
 		stats["expires_at"] = e.license.ExpiresAt.Format(time.RFC3339)
@@ -180,7 +153,7 @@ func (e *Enforcer) Stats() map[string]any {
 // Tier returns the current effective tier.
 func (e *Enforcer) Tier() Tier {
 	if e.license.IsExpired() {
-		return TierFree
+		return TierCommunity
 	}
 	return e.license.Payload.Tier
 }
