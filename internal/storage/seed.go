@@ -12,10 +12,16 @@ import (
 // on first visit. Only seeds if there are ≤1 traces (the deploy test).
 func (db *DB) SeedDemoData(project string) {
 	var count int
-	db.conn.QueryRow("SELECT COUNT(*) FROM requests").Scan(&count)
-	if count > 1 {
+	db.conn.QueryRow("SELECT COUNT(*) FROM requests WHERE id NOT LIKE 'demo-%'").Scan(&count)
+	if count > 10 {
 		return // Already has real data
 	}
+
+	// Clear stale demo data so dashboards show current dates
+	db.conn.Exec("DELETE FROM requests WHERE id LIKE 'demo-%'")
+	db.conn.Exec("DELETE FROM observe_traces WHERE id LIKE 't-demo-%'")
+	db.conn.Exec("DELETE FROM observe_cost_daily WHERE provider IN ('openai','anthropic','groq','deepseek','mistral','xai')")
+	db.conn.Exec("DELETE FROM spend_rollups WHERE project = ?", project)
 
 	log.Println("[seed] Populating demo data...")
 
@@ -30,6 +36,9 @@ func (db *DB) SeedDemoData(project string) {
 		{"anthropic", "claude-sonnet-4-5-20250929", 0.003, 0.015},
 		{"groq", "llama-3.3-70b-versatile", 0.00059, 0.00079},
 		{"openai", "gpt-4.1-mini", 0.0004, 0.0016},
+		{"deepseek", "deepseek-chat", 0.00014, 0.00028},
+		{"mistral", "mistral-large-latest", 0.002, 0.006},
+		{"xai", "grok-3-mini", 0.0003, 0.0005},
 	}
 
 	prompts := []string{
@@ -48,6 +57,10 @@ func (db *DB) SeedDemoData(project string) {
 	now := time.Now()
 	rng := rand.New(rand.NewSource(42)) // Deterministic for reproducibility
 	seeded := 0
+
+	// Track per-day per-provider-model costs for observe_cost_daily
+	type costKey struct{ date, provider, model string }
+	costAgg := make(map[costKey]*struct{ reqs, tokIn, tokOut int; cost float64 })
 
 	// Generate 7 days of data, ~15-40 requests per day
 	for day := 6; day >= 0; day-- {
@@ -70,10 +83,12 @@ func (db *DB) SeedDemoData(project string) {
 			latency := 200 + rng.Int63n(2800) // 200-3000ms
 
 			status := 200
+			traceStatus := "ok"
 			errMsg := ""
 			// ~5% error rate
 			if rng.Float64() < 0.05 {
 				status = 500
+				traceStatus = "error"
 				errMsg = "upstream provider timeout"
 				cost = 0
 				tokOut = 0
@@ -88,6 +103,7 @@ func (db *DB) SeedDemoData(project string) {
 
 			reqBody := fmt.Sprintf(`{"model":"%s","messages":[{"role":"user","content":"%s"}]}`, m.model, prompt)
 
+			// Insert into requests table
 			db.conn.Exec(`
 				INSERT OR IGNORE INTO requests (id, timestamp, project, user_id, provider, model,
 					tokens_in, tokens_out, cost_usd, latency_ms, status, cache_hit,
@@ -96,6 +112,26 @@ func (db *DB) SeedDemoData(project string) {
 				id, ts.Format(time.RFC3339), project, m.provider, m.model,
 				tokIn, tokOut, cost, latency, status, reqBody, errMsg,
 			)
+
+			// Insert into observe_traces table
+			db.conn.Exec(`
+				INSERT OR IGNORE INTO observe_traces (id, request_id, service, operation, provider, model,
+					status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at)
+				VALUES (?, ?, 'proxy', 'chat.completions', ?, ?, ?, ?, ?, ?, ?, '{}', ?)`,
+				"t-"+id, id, m.provider, m.model, traceStatus, latency, tokIn, tokOut, cost, ts.Format(time.RFC3339),
+			)
+
+			// Aggregate costs
+			key := costKey{dateStr, m.provider, m.model}
+			agg, ok := costAgg[key]
+			if !ok {
+				agg = &struct{ reqs, tokIn, tokOut int; cost float64 }{}
+				costAgg[key] = agg
+			}
+			agg.reqs++
+			agg.tokIn += tokIn
+			agg.tokOut += tokOut
+			agg.cost += cost
 
 			dayTotalCost += cost
 			dayTotalReqs++
@@ -114,6 +150,20 @@ func (db *DB) SeedDemoData(project string) {
 				total_tokens_in = excluded.total_tokens_in,
 				total_tokens_out = excluded.total_tokens_out`,
 			project, dateStr, dayTotalCost, dayTotalReqs, dayTotalTokIn, dayTotalTokOut,
+		)
+	}
+
+	// Insert observe_cost_daily aggregates
+	for key, agg := range costAgg {
+		db.conn.Exec(`
+			INSERT INTO observe_cost_daily (date, provider, model, requests, tokens_in, tokens_out, cost_usd)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+			ON CONFLICT(date, provider, model) DO UPDATE SET
+				requests = excluded.requests,
+				tokens_in = excluded.tokens_in,
+				tokens_out = excluded.tokens_out,
+				cost_usd = excluded.cost_usd`,
+			key.date, key.provider, key.model, agg.reqs, agg.tokIn, agg.tokOut, agg.cost,
 		)
 	}
 

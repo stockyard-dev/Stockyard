@@ -274,10 +274,11 @@ GET  /api/plans                           Pricing plans
 
 ## Links
 
-- **Website:** [stockyard.dev](https://stockyard.dev)
-- **Cloud:** [stockyard.dev/cloud](https://stockyard.dev/cloud)
-- **Docs:** [stockyard.dev/docs](https://stockyard.dev/docs)
-- **Live instance:** [stockyard-production.up.railway.app](https://stockyard-production.up.railway.app/health)
+- **Playground:** [stockyard-production.up.railway.app/playground](https://stockyard-production.up.railway.app/playground)
+- **Console:** [stockyard-production.up.railway.app/ui](https://stockyard-production.up.railway.app/ui)
+- **Website:** [stockyard-production.up.railway.app](https://stockyard-production.up.railway.app)
+- **Docs:** [stockyard-production.up.railway.app/docs](https://stockyard-production.up.railway.app/docs/)
+- **API Health:** [stockyard-production.up.railway.app/health](https://stockyard-production.up.railway.app/health)
 
 ## License
 

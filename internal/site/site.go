@@ -21,9 +21,21 @@ func Register(mux *http.ServeMux) {
 
 	// Serve known page routes as their index.html
 	pages := []string{
-		"/", "/cloud/", "/pricing/", "/docs/", "/products/",
+		"/cloud/", "/pricing/", "/docs/", "/products/",
 		"/exchange/", "/observe/", "/account/", "/success/",
 	}
+
+	// Homepage: exact match only (GET /{$} prevents catch-all)
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "index.html")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
 
 	for _, page := range pages {
 		p := page
