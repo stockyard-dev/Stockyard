@@ -184,29 +184,33 @@ func TestDBStats(t *testing.T) {
 
 func TestCatalog(t *testing.T) {
 	products := Catalog()
-	if len(products) < 120 {
-		t.Errorf("catalog has %d products, expected 120+", len(products))
+	if len(products) != 6 {
+		t.Errorf("catalog has %d apps, expected 6", len(products))
 	}
 
-	// Check suite exists
-	suite := ProductBySlug("stockyard")
-	if suite == nil {
-		t.Fatal("stockyard suite not in catalog")
-	}
-	if !suite.IsSuite {
-		t.Error("stockyard should be marked as suite")
-	}
-
-	// Check a few products
-	for _, slug := range []string{"costcap", "llmcache", "jsonguard", "toxicfilter", "tracelink"} {
+	// Check apps exist
+	for _, slug := range []string{"proxy", "observe", "trust", "studio", "forge", "exchange"} {
 		if ProductBySlug(slug) == nil {
-			t.Errorf("product %s not found in catalog", slug)
+			t.Errorf("app %s not found in catalog", slug)
 		}
 	}
 
 	// Check unknown product
 	if ProductBySlug("nonexistent") != nil {
 		t.Error("nonexistent product should return nil")
+	}
+
+	// Check plans
+	plans := Plans()
+	if len(plans) != 3 {
+		t.Errorf("expected 3 plans, got %d", len(plans))
+	}
+	cloud := PlanBySlug("cloud")
+	if cloud == nil {
+		t.Fatal("cloud plan not found")
+	}
+	if cloud.PriceCents != 2900 {
+		t.Errorf("cloud price = %d, want 2900", cloud.PriceCents)
 	}
 }
 

@@ -79,6 +79,7 @@ func (s *Server) registerRoutes() {
 	// Public API — product catalog
 	s.mux.HandleFunc("GET /api/products", s.handleProducts)
 	s.mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
+	s.mux.HandleFunc("GET /api/plans", s.handlePlans)
 
 	// Admin API (requires STOCKYARD_ADMIN_KEY)
 	s.mux.HandleFunc("GET /api/admin/stats", s.adminAuth(s.handleAdminStats))
@@ -127,9 +128,10 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/license/validate", s.handleValidateLicense)
 	mux.HandleFunc("GET /api/license/lookup", s.handleLookupLicense)
 
-	// Product catalog
+	// Product catalog + pricing
 	mux.HandleFunc("GET /api/products", s.handleProducts)
 	mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
+	mux.HandleFunc("GET /api/plans", s.handlePlans)
 
 	// Admin
 	mux.HandleFunc("GET /api/admin/stats", s.adminAuth(s.handleAdminStats))
@@ -403,22 +405,13 @@ func (s *Server) handleLookupLicense(w http.ResponseWriter, r *http.Request) {
 // --- Products ---
 
 func (s *Server) handleProducts(w http.ResponseWriter, r *http.Request) {
-	category := r.URL.Query().Get("category")
 	products := Catalog()
-
-	if category != "" {
-		var filtered []Product
-		for _, p := range products {
-			if p.Category == category {
-				filtered = append(filtered, p)
-			}
-		}
-		products = filtered
-	}
+	plans := Plans()
 
 	writeOK(w, map[string]any{
-		"count":    len(products),
-		"products": products,
+		"apps":  products,
+		"plans": plans,
+		"count": len(products),
 	})
 }
 
@@ -426,10 +419,20 @@ func (s *Server) handleProductBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
 	prod := ProductBySlug(slug)
 	if prod == nil {
-		writeErr(w, http.StatusNotFound, "product not found")
+		// Try plans
+		plan := PlanBySlug(slug)
+		if plan != nil {
+			writeOK(w, plan)
+			return
+		}
+		writeErr(w, http.StatusNotFound, "not found")
 		return
 	}
 	writeOK(w, prod)
+}
+
+func (s *Server) handlePlans(w http.ResponseWriter, r *http.Request) {
+	writeOK(w, map[string]any{"plans": Plans()})
 }
 
 // --- Admin endpoints ---
