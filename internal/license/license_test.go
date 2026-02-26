@@ -265,14 +265,16 @@ func TestMiddlewareBlocks(t *testing.T) {
 	})
 
 	// Exhaust community tier (10k/month)
-	for i := 0; i < 10_000; i++ {
+	for i := 0; i < 10_001; i++ {
 		handler(context.Background(), &provider.Request{Model: "gpt-4o"})
 	}
+
+	// 10,000 should have passed through, 1 blocked
 	if called != 10_000 {
-		t.Errorf("expected 10000 calls, got %d", called)
+		t.Errorf("expected 10000 calls through handler, got %d", called)
 	}
 
-	// Next should be blocked
+	// Explicit next call should also be blocked
 	_, err := handler(context.Background(), &provider.Request{Model: "gpt-4o"})
 	if err == nil {
 		t.Fatal("should be blocked")

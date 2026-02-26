@@ -1,33 +1,39 @@
 # ─── Build stage ─────────────────────────────────────────────────────────
-FROM golang:1.22-bookworm AS builder
+FROM golang:1.22-alpine AS builder
+
+RUN apk add --no-cache git ca-certificates
 
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-s -w" -o /stockyard ./cmd/stockyard/
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /stockyard ./cmd/stockyard/
 
 # ─── Runtime stage ───────────────────────────────────────────────────────
-FROM debian:bookworm-slim
+FROM alpine:3.20
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates tzdata curl
+
+# Non-root user
+RUN addgroup -S stockyard && adduser -S stockyard -G stockyard
 
 COPY --from=builder /stockyard /usr/local/bin/stockyard
 
-# Default data directory
-RUN mkdir -p /data
+# Data directory for SQLite
+RUN mkdir -p /data && chown stockyard:stockyard /data
 VOLUME /data
-ENV STOCKYARD_DATA_DIR=/data
 
-# Default port
-EXPOSE 4200
+USER stockyard
+WORKDIR /data
+
+ENV STOCKYARD_DB_PATH=/data/stockyard.db
+ENV STOCKYARD_LOG_FORMAT=json
 ENV PORT=4200
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+EXPOSE 4200
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:4200/health || exit 1
 
 ENTRYPOINT ["stockyard"]
