@@ -220,6 +220,17 @@ func Boot(pc ProductConfig) {
 	// Allow DATA_DIR env var to override data directory (for persistent volumes)
 	if envData := os.Getenv("DATA_DIR"); envData != "" {
 		cfg.DataDir = envData
+		log.Printf("DATA_DIR override: %s", envData)
+	} else {
+		log.Printf("DATA_DIR not set, using default: %s", cfg.DataDir)
+	}
+	// Also check Railway's auto-set volume env
+	if volPath := os.Getenv("RAILWAY_VOLUME_MOUNT_PATH"); volPath != "" {
+		log.Printf("RAILWAY_VOLUME_MOUNT_PATH: %s", volPath)
+		if cfg.DataDir != volPath && os.Getenv("DATA_DIR") == "" {
+			cfg.DataDir = volPath
+			log.Printf("Auto-using Railway volume path: %s", volPath)
+		}
 	}
 
 	// Open database
