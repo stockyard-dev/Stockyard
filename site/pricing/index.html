@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pricing — Stockyard</title>
-<meta name="description" content="Stockyard pricing. Self-hosted free forever. Cloud from $29/mo. Enterprise custom.">
-<meta property="og:title" content="Pricing — Stockyard">
-<meta property="og:description" content="Self-hosted free. Cloud $29/mo. Enterprise custom. Full platform either way.">
+<meta name="description" content="Stockyard pricing. Community free forever. Pro $9.99/mo. Cloud $29.99/mo. Enterprise custom.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -32,59 +30,50 @@ a:hover{color:var(--gold)}
 .nav-links a:hover{color:var(--rust-light)}
 
 .section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
-.section-label.gold{color:var(--gold)}
 .section-label.leather{color:var(--leather-light)}
-.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
-.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
-.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
-.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
-.btn-ghost{background:transparent;color:var(--cream-dim);border:2px solid var(--bg3)}
-.btn-ghost:hover{border-color:var(--leather);color:var(--cream)}
 
 .page-hero{max-width:700px;margin:0 auto;padding:7rem 2rem 3rem;text-align:center}
 .page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
 .page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
 .page-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
 .page-hero h1 .accent{color:var(--rust-light)}
-.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:500px;margin:0 auto}
+.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto}
 
-/* Tiers */
-.tiers{padding:3rem 2rem 5rem;max-width:960px;margin:0 auto}
-.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
-.tier{padding:2.5rem 2rem;border:1px solid var(--bg3);background:var(--bg2)}
-.tier-highlight{border-color:var(--rust);position:relative}
-.tier-highlight::before{content:'Most popular';position:absolute;top:-0.7rem;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--bg);background:var(--rust);padding:0.2rem 0.8rem}
-.tier-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem}
-.tier-price{font-size:3.5rem;font-weight:700;color:var(--cream);line-height:1}
-.tier-price .dollar{font-size:1.2rem;vertical-align:super;color:var(--leather-light);margin-right:2px}
-.tier-period{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem;margin-bottom:1.5rem;display:block}
-.tier-desc{font-size:0.85rem;color:var(--cream-dim);font-style:italic;margin-bottom:2rem;min-height:3rem}
-.tier-features{list-style:none;margin-bottom:2rem}
-.tier-features li{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.4rem 0;border-bottom:1px solid var(--bg3);display:flex;align-items:center;gap:0.5rem}
-.tier-features li .check{color:var(--green-light);font-size:0.9rem}
-.tier-features li .x{color:var(--leather);font-size:0.9rem}
-.tier-btn{display:block;width:100%;text-align:center;padding:0.8rem;font-family:var(--font-mono);font-size:0.85rem;border:2px solid;cursor:pointer;text-decoration:none;transition:all 0.2s}
-.tier-btn.primary{background:var(--rust);color:var(--cream);border-color:var(--rust)}
-.tier-btn.primary:hover{background:var(--rust-light);border-color:var(--rust-light)}
-.tier-btn.secondary{background:transparent;color:var(--cream);border-color:var(--leather)}
-.tier-btn.secondary:hover{border-color:var(--cream)}
-.tier-btn.ghost{background:transparent;color:var(--cream-dim);border-color:var(--bg3)}
-.tier-btn.ghost:hover{border-color:var(--leather);color:var(--cream)}
+.all-note{text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather-light);padding:0 2rem 2rem;max-width:600px;margin:0 auto}
 
-/* Comparison */
+.tiers{padding:2rem 2rem 5rem;max-width:1100px;margin:0 auto}
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.tier{padding:2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);display:flex;flex-direction:column}
+.tier-pop{border-color:var(--rust);position:relative}
+.tier-pop::before{content:'Most popular';position:absolute;top:-0.7rem;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--bg);background:var(--rust);padding:0.15rem 0.7rem;white-space:nowrap}
+.tier-name{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
+.tier-price{font-size:2.8rem;font-weight:700;color:var(--cream);line-height:1}
+.tier-price .d{font-size:1rem;vertical-align:super;color:var(--leather-light);margin-right:2px}
+.tier-price .c{font-size:1.2rem;color:var(--leather-light)}
+.tier-per{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:0.3rem;margin-bottom:1.2rem;display:block}
+.tier-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem;min-height:2.5rem}
+.tier-feat{list-style:none;margin-bottom:1.5rem;flex:1}
+.tier-feat li{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);padding:0.35rem 0;border-bottom:1px solid var(--bg3);display:flex;align-items:center;gap:0.4rem}
+.tier-feat li .k{color:var(--green-light);font-size:0.85rem}
+.tier-btn{display:block;width:100%;text-align:center;padding:0.7rem;font-family:var(--font-mono);font-size:0.8rem;border:2px solid;cursor:pointer;text-decoration:none;transition:all 0.2s}
+.tier-btn.p{background:var(--rust);color:var(--cream);border-color:var(--rust)}
+.tier-btn.p:hover{background:var(--rust-light);border-color:var(--rust-light)}
+.tier-btn.s{background:transparent;color:var(--cream);border-color:var(--leather)}
+.tier-btn.s:hover{border-color:var(--cream)}
+.tier-btn.g{background:transparent;color:var(--cream-dim);border-color:var(--bg3)}
+.tier-btn.g:hover{border-color:var(--leather);color:var(--cream)}
+
 .compare{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.compare-inner{max-width:800px;margin:0 auto}
-.compare-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.8rem}
-.compare-table th,.compare-table td{padding:0.6rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
-.compare-table th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
-.compare-table td{color:var(--cream-dim)}
-.compare-table .feat-label{color:var(--cream);font-family:var(--font-mono);font-size:0.75rem}
-.compare-table .yes{color:var(--green-light)}
-.compare-table .no{color:var(--leather)}
-.compare-table .highlight{color:var(--cream);font-weight:700}
+.compare-inner{max-width:900px;margin:0 auto}
+.ct{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.78rem}
+.ct th,.ct td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.ct th{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.ct td{color:var(--cream-dim)}
+.ct .f{color:var(--cream);font-family:var(--font-mono);font-size:0.72rem}
+.ct .y{color:var(--green-light)}
+.ct .n{color:var(--leather)}
+.ct .h{color:var(--cream);font-weight:700}
 
-/* FAQ */
 .faq{padding:5rem 2rem;max-width:700px;margin:0 auto}
 .faq-item{border-bottom:1px solid var(--bg3);padding:1.5rem 0}
 .faq-q{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
@@ -93,12 +82,8 @@ a:hover{color:var(--gold)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 
-@media(max-width:700px){
-  .tier-grid{grid-template-columns:1fr}
-  .tier-highlight::before{top:-0.6rem}
-  .compare-table{font-size:0.7rem}
-  .compare-table th,.compare-table td{padding:0.4rem 0.5rem}
-}
+@media(max-width:900px){.tier-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.tier-grid{grid-template-columns:1fr}.tier-pop::before{top:-0.6rem}.ct{font-size:0.65rem}.ct th,.ct td{padding:0.3rem 0.4rem}}
 </style>
 </head>
 <body>
@@ -110,90 +95,115 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="/playground">Playground</a>
     <a href="/cloud/">Cloud</a>
     <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
   </div>
 </nav>
 
 <section class="page-hero">
   <div class="eyebrow">Pricing</div>
-  <h1>Same platform. <span class="accent">Your choice how to run it.</span></h1>
-  <p class="sub">Self-hosted is free forever. Cloud takes away the ops work. Enterprise adds compliance and support.</p>
+  <h1>Full platform. <span class="accent">Every tier.</span></h1>
+  <p class="sub">All 6 apps, 50+ modules, and 16 providers included at every level. Pick how you want to run it.</p>
 </section>
+
+<p class="all-note">No per-token markup. You pay your LLM providers directly. Stockyard pricing is for the platform only.</p>
 
 <section class="tiers">
   <div class="tier-grid">
+
     <div class="tier">
-      <div class="tier-name">Self-Hosted</div>
+      <div class="tier-name">Community</div>
       <div class="tier-price">Free</div>
-      <span class="tier-period">forever &middot; open source</span>
+      <span class="tier-per">forever &middot; self-hosted</span>
       <div class="tier-desc">Full platform on your infrastructure. One binary, zero dependencies.</div>
-      <ul class="tier-features">
-        <li><span class="check">&#10003;</span> All 6 apps</li>
-        <li><span class="check">&#10003;</span> 50+ middleware modules</li>
-        <li><span class="check">&#10003;</span> 17 provider adapters</li>
-        <li><span class="check">&#10003;</span> Web console</li>
-        <li><span class="check">&#10003;</span> Exchange packs</li>
-        <li><span class="check">&#10003;</span> REST API (69 endpoints)</li>
-        <li><span class="check">&#10003;</span> Unlimited requests</li>
-        <li><span class="check">&#10003;</span> Community support</li>
+      <ul class="tier-feat">
+        <li><span class="k">&#10003;</span> All 6 apps</li>
+        <li><span class="k">&#10003;</span> 50+ middleware modules</li>
+        <li><span class="k">&#10003;</span> 16 providers</li>
+        <li><span class="k">&#10003;</span> 10,000 requests/mo</li>
+        <li><span class="k">&#10003;</span> 7-day retention</li>
+        <li><span class="k">&#10003;</span> 3 users</li>
+        <li><span class="k">&#10003;</span> Web console</li>
+        <li><span class="k">&#10003;</span> Community support</li>
       </ul>
-      <a href="https://github.com/stockyard-dev/stockyard" class="tier-btn ghost">Get the binary</a>
+      <a href="https://github.com/stockyard-dev/stockyard" class="tier-btn g">Get the binary</a>
     </div>
 
-    <div class="tier tier-highlight">
-      <div class="tier-name">Cloud</div>
-      <div class="tier-price"><span class="dollar">$</span>29</div>
-      <span class="tier-period">per month &middot; 14-day free trial</span>
-      <div class="tier-desc">Managed Stockyard. We run it, you use it. Get an endpoint in 30 seconds.</div>
-      <ul class="tier-features">
-        <li><span class="check">&#10003;</span> Everything in Self-Hosted</li>
-        <li><span class="check">&#10003;</span> Managed infrastructure</li>
-        <li><span class="check">&#10003;</span> 100k requests/mo</li>
-        <li><span class="check">&#10003;</span> 30-day trace retention</li>
-        <li><span class="check">&#10003;</span> Auto-scaling</li>
-        <li><span class="check">&#10003;</span> Daily backups</li>
-        <li><span class="check">&#10003;</span> Custom subdomain</li>
-        <li><span class="check">&#10003;</span> Email support</li>
+    <div class="tier tier-pop">
+      <div class="tier-name">Pro</div>
+      <div class="tier-price"><span class="d">$</span>9<span class="c">.99</span></div>
+      <span class="tier-per">per month &middot; self-hosted</span>
+      <div class="tier-desc">Remove all limits. Unlimited requests, users, and retention.</div>
+      <ul class="tier-feat">
+        <li><span class="k">&#10003;</span> Everything in Community</li>
+        <li><span class="k">&#10003;</span> Unlimited requests</li>
+        <li><span class="k">&#10003;</span> Unlimited retention</li>
+        <li><span class="k">&#10003;</span> Unlimited users</li>
+        <li><span class="k">&#10003;</span> Auto-backups</li>
+        <li><span class="k">&#10003;</span> Email alerts</li>
+        <li><span class="k">&#10003;</span> Priority support</li>
+        <li><span class="k">&#10003;</span> License key</li>
       </ul>
-      <a href="/cloud/" class="tier-btn primary">Start free trial</a>
+      <a href="/cloud/" class="tier-btn p">Start with Pro</a>
+    </div>
+
+    <div class="tier">
+      <div class="tier-name">Cloud</div>
+      <div class="tier-price"><span class="d">$</span>29<span class="c">.99</span></div>
+      <span class="tier-per">per month &middot; fully managed</span>
+      <div class="tier-desc">We run Stockyard for you. Get an endpoint in 30 seconds. Zero ops.</div>
+      <ul class="tier-feat">
+        <li><span class="k">&#10003;</span> Everything in Pro</li>
+        <li><span class="k">&#10003;</span> Managed infrastructure</li>
+        <li><span class="k">&#10003;</span> 100k requests/mo</li>
+        <li><span class="k">&#10003;</span> Auto-scaling</li>
+        <li><span class="k">&#10003;</span> 30-day retention</li>
+        <li><span class="k">&#10003;</span> Daily backups</li>
+        <li><span class="k">&#10003;</span> Custom domain</li>
+        <li><span class="k">&#10003;</span> Email support</li>
+      </ul>
+      <a href="/cloud/" class="tier-btn s">Start free trial</a>
     </div>
 
     <div class="tier">
       <div class="tier-name">Enterprise</div>
       <div class="tier-price">Custom</div>
-      <span class="tier-period">annual contract</span>
-      <div class="tier-desc">For teams that need SLAs, SSO, audit exports, and dedicated support.</div>
-      <ul class="tier-features">
-        <li><span class="check">&#10003;</span> Everything in Cloud</li>
-        <li><span class="check">&#10003;</span> Unlimited requests</li>
-        <li><span class="check">&#10003;</span> 1-year trace retention</li>
-        <li><span class="check">&#10003;</span> SSO / SAML</li>
-        <li><span class="check">&#10003;</span> 99.9% SLA</li>
-        <li><span class="check">&#10003;</span> SOC 2 audit export</li>
-        <li><span class="check">&#10003;</span> Dedicated instance</li>
-        <li><span class="check">&#10003;</span> Slack + priority support</li>
+      <span class="tier-per">annual contract</span>
+      <div class="tier-desc">Dedicated infrastructure, compliance, and a support engineer who knows your stack.</div>
+      <ul class="tier-feat">
+        <li><span class="k">&#10003;</span> Everything in Cloud</li>
+        <li><span class="k">&#10003;</span> Unlimited requests</li>
+        <li><span class="k">&#10003;</span> Dedicated instance</li>
+        <li><span class="k">&#10003;</span> SSO / SAML</li>
+        <li><span class="k">&#10003;</span> 99.9% SLA</li>
+        <li><span class="k">&#10003;</span> 1-year retention</li>
+        <li><span class="k">&#10003;</span> Audit export</li>
+        <li><span class="k">&#10003;</span> Dedicated engineer</li>
       </ul>
-      <a href="mailto:enterprise@stockyard.dev" class="tier-btn secondary">Contact sales</a>
+      <a href="mailto:enterprise@stockyard.dev" class="tier-btn s">Contact sales</a>
     </div>
+
   </div>
 </section>
 
 <section class="compare">
   <div class="compare-inner">
     <div class="section-label leather">Feature comparison</div>
-    <table class="compare-table">
-      <tr><th>Feature</th><th>Self-Hosted</th><th>Cloud</th><th>Enterprise</th></tr>
-      <tr><td class="feat-label">Apps</td><td class="highlight">6</td><td class="highlight">6</td><td class="highlight">6</td></tr>
-      <tr><td class="feat-label">Middleware modules</td><td class="highlight">50+</td><td class="highlight">50+</td><td class="highlight">50+</td></tr>
-      <tr><td class="feat-label">Providers</td><td class="highlight">17</td><td class="highlight">17</td><td class="highlight">17</td></tr>
-      <tr><td class="feat-label">Requests</td><td class="yes">Unlimited</td><td>100k/mo ($29) &middot; 1M/mo ($99)</td><td class="yes">Unlimited</td></tr>
-      <tr><td class="feat-label">Trace retention</td><td>Your disk</td><td>30 days</td><td class="highlight">1 year</td></tr>
-      <tr><td class="feat-label">Hosting</td><td>You manage</td><td class="yes">Managed</td><td class="yes">Dedicated</td></tr>
-      <tr><td class="feat-label">Auto-scaling</td><td class="no">&mdash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
-      <tr><td class="feat-label">Backups</td><td>You manage</td><td class="yes">Daily</td><td class="yes">Continuous</td></tr>
-      <tr><td class="feat-label">SSO / SAML</td><td class="no">&mdash;</td><td class="no">&mdash;</td><td class="yes">&#10003;</td></tr>
-      <tr><td class="feat-label">SLA</td><td class="no">&mdash;</td><td class="no">&mdash;</td><td class="yes">99.9%</td></tr>
-      <tr><td class="feat-label">Support</td><td>Community</td><td>Email</td><td class="highlight">Slack + priority</td></tr>
+    <table class="ct">
+      <tr><th>Feature</th><th>Community</th><th>Pro</th><th>Cloud</th><th>Enterprise</th></tr>
+      <tr><td class="f">Apps</td><td class="h">6</td><td class="h">6</td><td class="h">6</td><td class="h">6</td></tr>
+      <tr><td class="f">Modules</td><td class="h">50+</td><td class="h">50+</td><td class="h">50+</td><td class="h">50+</td></tr>
+      <tr><td class="f">Providers</td><td class="h">16</td><td class="h">16</td><td class="h">16</td><td class="h">16</td></tr>
+      <tr><td class="f">Requests</td><td>10k/mo</td><td class="y">Unlimited</td><td>100k/mo</td><td class="y">Unlimited</td></tr>
+      <tr><td class="f">Users</td><td>3</td><td class="y">Unlimited</td><td class="y">Unlimited</td><td class="y">Unlimited</td></tr>
+      <tr><td class="f">Retention</td><td>7 days</td><td class="y">Unlimited</td><td>30 days</td><td class="h">1 year</td></tr>
+      <tr><td class="f">Hosting</td><td>Self-hosted</td><td>Self-hosted</td><td class="y">Managed</td><td class="y">Dedicated</td></tr>
+      <tr><td class="f">Auto-scaling</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
+      <tr><td class="f">Backups</td><td class="n">&mdash;</td><td class="y">Auto</td><td class="y">Daily</td><td class="y">Continuous</td></tr>
+      <tr><td class="f">Email alerts</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
+      <tr><td class="f">SSO / SAML</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">&#10003;</td></tr>
+      <tr><td class="f">SLA</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">99.9%</td></tr>
+      <tr><td class="f">Support</td><td>Community</td><td class="h">Priority</td><td class="h">Email</td><td class="h">Dedicated</td></tr>
     </table>
   </div>
 </section>
@@ -202,39 +212,39 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="section-label">Frequently asked</div>
 
   <div class="faq-item">
-    <div class="faq-q">Is self-hosted really free?</div>
-    <div class="faq-a">Yes. Stockyard is a single Go binary. Download it, run it, use it forever. All six apps, all 50+ modules, no feature gating, no usage limits, no phone-home.</div>
+    <div class="faq-q">Is Community really free?</div>
+    <div class="faq-a">Yes. All 6 apps, all 50+ modules, all 16 providers. No feature gating. The 10K request/mo limit and 3-user cap are the only restrictions. For most side projects and small teams, that's plenty.</div>
   </div>
 
   <div class="faq-item">
-    <div class="faq-q">What's the difference between Cloud and self-hosted?</div>
-    <div class="faq-a">Same software. Cloud means we handle the server, scaling, backups, and uptime. You get a subdomain (your-org.stockyard.dev) and point your app at it. No Docker, no deploys, no ops.</div>
+    <div class="faq-q">What does Pro unlock?</div>
+    <div class="faq-a">Unlimited requests, users, retention, auto-backups, and email alerts. It's for teams running Stockyard on their own servers who've outgrown the free limits. You get a license key that removes the caps.</div>
   </div>
 
   <div class="faq-item">
-    <div class="faq-q">Can I switch from self-hosted to Cloud later?</div>
-    <div class="faq-a">Yes. Export your config from self-hosted using the Exchange environment sync, then import it into your Cloud instance. Your module toggles, routes, policies, and workflows carry over.</div>
+    <div class="faq-q">Why Cloud over Pro?</div>
+    <div class="faq-a">Zero ops. No server to maintain, no Docker, no deploys, no backup scripts. You get a managed endpoint in 30 seconds. Pro is for teams who want to self-host but need unlimited capacity.</div>
   </div>
 
   <div class="faq-item">
-    <div class="faq-q">Do you mark up LLM API costs?</div>
-    <div class="faq-a">No. Stockyard never touches your API keys or charges per token. You pay your LLM providers directly at their prices. Stockyard pricing is only for the platform itself.</div>
+    <div class="faq-q">Can I switch tiers?</div>
+    <div class="faq-a">Yes. Upgrade Community to Pro with a license key — same binary. Move to Cloud by exporting config via Exchange environment sync. Downgrade anytime.</div>
   </div>
 
   <div class="faq-item">
-    <div class="faq-q">What if I need more than 100k requests on Cloud?</div>
-    <div class="faq-a">The Team tier ($99/mo) covers 1M requests. For higher volumes, Enterprise includes unlimited requests with a dedicated instance.</div>
+    <div class="faq-q">Do you mark up LLM costs?</div>
+    <div class="faq-a">No. Stockyard never touches your API keys or charges per token. You pay your LLM providers directly. Stockyard pricing is for the platform only.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q">What counts as a request?</div>
-    <div class="faq-a">One LLM API call through the proxy = one request. Dashboard views, API management calls, and Exchange operations don't count.</div>
+    <div class="faq-a">One LLM API call through the proxy = one request. Dashboard views, management API calls, and Exchange operations don't count.</div>
   </div>
 </section>
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp;
     <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
 </footer>
 

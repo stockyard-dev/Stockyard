@@ -1,7 +1,8 @@
 package apiserver
 
 // ─── Pricing Plans ─────────────────────────────────────────────────────
-// Stockyard uses a 3-tier pricing model: Self-Hosted (free), Cloud, Enterprise.
+// Stockyard uses a 4-tier pricing model:
+//   Community (free) → Pro ($9.99) → Cloud ($29.99) → Enterprise (custom)
 // All tiers include the full platform (6 apps, 50+ modules, all providers).
 
 // Plan represents a Stockyard pricing tier.
@@ -20,22 +21,79 @@ type Plan struct {
 func Plans() []Plan {
 	return []Plan{
 		{
-			Slug: "self-hosted", Name: "Self-Hosted", Tagline: "Full platform, your infrastructure.",
+			Slug: "community", Name: "Community", Tagline: "Full platform. Self-hosted. Free forever.",
 			PriceCents: 0,
-			Features: []string{"All 6 apps", "50+ middleware modules", "All providers", "Community support", "Unlimited requests"},
-			Limits: map[string]string{"requests": "unlimited", "retention": "unlimited", "support": "community"},
+			Features: []string{
+				"All 6 apps",
+				"50+ middleware modules",
+				"All 16 providers",
+				"10,000 requests/mo",
+				"SQLite storage",
+				"Community support",
+			},
+			Limits: map[string]string{
+				"requests":  "10,000/mo",
+				"retention": "7 days",
+				"support":   "community",
+				"users":     "3",
+			},
 		},
 		{
-			Slug: "cloud", Name: "Cloud", Tagline: "Managed hosting. Zero ops.",
-			PriceCents: 2900, // $29/mo
-			Features: []string{"All 6 apps", "50+ middleware modules", "All providers", "Managed infrastructure", "Auto-scaling", "Email support"},
-			Limits: map[string]string{"requests": "100,000/mo", "retention": "30 days", "support": "email"},
+			Slug: "pro", Name: "Pro", Tagline: "Unlimited self-hosted. Priority support.",
+			PriceCents: 999, // $9.99/mo
+			Features: []string{
+				"Everything in Community",
+				"Unlimited requests",
+				"Unlimited retention",
+				"Auto-backups",
+				"Email alerts",
+				"Priority support",
+				"Unlimited users",
+			},
+			Limits: map[string]string{
+				"requests":  "unlimited",
+				"retention": "unlimited",
+				"support":   "priority",
+				"users":     "unlimited",
+			},
+		},
+		{
+			Slug: "cloud", Name: "Cloud", Tagline: "Fully managed. Zero ops.",
+			PriceCents: 2999, // $29.99/mo
+			Features: []string{
+				"Everything in Pro",
+				"Managed infrastructure",
+				"Auto-scaling",
+				"30-day trace retention",
+				"Daily backups",
+				"Email support",
+				"Custom domain",
+			},
+			Limits: map[string]string{
+				"requests":  "100,000/mo",
+				"retention": "30 days",
+				"support":   "email",
+				"users":     "unlimited",
+			},
 		},
 		{
 			Slug: "enterprise", Name: "Enterprise", Tagline: "Unlimited scale. Dedicated support.",
 			PriceCents: 0, Custom: true,
-			Features: []string{"All 6 apps", "50+ middleware modules", "All providers", "Dedicated infrastructure", "SSO/SAML", "99.9% SLA", "Dedicated support engineer"},
-			Limits: map[string]string{"requests": "unlimited", "retention": "1 year", "support": "dedicated"},
+			Features: []string{
+				"Everything in Cloud",
+				"Dedicated infrastructure",
+				"SSO / SAML",
+				"99.9% SLA",
+				"1-year retention",
+				"Dedicated support engineer",
+				"Custom integrations",
+			},
+			Limits: map[string]string{
+				"requests":  "unlimited",
+				"retention": "1 year",
+				"support":   "dedicated",
+				"users":     "unlimited",
+			},
 		},
 	}
 }

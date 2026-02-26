@@ -93,8 +93,8 @@ a:hover{color:var(--gold)}
 .compare-table .them{color:var(--cream-dim)}
 
 .pricing-teaser{padding:5rem 2rem;text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.tier-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:800px;margin-left:auto;margin-right:auto}
-.tier{flex:1;min-width:200px;max-width:240px;padding:2rem 1.5rem;border:1px solid var(--bg3);text-align:center}
+.tier-row{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:960px;margin-left:auto;margin-right:auto}
+.tier{flex:1;min-width:180px;max-width:220px;padding:1.5rem 1.2rem;border:1px solid var(--bg3);text-align:center}
 .tier-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
 .tier-price{font-size:2.5rem;font-weight:700;color:var(--cream)}
 .tier-price.has-dollar::before{content:'$';font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
@@ -270,16 +270,22 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="section-label gold">Pricing</div>
   <div class="tier-row">
     <div class="tier">
-      <div class="tier-name">Self-Hosted</div>
+      <div class="tier-name">Community</div>
       <div class="tier-price">Free</div>
-      <div class="tier-period">forever</div>
-      <div class="tier-desc">Full platform. Your infrastructure.</div>
+      <div class="tier-period">forever &middot; self-hosted</div>
+      <div class="tier-desc">Full platform. 10k reqs/mo.</div>
     </div>
     <div class="tier tier-highlight">
+      <div class="tier-name">Pro</div>
+      <div class="tier-price has-dollar">9.99</div>
+      <div class="tier-period">per month &middot; self-hosted</div>
+      <div class="tier-desc">Unlimited everything.</div>
+    </div>
+    <div class="tier">
       <div class="tier-name">Cloud</div>
-      <div class="tier-price has-dollar">29</div>
-      <div class="tier-period">per month</div>
-      <div class="tier-desc">Managed hosting. Zero ops.</div>
+      <div class="tier-price has-dollar">29.99</div>
+      <div class="tier-period">per month &middot; managed</div>
+      <div class="tier-desc">Zero ops. We run it.</div>
     </div>
     <div class="tier">
       <div class="tier-name">Enterprise</div>

@@ -280,8 +280,8 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, http.StatusBadRequest, "enterprise plan requires custom pricing — contact sales@stockyard.dev")
 			return
 		}
-		if plan.PriceCents == 0 {
-			writeErr(w, http.StatusBadRequest, "self-hosted plan is free — no checkout needed")
+		if plan.PriceCents == 0 && !plan.Custom {
+			writeErr(w, http.StatusBadRequest, "community plan is free — no checkout needed. Download at github.com/stockyard-dev/stockyard")
 			return
 		}
 		product = plan.Slug
