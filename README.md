@@ -23,13 +23,18 @@ Your App  →  Stockyard  →  OpenAI / Anthropic / Gemini / Groq / Mistral / 11
 ## Install
 
 ```bash
-curl -sSL stockyard.dev/install | sh
+# One-line install (Linux/macOS)
+curl -sSL https://stockyard-production.up.railway.app/install.sh | sh
 ```
 
 Or run with Docker:
 
 ```bash
-docker run -d -p 4200:4200 -v stockyard-data:/data ghcr.io/stockyard-dev/stockyard
+docker run -d -p 4200:4200 \
+  -e STOCKYARD_ADMIN_KEY=my-secret-key \
+  -e OPENAI_API_KEY=sk-... \
+  -v stockyard-data:/data \
+  ghcr.io/stockyard-dev/stockyard
 ```
 
 Or build from source:

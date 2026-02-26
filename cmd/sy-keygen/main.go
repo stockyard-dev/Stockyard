@@ -246,24 +246,27 @@ func cmdInfo() {
 	// Show tier limits
 	lim := license.Limits(lic.Payload.Tier)
 	fmt.Println("\nTier Limits:")
-	if lim.MaxRequestsPerDay > 0 {
-		fmt.Printf("  Daily:    %d requests\n", lim.MaxRequestsPerDay)
-	} else {
-		fmt.Printf("  Daily:    unlimited\n")
-	}
 	if lim.MaxRequestsPerMonth > 0 {
-		fmt.Printf("  Monthly:  %d requests\n", lim.MaxRequestsPerMonth)
+		fmt.Printf("  Monthly:    %d requests\n", lim.MaxRequestsPerMonth)
 	} else {
-		fmt.Printf("  Monthly:  unlimited\n")
+		fmt.Printf("  Monthly:    unlimited\n")
+	}
+	if lim.MaxUsers > 0 {
+		fmt.Printf("  Users:      %d\n", lim.MaxUsers)
+	} else {
+		fmt.Printf("  Users:      unlimited\n")
+	}
+	if lim.RetentionDays > 0 {
+		fmt.Printf("  Retention:  %d days\n", lim.RetentionDays)
+	} else {
+		fmt.Printf("  Retention:  unlimited\n")
 	}
 
 	features := []string{}
-	if lim.DashboardAccess { features = append(features, "dashboard") }
-	if lim.APIAccess { features = append(features, "api") }
-	if lim.ExportAccess { features = append(features, "export") }
-	if lim.MultiInstance { features = append(features, "multi-instance") }
-	if lim.WhiteLabel { features = append(features, "whitelabel") }
-	fmt.Printf("  Features: %s\n", strings.Join(features, ", "))
+	if lim.EmailAlerts { features = append(features, "email-alerts") }
+	if lim.AutoBackups { features = append(features, "auto-backups") }
+	if lim.PrioritySupport { features = append(features, "priority-support") }
+	fmt.Printf("  Features:   %s\n", strings.Join(features, ", "))
 }
 
 func fatal(format string, args ...any) {

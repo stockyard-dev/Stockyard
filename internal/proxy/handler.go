@@ -199,6 +199,8 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 func classifyError(err error) int {
 	msg := err.Error()
 	switch {
+	case strings.Contains(msg, "license"):
+		return http.StatusPaymentRequired // 402
 	case strings.Contains(msg, "no providers configured"):
 		return http.StatusServiceUnavailable // 503
 	case strings.Contains(msg, "circuit open"):

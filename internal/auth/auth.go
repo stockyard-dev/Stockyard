@@ -516,6 +516,18 @@ func (a *API) handleSignup(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 400, map[string]string{"error": "invalid JSON"})
 		return
 	}
+
+	// Enforce user cap
+	if a.licEnforcer != nil {
+		if err := a.licEnforcer.CheckUserLimit(a.store.CountUsers()); err != nil {
+			writeJSON(w, 402, map[string]string{
+				"error": err.Error(),
+				"type":  "license_limit",
+			})
+			return
+		}
+	}
+
 	user, err := a.store.CreateUser(body.Email, body.Name)
 	if err != nil {
 		status := 500
@@ -551,6 +563,18 @@ func (a *API) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 400, map[string]string{"error": "invalid JSON"})
 		return
 	}
+
+	// Enforce user cap
+	if a.licEnforcer != nil {
+		if err := a.licEnforcer.CheckUserLimit(a.store.CountUsers()); err != nil {
+			writeJSON(w, 402, map[string]string{
+				"error": err.Error(),
+				"type":  "license_limit",
+			})
+			return
+		}
+	}
+
 	user, err := a.store.CreateUser(body.Email, body.Name)
 	if err != nil {
 		status := 500

@@ -381,6 +381,7 @@ func Boot(pc ProductConfig) {
 
 	// Register auth API routes (user management, key management, provider keys)
 	authAPI := auth.NewAPI(authStore)
+	authAPI.SetLicenseEnforcer(licEnforcer)
 	authAPI.Register(srv.Mux())
 
 	// Wrap with self-service auth (/api/auth/me/* uses API key, not admin key)
