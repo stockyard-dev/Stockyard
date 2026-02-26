@@ -85,22 +85,55 @@ function ProxyView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-// ─── Observe (with trace detail modal) ─────────────────────────────
+// ─── Chart Components ──────────────────────────────────────────────
+function Sparkline({data,width=200,height=40,color='var(--rust-light)',fill=true}){
+  if(!data||data.length<2)return html`<svg width=${width} height=${height}><text x=${width/2} y=${height/2+4} text-anchor="middle" fill="var(--cream-muted)" font-size="10" font-family="var(--font-mono)">No data</text></svg>`;
+  const max=Math.max(...data,0.001);const min=Math.min(...data,0);const range=max-min||1;
+  const pts=data.map((v,i)=>[i/(data.length-1)*width,(1-(v-min)/range)*(height-4)+2]);
+  const line=pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const area=line+' L'+width+','+height+' L0,'+height+' Z';
+  return html`<svg width=${width} height=${height} style="display:block">${fill&&html`<path d=${area} fill=${color} opacity="0.1"/>`}<path d=${line} fill="none" stroke=${color} stroke-width="1.5"/><circle cx=${pts[pts.length-1][0]} cy=${pts[pts.length-1][1]} r="2.5" fill=${color}/></svg>`;
+}
+function MiniBar({items,width=260,height=120}){
+  if(!items||items.length===0)return html`<div class="empty-state" style="padding:16px;font-size:0.78rem">No data.</div>`;
+  const max=Math.max(...items.map(i=>i.value),0.001);const barH=Math.min(18,Math.floor((height-8)/items.length)-4);
+  return html`<svg width=${width} height=${items.length*(barH+6)+4} style="display:block">${items.map((item,i)=>{
+    const w=Math.max(2,(item.value/max)*(width-90));const y=i*(barH+6)+2;
+    return html`<g key=${i}><rect x="80" y=${y} width=${w} height=${barH} fill=${item.color||'var(--rust)'} rx="2" opacity="0.8"/><text x="76" y=${y+barH/2+4} text-anchor="end" fill="var(--cream-dim)" font-size="10" font-family="var(--font-mono)">${item.label}</text><text x=${82+w} y=${y+barH/2+4} fill="var(--cream-muted)" font-size="9" font-family="var(--font-mono)">${item.display||item.value.toFixed(2)}</text></g>`;
+  })}</svg>`;
+}
+
+// ─── Observe (with charts + trace detail) ──────────────────────────
 function ObserveView(){
-  const[tab,setTab]=useState('traces');const[data,setData]=useState({});const[detail,setDetail]=useState(null);
+  const[tab,setTab]=useState('dashboard');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[ts,setTs]=useState({});const[period,setPeriod]=useState('24h');
   useEffect(()=>{(async()=>{const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces'),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]})})()},[]);
+  useEffect(()=>{(async()=>{const r=await api('/api/observe/timeseries?period='+period);setTs(r||{})})()},[period]);
   const d=k=>Array.isArray(data[k])?data[k]:[];
+  const ov=data.overview||{};const today=ov.today||{};
+  const buckets=ts.buckets||[];const provs=ts.providers||[];const models=ts.models||[];
+  const PCOLORS=['var(--rust-light)','var(--gold)','var(--green)','var(--leather-light)','var(--cream-muted)'];
   return html`<div class="page-head"><div class="page-eyebrow">Observe</div><h2>Analytics & Traces</h2><p class="page-sub">Cost attribution, alerts & anomaly detection.</p></div>
-    <div class="stats-row"><${Stat} label="Traces" value=${fmt.num(d('traces').length)} accent/><${Stat} label="Today's Cost" value=${fmt.usd((data.overview||{}).today_cost||0)}/><${Stat} label="Alerts" value=${d('alerts').length}/><${Stat} label="Anomalies" value=${d('anomalies').length}/></div>
-    <${TabBar} tabs=${['traces','costs','alerts','anomalies']} active=${tab} onChange=${setTab}/>
-    ${tab==='traces'?html`<${DataTable} columns=${[
+    <div class="stats-row"><${Stat} label="Today\u2019s Requests" value=${fmt.num(today.requests||0)} accent/><${Stat} label="Today\u2019s Cost" value=${fmt.usd(today.cost_usd||0)}/><${Stat} label="Total Traces" value=${fmt.num(ov.total_traces||0)}/><${Stat} label="Alerts" value=${d('alerts').length} sub=${d('alerts').filter(a=>a.last_fired).length+' fired'}/></div>
+    <${TabBar} tabs=${['dashboard','traces','costs','alerts','anomalies']} active=${tab} onChange=${setTab}/>
+    ${tab==='dashboard'?html`<div class="chart-period"><span class="chart-period-label">Period:</span>${['24h','7d','30d'].map(p=>html`<button key=${p} class="btn btn-sm ${period===p?'primary':''}" onClick=${()=>setPeriod(p)}>${p}</button>`)}</div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="chart-title">Requests</div><${Sparkline} data=${buckets.map(b=>b.requests)} width=${280} height=${50}/></div>
+        <div class="chart-card"><div class="chart-title">Cost (USD)</div><${Sparkline} data=${buckets.map(b=>b.cost_usd)} width=${280} height=${50} color="var(--gold)"/></div>
+        <div class="chart-card"><div class="chart-title">Avg Latency (ms)</div><${Sparkline} data=${buckets.map(b=>b.avg_latency_ms)} width=${280} height=${50} color="var(--leather-light)"/></div>
+        <div class="chart-card"><div class="chart-title">Errors</div><${Sparkline} data=${buckets.map(b=>b.errors)} width=${280} height=${50} color="var(--red)"/></div>
+      </div>
+      <div class="chart-grid" style="grid-template-columns:1fr 1fr">
+        <div class="chart-card"><div class="chart-title">Cost by Provider (7d)</div><${MiniBar} items=${provs.map((p,i)=>({label:p.provider||'unknown',value:p.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(p.cost_usd)}))} width=${340} height=${140}/></div>
+        <div class="chart-card"><div class="chart-title">Cost by Model (7d)</div><${MiniBar} items=${models.map((m,i)=>({label:(m.model||'unknown').split('/').pop().substring(0,16),value:m.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(m.cost_usd)}))} width=${340} height=${140}/></div>
+      </div>`:
+    tab==='traces'?html`<${DataTable} columns=${[
       {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},{key:'provider',label:'Provider',width:'110px',mono:true},
       {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},{key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
       {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.latency_ms)},{key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
       {key:'s',label:'',width:'50px',render:r=>html`<${Badge} text=${r.status_code===200||!r.status_code?'ok':'err'} variant=${r.status_code===200||!r.status_code?'success':'danger'}/>`}
     ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg="No traces yet \u2014 send requests to /v1/chat/completions."/>`:
     tab==='costs'?html`<${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
-    tab==='alerts'?html`<${DataTable} columns=${[{key:'name',label:'Alert',width:'1.5fr'},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'threshold',label:'Threshold',width:'110px',mono:true},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'active'} variant=${r.status==='firing'?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured."/>`:
+    tab==='alerts'?html`<${DataTable} columns=${[{key:'name',label:'Alert',width:'1.5fr'},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'threshold',label:'Threshold',width:'110px',mono:true},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.last_fired?'fired':'active'} variant=${r.last_fired?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured."/>`:
     html`<${DataTable} columns=${[{key:'ts',label:'Detected',width:'110px',render:r=>fmt.ago(r.detected_at||r.created_at)},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'val',label:'Value',width:'90px',mono:true},{key:'sev',label:'Severity',width:'100px',render:r=>html`<${Badge} text=${r.severity||'medium'} variant=${r.severity==='high'?'danger':'warn'}/>`}]} rows=${d('anomalies')} emptyMsg="No anomalies detected."/>`}
     ${detail&&html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
       <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
@@ -113,7 +146,7 @@ function ObserveView(){
       ${detail.user_id?html`<div class="td-row"><span class="td-label">User ID</span><span class="mono">#${detail.user_id}</span></div>`:''}
       ${detail.request_body?html`<div class="td-section"><div class="td-label">Request</div><pre class="td-pre">${typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body,null,2)}</pre></div>`:''}
       ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
-    </div><//>`}`;
+    </div><//>}`
 }
 
 // ─── Trust ─────────────────────────────────────────────────────────
@@ -211,6 +244,37 @@ function SettingsView(){
 
 const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,settings:SettingsView};
 
+
+function Onboarding({onComplete}){
+  const[step,setStep]=useState(0);const[email,setEmail]=useState('');const[name,setName]=useState('');const[prov,setProv]=useState('openai');const[pk,setPk]=useState('');
+  const[result,setResult]=useState(null);const[err,setErr]=useState('');const[loading,setLoading]=useState(false);
+  const createUser=async()=>{setLoading(true);setErr('');const r=await api('/api/auth/users',{method:'POST',body:JSON.stringify({email,name})});setLoading(false);if(r._error||r.error){setErr(r.error||'Failed');return}setResult(r);setStep(1)};
+  const addProvider=async()=>{if(!result?.user)return;setLoading(true);setErr('');const r=await api('/api/auth/users/'+result.user.id+'/providers/'+prov,{method:'PUT',body:JSON.stringify({api_key:pk})});setLoading(false);if(r._error||r.error){setErr(r.error||'Failed');return}setStep(2)};
+  const finish=()=>{sessionStorage.setItem('sy_onboarded','1');onComplete()};
+  const STEPS=[{n:'Create User',d:'Set up the first user account.'},{n:'Add Provider',d:'Connect your LLM provider API key.'},{n:'Ready',d:'Your proxy is configured.'}];
+  return html`<div class="onboard-overlay"><div class="onboard-box">
+    <div class="onboard-header"><div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:8px">Welcome to Stockyard</div>
+    <h2 style="font-size:1.4rem;margin-bottom:4px">Quick Setup</h2><p style="color:var(--cream-dim);font-style:italic;font-size:0.9rem">Get proxying in 2 minutes.</p></div>
+    <div class="onboard-steps">${STEPS.map((s,i)=>html`<div key=${i} class="onboard-step ${i===step?'active':i<step?'done':''}"><span class="onboard-step-num">${i<step?'\u2713':i+1}</span><span>${s.n}</span></div>`)}</div>
+    <div class="onboard-content">
+    ${step===0?html`<${Input} label="Email" value=${email} onChange=${setEmail} placeholder="you@company.com"/>
+      <${Input} label="Name (optional)" value=${name} onChange=${setName} placeholder="Your name"/>
+      ${err&&html`<div style="color:var(--red);font-size:0.8rem;margin-bottom:8px">${err}</div>`}
+      <${Btn} variant="primary" onClick=${createUser} disabled=${!email||loading}>${loading?'Creating...':'Create User & API Key'}<//>
+      ${result&&html`<div class="key-alert" style="margin-top:12px"><div class="key-alert-title">Your API Key (copy now)</div><code class="key-alert-value">${result.api_key?.key}</code></div>`}`:
+    step===1?html`<${Select} label="Provider" value=${prov} onChange=${setProv} options=${[{value:'openai',label:'OpenAI'},{value:'anthropic',label:'Anthropic'},{value:'gemini',label:'Google Gemini'},{value:'groq',label:'Groq'}]}/>
+      <${Input} label="API Key" value=${pk} onChange=${setPk} type="password" placeholder="sk-..." mono/>
+      ${err&&html`<div style="color:var(--red);font-size:0.8rem;margin-bottom:8px">${err}</div>`}
+      <div style="display:flex;gap:8px"><${Btn} variant="primary" onClick=${addProvider} disabled=${!pk||loading}>${loading?'Saving...':'Save Provider Key'}<//><${Btn} onClick=${()=>setStep(2)}>Skip for now<//></div>`:
+    html`<div style="text-align:center;padding:24px 0">
+      <div style="font-size:2rem;margin-bottom:12px">\u2713</div>
+      <p style="font-size:1rem;margin-bottom:8px">You\u2019re all set!</p>
+      <p style="color:var(--cream-dim);font-size:0.85rem;margin-bottom:20px">Your proxy is ready at <code>/v1/chat/completions</code></p>
+      <pre style="background:var(--bg);border:1px solid var(--bg3);padding:12px;font-family:var(--font-mono);font-size:0.75rem;text-align:left;color:var(--cream-dim);margin-bottom:20px">curl https://YOUR_HOST/v1/chat/completions \\\n  -H "Authorization: Bearer ${result?.api_key?.key||'sk-sy-...'}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"model":"gpt-4","messages":[{"role":"user","content":"Hello"}]}'</pre>
+      <${Btn} variant="primary" onClick=${finish}>Open Console<//></div>`}
+    </div></div></div>`;
+}
+
 function AuthGate({onAuth}){
   const[key,setKey]=useState('');const[err,setErr]=useState('');
   const tryAuth=async()=>{setAdminKey(key);const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setErr('Invalid key');setAdminKey('');return}onAuth()};
@@ -224,10 +288,11 @@ function AuthGate({onAuth}){
 }
 
 function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const View=VIEWS[active]||OverviewView;
-  useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true)})()},[]);
+  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);const View=VIEWS[active]||OverviewView;
+  useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
+  if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
   return html`<div class="shell"><nav class="nav">
     <div class="nav-brand" onClick=${()=>setActive('overview')}><span class="nav-brand-text">Stockyard</span></div>
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
@@ -281,6 +346,14 @@ render(html`<${App}/>`,document.getElementById('root'));
 .section-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.section-head h3{font-size:1.1rem;font-weight:700}.section-title{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:8px;display:flex;align-items:center;gap:12px}
 .key-alert{background:rgba(196,93,44,0.08);border:1px solid var(--rust);padding:12px 16px;margin-bottom:12px}.key-alert-title{font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}.key-alert-value{display:block;font-size:0.82rem;color:var(--cream);margin-bottom:8px;word-break:break-all}
 .accent{color:var(--gold)}
+.chart-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.chart-card{background:var(--bg2);border:1px solid var(--bg3);padding:16px;transition:border-color 0.15s}.chart-card:hover{border-color:var(--leather)}.chart-title{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:10px}
+.chart-period{display:flex;align-items:center;gap:8px;margin-bottom:4px}.chart-period-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)}
+.onboard-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10000}.onboard-box{background:var(--bg2);border:1px solid var(--bg3);width:520px;max-width:90vw;padding:32px}
+.onboard-header{text-align:center;margin-bottom:24px}.onboard-steps{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid var(--bg3);padding-bottom:16px}
+.onboard-step{flex:1;display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);padding:8px}.onboard-step.active{color:var(--rust-light)}.onboard-step.done{color:var(--green)}
+.onboard-step-num{width:22px;height:22px;border-radius:11px;border:1px solid var(--bg3);display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0}.onboard-step.active .onboard-step-num{border-color:var(--rust);color:var(--rust-light)}.onboard-step.done .onboard-step-num{border-color:var(--green);color:var(--green);background:rgba(90,154,74,0.1)}
+.onboard-content{min-height:180px}
+
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg3)}::-webkit-scrollbar-thumb:hover{background:var(--leather)}
 @media(max-width:900px){.nav{display:none}.stats-row{flex-wrap:wrap}.stats-row .stat{min-width:45%}.app-grid{grid-template-columns:1fr}.content{padding:24px 16px}.settings-layout{flex-direction:column}.settings-sidebar{width:100%;min-width:0}}
 </style>

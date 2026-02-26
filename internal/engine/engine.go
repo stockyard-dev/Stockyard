@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/api"
+	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
@@ -392,6 +393,10 @@ func Boot(pc ProductConfig) {
 	flushCtx, flushCancel := context.WithCancel(context.Background())
 	flusher := tracker.NewFlusher(counter, db, 5*time.Second)
 	go flusher.Start(flushCtx)
+
+	// Start alert evaluator (checks alert rules every 60s, delivers webhooks)
+	alertEval := observe.NewAlertEvaluator(db.Conn())
+	go alertEval.Start(flushCtx)
 
 	// Graceful shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

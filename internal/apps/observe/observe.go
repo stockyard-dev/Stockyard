@@ -102,6 +102,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/observe/overview", a.handleOverview)
 	mux.HandleFunc("GET /api/observe/costs", a.handleCosts)
 	mux.HandleFunc("GET /api/observe/costs/daily", a.handleCostDaily)
+	mux.HandleFunc("GET /api/observe/timeseries", a.handleTimeseries)
 
 	// Traces
 	mux.HandleFunc("GET /api/observe/traces", a.handleListTraces)
@@ -376,6 +377,115 @@ func (a *App) handleListAnomalies(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	writeJSON(w, map[string]any{"anomalies": anomalies})
+}
+
+func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		period = "24h"
+	}
+
+	var query string
+	switch period {
+	case "7d":
+		query = `SELECT strftime('%Y-%m-%d', created_at) as bucket,
+			COUNT(*) as requests,
+			COALESCE(SUM(cost_usd),0) as cost,
+			COALESCE(AVG(duration_ms),0) as avg_latency,
+			COALESCE(SUM(CASE WHEN status != 'ok' THEN 1 ELSE 0 END),0) as errors,
+			COALESCE(SUM(tokens_in),0) as tokens_in,
+			COALESCE(SUM(tokens_out),0) as tokens_out
+			FROM observe_traces
+			WHERE created_at >= datetime('now', '-7 days')
+			GROUP BY bucket ORDER BY bucket`
+	case "30d":
+		query = `SELECT strftime('%Y-%m-%d', created_at) as bucket,
+			COUNT(*) as requests,
+			COALESCE(SUM(cost_usd),0) as cost,
+			COALESCE(AVG(duration_ms),0) as avg_latency,
+			COALESCE(SUM(CASE WHEN status != 'ok' THEN 1 ELSE 0 END),0) as errors,
+			COALESCE(SUM(tokens_in),0) as tokens_in,
+			COALESCE(SUM(tokens_out),0) as tokens_out
+			FROM observe_traces
+			WHERE created_at >= datetime('now', '-30 days')
+			GROUP BY bucket ORDER BY bucket`
+	default: // 24h
+		query = `SELECT strftime('%Y-%m-%d %H:00', created_at) as bucket,
+			COUNT(*) as requests,
+			COALESCE(SUM(cost_usd),0) as cost,
+			COALESCE(AVG(duration_ms),0) as avg_latency,
+			COALESCE(SUM(CASE WHEN status != 'ok' THEN 1 ELSE 0 END),0) as errors,
+			COALESCE(SUM(tokens_in),0) as tokens_in,
+			COALESCE(SUM(tokens_out),0) as tokens_out
+			FROM observe_traces
+			WHERE created_at >= datetime('now', '-24 hours')
+			GROUP BY bucket ORDER BY bucket`
+	}
+
+	rows, err := a.conn.Query(query)
+	if err != nil {
+		writeJSON(w, map[string]any{"buckets": []any{}, "error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var buckets []map[string]any
+	for rows.Next() {
+		var bucket string
+		var reqs, errors, tokIn, tokOut int64
+		var cost, avgLat float64
+		rows.Scan(&bucket, &reqs, &cost, &avgLat, &errors, &tokIn, &tokOut)
+		buckets = append(buckets, map[string]any{
+			"bucket": bucket, "requests": reqs, "cost_usd": cost,
+			"avg_latency_ms": avgLat, "errors": errors,
+			"tokens_in": tokIn, "tokens_out": tokOut,
+		})
+	}
+
+	// Provider breakdown
+	provRows, _ := a.conn.Query(`SELECT provider, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost,
+		COALESCE(AVG(duration_ms),0) as avg_lat, COALESCE(SUM(tokens_in+tokens_out),0) as tokens
+		FROM observe_traces WHERE created_at >= datetime('now', '-7 days')
+		GROUP BY provider ORDER BY cost DESC`)
+	var providers []map[string]any
+	if provRows != nil {
+		defer provRows.Close()
+		for provRows.Next() {
+			var prov string
+			var reqs, tokens int64
+			var cost, avgLat float64
+			provRows.Scan(&prov, &reqs, &cost, &avgLat, &tokens)
+			providers = append(providers, map[string]any{
+				"provider": prov, "requests": reqs, "cost_usd": cost,
+				"avg_latency_ms": avgLat, "tokens": tokens,
+			})
+		}
+	}
+
+	// Model breakdown
+	modelRows, _ := a.conn.Query(`SELECT model, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost
+		FROM observe_traces WHERE created_at >= datetime('now', '-7 days')
+		GROUP BY model ORDER BY cost DESC LIMIT 10`)
+	var models []map[string]any
+	if modelRows != nil {
+		defer modelRows.Close()
+		for modelRows.Next() {
+			var model string
+			var reqs int64
+			var cost float64
+			modelRows.Scan(&model, &reqs, &cost)
+			models = append(models, map[string]any{
+				"model": model, "requests": reqs, "cost_usd": cost,
+			})
+		}
+	}
+
+	writeJSON(w, map[string]any{
+		"period":    period,
+		"buckets":   buckets,
+		"providers": providers,
+		"models":    models,
+	})
 }
 
 func writeJSON(w http.ResponseWriter, v any) {
