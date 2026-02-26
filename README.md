@@ -198,4 +198,3 @@ POST /api/exchange/packs/{slug}/install   Install pack
 ## License
 
 See [LICENSE](LICENSE).
-# Persistence test Thu Feb 26 00:15:51 UTC 2026
