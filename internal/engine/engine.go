@@ -23,6 +23,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
+	"github.com/stockyard-dev/stockyard/internal/slog"
 	"github.com/stockyard-dev/stockyard/internal/storage"
 	"github.com/stockyard-dev/stockyard/internal/toggle"
 	"github.com/stockyard-dev/stockyard/internal/tracker"
@@ -201,6 +202,16 @@ func Boot(pc ProductConfig) {
 	}
 
 	log.SetFlags(log.Ltime | log.Lshortfile)
+
+	// Initialize structured logging
+	slog.Init(slog.Config{
+		Level:  os.Getenv("LOG_LEVEL"),  // debug, info, warn, error (default: info)
+		Format: os.Getenv("LOG_FORMAT"), // json or text (default: text)
+	})
+	if slog.IsJSON() {
+		log.SetFlags(0) // JSON handles its own formatting
+		slog.Info("structured logging initialized", "level", slog.GetLevel().String(), "format", "json")
+	}
 
 	// Load config
 	configPath := ""
