@@ -9,7 +9,8 @@ type Plan struct {
 	Slug        string            `json:"slug"`
 	Name        string            `json:"name"`
 	Tagline     string            `json:"tagline"`
-	PriceCents  int               `json:"price_cents"` // 0 = free, -1 = custom
+	PriceCents  int               `json:"price_cents"` // 0 = free or custom
+	Custom      bool              `json:"custom"`      // true = contact sales
 	Features    []string          `json:"features"`
 	Limits      map[string]string `json:"limits"`
 	StripePriceID string          `json:"stripe_price_id,omitempty"`
@@ -32,7 +33,7 @@ func Plans() []Plan {
 		},
 		{
 			Slug: "enterprise", Name: "Enterprise", Tagline: "Unlimited scale. Dedicated support.",
-			PriceCents: -1, // Custom pricing
+			PriceCents: 0, Custom: true,
 			Features: []string{"All 6 apps", "50+ middleware modules", "All providers", "Dedicated infrastructure", "SSO/SAML", "99.9% SLA", "Dedicated support engineer"},
 			Limits: map[string]string{"requests": "unlimited", "retention": "1 year", "support": "dedicated"},
 		},

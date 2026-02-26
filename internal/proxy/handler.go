@@ -41,7 +41,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		writeError(w, http.StatusBadGateway, fmt.Sprintf("provider error: %v", err))
+		writeError(w, classifyError(err), err.Error())
 		return
 	}
 
@@ -195,6 +195,25 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 }
 
 // writeError writes a JSON error response.
+// classifyError returns an appropriate HTTP status code based on the error message.
+func classifyError(err error) int {
+	msg := err.Error()
+	switch {
+	case strings.Contains(msg, "no providers configured"):
+		return http.StatusServiceUnavailable // 503
+	case strings.Contains(msg, "circuit open"):
+		return http.StatusServiceUnavailable // 503
+	case strings.Contains(msg, "rate limit") || strings.Contains(msg, "status 429"):
+		return http.StatusTooManyRequests // 429
+	case strings.Contains(msg, "status 401") || strings.Contains(msg, "invalid API key"):
+		return http.StatusUnauthorized // 401
+	case strings.Contains(msg, "status 403"):
+		return http.StatusForbidden // 403
+	default:
+		return http.StatusBadGateway // 502
+	}
+}
+
 func writeError(w http.ResponseWriter, status int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

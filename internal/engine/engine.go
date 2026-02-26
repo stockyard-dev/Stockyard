@@ -24,6 +24,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
+	"github.com/stockyard-dev/stockyard/internal/site"
 	"github.com/stockyard-dev/stockyard/internal/slog"
 	"github.com/stockyard-dev/stockyard/internal/storage"
 	"github.com/stockyard-dev/stockyard/internal/toggle"
@@ -388,6 +389,12 @@ func Boot(pc ProductConfig) {
 
 	// Wrap with admin auth (reads STOCKYARD_ADMIN_KEY env var)
 	srv.WrapHandler(adminAuthMiddleware)
+
+	// Register marketing website (/, /docs/, /pricing/, etc.)
+	site.Register(srv.Mux())
+
+	// Seed demo data if database is empty (populates traces, costs, experiments)
+	db.SeedDemoData(pc.Product)
 
 	// Start data retention cleanup loop
 	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)

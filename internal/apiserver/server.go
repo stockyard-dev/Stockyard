@@ -276,12 +276,12 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, http.StatusBadRequest, fmt.Sprintf("unknown plan: %s", req.Plan))
 			return
 		}
-		if plan.PriceCents == 0 {
-			writeErr(w, http.StatusBadRequest, "self-hosted plan is free — no checkout needed")
+		if plan.Custom {
+			writeErr(w, http.StatusBadRequest, "enterprise plan requires custom pricing — contact sales@stockyard.dev")
 			return
 		}
-		if plan.PriceCents < 0 {
-			writeErr(w, http.StatusBadRequest, "enterprise plan requires custom pricing — contact sales@stockyard.dev")
+		if plan.PriceCents == 0 {
+			writeErr(w, http.StatusBadRequest, "self-hosted plan is free — no checkout needed")
 			return
 		}
 		product = plan.Slug
