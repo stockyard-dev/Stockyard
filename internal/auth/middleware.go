@@ -281,10 +281,34 @@ func createProvider(name, apiKey, baseURL string) provider.Provider {
 		return provider.NewGemini(cfg)
 	case "groq":
 		return provider.NewGroq(cfg)
+	case "mistral":
+		return provider.NewMistral(cfg)
+	case "together":
+		return provider.NewTogether(cfg)
+	case "deepseek":
+		return provider.NewDeepSeek(cfg)
+	case "fireworks":
+		return provider.NewFireworks(cfg)
+	case "perplexity":
+		return provider.NewPerplexity(cfg)
+	case "openrouter":
+		return provider.NewOpenRouter(cfg)
+	case "azure":
+		return provider.NewAzureOpenAI(cfg)
+	case "xai":
+		return provider.NewXAI(cfg)
+	case "cohere":
+		return provider.NewCohere(cfg)
+	case "replicate":
+		return provider.NewReplicate(cfg)
+	case "lmstudio":
+		return provider.NewLMStudio(cfg)
+	case "ollama":
+		return provider.NewOllama(cfg)
 	default:
 		// Unknown provider — try as OpenAI-compatible
 		if cfg.BaseURL != "" {
-			return provider.NewOpenAI(cfg)
+			return provider.NewOpenAICompat(name, cfg)
 		}
 		return nil
 	}

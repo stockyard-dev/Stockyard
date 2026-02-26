@@ -11,10 +11,16 @@ import (
 )
 
 type App struct {
-	conn *sql.DB
+	conn   *sql.DB
+	runner *Runner
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
+
+// SetProxyPort configures the runner with the proxy's port for experiment execution.
+func (a *App) SetProxyPort(port int) {
+	a.runner = NewRunner(a.conn, port)
+}
 
 func (a *App) Name() string        { return "studio" }
 func (a *App) Description() string { return "Prompt templates, experiments, benchmarks, snapshot tests" }
@@ -109,11 +115,14 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Experiments
 	mux.HandleFunc("GET /api/studio/experiments", a.handleListExperiments)
 	mux.HandleFunc("POST /api/studio/experiments", a.handleCreateExperiment)
+	mux.HandleFunc("POST /api/studio/experiments/run", a.handleRunExperiment)
+	mux.HandleFunc("GET /api/studio/experiments/{id}", a.handleGetExperiment)
 	mux.HandleFunc("PUT /api/studio/experiments/{id}", a.handleUpdateExperiment)
 
 	// Benchmarks
 	mux.HandleFunc("GET /api/studio/benchmarks", a.handleListBenchmarks)
 	mux.HandleFunc("POST /api/studio/benchmarks", a.handleCreateBenchmark)
+	mux.HandleFunc("POST /api/studio/benchmarks/run", a.handleRunBenchmark)
 
 	// Snapshots
 	mux.HandleFunc("GET /api/studio/snapshots", a.handleListSnapshots)
@@ -388,6 +397,161 @@ func (a *App) handleCreateSnapshot(w http.ResponseWriter, r *http.Request) {
 }
 
 // --- Status ---
+
+func (a *App) handleRunExperiment(w http.ResponseWriter, r *http.Request) {
+	if a.runner == nil {
+		w.WriteHeader(503)
+		writeJSON(w, map[string]string{"error": "experiment runner not configured"})
+		return
+	}
+
+	var req RunExperimentRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "invalid JSON: " + err.Error()})
+		return
+	}
+	if req.Name == "" {
+		req.Name = fmt.Sprintf("experiment-%s", time.Now().Format("20060102-150405"))
+	}
+
+	result, err := a.runner.Run(r.Context(), req)
+	if err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": err.Error()})
+		return
+	}
+
+	writeJSON(w, result)
+}
+
+func (a *App) handleGetExperiment(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var name, etype, status, cfgJSON, varsJSON, resultsJSON, started, ended, created string
+	err := a.conn.QueryRow(
+		`SELECT name, type, status, config_json, variants_json, results_json, started_at, ended_at, created_at
+		 FROM studio_experiments WHERE id = ?`, id).
+		Scan(&name, &etype, &status, &cfgJSON, &varsJSON, &resultsJSON, &started, &ended, &created)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "experiment not found"})
+		return
+	}
+	var cfg, vars, results any
+	json.Unmarshal([]byte(cfgJSON), &cfg)
+	json.Unmarshal([]byte(varsJSON), &vars)
+	json.Unmarshal([]byte(resultsJSON), &results)
+	writeJSON(w, map[string]any{
+		"id": id, "name": name, "type": etype, "status": status,
+		"config": cfg, "variants": vars, "results": results,
+		"started_at": started, "ended_at": ended, "created_at": created,
+	})
+}
+
+func (a *App) handleRunBenchmark(w http.ResponseWriter, r *http.Request) {
+	if a.runner == nil {
+		w.WriteHeader(503)
+		writeJSON(w, map[string]string{"error": "experiment runner not configured"})
+		return
+	}
+
+	var req struct {
+		Name    string   `json:"name"`
+		Models  []string `json:"models"`
+		Prompts []struct {
+			Name   string `json:"name"`
+			Prompt string `json:"prompt"`
+			System string `json:"system"`
+			Eval   string `json:"eval"`
+			EvalArg string `json:"eval_arg"`
+		} `json:"prompts"`
+		Runs   int    `json:"runs"`
+		APIKey string `json:"api_key"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "invalid JSON"})
+		return
+	}
+	if req.Name == "" {
+		req.Name = fmt.Sprintf("benchmark-%s", time.Now().Format("20060102-150405"))
+	}
+	if len(req.Models) < 1 || len(req.Prompts) < 1 {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "need at least 1 model and 1 prompt"})
+		return
+	}
+
+	// Create benchmark record
+	modelsJSON, _ := json.Marshal(req.Models)
+	promptNames := make([]string, len(req.Prompts))
+	for i, p := range req.Prompts {
+		promptNames[i] = p.Name
+	}
+	promptsJSON, _ := json.Marshal(promptNames)
+	res, _ := a.conn.Exec(
+		`INSERT INTO studio_benchmarks (name, models_json, prompts_json, status, started_at) VALUES (?,?,?,'running',?)`,
+		req.Name, string(modelsJSON), string(promptsJSON), time.Now().Format(time.RFC3339))
+	benchID, _ := res.LastInsertId()
+
+	// Run each prompt as a mini-experiment
+	var allResults []map[string]any
+	for _, p := range req.Prompts {
+		expReq := RunExperimentRequest{
+			Name:    fmt.Sprintf("%s/%s", req.Name, p.Name),
+			Prompt:  p.Prompt,
+			System:  p.System,
+			Models:  req.Models,
+			Runs:    req.Runs,
+			Eval:    p.Eval,
+			EvalArg: p.EvalArg,
+			APIKey:  req.APIKey,
+		}
+		result, err := a.runner.Run(r.Context(), expReq)
+		if err != nil {
+			allResults = append(allResults, map[string]any{"prompt": p.Name, "error": err.Error()})
+			continue
+		}
+		allResults = append(allResults, map[string]any{
+			"prompt":   p.Name,
+			"winner":   result.Winner,
+			"variants": result.Variants,
+			"cost":     result.TotalCost,
+			"duration": result.Duration,
+		})
+	}
+
+	// Aggregate: which model wins the most prompts?
+	winCounts := make(map[string]int)
+	for _, r := range allResults {
+		if w, ok := r["winner"].(string); ok && w != "" {
+			winCounts[w]++
+		}
+	}
+	overallWinner := ""
+	bestWins := 0
+	for model, wins := range winCounts {
+		if wins > bestWins {
+			bestWins = wins
+			overallWinner = model
+		}
+	}
+
+	resultsJSON, _ := json.Marshal(map[string]any{
+		"prompts": allResults, "win_counts": winCounts, "overall_winner": overallWinner,
+	})
+	a.conn.Exec(`UPDATE studio_benchmarks SET status = 'completed', results_json = ?, completed_at = ? WHERE id = ?`,
+		string(resultsJSON), time.Now().Format(time.RFC3339), benchID)
+
+	writeJSON(w, map[string]any{
+		"benchmark_id":   benchID,
+		"name":           req.Name,
+		"models":         req.Models,
+		"prompts":        allResults,
+		"win_counts":     winCounts,
+		"overall_winner": overallWinner,
+	})
+}
 
 func (a *App) handleStatus(w http.ResponseWriter, r *http.Request) {
 	var templates, experiments, benchmarks, snapshots int

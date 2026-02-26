@@ -383,6 +383,9 @@ func Boot(pc ProductConfig) {
 	proxyAuthMode := auth.GetProxyAuthMode()
 	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode))
 
+	// Wrap with auto-config (detects raw provider keys, creates ephemeral providers)
+	srv.WrapHandler(auth.AutoConfigMiddleware(authStore, providerFactory))
+
 	// Wrap with admin auth (reads STOCKYARD_ADMIN_KEY env var)
 	srv.WrapHandler(adminAuthMiddleware)
 
@@ -441,7 +444,21 @@ func makeSendHandler(providers map[string]provider.Provider, factory *auth.Provi
 			name = provider.ProviderForModel(req.Model)
 		}
 
-		// Try user-specific provider first (via factory)
+		// Try auto-configured ephemeral provider (from raw API key in Authorization header)
+		if autoP, autoName := auth.AutoProviderFromContext(ctx); autoP != nil {
+			if name == "" || name == autoName {
+				resp, err := autoP.Send(ctx, req)
+				if err != nil {
+					return nil, err
+				}
+				if resp.Provider == "" {
+					resp.Provider = autoName
+				}
+				return resp, nil
+			}
+		}
+
+		// Try user-specific provider (via factory)
 		if factory != nil {
 			if p, err := factory.ResolveProvider(ctx, name); err == nil && p != nil {
 				resp, err := p.Send(ctx, req)
@@ -1057,10 +1074,11 @@ func buildAlerter(cfg *config.Config) *features.Alerter {
 	return features.NewAlerter(features.AlertConfig{})
 }
 
-// initProviders creates provider instances from config.
+// initProviders creates provider instances from config and environment variables.
 func initProviders(cfg *config.Config) map[string]provider.Provider {
 	providers := make(map[string]provider.Provider)
 
+	// Config-based providers (from stockyard.yaml)
 	if p, ok := cfg.Providers["openai"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
 		providers["openai"] = provider.NewOpenAI(provider.ProviderConfig{
 			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
@@ -1082,8 +1100,47 @@ func initProviders(cfg *config.Config) map[string]provider.Provider {
 		})
 	}
 
+	// Auto-detect providers from environment variables
+	envProviders := map[string]struct {
+		envKey  string
+		factory func(provider.ProviderConfig) provider.Provider
+	}{
+		"openai":     {"OPENAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewOpenAI(c) }},
+		"anthropic":  {"ANTHROPIC_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAnthropic(c) }},
+		"gemini":     {"GEMINI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewGemini(c) }},
+		"groq":       {"GROQ_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewGroq(c) }},
+		"mistral":    {"MISTRAL_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewMistral(c) }},
+		"together":   {"TOGETHER_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewTogether(c) }},
+		"deepseek":   {"DEEPSEEK_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDeepSeek(c) }},
+		"fireworks":  {"FIREWORKS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewFireworks(c) }},
+		"perplexity": {"PERPLEXITY_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewPerplexity(c) }},
+		"openrouter": {"OPENROUTER_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewOpenRouter(c) }},
+		"xai":        {"XAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewXAI(c) }},
+		"cohere":     {"COHERE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCohere(c) }},
+		"replicate":  {"REPLICATE_API_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewReplicate(c) }},
+	}
+
+	for name, ep := range envProviders {
+		if _, exists := providers[name]; exists {
+			continue // Already configured
+		}
+		if key := os.Getenv(ep.envKey); key != "" {
+			providers[name] = ep.factory(provider.ProviderConfig{
+				APIKey:  key,
+				Timeout: 60 * time.Second,
+			})
+			log.Printf("  Provider: %s (from %s)", name, ep.envKey)
+		}
+	}
+
 	if len(providers) == 0 {
 		log.Println("⚠️  No API keys configured. Set OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.")
+	} else {
+		names := make([]string, 0, len(providers))
+		for n := range providers {
+			names = append(names, n)
+		}
+		log.Printf("  Providers: %d (%s)", len(providers), strings.Join(names, ", "))
 	}
 
 	return providers
