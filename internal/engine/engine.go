@@ -357,7 +357,7 @@ func Boot(pc ProductConfig) {
 
 	// Mount sy-api billing/licensing/cloud/exchange routes (if enabled)
 	if pc.EnableAPIServer {
-		mountAPIServer(srv.Mux(), cfg.DataDir)
+		mountAPIServer(srv.Mux(), cfg.DataDir, authStore)
 	}
 
 	// Register auth API routes (user management, key management, provider keys)
@@ -684,6 +684,14 @@ func buildMiddlewares(reg *toggle.Registry,
 		add("toxicfilter", features.ToxicFilterMiddleware(filter))
 		log.Printf("toxicfilter: action=%s scan_input=%v scan_output=%v categories=%d",
 			cfg.ToxicFilter.Action, cfg.ToxicFilter.ScanInput, cfg.ToxicFilter.ScanOutput, len(cfg.ToxicFilter.Categories))
+	}
+
+	// Trust Policy Enforcement — checks requests/responses against trust_policies table
+	// Always enabled when apps include Trust (policies are loaded from DB)
+	if db != nil {
+		enforcer := features.NewTrustEnforcer(db.Conn())
+		add("trust_enforce", enforcer.Middleware())
+		log.Printf("trust_enforce: policy enforcement enabled")
 	}
 
 	// TraceLink — distributed tracing (wraps request lifecycle)

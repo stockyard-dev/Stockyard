@@ -124,6 +124,8 @@ func isPublicRoute(method, path string) bool {
 			return true
 		case path == "/api/products" || strings.HasPrefix(path, "/api/products/"):
 			return true
+		case path == "/api/plans":
+			return true
 		}
 	}
 	// Cloud signup (POST /api/cloud/tenants)
@@ -132,6 +134,14 @@ func isPublicRoute(method, path string) bool {
 	}
 	// User signup (POST /api/auth/signup)
 	if method == "POST" && path == "/api/auth/signup" {
+		return true
+	}
+	// Checkout (POST /api/checkout) — creates Stripe session
+	if method == "POST" && path == "/api/checkout" {
+		return true
+	}
+	// Stripe webhooks
+	if method == "POST" && path == "/webhooks/stripe" {
 		return true
 	}
 	return false

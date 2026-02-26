@@ -17,7 +17,8 @@ import (
 // mountAPIServer checks for apiserver env vars and, if present, initializes
 // the billing/licensing/cloud/exchange server and mounts its routes on mux.
 // Returns true if mounted, false if skipped (env vars not set).
-func mountAPIServer(mux *http.ServeMux, dataDir string) bool {
+// authUpdater is optional — if provided, Stripe webhooks will upgrade user tiers.
+func mountAPIServer(mux *http.ServeMux, dataDir string, authUpdater apiserver.AuthTierUpdater) bool {
 	// The apiserver needs at minimum a database path. Stripe keys are optional
 	// (endpoints will fail gracefully without them). This lets the unified
 	// binary always serve /api/products, /api/exchange, etc.
@@ -75,6 +76,12 @@ func mountAPIServer(mux *http.ServeMux, dataDir string) bool {
 
 	// Mount all apiserver routes onto the shared mux
 	srv.RegisterOnMux(mux)
+
+	// Wire auth tier updater for Stripe webhook → user tier upgrades
+	if authUpdater != nil {
+		srv.SetAuthTierUpdater(authUpdater)
+		log.Println("[apibridge] auth tier updater connected")
+	}
 
 	// CORS preflight for apiserver paths (stockyard.dev frontend calls these)
 	corsHandler := func(w http.ResponseWriter, r *http.Request) {

@@ -35,6 +35,12 @@ type Server struct {
 	adminKey string // simple admin API key for protected endpoints
 }
 
+// AuthTierUpdater updates a user's tier in the auth system.
+// Implemented by auth.Store — passed in to avoid circular imports.
+type AuthTierUpdater interface {
+	UpdateUserTierByEmail(email, tier string) error
+}
+
 // ServerConfig holds configuration for the API server.
 type ServerConfig struct {
 	Port     int
@@ -58,6 +64,11 @@ func NewServer(cfg ServerConfig, db *SqliteDB, stripe *StripeClient, kp *license
 	s.seedExchange()
 	s.registerRoutes()
 	return s
+}
+
+// SetAuthTierUpdater connects the apiserver to the auth system for tier upgrades.
+func (s *Server) SetAuthTierUpdater(u AuthTierUpdater) {
+	s.webhook.authUpdater = u
 }
 
 func (s *Server) registerRoutes() {
@@ -245,8 +256,9 @@ func (s *Server) handleCORS(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Product string `json:"product"`
-		Tier    string `json:"tier"`
+		Plan    string `json:"plan"`    // new: "cloud" or "enterprise"
+		Product string `json:"product"` // legacy compat
+		Tier    string `json:"tier"`    // legacy compat
 		Email   string `json:"email"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -254,29 +266,45 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Product == "" {
-		req.Product = "stockyard"
-	}
-	if req.Tier == "" {
-		req.Tier = "pro"
-	}
-
-	// Validate product exists
-	prod := ProductBySlug(req.Product)
-	if prod == nil {
-		writeErr(w, http.StatusBadRequest, fmt.Sprintf("unknown product: %s", req.Product))
-		return
+	// Support both new plan-based and legacy product/tier checkout
+	product := req.Product
+	tier := req.Tier
+	if req.Plan != "" {
+		// New plans model: plan slug maps directly
+		plan := PlanBySlug(req.Plan)
+		if plan == nil {
+			writeErr(w, http.StatusBadRequest, fmt.Sprintf("unknown plan: %s", req.Plan))
+			return
+		}
+		if plan.PriceCents == 0 {
+			writeErr(w, http.StatusBadRequest, "self-hosted plan is free — no checkout needed")
+			return
+		}
+		if plan.PriceCents < 0 {
+			writeErr(w, http.StatusBadRequest, "enterprise plan requires custom pricing — contact sales@stockyard.dev")
+			return
+		}
+		product = plan.Slug
+		tier = plan.Slug // "cloud" → both product and tier
+	} else {
+		// Legacy fallback
+		if product == "" {
+			product = "stockyard"
+		}
+		if tier == "" {
+			tier = "pro"
+		}
 	}
 
 	// Look up Stripe price ID
-	priceID := getPriceID(req.Product, req.Tier)
+	priceID := getPriceID(product, tier)
 	if priceID == "" {
 		writeErr(w, http.StatusBadRequest, fmt.Sprintf("no price configured for %s/%s — set STRIPE_PRICE_%s_%s",
-			req.Product, req.Tier, strings.ToUpper(req.Product), strings.ToUpper(req.Tier)))
+			product, tier, strings.ToUpper(product), strings.ToUpper(tier)))
 		return
 	}
 
-	url, err := s.stripe.CreateCheckoutSession(req.Product, req.Tier, req.Email, priceID)
+	url, err := s.stripe.CreateCheckoutSession(product, tier, req.Email, priceID)
 	if err != nil {
 		log.Printf("checkout error: %v", err)
 		writeErr(w, http.StatusInternalServerError, "failed to create checkout session")

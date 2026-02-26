@@ -468,6 +468,15 @@ func (db *SqliteDB) GetLicensesBySubscription(subID string) ([]*LicenseRecord, e
 	return db.scanLicenseRows(rows)
 }
 
+// GetLicenseBySubscription returns the first license for a subscription.
+func (db *SqliteDB) GetLicenseBySubscription(subID string) *LicenseRecord {
+	lics, err := db.GetLicensesBySubscription(subID)
+	if err != nil || len(lics) == 0 {
+		return nil
+	}
+	return lics[0]
+}
+
 func (db *SqliteDB) GetLicensesByCustomer(stripeCustomerID string) ([]*LicenseRecord, error) {
 	rows, err := db.conn.Query("SELECT id, customer_id, stripe_customer_id, stripe_subscription_id, product, tier, license_key, status, email, created_at, expires_at FROM licenses WHERE stripe_customer_id = ?", stripeCustomerID)
 	if err != nil {

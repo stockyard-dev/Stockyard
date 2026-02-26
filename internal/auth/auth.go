@@ -192,6 +192,21 @@ func (s *Store) UpdateUserTier(id int64, tier string) error {
 	return err
 }
 
+// UpdateUserTierByEmail updates a user's tier by email address.
+// Satisfies the apiserver.AuthTierUpdater interface.
+func (s *Store) UpdateUserTierByEmail(email, tier string) error {
+	email = strings.TrimSpace(strings.ToLower(email))
+	res, err := s.db.Exec(`UPDATE users SET tier = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?`, tier, email)
+	if err != nil {
+		return err
+	}
+	n, _ := res.RowsAffected()
+	if n == 0 {
+		return fmt.Errorf("no user found with email %s", email)
+	}
+	return nil
+}
+
 // ─── API Key Operations ────────────────────────────────────────────────────
 
 // GenerateKey creates a new API key for a user. Returns the full key only once.

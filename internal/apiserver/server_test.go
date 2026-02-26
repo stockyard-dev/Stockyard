@@ -15,9 +15,9 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/license"
 )
 
-func testDB(t *testing.T) *DB {
+func testDB(t *testing.T) *SqliteDB {
 	t.Helper()
-	db, err := OpenDB(":memory:")
+	db, err := OpenSqliteDB(":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func testKeyPair(t *testing.T) *license.KeyPair {
 	return kp
 }
 
-func testServer(t *testing.T) (*Server, *DB, *license.KeyPair) {
+func testServer(t *testing.T) (*Server, *SqliteDB, *license.KeyPair) {
 	t.Helper()
 	db := testDB(t)
 	kp := testKeyPair(t)
@@ -248,30 +248,30 @@ func TestProductsEndpoint(t *testing.T) {
 	var resp map[string]any
 	json.Unmarshal(w.Body.Bytes(), &resp)
 	count := resp["count"].(float64)
-	if count < 120 {
-		t.Errorf("product count = %v, expected 120+", count)
+	if count != 6 {
+		t.Errorf("product count = %v, expected 6 apps", count)
 	}
 }
 
 func TestProductsFilterByCategory(t *testing.T) {
 	srv, _, _ := testServer(t)
 
-	req := httptest.NewRequest("GET", "/api/products?category=safety", nil)
+	req := httptest.NewRequest("GET", "/api/products?category=app", nil)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 
 	var resp map[string]any
 	json.Unmarshal(w.Body.Bytes(), &resp)
 	count := resp["count"].(float64)
-	if count < 3 {
-		t.Errorf("safety products = %v, expected at least 3", count)
+	if count != 6 {
+		t.Errorf("app products = %v, expected 6", count)
 	}
 }
 
 func TestProductBySlugEndpoint(t *testing.T) {
 	srv, _, _ := testServer(t)
 
-	req := httptest.NewRequest("GET", "/api/products/costcap", nil)
+	req := httptest.NewRequest("GET", "/api/products/proxy", nil)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 
@@ -281,8 +281,8 @@ func TestProductBySlugEndpoint(t *testing.T) {
 
 	var resp map[string]any
 	json.Unmarshal(w.Body.Bytes(), &resp)
-	if resp["slug"] != "costcap" {
-		t.Errorf("slug = %v, want costcap", resp["slug"])
+	if resp["slug"] != "proxy" {
+		t.Errorf("slug = %v, want proxy", resp["slug"])
 	}
 }
 

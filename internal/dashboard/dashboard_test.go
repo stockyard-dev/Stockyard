@@ -9,7 +9,7 @@ import (
 
 func TestDashboardServes(t *testing.T) {
 	mux := http.NewServeMux()
-	Register(mux, "costcap")
+	Register(mux, "stockyard")
 
 	req := httptest.NewRequest("GET", "/ui", nil)
 	w := httptest.NewRecorder()
@@ -22,13 +22,8 @@ func TestDashboardServes(t *testing.T) {
 	body := w.Body.String()
 
 	// Verify product key was injected
-	if !strings.Contains(body, `data-product="costcap"`) {
+	if !strings.Contains(body, `data-product="stockyard"`) {
 		t.Error("product key not injected into HTML")
-	}
-
-	// Verify product name was injected
-	if !strings.Contains(body, "CostCap Dashboard") {
-		t.Error("product name not injected into title")
 	}
 
 	// Verify it's valid HTML
@@ -47,12 +42,6 @@ func TestDashboardProducts(t *testing.T) {
 		key  string
 		name string
 	}{
-		{"costcap", "CostCap"},
-		{"llmcache", "CacheLayer"},
-		{"jsonguard", "StructuredShield"},
-		{"routefall", "FallbackRouter"},
-		{"rateshield", "RateShield"},
-		{"promptreplay", "PromptReplay"},
 		{"stockyard", "Stockyard"},
 	}
 
@@ -72,7 +61,7 @@ func TestDashboardProducts(t *testing.T) {
 			if !strings.Contains(body, `data-product="`+tt.key+`"`) {
 				t.Errorf("product key %q not injected", tt.key)
 			}
-			if !strings.Contains(body, tt.name+" Dashboard") {
+			if !strings.Contains(body, tt.name+" Console") && !strings.Contains(body, tt.name+" Dashboard") {
 				t.Errorf("product name %q not in title", tt.name)
 			}
 		})

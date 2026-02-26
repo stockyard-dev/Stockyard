@@ -235,10 +235,11 @@ const (
 
 // WebhookHandler processes Stripe webhook events.
 type WebhookHandler struct {
-	db       *SqliteDB
-	stripe   *StripeClient
-	keyPair  *license.KeyPair
-	mailer   Mailer
+	db          *SqliteDB
+	stripe      *StripeClient
+	keyPair     *license.KeyPair
+	mailer      Mailer
+	authUpdater AuthTierUpdater // updates user tier in auth system (optional)
 }
 
 // NewWebhookHandler creates a new webhook processor.
@@ -417,6 +418,19 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	log.Printf("webhook: license issued — key=%s...%s product=%s tier=%s",
 		key[:10], key[len(key)-6:], product, tier)
 
+	// Upgrade user tier in auth system (if connected)
+	if wh.authUpdater != nil && email != "" {
+		authTier := tier
+		if product == "cloud" || product == "stockyard" {
+			authTier = "cloud"
+		}
+		if err := wh.authUpdater.UpdateUserTierByEmail(email, authTier); err != nil {
+			log.Printf("webhook: auth tier upgrade failed (non-fatal): %v", err)
+		} else {
+			log.Printf("webhook: auth tier upgraded to %s for %s", authTier, email)
+		}
+	}
+
 	return nil
 }
 
@@ -464,6 +478,19 @@ func (wh *WebhookHandler) handleSubscriptionDeleted(raw json.RawMessage) error {
 
 	subID := jsonStr(sub, "id")
 	log.Printf("webhook: subscription deleted — sub=%s", subID)
+
+	// Downgrade user tier in auth system
+	if wh.authUpdater != nil {
+		// Look up the license to get the email
+		lic := wh.db.GetLicenseBySubscription(subID)
+		if lic != nil && lic.Email != "" {
+			if err := wh.authUpdater.UpdateUserTierByEmail(lic.Email, "free"); err != nil {
+				log.Printf("webhook: auth tier downgrade failed (non-fatal): %v", err)
+			} else {
+				log.Printf("webhook: auth tier downgraded to free for %s", lic.Email)
+			}
+		}
+	}
 
 	return wh.db.UpdateLicenseStatus(subID, "canceled")
 }
