@@ -31,7 +31,7 @@ func Limits(tier Tier) TierLimits {
 		}
 	case TierCloud:
 		return TierLimits{
-			MaxRequestsPerMonth: 100_000,
+			MaxRequestsPerMonth: 500_000,
 			MaxUsers:            0, // unlimited
 			RetentionDays:       30,
 			EmailAlerts:         true,

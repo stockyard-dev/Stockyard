@@ -70,7 +70,7 @@ func Plans() []Plan {
 				"Custom domain",
 			},
 			Limits: map[string]string{
-				"requests":  "100,000/mo",
+				"requests":  "500,000/mo",
 				"retention": "30 days",
 				"support":   "email",
 				"users":     "unlimited",
