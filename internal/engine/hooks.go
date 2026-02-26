@@ -8,6 +8,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+
+	"github.com/stockyard-dev/stockyard/internal/slog"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
@@ -29,6 +31,34 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 			resp, err := next(ctx, req)
 
 			duration := time.Since(start)
+
+			// Structured request log
+			status := "ok"
+			if err != nil {
+				status = "error"
+			} else if resp != nil && resp.CacheHit {
+				status = "cache_hit"
+			}
+			logFields := []any{
+				"trace_id", traceID,
+				"provider", req.Provider,
+				"model", req.Model,
+				"status", status,
+				"duration_ms", duration.Milliseconds(),
+			}
+			if resp != nil {
+				logFields = append(logFields,
+					"tokens_in", resp.Usage.PromptTokens,
+					"tokens_out", resp.Usage.CompletionTokens,
+				)
+			}
+			if err != nil {
+				logFields = append(logFields, "error", err)
+				slog.Error("proxy request failed", logFields...)
+			} else {
+				slog.Info("proxy request", logFields...)
+			}
+
 			go recordObserveTrace(conn, traceID, req, resp, err, duration)
 			go recordTrustEvent(conn, traceID, req, resp, err, duration)
 
