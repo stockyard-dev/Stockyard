@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -218,19 +219,29 @@ func Boot(pc ProductConfig) {
 	}
 
 	// Allow DATA_DIR env var to override data directory (for persistent volumes)
-	if envData := os.Getenv("DATA_DIR"); envData != "" {
+	if envData := strings.TrimSpace(os.Getenv("DATA_DIR")); envData != "" {
 		cfg.DataDir = envData
-		log.Printf("DATA_DIR override: %s", envData)
+		log.Printf("DATA_DIR override: %q", envData)
 	} else {
-		log.Printf("DATA_DIR not set, using default: %s", cfg.DataDir)
+		log.Printf("DATA_DIR not set, using default: %q", cfg.DataDir)
 	}
 	// Also check Railway's auto-set volume env
-	if volPath := os.Getenv("RAILWAY_VOLUME_MOUNT_PATH"); volPath != "" {
-		log.Printf("RAILWAY_VOLUME_MOUNT_PATH: %s", volPath)
-		if cfg.DataDir != volPath && os.Getenv("DATA_DIR") == "" {
+	if volPath := strings.TrimSpace(os.Getenv("RAILWAY_VOLUME_MOUNT_PATH")); volPath != "" {
+		log.Printf("RAILWAY_VOLUME_MOUNT_PATH: %q", volPath)
+		if cfg.DataDir != volPath && strings.TrimSpace(os.Getenv("DATA_DIR")) == "" {
 			cfg.DataDir = volPath
-			log.Printf("Auto-using Railway volume path: %s", volPath)
+			log.Printf("Auto-using Railway volume path: %q", volPath)
 		}
+	}
+	// Verify the data dir exists and log what's in it
+	if entries, err := os.ReadDir(cfg.DataDir); err == nil {
+		names := []string{}
+		for _, e := range entries {
+			names = append(names, e.Name())
+		}
+		log.Printf("DataDir %q contents: %v", cfg.DataDir, names)
+	} else {
+		log.Printf("DataDir %q does not exist yet (will be created): %v", cfg.DataDir, err)
 	}
 
 	// Open database
