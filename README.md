@@ -148,6 +148,17 @@ With the key set:
 
 Without the key, all endpoints are open (dev mode).
 
+## Persistent Storage
+
+Stockyard uses SQLite with zero external dependencies. Set `DATA_DIR` to control where the database lives:
+
+```bash
+export DATA_DIR=/var/data/stockyard
+stockyard
+```
+
+On Railway, attach a volume and set `DATA_DIR` to the mount path. Stockyard also auto-detects `RAILWAY_VOLUME_MOUNT_PATH`.
+
 ## Providers
 
 Stockyard supports 17 LLM providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Cohere, AI21, Together, Fireworks, Perplexity, Ollama, LM Studio, vLLM, Azure OpenAI, AWS Bedrock, Replicate, and DeepSeek.
@@ -193,9 +204,8 @@ POST /api/exchange/packs/{slug}/install   Install pack
 - **Website:** [stockyard.dev](https://stockyard.dev)
 - **Cloud:** [stockyard.dev/cloud](https://stockyard.dev/cloud)
 - **Docs:** [stockyard.dev/docs](https://stockyard.dev/docs)
-- **Live demo:** [stockyard-production.up.railway.app](https://stockyard-production.up.railway.app/health)
+- **Live instance:** [stockyard-production.up.railway.app](https://stockyard-production.up.railway.app/health)
 
 ## License
 
 See [LICENSE](LICENSE).
-# persist-check 1772065524
