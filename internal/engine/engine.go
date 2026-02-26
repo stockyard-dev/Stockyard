@@ -217,6 +217,11 @@ func Boot(pc ProductConfig) {
 		}
 	}
 
+	// Allow DATA_DIR env var to override data directory (for persistent volumes)
+	if envData := os.Getenv("DATA_DIR"); envData != "" {
+		cfg.DataDir = envData
+	}
+
 	// Open database
 	db, err := storage.Open(cfg.DataDir)
 	if err != nil {
