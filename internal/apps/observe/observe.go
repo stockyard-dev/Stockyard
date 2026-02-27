@@ -101,6 +101,24 @@ CREATE TABLE IF NOT EXISTS observe_anomalies (
     message TEXT,
     detected_at TEXT DEFAULT (datetime('now'))
 );
+
+-- Safety incidents: PII redactions, injection attempts, secret leaks, toxic content
+CREATE TABLE IF NOT EXISTS observe_safety_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_type TEXT NOT NULL,
+    severity TEXT NOT NULL DEFAULT 'medium',
+    category TEXT NOT NULL DEFAULT '',
+    detail_json TEXT DEFAULT '{}',
+    source_ip TEXT DEFAULT '',
+    user_id TEXT DEFAULT '',
+    model TEXT DEFAULT '',
+    request_id TEXT DEFAULT '',
+    action_taken TEXT DEFAULT 'log',
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_safety_events_type ON observe_safety_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_safety_events_created ON observe_safety_events(created_at);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
@@ -123,6 +141,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Anomalies
 	mux.HandleFunc("GET /api/observe/anomalies", a.handleListAnomalies)
+
+	// Safety events
+	mux.HandleFunc("GET /api/observe/safety", a.handleListSafetyEvents)
+	mux.HandleFunc("GET /api/observe/safety/summary", a.handleSafetySummary)
 
 	// Live SSE status (how many dashboard clients connected, recent event count)
 	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
@@ -514,6 +536,118 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 		"buckets":   buckets,
 		"providers": providers,
 		"models":    models,
+	})
+}
+
+// SafetyReporter returns a function that middlewares can call to record safety events.
+// This gets wired into the engine and passed to safety middlewares.
+func (a *App) SafetyReporter() func(eventType, severity, category, actionTaken, model, requestID, sourceIP, userID string, detail any) {
+	return func(eventType, severity, category, actionTaken, model, requestID, sourceIP, userID string, detail any) {
+		detailJSON, _ := json.Marshal(detail)
+		a.conn.Exec(`INSERT INTO observe_safety_events (event_type, severity, category, detail_json, source_ip, user_id, model, request_id, action_taken) VALUES (?,?,?,?,?,?,?,?,?)`,
+			eventType, severity, category, string(detailJSON), sourceIP, userID, model, requestID, actionTaken)
+	}
+}
+
+func (a *App) handleListSafetyEvents(w http.ResponseWriter, r *http.Request) {
+	limit := r.URL.Query().Get("limit")
+	if limit == "" {
+		limit = "50"
+	}
+	eventType := r.URL.Query().Get("type")
+
+	var rows *sql.Rows
+	var err error
+	if eventType != "" {
+		rows, err = a.conn.Query("SELECT id, event_type, severity, category, detail_json, source_ip, user_id, model, request_id, action_taken, created_at FROM observe_safety_events WHERE event_type = ? ORDER BY created_at DESC LIMIT ?", eventType, limit)
+	} else {
+		rows, err = a.conn.Query("SELECT id, event_type, severity, category, detail_json, source_ip, user_id, model, request_id, action_taken, created_at FROM observe_safety_events ORDER BY created_at DESC LIMIT ?", limit)
+	}
+	if err != nil {
+		writeJSON(w, map[string]any{"events": []any{}, "error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var events []map[string]any
+	for rows.Next() {
+		var id int
+		var evType, sev, cat, detailStr, ip, uid, model, reqID, action, created string
+		rows.Scan(&id, &evType, &sev, &cat, &detailStr, &ip, &uid, &model, &reqID, &action, &created)
+		var detail any
+		json.Unmarshal([]byte(detailStr), &detail)
+		events = append(events, map[string]any{
+			"id": id, "event_type": evType, "severity": sev, "category": cat,
+			"detail": detail, "source_ip": ip, "user_id": uid, "model": model,
+			"request_id": reqID, "action_taken": action, "created_at": created,
+		})
+	}
+	writeJSON(w, map[string]any{"events": events, "count": len(events)})
+}
+
+func (a *App) handleSafetySummary(w http.ResponseWriter, r *http.Request) {
+	// Total counts by type
+	typeRows, _ := a.conn.Query("SELECT event_type, severity, action_taken, COUNT(*) FROM observe_safety_events GROUP BY event_type, severity, action_taken ORDER BY COUNT(*) DESC")
+	var byType []map[string]any
+	if typeRows != nil {
+		defer typeRows.Close()
+		for typeRows.Next() {
+			var evType, sev, action string
+			var count int
+			typeRows.Scan(&evType, &sev, &action, &count)
+			byType = append(byType, map[string]any{"event_type": evType, "severity": sev, "action_taken": action, "count": count})
+		}
+	}
+
+	// Today's counts
+	today := time.Now().UTC().Format("2006-01-02")
+	var todayTotal, todayBlocked, todayRedacted int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE created_at >= ?", today).Scan(&todayTotal)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE action_taken = 'block' AND created_at >= ?", today).Scan(&todayBlocked)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE action_taken = 'redact' AND created_at >= ?", today).Scan(&todayRedacted)
+
+	// Total all-time
+	var totalEvents int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events").Scan(&totalEvents)
+
+	// Severity breakdown
+	var critical, high, medium, low int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE severity = 'critical'").Scan(&critical)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE severity = 'high'").Scan(&high)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE severity = 'medium'").Scan(&medium)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE severity = 'low'").Scan(&low)
+
+	// Safety score (100 - penalty for critical/high events in last 24h)
+	var recentCritical, recentHigh int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE severity = 'critical' AND created_at >= datetime('now', '-24 hours')").Scan(&recentCritical)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_safety_events WHERE severity = 'high' AND created_at >= datetime('now', '-24 hours')").Scan(&recentHigh)
+	score := 100 - (recentCritical * 20) - (recentHigh * 5)
+	if score < 0 {
+		score = 0
+	}
+
+	// Active safety modules
+	var activeModules int
+	a.conn.QueryRow("SELECT COUNT(*) FROM proxy_modules WHERE enabled = 1 AND (name LIKE '%guard%' OR name LIKE '%filter%' OR name LIKE '%scan%' OR name LIKE '%fence%' OR name LIKE '%shield%' OR name LIKE '%enforce%' OR name LIKE '%pii%' OR name LIKE '%inject%' OR name LIKE '%toxic%' OR name LIKE '%secret%' OR name LIKE '%safety%' OR name LIKE '%compliance%')").Scan(&activeModules)
+
+	// Trust policies
+	var activePolicies int
+	a.conn.QueryRow("SELECT COUNT(*) FROM trust_policies WHERE enabled = 1").Scan(&activePolicies)
+
+	writeJSON(w, map[string]any{
+		"safety_score":    score,
+		"total_events":    totalEvents,
+		"active_modules":  activeModules,
+		"active_policies": activePolicies,
+		"today": map[string]any{
+			"total":    todayTotal,
+			"blocked":  todayBlocked,
+			"redacted": todayRedacted,
+		},
+		"severity": map[string]int{
+			"critical": critical, "high": high, "medium": medium, "low": low,
+		},
+		"by_type": byType,
 	})
 }
 

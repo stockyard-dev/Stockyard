@@ -264,6 +264,7 @@ func ToxicFilterMiddleware(filter *ToxicFilterState) proxy.Middleware {
 						filter.blocked.Add(1)
 						log.Printf("toxicfilter: blocked output — %d matches in categories: %s",
 							len(matches), matchCategories(matches))
+						reportSafety("toxic_content", "high", "toxic_filter", "block", req.Model, "", "", "", map[string]any{"direction": "output", "match_count": len(matches), "categories": toxicMatchCategories(matches)})
 						return nil, fmt.Errorf("content moderation: response blocked due to policy violation (%s)",
 							matchCategories(matches))
 
@@ -276,6 +277,7 @@ func ToxicFilterMiddleware(filter *ToxicFilterState) proxy.Middleware {
 						filter.flagged.Add(1)
 						log.Printf("toxicfilter: flagged %d matches in output: %s",
 							len(matches), matchCategories(matches))
+						reportSafety("toxic_content", "medium", "toxic_filter", "flag", req.Model, "", "", "", map[string]any{"direction": "output", "match_count": len(matches), "categories": toxicMatchCategories(matches)})
 					}
 				}
 			}
@@ -341,4 +343,17 @@ func matchCategories(matches []ToxicMatch) string {
 		}
 	}
 	return strings.Join(cats, ", ")
+}
+
+// toxicMatchCategories extracts category names from matches.
+func toxicMatchCategories(matches []ToxicMatch) []string {
+	seen := make(map[string]bool)
+	var cats []string
+	for _, m := range matches {
+		if !seen[m.Category] {
+			seen[m.Category] = true
+			cats = append(cats, m.Category)
+		}
+	}
+	return cats
 }

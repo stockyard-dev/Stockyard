@@ -474,6 +474,42 @@ func seedExchangePacks(conn *sql.DB) {
 				]
 			}`,
 		},
+		{
+			slug: "safety-hardened", name: "Safety Hardened", author: "Stockyard",
+			desc: "Lock down your proxy with maximum safety: PII redaction, injection blocking, secret scanning, toxic content filtering, rate limiting, and compliance logging",
+			tags: `["safety","security","compliance","hardening"]`,
+			content: `{
+				"modules": [
+					{"name": "promptguard", "enabled": true},
+					{"name": "secretscan", "enabled": true},
+					{"name": "toxicfilter", "enabled": true},
+					{"name": "trust_enforce", "enabled": true},
+					{"name": "ipfence", "enabled": true},
+					{"name": "ratelimit", "enabled": true},
+					{"name": "agentguard", "enabled": true},
+					{"name": "codefence", "enabled": true},
+					{"name": "hallucicheck", "enabled": true},
+					{"name": "guardrail", "enabled": true},
+					{"name": "agegate", "enabled": true},
+					{"name": "compliancelog", "enabled": true},
+					{"name": "maskmode", "enabled": true},
+					{"name": "scopeguard", "enabled": true}
+				],
+				"policies": [
+					{"name": "block-pii-output", "type": "block", "pattern": "\\\\b\\\\d{3}-\\\\d{2}-\\\\d{4}\\\\b|\\\\b\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}\\\\b", "description": "Block responses containing SSN or credit card numbers"},
+					{"name": "block-injection", "type": "block", "pattern": "ignore.*previous.*instructions|disregard.*prior", "description": "Block requests with injection patterns"},
+					{"name": "block-secrets", "type": "block", "pattern": "sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}", "description": "Block requests/responses containing API keys"},
+					{"name": "warn-toxic", "type": "warn", "pattern": "kill|harm|weapon|exploit", "description": "Warn on potentially harmful content"},
+					{"name": "log-sensitive-models", "type": "log", "pattern": "gpt-4|claude-opus", "description": "Log all requests to expensive models for cost review"}
+				],
+				"alerts": [
+					{"name": "injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 5, "window": 300, "description": "Alert on >5 injection attempts in 5min"},
+					{"name": "pii-leak", "metric": "pii_redactions", "condition": "gt", "threshold": 10, "window": 300, "description": "Alert on >10 PII redactions in 5min"},
+					{"name": "secret-exposure", "metric": "secrets_found", "condition": "gt", "threshold": 1, "window": 300, "description": "Alert immediately on secret detection"},
+					{"name": "high-error-rate", "metric": "error_rate", "condition": "gt", "threshold": 0.2, "window": 300, "description": "Alert when error rate exceeds 20%"}
+				]
+			}`,
+		},
 	}
 	for _, p := range extraPacks {
 		id := "pk_" + p.slug

@@ -211,6 +211,7 @@ func PromptGuardMiddleware(guard *PromptGuardState, injectionEnabled bool) proxy
 				for _, msg := range req.Messages {
 					if detected, match := guard.DetectInjection(msg.Content); detected {
 						guard.injectionCount.Add(1)
+						reportSafety("prompt_injection", "high", "injection", guard.injAction, req.Model, "", "", "", map[string]any{"role": msg.Role, "match": match})
 						log.Printf("promptguard: injection detected in %s message: %q", msg.Role, match)
 
 						switch guard.injAction {
@@ -245,6 +246,7 @@ func PromptGuardMiddleware(guard *PromptGuardState, injectionEnabled bool) proxy
 					_ = redacted
 					if count > 0 {
 						guard.blockCount.Add(1)
+							reportSafety("pii_detected", "high", "pii", "block", req.Model, "", "", "", map[string]any{"count": count})
 						return nil, fmt.Errorf("PII detected in request: %d patterns found, request blocked", count)
 					}
 					continue
@@ -260,6 +262,7 @@ func PromptGuardMiddleware(guard *PromptGuardState, injectionEnabled bool) proxy
 
 			if totalRedactions > 0 {
 				log.Printf("promptguard: redacted %d PII instances", totalRedactions)
+				reportSafety("pii_redacted", "medium", "pii", "redact", req.Model, "", "", "", map[string]any{"count": totalRedactions})
 			}
 
 			// Send to provider

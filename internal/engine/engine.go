@@ -396,6 +396,18 @@ func Boot(pc ProductConfig) {
 			log.Printf("  Audit:     trust auditor wired to apps")
 		}
 
+		// Third pass: extract safety reporter from observe and wire to safety middlewares
+		for _, app := range pc.Apps {
+			if a, ok := app.(interface {
+				SafetyReporter() func(string, string, string, string, string, string, string, string, any)
+			}); ok {
+				reporter := a.SafetyReporter()
+				features.SetSafetyReporter(reporter)
+				log.Printf("  Safety:    observe safety reporter wired to middlewares")
+				break
+			}
+		}
+
 		// Mount all app routes on the shared mux
 		registry.RegisterAllRoutes(srv.Mux())
 

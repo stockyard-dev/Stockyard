@@ -317,6 +317,14 @@ func recordViolation(db *sql.DB, policyName, action string, req *provider.Reques
 			"provider": prov,
 		})
 
+		// Report to safety event pipeline
+		severity := "medium"
+		if action == "block" {
+			severity = "high"
+		}
+		reportSafety("policy_violation", severity, "trust_enforce", action, model, "", "", "",
+			map[string]any{"policy": policyName, "provider": prov})
+
 		// Get previous hash for chain
 		var prevHash string
 		db.QueryRow("SELECT hash FROM trust_ledger ORDER BY id DESC LIMIT 1").Scan(&prevHash)

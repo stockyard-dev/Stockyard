@@ -267,6 +267,7 @@ func SecretScanMiddleware(scanner *SecretScanState) proxy.Middleware {
 					scanner.recordMatches(matches)
 					log.Printf("secretscan: found %d secrets in input (%s)",
 						len(matches), formatSecretSummary(matches))
+					reportSafety("secret_detected", severityForSecrets(matches), "secret_scan", scanner.cfg.Action, req.Model, "", "", "", map[string]any{"direction": "input", "count": len(matches), "patterns": matchPatternNames(matches)})
 
 					switch scanner.cfg.Action {
 					case "block":
@@ -302,6 +303,7 @@ func SecretScanMiddleware(scanner *SecretScanState) proxy.Middleware {
 					scanner.recordMatches(matches)
 					log.Printf("secretscan: found %d secrets in output (%s)",
 						len(matches), formatSecretSummary(matches))
+					reportSafety("secret_detected", severityForSecrets(matches), "secret_scan", scanner.cfg.Action, req.Model, "", "", "", map[string]any{"direction": "output", "count": len(matches), "patterns": matchPatternNames(matches)})
 
 					switch scanner.cfg.Action {
 					case "block":
@@ -339,4 +341,25 @@ func formatSecretSummary(matches []SecretMatch) string {
 		}
 	}
 	return strings.Join(parts, ", ")
+}
+
+// severityForSecrets returns the highest severity among matches.
+func severityForSecrets(matches []SecretMatch) string {
+	best := "low"
+	rank := map[string]int{"low": 0, "medium": 1, "high": 2, "critical": 3}
+	for _, m := range matches {
+		if rank[m.Severity] > rank[best] {
+			best = m.Severity
+		}
+	}
+	return best
+}
+
+// matchPatternNames extracts pattern names from matches.
+func matchPatternNames(matches []SecretMatch) []string {
+	names := make([]string, len(matches))
+	for i, m := range matches {
+		names[i] = m.PatternName
+	}
+	return names
 }
