@@ -256,7 +256,19 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 	if l := r.URL.Query().Get("limit"); l != "" {
 		limit = l
 	}
-	rows, err := a.conn.Query("SELECT id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, created_at FROM observe_traces ORDER BY created_at DESC LIMIT ?", limit)
+
+	// Filter demo vs real traces: ?source=real excludes demo data, ?source=demo shows only demo
+	query := "SELECT id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, created_at FROM observe_traces"
+	source := r.URL.Query().Get("source")
+	switch source {
+	case "real":
+		query += " WHERE id NOT LIKE 't-demo-%'"
+	case "demo":
+		query += " WHERE id LIKE 't-demo-%'"
+	}
+	query += " ORDER BY created_at DESC LIMIT ?"
+
+	rows, err := a.conn.Query(query, limit)
 	if err != nil {
 		writeJSON(w, map[string]any{"traces": []any{}})
 		return

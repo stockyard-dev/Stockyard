@@ -28,7 +28,7 @@ function ObserveView(){
   useEffect(()=>{if(!livePaused)setLiveEvents([...liveRef.current])},[livePaused]);
 
   // Load persisted data
-  const reload=async()=>{const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces'),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
+  const reload=async()=>{const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?source=real'),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
   useEffect(()=>{reload()},[]);
   useEffect(()=>{(async()=>{const r=await api('/api/observe/timeseries?period='+period);setTs(r||{})})()},[period]);
   // Auto-refresh persisted data every 15s when on live tab
