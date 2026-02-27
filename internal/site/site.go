@@ -122,18 +122,6 @@ func Register(mux *http.ServeMux) {
 		fileServer.ServeHTTP(w, r)
 	})
 
-	// Install script — curl -sSL stockyard.dev/install | sh
-	mux.HandleFunc("GET /install", func(w http.ResponseWriter, r *http.Request) {
-		data, err := fs.ReadFile(sub, "install.sh")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.Header().Set("Cache-Control", "public, max-age=300")
-		w.Write(data)
-	})
-
 	// Blog RSS feed
 	mux.HandleFunc("GET /blog/feed.xml", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "blog/feed.xml")
