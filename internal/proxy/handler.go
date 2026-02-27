@@ -148,6 +148,12 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 // directly to the first available provider. For debugging only.
 func (s *Server) handleProviderTest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	names := make([]string, 0)
+	for name := range s.config.Providers {
+		names = append(names, name)
+	}
+
 	for name, p := range s.config.Providers {
 		temp := float64(0)
 		maxTok := 5
@@ -161,20 +167,59 @@ func (s *Server) handleProviderTest(w http.ResponseWriter, r *http.Request) {
 		resp, err := p.Send(r.Context(), req)
 		if err != nil {
 			json.NewEncoder(w).Encode(map[string]any{
-				"provider": name,
-				"error":    err.Error(),
+				"provider":          name,
+				"provider_map_keys": names,
+				"error":             err.Error(),
 			})
 			return
 		}
 		json.NewEncoder(w).Encode(map[string]any{
-			"provider": name,
-			"model":    resp.Model,
-			"content":  resp.Choices[0].Message.Content,
-			"ok":       true,
+			"provider":          name,
+			"provider_map_keys": names,
+			"model":             resp.Model,
+			"content":           resp.Choices[0].Message.Content,
+			"ok":                true,
 		})
 		return
 	}
-	json.NewEncoder(w).Encode(map[string]any{"error": "no providers"})
+
+	// Fallback: try via the full handler chain
+	if s.config.Handler != nil {
+		temp := float64(0)
+		maxTok := 5
+		req := &provider.Request{
+			Model:       "gpt-4o-mini",
+			Messages:    []provider.Message{{Role: "user", Content: "Say ok"}},
+			Temperature: &temp,
+			MaxTokens:   &maxTok,
+			Extra:       map[string]any{},
+		}
+		resp, err := s.config.Handler(r.Context(), req)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]any{
+				"provider_map_keys": names,
+				"handler_error":     err.Error(),
+			})
+			return
+		}
+		content := ""
+		if len(resp.Choices) > 0 {
+			content = resp.Choices[0].Message.Content
+		}
+		json.NewEncoder(w).Encode(map[string]any{
+			"provider_map_keys": names,
+			"model":             resp.Model,
+			"content":           content,
+			"ok":                true,
+			"via":               "handler",
+		})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]any{
+		"error":             "no providers",
+		"provider_map_keys": names,
+	})
 }
 
 // parseRequest extracts a canonical Request from an HTTP request.
