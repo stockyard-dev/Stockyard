@@ -1,4 +1,9 @@
+[build]
+builder = "nixpacks"
+buildCommand = "CGO_ENABLED=0 go build -ldflags='-s -w' -o bin/stockyard ./cmd/stockyard/"
+
 [deploy]
+startCommand = "./bin/stockyard"
 healthcheckPath = "/health"
 healthcheckTimeout = 60
 restartPolicyMaxRetries = 3
