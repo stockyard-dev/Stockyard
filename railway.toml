@@ -1,4 +1,8 @@
+[build]
+buildCommand = "go build -ldflags='-s -w' -o stockyard ./cmd/stockyard/ && chmod +x stockyard"
+
 [deploy]
+startCommand = "./stockyard"
 healthcheckPath = "/health"
 healthcheckTimeout = 60
 restartPolicyMaxRetries = 3
