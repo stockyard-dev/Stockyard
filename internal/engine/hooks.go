@@ -125,12 +125,6 @@ func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, res
 // seedProxyModules populates the proxy_modules table from active feature flags
 // so the /api/proxy/modules endpoint returns real data.
 func seedProxyModules(conn *sql.DB, pc ProductConfig) {
-	var count int
-	conn.QueryRow("SELECT COUNT(*) FROM proxy_modules").Scan(&count)
-	if count > 0 {
-		return // Already seeded
-	}
-
 	type mod struct {
 		name     string
 		category string
@@ -140,23 +134,25 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 
 	modules := []mod{
 		// Routing
-		{"fallbackrouter", "routing", pc.Features.Failover, 10},
+		{"failover", "routing", pc.Features.Failover, 10},
 		{"modelswitch", "routing", pc.Features.ModelSwitch, 11},
 		{"regionroute", "routing", pc.Features.RegionRoute, 12},
 		{"localsync", "routing", pc.Features.LocalSync, 13},
 		{"abrouter", "routing", pc.Features.ABRouter, 14},
 		// Caching
-		{"cachelayer", "caching", pc.Features.Cache, 20},
+		{"cache", "caching", pc.Features.Cache, 20},
 		{"embedcache", "caching", pc.Features.EmbedCache, 21},
-		{"semanticcache", "caching", pc.Features.SemanticCache, 22},
 		// Cost
-		{"costcap", "cost", pc.Features.SpendCaps, 30},
-		{"tierdrop", "cost", pc.Features.TierDrop, 31},
-		{"idlekill", "cost", pc.Features.IdleKill, 32},
-		{"outputcap", "cost", pc.Features.OutputCap, 33},
-		{"usagepulse", "cost", pc.Features.UsagePulse, 34},
+		{"spend", "cost", pc.Features.SpendTracking, 30},
+		{"caps", "cost", pc.Features.SpendCaps, 31},
+		{"tierdrop", "cost", pc.Features.TierDrop, 32},
+		{"idlekill", "cost", pc.Features.IdleKill, 33},
+		{"outputcap", "cost", pc.Features.OutputCap, 34},
+		{"usagepulse", "cost", pc.Features.UsagePulse, 35},
 		// Rate
-		{"rateshield", "rate", pc.Features.RateLimiting, 40},
+		{"ratelimit", "rate", pc.Features.RateLimiting, 40},
+		{"ipfence", "tenant", pc.Features.IPFence, 41},
+		{"tenantwall", "tenant", pc.Features.TenantWall, 42},
 		// Keys
 		{"keypool", "keys", pc.Features.KeyPool, 50},
 		// Transform
@@ -167,32 +163,33 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"langbridge", "transform", pc.Features.LangBridge, 64},
 		{"voicebridge", "transform", pc.Features.VoiceBridge, 65},
 		// Validate
-		{"structuredshield", "validate", pc.Features.Validation, 70},
-		{"evalgate", "validate", pc.Features.EvalGate, 71},
-		{"codefence", "validate", pc.Features.CodeFence, 72},
+		{"evalgate", "validate", pc.Features.EvalGate, 70},
+		{"codefence", "validate", pc.Features.CodeFence, 71},
 		// Safety
 		{"promptguard", "safety", pc.Features.PromptGuard, 80},
-		{"toxicfilter", "safety", pc.Features.ToxicFilter, 81},
-		{"guardrail", "safety", pc.Features.GuardRail, 82},
-		{"agegate", "safety", pc.Features.AgeGate, 83},
-		{"hallucicheck", "safety", pc.Features.HalluciCheck, 84},
-		{"secretscan", "safety", pc.Features.SecretScan, 85},
+		{"secretscan", "safety", pc.Features.SecretScan, 81},
+		{"toxicfilter", "safety", pc.Features.ToxicFilter, 82},
+		{"guardrail", "safety", pc.Features.GuardRail, 83},
+		{"agegate", "safety", pc.Features.AgeGate, 84},
+		{"hallucicheck", "safety", pc.Features.HalluciCheck, 85},
 		{"agentguard", "safety", pc.Features.AgentGuard, 86},
+		{"maskmode", "safety", pc.Features.MaskMode, 87},
+		{"trust_enforce", "safety", true, 88},
 		// Shims
 		{"anthrofit", "shims", pc.Features.AnthroFit, 90},
 		{"geminishim", "shims", pc.Features.GeminiShim, 91},
+		// Reliability
+		{"retrypilot", "reliability", pc.Features.RetryPilot, 100},
 		// Stream
-		{"streamsnap", "stream", pc.Features.StreamSnap, 100},
+		{"streamsnap", "stream", pc.Features.StreamSnap, 110},
 		// Multimodal
-		{"imageproxy", "multimodal", pc.Features.ImageProxy, 110},
-		// Tenant
-		{"tenantwall", "tenant", pc.Features.TenantWall, 120},
-		{"ipfence", "tenant", pc.Features.IPFence, 121},
+		{"imageproxy", "multimodal", pc.Features.ImageProxy, 120},
 		// Observability
-		{"llmtap", "observe", pc.Features.LLMTap, 130},
-		{"tracelink", "observe", pc.Features.TraceLink, 131},
-		{"alertpulse", "observe", pc.Features.AlertPulse, 132},
-		{"driftwatch", "observe", pc.Features.DriftWatch, 133},
+		{"logging", "observe", pc.Features.RequestLogging, 130},
+		{"llmtap", "observe", pc.Features.LLMTap, 131},
+		{"tracelink", "observe", pc.Features.TraceLink, 132},
+		{"alertpulse", "observe", pc.Features.AlertPulse, 133},
+		{"driftwatch", "observe", pc.Features.DriftWatch, 134},
 		// Trust
 		{"compliancelog", "trust", pc.Features.ComplianceLog, 140},
 		{"feedbackloop", "trust", pc.Features.FeedbackLoop, 141},
@@ -201,9 +198,8 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"promptlint", "studio", pc.Features.PromptLint, 151},
 		{"approvalgate", "studio", pc.Features.ApprovalGate, 152},
 		// Forge
-		{"batchqueue", "forge", pc.Features.BatchQueue, 160},
-		{"multicall", "forge", pc.Features.MultiCall, 161},
-		{"mockllm", "forge", pc.Features.MockLLM, 162},
+		{"multicall", "forge", pc.Features.MultiCall, 160},
+		{"mockllm", "forge", pc.Features.MockLLM, 161},
 		// Exchange
 		{"devproxy", "exchange", pc.Features.DevProxy, 170},
 	}
@@ -217,7 +213,14 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 			m.name, m.category, enabled, m.priority)
 	}
 
-	log.Printf("[proxy] seeded %d modules into proxy_modules table", len(modules))
+	// Reconcile existing DBs: remove old/phantom module names
+	for _, old := range []string{"fallbackrouter", "cachelayer", "costcap", "rateshield", "batchqueue", "semanticcache", "structuredshield"} {
+		conn.Exec("DELETE FROM proxy_modules WHERE name = ?", old)
+	}
+
+	var total int
+	conn.QueryRow("SELECT COUNT(*) FROM proxy_modules").Scan(&total)
+	log.Printf("[proxy] seeded %d modules into proxy_modules table", total)
 }
 
 // seedProxyProviders populates the proxy_providers table from configured providers.
