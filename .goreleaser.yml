@@ -6,397 +6,103 @@ project_name: stockyard
 before:
   hooks:
     - go mod tidy
-    - go test ./... -count=1
+    - go test ./internal/license/ ./internal/storage/ -count=1
 
 builds:
-  - id: costcap
-    main: ./cmd/costcap
-    binary: costcap
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags:
-      &ldflags
-      - -s -w
-      - -X main.version={{.Version}}
-      - -X main.commit={{.ShortCommit}}
-      - -X main.date={{.Date}}
-
-  - id: llmcache
-    main: ./cmd/llmcache
-    binary: llmcache
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: jsonguard
-    main: ./cmd/jsonguard
-    binary: jsonguard
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: routefall
-    main: ./cmd/routefall
-    binary: routefall
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: rateshield
-    main: ./cmd/rateshield
-    binary: rateshield
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: promptreplay
-    main: ./cmd/promptreplay
-    binary: promptreplay
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: keypool
-    main: ./cmd/keypool
-    binary: keypool
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: promptguard
-    main: ./cmd/promptguard
-    binary: promptguard
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: modelswitch
-    main: ./cmd/modelswitch
-    binary: modelswitch
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: evalgate
-    main: ./cmd/evalgate
-    binary: evalgate
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: usagepulse
-    main: ./cmd/usagepulse
-    binary: usagepulse
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: promptpad
-    main: ./cmd/promptpad
-    binary: promptpad
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: tokentrim
-    main: ./cmd/tokentrim
-    binary: tokentrim
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: batchqueue
-    main: ./cmd/batchqueue
-    binary: batchqueue
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: multicall
-    main: ./cmd/multicall
-    binary: multicall
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: streamsnap
-    main: ./cmd/streamsnap
-    binary: streamsnap
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: llmtap
-    main: ./cmd/llmtap
-    binary: llmtap
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: contextpack
-    main: ./cmd/contextpack
-    binary: contextpack
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: retrypilot
-    main: ./cmd/retrypilot
-    binary: retrypilot
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
   - id: stockyard
     main: ./cmd/stockyard
     binary: stockyard
     env: [CGO_ENABLED=0]
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: sy-keygen
-    main: ./cmd/sy-keygen
-    binary: sy-keygen
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.ShortCommit}}
+      - -X main.date={{.Date}}
 
   - id: sy-api
     main: ./cmd/sy-api
     binary: sy-api
     env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
+    goos: [linux, darwin]
     goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-  - id: sy-docs
-    main: ./cmd/sy-docs
-    binary: sy-docs
-    env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    ldflags: *ldflags
-
-archives:
-  - id: costcap
-    builds: [costcap]
-    name_template: "costcap_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: llmcache
-    builds: [llmcache]
-    name_template: "llmcache_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: jsonguard
-    builds: [jsonguard]
-    name_template: "jsonguard_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: routefall
-    builds: [routefall]
-    name_template: "routefall_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: rateshield
-    builds: [rateshield]
-    name_template: "rateshield_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: promptreplay
-    builds: [promptreplay]
-    name_template: "promptreplay_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: keypool
-    builds: [keypool]
-    name_template: "keypool_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: promptguard
-    builds: [promptguard]
-    name_template: "promptguard_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: modelswitch
-    builds: [modelswitch]
-    name_template: "modelswitch_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: evalgate
-    builds: [evalgate]
-    name_template: "evalgate_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: usagepulse
-    builds: [usagepulse]
-    name_template: "usagepulse_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: promptpad
-    builds: [promptpad]
-    name_template: "promptpad_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: tokentrim
-    builds: [tokentrim]
-    name_template: "tokentrim_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: batchqueue
-    builds: [batchqueue]
-    name_template: "batchqueue_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: multicall
-    builds: [multicall]
-    name_template: "multicall_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: streamsnap
-    builds: [streamsnap]
-    name_template: "streamsnap_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: llmtap
-    builds: [llmtap]
-    name_template: "llmtap_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: contextpack
-    builds: [contextpack]
-    name_template: "contextpack_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: retrypilot
-    builds: [retrypilot]
-    name_template: "retrypilot_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: stockyard
-    builds: [stockyard]
-    name_template: "stockyard_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
 
   - id: sy-keygen
-    builds: [sy-keygen]
-    name_template: "sy-keygen_{{ .Os }}_{{ .Arch }}"
+    main: ./cmd/sy-keygen
+    binary: sy-keygen
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+
+archives:
+  - id: stockyard
+    builds: [stockyard]
+    name_template: "stockyard_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
         format: zip
 
-  - id: sy-api
-    builds: [sy-api]
-    name_template: "sy-api_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
-
-  - id: sy-docs
-    builds: [sy-docs]
-    name_template: "sy-docs_{{ .Os }}_{{ .Arch }}"
-    format_overrides:
-      - goos: windows
-        format: zip
+  - id: tools
+    builds: [sy-api, sy-keygen]
+    name_template: "stockyard-tools_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
   name_template: "checksums.txt"
 
 changelog:
   sort: asc
-  groups:
-    - title: "🚀 Features"
-      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
-      order: 0
-    - title: "🐛 Bug Fixes"
-      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
-      order: 1
-    - title: "📝 Documentation"
-      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
-      order: 2
-    - title: "Other"
-      order: 999
   filters:
     exclude:
+      - "^docs:"
+      - "^site:"
       - "^test:"
-      - "^ci:"
       - "^chore:"
+
+brews:
+  - name: stockyard
+    ids: [stockyard]
+    repository:
+      owner: stockyard-dev
+      name: homebrew-tap
+    homepage: "https://stockyard.dev"
+    description: "LLM proxy platform — 6 apps, 58 modules, one binary"
+    license: "MIT"
+    install: |
+      bin.install "stockyard"
+    test: |
+      assert_match "stockyard", shell_output("#{bin}/stockyard --version")
+
+dockers:
+  - image_templates:
+      - "ghcr.io/stockyard-dev/stockyard:{{ .Version }}"
+      - "ghcr.io/stockyard-dev/stockyard:latest"
+    ids: [stockyard]
+    dockerfile: Dockerfile.goreleaser
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.source=https://github.com/stockyard-dev/stockyard"
+      - "--label=org.opencontainers.image.version={{.Version}}"
 
 release:
   github:
     owner: stockyard-dev
     name: stockyard
+  draft: false
   prerelease: auto
-  name_template: "v{{.Version}}"
+  name_template: "Stockyard v{{.Version}}"
   header: |
-    ## Stockyard v{{.Version}} — 20 Products + 3 Tools
+    ## What's new
 
-    Install any product in 10 seconds:
-    ```bash
-    npx @stockyard/costcap      # or any of 20 products
-    brew install stockyard-dev/tap/costcap
-    docker run ghcr.io/stockyard-dev/costcap
-    ```
+    Six apps. One binary. Zero dependencies.
+    See the [changelog](https://stockyard.dev/changelog/) for details.
   footer: |
-    **Full Changelog**: https://github.com/stockyard-dev/stockyard/compare/{{ .PreviousTag }}...{{ .Tag }}
+    ---
+    **Quick install:** `curl -sSL stockyard.dev/install | sh`
+    **Docker:** `docker run -p 4200:4200 ghcr.io/stockyard-dev/stockyard:{{.Version}}`
+    **Docs:** https://stockyard.dev/docs/

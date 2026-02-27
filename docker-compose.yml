@@ -1,277 +1,34 @@
-# Stockyard — Run any product (or all of them) with Docker Compose
-#
-# Single product:  docker compose up costcap
-# Full suite:      docker compose up stockyard
-# All products:    docker compose up
-#
-# Required: Set OPENAI_API_KEY (and optionally ANTHROPIC_API_KEY, GROQ_API_KEY, GEMINI_API_KEY)
-
-x-common-env: &common-env
-  OPENAI_API_KEY: ${OPENAI_API_KEY}
-  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-  GROQ_API_KEY: ${GROQ_API_KEY:-}
-  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-
+# Docker Compose for local development and quick start.
+# Usage: docker compose up
 services:
-  # ── Original 7 ──────────────────────────────────────────────────────
-  costcap:
-    build: { context: ., args: { PRODUCT: costcap } }
-    image: ghcr.io/stockyard-dev/costcap:latest
-    ports: ["4100:4100"]
-    environment: *common-env
-    volumes: [costcap-data:/data]
-
-  llmcache:
-    build: { context: ., args: { PRODUCT: llmcache } }
-    image: ghcr.io/stockyard-dev/llmcache:latest
-    ports: ["4200:4200"]
-    environment: *common-env
-    volumes: [llmcache-data:/data]
-
-  jsonguard:
-    build: { context: ., args: { PRODUCT: jsonguard } }
-    image: ghcr.io/stockyard-dev/jsonguard:latest
-    ports: ["4300:4300"]
-    environment: *common-env
-    volumes: [jsonguard-data:/data]
-
-  routefall:
-    build: { context: ., args: { PRODUCT: routefall } }
-    image: ghcr.io/stockyard-dev/routefall:latest
-    ports: ["4400:4400"]
-    environment: *common-env
-    volumes: [routefall-data:/data]
-
-  rateshield:
-    build: { context: ., args: { PRODUCT: rateshield } }
-    image: ghcr.io/stockyard-dev/rateshield:latest
-    ports: ["4500:4500"]
-    environment: *common-env
-    volumes: [rateshield-data:/data]
-
-  promptreplay:
-    build: { context: ., args: { PRODUCT: promptreplay } }
-    image: ghcr.io/stockyard-dev/promptreplay:latest
-    ports: ["4600:4600"]
-    environment: *common-env
-    volumes: [promptreplay-data:/data]
-
-  # ── Phase 1 Expansion ──────────────────────────────────────────────
-  keypool:
-    build: { context: ., args: { PRODUCT: keypool } }
-    image: ghcr.io/stockyard-dev/keypool:latest
-    ports: ["4700:4700"]
-    environment: *common-env
-    volumes: [keypool-data:/data]
-
-  promptguard:
-    build: { context: ., args: { PRODUCT: promptguard } }
-    image: ghcr.io/stockyard-dev/promptguard:latest
-    ports: ["4800:4800"]
-    environment: *common-env
-    volumes: [promptguard-data:/data]
-
-  modelswitch:
-    build: { context: ., args: { PRODUCT: modelswitch } }
-    image: ghcr.io/stockyard-dev/modelswitch:latest
-    ports: ["4900:4900"]
-    environment: *common-env
-    volumes: [modelswitch-data:/data]
-
-  evalgate:
-    build: { context: ., args: { PRODUCT: evalgate } }
-    image: ghcr.io/stockyard-dev/evalgate:latest
-    ports: ["4110:4110"]
-    environment: *common-env
-    volumes: [evalgate-data:/data]
-
-  usagepulse:
-    build: { context: ., args: { PRODUCT: usagepulse } }
-    image: ghcr.io/stockyard-dev/usagepulse:latest
-    ports: ["4410:4410"]
-    environment: *common-env
-    volumes: [usagepulse-data:/data]
-
-  # ── Phase 2 Expansion ──────────────────────────────────────────────
-  promptpad:
-    build: { context: ., args: { PRODUCT: promptpad } }
-    image: ghcr.io/stockyard-dev/promptpad:latest
-    ports: ["4801:4801"]
-    environment: *common-env
-    volumes: [promptpad-data:/data]
-
-  tokentrim:
-    build: { context: ., args: { PRODUCT: tokentrim } }
-    image: ghcr.io/stockyard-dev/tokentrim:latest
-    ports: ["4901:4901"]
-    environment: *common-env
-    volumes: [tokentrim-data:/data]
-
-  batchqueue:
-    build: { context: ., args: { PRODUCT: batchqueue } }
-    image: ghcr.io/stockyard-dev/batchqueue:latest
-    ports: ["5000:5000"]
-    environment: *common-env
-    volumes: [batchqueue-data:/data]
-
-  multicall:
-    build: { context: ., args: { PRODUCT: multicall } }
-    image: ghcr.io/stockyard-dev/multicall:latest
-    ports: ["5100:5100"]
-    environment: *common-env
-    volumes: [multicall-data:/data]
-
-  streamsnap:
-    build: { context: ., args: { PRODUCT: streamsnap } }
-    image: ghcr.io/stockyard-dev/streamsnap:latest
-    ports: ["5200:5200"]
-    environment: *common-env
-    volumes: [streamsnap-data:/data]
-
-  llmtap:
-    build: { context: ., args: { PRODUCT: llmtap } }
-    image: ghcr.io/stockyard-dev/llmtap:latest
-    ports: ["5300:5300"]
-    environment: *common-env
-    volumes: [llmtap-data:/data]
-
-  contextpack:
-    build: { context: ., args: { PRODUCT: contextpack } }
-    image: ghcr.io/stockyard-dev/contextpack:latest
-    ports: ["5400:5400"]
-    environment: *common-env
-    volumes: [contextpack-data:/data]
-
-  retrypilot:
-    build: { context: ., args: { PRODUCT: retrypilot } }
-    image: ghcr.io/stockyard-dev/retrypilot:latest
-    ports: ["5500:5500"]
-    environment: *common-env
-    volumes: [retrypilot-data:/data]
-
-  # ── Phase 3 P1 Expansion ────────────────────────────────────────────
-  toxicfilter:
-    build: { context: ., args: { PRODUCT: toxicfilter } }
-    image: ghcr.io/stockyard-dev/toxicfilter:latest
-    ports: ["5600:5600"]
-    environment: *common-env
-    volumes: [toxicfilter-data:/data]
-
-  compliancelog:
-    build: { context: ., args: { PRODUCT: compliancelog } }
-    image: ghcr.io/stockyard-dev/compliancelog:latest
-    ports: ["5610:5610"]
-    environment: *common-env
-    volumes: [compliancelog-data:/data]
-
-  secretscan:
-    build: { context: ., args: { PRODUCT: secretscan } }
-    image: ghcr.io/stockyard-dev/secretscan:latest
-    ports: ["5620:5620"]
-    environment: *common-env
-    volumes: [secretscan-data:/data]
-
-  tracelink:
-    build: { context: ., args: { PRODUCT: tracelink } }
-    image: ghcr.io/stockyard-dev/tracelink:latest
-    ports: ["5630:5630"]
-    environment: *common-env
-    volumes: [tracelink-data:/data]
-
-  alertpulse:
-    build: { context: ., args: { PRODUCT: alertpulse } }
-    image: ghcr.io/stockyard-dev/alertpulse:latest
-    ports: ["5640:5640"]
-    environment: *common-env
-    volumes: [alertpulse-data:/data]
-
-  chatmem:
-    build: { context: ., args: { PRODUCT: chatmem } }
-    image: ghcr.io/stockyard-dev/chatmem:latest
-    ports: ["5650:5650"]
-    environment: *common-env
-    volumes: [chatmem-data:/data]
-
-  mockllm:
-    build: { context: ., args: { PRODUCT: mockllm } }
-    image: ghcr.io/stockyard-dev/mockllm:latest
-    ports: ["5660:5660"]
-    environment: *common-env
-    volumes: [mockllm-data:/data]
-
-  tenantwall:
-    build: { context: ., args: { PRODUCT: tenantwall } }
-    image: ghcr.io/stockyard-dev/tenantwall:latest
-    ports: ["5670:5670"]
-    environment: *common-env
-    volumes: [tenantwall-data:/data]
-
-  idlekill:
-    build: { context: ., args: { PRODUCT: idlekill } }
-    image: ghcr.io/stockyard-dev/idlekill:latest
-    ports: ["5680:5680"]
-    environment: *common-env
-    volumes: [idlekill-data:/data]
-
-  ipfence:
-    build: { context: ., args: { PRODUCT: ipfence } }
-    image: ghcr.io/stockyard-dev/ipfence:latest
-    ports: ["5690:5690"]
-    environment: *common-env
-    volumes: [ipfence-data:/data]
-
-  embedcache:
-    build: { context: ., args: { PRODUCT: embedcache } }
-    image: ghcr.io/stockyard-dev/embedcache:latest
-    ports: ["5700:5700"]
-    environment: *common-env
-    volumes: [embedcache-data:/data]
-
-  anthrofit:
-    build: { context: ., args: { PRODUCT: anthrofit } }
-    image: ghcr.io/stockyard-dev/anthrofit:latest
-    ports: ["5710:5710"]
-    environment: *common-env
-    volumes: [anthrofit-data:/data]
-
-  # ── Full Suite ──────────────────────────────────────────────────────
   stockyard:
-    build: { context: ., args: { PRODUCT: stockyard } }
-    image: ghcr.io/stockyard-dev/stockyard:latest
-    ports: ["4000:4000"]
-    environment: *common-env
-    volumes: [stockyard-data:/data]
+    build: .
+    ports:
+      - "4200:4200"
+    volumes:
+      - stockyard-data:/data
+    environment:
+      - PORT=4200
+      - STOCKYARD_DATA_DIR=/data
+      - STOCKYARD_ADMIN_KEY=${STOCKYARD_ADMIN_KEY:-}
+      - STOCKYARD_LICENSE_KEY=${STOCKYARD_LICENSE_KEY:-}
+      # Provider keys (set in .env or export before running)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      # OTEL export (optional)
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-stockyard}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "stockyard", "--health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
-  costcap-data:
-  llmcache-data:
-  jsonguard-data:
-  routefall-data:
-  rateshield-data:
-  promptreplay-data:
-  keypool-data:
-  promptguard-data:
-  modelswitch-data:
-  evalgate-data:
-  usagepulse-data:
-  promptpad-data:
-  tokentrim-data:
-  batchqueue-data:
-  multicall-data:
-  streamsnap-data:
-  llmtap-data:
-  contextpack-data:
-  retrypilot-data:
-  toxicfilter-data:
-  compliancelog-data:
-  secretscan-data:
-  tracelink-data:
-  alertpulse-data:
-  chatmem-data:
-  mockllm-data:
-  tenantwall-data:
-  idlekill-data:
-  ipfence-data:
-  embedcache-data:
-  anthrofit-data:
   stockyard-data:

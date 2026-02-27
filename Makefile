@@ -56,3 +56,27 @@ release-build:
 docker:
 	docker build -t stockyard:$(VERSION) .
 	docker tag stockyard:$(VERSION) stockyard:latest
+
+# Benchmarks
+bench:
+	go test ./internal/proxy/ -bench=. -benchmem -count=3 -timeout 120s
+
+bench-short:
+	go test ./internal/proxy/ -bench=. -benchmem -count=1 -timeout 60s
+
+# Doctor (run health check)
+doctor: build
+	./dist/stockyard doctor
+
+# Sync site/ to internal/site/static/
+site-sync:
+	@find site -name "*.html" -o -name "*.xml" -o -name "*.sh" -o -name "*.txt" | while read f; do \
+		dest="internal/site/static/$${f#site/}"; \
+		mkdir -p "$$(dirname "$$dest")"; \
+		cp "$$f" "$$dest"; \
+	done
+	@echo "Synced site/ → internal/site/static/"
+
+# Full check before pushing
+pre-push: lint test bench-short
+	@echo "All checks passed"
