@@ -1,8 +1,0 @@
-[phases.setup]
-nixPkgs = ["go"]
-
-[phases.build]
-cmds = ["CGO_ENABLED=0 go build -ldflags='-s -w' -o bin/stockyard ./cmd/stockyard/"]
-
-[start]
-cmd = "./bin/stockyard"
