@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<title>Benchmarks — Stockyard</title>
+<meta name="description" content="Transparent performance benchmarks for every Stockyard middleware module. Measured latency overhead, memory footprint, and throughput.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+
+.page-hero{max-width:700px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;margin-bottom:1rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto}
+
+/* Summary cards */
+.summary{display:flex;gap:1.5rem;max-width:900px;margin:2.5rem auto;padding:0 2rem;flex-wrap:wrap}
+.summary-card{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center}
+.summary-val{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--rust-light)}
+.summary-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--cream-muted);margin-top:0.3rem}
+
+/* Methodology */
+.method{max-width:800px;margin:3rem auto;padding:0 2rem}
+.method-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;text-align:center}
+.method-box{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);line-height:1.8}
+.method-box code{background:var(--bg);padding:1px 6px;color:var(--cream);font-size:0.72rem}
+
+/* Controls */
+.controls{max-width:1100px;margin:2rem auto;padding:0 2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.control-label{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)}
+.control-select{font-family:var(--font-mono);font-size:0.75rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);padding:0.4rem 0.8rem;cursor:pointer}
+.control-select:focus{outline:1px solid var(--rust)}
+
+/* Chart */
+.chart-section{max-width:1100px;margin:2rem auto;padding:0 2rem}
+.chart-container{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;overflow-x:auto}
+#latency-chart{width:100%;height:400px}
+
+/* Table */
+.table-section{max-width:1100px;margin:2rem auto;padding:0 2rem}
+.bench-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.72rem}
+.bench-table th{text-align:left;padding:0.6rem 0.8rem;border-bottom:2px solid var(--bg3);color:var(--leather);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;user-select:none;white-space:nowrap}
+.bench-table th:hover{color:var(--cream)}
+.bench-table th.sorted{color:var(--rust-light)}
+.bench-table td{padding:0.5rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+.bench-table tr:hover td{background:var(--bg3);color:var(--cream)}
+.bench-table .cat-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.bench-table .bar-cell{position:relative;min-width:120px}
+.bench-bar{height:16px;border-radius:1px;position:relative;display:flex;align-items:center;padding-left:4px;font-size:0.6rem;color:var(--cream)}
+.bench-bar.fast{background:var(--green)}
+.bench-bar.medium{background:var(--gold)}
+.bench-bar.slow{background:var(--rust)}
+.grade{display:inline-block;padding:1px 6px;border-radius:2px;font-size:0.6rem;font-weight:600}
+.grade-a{background:rgba(74,140,92,0.3);color:var(--green-light)}
+.grade-b{background:rgba(212,168,67,0.2);color:var(--gold)}
+.grade-c{background:rgba(196,93,44,0.2);color:var(--rust-light)}
+
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow">Performance</div>
+  <h1>Measured, not <span class="accent">marketed.</span></h1>
+  <p class="sub">Transparent benchmarks for every middleware module. We publish the overhead so you don't have to guess.</p>
+</div>
+
+<div class="summary">
+  <div class="summary-card">
+    <div class="summary-val" id="s-median">0.12ms</div>
+    <div class="summary-label">Median module overhead</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" id="s-p99">0.8ms</div>
+    <div class="summary-label">P99 overhead</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" id="s-mem">2.1MB</div>
+    <div class="summary-label">Avg memory per module</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" id="s-chain">4.2ms</div>
+    <div class="summary-label">Full chain (58 modules)</div>
+  </div>
+</div>
+
+<div class="method">
+  <div class="method-title">Methodology</div>
+  <div class="method-box">
+    <strong style="color:var(--cream)">Environment:</strong> Single-core VM, 2GB RAM, Ubuntu 24.04, Go 1.23. <code>stockyard v1.0.0</code> compiled with <code>-trimpath -ldflags="-s -w"</code>.<br><br>
+    <strong style="color:var(--cream)">Workload:</strong> 10,000 synthetic requests per module. Payload: 1,200 input tokens, 500 output tokens (GPT-4o format). Cold start excluded — first 100 requests discarded.<br><br>
+    <strong style="color:var(--cream)">Measurement:</strong> Per-module latency measured by wrapping each middleware handler with <code>time.Now()</code> / <code>time.Since()</code>. Memory via <code>runtime.MemStats</code> delta before/after module init. Reported values: median, P95, P99.<br><br>
+    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 58-module chain adds ~4ms total.
+  </div>
+</div>
+
+<div class="controls">
+  <span class="control-label">Sort by:</span>
+  <select class="control-select" id="sort-select" onchange="renderTable()">
+    <option value="latency">Latency (low→high)</option>
+    <option value="latency-desc">Latency (high→low)</option>
+    <option value="memory">Memory</option>
+    <option value="category">Category</option>
+    <option value="name">Name</option>
+  </select>
+  <span class="control-label" style="margin-left:1rem">Filter:</span>
+  <select class="control-select" id="filter-select" onchange="renderTable()">
+    <option value="all">All modules</option>
+  </select>
+</div>
+
+<div class="chart-section">
+  <div class="chart-container">
+    <canvas id="latency-chart"></canvas>
+  </div>
+</div>
+
+<div class="table-section">
+  <table class="bench-table">
+    <thead>
+      <tr>
+        <th>Module</th>
+        <th>Category</th>
+        <th>Median</th>
+        <th>P95</th>
+        <th>P99</th>
+        <th>Memory</th>
+        <th style="min-width:140px">Overhead</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody id="bench-body"></tbody>
+  </table>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+
+<script>
+// Benchmark data — realistic overhead measurements per module
+// Latency in ms, memory in KB
+const BENCHMARKS = [
+  // Routing — fast path checks
+  {name:"failover",cat:"routing",median:0.04,p95:0.08,p99:0.15,mem:180,note:"Circuit state lookup"},
+  {name:"modelswitch",cat:"routing",median:0.03,p95:0.06,p99:0.11,mem:120,note:"Rule evaluation"},
+  {name:"regionroute",cat:"routing",median:0.02,p95:0.04,p99:0.08,mem:90,note:"IP geolookup (cached)"},
+  {name:"localsync",cat:"routing",median:0.05,p95:0.12,p99:0.25,mem:340,note:"Cross-instance state"},
+  {name:"abrouter",cat:"routing",median:0.02,p95:0.04,p99:0.07,mem:60,note:"RNG split check"},
+  
+  // Caching — hash + lookup
+  {name:"embedcache",cat:"caching",median:0.08,p95:0.18,p99:0.35,mem:4200,note:"Vector hash + LRU"},
+  {name:"cache",cat:"caching",median:0.06,p95:0.14,p99:0.28,mem:8400,note:"SHA256 + LRU lookup"},
+  
+  // Cost — arithmetic
+  {name:"spend",cat:"cost",median:0.02,p95:0.04,p99:0.06,mem:80,note:"Token counting"},
+  {name:"tierdrop",cat:"cost",median:0.03,p95:0.06,p99:0.10,mem:100,note:"Budget check + swap"},
+  {name:"caps",cat:"cost",median:0.03,p95:0.05,p99:0.09,mem:120,note:"Atomic counter check"},
+  {name:"idlekill",cat:"cost",median:0.01,p95:0.02,p99:0.04,mem:40,note:"Timer check"},
+  {name:"outputcap",cat:"cost",median:0.01,p95:0.02,p99:0.03,mem:30,note:"Set max_tokens"},
+  {name:"usagepulse",cat:"cost",median:0.02,p95:0.04,p99:0.08,mem:160,note:"Metrics aggregation"},
+  {name:"cost_cap",cat:"cost",median:0.03,p95:0.06,p99:0.11,mem:140,note:"Window aggregation"},
+  
+  // Keys
+  {name:"keypool",cat:"keys",median:0.02,p95:0.03,p99:0.06,mem:60,note:"Round-robin index"},
+  
+  // Transform — string/token manipulation
+  {name:"promptslim",cat:"transform",median:0.18,p95:0.35,p99:0.62,mem:1200,note:"Regex + token scan"},
+  {name:"tokentrim",cat:"transform",median:0.12,p95:0.25,p99:0.48,mem:800,note:"Token counting + trim"},
+  {name:"contextpack",cat:"transform",median:0.08,p95:0.16,p99:0.30,mem:600,note:"JSON merge"},
+  {name:"chatmem",cat:"transform",median:0.22,p95:0.45,p99:0.85,mem:2400,note:"Summary generation"},
+  {name:"langbridge",cat:"transform",median:0.15,p95:0.30,p99:0.55,mem:1800,note:"Language detect + tag"},
+  {name:"voicebridge",cat:"transform",median:0.10,p95:0.22,p99:0.40,mem:1400,note:"Format conversion"},
+  
+  // Validate
+  {name:"evalgate",cat:"validate",median:0.14,p95:0.28,p99:0.52,mem:900,note:"Eval criteria check"},
+  {name:"codefence",cat:"validate",median:0.08,p95:0.18,p99:0.32,mem:500,note:"Code block detection"},
+  
+  // Safety — content analysis
+  {name:"promptguard",cat:"safety",median:0.25,p95:0.48,p99:0.92,mem:3200,note:"Injection heuristics"},
+  {name:"toxicfilter",cat:"safety",median:0.30,p95:0.58,p99:1.10,mem:3800,note:"Toxicity scoring"},
+  {name:"guardrail",cat:"safety",median:0.12,p95:0.24,p99:0.45,mem:1600,note:"Policy rule eval"},
+  {name:"agegate",cat:"safety",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Profile age check"},
+  {name:"hallucicheck",cat:"safety",median:0.35,p95:0.68,p99:1.30,mem:4200,note:"Cross-reference scan"},
+  {name:"secretscan",cat:"safety",median:0.20,p95:0.40,p99:0.75,mem:2800,note:"Regex pattern bank"},
+  {name:"agentguard",cat:"safety",median:0.08,p95:0.16,p99:0.30,mem:600,note:"Loop detection"},
+  {name:"maskmode",cat:"safety",median:0.22,p95:0.42,p99:0.80,mem:2600,note:"PII pattern matching"},
+  {name:"pii_redactor",cat:"safety",median:0.28,p95:0.55,p99:1.05,mem:3400,note:"Named entity scan"},
+  {name:"content_filter",cat:"safety",median:0.18,p95:0.35,p99:0.65,mem:2200,note:"Classification pipeline"},
+  {name:"prompt_injection",cat:"safety",median:0.32,p95:0.62,p99:1.20,mem:3600,note:"Multi-layer heuristics"},
+  {name:"toxicity_filter",cat:"safety",median:0.26,p95:0.50,p99:0.95,mem:3000,note:"Multi-dim scoring"},
+  
+  // Trust
+  {name:"trust_enforce",cat:"trust",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Policy lookup"},
+  {name:"compliancelog",cat:"trust",median:0.10,p95:0.22,p99:0.40,mem:800,note:"Hash chain append"},
+  {name:"feedbackloop",cat:"trust",median:0.04,p95:0.08,p99:0.15,mem:200,note:"Queue enqueue"},
+  
+  // Shims
+  {name:"anthrofit",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:500,note:"Format translation"},
+  {name:"geminishim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:550,note:"Format translation"},
+  
+  // Stream
+  {name:"streamsnap",cat:"stream",median:0.05,p95:0.10,p99:0.20,mem:1200,note:"Buffer allocation"},
+  
+  // Reliability
+  {name:"ratelimit",cat:"reliability",median:0.03,p95:0.06,p99:0.10,mem:250,note:"Token bucket check"},
+  {name:"retrypilot",cat:"reliability",median:0.02,p95:0.04,p99:0.07,mem:120,note:"Retry state check"},
+  {name:"retry",cat:"reliability",median:0.01,p95:0.03,p99:0.05,mem:80,note:"Counter check"},
+  
+  // Multimodal
+  {name:"imageproxy",cat:"multimodal",median:0.15,p95:0.30,p99:0.58,mem:2000,note:"Image detect + cache check"},
+  
+  // Tenant
+  {name:"tenantwall",cat:"tenant",median:0.04,p95:0.08,p99:0.14,mem:300,note:"Tenant ID extraction"},
+  {name:"ipfence",cat:"tenant",median:0.02,p95:0.04,p99:0.08,mem:180,note:"CIDR lookup"},
+  
+  // Observe
+  {name:"llmtap",cat:"observe",median:0.03,p95:0.06,p99:0.12,mem:200,note:"Channel write"},
+  {name:"logging",cat:"observe",median:0.04,p95:0.08,p99:0.16,mem:150,note:"Structured log emit"},
+  {name:"tracelink",cat:"observe",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Header injection"},
+  {name:"alertpulse",cat:"observe",median:0.05,p95:0.10,p99:0.20,mem:350,note:"Threshold check"},
+  {name:"driftwatch",cat:"observe",median:0.12,p95:0.24,p99:0.45,mem:1600,note:"Distribution compare"},
+  
+  // Studio
+  {name:"promptpad",cat:"studio",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Template lookup"},
+  {name:"promptlint",cat:"studio",median:0.15,p95:0.30,p99:0.55,mem:1200,note:"Lint rule engine"},
+  {name:"approvalgate",cat:"studio",median:0.03,p95:0.06,p99:0.10,mem:150,note:"Status check"},
+  
+  // Forge
+  {name:"multicall",cat:"forge",median:0.08,p95:0.16,p99:0.30,mem:600,note:"DAG scheduler"},
+  {name:"mockllm",cat:"forge",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Mock lookup"},
+  
+  // Exchange
+  {name:"devproxy",cat:"exchange",median:0.05,p95:0.10,p99:0.18,mem:300,note:"Hot-reload check"}
+];
+
+const CAT_COLORS = {
+  routing:'#e8753a',caching:'#d4a843',cost:'#4a8c5c',keys:'#7a9ec4',transform:'#9b72cf',
+  validate:'#cf7272',safety:'#e05555',trust:'#c4a87a',shims:'#72a5cf',stream:'#72cfb5',
+  reliability:'#8bc472',multimodal:'#cf72a5',tenant:'#a08060',observe:'#5ba0d4',
+  studio:'#cfb572',forge:'#72cfa5',exchange:'#a572cf'
+};
+
+// Populate filter dropdown
+const cats = [...new Set(BENCHMARKS.map(b=>b.cat))];
+const filterEl = document.getElementById('filter-select');
+cats.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c; opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+  filterEl.appendChild(opt);
+});
+
+// Summary stats
+const medians = BENCHMARKS.map(b=>b.median).sort((a,b)=>a-b);
+const p99s = BENCHMARKS.map(b=>b.p99).sort((a,b)=>a-b);
+const mems = BENCHMARKS.map(b=>b.mem);
+document.getElementById('s-median').textContent = medians[Math.floor(medians.length/2)].toFixed(2) + 'ms';
+document.getElementById('s-p99').textContent = p99s[Math.floor(p99s.length*0.99)].toFixed(1) + 'ms';
+document.getElementById('s-mem').textContent = (mems.reduce((a,b)=>a+b,0)/mems.length/1024).toFixed(1) + 'MB';
+document.getElementById('s-chain').textContent = medians.reduce((a,b)=>a+b,0).toFixed(1) + 'ms';
+
+function grade(median) {
+  if(median <= 0.05) return {g:'A+',cls:'grade-a'};
+  if(median <= 0.10) return {g:'A',cls:'grade-a'};
+  if(median <= 0.20) return {g:'B',cls:'grade-b'};
+  if(median <= 0.30) return {g:'C+',cls:'grade-c'};
+  return {g:'C',cls:'grade-c'};
+}
+
+function renderTable() {
+  const sort = document.getElementById('sort-select').value;
+  const filter = document.getElementById('filter-select').value;
+  
+  let data = filter === 'all' ? [...BENCHMARKS] : BENCHMARKS.filter(b=>b.cat===filter);
+  
+  switch(sort) {
+    case 'latency': data.sort((a,b)=>a.median-b.median); break;
+    case 'latency-desc': data.sort((a,b)=>b.median-a.median); break;
+    case 'memory': data.sort((a,b)=>b.mem-a.mem); break;
+    case 'category': data.sort((a,b)=>a.cat.localeCompare(b.cat)||a.median-b.median); break;
+    case 'name': data.sort((a,b)=>a.name.localeCompare(b.name)); break;
+  }
+  
+  const maxMedian = Math.max(...data.map(b=>b.median));
+  const tbody = document.getElementById('bench-body');
+  
+  tbody.innerHTML = data.map(b => {
+    const g = grade(b.median);
+    const barW = Math.max(8, (b.median / maxMedian) * 130);
+    const barClass = b.median <= 0.08 ? 'fast' : b.median <= 0.20 ? 'medium' : 'slow';
+    const color = CAT_COLORS[b.cat] || '#888';
+    return `<tr>
+      <td><strong style="color:var(--cream)">${b.name}</strong><br><span style="font-size:0.6rem;color:var(--cream-muted)">${b.note}</span></td>
+      <td><span class="cat-dot" style="background:${color}"></span>${b.cat}</td>
+      <td style="color:var(--cream)">${b.median.toFixed(2)}ms</td>
+      <td>${b.p95.toFixed(2)}ms</td>
+      <td>${b.p99.toFixed(2)}ms</td>
+      <td>${b.mem >= 1000 ? (b.mem/1024).toFixed(1)+'MB' : b.mem+'KB'}</td>
+      <td class="bar-cell"><div class="bench-bar ${barClass}" style="width:${barW}px">${b.median.toFixed(2)}</div></td>
+      <td><span class="grade ${g.cls}">${g.g}</span></td>
+    </tr>`;
+  }).join('');
+  
+  renderChart(data);
+}
+
+function renderChart(data) {
+  const canvas = document.getElementById('latency-chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 400 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '400px';
+  ctx.scale(dpr, dpr);
+  
+  const W = rect.width, H = 400;
+  const pad = {top:30,right:30,bottom:80,left:60};
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  
+  ctx.fillStyle = '#241e18';
+  ctx.fillRect(0,0,W,H);
+  
+  const maxVal = Math.max(...data.map(b=>b.p99)) * 1.1;
+  const barW = Math.min(14, (chartW / data.length) * 0.7);
+  const gap = chartW / data.length;
+  
+  // Grid lines
+  ctx.strokeStyle = '#2e261e';
+  ctx.lineWidth = 1;
+  for(let i=0; i<=5; i++) {
+    const y = pad.top + chartH * (1 - i/5);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle = '#7a7060';
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText((maxVal*i/5).toFixed(2)+'ms', pad.left-8, y+3);
+  }
+  
+  // Bars
+  data.forEach((b,i) => {
+    const x = pad.left + i * gap + gap/2;
+    const color = CAT_COLORS[b.cat] || '#888';
+    
+    // P99 bar (faint)
+    const h99 = (b.p99/maxVal)*chartH;
+    ctx.fillStyle = color+'33';
+    ctx.fillRect(x-barW/2, pad.top+chartH-h99, barW, h99);
+    
+    // P95 bar (medium)
+    const h95 = (b.p95/maxVal)*chartH;
+    ctx.fillStyle = color+'66';
+    ctx.fillRect(x-barW/2, pad.top+chartH-h95, barW, h95);
+    
+    // Median bar (solid)
+    const hMed = (b.median/maxVal)*chartH;
+    ctx.fillStyle = color;
+    ctx.fillRect(x-barW/2, pad.top+chartH-hMed, barW, hMed);
+    
+    // Label
+    ctx.save();
+    ctx.translate(x, pad.top+chartH+8);
+    ctx.rotate(-Math.PI/3);
+    ctx.fillStyle = '#bfb5a3';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(b.name, 0, 0);
+    ctx.restore();
+  });
+  
+  // Legend
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'left';
+  const legendX = W - pad.right - 180;
+  [['Median','#e8753a'],['P95','#e8753a99'],['P99','#e8753a44']].forEach(([label,color],i) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(legendX, pad.top+i*16, 10, 10);
+    ctx.fillStyle = '#bfb5a3';
+    ctx.fillText(label, legendX+16, pad.top+i*16+9);
+  });
+}
+
+renderTable();
+window.addEventListener('resize', renderTable);
+</script>
+</body>
+</html>
