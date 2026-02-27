@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<title>Workflow Builder — Stockyard Forge</title>
+<meta name="description" content="Visual DAG workflow builder for Stockyard Forge. Drag, connect, and export multi-step LLM workflows.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+
+.builder-header{display:flex;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--bg3);gap:1rem;flex-wrap:wrap}
+.builder-title{font-family:var(--font-mono);font-size:0.85rem;color:var(--leather-light);letter-spacing:2px}
+.builder-actions{display:flex;gap:0.5rem;margin-left:auto}
+.btn{font-family:var(--font-mono);font-size:0.72rem;padding:0.4rem 1rem;border:1px solid var(--bg3);background:var(--bg2);color:var(--cream-dim);cursor:pointer;letter-spacing:0.5px;transition:all 0.15s}
+.btn:hover{border-color:var(--leather);color:var(--cream)}
+.btn-primary{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+.btn-primary:hover{background:var(--rust-light)}
+.btn-green{background:var(--green);border-color:var(--green);color:var(--cream)}
+
+.workspace{display:flex;height:calc(100vh - 120px);overflow:hidden}
+
+/* Left panel: node palette */
+.palette{width:220px;border-right:1px solid var(--bg3);padding:1rem;overflow-y:auto;flex-shrink:0}
+.palette-title{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.palette-node{font-family:var(--font-mono);font-size:0.75rem;padding:0.6rem 0.8rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);cursor:grab;margin-bottom:0.4rem;transition:all 0.15s;display:flex;align-items:center;gap:8px}
+.palette-node:hover{border-color:var(--leather);color:var(--cream)}
+.palette-node:active{cursor:grabbing}
+.palette-icon{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.palette-desc{font-size:0.6rem;color:var(--cream-muted);margin-top:2px}
+
+/* Canvas */
+.canvas-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+#canvas{width:100%;height:100%;position:absolute;top:0;left:0}
+.canvas-grid{position:absolute;top:0;left:0;width:100%;height:100%;background-image:radial-gradient(circle,var(--bg3) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+.canvas-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);text-align:center;pointer-events:none;opacity:0.5}
+
+/* Nodes on canvas */
+.wf-node{position:absolute;min-width:180px;background:var(--bg2);border:1.5px solid var(--bg3);cursor:move;user-select:none;z-index:2;transition:border-color 0.15s,box-shadow 0.15s}
+.wf-node:hover{border-color:var(--leather)}
+.wf-node.selected{border-color:var(--rust-light);box-shadow:0 0 12px rgba(232,117,58,0.2)}
+.wf-node-header{display:flex;align-items:center;gap:6px;padding:0.5rem 0.7rem;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.72rem;cursor:move}
+.wf-node-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wf-node-body{padding:0.5rem 0.7rem}
+.wf-node-body input,.wf-node-body textarea,.wf-node-body select{font-family:var(--font-mono);font-size:0.7rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);padding:0.3rem 0.5rem;width:100%;margin-bottom:0.3rem;resize:none}
+.wf-node-body textarea{min-height:60px}
+.wf-node-body label{font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);display:block;margin-bottom:0.15rem}
+.wf-node-body input:focus,.wf-node-body textarea:focus,.wf-node-body select:focus{outline:none;border-color:var(--rust)}
+
+/* Connection ports */
+.port{width:12px;height:12px;border-radius:50%;border:2px solid var(--bg3);background:var(--bg);position:absolute;cursor:crosshair;z-index:3;transition:all 0.15s}
+.port:hover{border-color:var(--rust-light);background:var(--rust-light);transform:scale(1.3)}
+.port-in{left:-6px;top:50%}
+.port-out{right:-6px;top:50%}
+
+/* Right panel: JSON output */
+.json-panel{width:320px;border-left:1px solid var(--bg3);display:flex;flex-direction:column;flex-shrink:0}
+.json-panel-header{padding:0.8rem 1rem;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);display:flex;justify-content:space-between;align-items:center}
+.json-panel pre{flex:1;overflow:auto;padding:1rem;font-family:var(--font-mono);font-size:0.7rem;line-height:1.6;color:var(--cream-dim);background:var(--bg2)}
+.json-key{color:var(--leather-light)}.json-str{color:var(--green-light)}.json-num{color:var(--gold)}.json-bool{color:var(--rust-light)}
+
+footer{padding:2rem;text-align:center;border-top:1px solid var(--bg3)}
+.sig{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.65rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.65rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="builder-header">
+  <span class="builder-title">Forge — Workflow Builder</span>
+  <div style="display:flex;align-items:center;gap:0.5rem">
+    <label style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)">Name:</label>
+    <input id="wf-name" value="my-workflow" style="font-family:var(--font-mono);font-size:0.75rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);padding:0.3rem 0.6rem;width:180px" oninput="updateJSON()">
+  </div>
+  <div class="builder-actions">
+    <button class="btn" onclick="clearCanvas()">Clear</button>
+    <button class="btn" onclick="loadExample()">Load Example</button>
+    <button class="btn btn-primary" onclick="copyJSON()">Copy JSON</button>
+    <button class="btn btn-green" onclick="deployWorkflow()">Deploy →</button>
+  </div>
+</div>
+
+<div class="workspace">
+  <div class="palette">
+    <div class="palette-title">Drag to add</div>
+    <div class="palette-node" draggable="true" data-type="llm" ondragstart="dragStart(event,'llm')">
+      <div class="palette-icon" style="background:var(--rust-light)"></div>
+      <div>LLM Call<div class="palette-desc">Send prompt to a model</div></div>
+    </div>
+    <div class="palette-node" draggable="true" data-type="template" ondragstart="dragStart(event,'template')">
+      <div class="palette-icon" style="background:var(--gold)"></div>
+      <div>Template<div class="palette-desc">Inject Studio prompt</div></div>
+    </div>
+    <div class="palette-node" draggable="true" data-type="transform" ondragstart="dragStart(event,'transform')">
+      <div class="palette-icon" style="background:#9b72cf"></div>
+      <div>Transform<div class="palette-desc">Parse, extract, or format</div></div>
+    </div>
+    <div class="palette-node" draggable="true" data-type="condition" ondragstart="dragStart(event,'condition')">
+      <div class="palette-icon" style="background:var(--leather-light)"></div>
+      <div>Condition<div class="palette-desc">Branch on output</div></div>
+    </div>
+    <div class="palette-node" draggable="true" data-type="output" ondragstart="dragStart(event,'output')">
+      <div class="palette-icon" style="background:var(--green-light)"></div>
+      <div>Output<div class="palette-desc">Return final result</div></div>
+    </div>
+
+    <div class="palette-title" style="margin-top:1.5rem">Quick connect</div>
+    <p style="font-size:0.65rem;color:var(--cream-muted);font-family:var(--font-mono)">Drag from a node's <span style="color:var(--rust-light)">●</span> output port to another node's <span style="color:var(--rust-light)">●</span> input port to create a dependency edge.</p>
+    <p style="font-size:0.65rem;color:var(--cream-muted);font-family:var(--font-mono);margin-top:0.5rem">Use <span style="color:var(--cream)">{{step_name}}</span> in prompts to reference upstream outputs.</p>
+
+    <div class="palette-title" style="margin-top:1.5rem">Keyboard</div>
+    <p style="font-size:0.65rem;color:var(--cream-muted);font-family:var(--font-mono)"><span style="color:var(--cream)">Del</span> Delete selected node<br><span style="color:var(--cream)">Esc</span> Deselect all</p>
+  </div>
+
+  <div class="canvas-wrap" id="canvas-wrap" ondrop="dropNode(event)" ondragover="event.preventDefault()">
+    <div class="canvas-grid"></div>
+    <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="canvas-hint" id="canvas-hint">Drag nodes from the left panel to start building</div>
+    <div id="nodes-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+  </div>
+
+  <div class="json-panel">
+    <div class="json-panel-header">
+      <span>Forge JSON</span>
+      <span id="step-count" style="color:var(--cream-dim)">0 steps</span>
+    </div>
+    <pre id="json-output">{
+  <span class="json-key">"name"</span>: <span class="json-str">"my-workflow"</span>,
+  <span class="json-key">"steps"</span>: []
+}</pre>
+  </div>
+</div>
+
+<script>
+const NODE_TYPES = {
+  llm: {color:'#e8753a',label:'LLM Call',fields:[
+    {key:'name',label:'Step Name',type:'input',default:'llm_step'},
+    {key:'model',label:'Model',type:'select',options:['gpt-4o','gpt-4o-mini','claude-3.5-sonnet','claude-3-opus','gemini-1.5-flash']},
+    {key:'prompt',label:'Prompt',type:'textarea',default:'Analyze the following: {{input}}'}
+  ]},
+  template: {color:'#d4a843',label:'Template',fields:[
+    {key:'name',label:'Step Name',type:'input',default:'template_step'},
+    {key:'template_id',label:'Template ID',type:'input',default:'customer-support-v4'},
+    {key:'variables',label:'Variables (JSON)',type:'textarea',default:'{"customer_name": "{{prev_step}}"}'}
+  ]},
+  transform: {color:'#9b72cf',label:'Transform',fields:[
+    {key:'name',label:'Step Name',type:'input',default:'transform_step'},
+    {key:'operation',label:'Operation',type:'select',options:['extract_json','parse_markdown','summarize','split_lines','regex_match']},
+    {key:'input',label:'Input',type:'input',default:'{{prev_step}}'}
+  ]},
+  condition: {color:'#c4a87a',label:'Condition',fields:[
+    {key:'name',label:'Step Name',type:'input',default:'condition_step'},
+    {key:'expression',label:'Expression',type:'input',default:'{{prev_step}}.sentiment == "negative"'},
+    {key:'true_branch',label:'If True',type:'input',default:'escalate_step'},
+    {key:'false_branch',label:'If False',type:'input',default:'respond_step'}
+  ]},
+  output: {color:'#5ba86e',label:'Output',fields:[
+    {key:'name',label:'Step Name',type:'input',default:'output'},
+    {key:'value',label:'Value',type:'textarea',default:'{{prev_step}}'}
+  ]}
+};
+
+let nodes = [];
+let edges = [];
+let nextId = 1;
+let selectedNodeId = null;
+let draggingEdge = null;
+let dragOffset = {x:0,y:0};
+let isDraggingNode = null;
+
+function dragStart(e, type) {
+  e.dataTransfer.setData('node-type', type);
+}
+
+function dropNode(e) {
+  e.preventDefault();
+  const type = e.dataTransfer.getData('node-type');
+  if(!type || !NODE_TYPES[type]) return;
+  
+  const rect = document.getElementById('canvas-wrap').getBoundingClientRect();
+  const x = e.clientX - rect.left - 90;
+  const y = e.clientY - rect.top - 30;
+  addNode(type, x, y);
+}
+
+function addNode(type, x, y) {
+  const nt = NODE_TYPES[type];
+  const id = nextId++;
+  const data = {};
+  nt.fields.forEach(f => data[f.key] = f.default || '');
+  // Auto-increment step names
+  data.name = nt.fields[0].default + '_' + id;
+  
+  nodes.push({id, type, x, y, data});
+  document.getElementById('canvas-hint').style.display = 'none';
+  renderNodes();
+  updateJSON();
+  selectNode(id);
+}
+
+function renderNodes() {
+  const container = document.getElementById('nodes-container');
+  // Keep existing nodes, add new ones, remove deleted
+  const existing = new Set();
+  container.querySelectorAll('.wf-node').forEach(el => {
+    const id = parseInt(el.dataset.id);
+    if(!nodes.find(n=>n.id===id)) el.remove();
+    else existing.add(id);
+  });
+
+  nodes.forEach(n => {
+    const nt = NODE_TYPES[n.type];
+    let el = container.querySelector(`[data-id="${n.id}"]`);
+    if(!el) {
+      el = document.createElement('div');
+      el.className = 'wf-node';
+      el.dataset.id = n.id;
+      el.style.pointerEvents = 'auto';
+      container.appendChild(el);
+    }
+    
+    el.style.left = n.x + 'px';
+    el.style.top = n.y + 'px';
+    el.classList.toggle('selected', selectedNodeId === n.id);
+    
+    let html = `<div class="wf-node-header" onmousedown="startDragNode(event,${n.id})"><div class="dot" style="background:${nt.color}"></div>${nt.label}<span style="margin-left:auto;font-size:0.6rem;color:var(--cream-muted)">#${n.id}</span></div>`;
+    html += '<div class="wf-node-body">';
+    nt.fields.forEach(f => {
+      html += `<label>${f.label}</label>`;
+      if(f.type === 'input') {
+        html += `<input value="${esc(n.data[f.key]||'')}" onchange="updateNodeData(${n.id},'${f.key}',this.value)" onclick="event.stopPropagation()">`;
+      } else if(f.type === 'textarea') {
+        html += `<textarea onchange="updateNodeData(${n.id},'${f.key}',this.value)" onclick="event.stopPropagation()">${esc(n.data[f.key]||'')}</textarea>`;
+      } else if(f.type === 'select') {
+        html += `<select onchange="updateNodeData(${n.id},'${f.key}',this.value)" onclick="event.stopPropagation()">${f.options.map(o=>`<option${n.data[f.key]===o?' selected':''}>${o}</option>`).join('')}</select>`;
+      }
+    });
+    html += '</div>';
+    
+    // Ports
+    html += `<div class="port port-in" style="top:24px" onmousedown="startEdge(event,${n.id},'in')" onmouseup="endEdge(event,${n.id},'in')"></div>`;
+    html += `<div class="port port-out" style="top:24px" onmousedown="startEdge(event,${n.id},'out')" onmouseup="endEdge(event,${n.id},'out')"></div>`;
+    
+    el.innerHTML = html;
+    el.onclick = (e) => { if(e.target===el||e.target.classList.contains('wf-node-header')) selectNode(n.id); };
+  });
+  
+  renderEdges();
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function updateNodeData(id, key, value) {
+  const node = nodes.find(n=>n.id===id);
+  if(node) { node.data[key] = value; updateJSON(); }
+}
+
+function selectNode(id) {
+  selectedNodeId = selectedNodeId === id ? null : id;
+  renderNodes();
+}
+
+function startDragNode(e, id) {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  e.preventDefault();
+  isDraggingNode = id;
+  const node = nodes.find(n=>n.id===id);
+  dragOffset = {x: e.clientX - node.x, y: e.clientY - node.y};
+  selectNode(id);
+  
+  const move = (ev) => {
+    node.x = ev.clientX - dragOffset.x;
+    node.y = ev.clientY - dragOffset.y;
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if(el) { el.style.left = node.x+'px'; el.style.top = node.y+'px'; }
+    renderEdges();
+  };
+  const up = () => {
+    isDraggingNode = null;
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
+    updateJSON();
+  };
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+}
+
+// Edge drawing
+let edgeStart = null;
+
+function startEdge(e, nodeId, portType) {
+  e.preventDefault();
+  e.stopPropagation();
+  if(portType === 'out') {
+    edgeStart = {nodeId, portType};
+    document.addEventListener('mouseup', cancelEdge);
+  }
+}
+
+function endEdge(e, nodeId, portType) {
+  e.preventDefault();
+  e.stopPropagation();
+  if(edgeStart && portType === 'in' && edgeStart.nodeId !== nodeId) {
+    // Check no duplicate
+    if(!edges.find(ed=>ed.from===edgeStart.nodeId && ed.to===nodeId)) {
+      edges.push({from: edgeStart.nodeId, to: nodeId});
+      renderEdges();
+      updateJSON();
+    }
+  }
+  edgeStart = null;
+  document.removeEventListener('mouseup', cancelEdge);
+}
+
+function cancelEdge() {
+  edgeStart = null;
+  document.removeEventListener('mouseup', cancelEdge);
+}
+
+function renderEdges() {
+  const svg = document.getElementById('canvas');
+  let html = '<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#c4a87a"/></marker></defs>';
+  
+  edges.forEach(ed => {
+    const fromNode = nodes.find(n=>n.id===ed.from);
+    const toNode = nodes.find(n=>n.id===ed.to);
+    if(!fromNode || !toNode) return;
+    
+    const fromEl = document.querySelector(`[data-id="${ed.from}"]`);
+    const toEl = document.querySelector(`[data-id="${ed.to}"]`);
+    if(!fromEl || !toEl) return;
+    
+    const x1 = fromNode.x + fromEl.offsetWidth + 6;
+    const y1 = fromNode.y + 24;
+    const x2 = toNode.x - 6;
+    const y2 = toNode.y + 24;
+    
+    const cx1 = x1 + Math.abs(x2-x1)*0.4;
+    const cx2 = x2 - Math.abs(x2-x1)*0.4;
+    
+    html += `<path d="M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}" fill="none" stroke="#c4a87a" stroke-width="2" marker-end="url(#arrow)" opacity="0.7"/>`;
+  });
+  
+  svg.innerHTML = html;
+}
+
+function updateJSON() {
+  const name = document.getElementById('wf-name').value || 'my-workflow';
+  
+  const steps = nodes.map(n => {
+    const step = {name: n.data.name, type: n.type};
+    const deps = edges.filter(e=>e.to===n.id).map(e=>{
+      const fromNode = nodes.find(nn=>nn.id===e.from);
+      return fromNode ? fromNode.data.name : '';
+    }).filter(Boolean);
+    
+    if(deps.length) step.depends_on = deps;
+    
+    // Type-specific fields
+    if(n.type === 'llm') {
+      step.model = n.data.model || 'gpt-4o';
+      step.prompt = n.data.prompt || '';
+    } else if(n.type === 'template') {
+      step.template_id = n.data.template_id || '';
+      try { step.variables = JSON.parse(n.data.variables || '{}'); } catch(e) { step.variables = {}; }
+    } else if(n.type === 'transform') {
+      step.operation = n.data.operation || 'extract_json';
+      step.input = n.data.input || '';
+    } else if(n.type === 'condition') {
+      step.expression = n.data.expression || '';
+      step.true_branch = n.data.true_branch || '';
+      step.false_branch = n.data.false_branch || '';
+    } else if(n.type === 'output') {
+      step.value = n.data.value || '';
+    }
+    
+    return step;
+  });
+  
+  const workflow = {name, steps};
+  const json = JSON.stringify(workflow, null, 2);
+  
+  // Syntax highlight
+  const highlighted = json
+    .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+    .replace(/: "([^"]*?)"/g, ': <span class="json-str">"$1"</span>')
+    .replace(/: (\d+)/g, ': <span class="json-num">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>');
+  
+  document.getElementById('json-output').innerHTML = highlighted;
+  document.getElementById('step-count').textContent = steps.length + ' step' + (steps.length!==1?'s':'');
+}
+
+function clearCanvas() {
+  nodes = []; edges = []; nextId = 1; selectedNodeId = null;
+  document.getElementById('nodes-container').innerHTML = '';
+  document.getElementById('canvas-hint').style.display = 'block';
+  renderEdges();
+  updateJSON();
+}
+
+function copyJSON() {
+  const name = document.getElementById('wf-name').value || 'my-workflow';
+  const steps = nodes.map(n => {
+    const step = {name:n.data.name, type:n.type};
+    const deps = edges.filter(e=>e.to===n.id).map(e=>{const f=nodes.find(nn=>nn.id===e.from);return f?f.data.name:'';}).filter(Boolean);
+    if(deps.length) step.depends_on = deps;
+    if(n.type==='llm'){step.model=n.data.model;step.prompt=n.data.prompt;}
+    else if(n.type==='template'){step.template_id=n.data.template_id;try{step.variables=JSON.parse(n.data.variables);}catch(e){step.variables={};}}
+    else if(n.type==='transform'){step.operation=n.data.operation;step.input=n.data.input;}
+    else if(n.type==='condition'){step.expression=n.data.expression;step.true_branch=n.data.true_branch;step.false_branch=n.data.false_branch;}
+    else if(n.type==='output'){step.value=n.data.value;}
+    return step;
+  });
+  navigator.clipboard.writeText(JSON.stringify({name,steps},null,2));
+  const btn = document.querySelector('.btn-primary');
+  btn.textContent = '✓ Copied!';
+  setTimeout(()=>btn.textContent='Copy JSON', 1500);
+}
+
+function deployWorkflow() {
+  alert('In production, this would POST to /api/forge/workflows.\n\nThe JSON is ready — copy it and use:\n\ncurl -X POST http://localhost:4200/api/forge/workflows \\\n  -H "Content-Type: application/json" \\\n  -d @workflow.json');
+}
+
+function loadExample() {
+  clearCanvas();
+  // Build a 4-step example: Template → LLM → Transform → Output
+  addNode('template', 40, 50);
+  nodes[0].data = {name:'load_prompt', template_id:'customer-support-v4', variables:'{"customer_name": "Sarah", "message": "billing issue"}'};
+  
+  addNode('llm', 300, 40);
+  nodes[1].data = {name:'generate_response', model:'gpt-4o', prompt:'{{load_prompt}}'};
+  edges.push({from:1, to:2});
+  
+  addNode('transform', 300, 260);
+  nodes[2].data = {name:'extract_sentiment', model:'', operation:'extract_json', input:'Classify sentiment of: {{generate_response}}'};
+  edges.push({from:2, to:3});
+  
+  addNode('condition', 580, 120);
+  nodes[3].data = {name:'check_sentiment', expression:'{{extract_sentiment}}.sentiment == "negative"', true_branch:'escalate', false_branch:'output'};
+  edges.push({from:3, to:4});
+  
+  addNode('output', 860, 120);
+  nodes[4].data = {name:'final_output', value:'{{generate_response}}'};
+  edges.push({from:4, to:5});
+  
+  selectedNodeId = null;
+  renderNodes();
+  updateJSON();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if(e.key === 'Delete' && selectedNodeId) {
+    edges = edges.filter(ed => ed.from !== selectedNodeId && ed.to !== selectedNodeId);
+    nodes = nodes.filter(n => n.id !== selectedNodeId);
+    const el = document.querySelector(`[data-id="${selectedNodeId}"]`);
+    if(el) el.remove();
+    selectedNodeId = null;
+    renderEdges();
+    updateJSON();
+    if(nodes.length === 0) document.getElementById('canvas-hint').style.display = 'block';
+  }
+  if(e.key === 'Escape') { selectedNodeId = null; renderNodes(); }
+});
+
+// Init
+updateJSON();
+</script>
+</body>
+</html>
