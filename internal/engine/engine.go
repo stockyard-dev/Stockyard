@@ -360,6 +360,15 @@ func Boot(pc ProductConfig) {
 			if setter, ok := app.(interface{ SetProxyPort(int) }); ok {
 				setter.SetProxyPort(cfg.Port)
 			}
+			// Wire broadcaster into observe app for live trace recording
+			if setter, ok := app.(interface {
+				SetBroadcaster(interface {
+					AddListener(func([]byte)) func()
+					ClientCount() int
+				})
+			}); ok {
+				setter.SetBroadcaster(broadcaster)
+			}
 		}
 
 		// Mount all app routes on the shared mux

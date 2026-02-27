@@ -49,6 +49,28 @@ func (b *Broadcaster) ClientCount() int {
 	return len(b.clients)
 }
 
+// AddListener registers a Go callback that receives every broadcast event.
+// Returns an unsubscribe function.
+func (b *Broadcaster) AddListener(fn func([]byte)) func() {
+	ch := make(chan []byte, 64)
+	b.mu.Lock()
+	b.clients[ch] = struct{}{}
+	b.mu.Unlock()
+
+	go func() {
+		for data := range ch {
+			fn(data)
+		}
+	}()
+
+	return func() {
+		b.mu.Lock()
+		delete(b.clients, ch)
+		close(ch)
+		b.mu.Unlock()
+	}
+}
+
 // RegisterSSE mounts the SSE endpoint on the given ServeMux.
 func (b *Broadcaster) RegisterSSE(mux *http.ServeMux) {
 	mux.HandleFunc("GET /ui/events", b.handleSSE)

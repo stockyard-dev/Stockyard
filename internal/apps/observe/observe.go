@@ -4,8 +4,10 @@ package observe
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -13,10 +15,80 @@ type App struct {
 	conn *sql.DB
 }
 
+// EventBroadcaster is the interface the dashboard broadcaster satisfies.
+type EventBroadcaster interface {
+	AddListener(func([]byte)) func()
+	ClientCount() int
+}
+
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
 func (a *App) Name() string        { return "observe" }
 func (a *App) Description() string { return "Analytics, traces, alerts, anomaly detection, cost attribution" }
+
+// SetBroadcaster subscribes to live proxy events and persists them as traces.
+func (a *App) SetBroadcaster(b EventBroadcaster) {
+	b.AddListener(func(data []byte) {
+		var evt map[string]any
+		if err := json.Unmarshal(data, &evt); err != nil {
+			return
+		}
+		evtType, _ := evt["type"].(string)
+		if evtType != "request_logged" {
+			return
+		}
+		// Extract fields from the broadcast event
+		model, _ := evt["model"].(string)
+		tokens, _ := evt["tokens"].(float64)
+		cost, _ := evt["cost"].(float64)
+		latency, _ := evt["latency"].(float64)
+		status, _ := evt["status"].(string)
+		cacheHit, _ := evt["cache_hit"].(bool)
+		reqID, _ := evt["id"].(string)
+
+		if status == "" {
+			status = "ok"
+		}
+		if reqID == "" {
+			reqID = genID("req_")
+		}
+		traceID := genID("tr_")
+		tokIn := int64(tokens / 2) // approximate split
+		tokOut := int64(tokens) - tokIn
+
+		// Insert trace
+		a.conn.Exec(`INSERT OR IGNORE INTO observe_traces (id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+			traceID, reqID, "proxy", "chat/completions", providerFromModel(model), model, status, int64(latency), tokIn, tokOut, cost,
+			fmt.Sprintf(`{"cache_hit":%v}`, cacheHit))
+
+		// Update daily cost rollup
+		today := time.Now().UTC().Format("2006-01-02")
+		a.conn.Exec(`INSERT INTO observe_cost_daily (date, provider, model, requests, tokens_in, tokens_out, cost_usd) VALUES (?,?,?,1,?,?,?) ON CONFLICT(date, provider, model) DO UPDATE SET requests=requests+1, tokens_in=tokens_in+excluded.tokens_in, tokens_out=tokens_out+excluded.tokens_out, cost_usd=cost_usd+excluded.cost_usd`,
+			today, providerFromModel(model), model, tokIn, tokOut, cost)
+	})
+	log.Printf("[observe] subscribed to live broadcast events")
+}
+
+// providerFromModel guesses provider from model name.
+func providerFromModel(model string) string {
+	m := strings.ToLower(model)
+	switch {
+	case strings.HasPrefix(m, "gpt") || strings.HasPrefix(m, "o1") || strings.HasPrefix(m, "o3") || strings.HasPrefix(m, "o4"):
+		return "openai"
+	case strings.HasPrefix(m, "claude"):
+		return "anthropic"
+	case strings.HasPrefix(m, "gemini"):
+		return "google"
+	case strings.HasPrefix(m, "mistral") || strings.HasPrefix(m, "mixtral"):
+		return "mistral"
+	case strings.HasPrefix(m, "llama") || strings.HasPrefix(m, "meta"):
+		return "meta"
+	case strings.HasPrefix(m, "deepseek"):
+		return "deepseek"
+	default:
+		return "unknown"
+	}
+}
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn
@@ -118,7 +190,30 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Anomalies
 	mux.HandleFunc("GET /api/observe/anomalies", a.handleListAnomalies)
 
+	// Live SSE status (how many dashboard clients connected, recent event count)
+	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
+
 	log.Printf("[observe] routes registered")
+}
+
+func (a *App) handleLiveStatus(w http.ResponseWriter, r *http.Request) {
+	// Count traces from last 5 minutes
+	var recentCount int
+	var recentCost float64
+	a.conn.QueryRow(`SELECT COALESCE(COUNT(*),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-5 minutes')`).
+		Scan(&recentCount, &recentCost)
+
+	// Count traces from last minute
+	var lastMinute int
+	a.conn.QueryRow(`SELECT COALESCE(COUNT(*),0) FROM observe_traces WHERE created_at >= datetime('now', '-1 minute')`).
+		Scan(&lastMinute)
+
+	writeJSON(w, map[string]any{
+		"recent_5m":        recentCount,
+		"recent_1m":        lastMinute,
+		"recent_cost_5m":   recentCost,
+		"sse_endpoint":     "/ui/events",
+	})
 }
 
 func (a *App) handleOverview(w http.ResponseWriter, r *http.Request) {
