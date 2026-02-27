@@ -1,5 +1,5 @@
-[build]
-buildCommand = "chmod +x stockyard"
-
 [deploy]
-startCommand = "./stockyard"
+startCommand = "/usr/local/bin/stockyard"
+healthcheckPath = "/health"
+healthcheckTimeout = 5
+restartPolicyType = "ON_FAILURE"
