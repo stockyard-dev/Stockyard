@@ -80,6 +80,7 @@ func (s *Server) registerRoutes() {
 
 	// Health check
 	s.mux.HandleFunc("GET /health", s.handleHealth)
+	s.mux.HandleFunc("GET /debug/provider-test", s.handleProviderTest)
 }
 
 // Start begins listening for requests.

@@ -144,6 +144,39 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleProviderTest bypasses all middleware and sends a minimal request
+// directly to the first available provider. For debugging only.
+func (s *Server) handleProviderTest(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	for name, p := range s.config.Providers {
+		temp := float64(0)
+		maxTok := 5
+		req := &provider.Request{
+			Model:       "gpt-4o-mini",
+			Messages:    []provider.Message{{Role: "user", Content: "Say ok"}},
+			Temperature: &temp,
+			MaxTokens:   &maxTok,
+			Extra:       map[string]any{},
+		}
+		resp, err := p.Send(r.Context(), req)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]any{
+				"provider": name,
+				"error":    err.Error(),
+			})
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]any{
+			"provider": name,
+			"model":    resp.Model,
+			"content":  resp.Choices[0].Message.Content,
+			"ok":       true,
+		})
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]any{"error": "no providers"})
+}
+
 // parseRequest extracts a canonical Request from an HTTP request.
 // Returns the request and the raw body bytes.
 func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error) {
