@@ -49,6 +49,9 @@ go build -o stockyard ./cmd/stockyard
 # Start the platform (all 6 apps on port 4200)
 stockyard
 
+# Or check your environment first
+stockyard doctor
+
 # Point your app at the proxy
 export OPENAI_BASE_URL=http://localhost:4200/v1
 
@@ -89,7 +92,7 @@ Every view runs inside the binary — no separate UI service, no Docker sidecar,
 ## The Platform
 
 ### Proxy (App 01)
-50+ middleware modules in a chain, every one toggleable at runtime:
+58 middleware modules in a chain, every one toggleable at runtime:
 
 | Category | Modules |
 |----------|---------|
@@ -274,7 +277,7 @@ Any OpenAI-compatible endpoint works as a custom provider.
 GET  /health                              Health check
 GET  /api/apps                            List apps
 POST /v1/chat/completions                 Proxy LLM request
-GET  /api/proxy/modules                   List modules (54)
+GET  /api/proxy/modules                   List modules (58)
 PUT  /api/proxy/modules/{name}            Toggle module
 GET  /api/proxy/providers                 List providers
 POST /api/auth/signup                     Create user + API key
@@ -304,7 +307,7 @@ GET  /api/plans                           Pricing plans
 | Binary | Single static binary | pip install + runtime |
 | Dependencies | Zero | Redis, Postgres |
 | Platform | 6 integrated apps | One proxy |
-| Middleware | 50+ toggleable modules | Limited callbacks |
+| Middleware | 58 toggleable modules | Limited callbacks |
 | Memory | ~12MB | ~200MB+ |
 | Cold start | <50ms | Seconds |
 
@@ -317,7 +320,7 @@ GET  /api/plans                           Pricing plans
 | **Cloud** | $29.99/mo | 500k/mo | Unlimited | 30 days |
 | **Enterprise** | Custom | Unlimited | Unlimited | 1 year |
 
-All tiers include all 6 apps, 50+ modules, and 16 providers. No per-token markup.
+All tiers include all 6 apps, 58 modules, and 16 providers. No per-token markup.
 
 **License keys** (Pro/Cloud/Enterprise): Set `STOCKYARD_LICENSE_KEY` to remove Community tier limits. Check status at `GET /api/license`.
 
@@ -329,12 +332,23 @@ curl localhost:4200/api/license
 export STOCKYARD_LICENSE_KEY="SY-eyJ..."
 ```
 
+## New in v1.0
+
+- **`stockyard doctor`** — Pre-flight environment check (config, database, ports, API keys, Ollama, disk)
+- **OpenTelemetry export** — Set `OTEL_EXPORTER_OTLP_ENDPOINT` to send traces to Jaeger, Grafana, Datadog, Honeycomb
+- **Playground sharing** — `POST /api/playground/share` creates shareable playground sessions (30-day TTL)
+- **GitHub Action** — `stockyard-dev/stockyard/.github/actions/setup-stockyard` for CI/CD pipelines
+- **12 Go benchmarks** — `go test ./internal/proxy/ -bench=. -benchmem` covers the full middleware chain
+
 ## Links
 
 - **Website:** [stockyard.dev](https://stockyard.dev)
 - **Playground:** [stockyard.dev/playground](https://stockyard.dev/playground)
-- **Console:** [stockyard.dev/ui](https://stockyard.dev/ui)
 - **Docs:** [stockyard.dev/docs](https://stockyard.dev/docs/)
+- **Architecture:** [stockyard.dev/architecture](https://stockyard.dev/architecture/)
+- **Benchmarks:** [stockyard.dev/benchmarks](https://stockyard.dev/benchmarks/)
+- **Blog:** [stockyard.dev/blog](https://stockyard.dev/blog/)
+- **Comparisons:** [vs LiteLLM](https://stockyard.dev/vs/litellm/) · [vs Helicone](https://stockyard.dev/vs/helicone/) · [vs Portkey](https://stockyard.dev/vs/portkey/)
 - **API Health:** [stockyard.dev/health](https://stockyard.dev/health)
 
 ## License

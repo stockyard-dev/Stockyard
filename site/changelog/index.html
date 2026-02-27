@@ -62,6 +62,42 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <div class="release">
   <div class="release-header">
+    <span class="release-version">v1.1.0</span>
+    <span class="release-date">February 27, 2026</span>
+    <span class="release-tag tag-major">Platform</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">New Features</div>
+    <div class="change-item"><code>stockyard doctor</code> — Pre-flight environment check (config, database, ports, API keys, Ollama, license, disk). JSON output with <code>--json</code> flag.</div>
+    <div class="change-item">OpenTelemetry export — Set <code>OTEL_EXPORTER_OTLP_ENDPOINT</code> to send traces to any OTLP backend (Jaeger, Grafana, Datadog, Honeycomb). Batched export, graceful flush.</div>
+    <div class="change-item">Playground share — <code>POST /api/playground/share</code> creates shareable sessions. 30-day TTL, auto-cleanup.</div>
+    <div class="change-item">GitHub Action — <code>.github/actions/setup-stockyard</code> for CI/CD pipelines. Install, doctor, start as background service.</div>
+    <div class="change-item">Go benchmark suite — 12 benchmarks covering middleware chain, toggle overhead, registry lookup, and parallel throughput.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Docs & Site</div>
+    <div class="change-item">Docs split into 10 pages with sidebar navigation, prev/next links, and active state highlighting.</div>
+    <div class="change-item">3 comparison pages: <a href="/vs/litellm/">vs LiteLLM</a>, <a href="/vs/helicone/">vs Helicone</a>, <a href="/vs/portkey/">vs Portkey</a>.</div>
+    <div class="change-item">Blog with 3 launch posts. RSS feed at <a href="/blog/feed.xml">/blog/feed.xml</a>.</div>
+    <div class="change-item">Interactive architecture diagram at <a href="/architecture/">/architecture/</a> — animated request flow through all 58 modules.</div>
+    <div class="change-item">Install script: <code>curl -sSL stockyard.dev/install | sh</code></div>
+    <div class="change-item">Sitemap expanded to 35 URLs. Blog nav link added site-wide.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Fixes</div>
+    <div class="change-item">Fixed JavaScript SyntaxError on 4 pages (stray CSS in script blocks).</div>
+    <div class="change-item">Standardized module count to 58 across all pages.</div>
+    <div class="change-item">Removed dead Discord links. Unified footers across all page variants.</div>
+    <div class="change-item">Fixed visible skip-link elements on 7 pages. Added missing logo SVGs and Guide nav links.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">CI</div>
+    <div class="change-item">CI workflow: added benchmark job with artifact upload. Expanded test/vet coverage to engine/ and proxy/.</div>
+  </div>
+</div>
+
+<div class="release">
+  <div class="release-header">
     <span class="release-version">v1.0.0</span>
     <span class="release-date">February 27, 2026</span>
     <span class="release-tag tag-major">Launch</span>

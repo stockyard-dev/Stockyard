@@ -12,7 +12,7 @@ func OpenAPISpec() map[string]any {
 		"info": map[string]any{
 			"title":       "Stockyard API",
 			"version":     "1.0.0",
-			"description": "LLM gateway with 6 apps, 54 middleware modules, and 16 providers. Drop-in OpenAI-compatible proxy with observability, trust policies, A/B testing, and workflow orchestration.",
+			"description": "LLM gateway with 6 apps, 58 middleware modules, and 16 providers. Drop-in OpenAI-compatible proxy with observability, trust policies, A/B testing, and workflow orchestration.",
 			"contact":     map[string]string{"email": "hello@stockyard.dev", "url": "https://stockyard.dev"},
 			"license":     map[string]string{"name": "MIT", "url": "https://github.com/stockyard-dev/stockyard/blob/main/LICENSE"},
 		},
@@ -28,6 +28,7 @@ func OpenAPISpec() map[string]any {
 			{"name": "Forge", "description": "DAG workflow engine"},
 			{"name": "Exchange", "description": "Config pack marketplace"},
 			{"name": "Auth", "description": "Users, API keys, provider keys"},
+			{"name": "Playground", "description": "Shareable playground sessions"},
 			{"name": "System", "description": "Health, license, plans"},
 		},
 		"paths": openAPIPaths(),
@@ -154,6 +155,10 @@ func openAPIPaths() map[string]any {
 
 		// Checkout
 		"/api/checkout": map[string]any{"post": ep("Create Stripe checkout session", "System", nil, ok)},
+
+		// Playground
+		"/api/playground/share":      map[string]any{"post": ep("Create shareable playground session (30-day TTL)", "Playground", nil, ok)},
+		"/api/playground/share/{id}": map[string]any{"get": ep("Retrieve shared playground session", "Playground", nil, ok)},
 	}
 }
 
