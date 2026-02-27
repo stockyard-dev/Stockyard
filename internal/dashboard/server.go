@@ -1,4 +1,6 @@
 // Package dashboard serves the embedded Preact SPA and SSE events.
+//
+//go:generate bash build.sh
 package dashboard
 
 import (
