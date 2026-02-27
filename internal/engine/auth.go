@@ -144,6 +144,8 @@ func isPublicRoute(method, path string) bool {
 			return true
 		case path == "/api/license":
 			return true
+		case path == "/api/openapi.json":
+			return true
 		}
 	}
 	// Cloud signup (POST /api/cloud/tenants)

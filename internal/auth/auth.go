@@ -501,6 +501,7 @@ func (a *API) Register(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/auth/me/providers/{provider}", a.handleSetMyProviderKey)
 	mux.HandleFunc("GET /api/auth/me/providers", a.handleListMyProviderKeys)
 	mux.HandleFunc("DELETE /api/auth/me/providers/{provider}", a.handleDeleteMyProviderKey)
+	mux.HandleFunc("GET /api/auth/me/usage", a.handleMyUsage)
 
 	log.Println("[auth] API routes registered")
 }
@@ -743,6 +744,71 @@ func (a *API) handleMe(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{
 		"user":      user,
 		"providers": provKeys,
+	})
+}
+
+func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
+	user := UserFromContext(r.Context())
+	if user == nil {
+		writeJSON(w, 401, map[string]string{"error": "not authenticated"})
+		return
+	}
+
+	uid := fmt.Sprintf("%d", user.ID)
+
+	// Total usage
+	var totalReqs int64
+	var totalCost float64
+	var totalTokensIn, totalTokensOut int64
+	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0) FROM requests WHERE user_id = ?`, uid).Scan(&totalReqs, &totalCost, &totalTokensIn, &totalTokensOut)
+
+	// This month
+	var monthReqs int64
+	var monthCost float64
+	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests WHERE user_id = ? AND timestamp >= date('now','start of month')`, uid).Scan(&monthReqs, &monthCost)
+
+	// Today
+	var todayReqs int64
+	var todayCost float64
+	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests WHERE user_id = ? AND timestamp >= date('now')`, uid).Scan(&todayReqs, &todayCost)
+
+	// Top models
+	type modelStat struct {
+		Model string  `json:"model"`
+		Reqs  int64   `json:"requests"`
+		Cost  float64 `json:"cost_usd"`
+	}
+	var topModels []modelStat
+	rows, _ := a.store.db.Query(`SELECT model, COUNT(*) as c, COALESCE(SUM(cost_usd),0) FROM requests WHERE user_id = ? GROUP BY model ORDER BY c DESC LIMIT 5`, uid)
+	if rows != nil {
+		defer rows.Close()
+		for rows.Next() {
+			var m modelStat
+			rows.Scan(&m.Model, &m.Reqs, &m.Cost)
+			topModels = append(topModels, m)
+		}
+	}
+	if topModels == nil {
+		topModels = []modelStat{}
+	}
+
+	writeJSON(w, 200, map[string]any{
+		"user_id": user.ID,
+		"total": map[string]any{
+			"requests":   totalReqs,
+			"cost_usd":   totalCost,
+			"tokens_in":  totalTokensIn,
+			"tokens_out": totalTokensOut,
+		},
+		"this_month": map[string]any{
+			"requests": monthReqs,
+			"cost_usd": monthCost,
+		},
+		"today": map[string]any{
+			"requests": todayReqs,
+			"cost_usd": todayCost,
+		},
+		"top_models": topModels,
 	})
 }
 

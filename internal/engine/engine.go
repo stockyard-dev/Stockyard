@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/api"
+	"github.com/stockyard-dev/stockyard/internal/apiserver"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
@@ -406,6 +407,10 @@ func Boot(pc ProductConfig) {
 		json.NewEncoder(w).Encode(licEnforcer.Stats())
 	})
 	log.Printf("  License:   tier=%s valid=%v", licEnforcer.Tier(), lic.Valid)
+
+	// OpenAPI spec
+	srv.Mux().HandleFunc("GET /api/openapi.json", apiserver.HandleOpenAPI)
+	log.Printf("  OpenAPI:   http://localhost:%d/api/openapi.json", cfg.Port)
 
 	// Seed demo data if database is empty (populates traces, costs, experiments)
 	db.SeedDemoData(pc.Product)

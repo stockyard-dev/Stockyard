@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -185,15 +186,68 @@ func (e *AlertEvaluator) deliverWebhook(channelCfg, name, metric string, value, 
 		return
 	}
 
-	payload, _ := json.Marshal(map[string]any{
-		"alert":     name,
-		"metric":    metric,
-		"value":     value,
-		"threshold": threshold,
-		"message":   msg,
-		"source":    "stockyard",
-		"fired_at":  time.Now().UTC().Format(time.RFC3339),
-	})
+	var payload []byte
+
+	switch {
+	case strings.Contains(cfg.URL, "hooks.slack.com"):
+		// Slack Block Kit format
+		payload, _ = json.Marshal(map[string]any{
+			"blocks": []map[string]any{
+				{
+					"type": "header",
+					"text": map[string]string{"type": "plain_text", "text": "🚨 Stockyard Alert: " + name},
+				},
+				{
+					"type": "section",
+					"fields": []map[string]string{
+						{"type": "mrkdwn", "text": "*Metric:*\n" + metric},
+						{"type": "mrkdwn", "text": fmt.Sprintf("*Value:*\n%.2f (threshold: %.2f)", value, threshold)},
+					},
+				},
+				{
+					"type": "section",
+					"text": map[string]string{"type": "mrkdwn", "text": msg},
+				},
+				{
+					"type": "context",
+					"elements": []map[string]string{
+						{"type": "mrkdwn", "text": "Source: Stockyard • " + time.Now().UTC().Format("2006-01-02 15:04 UTC")},
+					},
+				},
+			},
+		})
+
+	case strings.Contains(cfg.URL, "discord.com/api/webhooks"):
+		// Discord embed format
+		payload, _ = json.Marshal(map[string]any{
+			"embeds": []map[string]any{
+				{
+					"title":       "🚨 Alert: " + name,
+					"description": msg,
+					"color":       16007990, // #F44336 red
+					"fields": []map[string]any{
+						{"name": "Metric", "value": metric, "inline": true},
+						{"name": "Value", "value": fmt.Sprintf("%.2f", value), "inline": true},
+						{"name": "Threshold", "value": fmt.Sprintf("%.2f", threshold), "inline": true},
+					},
+					"footer": map[string]string{"text": "Stockyard"},
+					"timestamp": time.Now().UTC().Format(time.RFC3339),
+				},
+			},
+		})
+
+	default:
+		// Generic JSON webhook
+		payload, _ = json.Marshal(map[string]any{
+			"alert":     name,
+			"metric":    metric,
+			"value":     value,
+			"threshold": threshold,
+			"message":   msg,
+			"source":    "stockyard",
+			"fired_at":  time.Now().UTC().Format(time.RFC3339),
+		})
+	}
 
 	resp, err := e.client.Post(cfg.URL, "application/json", bytes.NewReader(payload))
 	if err != nil {

@@ -440,5 +440,90 @@ func seedExchangePacks(conn *sql.DB) {
 		conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
 			id, "1.0.0", p.content)
 	}
-	log.Printf("[exchange] seeded %d starter packs", len(packs))
+
+	// Wave 2 packs (OR IGNORE so they appear on existing installs too)
+	extraPacks := []pack{
+		{
+			slug: "deepseek-starter", name: "DeepSeek Starter", author: "Stockyard",
+			desc: "Pre-configured DeepSeek provider with cost-optimized model routing and caching",
+			tags: `["deepseek","quickstart","provider","cost"]`,
+			content: `{
+				"providers": [{"name": "deepseek", "base_url": "https://api.deepseek.com/v1", "auth_type": "bearer", "priority": 1, "models": "deepseek-chat,deepseek-coder,deepseek-reasoner"}],
+				"routes": [{"pattern": "deepseek-*", "provider": "deepseek", "priority": 1, "enabled": true}],
+				"modules": [{"name": "cache", "enabled": true}, {"name": "retry", "enabled": true}, {"name": "cost_cap", "enabled": true}]
+			}`,
+		},
+		{
+			slug: "groq-speed", name: "Groq Speed Pack", author: "Stockyard",
+			desc: "Groq provider optimized for ultra-low latency inference with Llama and Mixtral models",
+			tags: `["groq","quickstart","provider","speed"]`,
+			content: `{
+				"providers": [{"name": "groq", "base_url": "https://api.groq.com/openai/v1", "auth_type": "bearer", "priority": 1, "models": "llama-3.3-70b-versatile,llama-3.1-8b-instant,mixtral-8x7b-32768"}],
+				"routes": [{"pattern": "llama-*", "provider": "groq", "priority": 1, "enabled": true}, {"pattern": "mixtral-*", "provider": "groq", "priority": 1, "enabled": true}],
+				"modules": [{"name": "cache", "enabled": true}],
+				"alerts": [{"name": "groq-latency", "metric": "latency_p95", "condition": "gt", "threshold": 500, "window": "5m", "channel": "default", "enabled": true}]
+			}`,
+		},
+		{
+			slug: "mistral-eu", name: "Mistral EU Pack", author: "Stockyard",
+			desc: "Mistral AI provider for EU-hosted inference with GDPR-compliant routing",
+			tags: `["mistral","quickstart","provider","eu","compliance"]`,
+			content: `{
+				"providers": [{"name": "mistral", "base_url": "https://api.mistral.ai/v1", "auth_type": "bearer", "priority": 1, "models": "mistral-large-latest,mistral-small-latest,codestral-latest"}],
+				"routes": [{"pattern": "mistral-*", "provider": "mistral", "priority": 1, "enabled": true}, {"pattern": "codestral-*", "provider": "mistral", "priority": 1, "enabled": true}],
+				"modules": [{"name": "cache", "enabled": true}, {"name": "retry", "enabled": true}],
+				"policies": [{"name": "eu-data-residency", "policy_type": "log", "pattern": ".*", "description": "Log all requests for GDPR compliance audit trail", "enabled": true}]
+			}`,
+		},
+		{
+			slug: "local-llm", name: "Local LLM Pack", author: "Stockyard",
+			desc: "Run models locally via Ollama or LM Studio — zero API costs, full privacy",
+			tags: `["ollama","lm-studio","local","privacy"]`,
+			content: `{
+				"providers": [
+					{"name": "ollama", "base_url": "http://localhost:11434/v1", "auth_type": "none", "priority": 1, "models": "llama3,codellama,mistral,phi3"},
+					{"name": "lm-studio", "base_url": "http://localhost:1234/v1", "auth_type": "none", "priority": 2, "models": "local-model"}
+				],
+				"routes": [{"pattern": "llama*", "provider": "ollama", "priority": 1, "enabled": true}],
+				"modules": [{"name": "retry", "enabled": true}, {"name": "healthcheck", "enabled": true}]
+			}`,
+		},
+		{
+			slug: "compliance-hipaa", name: "HIPAA Compliance Pack", author: "Stockyard",
+			desc: "Trust policies and audit logging configured for HIPAA-adjacent compliance in healthcare contexts",
+			tags: `["compliance","hipaa","healthcare","trust"]`,
+			content: `{
+				"modules": [{"name": "pii_redactor", "enabled": true}, {"name": "content_filter", "enabled": true}, {"name": "audit_log", "enabled": true}],
+				"policies": [
+					{"name": "redact-phi", "policy_type": "redact", "pattern": "SSN|DOB|date of birth|medical record|patient id", "description": "Redact protected health information patterns", "enabled": true},
+					{"name": "block-phi-storage", "policy_type": "block", "pattern": "store.*patient|save.*health.*record|persist.*PHI", "description": "Block requests that attempt to store PHI", "enabled": true},
+					{"name": "audit-all", "policy_type": "log", "pattern": ".*", "description": "Log all LLM interactions for compliance audit trail", "enabled": true}
+				],
+				"alerts": [{"name": "phi-redaction", "metric": "pii_detections", "condition": "gt", "threshold": 0, "window": "5m", "channel": "default", "enabled": true}]
+			}`,
+		},
+		{
+			slug: "dev-productivity", name: "Developer Productivity", author: "Stockyard",
+			desc: "Coding-focused configuration with code models, prompt templates for development tasks, and cost tracking",
+			tags: `["developer","coding","productivity"]`,
+			content: `{
+				"modules": [{"name": "cache", "enabled": true}, {"name": "retry", "enabled": true}, {"name": "cost_cap", "enabled": true}],
+				"templates": [
+					{"slug": "code-review", "name": "Code Review", "description": "Automated code review with actionable feedback", "template": "Review this code for bugs, security issues, and improvements. Be specific.\n\n{{input}}", "model": "gpt-4o", "tags": "code,review"},
+					{"slug": "explain-code", "name": "Explain Code", "description": "Clear code explanation for onboarding", "template": "Explain this code clearly: what it does, how it works, notable patterns.\n\n{{input}}", "model": "gpt-4o-mini", "tags": "code,explain"},
+					{"slug": "write-tests", "name": "Write Tests", "description": "Generate unit tests with edge cases", "template": "Write comprehensive unit tests for this code. Include edge cases.\n\n{{input}}", "model": "gpt-4o", "tags": "code,testing"},
+					{"slug": "commit-msg", "name": "Commit Message", "description": "Generate conventional commit message", "template": "Write a conventional commit message for this diff.\n\n{{input}}", "model": "gpt-4o-mini", "tags": "code,git"}
+				]
+			}`,
+		},
+	}
+	for _, p := range extraPacks {
+		id := "pk_" + p.slug
+		conn.Exec(`INSERT OR IGNORE INTO exchange_packs (id, slug, name, description, author, pack_type, tags_json) VALUES (?,?,?,?,?,?,?)`,
+			id, p.slug, p.name, p.desc, p.author, "config", p.tags)
+		conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
+			id, "1.0.0", p.content)
+	}
+
+	log.Printf("[exchange] seeded %d starter packs + %d extra packs", len(packs), len(extraPacks))
 }

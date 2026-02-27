@@ -333,9 +333,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="note"><strong>Starter packs</strong><br>6 packs ship by default: Safety Essentials, Cost Control, OpenAI Quickstart, Anthropic Quickstart, Multi-Provider Failover, and Evaluation Suite.</div>
 
     <h2 id="api">API Reference</h2>
-    <p>All endpoints are served on the same port as the proxy. No separate API server required.</p>
+    <p>All endpoints are served on the same port as the proxy. Full <a href="/api/openapi.json" style="color:var(--rust-light)">OpenAPI 3.1 spec</a> available at <code>/api/openapi.json</code>.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">GET</td><td>/api/openapi.json</td><td>OpenAPI 3.1 specification</td></tr>
       <tr><td class="method">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
       <tr><td class="method">GET</td><td>/health</td><td>Health check</td></tr>
       <tr><td class="method">POST</td><td>/v1/chat/completions</td><td>Proxy LLM request</td></tr>
@@ -360,6 +361,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">POST</td><td>/api/studio/benchmarks/run</td><td>Run benchmark suite</td></tr>
       <tr><td class="method">POST</td><td>/api/auth/signup</td><td>Create user + API key</td></tr>
       <tr><td class="method">GET</td><td>/api/auth/me</td><td>Current user info</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/me/usage</td><td>My usage stats (requests, cost, tokens)</td></tr>
       <tr><td class="method">PUT</td><td>/api/auth/me/providers/{name}</td><td>Add provider key</td></tr>
       <tr><td class="method">GET</td><td>/api/plans</td><td>Pricing plans</td></tr>
       <tr><td class="method">GET</td><td>/api/forge/workflows</td><td>List workflows</td></tr>
