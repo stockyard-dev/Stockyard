@@ -80,3 +80,7 @@ site-sync:
 # Full check before pushing
 pre-push: lint test bench-short
 	@echo "All checks passed"
+
+# Integration smoke test (builds binary, boots server, hits all endpoints)
+smoke:
+	bash test/smoke_test.sh

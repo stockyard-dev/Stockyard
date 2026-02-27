@@ -6,8 +6,12 @@
 
 <p align="center">
   <a href="https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml"><img src="https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/stockyard-dev/stockyard"><img src="https://img.shields.io/github/stars/stockyard-dev/stockyard?style=flat&color=d4a843" alt="GitHub Stars"></a>
+  <a href="https://github.com/stockyard-dev/stockyard/releases"><img src="https://img.shields.io/github/v/release/stockyard-dev/stockyard?color=c45d2c" alt="Release"></a>
+  <a href="https://goreportcard.com/report/github.com/stockyard-dev/stockyard"><img src="https://goreportcard.com/badge/github.com/stockyard-dev/stockyard" alt="Go Report"></a>
   <a href="https://stockyard.dev"><img src="https://img.shields.io/badge/website-stockyard.dev-e8753a" alt="Website"></a>
   <a href="https://stockyard.dev/docs"><img src="https://img.shields.io/badge/docs-stockyard.dev%2Fdocs-c4a87a" alt="Docs"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-c4a87a" alt="License"></a>
 </p>
 
 **Six apps. One Go binary. Zero dependencies.** The complete LLM infrastructure platform — proxy, observe, trust, studio, forge, and exchange.

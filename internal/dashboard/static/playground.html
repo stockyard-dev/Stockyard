@@ -961,7 +961,7 @@ async function shareSession() {
     
     if(resp.ok) {
       const data = await resp.json();
-      const url = window.location.origin + '/playground/s/' + data.id;
+      const url = data.url ? (window.location.origin + data.url) : (window.location.origin + '/playground?share=' + data.id);
       await navigator.clipboard.writeText(url);
       btn.textContent = '✓ Link copied!';
       setTimeout(() => { btn.textContent = 'Share'; btn.disabled = false; }, 2500);
@@ -984,25 +984,69 @@ async function shareSession() {
 }
 
 // Check for shared session on load
-function loadSharedSession() {
+async function loadSharedSession() {
+  // Backend share: ?share={id}
+  const params = new URLSearchParams(window.location.search);
+  const shareId = params.get('share');
+  if(shareId) {
+    try {
+      const resp = await fetch('/api/playground/share/' + encodeURIComponent(shareId));
+      if(!resp.ok) throw new Error('Not found');
+      const data = await resp.json();
+      
+      const messagesEl = document.getElementById('messages');
+      const messages = typeof data.messages === 'string' ? JSON.parse(data.messages) : data.messages;
+      if(messages && messagesEl) {
+        messages.forEach(m => {
+          const role = m.role || 'user';
+          const content = (m.content || '').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+          messagesEl.innerHTML += `<div class="msg msg-${role}"><div class="msg-role">${role}</div><div class="msg-body">${content}</div></div>`;
+        });
+      }
+      
+      // Update header
+      const chatModel = document.querySelector('.chat-model');
+      if(chatModel && data.model) chatModel.textContent = data.model;
+      
+      // Set state
+      if(data.model) state.model = data.model;
+      if(data.provider) state.provider = data.provider;
+      state.messages = messages || [];
+      
+      // Show shared banner
+      if(messagesEl) {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'padding:8px 16px;background:var(--bg3);font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);text-align:center;border-bottom:1px solid var(--bg3)';
+        banner.innerHTML = 'Shared session · <a href="/playground" style="color:var(--rust-light)">Start your own</a>';
+        messagesEl.parentNode.insertBefore(banner, messagesEl);
+      }
+      
+      // Hide setup overlay
+      const setup = document.querySelector('.setup');
+      if(setup) setup.style.display = 'none';
+      
+      // Scroll to bottom
+      if(messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
+      return;
+    } catch(e) { console.log('Failed to load shared session from API:', e); }
+  }
+  
+  // Fallback: #shared= hash (base64 encoded, no backend)
   const hash = window.location.hash;
   if(!hash.startsWith('#shared=')) return;
   try {
     const data = JSON.parse(atob(hash.substring(8)));
-    // Display as read-only
     const messagesEl = document.getElementById('messages');
     if(data.msgs && messagesEl) {
       data.msgs.forEach(m => {
         messagesEl.innerHTML += `<div class="msg msg-${m.r}"><div class="msg-role">${m.r}</div><div class="msg-body">${m.c.replace(/</g,'&lt;')}</div></div>`;
       });
-      // Update header
       const chatModel = document.querySelector('.chat-model');
       if(chatModel && data.m) chatModel.textContent = data.m;
-      // Hide setup overlay
       const setup = document.querySelector('.setup');
       if(setup) setup.style.display = 'none';
     }
-  } catch(e) { console.log('Failed to load shared session', e); }
+  } catch(e) { console.log('Failed to load shared session from hash:', e); }
 }
 
 // ─── INIT ──────────────────────────────────────────────────────
