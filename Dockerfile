@@ -8,7 +8,6 @@ COPY stockyard /usr/local/bin/stockyard
 RUN chmod +x /usr/local/bin/stockyard
 
 RUN mkdir -p /data && chown stockyard:stockyard /data
-VOLUME /data
 
 USER stockyard
 WORKDIR /data
