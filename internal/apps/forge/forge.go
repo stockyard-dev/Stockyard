@@ -125,9 +125,11 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/forge/workflows", a.handleListWorkflows)
 	mux.HandleFunc("GET /api/forge/workflows/{slug}", a.handleGetWorkflow)
 	mux.HandleFunc("POST /api/forge/workflows", a.handleCreateWorkflow)
+	mux.HandleFunc("PUT /api/forge/workflows/{slug}", a.handleUpdateWorkflow)
 	mux.HandleFunc("POST /api/forge/workflows/{slug}/run", a.handleRunWorkflow)
 	mux.HandleFunc("GET /api/forge/runs", a.handleListRuns)
 	mux.HandleFunc("GET /api/forge/runs/{id}", a.handleGetRun)
+	mux.HandleFunc("DELETE /api/forge/runs/{id}", a.handleDeleteRun)
 
 	// Tools
 	mux.HandleFunc("GET /api/forge/tools", a.handleListTools)
@@ -152,7 +154,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 // --- Workflows ---
 
 func (a *App) handleListWorkflows(w http.ResponseWriter, r *http.Request) {
-	rows, _ := a.conn.Query("SELECT id, slug, name, description, trigger_type, enabled, updated_at FROM forge_workflows ORDER BY updated_at DESC")
+	rows, _ := a.conn.Query("SELECT id, slug, name, description, steps_json, trigger_type, enabled, updated_at FROM forge_workflows ORDER BY updated_at DESC")
 	if rows == nil {
 		writeJSON(w, map[string]any{"workflows": []any{}})
 		return
@@ -161,9 +163,11 @@ func (a *App) handleListWorkflows(w http.ResponseWriter, r *http.Request) {
 	var wfs []map[string]any
 	for rows.Next() {
 		var id, enabled int
-		var slug, name, desc, trigger, updated string
-		rows.Scan(&id, &slug, &name, &desc, &trigger, &enabled, &updated)
-		wfs = append(wfs, map[string]any{"id": id, "slug": slug, "name": name, "description": desc, "trigger_type": trigger, "enabled": enabled == 1, "updated_at": updated})
+		var slug, name, desc, stepsJSON, trigger, updated string
+		rows.Scan(&id, &slug, &name, &desc, &stepsJSON, &trigger, &enabled, &updated)
+		var steps []any
+		json.Unmarshal([]byte(stepsJSON), &steps)
+		wfs = append(wfs, map[string]any{"id": id, "slug": slug, "name": name, "description": desc, "trigger_type": trigger, "enabled": enabled == 1, "updated_at": updated, "step_count": len(steps)})
 	}
 	writeJSON(w, map[string]any{"workflows": wfs, "count": len(wfs)})
 }
@@ -213,6 +217,46 @@ func (a *App) handleCreateWorkflow(w http.ResponseWriter, r *http.Request) {
 	}
 	id, _ := res.LastInsertId()
 	writeJSON(w, map[string]any{"status": "created", "id": id, "slug": req.Slug})
+}
+
+func (a *App) handleUpdateWorkflow(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	var req struct {
+		Name        *string `json:"name"`
+		Desc        *string `json:"description"`
+		Steps       any     `json:"steps"`
+		TriggerType *string `json:"trigger_type"`
+		TriggerCfg  any     `json:"trigger_config"`
+		Enabled     *bool   `json:"enabled"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	now := time.Now().Format(time.RFC3339)
+
+	if req.Name != nil {
+		a.conn.Exec("UPDATE forge_workflows SET name = ?, updated_at = ? WHERE slug = ?", *req.Name, now, slug)
+	}
+	if req.Desc != nil {
+		a.conn.Exec("UPDATE forge_workflows SET description = ?, updated_at = ? WHERE slug = ?", *req.Desc, now, slug)
+	}
+	if req.Steps != nil {
+		steps, _ := json.Marshal(req.Steps)
+		a.conn.Exec("UPDATE forge_workflows SET steps_json = ?, updated_at = ? WHERE slug = ?", string(steps), now, slug)
+	}
+	if req.TriggerType != nil {
+		a.conn.Exec("UPDATE forge_workflows SET trigger_type = ?, updated_at = ? WHERE slug = ?", *req.TriggerType, now, slug)
+	}
+	if req.TriggerCfg != nil {
+		tc, _ := json.Marshal(req.TriggerCfg)
+		a.conn.Exec("UPDATE forge_workflows SET trigger_config = ?, updated_at = ? WHERE slug = ?", string(tc), now, slug)
+	}
+	if req.Enabled != nil {
+		enabled := 0
+		if *req.Enabled {
+			enabled = 1
+		}
+		a.conn.Exec("UPDATE forge_workflows SET enabled = ?, updated_at = ? WHERE slug = ?", enabled, now, slug)
+	}
+	writeJSON(w, map[string]string{"status": "updated", "slug": slug})
 }
 
 func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
@@ -292,6 +336,23 @@ func (a *App) handleGetRun(w http.ResponseWriter, r *http.Request) {
 		"steps_completed": done, "steps_total": total, "error": errMsg,
 		"started_at": started, "completed_at": completed,
 	})
+}
+
+func (a *App) handleDeleteRun(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	res, err := a.conn.Exec("DELETE FROM forge_runs WHERE id = ?", id)
+	if err != nil {
+		w.WriteHeader(500)
+		writeJSON(w, map[string]string{"error": err.Error()})
+		return
+	}
+	affected, _ := res.RowsAffected()
+	if affected == 0 {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "run not found"})
+		return
+	}
+	writeJSON(w, map[string]string{"status": "deleted", "id": id})
 }
 
 // --- Tools ---

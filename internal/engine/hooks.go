@@ -527,3 +527,105 @@ func seedExchangePacks(conn *sql.DB) {
 
 	log.Printf("[exchange] seeded %d starter packs + %d extra packs", len(packs), len(extraPacks))
 }
+
+// seedForgeData populates the Forge tool registry and additional demo workflows.
+func seedForgeData(conn *sql.DB) {
+	// ── Seed tools ──────────────────────────────────────────────────
+	type tool struct {
+		name, desc, ttype, handler string
+		schema                     string
+	}
+	tools := []tool{
+		{
+			name: "echo", desc: "Returns input unchanged (useful for testing DAGs)", ttype: "builtin", handler: "echo",
+			schema: `{"input": {"type": "string", "description": "Any input to echo back"}}`,
+		},
+		{
+			name: "json_validate", desc: "Validates that input is well-formed JSON", ttype: "builtin", handler: "json_validate",
+			schema: `{"input": {"type": "string", "description": "JSON string to validate"}}`,
+		},
+		{
+			name: "timestamp", desc: "Returns the current ISO 8601 timestamp", ttype: "builtin", handler: "timestamp",
+			schema: `{}`,
+		},
+		{
+			name: "word_count", desc: "Counts words in the input text", ttype: "builtin", handler: "word_count",
+			schema: `{"input": {"type": "string", "description": "Text to count words in"}}`,
+		},
+		{
+			name: "summarize_results", desc: "Aggregates all previous step outputs into a JSON summary", ttype: "builtin", handler: "summarize_results",
+			schema: `{}`,
+		},
+	}
+	for _, t := range tools {
+		conn.Exec(`INSERT OR IGNORE INTO forge_tools (name, description, type, schema_json, handler, enabled) VALUES (?,?,?,?,?,1)`,
+			t.name, t.desc, t.ttype, t.schema, t.handler)
+	}
+
+	// ── Seed additional workflows ───────────────────────────────────
+	type wf struct {
+		slug, name, desc, steps string
+	}
+	workflows := []wf{
+		{
+			slug: "content-pipeline",
+			name: "Content Pipeline",
+			desc: "Draft content → review → improve → validate. Multi-stage content creation with quality gates.",
+			steps: `[
+				{"id": "draft", "type": "llm", "config": {"model": "gpt-4o-mini", "system": "You are a skilled content writer.", "prompt": "Write a concise, engaging article about: {{input}}"}},
+				{"id": "review", "type": "llm", "depends_on": ["draft"], "config": {"model": "gpt-4o", "system": "You are a strict editor. Identify weaknesses, factual issues, and areas for improvement. Be specific.", "prompt": "Review this draft:\n\n{{steps.draft.output}}"}},
+				{"id": "improve", "type": "llm", "depends_on": ["draft", "review"], "config": {"model": "gpt-4o", "system": "You are a skilled rewriter. Improve the draft based on the editor feedback.", "prompt": "Original draft:\n{{steps.draft.output}}\n\nEditor feedback:\n{{steps.review.output}}\n\nRewrite the article incorporating the feedback."}},
+				{"id": "validate", "type": "gate", "depends_on": ["improve"], "config": {"condition": "not_empty", "prompt": "{{steps.improve.output}}"}}
+			]`,
+		},
+		{
+			slug: "translate-verify",
+			name: "Translate & Verify",
+			desc: "Translate text then back-translate to verify accuracy. Catches drift and mistranslation.",
+			steps: `[
+				{"id": "translate", "type": "llm", "config": {"model": "gpt-4o-mini", "system": "You are a professional translator. Translate the following text to Spanish. Output only the translation.", "prompt": "{{input}}"}},
+				{"id": "backtranslate", "type": "llm", "depends_on": ["translate"], "config": {"model": "gpt-4o-mini", "system": "You are a professional translator. Translate the following Spanish text back to English. Output only the translation.", "prompt": "{{steps.translate.output}}"}},
+				{"id": "compare", "type": "llm", "depends_on": ["backtranslate"], "config": {"model": "gpt-4o", "system": "Compare the original and back-translated texts. Score similarity 1-10 and list any meaning changes. Respond as JSON: {\"score\": N, \"changes\": [...]}", "prompt": "Original:\n{{input}}\n\nBack-translated:\n{{steps.backtranslate.output}}"}},
+				{"id": "result", "type": "transform", "depends_on": ["compare"], "config": {"expression": "extract_json"}}
+			]`,
+		},
+		{
+			slug: "multi-model-compare",
+			name: "Multi-Model Compare",
+			desc: "Send the same prompt to two models and compare responses. Great for model selection.",
+			steps: `[
+				{"id": "model_a", "type": "llm", "config": {"model": "gpt-4o-mini", "prompt": "{{input}}"}},
+				{"id": "model_b", "type": "llm", "config": {"model": "gpt-4o", "prompt": "{{input}}"}},
+				{"id": "compare", "type": "llm", "depends_on": ["model_a", "model_b"], "config": {"model": "gpt-4o", "system": "Compare these two AI responses objectively. Which is better and why? Score each 1-10. Respond as JSON.", "prompt": "Prompt: {{input}}\n\nResponse A (gpt-4o-mini):\n{{steps.model_a.output}}\n\nResponse B (gpt-4o):\n{{steps.model_b.output}}"}},
+				{"id": "result", "type": "transform", "depends_on": ["compare"], "config": {"expression": "extract_json"}}
+			]`,
+		},
+		{
+			slug: "summarize-and-extract",
+			name: "Summarize & Extract",
+			desc: "Summarize long text, then extract key entities and action items.",
+			steps: `[
+				{"id": "summarize", "type": "llm", "config": {"model": "gpt-4o-mini", "system": "Summarize the following text concisely, capturing all key points.", "prompt": "{{input}}"}},
+				{"id": "extract", "type": "llm", "depends_on": ["summarize"], "config": {"model": "gpt-4o-mini", "system": "From this summary, extract: people mentioned, organizations, dates, action items, and key decisions. Respond as JSON.", "prompt": "{{steps.summarize.output}}"}},
+				{"id": "result", "type": "transform", "depends_on": ["extract"], "config": {"expression": "extract_json"}}
+			]`,
+		},
+		{
+			slug: "code-review-pipeline",
+			name: "Code Review Pipeline",
+			desc: "Analyze code for bugs, security, performance, then produce a consolidated review.",
+			steps: `[
+				{"id": "bugs", "type": "llm", "config": {"model": "gpt-4o", "system": "You are a bug hunter. Find bugs, logic errors, and edge cases in this code. Be specific with line references.", "prompt": "{{input}}"}},
+				{"id": "security", "type": "llm", "config": {"model": "gpt-4o", "system": "You are a security auditor. Identify security vulnerabilities: injection, auth issues, data exposure, etc.", "prompt": "{{input}}"}},
+				{"id": "perf", "type": "llm", "config": {"model": "gpt-4o-mini", "system": "You are a performance engineer. Identify performance bottlenecks, unnecessary allocations, N+1 queries, etc.", "prompt": "{{input}}"}},
+				{"id": "consolidate", "type": "llm", "depends_on": ["bugs", "security", "perf"], "config": {"model": "gpt-4o", "system": "Consolidate these three code reviews into a single prioritized report. Group by severity: critical, high, medium, low.", "prompt": "Bug Analysis:\n{{steps.bugs.output}}\n\nSecurity Audit:\n{{steps.security.output}}\n\nPerformance Review:\n{{steps.perf.output}}"}}
+			]`,
+		},
+	}
+	for _, w := range workflows {
+		conn.Exec(`INSERT OR IGNORE INTO forge_workflows (slug, name, description, steps_json, trigger_type, enabled) VALUES (?,?,?,?,?,1)`,
+			w.slug, w.name, w.desc, w.steps, "manual")
+	}
+
+	log.Printf("[forge] seeded %d tools + %d workflows", len(tools), len(workflows))
+}

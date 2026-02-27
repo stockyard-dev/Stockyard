@@ -346,6 +346,7 @@ func Boot(pc ProductConfig) {
 		seedProxyModules(db.Conn(), pc)
 		seedProxyProviders(db.Conn(), providers)
 		seedExchangePacks(db.Conn())
+		seedForgeData(db.Conn())
 
 		// Seed toggle registry from proxy_modules table
 		toggleReg.SeedFromDB(db.Conn())

@@ -32,11 +32,23 @@ type StepConfig struct {
 	MaxTokens   *int     `json:"max_tokens,omitempty"`
 
 	// Transform step fields
-	Expression string `json:"expression,omitempty"` // "concat", "extract_json", "first_line"
+	Expression string `json:"expression,omitempty"` // "concat", "extract_json", "first_line", "uppercase", "lowercase", "word_count", "trim"
 
 	// Tool step fields
 	ToolName string `json:"tool_name,omitempty"`
 	ToolArgs any    `json:"tool_args,omitempty"`
+
+	// HTTP step fields
+	URL     string            `json:"url,omitempty"`
+	Method  string            `json:"method,omitempty"` // GET, POST, PUT
+	Headers map[string]string `json:"headers,omitempty"`
+	Body    string            `json:"body,omitempty"` // template
+
+	// Gate step fields (conditional)
+	Condition string `json:"condition,omitempty"` // "contains", "not_empty", "json_field", "score_above"
+	Threshold string `json:"threshold,omitempty"` // value to compare against
+	IfTrue    string `json:"if_true,omitempty"`   // output if condition met
+	IfFalse   string `json:"if_false,omitempty"`  // output if not met
 }
 
 // StepResult holds the output of an executed step.
@@ -56,6 +68,7 @@ type RunContext struct {
 	Input    string
 	Results  map[string]*StepResult // step_id → result
 	ProxyURL string                 // e.g. "http://localhost:4200"
+	Conn     *sql.DB                // for tool lookups
 }
 
 // Execute runs a workflow's steps in dependency order.
@@ -71,6 +84,7 @@ func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, inpu
 		Input:    string(inputJSON),
 		Results:  make(map[string]*StepResult),
 		ProxyURL: fmt.Sprintf("http://localhost:%d", proxyPort),
+		Conn:     conn,
 	}
 
 	// Build dependency graph and find execution order
@@ -132,6 +146,12 @@ func executeStep(ctx context.Context, rc *RunContext, step Step) *StepResult {
 		return executeLLMStep(ctx, rc, step, start)
 	case "transform":
 		return executeTransformStep(rc, step, start)
+	case "tool":
+		return executeToolStep(ctx, rc, step, start)
+	case "http":
+		return executeHTTPStep(ctx, rc, step, start)
+	case "gate":
+		return executeGateStep(rc, step, start)
 	default:
 		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("unknown step type: %s", step.Type)}
 	}
@@ -257,6 +277,27 @@ func executeTransformStep(rc *RunContext, step Step, start time.Time) *StepResul
 			}
 		}
 		output = strings.Join(parts, "\n\n---\n\n")
+	case "uppercase":
+		output = strings.ToUpper(input)
+	case "lowercase":
+		output = strings.ToLower(input)
+	case "trim":
+		output = strings.TrimSpace(input)
+	case "word_count":
+		words := strings.Fields(input)
+		output = fmt.Sprintf("%d", len(words))
+	case "line_count":
+		lines := strings.Split(input, "\n")
+		output = fmt.Sprintf("%d", len(lines))
+	case "json_keys":
+		var obj map[string]any
+		if json.Unmarshal([]byte(input), &obj) == nil {
+			keys := make([]string, 0, len(obj))
+			for k := range obj { keys = append(keys, k) }
+			output = strings.Join(keys, ", ")
+		} else {
+			output = input
+		}
 	default:
 		output = input // passthrough
 	}
@@ -265,6 +306,211 @@ func executeTransformStep(rc *RunContext, step Step, start time.Time) *StepResul
 		StepID:    step.ID,
 		Status:    "success",
 		Output:    output,
+		LatencyMS: time.Since(start).Milliseconds(),
+	}
+}
+
+// executeToolStep looks up a registered tool and calls its handler endpoint.
+func executeToolStep(ctx context.Context, rc *RunContext, step Step, start time.Time) *StepResult {
+	toolName := step.Config.ToolName
+	if toolName == "" {
+		return &StepResult{StepID: step.ID, Status: "error", Error: "tool_name required", LatencyMS: time.Since(start).Milliseconds()}
+	}
+
+	// Look up the tool from forge_tools
+	var handler, schemaJSON string
+	err := rc.Conn.QueryRow("SELECT handler, schema_json FROM forge_tools WHERE name = ? AND enabled = 1", toolName).Scan(&handler, &schemaJSON)
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool %q not found or disabled", toolName), LatencyMS: time.Since(start).Milliseconds()}
+	}
+
+	// Build tool input from config args + template resolution
+	toolArgs := step.Config.ToolArgs
+	if toolArgs == nil {
+		// Use resolved prompt as the input if no explicit args
+		toolArgs = map[string]string{"input": resolveTemplate(step.Config.Prompt, rc)}
+	}
+	argsJSON, _ := json.Marshal(toolArgs)
+
+	// If handler is a URL, call it; otherwise treat as a built-in
+	if handler != "" && (strings.HasPrefix(handler, "http://") || strings.HasPrefix(handler, "https://")) {
+		return callToolEndpoint(ctx, rc, step, handler, argsJSON, start)
+	}
+
+	// Built-in tool handlers
+	switch handler {
+	case "echo":
+		return &StepResult{StepID: step.ID, Status: "success", Output: string(argsJSON), LatencyMS: time.Since(start).Milliseconds()}
+	case "json_validate":
+		var parsed any
+		if err := json.Unmarshal(argsJSON, &parsed); err != nil {
+			return &StepResult{StepID: step.ID, Status: "success", Output: `{"valid": false, "error": "` + err.Error() + `"}`, LatencyMS: time.Since(start).Milliseconds()}
+		}
+		return &StepResult{StepID: step.ID, Status: "success", Output: `{"valid": true}`, LatencyMS: time.Since(start).Milliseconds()}
+	case "timestamp":
+		return &StepResult{StepID: step.ID, Status: "success", Output: time.Now().Format(time.RFC3339), LatencyMS: time.Since(start).Milliseconds()}
+	case "word_count":
+		input := resolveTemplate(step.Config.Prompt, rc)
+		count := len(strings.Fields(input))
+		return &StepResult{StepID: step.ID, Status: "success", Output: fmt.Sprintf(`{"count": %d}`, count), LatencyMS: time.Since(start).Milliseconds()}
+	case "summarize_results":
+		// Aggregate all previous step outputs into a summary object
+		summary := make(map[string]string)
+		for id, r := range rc.Results {
+			if r.Status == "success" {
+				summary[id] = truncate(r.Output, 500)
+			}
+		}
+		j, _ := json.Marshal(summary)
+		return &StepResult{StepID: step.ID, Status: "success", Output: string(j), LatencyMS: time.Since(start).Milliseconds()}
+	default:
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("no handler for tool %q (handler: %q)", toolName, handler), LatencyMS: time.Since(start).Milliseconds()}
+	}
+}
+
+// callToolEndpoint makes an HTTP POST to a tool's handler URL.
+func callToolEndpoint(ctx context.Context, rc *RunContext, step Step, url string, argsJSON []byte, start time.Time) *StepResult {
+	stepCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
+	req, _ := http.NewRequestWithContext(stepCtx, "POST", url, bytes.NewReader(argsJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 15 * time.Second}
+	resp, err := client.Do(req)
+	latency := time.Since(start).Milliseconds()
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: latency}
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode >= 400 {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool returned %d: %s", resp.StatusCode, truncate(string(body), 200)), LatencyMS: latency}
+	}
+
+	return &StepResult{StepID: step.ID, Status: "success", Output: string(body), LatencyMS: latency}
+}
+
+// executeHTTPStep makes an arbitrary HTTP request.
+func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.Time) *StepResult {
+	url := resolveTemplate(step.Config.URL, rc)
+	if url == "" {
+		return &StepResult{StepID: step.ID, Status: "error", Error: "url required for http step", LatencyMS: time.Since(start).Milliseconds()}
+	}
+
+	method := step.Config.Method
+	if method == "" {
+		method = "GET"
+	}
+
+	var bodyReader io.Reader
+	if step.Config.Body != "" {
+		bodyReader = strings.NewReader(resolveTemplate(step.Config.Body, rc))
+	}
+
+	stepCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(stepCtx, method, url, bodyReader)
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: time.Since(start).Milliseconds()}
+	}
+	for k, v := range step.Config.Headers {
+		req.Header.Set(k, resolveTemplate(v, rc))
+	}
+	if step.Config.Body != "" && req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	latency := time.Since(start).Milliseconds()
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: latency}
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode >= 400 {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("http %d: %s", resp.StatusCode, truncate(string(body), 200)), LatencyMS: latency}
+	}
+
+	return &StepResult{StepID: step.ID, Status: "success", Output: string(body), LatencyMS: latency}
+}
+
+// executeGateStep evaluates a condition and outputs if_true or if_false.
+func executeGateStep(rc *RunContext, step Step, start time.Time) *StepResult {
+	input := resolveTemplate(step.Config.Prompt, rc)
+	if input == "" && len(step.DependsOn) > 0 {
+		if r, ok := rc.Results[step.DependsOn[0]]; ok {
+			input = r.Output
+		}
+	}
+
+	threshold := resolveTemplate(step.Config.Threshold, rc)
+	passed := false
+
+	switch step.Config.Condition {
+	case "contains":
+		passed = strings.Contains(strings.ToLower(input), strings.ToLower(threshold))
+	case "not_empty":
+		passed = strings.TrimSpace(input) != ""
+	case "equals":
+		passed = strings.TrimSpace(input) == strings.TrimSpace(threshold)
+	case "json_field":
+		// Check if a JSON field exists and is truthy
+		var obj map[string]any
+		if json.Unmarshal([]byte(input), &obj) == nil {
+			if v, ok := obj[threshold]; ok {
+				switch tv := v.(type) {
+				case bool:
+					passed = tv
+				case float64:
+					passed = tv > 0
+				case string:
+					passed = tv != ""
+				default:
+					passed = v != nil
+				}
+			}
+		}
+	case "score_above":
+		// Extract a numeric score from JSON and compare to threshold
+		var obj map[string]any
+		if json.Unmarshal([]byte(input), &obj) == nil {
+			if score, ok := obj["score"].(float64); ok {
+				var thresh float64
+				fmt.Sscanf(threshold, "%f", &thresh)
+				passed = score >= thresh
+			}
+		}
+	default:
+		passed = strings.TrimSpace(input) != ""
+	}
+
+	output := step.Config.IfTrue
+	if !passed {
+		output = step.Config.IfFalse
+		if output == "" {
+			output = "gate:failed"
+		}
+	}
+	if output == "" {
+		output = "gate:passed"
+	}
+
+	status := "success"
+	// If gate fails and if_false is empty, mark as error to stop downstream
+	if !passed && step.Config.IfFalse == "" {
+		status = "error"
+		output = fmt.Sprintf("gate condition %q not met", step.Config.Condition)
+	}
+
+	return &StepResult{
+		StepID:    step.ID,
+		Status:    status,
+		Output:    resolveTemplate(output, rc),
 		LatencyMS: time.Since(start).Milliseconds(),
 	}
 }
