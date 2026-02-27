@@ -24,10 +24,6 @@ RUN mkdir -p /data && chown stockyard:stockyard /data
 
 ENV DATA_DIR=/data
 ENV STOCKYARD_DB_PATH=/data/stockyard.db
-ENV STOCKYARD_LOG_FORMAT=json
-ENV PORT=4200
-
-EXPOSE 4200
 
 USER stockyard
 WORKDIR /data
