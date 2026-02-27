@@ -18,7 +18,7 @@ COPY --from=builder /stockyard /usr/local/bin/stockyard
 # Data directory
 RUN mkdir -p /data && chown stockyard:stockyard /data
 
-ENV STOCKYARD_DATA_DIR=/data
+ENV DATA_DIR=/data
 
 # Default port
 EXPOSE 4200
