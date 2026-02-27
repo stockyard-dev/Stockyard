@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<title>Privacy Policy — Stockyard</title>
+<meta name="description" content="Stockyard privacy policy. How we handle your data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:700px;margin:0 auto;padding:5rem 2rem 4rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .updated{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-bottom:3rem}
+.content h2{font-size:1.15rem;color:var(--leather-light);margin:2.5rem 0 0.8rem;font-family:var(--font-mono);font-size:0.9rem;letter-spacing:1px}
+.content p{color:var(--cream-dim);margin-bottom:1rem;font-size:0.95rem}
+.content ul{color:var(--cream-dim);margin:0 0 1rem 1.5rem;font-size:0.95rem}
+.content li{margin-bottom:0.4rem}
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="content">
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated: February 27, 2026</p>
+
+<h2>What we collect</h2>
+<p>Stockyard collects the minimum data necessary to provide our services.</p>
+<p><strong>Self-hosted (Community &amp; Pro):</strong> We collect nothing. The binary runs entirely on your infrastructure. No telemetry, no phone-home, no analytics. Your LLM traffic, API keys, prompts, and responses never leave your machine.</p>
+<p><strong>Cloud tier:</strong> When you sign up for Stockyard Cloud, we collect:</p>
+<ul>
+  <li>Email address (for account management and communication)</li>
+  <li>Organization name (for your workspace)</li>
+  <li>Payment information (processed by Stripe; we never see or store your full card number)</li>
+</ul>
+<p><strong>Website:</strong> stockyard.dev does not use cookies, tracking pixels, or third-party analytics. We use basic server-side request logs (IP, timestamp, path) for operational monitoring, retained for 30 days.</p>
+
+<h2>How we use your data</h2>
+<p>Cloud tier data is used solely to operate your Stockyard Cloud instance, send transactional emails (receipts, security alerts), and respond to support requests. We do not sell, share, or monetize your data in any way.</p>
+
+<h2>LLM traffic</h2>
+<p>Whether self-hosted or on Stockyard Cloud, your LLM requests and responses pass through the Stockyard proxy to your configured providers. Stockyard Cloud stores trace metadata (model, token count, latency, cost) per your retention settings. Prompt and response content is stored only if you explicitly enable it in Observe settings. You can delete all trace data at any time via the API.</p>
+
+<h2>Provider API keys</h2>
+<p>API keys you configure for LLM providers (OpenAI, Anthropic, etc.) are encrypted at rest using AES-256-GCM. On self-hosted deployments, keys are stored in your local SQLite database. On Cloud, keys are stored in encrypted storage with per-tenant isolation.</p>
+
+<h2>Data retention</h2>
+<p>Cloud tier data is retained according to your plan: 7 days (Community), 30 days (Cloud), unlimited (Pro self-hosted), or per your agreement (Enterprise). You can export or delete your data at any time. Upon account deletion, all data is purged within 30 days.</p>
+
+<h2>Third parties</h2>
+<p>We use Stripe for payment processing and Railway for Cloud infrastructure hosting. We do not share data with any other third parties. We do not use any advertising networks or data brokers.</p>
+
+<h2>Security</h2>
+<p>Stockyard Cloud uses TLS for all connections, encrypts sensitive data at rest, and maintains a hash-chained audit ledger (the Trust app) for tamper-evident logging. If you discover a security vulnerability, please report it to <a href="mailto:security@stockyard.dev">security@stockyard.dev</a>.</p>
+
+<h2>Changes</h2>
+<p>We may update this policy as our services evolve. Material changes will be announced via email to Cloud users and posted to our changelog. Continued use after changes constitutes acceptance.</p>
+
+<h2>Contact</h2>
+<p>Questions about privacy? Email <a href="mailto:privacy@stockyard.dev">privacy@stockyard.dev</a>.</p>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+</body>
+</html>

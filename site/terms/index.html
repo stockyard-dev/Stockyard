@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<title>Terms of Service — Stockyard</title>
+<meta name="description" content="Stockyard terms of service. Fair, readable terms for self-hosted and cloud users.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:700px;margin:0 auto;padding:5rem 2rem 4rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .updated{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-bottom:3rem}
+.content h2{color:var(--leather-light);margin:2.5rem 0 0.8rem;font-family:var(--font-mono);font-size:0.9rem;letter-spacing:1px}
+.content p{color:var(--cream-dim);margin-bottom:1rem;font-size:0.95rem}
+.content ul{color:var(--cream-dim);margin:0 0 1rem 1.5rem;font-size:0.95rem}
+.content li{margin-bottom:0.4rem}
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="content">
+<h1>Terms of Service</h1>
+<p class="updated">Last updated: February 27, 2026</p>
+
+<h2>The short version</h2>
+<p>Stockyard is an LLM infrastructure platform. You use it to proxy, observe, and manage LLM traffic. We provide the software; you're responsible for how you use it and what you send through it. Don't use it to harm others. Pay for the tier you use. That's the gist.</p>
+
+<h2>Self-hosted (Community &amp; Pro)</h2>
+<p>The self-hosted Stockyard binary is provided under the terms of the <a href="https://github.com/stockyard-dev/stockyard/blob/main/LICENSE">project license</a>. Community tier is free for up to 10,000 requests per month and 3 users. Pro tier requires a valid license key ($9.99/month) and removes all limits. You may run Stockyard on any infrastructure you control.</p>
+<p>You are solely responsible for securing your deployment, managing API keys, and complying with your LLM providers' terms of service.</p>
+
+<h2>Cloud</h2>
+<p>Stockyard Cloud is a managed hosting service. We provision and operate a Stockyard instance on your behalf. You agree to provide accurate account information and keep your credentials secure. We reserve the right to suspend accounts that violate these terms or are used for illegal purposes.</p>
+
+<h2>Acceptable use</h2>
+<p>You agree not to use Stockyard to:</p>
+<ul>
+  <li>Violate any applicable law or regulation</li>
+  <li>Infringe on the intellectual property rights of others</li>
+  <li>Transmit malware, spam, or content designed to harm systems or people</li>
+  <li>Attempt to gain unauthorized access to Stockyard systems or other users' data</li>
+  <li>Circumvent license key restrictions or usage limits</li>
+  <li>Resell Stockyard access without a reseller agreement</li>
+</ul>
+
+<h2>Payment</h2>
+<p>Paid tiers are billed monthly or annually via Stripe. You can cancel at any time; service continues through the end of your billing period. We do not offer refunds for partial months. Enterprise agreements have custom billing terms.</p>
+
+<h2>Availability &amp; SLA</h2>
+<p>Self-hosted Stockyard has no uptime guarantee — it runs on your infrastructure, so availability is your responsibility. Stockyard Cloud targets 99.9% uptime. Enterprise agreements include a formal SLA with service credits. We perform maintenance during low-traffic windows and provide advance notice when possible.</p>
+
+<h2>Data &amp; ownership</h2>
+<p>You own your data. Stockyard does not claim any rights to your prompts, responses, API keys, configurations, or any content that passes through the proxy. On Cloud, you can export or delete your data at any time via the API.</p>
+
+<h2>Limitation of liability</h2>
+<p>Stockyard is provided "as is." We do our best to make it reliable, fast, and secure, but we cannot guarantee it will be error-free. To the maximum extent permitted by law, Stockyard's liability is limited to the amount you paid us in the 12 months preceding any claim. We are not liable for indirect, incidental, or consequential damages.</p>
+
+<h2>Changes</h2>
+<p>We may update these terms. Material changes will be announced via email to Cloud users and posted to our changelog 30 days before taking effect.</p>
+
+<h2>Contact</h2>
+<p>Questions? Email <a href="mailto:legal@stockyard.dev">legal@stockyard.dev</a>.</p>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+</body>
+</html>

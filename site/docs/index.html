@@ -100,10 +100,11 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-title">Getting Started</div>
-      <a href="#quickstart" class="active">Quickstart</a>
+      <a href="#install" class="active">Install &amp; Quickstart</a>
       <a href="#playground-doc">Playground</a>
       <a href="#auth">Authentication</a>
       <a href="#configuration">Configuration</a>
+      <a href="#license">License &amp; Pro</a>
       <a href="#dashboard">Console</a>
     </div>
     <div class="sidebar-section">
@@ -131,7 +132,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h1>Documentation</h1>
     <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
 
-    <h2 id="quickstart">Quickstart</h2>
+    <h2 id="install">Install &amp; Quickstart</h2>
     <p>Get Stockyard running in under a minute.</p>
     <pre>
 <span class="comment"># Install the binary</span>
@@ -190,6 +191,20 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">  -d '{"enabled": true}'</span>
 </pre>
     <p>Module state persists in the embedded SQLite database. Changes take effect immediately &mdash; no restart needed.</p>
+
+    <h2 id="license">License &amp; Pro</h2>
+    <p>Stockyard Community is free for up to 10,000 requests/month and 3 users. To remove all limits, upgrade to Pro ($9.99/month) by setting a license key:</p>
+    <pre>
+<span class="comment"># Set your license key</span>
+<span class="cmd">export STOCKYARD_LICENSE_KEY="SY-eyJ..."</span>
+
+<span class="comment"># Restart Stockyard (or set the env var before first start)</span>
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Verify your tier and usage</span>
+<span class="cmd">curl http://localhost:4200/api/license</span>
+</pre>
+    <p>License keys are available at <a href="/pricing/">stockyard.dev/pricing</a>. Pro and Enterprise keys unlock unlimited requests, unlimited users, and extended retention. All features and modules are available on every tier.</p>
 
     <h2 id="dashboard">Console</h2>
     <p>The web console is served at <code>/ui</code> and gives you a real-time view of all six apps. It shows modules, providers, routes, traces, costs, alerts, templates, workflows, packs, and installed status.</p>
@@ -393,9 +408,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a>
-    <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
 </footer>
 
 <script>

@@ -23,6 +23,7 @@ func Register(mux *http.ServeMux) {
 	pages := []string{
 		"/cloud/", "/pricing/", "/docs/", "/products/",
 		"/exchange/", "/observe/", "/account/", "/success/",
+		"/privacy/", "/terms/", "/changelog/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
@@ -66,6 +67,42 @@ func Register(mux *http.ServeMux) {
 		}
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+
+	// Serve /install as alias for install.sh
+	mux.HandleFunc("GET /install", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "install.sh")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+
+	// Serve robots.txt
+	mux.HandleFunc("GET /robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "robots.txt")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		w.Write(data)
+	})
+
+	// Serve sitemap.xml
+	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "sitemap.xml")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/xml; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
 		w.Write(data)
 	})
 

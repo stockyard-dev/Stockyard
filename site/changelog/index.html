@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<title>Changelog — Stockyard</title>
+<meta name="description" content="Stockyard changelog. What's new, what's fixed, what's next.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:750px;margin:0 auto;padding:5rem 2rem 4rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .sub{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);margin-bottom:3rem}
+.release{margin-bottom:3rem;border-left:2px solid var(--bg3);padding-left:1.5rem}
+.release-header{display:flex;align-items:baseline;gap:12px;margin-bottom:0.8rem}
+.release-version{font-family:var(--font-mono);font-size:1.1rem;color:var(--rust-light);font-weight:600}
+.release-date{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)}
+.release-tag{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;color:var(--cream)}
+.tag-major{background:var(--rust)}
+.tag-patch{background:var(--bg3);color:var(--cream-dim)}
+.tag-new{background:var(--green)}
+.change-group{margin-bottom:0.8rem}
+.change-group-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
+.change-item{color:var(--cream-dim);font-size:0.9rem;margin-bottom:0.3rem;padding-left:1rem;position:relative}
+.change-item::before{content:'';position:absolute;left:0;top:0.6em;width:4px;height:4px;background:var(--leather);border-radius:50%}
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="content">
+<h1>Changelog</h1>
+<p class="sub">What's new in Stockyard. Follow <a href="https://github.com/stockyard-dev/stockyard">GitHub</a> for commit-level detail.</p>
+
+<div class="release">
+  <div class="release-header">
+    <span class="release-version">v1.0.0</span>
+    <span class="release-date">February 27, 2026</span>
+    <span class="release-tag tag-major">Launch</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Platform</div>
+    <div class="change-item">6 flagship apps: Proxy, Observe, Trust, Studio, Forge, Exchange</div>
+    <div class="change-item">69 REST API endpoints across all apps</div>
+    <div class="change-item">Embedded web console at /ui with full dashboard</div>
+    <div class="change-item">16 LLM providers auto-configured from environment variables</div>
+    <div class="change-item">SQLite storage — zero external dependencies</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Proxy</div>
+    <div class="change-item">58 middleware modules across 8 categories (routing, caching, cost, safety, transform, validate, observe, shims)</div>
+    <div class="change-item">Runtime module toggling via API</div>
+    <div class="change-item">Multi-provider failover with circuit breaker</div>
+    <div class="change-item">Bring-your-own-key (BYOK) with auto-detection from key prefix</div>
+    <div class="change-item">Anthropic and Gemini SDK shims (anthrofit, geminishim)</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Observe</div>
+    <div class="change-item">Automatic trace recording for every proxy request</div>
+    <div class="change-item">Cost tracking and time-series analytics</div>
+    <div class="change-item">Configurable alerts with threshold and anomaly detection</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Trust</div>
+    <div class="change-item">Hash-chained audit ledger — tamper-evident by design</div>
+    <div class="change-item">Content policies with block, warn, and log actions</div>
+    <div class="change-item">Integrity verification endpoint</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Studio</div>
+    <div class="change-item">Versioned prompt templates with variable interpolation</div>
+    <div class="change-item">A/B experiments across models</div>
+    <div class="change-item">Multi-model benchmarking with eval methods</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Forge</div>
+    <div class="change-item">DAG workflow engine with dependency-ordered step execution</div>
+    <div class="change-item">Template variable interpolation between steps</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Exchange</div>
+    <div class="change-item">13 config packs: safety-essentials, cost-control, openai-quickstart, multi-provider-failover, and more</div>
+    <div class="change-item">One-click install/uninstall via API</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Auth</div>
+    <div class="change-item">Multi-user system with per-user API keys (sk-sy-*)</div>
+    <div class="change-item">Per-user provider key management</div>
+    <div class="change-item">Admin key protection for management API</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Site</div>
+    <div class="change-item">Marketing site with interactive playground</div>
+    <div class="change-item">Full API documentation</div>
+    <div class="change-item">Fence Rail brand identity and logo system</div>
+    <div class="change-item">Community, Pro, Cloud, and Enterprise pricing tiers</div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+</body>
+</html>
