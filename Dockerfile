@@ -1,16 +1,4 @@
-# ─── Build stage ─────────────────────────────────────────────────────────
-FROM golang:1.22-alpine AS builder
-
-RUN apk add --no-cache git ca-certificates
-
-WORKDIR /src
-COPY go.mod go.sum ./
-RUN go mod download
-
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /stockyard ./cmd/stockyard/
-
-# ─── Runtime stage ───────────────────────────────────────────────────────
+# ─── Runtime-only stage (pre-built binary) ───────────────────────────────
 FROM alpine:3.20
 
 RUN apk add --no-cache ca-certificates tzdata curl
@@ -18,7 +6,9 @@ RUN apk add --no-cache ca-certificates tzdata curl
 # Non-root user
 RUN addgroup -S stockyard && adduser -S stockyard -G stockyard
 
-COPY --from=builder /stockyard /usr/local/bin/stockyard
+# Copy pre-built binary
+COPY stockyard /usr/local/bin/stockyard
+RUN chmod +x /usr/local/bin/stockyard
 
 # Data directory for SQLite
 RUN mkdir -p /data && chown stockyard:stockyard /data
