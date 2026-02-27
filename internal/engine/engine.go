@@ -205,6 +205,11 @@ func Boot(pc ProductConfig) {
 		os.Exit(0)
 	}
 
+	// Handle doctor subcommand
+	if len(os.Args) > 1 && (os.Args[1] == "doctor" || os.Args[1] == "--doctor") {
+		RunDoctor(pc)
+	}
+
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
 	// Initialize structured logging
@@ -298,6 +303,13 @@ func Boot(pc ProductConfig) {
 	// Compose the handler
 	handler := proxy.Chain(sendHandler, middlewares...)
 
+	// OTEL export middleware (if configured via STOCKYARD_OTEL_ENDPOINT or OTEL_EXPORTER_OTLP_ENDPOINT)
+	otelCfg := LoadOTELConfig()
+	otelExp := NewOTELExporter(otelCfg)
+	if otelExp != nil {
+		handler = OTELMiddleware(otelExp)(handler)
+	}
+
 	// Wrap with app hooks (Observe traces + Trust audit) if apps are configured
 	if len(pc.Apps) > 0 {
 		handler = appHooksMiddleware(db.Conn())(handler)
@@ -327,6 +339,9 @@ func Boot(pc ProductConfig) {
 	// Register dashboard, SSE, and management API
 	dashboard.Register(srv.Mux(), pc.Product)
 	broadcaster.RegisterSSE(srv.Mux())
+
+	// Playground share endpoints
+	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
@@ -517,6 +532,9 @@ func Boot(pc ProductConfig) {
 	<-ctx.Done()
 	log.Println("shutting down...")
 	flushCancel()
+	if otelExp != nil {
+		otelExp.Close()
+	}
 	srv.Shutdown(context.Background())
 	db.Close()
 }

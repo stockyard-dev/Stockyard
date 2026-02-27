@@ -1,0 +1,111 @@
+name: 'Setup Stockyard'
+description: 'Install Stockyard LLM proxy for CI/CD pipelines. Provides cost tracking, caching, safety guardrails, and audit trails for LLM API calls in your tests and workflows.'
+author: 'stockyard-dev'
+
+branding:
+  icon: 'server'
+  color: 'orange'
+
+inputs:
+  version:
+    description: 'Stockyard version to install (e.g., "latest", "0.1.0")'
+    required: false
+    default: 'latest'
+  port:
+    description: 'Port to run Stockyard on'
+    required: false
+    default: '4200'
+  start:
+    description: 'Start Stockyard as a background service after install'
+    required: false
+    default: 'true'
+  modules:
+    description: 'Comma-separated list of modules to enable (empty = all defaults)'
+    required: false
+    default: ''
+  license-key:
+    description: 'Stockyard license key (Pro/Enterprise)'
+    required: false
+    default: ''
+
+outputs:
+  base-url:
+    description: 'The base URL for the Stockyard proxy'
+    value: ${{ steps.start.outputs.base-url }}
+  version:
+    description: 'The installed Stockyard version'
+    value: ${{ steps.install.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Stockyard
+      id: install
+      shell: bash
+      run: |
+        echo "::group::Installing Stockyard"
+        VERSION="${{ inputs.version }}"
+
+        if [ "$VERSION" = "latest" ]; then
+          curl -sSL https://stockyard.dev/install | sh
+        else
+          curl -sSL "https://stockyard.dev/install?v=${VERSION}" | sh
+        fi
+
+        # Verify installation
+        INSTALLED_VERSION=$(stockyard --version 2>&1 || echo "unknown")
+        echo "version=${INSTALLED_VERSION}" >> $GITHUB_OUTPUT
+        echo "Installed: ${INSTALLED_VERSION}"
+        echo "::endgroup::"
+
+    - name: Run doctor
+      shell: bash
+      run: |
+        echo "::group::Stockyard Doctor"
+        stockyard doctor || true
+        echo "::endgroup::"
+
+    - name: Start Stockyard
+      id: start
+      if: ${{ inputs.start == 'true' }}
+      shell: bash
+      env:
+        PORT: ${{ inputs.port }}
+        STOCKYARD_LICENSE_KEY: ${{ inputs.license-key }}
+      run: |
+        echo "::group::Starting Stockyard"
+        export PORT="${{ inputs.port }}"
+
+        # Start in background
+        nohup stockyard > /tmp/stockyard.log 2>&1 &
+        STOCKYARD_PID=$!
+        echo "stockyard-pid=${STOCKYARD_PID}" >> $GITHUB_OUTPUT
+
+        # Wait for health check
+        for i in $(seq 1 30); do
+          if curl -sf "http://localhost:${PORT}/health" > /dev/null 2>&1; then
+            echo "Stockyard running on port ${PORT} (PID: ${STOCKYARD_PID})"
+            echo "base-url=http://localhost:${PORT}" >> $GITHUB_OUTPUT
+            break
+          fi
+          if [ $i -eq 30 ]; then
+            echo "::error::Stockyard failed to start within 30 seconds"
+            cat /tmp/stockyard.log
+            exit 1
+          fi
+          sleep 1
+        done
+
+        # Configure modules if specified
+        MODULES="${{ inputs.modules }}"
+        if [ -n "$MODULES" ]; then
+          echo "Configuring modules: ${MODULES}"
+          IFS=',' read -ra MODS <<< "$MODULES"
+          for mod in "${MODS[@]}"; do
+            mod=$(echo "$mod" | xargs)
+            curl -sf -X PUT "http://localhost:${PORT}/api/proxy/modules/${mod}" \
+              -d '{"enabled":true}' > /dev/null 2>&1 || true
+          done
+        fi
+
+        echo "::endgroup::"

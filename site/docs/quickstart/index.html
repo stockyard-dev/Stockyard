@@ -138,6 +138,23 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Open <code>http://localhost:4200/ui</code> for the web console. Open <code>http://localhost:4200/api/apps</code> to see all registered apps.</p>
     <div class="note"><strong>Note</strong><br>Stockyard auto-detects your API key provider from its prefix (sk- &rarr; OpenAI, sk-ant- &rarr; Anthropic, gsk_ &rarr; Groq, etc.) and routes to the correct upstream. No extra configuration needed.</div>
 
+    <h2 id="doctor">Doctor</h2>
+    <p>Run <code>stockyard doctor</code> to check your environment before starting. It verifies your config, data directory, database, port availability, provider API keys, Ollama, license, and disk access.</p>
+    <pre>
+<span class="cmd">stockyard doctor</span>
+
+<span class="comment"># JSON output for CI pipelines:</span>
+<span class="cmd">stockyard doctor --json</span>
+</pre>
+
+    <h2 id="otel">OpenTelemetry Export</h2>
+    <p>Send traces to any OTLP-compatible backend (Jaeger, Grafana, Datadog, Honeycomb) by setting one env var:</p>
+    <pre>
+<span class="cmd">export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318</span>
+<span class="cmd">stockyard</span>
+</pre>
+    <p>Every proxied request becomes an OTEL span with attributes for model, provider, tokens, cost, and latency. Spans are batched (100 per batch, 5s flush interval) and exported as OTLP JSON.</p>
+
     <h2 id="playground">Playground</h2>
     <p>Try Stockyard instantly at <a href="/playground">/playground</a>. Paste any provider API key, pick a model, and start chatting. The playground includes real-time trace viewing, live middleware toggles, and a built-in A/B model comparison tool. No signup required.</p>
 
