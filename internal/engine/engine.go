@@ -342,6 +342,18 @@ func Boot(pc ProductConfig) {
 
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
+
+	// Webhook manager (alerts, cost thresholds, trust violations → Slack, HTTP, etc.)
+	webhookMgr := NewWebhookManager(db.Conn())
+	RegisterWebhookRoutes(srv.Mux(), webhookMgr)
+
+	// Status collector (real-time metrics for /api/status)
+	statusCollector := NewStatusCollector()
+	RegisterStatusRoutes(srv.Mux(), statusCollector, db.Conn(), pc.Version)
+
+	// Config export/import/diff
+	RegisterConfigRoutes(srv.Mux(), db.Conn())
+
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())

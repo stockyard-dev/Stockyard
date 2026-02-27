@@ -350,6 +350,44 @@ func (s *Store) RevokeKey(userID int64, keyID int64) error {
 	return nil
 }
 
+// RotateKey atomically revokes the old key and generates a new one with the same name.
+// Returns the new key (with secret). The old key is immediately invalid.
+func (s *Store) RotateKey(userID int64, keyID int64) (*APIKeyWithSecret, error) {
+	// Look up old key name
+	var name string
+	err := s.db.QueryRow(
+		`SELECT name FROM api_keys WHERE id = ? AND user_id = ? AND revoked_at IS NULL`,
+		keyID, userID,
+	).Scan(&name)
+	if err == sql.ErrNoRows {
+		return nil, errors.New("key not found or already revoked")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	// Revoke the old key
+	_, err = s.db.Exec(
+		`UPDATE api_keys SET revoked_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?`,
+		keyID, userID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("revoke old key: %w", err)
+	}
+
+	// Generate a new key with the same name + " (rotated)" suffix if name conflict
+	newKey, err := s.GenerateKey(userID, name)
+	if err != nil {
+		// Name conflict — try with suffix
+		newKey, err = s.GenerateKey(userID, name+" (rotated)")
+		if err != nil {
+			return nil, fmt.Errorf("generate new key: %w", err)
+		}
+	}
+
+	return newKey, nil
+}
+
 // ─── Provider Key Operations ───────────────────────────────────────────────
 
 // SetProviderKey stores or updates a user's provider API key.
@@ -487,6 +525,7 @@ func (a *API) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/users/{id}/keys", a.handleCreateKey)
 	mux.HandleFunc("GET /api/auth/users/{id}/keys", a.handleListKeys)
 	mux.HandleFunc("DELETE /api/auth/users/{id}/keys/{keyId}", a.handleRevokeKey)
+	mux.HandleFunc("POST /api/auth/users/{id}/keys/{keyId}/rotate", a.handleRotateKey)
 
 	// Provider key management
 	mux.HandleFunc("PUT /api/auth/users/{id}/providers/{provider}", a.handleSetProviderKey)
@@ -498,6 +537,7 @@ func (a *API) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/auth/me/keys", a.handleCreateMyKey)
 	mux.HandleFunc("GET /api/auth/me/keys", a.handleListMyKeys)
 	mux.HandleFunc("DELETE /api/auth/me/keys/{keyId}", a.handleRevokeMyKey)
+	mux.HandleFunc("POST /api/auth/me/keys/{keyId}/rotate", a.handleRotateMyKey)
 	mux.HandleFunc("PUT /api/auth/me/providers/{provider}", a.handleSetMyProviderKey)
 	mux.HandleFunc("GET /api/auth/me/providers", a.handleListMyProviderKeys)
 	mux.HandleFunc("DELETE /api/auth/me/providers/{provider}", a.handleDeleteMyProviderKey)
@@ -674,6 +714,25 @@ func (a *API) handleRevokeKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, 200, map[string]string{"status": "revoked"})
+}
+
+func (a *API) handleRotateKey(w http.ResponseWriter, r *http.Request) {
+	uid := parseID(r.PathValue("id"))
+	kid := parseID(r.PathValue("keyId"))
+	if uid == 0 || kid == 0 {
+		writeJSON(w, 400, map[string]string{"error": "invalid ids"})
+		return
+	}
+	newKey, err := a.store.RotateKey(uid, kid)
+	if err != nil {
+		writeJSON(w, 404, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, 200, map[string]any{
+		"status":  "rotated",
+		"old_key": kid,
+		"new_key": newKey,
+	})
 }
 
 func (a *API) handleSetProviderKey(w http.ResponseWriter, r *http.Request) {
@@ -864,6 +923,29 @@ func (a *API) handleRevokeMyKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, 200, map[string]string{"status": "revoked"})
+}
+
+func (a *API) handleRotateMyKey(w http.ResponseWriter, r *http.Request) {
+	user := UserFromContext(r.Context())
+	if user == nil {
+		writeJSON(w, 401, map[string]string{"error": "not authenticated"})
+		return
+	}
+	kid := parseID(r.PathValue("keyId"))
+	if kid == 0 {
+		writeJSON(w, 400, map[string]string{"error": "invalid key id"})
+		return
+	}
+	newKey, err := a.store.RotateKey(user.ID, kid)
+	if err != nil {
+		writeJSON(w, 404, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, 200, map[string]any{
+		"status":  "rotated",
+		"old_key": kid,
+		"new_key": newKey,
+	})
 }
 
 func (a *API) handleSetMyProviderKey(w http.ResponseWriter, r *http.Request) {

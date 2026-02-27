@@ -63,6 +63,11 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 			// Trust ledger recording is handled by Trust app's broadcaster listener
 			// (mutex-protected hash chain via RecordEvent)
 
+			// Status metrics
+			if GlobalStatus != nil {
+				GlobalStatus.RecordRequest(duration, err != nil)
+			}
+
 			return resp, err
 		}
 	}
