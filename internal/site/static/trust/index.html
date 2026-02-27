@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trust — Stockyard</title>
+<meta name="description" content="Immutable audit ledger, compliance policies, evidence packs, and replay lab. Every LLM decision traceable, verifiable, and tamper-proof.">
+<meta property="og:title" content="Stockyard Trust">
+<meta property="og:description" content="LLM audit and compliance built in. Hash-chained ledger, policy engine, evidence packs, replay lab — zero config.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--red:#b84233;--amber:#c49a3c;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+.page-hero{max-width:750px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto 2.5rem}
+
+.demo{padding:3rem 2rem 5rem;max-width:800px;margin:0 auto}
+.demo-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-bottom:1rem}
+.demo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.demo-title{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.demo-badge{font-family:var(--font-mono);font-size:0.65rem;padding:0.2rem 0.6rem;border:1px solid}
+.badge-green{color:var(--green);border-color:var(--green)}
+.badge-amber{color:var(--amber);border-color:var(--amber)}
+
+/* Ledger */
+.ledger-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.72rem}
+.ledger-table th{text-align:left;padding:0.5rem 0.6rem;color:var(--leather);font-weight:400;letter-spacing:1px;text-transform:uppercase;font-size:0.58rem;border-bottom:1px solid var(--bg3)}
+.ledger-table td{padding:0.5rem 0.6rem;color:var(--cream-dim);border-bottom:1px solid var(--bg3)}
+.ledger-table .seq{color:var(--leather-light)}
+.ledger-table .hash{color:var(--gold);font-size:0.65rem}
+.ledger-table .event{color:var(--cream)}
+.ledger-table .ok{color:var(--green)}
+
+.chain-viz{display:flex;align-items:center;gap:0;margin:1rem 0;overflow-x:auto;padding:0.5rem 0}
+.chain-block{background:var(--bg);border:1px solid var(--bg3);padding:0.5rem 0.8rem;font-family:var(--font-mono);font-size:0.6rem;min-width:90px;text-align:center;flex-shrink:0}
+.chain-block .block-seq{color:var(--cream);display:block;font-size:0.7rem;margin-bottom:0.2rem}
+.chain-block .block-hash{color:var(--gold);font-size:0.55rem}
+.chain-arrow{color:var(--bg3);font-size:1.2rem;padding:0 0.3rem;flex-shrink:0}
+.chain-block.verified{border-color:var(--green)}
+.chain-block.verified .block-hash{color:var(--green)}
+
+.policy-list{list-style:none}
+.policy-item{display:flex;align-items:center;gap:1rem;padding:0.7rem 0;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem}
+.policy-item:last-child{border-bottom:none}
+.policy-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.policy-status.active{background:var(--green)}
+.policy-status.warn{background:var(--amber)}
+.policy-name{color:var(--cream);min-width:150px}
+.policy-desc{color:var(--cream-dim);flex:1;font-size:0.72rem}
+.policy-action{color:var(--leather);font-size:0.65rem;text-transform:uppercase;letter-spacing:1px}
+
+.features{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.features-inner{max-width:800px;margin:0 auto}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+.feat{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg)}
+.feat-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
+.feat-desc{font-size:0.8rem;color:var(--cream-dim);line-height:1.6}
+
+.api-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+
+.page-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.page-cta h2{font-size:2rem;margin-bottom:1rem}
+.page-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .page-hero{padding:5rem 1.5rem 3rem}
+  .feat-grid{grid-template-columns:1fr}
+  .cta-group{flex-direction:column;align-items:center}
+  .ledger-table{font-size:0.6rem}
+}
+</style>
+<link rel="canonical" href="https://stockyard.dev/trust/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="page-hero" id="main">
+  <div class="eyebrow">App 03 &mdash; Trust</div>
+  <h1>Every decision. <span class="accent">Tamper-proof.</span></h1>
+  <p class="sub">Hash-chained audit ledger, compliance policies, evidence packs, and replay lab. Built for teams that need to prove what their AI did and why.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="#api" class="btn btn-secondary">See the API</a>
+  </div>
+</section>
+
+<section class="demo">
+  <div class="demo-card">
+    <div class="demo-header">
+      <span class="demo-title">Audit Ledger</span>
+      <span class="demo-badge badge-green">Chain intact</span>
+    </div>
+    <div class="chain-viz">
+      <div class="chain-block verified"><span class="block-seq">#1</span><span class="block-hash">a3f8c1...</span></div>
+      <span class="chain-arrow">&rarr;</span>
+      <div class="chain-block verified"><span class="block-seq">#2</span><span class="block-hash">7b2e04...</span></div>
+      <span class="chain-arrow">&rarr;</span>
+      <div class="chain-block verified"><span class="block-seq">#3</span><span class="block-hash">d91f6a...</span></div>
+      <span class="chain-arrow">&rarr;</span>
+      <div class="chain-block verified"><span class="block-seq">#4</span><span class="block-hash">1c4a8f...</span></div>
+      <span class="chain-arrow">&rarr;</span>
+      <div class="chain-block verified"><span class="block-seq">#5</span><span class="block-hash">e07b32...</span></div>
+      <span class="chain-arrow">&rarr;</span>
+      <div class="chain-block"><span class="block-seq">#6</span><span class="block-hash">f5d291...</span></div>
+    </div>
+    <table class="ledger-table">
+      <tr><th>Seq</th><th>Event</th><th>Model</th><th>Hash</th><th>Prev</th><th>Verified</th></tr>
+      <tr><td class="seq">#6</td><td class="event">chat.completion</td><td>gpt-4o</td><td class="hash">f5d291...</td><td class="hash">e07b32...</td><td class="ok">&#10003;</td></tr>
+      <tr><td class="seq">#5</td><td class="event">chat.completion</td><td>claude-sonnet</td><td class="hash">e07b32...</td><td class="hash">1c4a8f...</td><td class="ok">&#10003;</td></tr>
+      <tr><td class="seq">#4</td><td class="event">policy.block</td><td>gpt-4o</td><td class="hash">1c4a8f...</td><td class="hash">d91f6a...</td><td class="ok">&#10003;</td></tr>
+      <tr><td class="seq">#3</td><td class="event">chat.completion</td><td>gpt-4o-mini</td><td class="hash">d91f6a...</td><td class="hash">7b2e04...</td><td class="ok">&#10003;</td></tr>
+    </table>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Active Policies</span>
+      </div>
+      <ul class="policy-list">
+        <li class="policy-item"><span class="policy-status active"></span><span class="policy-name">no-pii-output</span><span class="policy-desc">Block responses containing PII patterns</span><span class="policy-action">Block</span></li>
+        <li class="policy-item"><span class="policy-status active"></span><span class="policy-name">max-token-limit</span><span class="policy-desc">Reject prompts over 32K tokens</span><span class="policy-action">Reject</span></li>
+        <li class="policy-item"><span class="policy-status warn"></span><span class="policy-name">content-safety</span><span class="policy-desc">Flag harmful content for review</span><span class="policy-action">Flag</span></li>
+      </ul>
+    </div>
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Evidence Packs</span>
+        <span class="demo-badge badge-green">3 complete</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;line-height:2.2">
+        <div><span style="color:var(--cream)">SOC2-Q1-2025</span> <span style="color:var(--green)">&#10003;</span></div>
+        <div style="color:var(--cream-dim);font-size:0.65rem;margin-top:-0.3rem;margin-bottom:0.5rem">1,247 ledger entries &middot; chain verified &middot; exported Jan 31</div>
+        <div><span style="color:var(--cream)">GDPR-audit-feb</span> <span style="color:var(--green)">&#10003;</span></div>
+        <div style="color:var(--cream-dim);font-size:0.65rem;margin-top:-0.3rem;margin-bottom:0.5rem">892 entries &middot; PII policy log &middot; exported Feb 28</div>
+        <div><span style="color:var(--cream)">incident-031</span> <span style="color:var(--green)">&#10003;</span></div>
+        <div style="color:var(--cream-dim);font-size:0.65rem;margin-top:-0.3rem">23 entries &middot; replay included &middot; exported Mar 5</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <h2 class="section-label leather">What Trust does</h2>
+    <div class="feat-grid">
+      <div class="feat">
+        <h3 class="feat-name">Hash-Chained Ledger</h3>
+        <div class="feat-desc">Every LLM event is appended to an immutable, hash-linked chain. Each entry references the previous hash, making tampering detectable. Verify integrity with one API call.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Compliance Policies</h3>
+        <div class="feat-desc">Define rules that run on every request. Block PII in outputs, enforce token limits, flag unsafe content. Policies are versioned and auditable.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Evidence Packs</h3>
+        <div class="feat-desc">Bundle ledger entries, policy logs, and chain verification proofs into exportable packages. Ready for SOC2, GDPR, HIPAA, or internal audit reviews.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Replay Lab</h3>
+        <div class="feat-desc">Re-run any historical request through the current middleware chain. See how today's policies would have handled yesterday's traffic. Essential for incident review.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Human Feedback</h3>
+        <div class="feat-desc">Collect thumbs-up/down and text feedback on any LLM response. Link feedback to specific ledger entries for full traceability.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Zero Config</h3>
+        <div class="feat-desc">Trust hooks into every proxy request automatically. The ledger starts recording the moment you boot the binary. No code changes, no agents.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="api-section" id="api">
+  <h2 class="section-label">The API</h2>
+  <p style="color:var(--cream-dim);font-size:0.95rem">Ledger, policies, evidence packs, replays, and feedback — all REST. Build compliance workflows or integrate with your existing audit infrastructure.</p>
+
+  <div class="code-block">
+<span class="comment"># Verify the ledger chain is intact</span>
+<span class="cmd">curl /api/trust/ledger/verify</span>
+
+<span class="comment"># Get recent audit entries</span>
+<span class="cmd">curl /api/trust/ledger?limit=50</span>
+
+<span class="comment"># Create a compliance policy</span>
+<span class="cmd">curl -X POST /api/trust/policies \</span>
+<span class="cmd">  -d '{"name":"no-pii-output", "type":"output",</span>
+<span class="cmd">       "pattern":"\\b\\d{3}-\\d{2}-\\d{4}\\b", "action":"block"}'</span>
+
+<span class="comment"># Bundle evidence for audit</span>
+<span class="cmd">curl -X POST /api/trust/evidence \</span>
+<span class="cmd">  -d '{"name":"SOC2-Q1-2025", "from":"2025-01-01",</span>
+<span class="cmd">       "to":"2025-03-31", "include_verification":true}'</span>
+
+<span class="comment"># Replay a historical request</span>
+<span class="cmd">curl -X POST /api/trust/replays \</span>
+<span class="cmd">  -d '{"ledger_seq":4, "note":"Incident review: was PII leaked?"}'</span>
+
+<span class="comment"># Submit human feedback</span>
+<span class="cmd">curl -X POST /api/trust/feedback \</span>
+<span class="cmd">  -d '{"ledger_seq":6, "rating":"positive", "comment":"Accurate summary"}'</span>
+  </div>
+</section>
+
+<section class="page-cta">
+  <h2>Prove it. Every time.</h2>
+  <p>Trust ships with every Stockyard instance. Self-hosted or Cloud.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/" class="btn btn-secondary">Back to platform</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/exchange/">Exchange</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp;
+    <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-dim)"><a href="/privacy/" style="color:var(--cream-dim)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-dim)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-dim)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-dim)">Discord</a></p>
+</footer>
+
+</body>
+</html>

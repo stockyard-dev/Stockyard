@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge — Stockyard</title>
+<meta name="description" content="DAG workflow engine for LLM pipelines. Chain calls, transforms, and tool invocations with dependency ordering, retries, and full execution history.">
+<meta property="og:title" content="Stockyard Forge">
+<meta property="og:description" content="LLM workflow engine. Chain calls, transforms, and tools into DAGs. Visual builder, execution tracking, batch processing.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--red:#b84233;--amber:#c49a3c;--blue:#5b8fb9;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* Hero */
+.page-hero{max-width:750px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto 2.5rem}
+
+/* DAG Demo */
+.demo{padding:3rem 2rem 5rem;max-width:860px;margin:0 auto}
+.demo-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-bottom:1rem}
+.demo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.demo-title{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.demo-badge{font-family:var(--font-mono);font-size:0.65rem;padding:0.2rem 0.6rem;border:1px solid}
+.badge-green{color:var(--green);border-color:var(--green)}
+.badge-blue{color:var(--blue);border-color:var(--blue)}
+.badge-amber{color:var(--amber);border-color:var(--amber)}
+
+/* DAG visualization */
+.dag{position:relative;min-height:260px;margin:0.5rem 0}
+.dag-node{position:absolute;background:var(--bg);border:1px solid var(--bg3);padding:0.6rem 1rem;font-family:var(--font-mono);font-size:0.72rem;min-width:130px;text-align:center}
+.dag-node .node-type{font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);display:block;margin-bottom:0.2rem}
+.dag-node .node-name{color:var(--cream);display:block}
+.dag-node .node-status{font-size:0.6rem;margin-top:0.3rem;display:block}
+.dag-node.done{border-color:var(--green)}.dag-node.done .node-status{color:var(--green)}
+.dag-node.running{border-color:var(--amber)}.dag-node.running .node-status{color:var(--amber)}
+.dag-node.pending{border-color:var(--bg3)}.dag-node.pending .node-status{color:var(--leather)}
+.dag-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.dag-svg line{stroke:var(--bg3);stroke-width:1.5;stroke-dasharray:4,3}
+.dag-svg line.done{stroke:var(--green);stroke-dasharray:none}
+
+/* Run history */
+.run-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.75rem}
+.run-table th{text-align:left;padding:0.5rem 0.8rem;color:var(--leather);font-weight:400;letter-spacing:1px;text-transform:uppercase;font-size:0.6rem;border-bottom:1px solid var(--bg3)}
+.run-table td{padding:0.5rem 0.8rem;color:var(--cream-dim);border-bottom:1px solid var(--bg3)}
+.run-table .wf{color:var(--cream)}
+.run-table .ok{color:var(--green)}
+.run-table .fail{color:var(--red)}
+.run-table .dur{color:var(--leather-light)}
+
+.tool-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem}
+.tool-chip{background:var(--bg);border:1px solid var(--bg3);padding:0.6rem 0.8rem;font-family:var(--font-mono);font-size:0.72rem}
+.tool-chip .tool-type{color:var(--leather);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:0.2rem}
+.tool-chip .tool-name{color:var(--cream)}
+
+/* Features */
+.features{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.features-inner{max-width:800px;margin:0 auto}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+.feat{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg)}
+.feat-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
+.feat-desc{font-size:0.8rem;color:var(--cream-dim);line-height:1.6}
+
+/* API */
+.api-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+
+/* CTA */
+.page-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.page-cta h2{font-size:2rem;margin-bottom:1rem}
+.page-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .page-hero{padding:5rem 1.5rem 3rem}
+  .feat-grid{grid-template-columns:1fr}
+  .tool-grid{grid-template-columns:1fr 1fr}
+  .cta-group{flex-direction:column;align-items:center}
+  .dag{min-height:340px}
+}
+</style>
+<link rel="canonical" href="https://stockyard.dev/forge/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="page-hero" id="main">
+  <div class="eyebrow">App 05 &mdash; Forge</div>
+  <h1>Chain LLM calls <span class="accent">into workflows.</span></h1>
+  <p class="sub">DAG-based workflow engine. Chain LLM calls, transforms, and tool invocations with dependency ordering, retries, and full execution history.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="#api" class="btn btn-secondary">See the API</a>
+  </div>
+</section>
+
+<section class="demo">
+  <div class="demo-card">
+    <div class="demo-header">
+      <span class="demo-title">Workflow: content-pipeline</span>
+      <span class="demo-badge badge-amber">Running</span>
+    </div>
+    <div class="dag">
+      <svg class="dag-svg" viewBox="0 0 800 240">
+        <line x1="170" y1="35" x2="280" y2="35" class="done"/>
+        <line x1="170" y1="35" x2="280" y2="115" class="done"/>
+        <line x1="420" y1="35" x2="530" y2="75" class="done"/>
+        <line x1="420" y1="115" x2="530" y2="75"/>
+        <line x1="660" y1="75" x2="720" y2="175"/>
+      </svg>
+      <div class="dag-node done" style="left:20px;top:12px"><span class="node-type">LLM</span><span class="node-name">Extract topics</span><span class="node-status">&#10003; 1.2s</span></div>
+      <div class="dag-node done" style="left:280px;top:12px"><span class="node-type">LLM</span><span class="node-name">Draft article</span><span class="node-status">&#10003; 3.4s</span></div>
+      <div class="dag-node done" style="left:280px;top:92px"><span class="node-type">Tool</span><span class="node-name">Fetch sources</span><span class="node-status">&#10003; 0.8s</span></div>
+      <div class="dag-node running" style="left:530px;top:52px"><span class="node-type">LLM</span><span class="node-name">Edit &amp; fact-check</span><span class="node-status">&#9676; running...</span></div>
+      <div class="dag-node pending" style="left:700px;top:152px"><span class="node-type">Transform</span><span class="node-name">Format output</span><span class="node-status">&#9744; pending</span></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Recent runs</span>
+      </div>
+      <table class="run-table">
+        <tr><th>Run</th><th>Workflow</th><th>Steps</th><th>Duration</th><th>Status</th></tr>
+        <tr><td>run_a8f2</td><td class="wf">content-pipeline</td><td>5/5</td><td class="dur">8.7s</td><td class="ok">&#10003;</td></tr>
+        <tr><td>run_7b31</td><td class="wf">support-triage</td><td>3/3</td><td class="dur">2.1s</td><td class="ok">&#10003;</td></tr>
+        <tr><td>run_c4e9</td><td class="wf">data-enrichment</td><td>2/4</td><td class="dur">12.3s</td><td class="fail">&#10007;</td></tr>
+        <tr><td>run_1d5a</td><td class="wf">content-pipeline</td><td>5/5</td><td class="dur">7.9s</td><td class="ok">&#10003;</td></tr>
+      </table>
+    </div>
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Tool registry</span>
+        <span class="demo-badge badge-green">6 registered</span>
+      </div>
+      <div class="tool-grid">
+        <div class="tool-chip"><span class="tool-type">HTTP</span><span class="tool-name">fetch_url</span></div>
+        <div class="tool-chip"><span class="tool-type">HTTP</span><span class="tool-name">search_api</span></div>
+        <div class="tool-chip"><span class="tool-type">Transform</span><span class="tool-name">json_extract</span></div>
+        <div class="tool-chip"><span class="tool-type">Transform</span><span class="tool-name">markdown_fmt</span></div>
+        <div class="tool-chip"><span class="tool-type">LLM</span><span class="tool-name">summarize</span></div>
+        <div class="tool-chip"><span class="tool-type">LLM</span><span class="tool-name">classify</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <h2 class="section-label leather">What Forge does</h2>
+    <div class="feat-grid">
+      <div class="feat">
+        <h3 class="feat-name">DAG Workflows</h3>
+        <div class="feat-desc">Define multi-step pipelines as directed acyclic graphs. Each node can be an LLM call, a tool invocation, or a data transform. Dependencies are resolved automatically.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Tool Registry</h3>
+        <div class="feat-desc">Register HTTP endpoints, transforms, and LLM calls as reusable tools. Reference them by name in any workflow. Add custom tools with a single POST.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Execution Tracking</h3>
+        <div class="feat-desc">Every workflow run is logged step by step. See which nodes completed, which failed, input/output at each stage, and total cost and latency.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Stateful Sessions</h3>
+        <div class="feat-desc">Maintain conversation context across workflow runs. Sessions track messages, tool calls, and state so multi-turn workflows work naturally.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Batch Processing</h3>
+        <div class="feat-desc">Submit arrays of inputs to run a workflow in parallel. Track batch progress and collect results. Ideal for bulk processing and data enrichment.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Visual Builder</h3>
+        <div class="feat-desc">Drag-and-drop workflow editor at <a href="/forge/builder/">/forge/builder/</a>. Connect nodes with bezier edges, configure each step, and export the workflow JSON.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="api-section" id="api">
+  <h2 class="section-label">The API</h2>
+  <p style="color:var(--cream-dim);font-size:0.95rem">Workflows, runs, tools, sessions, and batch jobs are all REST resources. Build complex LLM pipelines with simple HTTP calls.</p>
+
+  <div class="code-block">
+<span class="comment"># Create a workflow</span>
+<span class="cmd">curl -X POST /api/forge/workflows \</span>
+<span class="cmd">  -d '{"slug":"content-pipeline", "steps":[</span>
+<span class="cmd">    {"id":"extract","type":"llm","model":"gpt-4o","prompt":"Extract topics: {{input}}"},</span>
+<span class="cmd">    {"id":"sources","type":"tool","tool":"fetch_url","depends_on":["extract"]},</span>
+<span class="cmd">    {"id":"draft","type":"llm","model":"gpt-4o","depends_on":["extract"]},</span>
+<span class="cmd">    {"id":"edit","type":"llm","depends_on":["draft","sources"]},</span>
+<span class="cmd">    {"id":"format","type":"transform","tool":"markdown_fmt","depends_on":["edit"]}</span>
+<span class="cmd">  ]}'</span>
+
+<span class="comment"># Run a workflow</span>
+<span class="cmd">curl -X POST /api/forge/workflows/content-pipeline/run \</span>
+<span class="cmd">  -d '{"input":"Latest developments in AI safety research"}'</span>
+
+<span class="comment"># Check run status and step details</span>
+<span class="cmd">curl /api/forge/runs/run_a8f2/steps</span>
+
+<span class="comment"># Register a custom tool</span>
+<span class="cmd">curl -X POST /api/forge/tools \</span>
+<span class="cmd">  -d '{"name":"search_api","type":"http",</span>
+<span class="cmd">       "url":"https://api.search.io/v1/query","method":"POST"}'</span>
+
+<span class="comment"># Submit a batch</span>
+<span class="cmd">curl -X POST /api/forge/batch \</span>
+<span class="cmd">  -d '{"workflow":"content-pipeline",</span>
+<span class="cmd">       "inputs":["Topic A","Topic B","Topic C"]}'</span>
+  </div>
+</section>
+
+<section class="page-cta">
+  <h2>One call in. Pipeline out.</h2>
+  <p>Forge ships with every Stockyard instance. Self-hosted or Cloud.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/" class="btn btn-secondary">Back to platform</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/exchange/">Exchange</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp;
+    <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-dim)"><a href="/privacy/" style="color:var(--cream-dim)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-dim)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-dim)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-dim)">Discord</a></p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio — Stockyard</title>
+<meta name="description" content="Versioned prompt templates, A/B experiments, benchmarks, and snapshot comparison. Prompt engineering with version control built in.">
+<meta property="og:title" content="Stockyard Studio">
+<meta property="og:description" content="Prompt engineering as infrastructure. Templates, experiments, benchmarks — all versioned, all via API.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--red:#b84233;--amber:#c49a3c;--blue:#5b8fb9;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* Hero */
+.page-hero{max-width:750px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto 2.5rem}
+
+/* Demo */
+.demo{padding:3rem 2rem 5rem;max-width:800px;margin:0 auto}
+.demo-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-bottom:1rem}
+.demo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.demo-title{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.demo-badge{font-family:var(--font-mono);font-size:0.65rem;padding:0.2rem 0.6rem;border:1px solid}
+.badge-green{color:var(--green);border-color:var(--green)}
+.badge-blue{color:var(--blue);border-color:var(--blue)}
+.badge-amber{color:var(--amber);border-color:var(--amber)}
+
+.tmpl-list{list-style:none}
+.tmpl-item{display:flex;align-items:center;gap:1rem;padding:0.7rem 0;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem}
+.tmpl-item:last-child{border-bottom:none}
+.tmpl-slug{color:var(--cream);min-width:160px}
+.tmpl-ver{color:var(--gold);min-width:40px}
+.tmpl-desc{color:var(--cream-dim);flex:1}
+.tmpl-date{color:var(--leather);font-size:0.65rem;min-width:80px;text-align:right}
+
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.exp-card{background:var(--bg);border:1px solid var(--bg3);padding:1.2rem}
+.exp-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.3rem}
+.exp-meta{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-bottom:0.8rem}
+.exp-bar{height:6px;background:var(--bg3);margin-bottom:0.4rem;display:flex;overflow:hidden}
+.exp-bar-a{background:var(--rust);height:100%}
+.exp-bar-b{background:var(--gold);height:100%}
+.exp-labels{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.6rem}
+.exp-labels .a{color:var(--rust-light)}
+.exp-labels .b{color:var(--gold)}
+
+/* Features */
+.features{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.features-inner{max-width:800px;margin:0 auto}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+.feat{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg)}
+.feat-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
+.feat-desc{font-size:0.8rem;color:var(--cream-dim);line-height:1.6}
+
+/* API */
+.api-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+.code-block .key{color:var(--rust-light)}
+.code-block .val{color:var(--gold)}
+
+/* CTA */
+.page-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.page-cta h2{font-size:2rem;margin-bottom:1rem}
+.page-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .page-hero{padding:5rem 1.5rem 3rem}
+  .feat-grid{grid-template-columns:1fr}
+  .exp-grid{grid-template-columns:1fr}
+  .cta-group{flex-direction:column;align-items:center}
+}
+</style>
+<link rel="canonical" href="https://stockyard.dev/studio/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="page-hero" id="main">
+  <div class="eyebrow">App 04 &mdash; Studio</div>
+  <h1>Prompts deserve <span class="accent">version control.</span></h1>
+  <p class="sub">Versioned templates, A/B experiments, model benchmarks, and snapshot tests. Prompt engineering as infrastructure, not guesswork.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="#api" class="btn btn-secondary">See the API</a>
+  </div>
+</section>
+
+<section class="demo">
+  <div class="demo-card">
+    <div class="demo-header">
+      <span class="demo-title">Prompt Templates</span>
+      <span class="demo-badge badge-green">4 active</span>
+    </div>
+    <ul class="tmpl-list">
+      <li class="tmpl-item"><span class="tmpl-slug">summarize-doc</span><span class="tmpl-ver">v3</span><span class="tmpl-desc">Summarize uploaded documents into bullet points</span><span class="tmpl-date">2h ago</span></li>
+      <li class="tmpl-item"><span class="tmpl-slug">code-review</span><span class="tmpl-ver">v7</span><span class="tmpl-desc">Review PR diffs for bugs, style, and security</span><span class="tmpl-date">1d ago</span></li>
+      <li class="tmpl-item"><span class="tmpl-slug">customer-reply</span><span class="tmpl-ver">v2</span><span class="tmpl-desc">Generate support ticket responses with context</span><span class="tmpl-date">3d ago</span></li>
+      <li class="tmpl-item"><span class="tmpl-slug">extract-entities</span><span class="tmpl-ver">v5</span><span class="tmpl-desc">Pull names, dates, amounts from unstructured text</span><span class="tmpl-date">5d ago</span></li>
+    </ul>
+  </div>
+
+  <div class="exp-grid">
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Experiment: code-review</span>
+        <span class="demo-badge badge-blue">Running</span>
+      </div>
+      <div class="exp-name">v6 vs v7: stricter security checks</div>
+      <div class="exp-meta">247 completions &middot; 72% traffic to v7</div>
+      <div class="exp-bar"><div class="exp-bar-a" style="width:38%"></div><div class="exp-bar-b" style="width:62%"></div></div>
+      <div class="exp-labels"><span class="a">v6: 3.2 avg score</span><span class="b">v7: 4.1 avg score</span></div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Benchmark: summarize-doc</span>
+        <span class="demo-badge badge-amber">Complete</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;line-height:2;margin-top:0.5rem">
+        <div><span style="color:var(--gold)">gpt-4o</span> &mdash; 4.3 quality, $0.018/call, 1.2s</div>
+        <div><span style="color:var(--gold)">claude-sonnet</span> &mdash; 4.5 quality, $0.024/call, 1.8s</div>
+        <div><span style="color:var(--gold)">gpt-4o-mini</span> &mdash; 3.8 quality, $0.002/call, 0.4s</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <h2 class="section-label leather">What Studio does</h2>
+    <div class="feat-grid">
+      <div class="feat">
+        <h3 class="feat-name">Prompt Templates</h3>
+        <div class="feat-desc">Store prompts as named, versioned templates with variables. Roll back to any version. Deploy a specific version to production while testing the next.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">A/B Experiments</h3>
+        <div class="feat-desc">Split traffic between template versions. Measure quality scores, latency, and cost per variant. Promote the winner with one API call.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Model Benchmarks</h3>
+        <div class="feat-desc">Run the same prompt across multiple models. Compare quality, cost, and speed side by side. Find the best model for each use case.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Snapshot Tests</h3>
+        <div class="feat-desc">Capture a prompt's output at a point in time. Detect regressions when models update. Assert that changes don't break existing behavior.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Diff Viewer</h3>
+        <div class="feat-desc">Compare any two template versions, model outputs, or experiment results side by side. Split or unified view with inline highlighting.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Zero Config</h3>
+        <div class="feat-desc">Studio ships in the same binary. No separate service, no database migration, no SDK. Create your first template with one curl.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="api-section" id="api">
+  <h2 class="section-label">The API</h2>
+  <p style="color:var(--cream-dim);font-size:0.95rem">Templates, experiments, benchmarks, and snapshots are all first-class REST resources. Version your prompts the same way you version your code.</p>
+
+  <div class="code-block">
+<span class="comment"># Create a template</span>
+<span class="cmd">curl -X POST /api/studio/templates \</span>
+<span class="cmd">  -d '{"slug":"summarize-doc", "body":"Summarize: {{text}}",</span>
+<span class="cmd">       "model":"gpt-4o", "variables":["text"]}'</span>
+
+<span class="comment"># Add a new version</span>
+<span class="cmd">curl -X POST /api/studio/templates/summarize-doc/versions \</span>
+<span class="cmd">  -d '{"body":"Summarize in 3 bullets: {{text}}", "note":"tighter format"}'</span>
+
+<span class="comment"># Run an A/B experiment</span>
+<span class="cmd">curl -X POST /api/studio/experiments \</span>
+<span class="cmd">  -d '{"template":"code-review", "variants":["v6","v7"],</span>
+<span class="cmd">       "split":[30,70], "metric":"quality"}'</span>
+
+<span class="comment"># Benchmark across models</span>
+<span class="cmd">curl -X POST /api/studio/benchmarks/run \</span>
+<span class="cmd">  -d '{"template":"summarize-doc",</span>
+<span class="cmd">       "models":["gpt-4o","claude-sonnet-4-20250514","gpt-4o-mini"]}'</span>
+
+<span class="comment"># Take a snapshot</span>
+<span class="cmd">curl -X POST /api/studio/snapshots \</span>
+<span class="cmd">  -d '{"template":"extract-entities", "version":"v5", "tag":"pre-model-update"}'</span>
+  </div>
+</section>
+
+<section class="page-cta">
+  <h2>Stop guessing. Start testing.</h2>
+  <p>Studio ships with every Stockyard instance. Self-hosted or Cloud.</p>
+  <div class="cta-group">
+    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/" class="btn btn-secondary">Back to platform</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/exchange/">Exchange</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp;
+    <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-dim)"><a href="/privacy/" style="color:var(--cream-dim)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-dim)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-dim)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-dim)">Discord</a></p>
+</footer>
+
+</body>
+</html>
