@@ -259,19 +259,29 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </footer>
 
 <script>
-const API = 'https://stockyard-production.up.railway.app';
+const API = 'https://stockyard.dev';
 
 async function installPack(slug, btn) {
   if (btn.classList.contains('installed')) return;
   btn.textContent = 'Installing...';
   try {
     const res = await fetch(API + '/api/exchange/packs/' + slug + '/install', { method: 'POST' });
+    if (res.status === 401 || res.status === 403) {
+      btn.textContent = 'Run locally to install';
+      btn.title = 'Install packs by running Stockyard on your machine: stockyard exchange install ' + slug;
+      return;
+    }
     const data = await res.json();
-    if (data.error) { btn.textContent = 'Error'; return; }
+    if (data.error) {
+      btn.textContent = data.error.includes('already installed') ? 'Already installed ✓' : 'Error';
+      if (data.error.includes('already installed')) btn.classList.add('installed');
+      return;
+    }
     btn.textContent = 'Installed ✓';
     btn.classList.add('installed');
   } catch (e) {
-    btn.textContent = 'Install';
+    btn.textContent = 'Run locally to install';
+    btn.title = 'Install packs by running Stockyard on your machine';
   }
 }
 </script>

@@ -44,7 +44,10 @@ a:hover{color:var(--gold)}
 .content h2:first-of-type{margin-top:0;padding-top:0;border:none}
 .content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
 .content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
-.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
+.copy-btn{position:absolute;top:0.5rem;right:0.5rem;background:var(--bg3);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;opacity:0}
+.copy-btn:hover{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+pre:hover .copy-btn{opacity:1}
 .content pre .comment{color:#5a5040}
 .content pre .cmd{color:var(--cream)}
 .content pre .key{color:var(--rust-light)}
@@ -387,5 +390,39 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
 </footer>
 
+<script>
+document.querySelectorAll('.content pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = () => {
+    const text = pre.textContent.replace(/^Copy/, '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  };
+  pre.appendChild(btn);
+});
+
+// Scroll spy for sidebar active highlighting
+const sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+const sections = [];
+sidebarLinks.forEach(link => {
+  const id = link.getAttribute('href').slice(1);
+  const el = document.getElementById(id);
+  if (el) sections.push({ el, link });
+});
+function updateActive() {
+  let current = sections[0];
+  for (const s of sections) {
+    if (s.el.getBoundingClientRect().top <= 120) current = s;
+  }
+  sidebarLinks.forEach(l => l.classList.remove('active'));
+  if (current) current.link.classList.add('active');
+}
+window.addEventListener('scroll', updateActive, { passive: true });
+updateActive();
+</script>
 </body>
 </html>

@@ -149,7 +149,10 @@ a{color:var(--rust-light);text-decoration:none}
     <span class="nav-tag">Playground</span>
   </div>
   <div class="nav-right">
-    <a href="/ui" class="nav-link">Console</a>
+    <a href="/products/" class="nav-link">Products</a>
+    <a href="/cloud/" class="nav-link">Cloud</a>
+    <a href="/pricing/" class="nav-link">Pricing</a>
+    <a href="/docs/" class="nav-link">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard" class="nav-link">GitHub</a>
     <button onclick="resetPlayground()" class="nav-link" style="background:none;border:none;cursor:pointer;font:inherit">Reset</button>
   </div>
@@ -299,16 +302,19 @@ function onKeyInput(e) {
     btn.disabled = false;
     state.provider = prov;
   } else {
-    det.textContent = 'Provider not auto-detected. Enter model name manually or use a supported key prefix.';
+    det.textContent = 'Provider not auto-detected. Select your provider and model below.';
     det.className = 'setup-detect err';
-    // Show all models
+    // Show all models grouped by provider
     sel.innerHTML = '<option value="">Select a model...</option>';
-    Object.values(PROVIDERS).forEach(p => {
+    Object.entries(PROVIDERS).forEach(([key, p]) => {
+      const group = document.createElement('optgroup');
+      group.label = p.label;
       p.models.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m; opt.textContent = m;
-        sel.appendChild(opt);
+        group.appendChild(opt);
       });
+      sel.appendChild(group);
     });
     btn.disabled = false;
     state.provider = 'openai'; // default fallback
@@ -596,13 +602,17 @@ function renderExperiment() {
       </div>
       <div>
         <label class="exp-label">Evaluation Method</label>
-        <select class="exp-select" id="expEval">
+        <select class="exp-select" id="expEval" onchange="document.getElementById('expEvalArgWrap').style.display=this.value==='contains'?'block':'none'">
           <option value="">None (compare by cost)</option>
           <option value="length">Length (longer = better)</option>
           <option value="concise">Concise (shorter = better)</option>
           <option value="contains">Contains keyword</option>
           <option value="json">Valid JSON output</option>
         </select>
+      </div>
+      <div id="expEvalArgWrap" style="display:none">
+        <label class="exp-label">Keyword to Match</label>
+        <input type="text" class="exp-select" id="expEvalArg" placeholder="e.g. Python, yes, JSON..." style="background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem;outline:none;width:100%">
       </div>
       <div>
         <label class="exp-label">Runs per Model</label>
