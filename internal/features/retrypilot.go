@@ -10,6 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
@@ -378,6 +379,10 @@ func (rp *RetryPilotEngine) Stats() map[string]any {
 func RetryPilotMiddleware(rp *RetryPilotEngine) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
+			// BYOK: skip retry/circuit-breaking for user-provided keys
+			if autoP, _ := auth.AutoProviderFromContext(ctx); autoP != nil {
+				return next(ctx, req)
+			}
 			return rp.Execute(ctx, req, next)
 		}
 	}

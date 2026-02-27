@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
@@ -124,6 +125,12 @@ func isRetryableError(err error) bool {
 func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
+			// BYOK: if the user provided their own API key, skip the failover
+			// chain entirely and let the inner handler use the ephemeral provider.
+			if autoP, _ := auth.AutoProviderFromContext(ctx); autoP != nil {
+				return next(ctx, req)
+			}
+
 			var lastErr error
 
 			for _, name := range router.config.Providers {
