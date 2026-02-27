@@ -9,7 +9,11 @@
 <meta property="og:description" content="Six apps. One binary. Zero dependencies. The complete infrastructure layer for LLM-powered applications.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -117,6 +121,15 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .compare-table{font-size:0.75rem}
   .tier-row{flex-direction:column;align-items:center}
 }
+.console-preview{padding:4rem 2rem;max-width:1200px;margin:0 auto;text-align:center}
+.console-preview .section-label{margin-bottom:0.5rem}
+.console-preview p{color:var(--cream-dim);font-size:0.95rem;margin-bottom:2rem}
+.console-tabs{display:flex;justify-content:center;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3)}
+.console-tab{padding:0.5rem 1.2rem;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--cream-dim);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;text-transform:capitalize;transition:all 0.15s}
+.console-tab:hover{color:var(--cream)}.console-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.console-gallery{position:relative;border:1px solid var(--bg3);background:var(--bg2);overflow:hidden;border-radius:0}
+.console-gallery img{width:100%;display:block;transition:opacity 0.3s}
+.console-gallery img.hidden{display:none}
 </style>
 </head>
 <body>
@@ -141,8 +154,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="hero-stats">
     <div class="stat"><span class="stat-num">6</span><span class="stat-label">Apps</span></div>
     <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Modules</span></div>
-    <div class="stat"><span class="stat-num">17</span><span class="stat-label">Providers</span></div>
-    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
+    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
+    <div class="stat"><span class="stat-num" style="letter-spacing:1px">Zero</span><span class="stat-label">Dependencies</span></div>
   </div>
 
   <div class="cta-group">
@@ -150,7 +163,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="/cloud/" class="btn btn-secondary">Start free</a>
     <a href="#apps" class="btn btn-secondary">See the platform</a>
   </div>
-  <code class="install-cmd">curl -sSL stockyard.dev/install | sh</code>
+  <code class="install-cmd" onclick="navigator.clipboard.writeText('curl -sSL stockyard.dev/install | sh').then(()=>{this.dataset.copied='true';this.textContent='✓ Copied!';setTimeout(()=>{this.textContent='curl -sSL stockyard.dev/install | sh';this.dataset.copied=''},2000)})" style="cursor:pointer" title="Click to copy">curl -sSL stockyard.dev/install | sh</code>
 </section>
 
 <section class="problem">
@@ -165,7 +178,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="solution">
   <div class="section-label gold">The fix</div>
   <p class="solution-text">
-    Stockyard is one Go binary that gives you six integrated apps. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get a full platform &mdash; proxy with 50+ middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 12 more providers.
+    Stockyard is one Go binary that gives you six integrated apps. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get a full platform &mdash; proxy with 50+ middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 11 more providers.
   </p>
 </section>
 
@@ -185,24 +198,24 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <span class="app-tagline">See everything. Every request, every dollar, every anomaly.</span>
         <span class="app-features">Request tracing &bull; Cost rollups &bull; Latency tracking &bull; Alert rules &bull; Anomaly detection &bull; Daily dashboards</span>
       </a></div>
-      <div class="app-card">
+      <div class="app-card"><a href="/products/">
         <span class="app-num">App 03</span>
         <span class="app-name">Trust</span>
         <span class="app-tagline">Append-only audit ledger. Hash-chained. Tamper-evident.</span>
         <span class="app-features">Audit trails &bull; Evidence packs &bull; Policy engine &bull; Feedback capture &bull; Compliance reports &bull; Replay</span>
-      </div>
-      <div class="app-card">
+      </a></div>
+      <div class="app-card"><a href="/products/">
         <span class="app-num">App 04</span>
         <span class="app-name">Studio</span>
         <span class="app-tagline">Prompt engineering, versioned. Experiment, benchmark, snapshot.</span>
         <span class="app-features">Prompt templates &bull; A/B experiments &bull; Benchmarks &bull; Snapshot comparison &bull; Version history</span>
-      </div>
-      <div class="app-card">
+      </a></div>
+      <div class="app-card"><a href="/products/">
         <span class="app-num">App 05</span>
         <span class="app-name">Forge</span>
         <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
         <span class="app-features">Topological execution &bull; Template variables &bull; Transform steps &bull; Tool integration &bull; Batch processing</span>
-      </div>
+      </a></div>
       <div class="app-card"><a href="/exchange/">
         <span class="app-num">App 06</span>
         <span class="app-name">Exchange</span>
@@ -233,6 +246,33 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </section>
 
+<section class="console-preview">
+  <div class="section-label leather">The Console</div>
+  <p>A full management dashboard — embedded in the binary, no separate UI service needed.</p>
+  <div class="console-tabs">
+    <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
+    <button class="console-tab" onclick="showConsole('observe')">Observe</button>
+    <button class="console-tab" onclick="showConsole('proxy')">Proxy</button>
+    <button class="console-tab" onclick="showConsole('trust')">Trust</button>
+    <button class="console-tab" onclick="showConsole('exchange')">Exchange</button>
+  </div>
+  <div class="console-gallery">
+    <img id="cs-overview" src="/site-assets/assets/screenshots/console-overview.png" alt="Stockyard console — system overview showing all 6 apps running">
+    <img id="cs-observe" src="/site-assets/assets/screenshots/console-observe.png" alt="Observe dashboard — traces, costs, latency across providers" class="hidden">
+    <img id="cs-proxy" src="/site-assets/assets/screenshots/console-proxy.png" alt="Proxy middleware chain — 58 modules with runtime toggles" class="hidden">
+    <img id="cs-trust" src="/site-assets/assets/screenshots/console-trust.png" alt="Trust policies and hash-chained audit ledger" class="hidden">
+    <img id="cs-exchange" src="/site-assets/assets/screenshots/console-exchange.png" alt="Exchange pack marketplace — one-click config installs" class="hidden">
+  </div>
+</section>
+<script>
+function showConsole(name){
+  document.querySelectorAll('.console-gallery img').forEach(i=>i.classList.add('hidden'));
+  document.getElementById('cs-'+name).classList.remove('hidden');
+  document.querySelectorAll('.console-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+
 <section class="modules">
   <div class="modules-inner">
     <div class="section-label leather">50+ middleware modules</div>
@@ -254,7 +294,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="compare">
   <div class="section-label">Why not LiteLLM?</div>
   <table class="compare-table">
-    <tr><th></th><th>Stockyard</th><th>LiteLLM</th></tr>
+    <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th></tr>
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td></tr>
     <tr><td>Binary</td><td class="us">Single static binary</td><td class="them">pip install + runtime</td></tr>
     <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td></tr>
@@ -274,24 +314,28 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <div class="tier-price">Free</div>
       <div class="tier-period">forever &middot; self-hosted</div>
       <div class="tier-desc">Full platform. 10k reqs/mo.</div>
+      <a href="https://github.com/stockyard-dev/stockyard" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get the binary</a>
     </div>
     <div class="tier tier-highlight">
       <div class="tier-name">Pro</div>
       <div class="tier-price has-dollar">9.99</div>
       <div class="tier-period">per month &middot; self-hosted</div>
       <div class="tier-desc">Unlimited everything.</div>
+      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Start with Pro</a>
     </div>
     <div class="tier">
       <div class="tier-name">Cloud</div>
       <div class="tier-price has-dollar">29.99</div>
       <div class="tier-period">per month &middot; managed</div>
       <div class="tier-desc">Zero ops. We run it.</div>
+      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start free trial</a>
     </div>
     <div class="tier">
       <div class="tier-name">Enterprise</div>
       <div class="tier-price">Custom</div>
       <div class="tier-period">&nbsp;</div>
       <div class="tier-desc">SSO, SLA, dedicated support.</div>
+      <a href="mailto:enterprise@stockyard.dev" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Contact sales</a>
     </div>
   </div>
   <div class="cta-group" style="margin-top:2rem">
@@ -310,7 +354,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/observe/">Observe</a> &nbsp;&middot;&nbsp; <a href="/exchange/">Exchange</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp;
     <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
 </footer>
 

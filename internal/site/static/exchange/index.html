@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <title>Exchange — Stockyard</title>
 <meta name="description" content="Config packs for Stockyard. Install providers, modules, workflows, policies, and alerts in one click. Uninstall cleanly.">
 <meta property="og:title" content="Stockyard Exchange">
@@ -266,12 +271,22 @@ async function installPack(slug, btn) {
   btn.textContent = 'Installing...';
   try {
     const res = await fetch(API + '/api/exchange/packs/' + slug + '/install', { method: 'POST' });
+    if (res.status === 401 || res.status === 403) {
+      btn.textContent = 'Run locally to install';
+      btn.title = 'Install packs by running Stockyard on your machine: stockyard exchange install ' + slug;
+      return;
+    }
     const data = await res.json();
-    if (data.error) { btn.textContent = 'Error'; return; }
+    if (data.error) {
+      btn.textContent = data.error.includes('already installed') ? 'Already installed ✓' : 'Error';
+      if (data.error.includes('already installed')) btn.classList.add('installed');
+      return;
+    }
     btn.textContent = 'Installed ✓';
     btn.classList.add('installed');
   } catch (e) {
-    btn.textContent = 'Install';
+    btn.textContent = 'Run locally to install';
+    btn.title = 'Install packs by running Stockyard on your machine';
   }
 }
 </script>
