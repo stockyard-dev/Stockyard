@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Stockyard vs LiteLLM &mdash; Stockyard</title>
+<meta name="description" content="Stockyard vs LiteLLM: one Go binary with 6 integrated apps vs a Python proxy that needs Redis and Postgres.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.hero{text-align:center;padding:5rem 2rem 3rem}
+.hero h1{font-size:2.2rem;line-height:1.3;max-width:700px;margin:0 auto}
+.hero .vs-tag{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem;display:block}
+.hero p{font-size:1.05rem;color:var(--cream-dim);max-width:600px;margin:1.5rem auto 0}
+.compare{max-width:800px;margin:0 auto;padding:0 2rem}
+.compare-table{width:100%;border-collapse:collapse;margin:2rem 0 3rem}
+.compare-table th,.compare-table td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.8rem}
+.compare-table th{color:var(--leather-light);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase}
+.compare-table th:nth-child(2){color:var(--rust-light)}
+.compare-table td:first-child{color:var(--cream-dim);font-size:0.75rem;font-family:var(--font-serif)}
+.us{color:var(--green-light)}
+.them{color:var(--cream-dim)}
+.section{max-width:800px;margin:0 auto 3rem;padding:0 2rem}
+.section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem}
+.section p{color:var(--cream-dim);line-height:1.8;margin-bottom:1rem}
+.section code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
+.detail-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem}
+.detail-card h3{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
+.detail-card p{font-size:0.85rem;color:var(--cream-dim);margin-bottom:0}
+.cta{text-align:center;padding:3rem 2rem 5rem}
+.cta h2{font-size:1.6rem;margin-bottom:1rem}
+.cta p{color:var(--cream-dim);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-btn{display:inline-block;font-family:var(--font-mono);font-size:0.8rem;padding:0.7rem 2rem;background:var(--rust);color:var(--cream);letter-spacing:1px;transition:background 0.2s;margin:0 0.5rem}
+.cta-btn:hover{background:var(--rust-light);color:var(--cream)}
+.cta-btn.secondary{background:transparent;border:1px solid var(--bg3);color:var(--cream-dim)}
+.cta-btn.secondary:hover{border-color:var(--rust);color:var(--cream)}
+.also-see{max-width:800px;margin:0 auto 3rem;padding:0 2rem;text-align:center}
+.also-see h3{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
+.also-see a{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin:0 1rem}.also-see a:hover{color:var(--rust-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.hero h1{font-size:1.6rem}.detail-grid{grid-template-columns:1fr}.compare{padding:0 1rem}.section{padding:0 1rem}}
+</style>
+<link rel="canonical" href="https://stockyard.dev/vs/litellm/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="hero" id="main">
+  <span class="vs-tag">Comparison</span>
+  <h1>Stockyard vs LiteLLM</h1>
+  <p>Both route LLM traffic to multiple providers. One is a proxy. The other is a platform.</p>
+</div>
+
+<div class="compare">
+
+    <table class="compare-table">
+      <tr><th></th><th>Stockyard</th><th>LiteLLM</th></tr>
+      <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td></tr>
+      <tr><td>Binary</td><td class="us">Single static binary, ~15MB</td><td class="them">pip install + Python runtime</td></tr>
+      <tr><td>External dependencies</td><td class="us">Zero &mdash; embedded SQLite</td><td class="them">Redis + Postgres required</td></tr>
+      <tr><td>Dashboard</td><td class="us">Embedded web console</td><td class="them">Separate UI service</td></tr>
+      <tr><td>Platform scope</td><td class="us">6 integrated apps (Proxy, Observe, Trust, Studio, Forge, Exchange)</td><td class="them">Proxy + basic logging</td></tr>
+      <tr><td>Middleware</td><td class="us">58 toggleable modules, runtime on/off</td><td class="them">Callback hooks, custom code</td></tr>
+      <tr><td>Audit trail</td><td class="us">Hash-chained tamper-evident ledger</td><td class="them">Database logs</td></tr>
+      <tr><td>Prompt management</td><td class="us">Versioned templates, A/B experiments</td><td class="them">Not included</td></tr>
+      <tr><td>Workflows</td><td class="us">DAG engine with tool registry</td><td class="them">Not included</td></tr>
+      <tr><td>Memory footprint</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
+      <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td></tr>
+      <tr><td>Config marketplace</td><td class="us">Exchange with installable packs</td><td class="them">Not included</td></tr>
+      <tr><td>Pricing</td><td class="us">Free tier, $9.99/mo Pro</td><td class="them">Free OSS, Enterprise pricing</td></tr>
+    </table>
+
+</div>
+
+
+    <div class="detail-grid">
+      <div class="detail-card">
+        <h3>When to choose Stockyard</h3>
+        <p>You want a single binary that handles everything &mdash; proxy, observability, audit trails, prompt management, and workflows &mdash; without standing up Redis, Postgres, or separate services. You value fast cold starts and low memory for edge or containerized deployments.</p>
+      </div>
+      <div class="detail-card">
+        <h3>When to choose LiteLLM</h3>
+        <p>You&rsquo;re already invested in the Python ecosystem and need deep integration with Python-specific tools. You want a mature, widely-adopted proxy with a large community and are comfortable managing Redis and Postgres infrastructure.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>The infrastructure gap</h2>
+      <p>LiteLLM requires you to provision and manage Redis (for caching and rate limiting) and Postgres (for logging and config). Stockyard embeds SQLite, so there&rsquo;s nothing to provision. Run <code>stockyard</code> and everything works. This matters most in environments where you can&rsquo;t or don&rsquo;t want to manage additional databases &mdash; local development, CI pipelines, edge deployments, or single-server setups.</p>
+    </div>
+
+    <div class="section">
+      <h2>Beyond the proxy</h2>
+      <p>LiteLLM is a proxy &mdash; it routes requests and logs them. Stockyard is a platform. The same binary that proxies your requests also gives you a hash-chained audit ledger (Trust), versioned prompt templates with A/B experiments (Studio), a DAG workflow engine (Forge), and an installable config marketplace (Exchange). These aren&rsquo;t separate services to deploy. They&rsquo;re part of the binary.</p>
+    </div>
+
+
+<div class="also-see">
+  <h3>Also compare</h3>
+  <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a>
+</div>
+
+<div class="cta">
+  <h2>Try Stockyard in 60 seconds</h2>
+  <p>One curl. One binary. Six apps running on localhost.</p>
+  <a href="/guide/" class="cta-btn">Get started</a>
+  <a href="/playground" class="cta-btn secondary">Try the playground</a>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
+</footer>
+</body>
+</html>

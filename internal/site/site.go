@@ -28,6 +28,7 @@ func Register(mux *http.ServeMux) {
 		"/docs/quickstart/", "/docs/auth/", "/docs/proxy/",
 		"/docs/observe/", "/docs/trust/", "/docs/studio/",
 		"/docs/forge/", "/docs/exchange/", "/docs/api/",
+		"/vs/litellm/", "/vs/helicone/", "/vs/portkey/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
