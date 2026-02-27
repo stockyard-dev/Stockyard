@@ -128,6 +128,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/studio/snapshots", a.handleListSnapshots)
 	mux.HandleFunc("POST /api/studio/snapshots", a.handleCreateSnapshot)
 
+	// Playground (single-shot prompt testing)
+	mux.HandleFunc("POST /api/studio/playground", a.handlePlayground)
+
 	// Status
 	mux.HandleFunc("GET /api/studio/status", a.handleStatus)
 
@@ -394,6 +397,52 @@ func (a *App) handleCreateSnapshot(w http.ResponseWriter, r *http.Request) {
 		req.Name, req.TemplID, req.Model, string(inputJSON), req.Expected)
 	id, _ := res.LastInsertId()
 	writeJSON(w, map[string]any{"status": "created", "id": id})
+}
+
+// --- Playground (single-shot, no experiment record) ---
+
+func (a *App) handlePlayground(w http.ResponseWriter, r *http.Request) {
+	if a.runner == nil {
+		w.WriteHeader(503)
+		writeJSON(w, map[string]string{"error": "runner not configured (no proxy port)"})
+		return
+	}
+
+	var req struct {
+		Prompt string `json:"prompt"`
+		System string `json:"system"`
+		Model  string `json:"model"`
+		APIKey string `json:"api_key"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "invalid JSON"})
+		return
+	}
+	if req.Prompt == "" || req.Model == "" {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "prompt and model are required"})
+		return
+	}
+
+	expReq := RunExperimentRequest{
+		Prompt: req.Prompt,
+		System: req.System,
+		Models: []string{req.Model},
+		Runs:   1,
+		APIKey: req.APIKey,
+	}
+
+	run := a.runner.executeRun(r.Context(), expReq, req.Model)
+	writeJSON(w, map[string]any{
+		"model":      req.Model,
+		"content":    run.Content,
+		"latency_ms": run.LatencyMs,
+		"tokens_in":  run.TokensIn,
+		"tokens_out": run.TokensOut,
+		"cost_usd":   run.CostUSD,
+		"error":      run.Error,
+	})
 }
 
 // --- Status ---
