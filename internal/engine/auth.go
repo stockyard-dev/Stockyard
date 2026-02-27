@@ -41,7 +41,7 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Exempt paths: proxy endpoints, health, dashboard, site pages
+		// Exempt paths: proxy endpoints, health, dashboard
 		if strings.HasPrefix(path, "/v1/") ||
 			path == "/health" ||
 			path == "/ui" ||
@@ -57,19 +57,8 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			path == "/observe/" ||
 			path == "/account/" ||
 			path == "/success/" ||
-			path == "/guide/" ||
-			path == "/architecture/" ||
-			path == "/benchmarks/" ||
-			path == "/changelog/" ||
-			path == "/privacy/" ||
-			path == "/terms/" ||
-			strings.HasPrefix(path, "/docs/") ||
-			strings.HasPrefix(path, "/blog/") ||
-			strings.HasPrefix(path, "/vs/") ||
 			strings.HasPrefix(path, "/site-assets/") ||
 			path == "/install.sh" ||
-			path == "/sitemap.xml" ||
-			path == "/robots.txt" ||
 			path == "/api/license" {
 			next.ServeHTTP(w, r)
 			return

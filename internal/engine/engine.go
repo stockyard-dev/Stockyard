@@ -342,7 +342,6 @@ func Boot(pc ProductConfig) {
 
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
-
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
