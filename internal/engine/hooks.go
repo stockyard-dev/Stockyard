@@ -499,11 +499,11 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "scopeguard", "enabled": true}
 				],
 				"policies": [
-					{"name": "block-pii-output", "type": "block", "pattern": "\\\\b\\\\d{3}-\\\\d{2}-\\\\d{4}\\\\b|\\\\b\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}\\\\b", "description": "Block responses containing SSN or credit card numbers"},
-					{"name": "block-injection", "type": "block", "pattern": "ignore.*previous.*instructions|disregard.*prior", "description": "Block requests with injection patterns"},
-					{"name": "block-secrets", "type": "block", "pattern": "sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}", "description": "Block requests/responses containing API keys"},
-					{"name": "warn-toxic", "type": "warn", "pattern": "kill|harm|weapon|exploit", "description": "Warn on potentially harmful content"},
-					{"name": "log-sensitive-models", "type": "log", "pattern": "gpt-4|claude-opus", "description": "Log all requests to expensive models for cost review"}
+					{"name": "block-pii-output", "policy_type": "block", "pattern": "\\\\b\\\\d{3}-\\\\d{2}-\\\\d{4}\\\\b|\\\\b\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}\\\\b", "description": "Block responses containing SSN or credit card numbers", "enabled": true},
+					{"name": "block-injection", "policy_type": "block", "pattern": "ignore.*previous.*instructions|disregard.*prior", "description": "Block requests with injection patterns", "enabled": true},
+					{"name": "block-secrets", "policy_type": "block", "pattern": "sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}", "description": "Block requests/responses containing API keys", "enabled": true},
+					{"name": "warn-toxic", "policy_type": "warn", "pattern": "kill|harm|weapon|exploit", "description": "Warn on potentially harmful content", "enabled": true},
+					{"name": "log-sensitive-models", "policy_type": "log", "pattern": "gpt-4|claude-opus", "description": "Log all requests to expensive models for cost review", "enabled": true}
 				],
 				"alerts": [
 					{"name": "injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 5, "window": "5m", "description": "Alert on >5 injection attempts in 5min"},
@@ -532,11 +532,11 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "guardrail", "enabled": true, "description": "Content guardrails and safety boundaries"}
 				],
 				"policies": [
-					{"name": "block-pii-output", "type": "block", "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b|\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b", "description": "Block responses containing SSN or credit card numbers"},
-					{"name": "block-injection-attempt", "type": "block", "pattern": "ignore.*previous.*instructions|disregard.*prior|you are now|DAN mode|jailbreak", "description": "Block prompt injection attempts"},
-					{"name": "block-secret-leak", "type": "block", "pattern": "sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|sk-ant-", "description": "Block responses leaking API keys"},
-					{"name": "warn-harmful-content", "type": "warn", "pattern": "(?i)how to (make|build|create).*(bomb|weapon|explosive|poison)", "description": "Warn on potentially dangerous instructional content"},
-					{"name": "log-data-extraction", "type": "log", "pattern": "(?i)(dump|export|extract).*(database|table|schema|credentials)", "description": "Log data extraction attempts"}
+					{"name": "block-pii-output", "policy_type": "block", "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b|\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b", "description": "Block responses containing SSN or credit card numbers", "enabled": true},
+					{"name": "block-injection-attempt", "policy_type": "block", "pattern": "ignore.*previous.*instructions|disregard.*prior|you are now|DAN mode|jailbreak", "description": "Block prompt injection attempts", "enabled": true},
+					{"name": "block-secret-leak", "policy_type": "block", "pattern": "sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|sk-ant-", "description": "Block responses leaking API keys", "enabled": true},
+					{"name": "warn-harmful-content", "policy_type": "warn", "pattern": "(?i)how to (make|build|create).*(bomb|weapon|explosive|poison)", "description": "Warn on potentially dangerous instructional content", "enabled": true},
+					{"name": "log-data-extraction", "policy_type": "log", "pattern": "(?i)(dump|export|extract).*(database|table|schema|credentials)", "description": "Log data extraction attempts", "enabled": true}
 				],
 				"alerts": [
 					{"name": "safety-injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 3, "window": "5m", "description": "Alert on >3 injection attempts in 5min"},
@@ -685,6 +685,23 @@ func seedTrustData(conn *sql.DB) {
 		for _, p := range policies {
 			conn.Exec(`INSERT OR IGNORE INTO trust_policies (name, type, config_json, enabled) VALUES (?,?,?,1)`, p.name, p.ptype, p.config)
 		}
+	}
+
+	// Repair policies from earlier pack installs that had wrong JSON keys
+	// (used "type" instead of "policy_type" and were missing "enabled": true)
+	policyTypeMap := map[string]string{
+		"block-pii-output":       "block",
+		"block-injection-attempt": "block",
+		"block-secret-leak":      "block",
+		"block-injection":        "block",
+		"block-secrets":          "block",
+		"warn-harmful-content":   "warn",
+		"warn-toxic":             "warn",
+		"log-data-extraction":    "log",
+		"log-sensitive-models":   "log",
+	}
+	for name, ptype := range policyTypeMap {
+		conn.Exec(`UPDATE trust_policies SET type = ?, enabled = 1 WHERE name = ? AND (type = '' OR enabled = 0)`, ptype, name)
 	}
 
 	// Seed genesis ledger entry if ledger is empty

@@ -76,9 +76,10 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Management API requires auth
+		// Management API and debug endpoints require auth
 		if strings.HasPrefix(path, "/api/") ||
-			strings.HasPrefix(path, "/webhooks/") {
+			strings.HasPrefix(path, "/webhooks/") ||
+			strings.HasPrefix(path, "/debug/") {
 			key := extractAdminKey(r)
 			if key == "" {
 				http.Error(w, `{"error":"missing admin key — set Authorization: Bearer <key> or X-Admin-Key header"}`, http.StatusUnauthorized)
