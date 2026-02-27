@@ -233,26 +233,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </section>
 
-<section class="how">
-  <div class="how-inner">
-    <h2 class="section-label">How it works</h2>
-    <p style="color:var(--cream-dim);margin-bottom:0.5rem">Three commands. Thirty seconds.</p>
-    <div class="code-block">
-<span class="comment"># Install</span>
-<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
-
-<span class="comment"># Run (starts all 6 apps on :4200 with console at /ui)</span>
-<span class="cmd">stockyard</span>
-
-<span class="comment"># Point your app at the proxy</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
-
-<span class="comment"># That's it. Every LLM call now flows through the platform.</span>
-<span class="comment"># Open http://localhost:4200/ui for the live console.</span>
-    </div>
-  </div>
-</section>
-
 <section class="console-preview">
   <h2 class="section-label leather">The Console</h2>
   <p>A full management dashboard — embedded in the binary, no separate UI service needed.</p>
@@ -283,6 +263,26 @@ function showConsole(name){
   event.target.classList.add('active');
 }
 </script>
+
+<section class="how">
+  <div class="how-inner">
+    <h2 class="section-label">How it works</h2>
+    <p style="color:var(--cream-dim);margin-bottom:0.5rem">Three commands. Thirty seconds.</p>
+    <div class="code-block">
+<span class="comment"># Install</span>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+
+<span class="comment"># Run (starts all 6 apps on :4200 with console at /ui)</span>
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Point your app at the proxy</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+
+<span class="comment"># That's it. Every LLM call now flows through the platform.</span>
+<span class="comment"># Open http://localhost:4200/ui for the live console.</span>
+    </div>
+  </div>
+</section>
 
 <section class="modules">
   <div class="modules-inner">
