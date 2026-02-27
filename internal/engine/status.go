@@ -3,7 +3,6 @@ package engine
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"runtime"
 	"sync"
