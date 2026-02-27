@@ -8,52 +8,51 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Stockyard vs Helicone &mdash; Stockyard</title>
-<meta name="description" content="Stockyard vs Helicone: a self-hosted platform with 6 apps vs a cloud-only observability layer.">
+<title>Stockyard vs Helicone &mdash; Comparison</title>
+<meta name="description" content="Side-by-side comparison of Stockyard and Helicone. Architecture, observability, pricing, and feature differences.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 .skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-.hero{text-align:center;padding:5rem 2rem 3rem}
-.hero h1{font-size:2.2rem;line-height:1.3;max-width:700px;margin:0 auto}
-.hero .vs-tag{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem;display:block}
-.hero p{font-size:1.05rem;color:var(--cream-dim);max-width:600px;margin:1.5rem auto 0}
-.compare{max-width:800px;margin:0 auto;padding:0 2rem}
-.compare-table{width:100%;border-collapse:collapse;margin:2rem 0 3rem}
-.compare-table th,.compare-table td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.8rem}
-.compare-table th{color:var(--leather-light);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase}
-.compare-table th:nth-child(2){color:var(--rust-light)}
-.compare-table td:first-child{color:var(--cream-dim);font-size:0.75rem;font-family:var(--font-serif)}
-.us{color:var(--green-light)}
-.them{color:var(--cream-dim)}
-.section{max-width:800px;margin:0 auto 3rem;padding:0 2rem}
-.section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem}
-.section p{color:var(--cream-dim);line-height:1.8;margin-bottom:1rem}
-.section code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0}
-.detail-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem}
-.detail-card h3{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
-.detail-card p{font-size:0.85rem;color:var(--cream-dim);margin-bottom:0}
-.cta{text-align:center;padding:3rem 2rem 5rem}
-.cta h2{font-size:1.6rem;margin-bottom:1rem}
-.cta p{color:var(--cream-dim);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto}
-.cta-btn{display:inline-block;font-family:var(--font-mono);font-size:0.8rem;padding:0.7rem 2rem;background:var(--rust);color:var(--cream);letter-spacing:1px;transition:background 0.2s;margin:0 0.5rem}
-.cta-btn:hover{background:var(--rust-light);color:var(--cream)}
-.cta-btn.secondary{background:transparent;border:1px solid var(--bg3);color:var(--cream-dim)}
-.cta-btn.secondary:hover{border-color:var(--rust);color:var(--cream)}
-.also-see{max-width:800px;margin:0 auto 3rem;padding:0 2rem;text-align:center}
-.also-see h3{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
-.also-see a{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin:0 1rem}.also-see a:hover{color:var(--rust-light)}
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
-footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-@media(max-width:700px){.hero h1{font-size:1.6rem}.detail-grid{grid-template-columns:1fr}.compare{padding:0 1rem}.section{padding:0 1rem}}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.hero{text-align:center;padding:4rem 2rem 3rem}
+.hero h1{font-size:2.2rem;margin-bottom:0.8rem;line-height:1.3}
+.hero h1 .vs{color:var(--leather);font-size:1.6rem}
+.hero h1 .them{color:var(--cream-dim)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto}
+.section{max-width:800px;margin:0 auto;padding:0 2rem 3rem}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem}
+.ct{width:100%;border-collapse:collapse;margin:0 0 2rem;font-size:0.85rem}
+.ct th,.ct td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.ct th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.ct th.us{color:var(--rust-light);font-weight:700}
+.ct td:first-child{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.78rem}
+.ct .us{color:var(--green-light);font-weight:600}
+.ct .them{color:var(--cream-dim)}
+.ct .tie{color:var(--leather-light)}
+p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.verdict{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem 2rem;margin:2rem 0;text-align:center}
+.verdict-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem}
+.verdict p{color:var(--cream);font-size:1rem;margin-bottom:0.5rem}
+.cta-row{display:flex;gap:1rem;justify-content:center;margin:2rem 0 1rem;flex-wrap:wrap}
+.cta{display:inline-block;font-family:var(--font-mono);font-size:0.8rem;padding:0.6rem 1.5rem;text-align:center;transition:all 0.2s}
+.cta-primary{background:var(--rust);color:var(--cream);border:1px solid var(--rust)}.cta-primary:hover{background:var(--rust-dark);color:var(--cream)}
+.cta-ghost{border:1px solid var(--bg3);color:var(--cream-dim)}.cta-ghost:hover{border-color:var(--rust);color:var(--cream)}
+.also{text-align:center;margin:2rem 0;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)}
+.also a{color:var(--cream-dim)}.also a:hover{color:var(--rust-light)}
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:3rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+@media(max-width:600px){.hero h1{font-size:1.6rem}.ct{font-size:0.75rem}.ct th,.ct td{padding:0.5rem}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/vs/helicone/">
 </head>
@@ -73,71 +72,59 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </nav>
 
-<div class="hero" id="main">
-  <span class="vs-tag">Comparison</span>
-  <h1>Stockyard vs Helicone</h1>
-  <p>Both give you visibility into LLM usage. One is observability-only. The other is a full platform you own.</p>
+<div class="hero">
+  <h1>Stockyard <span class="vs">vs</span> <span class="them">Helicone</span></h1>
+  <p class="sub">Helicone is a managed observability layer for LLM apps. Stockyard is a self-hosted platform that includes observability alongside five other integrated apps.</p>
 </div>
 
-<div class="compare">
-
-    <table class="compare-table">
-      <tr><th></th><th>Stockyard</th><th>Helicone</th></tr>
-      <tr><td>Deployment</td><td class="us">Self-hosted or managed cloud</td><td class="them">Cloud-only SaaS</td></tr>
-      <tr><td>Data residency</td><td class="us">Your infrastructure, your data</td><td class="them">Helicone&rsquo;s servers</td></tr>
-      <tr><td>Scope</td><td class="us">Full platform: proxy + 5 apps</td><td class="them">Observability + basic caching</td></tr>
-      <tr><td>Integration</td><td class="us">One-line base URL change</td><td class="them">SDK wrapper or header injection</td></tr>
-      <tr><td>Middleware</td><td class="us">58 toggleable modules</td><td class="them">Limited to logging &amp; caching</td></tr>
-      <tr><td>Audit trail</td><td class="us">Hash-chained tamper-evident ledger</td><td class="them">Standard database logs</td></tr>
-      <tr><td>Prompt management</td><td class="us">Versioned templates, A/B testing</td><td class="them">Prompt management included</td></tr>
-      <tr><td>Workflows</td><td class="us">DAG engine with tool registry</td><td class="them">Not included</td></tr>
-      <tr><td>Safety &amp; guardrails</td><td class="us">7 safety modules built in</td><td class="them">Not included</td></tr>
-      <tr><td>Cost controls</td><td class="us">Cost caps, rate limiting, spend alerts</td><td class="them">Cost tracking (read-only)</td></tr>
-      <tr><td>Open source</td><td class="us">Yes</td><td class="them">Yes</td></tr>
-      <tr><td>Pricing</td><td class="us">Free tier, $9.99/mo Pro</td><td class="them">Free tier, usage-based pricing</td></tr>
-    </table>
-
-</div>
-
-
-    <div class="detail-grid">
-      <div class="detail-card">
-        <h3>When to choose Stockyard</h3>
-        <p>You need more than observability &mdash; you want safety guardrails, cost controls, prompt management, workflows, and an audit trail in one tool. Or you need self-hosted deployment for data residency, compliance, or air-gapped environments.</p>
-      </div>
-      <div class="detail-card">
-        <h3>When to choose Helicone</h3>
-        <p>You specifically want a cloud-hosted observability layer with minimal setup. You&rsquo;re not looking for a proxy or middleware &mdash; just logging, analytics, and prompt tracking as a managed service.</p>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Observability vs. control</h2>
-      <p>Helicone tells you what happened after a request. Stockyard sits in the request path and can act on it &mdash; blocking toxic content, enforcing cost caps, caching responses, falling back to another provider, or compressing prompts. Observability is one of Stockyard&rsquo;s six apps, not the whole product.</p>
-    </div>
-
-    <div class="section">
-      <h2>Data ownership</h2>
-      <p>With Helicone, your prompts and completions flow through their infrastructure. With Stockyard self-hosted, nothing leaves your network. For teams with data residency requirements, compliance mandates, or sensitive workloads, this is the deciding factor.</p>
-    </div>
+<section class="section" id="main">
+  <div class="section-label">Feature comparison</div>
+  <table class="ct">
+    <tr><th></th><th class="us">Stockyard</th><th>Competitor</th></tr>
+    <tr><td>Deployment</td><td class="us">Self-hosted or managed &mdash; your choice</td><td class="them">Managed SaaS only</td></tr>
+    <tr><td>Data residency</td><td class="us">Your server, your database</td><td class="them">Helicone&rsquo;s infrastructure</td></tr>
+    <tr><td>Proxy layer</td><td class="us">Full middleware chain (58 modules)</td><td class="them">Logging proxy (pass-through)</td></tr>
+    <tr><td>Observability</td><td class="them">Built-in Observe app</td><td class="us">Core product &mdash; excellent dashboards</td></tr>
+    <tr><td>Custom dashboards</td><td class="them">Console with tab-based views</td><td class="us">Highly customizable dashboards</td></tr>
+    <tr><td>Audit trail</td><td class="us">Hash-chained tamper-evident ledger</td><td class="them">Request logging only</td></tr>
+    <tr><td>Prompt management</td><td class="tie">Versioned templates + A/B experiments</td><td class="tie">Prompt templates + versioning</td></tr>
+    <tr><td>Safety &amp; guardrails</td><td class="us">7 safety modules (PII, injection, toxicity)</td><td class="them">Content moderation via integrations</td></tr>
+    <tr><td>Cost tracking</td><td class="tie">Built-in, per-request attribution</td><td class="tie">Built-in, per-request attribution</td></tr>
+    <tr><td>Alerting</td><td class="us">Built-in alerts + anomaly detection</td><td class="them">Alerts via integrations</td></tr>
+    <tr><td>Workflow engine</td><td class="us">Forge DAG engine</td><td class="them">None</td></tr>
+    <tr><td>Config marketplace</td><td class="us">Exchange packs</td><td class="them">None</td></tr>
+    <tr><td>Pricing</td><td class="us">Free forever (self-hosted), $9.99/mo Pro</td><td class="them">Free tier, then usage-based</td></tr>
+    <tr><td>Integration effort</td><td class="tie">Change one env var</td><td class="tie">Add SDK or proxy URL</td></tr>
+  </table>
 
 
-<div class="also-see">
-  <h3>Also compare</h3>
-  <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a>
-</div>
+    <h2>When to choose Helicone</h2>
+    <p>Helicone is the right choice if observability is your primary need and you want a polished, managed SaaS with zero ops overhead. Their dashboards are excellent, their team ships fast, and they have strong integrations with the broader LLM tooling ecosystem. If you don&rsquo;t want to self-host anything, Helicone is a great option.</p>
 
-<div class="cta">
-  <h2>Try Stockyard in 60 seconds</h2>
-  <p>One curl. One binary. Six apps running on localhost.</p>
-  <a href="/guide/" class="cta-btn">Get started</a>
-  <a href="/playground" class="cta-btn secondary">Try the playground</a>
-</div>
+    <h2>When to choose Stockyard</h2>
+    <p>Stockyard is the right choice if you want observability <em>and</em> everything else in one place. Stockyard includes a full proxy with 58 middleware modules, an audit ledger, prompt management, a workflow engine, and a config marketplace &mdash; on top of the observability layer. And because it&rsquo;s self-hosted, your data never leaves your infrastructure.</p>
+    <p>If compliance, data residency, or cost control matter to your team, self-hosting a single binary is simpler and cheaper than subscribing to multiple managed services.</p>
+
+
+  <div class="verdict">
+    <div class="verdict-label">The bottom line</div>
+    <p>Helicone is excellent at observability. Stockyard gives you that same capability plus a full proxy, audit system, prompt studio, workflow engine, and marketplace &mdash; all self-hosted. If you only need logging and dashboards, Helicone is great. If you want the whole platform, Stockyard is one binary.</p>
+  </div>
+
+  <div class="cta-row">
+    <a href="/guide/" class="cta cta-primary">Try Stockyard &rarr;</a>
+    <a href="/docs/" class="cta cta-ghost">Read the docs</a>
+    <a href="/pricing/" class="cta cta-ghost">See pricing</a>
+  </div>
+
+  <div class="also">Also compare: <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a></div>
+</section>
 
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
   <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
+
 </body>
 </html>
