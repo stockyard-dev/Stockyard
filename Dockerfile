@@ -17,7 +17,7 @@ COPY --from=builder /stockyard /usr/local/bin/stockyard
 
 # Data directory
 RUN mkdir -p /data && chown stockyard:stockyard /data
-VOLUME /data
+
 ENV STOCKYARD_DATA_DIR=/data
 
 # Default port
