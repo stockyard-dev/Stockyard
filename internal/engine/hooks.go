@@ -510,6 +510,40 @@ func seedExchangePacks(conn *sql.DB) {
 				]
 			}`,
 		},
+		{
+			slug: "safety-hardened", name: "Safety Hardened", author: "Stockyard",
+			desc: "Defense-in-depth safety configuration: strict PII redaction, injection blocking, secret scanning, toxic content filtering, and compliance logging with safety-specific alert rules.",
+			tags: `["safety","pii","injection","toxic","compliance","hardened"]`,
+			content: `{
+				"modules": [
+					{"name": "promptguard", "enabled": true, "description": "PII redaction + injection detection at medium sensitivity"},
+					{"name": "secretscan", "enabled": true, "description": "Detect and redact API keys, tokens, private keys in input/output"},
+					{"name": "toxicfilter", "enabled": true, "description": "Flag and optionally block toxic/harmful content"},
+					{"name": "trust_enforce", "enabled": true, "description": "Runtime policy enforcement from trust policies table"},
+					{"name": "compliancelog", "enabled": true, "description": "Hash-chain compliance logging for every request"},
+					{"name": "ipfence", "enabled": true, "description": "IP allowlist/denylist filtering"},
+					{"name": "ratelimit", "enabled": true, "description": "Request rate limiting per IP/user"},
+					{"name": "agentguard", "enabled": true, "description": "Agent session safety rails"},
+					{"name": "hallucicheck", "enabled": true, "description": "Post-response hallucination scoring"},
+					{"name": "codefence", "enabled": true, "description": "Block dangerous code patterns in responses"},
+					{"name": "guardrail", "enabled": true, "description": "Content guardrails and safety boundaries"}
+				],
+				"policies": [
+					{"name": "block-pii-output", "type": "block", "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b|\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b", "description": "Block responses containing SSN or credit card numbers"},
+					{"name": "block-injection-attempt", "type": "block", "pattern": "ignore.*previous.*instructions|disregard.*prior|you are now|DAN mode|jailbreak", "description": "Block prompt injection attempts"},
+					{"name": "block-secret-leak", "type": "block", "pattern": "sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|sk-ant-", "description": "Block responses leaking API keys"},
+					{"name": "warn-harmful-content", "type": "warn", "pattern": "(?i)how to (make|build|create).*(bomb|weapon|explosive|poison)", "description": "Warn on potentially dangerous instructional content"},
+					{"name": "log-data-extraction", "type": "log", "pattern": "(?i)(dump|export|extract).*(database|table|schema|credentials)", "description": "Log data extraction attempts"}
+				],
+				"alerts": [
+					{"name": "safety-injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 3, "window": 300, "description": "Alert on >3 injection attempts in 5min"},
+					{"name": "safety-pii-burst", "metric": "pii_redactions", "condition": "gt", "threshold": 5, "window": 300, "description": "Alert on >5 PII redactions in 5min"},
+					{"name": "safety-secret-any", "metric": "secrets_found", "condition": "gt", "threshold": 0, "window": 60, "description": "Immediate alert on any secret detection"},
+					{"name": "safety-toxic-spike", "metric": "toxic_flags", "condition": "gt", "threshold": 3, "window": 300, "description": "Alert on >3 toxic content flags in 5min"},
+					{"name": "safety-policy-violations", "metric": "policy_blocks", "condition": "gt", "threshold": 5, "window": 300, "description": "Alert on >5 policy violations in 5min"}
+				]
+			}`,
+		},
 	}
 	for _, p := range extraPacks {
 		id := "pk_" + p.slug

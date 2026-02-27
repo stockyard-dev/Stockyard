@@ -241,28 +241,85 @@ function ObserveView(){
 
 // ─── Trust ─────────────────────────────────────────────────────────
 function TrustView(){
-  const[tab,setTab]=useState('ledger');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[chainStatus,setChainStatus]=useState(null);const[verifying,setVerifying]=useState(false);
+  const[tab,setTab]=useState('safety');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[chainStatus,setChainStatus]=useState(null);const[verifying,setVerifying]=useState(false);
   const[evtFilter,setEvtFilter]=useState('all');const[autoRefresh,setAutoRefresh]=useState(false);const[showEvidenceForm,setShowEvidenceForm]=useState(false);
+  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);
   const reload=async()=>{const[l,p,e,fb,st]=await Promise.all([api('/api/trust/ledger?limit=200'),api('/api/trust/policies'),api('/api/trust/evidence'),api('/api/trust/feedback'),api('/api/trust/status')]);setData({ledger:l.events||l.entries||[],policies:p.policies||[],evidence:e.packs||[],feedback:fb.feedback||[],status:st||{}})};
-  useEffect(()=>{reload()},[]);
-  useEffect(()=>{if(autoRefresh){const t=setInterval(reload,5000);return()=>clearInterval(t)}},[autoRefresh]);
+  const loadSafety=async()=>{const[s,e]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=100')]);setSafety(s);setSafetyEvents(e.events||[])};
+  useEffect(()=>{reload();loadSafety()},[]);
+  useEffect(()=>{if(autoRefresh){const t=setInterval(()=>{reload();loadSafety()},5000);return()=>clearInterval(t)}},[autoRefresh]);
   const verifyChain=async()=>{setVerifying(true);const r=await api('/api/trust/ledger/verify');setChainStatus(r);setVerifying(false)};
   const createEvidence=async(name,from,to)=>{const r=await api('/api/trust/evidence',{method:'POST',body:JSON.stringify({name,date_from:from,date_to:to})});if(!r._error){setShowEvidenceForm(false);reload()}};
   const d=k=>Array.isArray(data[k])?data[k]:[];
-  const st=data.status||{};
+  const st=data.status||{};const sf=safety||{};
   const EVENT_COLORS={'proxy_request':'var(--green)','spend_update':'var(--gold)','policy_violation':'var(--red)','admin_action':'var(--leather-light)','feedback':'var(--cream-muted)','system':'var(--rust-light)','forge_event':'var(--amber)','exchange_event':'var(--green)'};
   const evtTypes=[...new Set(d('ledger').map(e=>e.event_type))].sort();
   const filtered=evtFilter==='all'?d('ledger'):d('ledger').filter(e=>e.event_type===evtFilter);
   const typeCounts={};d('ledger').forEach(e=>{typeCounts[e.event_type]=(typeCounts[e.event_type]||0)+1});
-  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Audit Ledger & Compliance</h2><p class="page-sub">Immutable hash-chain audit log, policies, evidence packs & feedback.</p></div>
+  const scoreColor=s=>s>=80?'var(--green)':s>=50?'var(--gold)':'var(--red)';
+  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Safety & Compliance</h2><p class="page-sub">Safety scorecard, audit ledger, policies, evidence packs.</p></div>
     <div class="stats-row">
-      <${Stat} label="Ledger Events" value=${fmt.num(st.ledger_events||d('ledger').length)} accent sub=${evtTypes.length+' types'}/>
-      <${Stat} label="Policies" value=${d('policies').length} sub=${d('policies').filter(p=>p.enabled).length+' active'}/>
-      <${Stat} label="Evidence" value=${d('evidence').length}/>
+      <${Stat} label="Safety Score" value=${(sf.safety_score!=null?sf.safety_score+'%':'--')} accent sub=${'24h window'}/>
+      <${Stat} label="Safety Events" value=${fmt.num(sf.total_events||0)} sub=${(sf.today?.blocked||0)+' blocked today'}/>
+      <${Stat} label="Ledger Events" value=${fmt.num(st.ledger_events||d('ledger').length)} sub=${evtTypes.length+' types'}/>
       <${Stat} label="Chain" value=${chainStatus?chainStatus.valid?'\u2713 Valid':'\u2717 Broken':'Unverified'} sub=${chainStatus?chainStatus.events_checked+' checked':html`<button class="btn btn-sm" style="font-size:0.65rem;padding:2px 6px" onClick=${verifyChain}>${verifying?'Verifying\u2026':'Verify'}</button>`}/>
     </div>
-    <${TabBar} tabs=${['ledger','policies','evidence','feedback']} active=${tab} onChange=${setTab}/>
-    ${tab==='ledger'?html`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+    <${TabBar} tabs=${['safety','ledger','policies','evidence','feedback']} active=${tab} onChange=${setTab}/>
+    ${tab==='safety'?html`<div class="safety-dash">
+      <div class="safety-score-card">
+        <div class="safety-score-ring" style="--score-color:${scoreColor(sf.safety_score||100)}">
+          <div class="safety-score-num" style="color:${scoreColor(sf.safety_score||100)}">${sf.safety_score!=null?sf.safety_score:100}</div>
+          <div style="font-size:0.72rem;color:var(--cream-muted)">Safety Score</div>
+        </div>
+        <div class="safety-score-detail">
+          <div class="section-title" style="margin-bottom:8px">Active Defenses</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+            <div class="safety-metric"><span class="safety-metric-val">${sf.active_modules||0}</span><span class="safety-metric-label">Safety Modules</span></div>
+            <div class="safety-metric"><span class="safety-metric-val">${sf.active_policies||0}</span><span class="safety-metric-label">Trust Policies</span></div>
+          </div>
+          <div class="section-title" style="margin-bottom:8px">Today</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+            <div class="safety-metric"><span class="safety-metric-val">${sf.today?.total||0}</span><span class="safety-metric-label">Events</span></div>
+            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--red)">${sf.today?.blocked||0}</span><span class="safety-metric-label">Blocked</span></div>
+            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--gold)">${sf.today?.redacted||0}</span><span class="safety-metric-label">Redacted</span></div>
+          </div>
+          <div class="section-title" style="margin-bottom:8px">Severity Breakdown</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--red)">${sf.severity?.critical||0}</span><span class="safety-metric-label">Critical</span></div>
+            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--rust-light)">${sf.severity?.high||0}</span><span class="safety-metric-label">High</span></div>
+            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--gold)">${sf.severity?.medium||0}</span><span class="safety-metric-label">Medium</span></div>
+            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--cream-muted)">${sf.severity?.low||0}</span><span class="safety-metric-label">Low</span></div>
+          </div>
+        </div>
+      </div>
+      ${sf.by_type&&sf.by_type.length>0?html`<div style="margin-top:12px">
+        <div class="section-title" style="margin-bottom:6px">Event Breakdown</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${sf.by_type.map(t=>html`<div key=${t.event_type+t.severity} class="safety-type-pill">
+          <span class="mono">${t.event_type}</span>
+          <${Badge} text=${t.severity} variant=${t.severity==='critical'||t.severity==='high'?'danger':t.severity==='medium'?'warn':'muted'}/>
+          <span class="mono" style="font-size:0.72rem">${t.action_taken}: ${t.count}</span>
+        </div>`)}</div>
+      </div>`:null}
+      <div style="margin-top:14px">
+        <div class="section-title" style="margin-bottom:6px">Recent Safety Events</div>
+        <${DataTable} columns=${[
+          {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.created_at)},
+          {key:'type',label:'Event',width:'140px',mono:true,render:r=>html`<span style="color:${r.severity==='critical'?'var(--red)':r.severity==='high'?'var(--rust-light)':'var(--cream-muted)'}">${r.event_type}</span>`},
+          {key:'sev',label:'Severity',width:'80px',render:r=>html`<${Badge} text=${r.severity} variant=${r.severity==='critical'||r.severity==='high'?'danger':r.severity==='medium'?'warn':'muted'}/>`},
+          {key:'action',label:'Action',width:'80px',render:r=>html`<${Badge} text=${r.action_taken||'log'} variant=${r.action_taken==='block'?'danger':r.action_taken==='redact'?'warn':'muted'}/>`},
+          {key:'cat',label:'Category',width:'100px',mono:true},
+          {key:'model',label:'Model',width:'1fr',mono:true,render:r=>r.model||'\u2014'}
+        ]} rows=${safetyEvents} emptyMsg="No safety events \u2014 events appear when PromptGuard, SecretScan, ToxicFilter or TrustEnforce fire."/>
+      </div>
+      <div style="margin-top:14px;padding:12px;background:var(--bg);border:1px solid var(--bg3);font-size:0.78rem;color:var(--cream-dim)">
+        <div class="section-title" style="margin-bottom:6px">Safety Middleware Pipeline</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+          ${['ipfence','ratelimit','promptguard','secretscan','tokentrim','toxicfilter','trust_enforce','compliancelog'].map((m,i)=>html`<span key=${m} class="safety-pipe-step">${m}</span>${i<7?html`<span style="color:var(--cream-muted)">\u2192</span>`:null}`)}
+        </div>
+        <div style="margin-top:6px;font-size:0.72rem;color:var(--cream-muted)">PII redaction \u2192 injection detection \u2192 secret scanning \u2192 toxicity filtering \u2192 policy enforcement \u2192 compliance logging</div>
+      </div>
+    </div>`:
+    tab==='ledger'?html`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
       <button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button>
       <button class="btn btn-sm ${autoRefresh?'primary':''}" onClick=${()=>setAutoRefresh(!autoRefresh)}>${autoRefresh?'\u23F8 Auto':'Auto \u25B6'}</button>
       <button class="btn btn-sm ${chainStatus?.valid?'primary':''}" onClick=${verifyChain}>${verifying?'Verifying\u2026':chainStatus?chainStatus.valid?'\u2713 Chain Valid':'\u2717 Broken #'+chainStatus.broken_at_id:'Verify Chain'}</button>
@@ -724,6 +781,7 @@ render(html`<${App}/>`,document.getElementById('root'));
 .trace-detail{display:flex;flex-direction:column;gap:8px}.td-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bg3)}.td-label{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--cream-muted)}.td-section{margin-top:12px}.td-pre{background:var(--bg);border:1px solid var(--bg3);padding:12px;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);overflow-x:auto;max-height:200px;overflow-y:auto;margin-top:4px;white-space:pre-wrap;word-break:break-all}
 .pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.pack-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;display:flex;flex-direction:column;gap:8px;transition:border-color 0.15s}.pack-card:hover{border-color:var(--leather)}.pack-card.pack-installed{border-color:var(--green);opacity:0.85}.pack-name{font-family:var(--font-mono);font-weight:600;font-size:0.9rem;color:var(--cream)}.pack-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;flex:1}.pack-meta{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted);display:flex;gap:12px}.pack-actions{margin-top:4px}
 .pg-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:400px}@media(max-width:900px){.pg-layout{grid-template-columns:1fr}}.pg-input{display:flex;flex-direction:column}.pg-output{display:flex;flex-direction:column;gap:10px}.pg-compare{display:flex;flex-direction:column;gap:10px}.pg-result-card{background:var(--bg2);border:1px solid var(--bg3);overflow:hidden}.pg-result-card.pg-winner{border-color:var(--green)}.pg-result-head{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-bottom:1px solid var(--bg3);flex-wrap:wrap}.pg-result-body{padding:10px;font-size:0.82rem;line-height:1.5;white-space:pre-wrap;max-height:400px;overflow-y:auto;color:var(--cream-dim)}
+.safety-dash{display:flex;flex-direction:column;gap:8px}.safety-score-card{display:flex;gap:20px;background:var(--bg);border:1px solid var(--bg3);padding:16px;align-items:flex-start;flex-wrap:wrap}.safety-score-ring{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:100px;padding:12px}.safety-score-num{font-family:var(--font-mono);font-size:2.4rem;font-weight:700;line-height:1}.safety-score-detail{flex:1;min-width:200px}.safety-metric{display:flex;flex-direction:column;gap:2px}.safety-metric-val{font-family:var(--font-mono);font-size:1.1rem;font-weight:600;color:var(--cream)}.safety-metric-label{font-size:0.68rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}.safety-type-pill{display:inline-flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--bg3);padding:4px 8px;font-size:0.72rem}.safety-pipe-step{font-family:var(--font-mono);font-size:0.72rem;padding:3px 8px;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim)}
 .settings-layout{display:flex;gap:20px;min-height:400px}.settings-sidebar{width:260px;min-width:260px;background:var(--bg2);border:1px solid var(--bg3)}.settings-sidebar-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)}.settings-main{flex:1;min-width:0}
 .user-list{overflow-y:auto;max-height:500px}.user-item{padding:10px 16px;border-bottom:1px solid var(--bg3);cursor:pointer;transition:background 0.1s}.user-item:hover{background:var(--bg3)}.user-item.active{background:rgba(196,93,44,0.08);border-left:2px solid var(--rust)}.user-email{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}.user-meta{font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:2px}
 .section-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.section-head h3{font-size:1.1rem;font-weight:700}.section-title{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:8px;display:flex;align-items:center;gap:12px}
