@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Guide — Your First 5 Minutes | Stockyard</title>
+<meta name="description" content="Install Stockyard, send your first request, explore the console, and see what 58 middleware modules actually do — in under 5 minutes.">
+<meta property="og:title" content="Your First 5 Minutes with Stockyard">
+<meta property="og:description" content="From install to traces in 5 minutes. See what the platform actually does.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/guide/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/guide/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;--green:#5cb85c;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+/* Hero */
+.guide-hero{max-width:720px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.guide-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.guide-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.guide-hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1.5rem}
+.guide-hero h1 .accent{color:var(--rust-light)}
+.guide-hero .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+
+/* Steps */
+.steps{max-width:780px;margin:0 auto;padding:3rem 2rem 5rem}
+.step{margin-bottom:4rem;position:relative;padding-left:60px}
+.step-num{position:absolute;left:0;top:0;width:40px;height:40px;border:2px solid var(--rust);font-family:var(--font-mono);font-size:0.85rem;font-weight:600;color:var(--rust-light);display:flex;align-items:center;justify-content:center}
+.step h3{font-size:1.3rem;margin-bottom:0.4rem}
+.step .step-sub{font-size:0.9rem;color:var(--cream-dim);margin-bottom:1.2rem;font-style:italic}
+.step .step-body{font-size:0.95rem;color:var(--cream-dim);line-height:1.8}
+.step .step-body p{margin-bottom:0.8rem}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin:1rem 0;white-space:pre-wrap}
+.code-block .comment{color:var(--cream-dim);font-style:italic}
+.code-block .cmd{color:var(--cream)}
+.code-block .str{color:var(--gold)}
+.code-block .kw{color:var(--rust-light)}
+.code-block .fn{color:var(--leather-light)}
+.outcome{background:var(--bg2);border-left:3px solid var(--green);padding:1rem 1.2rem;margin:1rem 0;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);line-height:1.7}
+.outcome strong{color:var(--green);font-weight:500}
+.screenshot-frame{margin:1.5rem 0;border:1px solid var(--bg3);overflow:hidden}
+.screenshot-frame img{width:100%;display:block}
+.screenshot-caption{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);text-align:center;padding:0.6rem;background:var(--bg2);border-top:1px solid var(--bg3)}
+
+/* Scenarios */
+.scenarios{background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);padding:5rem 2rem}
+.scenarios-inner{max-width:900px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.scenarios h2{font-size:1.8rem;text-align:center;margin-bottom:0.8rem}
+.scenarios .lead{text-align:center;color:var(--cream-dim);margin-bottom:3rem;font-style:italic}
+.scenario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem}
+.scenario{padding:1.8rem;border:1px solid var(--bg3);background:var(--bg)}
+.scenario-who{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.6rem}
+.scenario h3{font-size:1.1rem;margin-bottom:0.6rem}
+.scenario p{font-size:0.88rem;color:var(--cream-dim);line-height:1.7;margin-bottom:0.8rem}
+.scenario .modules{font-family:var(--font-mono);font-size:0.72rem;color:var(--rust-light)}
+
+/* Console section */
+.console-section{padding:5rem 2rem;max-width:900px;margin:0 auto}
+.console-section h2{font-size:1.8rem;text-align:center;margin-bottom:0.8rem}
+.console-section .lead{text-align:center;color:var(--cream-dim);margin-bottom:3rem;font-style:italic}
+.console-tabs{display:flex;justify-content:center;gap:0;border-bottom:1px solid var(--bg3);margin-bottom:1.5rem}
+.console-tab{background:none;border:none;color:var(--cream-dim);font-family:var(--font-mono);font-size:0.78rem;padding:0.6rem 1.2rem;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s}
+.console-tab:hover{color:var(--cream)}
+.console-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.console-desc{font-size:0.9rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1.5rem;text-align:center;max-width:600px;margin-left:auto;margin-right:auto}
+.hidden{display:none!important}
+
+/* Integration */
+.integration{background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);padding:5rem 2rem}
+.integration-inner{max-width:780px;margin:0 auto}
+.integration h2{font-size:1.8rem;text-align:center;margin-bottom:0.8rem}
+.integration .lead{text-align:center;color:var(--cream-dim);margin-bottom:2.5rem;font-style:italic}
+.lang-tabs{display:flex;justify-content:center;gap:0;border-bottom:1px solid var(--bg3);margin-bottom:1.5rem}
+.lang-tab{background:none;border:none;color:var(--cream-dim);font-family:var(--font-mono);font-size:0.78rem;padding:0.6rem 1.5rem;cursor:pointer;border-bottom:2px solid transparent}
+.lang-tab:hover{color:var(--cream)}
+.lang-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.integration .note{font-size:0.85rem;color:var(--cream-dim);text-align:center;margin-top:1.5rem;font-style:italic}
+
+/* CTA */
+.guide-cta{padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.guide-cta h2{font-size:1.8rem;margin-bottom:1rem}
+.guide-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--bg3);font-size:0.8rem;color:var(--cream-dim)}
+footer .sig{font-family:var(--font-serif);font-size:1rem;color:var(--leather-light);font-style:italic}
+footer a{color:var(--cream-dim)}
+footer a:hover{color:var(--rust-light)}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<section class="guide-hero">
+  <div class="eyebrow">Getting Started</div>
+  <h1>Your first <span class="accent">5 minutes</span></h1>
+  <p class="sub">Install the binary, send a request, and watch the platform light up. Here's what actually happens at each step.</p>
+</section>
+
+<section class="steps">
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <h3>Install</h3>
+    <p class="step-sub">One command. No runtime, no Docker, no dependencies.</p>
+    <div class="step-body">
+      <div class="code-block">
+<span class="comment"># Downloads a single static binary to /usr/local/bin</span>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+      </div>
+      <div class="outcome">
+        <strong>What just happened:</strong> A ~15MB Go binary is now on your PATH. It contains all 6 apps, 58 middleware modules, an embedded SQLite database, and a full web console. Nothing else was installed.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <h3>Start the platform</h3>
+    <p class="step-sub">One command. All 6 apps boot on a single port.</p>
+    <div class="step-body">
+      <div class="code-block">
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Output:</span>
+<span class="comment"># Stockyard v1.0 — Where LLM traffic gets sorted</span>
+<span class="comment"># ┌─────────────────────────────────────────────┐</span>
+<span class="comment"># │  Proxy      :4200/v1    ✓ 53 modules active │</span>
+<span class="comment"># │  Console    :4200/ui    ✓ 6 apps loaded     │</span>
+<span class="comment"># │  API        :4200/api   ✓ 69 endpoints      │</span>
+<span class="comment"># │  Playground :4200/play  ✓ ready              │</span>
+<span class="comment"># └─────────────────────────────────────────────┘</span>
+      </div>
+      <div class="outcome">
+        <strong>What just happened:</strong> The proxy is listening. The console is live. The SQLite database was created at <code>~/.stockyard/stockyard.db</code>. All 16 providers are auto-configured. Fifty-three modules are running in the middleware chain. Nothing to configure yet — sensible defaults are already active.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <h3>Send your first request</h3>
+    <p class="step-sub">Point any OpenAI-compatible client at localhost:4200.</p>
+    <div class="step-body">
+      <div class="code-block">
+<span class="comment"># Just change the base URL — your API key stays yours</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">  -H <span class="str">"Authorization: Bearer $OPENAI_API_KEY"</span> \</span>
+<span class="cmd">  -H <span class="str">"Content-Type: application/json"</span> \</span>
+<span class="cmd">  -d <span class="str">'{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</span></span>
+      </div>
+      <p>Or in your app code — one line changes:</p>
+      <div class="code-block">
+<span class="comment"># Before — direct to OpenAI</span>
+<span class="fn">client</span> = <span class="fn">OpenAI</span>()
+
+<span class="comment"># After — through Stockyard</span>
+<span class="fn">client</span> = <span class="fn">OpenAI</span>(<span class="kw">base_url</span>=<span class="str">"http://localhost:4200/v1"</span>)
+      </div>
+      <div class="outcome">
+        <strong>What just happened:</strong> Your request hit the proxy, flowed through 53 middleware modules (rate limiter, cost tracker, safety filter, semantic cache, etc.), reached OpenAI, and the response came back — with a trace logged in Observe and an audit event written to Trust. You didn't configure any of that.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <h3>Open the console</h3>
+    <p class="step-sub">See what just happened — traces, costs, live events.</p>
+    <div class="step-body">
+      <p>Open <code style="background:var(--bg2);padding:2px 6px">http://localhost:4200/ui</code> in your browser.</p>
+      <div class="screenshot-frame">
+        <img src="/site-assets/assets/screenshots/console-observe.png" alt="Observe dashboard showing request traces with model, provider, latency, tokens, cost, and time columns" loading="lazy">
+        <div class="screenshot-caption">Observe → Traces: every request logged with model, latency, tokens, and cost</div>
+      </div>
+      <div class="outcome">
+        <strong>What you're seeing:</strong> The Observe dashboard shows every request that's flowed through the proxy. Each row is a trace — which model was called, through which provider, how long it took, how many tokens were used, and what it cost. The cost rollup at the top gives you today's spend at a glance.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <h3>Toggle a module</h3>
+    <p class="step-sub">Turn features on and off at runtime — no restart, no redeploy.</p>
+    <div class="step-body">
+      <p>Navigate to <strong>Proxy</strong> in the sidebar. You'll see all 53 active modules with toggle switches.</p>
+      <div class="code-block">
+<span class="comment"># Or via the API:</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cost-cap \</span>
+<span class="cmd">  -d <span class="str">'{"enabled": true}'</span></span>
+      </div>
+      <div class="outcome">
+        <strong>What just happened:</strong> The module was toggled in the live middleware chain — the next request will flow through the updated pipeline. No binary restart, no config file change, no deploy. The toggle is persisted to SQLite and survives restarts.
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="scenarios">
+  <div class="scenarios-inner">
+    <div class="section-label">Who it's for</div>
+    <h2>Three developers, three problems</h2>
+    <p class="lead">The same platform, configured differently.</p>
+    <div class="scenario-grid">
+      <div class="scenario">
+        <div class="scenario-who">Solo developer</div>
+        <h3>"I don't want a surprise $400 bill."</h3>
+        <p>You're building a side project with GPT-4o. You want a hard cost cap at $20/month, automatic fallback to a cheaper model when you're close, and a daily email if anything looks off.</p>
+        <p>Enable three modules and you're done.</p>
+        <div class="modules">cost-cap · model-fallback · spend-alerts</div>
+      </div>
+      <div class="scenario">
+        <div class="scenario-who">Startup going to prod</div>
+        <h3>"Our safety review is next week."</h3>
+        <p>You need PII filtering before responses hit users, injection attempt blocking, and an audit trail that proves you're doing it. Install the safety pack — five modules, pre-configured.</p>
+        <div class="modules">block-pii-output · block-injection · content-filter · audit-log · safety-score</div>
+      </div>
+      <div class="scenario">
+        <div class="scenario-who">Enterprise team</div>
+        <h3>"Compliance wants a tamper-proof ledger."</h3>
+        <p>Every LLM call needs to be hash-chained in an append-only audit log. Trust does this automatically — every request through the proxy is a signed ledger entry with chain verification.</p>
+        <div class="modules">trust-ledger · evidence-export · chain-verify · policy-engine</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="console-section">
+  <div class="section-label">The Console</div>
+  <h2>What you're actually looking at</h2>
+  <p class="lead">Six apps, one dashboard. Each tab is a different lens on the same traffic.</p>
+
+  <div class="console-tabs">
+    <button class="console-tab active" onclick="showTab('observe')">Observe</button>
+    <button class="console-tab" onclick="showTab('trust')">Trust</button>
+    <button class="console-tab" onclick="showTab('studio')">Studio</button>
+    <button class="console-tab" onclick="showTab('forge')">Forge</button>
+  </div>
+
+  <div id="tab-observe">
+    <p class="console-desc">Every request traced. Cost attribution by model and provider. Latency sparklines. Anomaly detection. Alerts when something looks wrong.</p>
+    <div class="screenshot-frame">
+      <img src="/site-assets/assets/screenshots/console-observe.png" alt="Observe dashboard with traces, cost, latency, and error rate stats" loading="lazy">
+      <div class="screenshot-caption">Traces & Cost Dashboard — real-time request monitoring</div>
+    </div>
+  </div>
+  <div id="tab-trust" class="hidden">
+    <p class="console-desc">Hash-chained audit ledger. Every LLM interaction is an immutable, signed event. Policy engine with block, warn, and log actions. Chain integrity verification.</p>
+    <div class="screenshot-frame">
+      <img src="/site-assets/assets/screenshots/console-trust.png" alt="Trust dashboard with policies, audit events, chain length, and integrity verification" loading="lazy">
+      <div class="screenshot-caption">Policies & Audit Ledger — tamper-evident compliance</div>
+    </div>
+  </div>
+  <div id="tab-studio" class="hidden">
+    <p class="console-desc">Version every prompt. Run A/B experiments across model variants. Snapshot tests to catch regressions. Full history of every change.</p>
+    <div class="screenshot-frame">
+      <img src="/site-assets/assets/screenshots/console-studio.png" alt="Studio dashboard with prompt templates, experiment progress bars, and version tracking" loading="lazy">
+      <div class="screenshot-caption">Prompts & Experiments — version, test, optimize</div>
+    </div>
+  </div>
+  <div id="tab-forge" class="hidden">
+    <p class="console-desc">Multi-step LLM workflows as directed acyclic graphs. Tool registry for function calling. Trigger rules. Batch queue for high-volume jobs.</p>
+    <div class="screenshot-frame">
+      <img src="/site-assets/assets/screenshots/console-forge.png" alt="Forge dashboard with workflow DAGs showing pipeline nodes with status indicators" loading="lazy">
+      <div class="screenshot-caption">Workflows & Tools — orchestrate multi-step LLM pipelines</div>
+    </div>
+  </div>
+</section>
+
+<section class="integration">
+  <div class="integration-inner">
+    <div class="section-label" style="text-align:center">Integration</div>
+    <h2>One line in your code</h2>
+    <p class="lead">If your code talks to the OpenAI API, it already works with Stockyard.</p>
+
+    <div class="lang-tabs">
+      <button class="lang-tab active" onclick="showLang('python')">Python</button>
+      <button class="lang-tab" onclick="showLang('typescript')">TypeScript</button>
+      <button class="lang-tab" onclick="showLang('curl')">curl</button>
+      <button class="lang-tab" onclick="showLang('env')">Env var</button>
+    </div>
+
+    <div id="lang-python">
+      <div class="code-block">
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="comment"># Your API key goes straight to the provider — Stockyard never stores it</span>
+<span class="fn">client</span> = OpenAI(
+    <span class="kw">base_url</span>=<span class="str">"http://localhost:4200/v1"</span>,  <span class="comment"># ← the only change</span>
+    <span class="kw">api_key</span>=<span class="str">"sk-your-key"</span>,
+)
+
+<span class="fn">response</span> = client.chat.completions.create(
+    <span class="kw">model</span>=<span class="str">"gpt-4o"</span>,
+    <span class="kw">messages</span>=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Explain LLM proxies in one sentence."</span>}],
+)
+<span class="fn">print</span>(response.choices[0].message.content)
+      </div>
+    </div>
+    <div id="lang-typescript" class="hidden">
+      <div class="code-block">
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">"openai"</span>;
+
+<span class="kw">const</span> <span class="fn">client</span> = <span class="kw">new</span> OpenAI({
+  <span class="kw">baseURL</span>: <span class="str">"http://localhost:4200/v1"</span>,  <span class="comment">// ← the only change</span>
+  <span class="kw">apiKey</span>: <span class="str">"sk-your-key"</span>,
+});
+
+<span class="kw">const</span> <span class="fn">response</span> = <span class="kw">await</span> client.chat.completions.create({
+  <span class="kw">model</span>: <span class="str">"gpt-4o"</span>,
+  <span class="kw">messages</span>: [{ <span class="kw">role</span>: <span class="str">"user"</span>, <span class="kw">content</span>: <span class="str">"Explain LLM proxies in one sentence."</span> }],
+});
+console.log(response.choices[0].message.content);
+      </div>
+    </div>
+    <div id="lang-curl" class="hidden">
+      <div class="code-block">
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">  -H <span class="str">"Authorization: Bearer sk-your-key"</span> \</span>
+<span class="cmd">  -H <span class="str">"Content-Type: application/json"</span> \</span>
+<span class="cmd">  -d <span class="str">'{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Explain LLM proxies in one sentence."}]
+  }'</span></span>
+      </div>
+    </div>
+    <div id="lang-env" class="hidden">
+      <div class="code-block">
+<span class="comment"># Set once — every OpenAI SDK call in your app routes through Stockyard</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+
+<span class="comment"># Your existing code works unchanged</span>
+<span class="cmd">python app.py</span>
+      </div>
+    </div>
+
+    <p class="note">Works with any OpenAI-compatible client. The Anthropic, Google, and Groq SDKs all support custom base URLs.</p>
+  </div>
+</section>
+
+<section class="guide-cta">
+  <h2>Ready to try it?</h2>
+  <p>Three commands. Thirty seconds. Everything between your app and the model.</p>
+  <div class="cta-group">
+    <a href="/docs/#install" class="btn btn-primary">Install Stockyard</a>
+    <a href="/playground" class="btn btn-secondary">Try the Playground</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('tab-' + name).classList.remove('hidden');
+  document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+function showLang(name) {
+  document.querySelectorAll('[id^="lang-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('lang-' + name).classList.remove('hidden');
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
