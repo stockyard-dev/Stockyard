@@ -341,46 +341,8 @@ func Boot(pc ProductConfig) {
 	broadcaster.RegisterSSE(srv.Mux())
 
 	// Playground share endpoints
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Printf("[playground] init panic (skipped): %v", r)
-			}
-		}()
-		registerPlaygroundRoutes(srv.Mux(), db.Conn())
-	}()
+	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 
-	// Webhook manager (alerts, cost thresholds, trust violations → Slack, HTTP, etc.)
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Printf("[webhooks] init panic (skipped): %v", r)
-			}
-		}()
-		webhookMgr := NewWebhookManager(db.Conn())
-		RegisterWebhookRoutes(srv.Mux(), webhookMgr)
-	}()
-
-	// Status collector (real-time metrics for /api/status)
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Printf("[status] init panic (skipped): %v", r)
-			}
-		}()
-		statusCollector := NewStatusCollector()
-		RegisterStatusRoutes(srv.Mux(), statusCollector, db.Conn(), pc.Version)
-	}()
-
-	// Config export/import/diff
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				log.Printf("[config-export] init panic (skipped): %v", r)
-			}
-		}()
-		RegisterConfigRoutes(srv.Mux(), db.Conn())
-	}()
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
