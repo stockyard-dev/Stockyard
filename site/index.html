@@ -9,7 +9,11 @@
 <meta property="og:description" content="Six apps. One binary. Zero dependencies. The complete infrastructure layer for LLM-powered applications.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
+<meta property="og:image" content="https://stockyard.dev/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/assets/marketing/og-card.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -117,6 +121,15 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .compare-table{font-size:0.75rem}
   .tier-row{flex-direction:column;align-items:center}
 }
+.console-preview{padding:4rem 2rem;max-width:1200px;margin:0 auto;text-align:center}
+.console-preview .section-label{margin-bottom:0.5rem}
+.console-preview p{color:var(--cream-dim);font-size:0.95rem;margin-bottom:2rem}
+.console-tabs{display:flex;justify-content:center;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3)}
+.console-tab{padding:0.5rem 1.2rem;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--cream-dim);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;text-transform:capitalize;transition:all 0.15s}
+.console-tab:hover{color:var(--cream)}.console-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.console-gallery{position:relative;border:1px solid var(--bg3);background:var(--bg2);overflow:hidden;border-radius:0}
+.console-gallery img{width:100%;display:block;transition:opacity 0.3s}
+.console-gallery img.hidden{display:none}
 </style>
 </head>
 <body>
@@ -232,6 +245,33 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </div>
 </section>
+
+<section class="console-preview">
+  <div class="section-label leather">The Console</div>
+  <p>A full management dashboard — embedded in the binary, no separate UI service needed.</p>
+  <div class="console-tabs">
+    <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
+    <button class="console-tab" onclick="showConsole('observe')">Observe</button>
+    <button class="console-tab" onclick="showConsole('proxy')">Proxy</button>
+    <button class="console-tab" onclick="showConsole('trust')">Trust</button>
+    <button class="console-tab" onclick="showConsole('exchange')">Exchange</button>
+  </div>
+  <div class="console-gallery">
+    <img id="cs-overview" src="/assets/screenshots/console-overview.png" alt="Stockyard console — system overview showing all 6 apps running">
+    <img id="cs-observe" src="/assets/screenshots/console-observe.png" alt="Observe dashboard — traces, costs, latency across providers" class="hidden">
+    <img id="cs-proxy" src="/assets/screenshots/console-proxy.png" alt="Proxy middleware chain — 58 modules with runtime toggles" class="hidden">
+    <img id="cs-trust" src="/assets/screenshots/console-trust.png" alt="Trust policies and hash-chained audit ledger" class="hidden">
+    <img id="cs-exchange" src="/assets/screenshots/console-exchange.png" alt="Exchange pack marketplace — one-click config installs" class="hidden">
+  </div>
+</section>
+<script>
+function showConsole(name){
+  document.querySelectorAll('.console-gallery img').forEach(i=>i.classList.add('hidden'));
+  document.getElementById('cs-'+name).classList.remove('hidden');
+  document.querySelectorAll('.console-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
 
 <section class="modules">
   <div class="modules-inner">

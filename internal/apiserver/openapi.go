@@ -18,7 +18,7 @@ func OpenAPISpec() map[string]any {
 		},
 		"servers": []map[string]string{
 			{"url": "http://localhost:4200", "description": "Local"},
-			{"url": "https://stockyard-production.up.railway.app", "description": "Cloud"},
+			{"url": "https://stockyard.dev", "description": "Cloud"},
 		},
 		"tags": []map[string]string{
 			{"name": "Proxy", "description": "OpenAI-compatible LLM proxy"},

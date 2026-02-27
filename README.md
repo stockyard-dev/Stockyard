@@ -1,30 +1,28 @@
 # Stockyard
 
-[![CI](https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml/badge.svg)](https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml)
+<p align="center">
+  <img src="site/assets/marketing/readme-banner.png" alt="Stockyard — Where LLM traffic gets sorted" width="100%">
+</p>
 
-**Where LLM traffic gets sorted.**
+<p align="center">
+  <a href="https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml"><img src="https://github.com/stockyard-dev/stockyard/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://stockyard.dev"><img src="https://img.shields.io/badge/website-stockyard.dev-e8753a" alt="Website"></a>
+  <a href="https://stockyard.dev/docs"><img src="https://img.shields.io/badge/docs-stockyard.dev%2Fdocs-c4a87a" alt="Docs"></a>
+</p>
 
-Six apps. One Go binary. Zero dependencies. The complete LLM infrastructure platform — proxy, observe, trust, studio, forge, and exchange.
+**Six apps. One Go binary. Zero dependencies.** The complete LLM infrastructure platform — proxy, observe, trust, studio, forge, and exchange.
 
-[**Try the Playground →**](https://stockyard-production.up.railway.app/playground) — paste an API key, toggle middleware, compare models. No signup.
+[**Try the Playground →**](https://stockyard.dev/playground) — paste an API key, toggle middleware, compare models. No signup.
 
-```
-Your App  →  Stockyard  →  OpenAI / Anthropic / Gemini / Groq / Mistral / 11 more
-                 │
-    Console (localhost:4200/ui)
-    ├── Proxy     50+ middleware modules, runtime toggles
-    ├── Observe   Traces, costs, alerts, anomaly detection
-    ├── Trust     Hash-chained audit ledger, policies
-    ├── Studio    A/B experiments, benchmarks, versioned prompts
-    ├── Forge     DAG workflow engine
-    └── Exchange  Config pack marketplace
-```
+<p align="center">
+  <img src="site/assets/marketing/architecture.png" alt="Stockyard architecture" width="100%">
+</p>
 
 ## Install
 
 ```bash
 # One-line install (Linux/macOS)
-curl -sSL https://stockyard-production.up.railway.app/install.sh | sh
+curl -sSL https://stockyard.dev/install | sh
 ```
 
 Or run with Docker:
@@ -62,6 +60,31 @@ curl http://localhost:4200/v1/chat/completions \
 ```
 
 Open `http://localhost:4200/ui` for the web console.
+
+### Console
+
+Every view runs inside the binary — no separate UI service, no Docker sidecar, no setup.
+
+<p align="center">
+  <img src="site/assets/screenshots/console-overview.png" alt="Console — system overview" width="100%">
+</p>
+
+<details>
+<summary><strong>More console views</strong></summary>
+
+**Observe** — traces, costs, latency across all providers:
+<img src="site/assets/screenshots/console-observe.png" alt="Observe dashboard" width="100%">
+
+**Proxy** — 58 middleware modules with runtime toggles:
+<img src="site/assets/screenshots/console-proxy.png" alt="Proxy middleware chain" width="100%">
+
+**Trust** — policies and hash-chained audit ledger:
+<img src="site/assets/screenshots/console-trust.png" alt="Trust policies" width="100%">
+
+**Exchange** — config pack marketplace:
+<img src="site/assets/screenshots/console-exchange.png" alt="Exchange marketplace" width="100%">
+
+</details>
 
 ## The Platform
 
@@ -291,7 +314,7 @@ GET  /api/plans                           Pricing plans
 |------|-------|----------|-------|-----------|
 | **Community** | Free | 10k/mo | 3 | 7 days |
 | **Pro** | $9.99/mo | Unlimited | Unlimited | Unlimited |
-| **Cloud** | $29.99/mo | 100k/mo | Unlimited | 30 days |
+| **Cloud** | $29.99/mo | 500k/mo | Unlimited | 30 days |
 | **Enterprise** | Custom | Unlimited | Unlimited | 1 year |
 
 All tiers include all 6 apps, 50+ modules, and 16 providers. No per-token markup.
@@ -308,11 +331,11 @@ export STOCKYARD_LICENSE_KEY="SY-eyJ..."
 
 ## Links
 
-- **Playground:** [stockyard-production.up.railway.app/playground](https://stockyard-production.up.railway.app/playground)
-- **Console:** [stockyard-production.up.railway.app/ui](https://stockyard-production.up.railway.app/ui)
-- **Website:** [stockyard-production.up.railway.app](https://stockyard-production.up.railway.app)
-- **Docs:** [stockyard-production.up.railway.app/docs](https://stockyard-production.up.railway.app/docs/)
-- **API Health:** [stockyard-production.up.railway.app/health](https://stockyard-production.up.railway.app/health)
+- **Website:** [stockyard.dev](https://stockyard.dev)
+- **Playground:** [stockyard.dev/playground](https://stockyard.dev/playground)
+- **Console:** [stockyard.dev/ui](https://stockyard.dev/ui)
+- **Docs:** [stockyard.dev/docs](https://stockyard.dev/docs/)
+- **API Health:** [stockyard.dev/health](https://stockyard.dev/health)
 
 ## License
 

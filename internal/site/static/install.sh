@@ -1,6 +1,6 @@
 #!/bin/sh
 # Stockyard installer
-# Usage: curl -sSL https://stockyard-production.up.railway.app/install.sh | sh
+# Usage: curl -sSL https://stockyard.dev/install.sh | sh
 set -e
 
 REPO="stockyard-dev/stockyard"
@@ -59,7 +59,7 @@ if [ -n "$LATEST" ]; then
     echo ""
     echo "  Console:    http://localhost:8080/ui"
     echo "  Playground: http://localhost:8080/playground"
-    echo "  Docs:       https://stockyard-production.up.railway.app/docs/"
+    echo "  Docs:       https://stockyard.dev/docs/"
     echo ""
     exit 0
   fi
@@ -104,5 +104,5 @@ echo "    stockyard"
 echo ""
 echo "  Console:    http://localhost:8080/ui"
 echo "  Playground: http://localhost:8080/playground"
-echo "  Docs:       https://stockyard-production.up.railway.app/docs/"
+echo "  Docs:       https://stockyard.dev/docs/"
 echo ""
