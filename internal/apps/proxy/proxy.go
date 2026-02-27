@@ -380,11 +380,22 @@ func (a *App) handleStatus(w http.ResponseWriter, r *http.Request) {
 	a.conn.QueryRow("SELECT COUNT(*) FROM proxy_providers").Scan(&providerCount)
 	a.conn.QueryRow("SELECT COUNT(*) FROM proxy_routes").Scan(&routeCount)
 
+	// Count modules actually in the live middleware chain
+	var chainCount int
+	if a.toggle != nil {
+		for _, enabled := range a.toggle.KnownModules() {
+			if enabled {
+				chainCount++
+			}
+		}
+	}
+
 	writeJSON(w, map[string]any{
 		"app":              "proxy",
 		"status":           "running",
 		"total_modules":    moduleCount,
 		"enabled_modules":  enabledCount,
+		"live_chain":       chainCount,
 		"providers":        providerCount,
 		"routes":           routeCount,
 	})

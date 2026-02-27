@@ -108,6 +108,13 @@ func (a *App) Install(packSlug string) (*InstallResult, error) {
 		return nil, fmt.Errorf("pack not found: %s", packSlug)
 	}
 
+	// Check for duplicate install
+	var existingCount int
+	a.conn.QueryRow("SELECT COUNT(*) FROM exchange_installed WHERE pack_slug = ?", packSlug).Scan(&existingCount)
+	if existingCount > 0 {
+		return nil, fmt.Errorf("pack %s is already installed (uninstall first to reinstall)", packSlug)
+	}
+
 	// Parse pack content
 	var content PackContent
 	if err := json.Unmarshal([]byte(contentJSON), &content); err != nil {
@@ -428,6 +435,15 @@ func (a *App) Uninstall(installID int) (*InstallResult, error) {
 	for _, s := range content.Alerts {
 		a.conn.Exec("DELETE FROM observe_alert_rules WHERE name = ?", s.Name)
 		result.Applied["alerts"]++
+	}
+
+	// Revert module toggles (disable modules that this pack enabled)
+	for _, s := range content.Modules {
+		a.conn.Exec("UPDATE proxy_modules SET enabled = 0 WHERE name = ?", s.Name)
+		if a.toggle != nil {
+			a.toggle.Set(s.Name, false)
+		}
+		result.Applied["modules"]++
 	}
 
 	a.conn.Exec("DELETE FROM exchange_installed WHERE id = ?", installID)

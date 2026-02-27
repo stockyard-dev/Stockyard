@@ -124,6 +124,7 @@ CREATE INDEX IF NOT EXISTS idx_safety_events_created ON observe_safety_events(cr
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Overview / dashboard data
 	mux.HandleFunc("GET /api/observe/overview", a.handleOverview)
+	mux.HandleFunc("GET /api/observe/status", a.handleOverview)
 	mux.HandleFunc("GET /api/observe/costs", a.handleCosts)
 	mux.HandleFunc("GET /api/observe/costs/daily", a.handleCostDaily)
 	mux.HandleFunc("GET /api/observe/timeseries", a.handleTimeseries)
