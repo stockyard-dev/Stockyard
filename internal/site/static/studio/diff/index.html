@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<title>Prompt Diff — Stockyard Studio</title>
+<meta name="description" content="Visual side-by-side diff for Stockyard Studio prompt template versioning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--red:#a04040;--red-light:#d45555;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+
+.page-hero{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.15;margin-bottom:1rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:500px;margin:0 auto}
+
+.diff-container{max-width:1200px;margin:2rem auto;padding:0 2rem}
+
+/* Template selector */
+.template-bar{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:0;border-bottom:none;flex-wrap:wrap}
+.template-bar label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)}
+.template-select{font-family:var(--font-mono);font-size:0.8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);padding:0.4rem 0.8rem;cursor:pointer}
+.template-select:focus{outline:1px solid var(--rust);border-color:var(--rust)}
+.version-badge{font-family:var(--font-mono);font-size:0.65rem;padding:2px 8px;border-radius:2px;background:var(--bg3);color:var(--cream-dim)}
+.ver-old{background:var(--red);color:var(--cream)}
+.ver-new{background:var(--green);color:var(--cream)}
+.diff-stats{margin-left:auto;font-family:var(--font-mono);font-size:0.75rem}
+.diff-stats .add{color:var(--green-light)}
+.diff-stats .del{color:var(--red-light)}
+
+/* Diff view */
+.diff-view{display:flex;border:1px solid var(--bg3);background:var(--bg2)}
+.diff-pane{flex:1;overflow:auto;max-height:500px}
+.diff-pane-header{font-family:var(--font-mono);font-size:0.7rem;padding:0.6rem 1rem;background:var(--bg);border-bottom:1px solid var(--bg3);color:var(--cream-muted);position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center}
+.diff-divider{width:1px;background:var(--bg3);flex-shrink:0}
+.diff-line{display:flex;font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;border-bottom:1px solid rgba(46,38,30,0.5)}
+.diff-line:hover{background:rgba(160,132,92,0.06)}
+.diff-line-num{width:40px;text-align:right;padding:0 8px;color:var(--cream-muted);user-select:none;flex-shrink:0;font-size:0.7rem}
+.diff-line-content{flex:1;padding:0 12px;white-space:pre-wrap;word-break:break-word}
+.diff-line.added{background:rgba(74,140,92,0.12)}
+.diff-line.added .diff-line-num{color:var(--green-light)}
+.diff-line.removed{background:rgba(160,64,64,0.12)}
+.diff-line.removed .diff-line-num{color:var(--red-light)}
+.diff-line.changed{background:rgba(196,168,122,0.08)}
+.diff-highlight-add{background:rgba(74,140,92,0.35);border-radius:2px;padding:0 1px}
+.diff-highlight-del{background:rgba(160,64,64,0.35);border-radius:2px;padding:0 1px;text-decoration:line-through}
+
+/* Unified view toggle */
+.view-toggle{display:flex;gap:0;margin-left:1rem}
+.view-btn{font-family:var(--font-mono);font-size:0.7rem;padding:0.35rem 0.8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);cursor:pointer}
+.view-btn:first-child{border-right:none;border-radius:2px 0 0 2px}
+.view-btn:last-child{border-radius:0 2px 2px 0}
+.view-btn.active{background:var(--bg3);color:var(--cream)}
+
+/* Output comparison */
+.output-section{max-width:1200px;margin:2rem auto;padding:0 2rem}
+.output-header{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;text-align:center}
+.output-compare{display:flex;gap:1.5rem}
+.output-card{flex:1;background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem}
+.output-card-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem;display:flex;align-items:center;gap:8px}
+.output-card-label .badge{padding:2px 6px;border-radius:2px;font-size:0.6rem}
+.output-text{font-size:0.9rem;color:var(--cream-dim);line-height:1.6}
+.output-metrics{display:flex;gap:1.5rem;margin-top:1rem;padding-top:0.8rem;border-top:1px solid var(--bg3)}
+.output-metric{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)}
+.output-metric span{color:var(--cream)}
+
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+@media(max-width:768px){.diff-view{flex-direction:column}.diff-divider{width:100%;height:1px}.output-compare{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow">Studio — Prompt Diff</div>
+  <h1>See exactly what <span class="accent">changed.</span></h1>
+  <p class="sub">Compare prompt template versions side-by-side. See insertions, deletions, and how each change affects model output.</p>
+</div>
+
+<div class="diff-container">
+  <div class="template-bar">
+    <label>Template</label>
+    <select class="template-select" id="template-select" onchange="loadTemplate()">
+      <option value="customer-support">customer-support-v2</option>
+      <option value="code-review">code-review-agent</option>
+      <option value="summarizer">doc-summarizer</option>
+    </select>
+    <span class="version-badge ver-old" id="ver-old">v3</span>
+    <span style="color:var(--cream-muted)">→</span>
+    <span class="version-badge ver-new" id="ver-new">v4</span>
+    <div class="diff-stats" id="diff-stats"><span class="add">+3</span> <span class="del">-2</span></div>
+    <div class="view-toggle">
+      <button class="view-btn active" onclick="setView('split',this)">Split</button>
+      <button class="view-btn" onclick="setView('unified',this)">Unified</button>
+    </div>
+  </div>
+  <div class="diff-view" id="diff-view"></div>
+</div>
+
+<div class="output-section">
+  <div class="output-header">A/B Output Comparison</div>
+  <div class="output-compare" id="output-compare"></div>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+
+<script>
+const TEMPLATES = {
+  "customer-support": {
+    name: "customer-support-v2",
+    oldVer: "v3", newVer: "v4",
+    old: `You are a helpful customer support agent for {{company_name}}.
+Your role is to assist customers with their questions and issues.
+
+Guidelines:
+- Be polite and professional
+- If you don't know the answer, say so
+- Always greet the customer by name: {{customer_name}}
+
+Customer message: {{message}}`,
+    new: `You are a friendly, efficient support agent for {{company_name}}.
+Your role is to resolve customer issues quickly and thoroughly.
+
+Guidelines:
+- Be warm but concise — respect the customer's time
+- If you don't know the answer, escalate to a human agent
+- Always greet the customer by name: {{customer_name}}
+- Include a ticket reference: {{ticket_id}}
+- End with a satisfaction check
+
+Customer message: {{message}}`,
+    outputOld: {
+      text: "Hello Sarah! Thank you for reaching out to Acme Corp support. I'd be happy to help you with your billing question. Let me look into that for you. I can see your account shows a charge of $49.99 on January 15th. This appears to be your monthly subscription renewal. Is there anything else I can help you with?",
+      tokens: 67, latency: "1.2s", model: "gpt-4o"
+    },
+    outputNew: {
+      text: "Hi Sarah! Thanks for contacting Acme Corp — let me help with that billing question right away.\n\nYour account shows a $49.99 charge on Jan 15 — that's your monthly subscription renewal. If this looks incorrect, I can escalate to our billing team immediately.\n\nRef: #TK-4821\n\nDoes that resolve your concern, or would you like me to dig deeper?",
+      tokens: 72, latency: "1.1s", model: "gpt-4o"
+    }
+  },
+  "code-review": {
+    name: "code-review-agent",
+    oldVer: "v1", newVer: "v2",
+    old: `Review the following code for bugs and improvements.
+
+Language: {{language}}
+Code:
+\`\`\`
+{{code}}
+\`\`\`
+
+Provide feedback as a list of issues.`,
+    new: `Review this {{language}} code for correctness, security, and performance.
+
+Focus areas (in order of priority):
+1. Security vulnerabilities (SQL injection, XSS, auth bypass)
+2. Logic errors and edge cases
+3. Performance bottlenecks
+4. Code style and readability
+
+Code:
+\`\`\`{{language}}
+{{code}}
+\`\`\`
+
+Format: For each issue, state severity (critical/warning/info), line reference, and a concrete fix. Skip praise — only report problems.`,
+    outputOld: {
+      text: "Here are some issues I found:\n- Line 12: You should validate user input\n- Line 25: This loop could be optimized\n- Line 8: Consider adding error handling\n- Overall the code looks decent but could use some improvements",
+      tokens: 45, latency: "0.9s", model: "gpt-4o"
+    },
+    outputNew: {
+      text: "**Critical** — Line 12: SQL query uses string concatenation with user input. Fix: Use parameterized query `db.Query(\"SELECT * FROM users WHERE id = ?\", userID)`\n\n**Critical** — Line 8: No error check on `db.Open()`. Fix: Add `if err != nil { return fmt.Errorf(\"db: %w\", err) }`\n\n**Warning** — Line 25: O(n²) nested loop over users×roles. Fix: Index roles in a map for O(n) lookup\n\n**Info** — Line 3: Exported function missing doc comment",
+      tokens: 89, latency: "1.3s", model: "gpt-4o"
+    }
+  },
+  "summarizer": {
+    name: "doc-summarizer",
+    oldVer: "v2", newVer: "v3",
+    old: `Summarize the following document.
+
+Document: {{document}}
+
+Provide a brief summary.`,
+    new: `Summarize this document for a {{audience}} audience.
+
+Document: {{document}}
+
+Requirements:
+- Lead with the single most important takeaway
+- Maximum {{max_words}} words
+- Use bullet points only if 3+ distinct topics
+- Preserve all numbers, dates, and proper nouns exactly
+- Flag any claims that appear unsubstantiated`,
+    outputOld: {
+      text: "This document discusses the company's Q3 earnings. Revenue was up and there were some new product launches. The company is optimistic about the future and plans to expand into new markets. Overall, it was a good quarter.",
+      tokens: 42, latency: "0.6s", model: "gpt-4o"
+    },
+    outputNew: {
+      text: "Q3 revenue hit $4.2B (+18% YoY), driven by the AI platform launch in August.\n\n- Cloud segment: $2.1B (+31%), now 50% of total revenue\n- Hardware: $1.4B (-3%), declining as expected\n- Services: $700M (+12%), strong consulting demand\n\nGuidance raised to $17.5B for FY2026 (prev. $16.8B). Note: The \"90% customer satisfaction\" claim on p.12 cites no methodology. ⚠️",
+      tokens: 78, latency: "0.8s", model: "gpt-4o"
+    }
+  }
+};
+
+let currentView = 'split';
+
+function setView(view, btn) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadTemplate();
+}
+
+function diffLines(oldText, newText) {
+  const oldLines = oldText.split('\n');
+  const newLines = newText.split('\n');
+  
+  // Simple LCS-based diff
+  const m = oldLines.length, n = newLines.length;
+  const dp = Array.from({length:m+1}, ()=>Array(n+1).fill(0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){
+    dp[i][j] = oldLines[i-1]===newLines[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j],dp[i][j-1]);
+  }
+  
+  const result = [];
+  let i=m, j=n;
+  const stack = [];
+  while(i>0||j>0){
+    if(i>0 && j>0 && oldLines[i-1]===newLines[j-1]){
+      stack.push({type:'same',oldLine:i,newLine:j,text:oldLines[i-1]});
+      i--;j--;
+    } else if(j>0 && (i===0||dp[i][j-1]>=dp[i-1][j])){
+      stack.push({type:'added',newLine:j,text:newLines[j-1]});
+      j--;
+    } else {
+      stack.push({type:'removed',oldLine:i,text:oldLines[i-1]});
+      i--;
+    }
+  }
+  return stack.reverse();
+}
+
+function highlightWords(oldText, newText) {
+  const oldWords = oldText.split(/(\s+)/);
+  const newWords = newText.split(/(\s+)/);
+  const oldSet = new Set(oldWords);
+  const newSet = new Set(newWords);
+  
+  const oldHtml = oldWords.map(w => 
+    w.trim() && !newSet.has(w) ? `<span class="diff-highlight-del">${esc(w)}</span>` : esc(w)
+  ).join('');
+  const newHtml = newWords.map(w =>
+    w.trim() && !oldSet.has(w) ? `<span class="diff-highlight-add">${esc(w)}</span>` : esc(w)
+  ).join('');
+  return {oldHtml, newHtml};
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderSplitDiff(diff) {
+  let leftHtml = '', rightHtml = '';
+  let adds = 0, dels = 0;
+  
+  diff.forEach(d => {
+    if(d.type === 'same') {
+      leftHtml += `<div class="diff-line"><div class="diff-line-num">${d.oldLine}</div><div class="diff-line-content">${esc(d.text)}</div></div>`;
+      rightHtml += `<div class="diff-line"><div class="diff-line-num">${d.newLine}</div><div class="diff-line-content">${esc(d.text)}</div></div>`;
+    } else if(d.type === 'removed') {
+      leftHtml += `<div class="diff-line removed"><div class="diff-line-num">${d.oldLine}</div><div class="diff-line-content">${esc(d.text)}</div></div>`;
+      rightHtml += `<div class="diff-line removed"><div class="diff-line-num"></div><div class="diff-line-content"></div></div>`;
+      dels++;
+    } else if(d.type === 'added') {
+      leftHtml += `<div class="diff-line added"><div class="diff-line-num"></div><div class="diff-line-content"></div></div>`;
+      rightHtml += `<div class="diff-line added"><div class="diff-line-num">${d.newLine}</div><div class="diff-line-content">${esc(d.text)}</div></div>`;
+      adds++;
+    }
+  });
+  
+  return {html: `
+    <div class="diff-pane">
+      <div class="diff-pane-header"><span>Old version</span><span style="color:var(--red-light)">−${dels} lines</span></div>
+      ${leftHtml}
+    </div>
+    <div class="diff-divider"></div>
+    <div class="diff-pane">
+      <div class="diff-pane-header"><span>New version</span><span style="color:var(--green-light)">+${adds} lines</span></div>
+      ${rightHtml}
+    </div>`, adds, dels};
+}
+
+function renderUnifiedDiff(diff) {
+  let html = `<div class="diff-pane" style="flex:1"><div class="diff-pane-header">Unified diff</div>`;
+  let adds = 0, dels = 0;
+  
+  diff.forEach(d => {
+    if(d.type === 'same') {
+      html += `<div class="diff-line"><div class="diff-line-num">${d.oldLine}</div><div class="diff-line-content"> ${esc(d.text)}</div></div>`;
+    } else if(d.type === 'removed') {
+      html += `<div class="diff-line removed"><div class="diff-line-num">${d.oldLine}</div><div class="diff-line-content">-${esc(d.text)}</div></div>`;
+      dels++;
+    } else if(d.type === 'added') {
+      html += `<div class="diff-line added"><div class="diff-line-num">${d.newLine}</div><div class="diff-line-content">+${esc(d.text)}</div></div>`;
+      adds++;
+    }
+  });
+  
+  return {html: html + '</div>', adds, dels};
+}
+
+function loadTemplate() {
+  const key = document.getElementById('template-select').value;
+  const t = TEMPLATES[key];
+  
+  document.getElementById('ver-old').textContent = t.oldVer;
+  document.getElementById('ver-new').textContent = t.newVer;
+  
+  const diff = diffLines(t.old, t.new);
+  const {html, adds, dels} = currentView === 'split' ? renderSplitDiff(diff) : renderUnifiedDiff(diff);
+  
+  document.getElementById('diff-view').innerHTML = html;
+  document.getElementById('diff-stats').innerHTML = `<span class="add">+${adds}</span> <span class="del">-${dels}</span>`;
+  
+  // Render output comparison
+  const outEl = document.getElementById('output-compare');
+  outEl.innerHTML = `
+    <div class="output-card">
+      <div class="output-card-label"><span class="badge" style="background:var(--red)">${t.oldVer}</span> Output</div>
+      <div class="output-text">${esc(t.outputOld.text)}</div>
+      <div class="output-metrics">
+        <div class="output-metric">Tokens: <span>${t.outputOld.tokens}</span></div>
+        <div class="output-metric">Latency: <span>${t.outputOld.latency}</span></div>
+        <div class="output-metric">Model: <span>${t.outputOld.model}</span></div>
+      </div>
+    </div>
+    <div class="output-card">
+      <div class="output-card-label"><span class="badge" style="background:var(--green)">${t.newVer}</span> Output</div>
+      <div class="output-text">${esc(t.outputNew.text)}</div>
+      <div class="output-metrics">
+        <div class="output-metric">Tokens: <span>${t.outputNew.tokens}</span></div>
+        <div class="output-metric">Latency: <span>${t.outputNew.latency}</span></div>
+        <div class="output-metric">Model: <span>${t.outputNew.model}</span></div>
+      </div>
+    </div>
+  `;
+}
+
+loadTemplate();
+</script>
+</body>
+</html>

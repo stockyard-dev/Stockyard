@@ -22,7 +22,7 @@ func Register(mux *http.ServeMux) {
 	// Serve known page routes as their index.html
 	pages := []string{
 		"/cloud/", "/pricing/", "/docs/", "/products/",
-		"/exchange/", "/observe/", "/account/", "/success/", "/modules/",
+		"/exchange/", "/observe/", "/account/", "/success/", "/modules/", "/studio/diff/",
 		"/privacy/", "/terms/", "/changelog/",
 	}
 
