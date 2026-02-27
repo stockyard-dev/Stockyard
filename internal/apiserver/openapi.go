@@ -29,6 +29,7 @@ func OpenAPISpec() map[string]any {
 			{"name": "Exchange", "description": "Config pack marketplace"},
 			{"name": "Auth", "description": "Users, API keys, provider keys"},
 			{"name": "Playground", "description": "Shareable playground sessions"},
+			{"name": "Webhooks", "description": "Event delivery to external endpoints"},
 			{"name": "System", "description": "Health, license, plans"},
 		},
 		"paths": openAPIPaths(),
@@ -140,6 +141,9 @@ func openAPIPaths() map[string]any {
 			"get":  ep("List user API keys", "Auth", admin, ok),
 			"post": ep("Generate API key for user", "Auth", admin, ok),
 		},
+		"/api/auth/users/{id}/keys/{keyId}/rotate": map[string]any{
+			"post": ep("Rotate API key (revoke old, generate new)", "Auth", admin, ok),
+		},
 		"/api/auth/users/{id}/providers/{provider}": map[string]any{
 			"put":    ep("Set provider API key for user", "Auth", admin, ok),
 			"delete": ep("Delete provider key for user", "Auth", admin, ok),
@@ -159,6 +163,17 @@ func openAPIPaths() map[string]any {
 		// Playground
 		"/api/playground/share":      map[string]any{"post": ep("Create shareable playground session (30-day TTL)", "Playground", nil, ok)},
 		"/api/playground/share/{id}": map[string]any{"get": ep("Retrieve shared playground session", "Playground", nil, ok)},
+
+		// Webhooks
+		"/api/webhooks":      map[string]any{
+			"get":  ep("List registered webhooks", "Webhooks", admin, ok),
+			"post": ep("Register a webhook endpoint", "Webhooks", admin, ok),
+		},
+		"/api/webhooks/{id}":   map[string]any{"delete": ep("Delete a webhook", "Webhooks", admin, ok)},
+		"/api/webhooks/test":   map[string]any{"post": ep("Send test event to all webhooks", "Webhooks", admin, ok)},
+
+		// Status
+		"/api/status": map[string]any{"get": ep("System status, uptime, component health, request metrics", "System", nil, ok)},
 	}
 }
 

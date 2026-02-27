@@ -1,0 +1,13 @@
+# Minimal runtime image for GoReleaser builds.
+# The binary is already compiled — just copy it in.
+FROM alpine:3.20
+RUN apk add --no-cache ca-certificates tzdata
+RUN adduser -D -h /home/stockyard stockyard
+COPY stockyard /usr/local/bin/stockyard
+RUN mkdir -p /data && chown stockyard:stockyard /data
+VOLUME /data
+ENV STOCKYARD_DATA_DIR=/data
+EXPOSE 4200
+ENV PORT=4200
+USER stockyard
+ENTRYPOINT ["stockyard"]

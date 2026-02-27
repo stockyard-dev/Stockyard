@@ -3,7 +3,7 @@
  * @stockyard/mcp-stockyard — The complete LLM infrastructure suite
  * 
  * MCP server for Stockyard Stockyard.
- * All 125 Stockyard products in one binary.
+ * 6 apps, 58 modules in one binary.
  * 
  * Usage with Claude Desktop / Cursor / Windsurf:
  *   npx @stockyard/mcp-stockyard

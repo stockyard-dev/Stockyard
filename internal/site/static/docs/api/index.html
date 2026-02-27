@@ -192,6 +192,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">GET</td><td>/api/auth/me</td><td>Current user info</td></tr>
       <tr><td class="method">GET</td><td>/api/auth/me/usage</td><td>My usage stats</td></tr>
       <tr><td class="method">PUT</td><td>/api/auth/me/providers/{name}</td><td>Add provider key</td></tr>
+      <tr><td class="method">POST</td><td>/api/auth/me/keys/{id}/rotate</td><td>Rotate API key (revoke old, generate new)</td></tr>
       <tr><td class="method">GET</td><td>/api/plans</td><td>Pricing plans</td></tr>
     </table>
 
@@ -205,6 +206,32 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">DELETE</td><td>/api/exchange/installed/{id}</td><td>Uninstall pack</td></tr>
       <tr><td class="method">GET</td><td>/api/exchange/environments</td><td>Environments</td></tr>
       <tr><td class="method">POST</td><td>/api/exchange/environments/{name}/sync</td><td>Sync environment</td></tr>
+    </table>
+
+    <h2 id="playground-api">Playground</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">POST</td><td>/api/playground/share</td><td>Create shareable session (30-day TTL)</td></tr>
+      <tr><td class="method">GET</td><td>/api/playground/share/{id}</td><td>Retrieve shared session</td></tr>
+    </table>
+
+    <h2 id="webhooks-api">Webhooks</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">GET</td><td>/api/webhooks</td><td>List registered webhooks</td></tr>
+      <tr><td class="method">POST</td><td>/api/webhooks</td><td>Register a webhook endpoint</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
+      <tr><td class="method">POST</td><td>/api/webhooks/test</td><td>Send test event to all webhooks</td></tr>
+    </table>
+
+    <h2 id="system-api">System</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">GET</td><td>/health</td><td>Health check</td></tr>
+      <tr><td class="method">GET</td><td>/api/status</td><td>System status, uptime, metrics, component health</td></tr>
+      <tr><td class="method">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
+      <tr><td class="method">GET</td><td>/api/license</td><td>License status and usage</td></tr>
+      <tr><td class="method">GET</td><td>/api/openapi.json</td><td>OpenAPI 3.1 specification</td></tr>
     </table>
 
     <div class="pn"><a href="/docs/exchange/">&larr; Exchange</a></div>

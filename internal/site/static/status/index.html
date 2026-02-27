@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Status — Stockyard</title>
+<meta name="description" content="Real-time system status for Stockyard. Uptime, component health, request metrics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--red:#c44d2c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:800px;margin:0 auto;padding:4rem 2rem}
+h1{font-size:2rem;margin-bottom:0.3rem}
+.sub{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);margin-bottom:2rem}
+.overall{display:flex;align-items:center;gap:12px;padding:1.5rem;border:1px solid var(--bg3);margin-bottom:2rem}
+.dot{width:16px;height:16px;border-radius:50%;flex-shrink:0}
+.dot.healthy{background:var(--green-light)}
+.dot.degraded{background:var(--gold)}
+.dot.down{background:var(--red)}
+.dot.loading{background:var(--cream-muted);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.overall-text{font-family:var(--font-mono);font-size:1.1rem}
+.overall-detail{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-left:auto}
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:2rem}
+.metric{padding:1rem;border:1px solid var(--bg3)}
+.metric-value{font-family:var(--font-mono);font-size:1.4rem;color:var(--cream)}
+.metric-label{font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px;margin-top:0.3rem}
+.components{margin-bottom:2rem}
+.comp{display:flex;align-items:center;gap:10px;padding:0.8rem 1rem;border-bottom:1px solid var(--bg3)}
+.comp:last-child{border-bottom:none}
+.comp-name{font-family:var(--font-mono);font-size:0.85rem;width:100px}
+.comp-status{font-family:var(--font-mono);font-size:0.75rem;padding:2px 8px;border-radius:3px}
+.comp-status.healthy{background:rgba(90,168,110,0.15);color:var(--green-light)}
+.comp-status.degraded{background:rgba(212,168,67,0.15);color:var(--gold)}
+.comp-status.down{background:rgba(196,77,44,0.15);color:var(--red)}
+.comp-detail{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-left:auto}
+.refresh{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);text-align:center;margin-top:1rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="2" y="8" width="28" height="4" rx="1" fill="#c45d2c"/><rect x="6" y="14" width="20" height="3" rx="1" fill="#a0845c"/><rect x="4" y="19" width="24" height="3" rx="1" fill="#c45d2c"/><rect x="8" y="24" width="16" height="3" rx="1" fill="#a0845c"/><rect x="14" y="4" width="4" height="4" rx="1" fill="#d4a843"/></svg>
+    STOCKYARD
+  </a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground/">Playground</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="/blog/">Blog</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+<div class="content">
+<h1>System Status</h1>
+<p class="sub">Real-time health of <a href="https://stockyard.dev">stockyard.dev</a>. Auto-refreshes every 30 seconds.</p>
+
+<div class="overall" id="overall">
+  <div class="dot loading" id="overall-dot"></div>
+  <span class="overall-text" id="overall-text">Checking...</span>
+  <span class="overall-detail" id="overall-detail"></span>
+</div>
+
+<div class="metrics" id="metrics"></div>
+
+<h2 style="font-size:1rem;margin-bottom:0.8rem">Components</h2>
+<div class="components" id="components">
+  <div class="comp"><span class="comp-name">Loading...</span></div>
+</div>
+
+<p class="refresh">Last checked: <span id="last-check">—</span> · Refreshes every 30s</p>
+<p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">
+  API: <code>GET /api/status</code> · <code>GET /health</code>
+</p>
+</div>
+
+<footer style="text-align:center;padding:3rem 2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);border-top:1px solid var(--bg3)">
+  <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/changelog/">Changelog</a> · <a href="/status/">Status</a>
+</footer>
+
+<script>
+async function fetchStatus() {
+  try {
+    const r = await fetch('/api/status');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    
+    // Overall
+    const dot = document.getElementById('overall-dot');
+    dot.className = 'dot ' + d.status;
+    document.getElementById('overall-text').textContent =
+      d.status === 'healthy' ? 'All systems operational' :
+      d.status === 'degraded' ? 'Partial degradation' : 'Service disruption';
+    document.getElementById('overall-detail').textContent = d.uptime + ' uptime';
+    
+    // Metrics
+    document.getElementById('metrics').innerHTML = [
+      ['requests', d.total_requests.toLocaleString()],
+      ['avg latency', d.avg_latency_ms.toFixed(2) + ' ms'],
+      ['error rate', (d.error_rate * 100).toFixed(2) + '%'],
+      ['memory', d.memory.alloc_mb.toFixed(1) + ' MB'],
+      ['goroutines', d.goroutines],
+      ['version', d.version || 'dev'],
+    ].map(([label, value]) =>
+      '<div class="metric"><div class="metric-value">' + value + '</div><div class="metric-label">' + label + '</div></div>'
+    ).join('');
+    
+    // Components
+    const comps = Object.entries(d.components || {});
+    document.getElementById('components').innerHTML = comps.map(([name, c]) =>
+      '<div class="comp">' +
+      '<span class="comp-name">' + name + '</span>' +
+      '<span class="comp-status ' + c.status + '">' + c.status + '</span>' +
+      (c.detail ? '<span class="comp-detail">' + c.detail + '</span>' : '') +
+      '</div>'
+    ).join('');
+    
+    document.getElementById('last-check').textContent = new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('overall-dot').className = 'dot down';
+    document.getElementById('overall-text').textContent = 'Unable to reach API';
+    document.getElementById('overall-detail').textContent = e.message;
+  }
+}
+fetchStatus();
+setInterval(fetchStatus, 30000);
+</script>
+</body>
+</html>
