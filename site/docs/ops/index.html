@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Operations &mdash; Stockyard</title>
+<meta name="description" content="Stockyard operations: webhooks, OpenTelemetry, status monitoring, config export/import, doctor diagnostics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content;max-height:100vh;overflow-y:auto}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0;transition:color 0.15s}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
+.copy-btn{position:absolute;top:0.5rem;right:0.5rem;background:var(--bg3);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;opacity:0}
+.copy-btn:hover{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+pre:hover .copy-btn{opacity:1}
+.content pre .comment{color:#5a5040}
+.content pre .cmd{color:var(--cream)}
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+.endpoint-table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:0.8rem}
+.endpoint-table th,.endpoint-table td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.endpoint-table th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.endpoint-table td{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.75rem}
+.endpoint-table .method{color:var(--green-light);font-weight:600}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.ov-card{display:block;padding:1.2rem;border:1px solid var(--bg3);background:var(--bg2);transition:border-color 0.2s;text-decoration:none}
+.ov-card:hover{border-color:var(--rust)}
+.ov-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
+.ov-title{font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem}
+.ov-desc{font-size:0.8rem;color:var(--cream-dim)}
+.pn{display:flex;justify-content:space-between;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.pn a{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.pn a:hover{color:var(--rust-light)}
+.pn .next{margin-left:auto}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+</style>
+<link rel="canonical" href="https://stockyard.dev/docs/proxy/">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="2" y="8" width="28" height="4" rx="1" fill="#c45d2c"/><rect x="6" y="14" width="20" height="3" rx="1" fill="#a0845c"/><rect x="4" y="19" width="24" height="3" rx="1" fill="#c45d2c"/><rect x="8" y="24" width="16" height="3" rx="1" fill="#a0845c"/><rect x="14" y="4" width="4" height="4" rx="1" fill="#d4a843"/></svg>
+    STOCKYARD
+  </a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground/">Playground</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="/blog/">Blog</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+<div class="docs-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Getting Started</div>
+      <a href="/docs/quickstart/">Quickstart</a>
+      <a href="/docs/auth/">Auth &amp; Config</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Proxy</div>
+      <a href="/docs/proxy/">Modules &amp; Providers</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Apps</div>
+      <a href="/docs/observe/">Observe</a>
+      <a href="/docs/trust/">Trust</a>
+      <a href="/docs/studio/">Studio</a>
+      <a href="/docs/forge/">Forge</a>
+      <a href="/docs/exchange/">Exchange</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Operations</div>
+      <a href="/docs/ops/" class="active">Ops Guide</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Reference</div>
+      <a href="/docs/api/">API Reference</a>
+    </div>
+  </aside>
+  <main class="content" id="main">
+    <h1>Operations</h1>
+    <p class="subtitle">Webhooks, OpenTelemetry, status monitoring, config management, diagnostics.</p>
+
+    <h2 id="doctor">Doctor</h2>
+    <p>Run <code>stockyard doctor</code> before first start to verify your environment.</p>
+    <pre><code>$ stockyard doctor
+
+  ✓ Go runtime         go1.22.5
+  ✓ Config             port=4200
+  ✓ Data directory     ./stockyard-data (writable)
+  ✓ SQLite database    connected (58 modules)
+  ✓ Port 4200          available
+  ✓ OpenAI API key     set
+  ✓ Anthropic API key  set
+  ⚠ Gemini API key     not set
+  ✓ Ollama             detected (localhost:11434)
+  ⚠ License key        not set (Community tier)
+  ✓ Disk space         writable
+
+  9 passed · 2 warnings · 0 failures</code></pre>
+    <p>Use <code>stockyard doctor --json</code> for machine-readable output in CI pipelines.</p>
+
+    <h2 id="webhooks">Webhooks</h2>
+    <p>Register HTTP endpoints to receive events from Stockyard: alerts firing, cost thresholds, trust policy violations, and more.</p>
+    <pre><code># Register a Slack webhook
+curl -X POST localhost:4200/api/webhooks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://hooks.slack.com/services/YOUR/SLACK/URL",
+    "secret": "my-signing-secret",
+    "events": "alert.fired,cost.threshold,trust.violation"
+  }'
+
+# List registered webhooks
+curl localhost:4200/api/webhooks
+
+# Send a test event
+curl -X POST localhost:4200/api/webhooks/test
+
+# Delete a webhook
+curl -X DELETE localhost:4200/api/webhooks/1</code></pre>
+
+    <h3>Event Types</h3>
+    <table class="endpoint-table">
+      <tr><th>Event</th><th>Fired When</th></tr>
+      <tr><td><code>alert.fired</code></td><td>An Observe alert threshold is exceeded</td></tr>
+      <tr><td><code>cost.threshold</code></td><td>Daily cost exceeds a configured limit</td></tr>
+      <tr><td><code>trust.violation</code></td><td>A Trust policy blocks or warns on a request</td></tr>
+      <tr><td><code>error.spike</code></td><td>Error rate exceeds normal baseline</td></tr>
+      <tr><td><code>webhook.test</code></td><td>Manual test via POST /api/webhooks/test</td></tr>
+    </table>
+
+    <h3>HMAC Signatures</h3>
+    <p>If you set a <code>secret</code>, every delivery includes an <code>X-Stockyard-Signature</code> header with <code>sha256=HMAC</code> of the JSON payload. Verify this on your server to confirm the webhook came from Stockyard.</p>
+
+    <h3>Auto-disable</h3>
+    <p>Webhooks that fail 10 consecutive deliveries are automatically disabled. Check <code>fail_count</code> in the list response.</p>
+
+    <h2 id="otel">OpenTelemetry Export</h2>
+    <p>Export every proxy request as an OTLP trace span. Works with Jaeger, Grafana Tempo, Datadog, Honeycomb, or any OTLP-compatible backend.</p>
+    <pre><code># Set the collector endpoint
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+
+# Optional: service name (default: "stockyard")
+export OTEL_SERVICE_NAME=my-stockyard
+
+# Optional: auth headers
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer my-token"
+
+# Start Stockyard — traces flow automatically
+stockyard</code></pre>
+
+    <h3>Span Attributes</h3>
+    <table class="endpoint-table">
+      <tr><th>Attribute</th><th>Description</th></tr>
+      <tr><td><code>llm.model</code></td><td>Model name (e.g., gpt-4o-mini)</td></tr>
+      <tr><td><code>llm.provider</code></td><td>Provider name (e.g., openai)</td></tr>
+      <tr><td><code>llm.tokens.total</code></td><td>Total tokens used</td></tr>
+      <tr><td><code>llm.cost.usd</code></td><td>Estimated cost in USD</td></tr>
+      <tr><td><code>llm.latency.ms</code></td><td>Request latency in milliseconds</td></tr>
+      <tr><td><code>llm.status</code></td><td>ok, error, or cache_hit</td></tr>
+    </table>
+    <p>Spans are batched (100 per batch, 5s flush interval) and flushed gracefully on shutdown.</p>
+
+    <h2 id="status">Status Monitoring</h2>
+    <p>Real-time system health at <code>GET /api/status</code>:</p>
+    <pre><code>curl localhost:4200/api/status | jq .
+{
+  "status": "healthy",
+  "uptime": "2d 5h 30m",
+  "total_requests": 12453,
+  "error_rate": 0.002,
+  "avg_latency_ms": 245.3,
+  "memory": { "alloc_mb": 8.2, "sys_mb": 24.1 },
+  "goroutines": 12,
+  "components": {
+    "database": { "status": "healthy", "detail": "1.2ms" },
+    "modules": { "status": "healthy", "detail": "58 registered" },
+    "observe": { "status": "healthy", "detail": "12,453 traces" },
+    "trust": { "status": "healthy", "detail": "12,453 events" }
+  }
+}</code></pre>
+    <p>The web status page at <a href="/status/">/status/</a> auto-refreshes every 30 seconds.</p>
+
+    <h2 id="config">Config Export &amp; Import</h2>
+    <p>Snapshot your entire Stockyard configuration and restore it on another instance.</p>
+    <pre><code># Export current config
+curl localhost:4200/api/config/export > stockyard-config.json
+
+# Preview changes before applying
+curl -X POST localhost:4200/api/config/diff \
+  -d @stockyard-config.json
+
+# Import on another instance
+curl -X POST localhost:4200/api/config/import \
+  -d @stockyard-config.json</code></pre>
+    <p>The export includes module states, webhooks, and trust policies. Provider API keys are never included in exports.</p>
+
+    <h2 id="key-rotation">API Key Rotation</h2>
+    <p>Rotate API keys without downtime — the old key is immediately revoked and a new one generated:</p>
+    <pre><code># Rotate your own key
+curl -X POST localhost:4200/api/auth/me/keys/1/rotate \
+  -H "Authorization: Bearer sk-sy-current-key"
+# Returns: { "status": "rotated", "new_key": { "key": "sk-sy-new-...", ... } }
+
+# Admin: rotate any user's key
+curl -X POST localhost:4200/api/auth/users/1/keys/1/rotate</code></pre>
+
+    <div class="pn">
+      <a href="/docs/exchange/">&larr; Exchange</a>
+      <a href="/docs/api/">API Reference &rarr;</a>
+    </div>
+  </main>
+</div>
+
+<footer style="text-align:center;padding:3rem 2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);border-top:1px solid var(--bg3)">
+  <p>Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+</body>
+</html>

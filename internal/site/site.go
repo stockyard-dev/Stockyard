@@ -28,6 +28,7 @@ func Register(mux *http.ServeMux) {
 		"/docs/quickstart/", "/docs/auth/", "/docs/proxy/",
 		"/docs/observe/", "/docs/trust/", "/docs/studio/",
 		"/docs/forge/", "/docs/exchange/", "/docs/api/",
+		"/docs/ops/",
 		"/vs/litellm/", "/vs/helicone/", "/vs/portkey/",
 		"/blog/", "/blog/why-i-built-stockyard/",
 		"/blog/architecture-decisions/", "/blog/134-tools-one-binary/",
