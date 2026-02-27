@@ -347,6 +347,7 @@ func Boot(pc ProductConfig) {
 		seedProxyProviders(db.Conn(), providers)
 		seedExchangePacks(db.Conn())
 		seedForgeData(db.Conn())
+		seedTrustData(db.Conn())
 
 		// Seed toggle registry from proxy_modules table
 		toggleReg.SeedFromDB(db.Conn())
@@ -360,13 +361,8 @@ func Boot(pc ProductConfig) {
 			if setter, ok := app.(interface{ SetProxyPort(int) }); ok {
 				setter.SetProxyPort(cfg.Port)
 			}
-			// Wire broadcaster into observe app for live trace recording
-			if setter, ok := app.(interface {
-				SetBroadcaster(interface {
-					AddListener(func([]byte)) func()
-					ClientCount() int
-				})
-			}); ok {
+			// Wire broadcaster into apps that subscribe to live events (observe, trust)
+			if setter, ok := app.(interface{ SetBroadcaster(any) }); ok {
 				setter.SetBroadcaster(broadcaster)
 			}
 		}

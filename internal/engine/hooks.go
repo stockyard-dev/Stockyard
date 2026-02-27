@@ -60,7 +60,8 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 			}
 
 			go recordObserveTrace(conn, traceID, req, resp, err, duration)
-			go recordTrustEvent(conn, traceID, req, resp, err, duration)
+			// Trust ledger recording is handled by Trust app's broadcaster listener
+			// (mutex-protected hash chain via RecordEvent)
 
 			return resp, err
 		}
@@ -119,49 +120,6 @@ func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, res
 			requests=requests+1, tokens_in=tokens_in+excluded.tokens_in, 
 			tokens_out=tokens_out+excluded.tokens_out, cost_usd=cost_usd+excluded.cost_usd`,
 		today, prov, model, tokIn, tokOut, costUSD)
-}
-
-// recordTrustEvent appends to the immutable audit ledger.
-func recordTrustEvent(conn *sql.DB, traceID string, req *provider.Request, resp *provider.Response, reqErr error, dur time.Duration) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("[trust-hook] panic: %v", r)
-		}
-	}()
-
-	action := "proxy.request"
-	resource := req.Model
-	actor := req.UserID
-	if actor == "" {
-		actor = req.ClientIP
-	}
-
-	status := "ok"
-	if reqErr != nil {
-		status = "error"
-		action = "proxy.error"
-	}
-
-	detail := fmt.Sprintf(`{"trace_id":"%s","provider":"%s","model":"%s","status":"%s","duration_ms":%d}`,
-		traceID, req.Provider, req.Model, status, dur.Milliseconds())
-
-	// Get previous hash for chain
-	var prevHash string
-	conn.QueryRow("SELECT hash FROM trust_ledger ORDER BY id DESC LIMIT 1").Scan(&prevHash)
-
-	now := time.Now().UTC().Format(time.RFC3339Nano)
-	hashInput := fmt.Sprintf("%s|%s|%s|%s|%s|%s", prevHash, "proxy.request", action, resource, detail, now)
-	h := sha256.Sum256([]byte(hashInput))
-	hash := hex.EncodeToString(h[:])
-
-	_, err := conn.Exec(`INSERT INTO trust_ledger 
-		(event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) 
-		VALUES (?,?,?,?,?,?,?,?)`,
-		"proxy.request", actor, resource, action, detail, prevHash, hash, now)
-	if err != nil {
-		// Table might not exist — silent skip
-		return
-	}
 }
 
 // seedProxyModules populates the proxy_modules table from active feature flags
@@ -637,4 +595,36 @@ func seedForgeData(conn *sql.DB) {
 	conn.Exec(`DELETE FROM forge_workflows WHERE slug = 'persist-proof'`)
 
 	log.Printf("[forge] seeded %d tools + %d workflows", len(tools), len(workflows))
+}
+
+// seedTrustData creates default policies and a genesis ledger entry.
+func seedTrustData(conn *sql.DB) {
+	// Seed default policies if none exist
+	var policyCount int
+	conn.QueryRow("SELECT COUNT(*) FROM trust_policies").Scan(&policyCount)
+	if policyCount == 0 {
+		policies := []struct {
+			name, ptype, config string
+		}{
+			{"content-safety", "warn", `{"description":"Flag responses containing potentially unsafe content patterns","pattern":"(password|secret|api.?key|bearer)\\s*[:=]","target":"response"}`},
+			{"data-retention", "log", `{"description":"90-day audit log retention policy for compliance","retention_days":90}`},
+		}
+		for _, p := range policies {
+			conn.Exec(`INSERT OR IGNORE INTO trust_policies (name, type, config_json, enabled) VALUES (?,?,?,1)`, p.name, p.ptype, p.config)
+		}
+	}
+
+	// Seed genesis ledger entry if ledger is empty
+	var ledgerCount int
+	conn.QueryRow("SELECT COUNT(*) FROM trust_ledger").Scan(&ledgerCount)
+	if ledgerCount == 0 {
+		now := time.Now().UTC().Format(time.RFC3339Nano)
+		detail := `{"event":"system_boot","version":"0.1.0"}`
+		hashInput := fmt.Sprintf("|system_boot|genesis||%s|%s", detail, now)
+		h := sha256.Sum256([]byte(hashInput))
+		hash := hex.EncodeToString(h[:])
+		conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
+			"system_boot", "system", "", "genesis", detail, "", hash, now)
+		log.Printf("[trust] seeded genesis ledger entry + %d default policies", policyCount)
+	}
 }

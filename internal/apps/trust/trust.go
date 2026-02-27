@@ -9,17 +9,85 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
 type App struct {
 	conn *sql.DB
+	mu   sync.Mutex // protects hash chain writes
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
 func (a *App) Name() string        { return "trust" }
 func (a *App) Description() string { return "Audit ledger, compliance, evidence packs, replay lab" }
+
+// RecordEvent appends an entry to the hash-chain audit ledger.
+// Thread-safe — serializes hash chain computation.
+func (a *App) RecordEvent(eventType, actor, resource, action string, detail any) (int64, string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	// Get previous hash
+	var prevHash string
+	a.conn.QueryRow("SELECT hash FROM trust_ledger ORDER BY id DESC LIMIT 1").Scan(&prevHash)
+
+	// Compute hash
+	now := time.Now().UTC().Format(time.RFC3339Nano)
+	detailJSON, _ := json.Marshal(detail)
+	hashInput := fmt.Sprintf("%s|%s|%s|%s|%s|%s", prevHash, eventType, action, resource, string(detailJSON), now)
+	h := sha256.Sum256([]byte(hashInput))
+	hash := hex.EncodeToString(h[:])
+
+	res, _ := a.conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
+		eventType, actor, resource, action, string(detailJSON), prevHash, hash, now)
+	id, _ := res.LastInsertId()
+	return id, hash
+}
+
+// SetBroadcaster subscribes to live proxy events and records them in the audit ledger.
+// Accepts any type that has AddListener(func([]byte)) func() — uses any to work with
+// Go's interface type assertion in engine.go.
+func (a *App) SetBroadcaster(b any) {
+	type listener interface {
+		AddListener(func([]byte)) func()
+	}
+	lb, ok := b.(listener)
+	if !ok {
+		log.Printf("[trust] SetBroadcaster: broadcaster does not implement AddListener")
+		return
+	}
+	lb.AddListener(func(data []byte) {
+		var evt map[string]any
+		if err := json.Unmarshal(data, &evt); err != nil {
+			return
+		}
+		evtType, _ := evt["type"].(string)
+		switch evtType {
+		case "request_logged":
+			model, _ := evt["model"].(string)
+			tokens, _ := evt["tokens"].(float64)
+			cost, _ := evt["cost"].(float64)
+			latency, _ := evt["latency"].(float64)
+			status, _ := evt["status"].(string)
+			cacheHit, _ := evt["cache_hit"].(bool)
+			a.RecordEvent("proxy_request", "proxy", model, "chat_completion", map[string]any{
+				"tokens": tokens, "cost_usd": cost, "latency_ms": latency,
+				"status": status, "cache_hit": cacheHit,
+			})
+		case "spend_update":
+			project, _ := evt["project"].(string)
+			today, _ := evt["today"].(float64)
+			month, _ := evt["month"].(float64)
+			cap, _ := evt["cap"].(float64)
+			a.RecordEvent("spend_update", "costcap", project, "spend_check", map[string]any{
+				"today": today, "month": month, "cap": cap,
+			})
+		}
+	})
+	log.Printf("[trust] subscribed to live broadcast events for audit ledger")
+}
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn
@@ -165,21 +233,7 @@ func (a *App) handleAppendLedger(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewDecoder(r.Body).Decode(&req)
 
-	// Get previous hash
-	var prevHash string
-	a.conn.QueryRow("SELECT hash FROM trust_ledger ORDER BY id DESC LIMIT 1").Scan(&prevHash)
-
-	// Compute hash: sha256(prev_hash + event_type + action + timestamp)
-	now := time.Now().UTC().Format(time.RFC3339Nano)
-	detailJSON, _ := json.Marshal(req.Detail)
-	hashInput := fmt.Sprintf("%s|%s|%s|%s|%s|%s", prevHash, req.EventType, req.Action, req.Resource, string(detailJSON), now)
-	h := sha256.Sum256([]byte(hashInput))
-	hash := hex.EncodeToString(h[:])
-
-	res, _ := a.conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
-		req.EventType, req.Actor, req.Resource, req.Action, string(detailJSON), prevHash, hash, now)
-	id, _ := res.LastInsertId()
-
+	id, hash := a.RecordEvent(req.EventType, req.Actor, req.Resource, req.Action, req.Detail)
 	writeJSON(w, map[string]any{"status": "appended", "id": id, "hash": hash})
 }
 
@@ -271,6 +325,11 @@ func (a *App) handleCreateEvidence(w http.ResponseWriter, r *http.Request) {
 	a.conn.Exec(`INSERT INTO trust_evidence_packs (id, name, description, event_count, date_from, date_to, hash) VALUES (?,?,?,?,?,?,?)`,
 		id, req.Name, req.Desc, count, req.DateFrom, req.DateTo, hash)
 
+	// Audit: record evidence pack generation
+	a.RecordEvent("admin_action", "admin", id, "evidence_generated", map[string]any{
+		"name": req.Name, "event_count": count, "date_range": req.DateFrom + " to " + req.DateTo,
+	})
+
 	writeJSON(w, map[string]any{"status": "generated", "id": id, "event_count": count, "hash": hash})
 }
 
@@ -305,6 +364,12 @@ func (a *App) handleCreatePolicy(w http.ResponseWriter, r *http.Request) {
 	cfg, _ := json.Marshal(req.Config)
 	res, _ := a.conn.Exec("INSERT INTO trust_policies (name, type, config_json) VALUES (?,?,?)", req.Name, req.Type, string(cfg))
 	id, _ := res.LastInsertId()
+
+	// Audit: record policy creation in ledger
+	a.RecordEvent("admin_action", "admin", req.Name, "policy_created", map[string]any{
+		"policy_id": id, "type": req.Type, "config": req.Config,
+	})
+
 	writeJSON(w, map[string]any{"status": "created", "id": id})
 }
 
@@ -337,6 +402,12 @@ func (a *App) handleSubmitFeedback(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&req)
 	res, _ := a.conn.Exec("INSERT INTO trust_feedback (request_id, user_email, rating, comment) VALUES (?,?,?,?)", req.RequestID, req.Email, req.Rating, req.Comment)
 	id, _ := res.LastInsertId()
+
+	// Audit: record feedback submission
+	a.RecordEvent("feedback", req.Email, req.RequestID, "feedback_submitted", map[string]any{
+		"rating": req.Rating, "has_comment": req.Comment != "",
+	})
+
 	writeJSON(w, map[string]any{"status": "submitted", "id": id})
 }
 

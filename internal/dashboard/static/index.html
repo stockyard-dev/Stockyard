@@ -220,15 +220,47 @@ function ObserveView(){
 
 // ─── Trust ─────────────────────────────────────────────────────────
 function TrustView(){
-  const[tab,setTab]=useState('policies');const[data,setData]=useState({});
-  useEffect(()=>{(async()=>{const[l,p,e]=await Promise.all([api('/api/trust/ledger'),api('/api/trust/policies'),api('/api/trust/evidence')]);setData({ledger:l.entries||l.events||[],policies:p.policies||[],evidence:e.packs||[]})})()},[]);
+  const[tab,setTab]=useState('ledger');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[chainStatus,setChainStatus]=useState(null);const[verifying,setVerifying]=useState(false);
+  const reload=async()=>{const[l,p,e,fb,st]=await Promise.all([api('/api/trust/ledger'),api('/api/trust/policies'),api('/api/trust/evidence'),api('/api/trust/feedback'),api('/api/trust/status')]);setData({ledger:l.events||l.entries||[],policies:p.policies||[],evidence:e.packs||[],feedback:fb.feedback||[],status:st||{}})};
+  useEffect(()=>{reload()},[]);
+  const verifyChain=async()=>{setVerifying(true);const r=await api('/api/trust/ledger/verify');setChainStatus(r);setVerifying(false)};
   const d=k=>Array.isArray(data[k])?data[k]:[];
-  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Policies & Audit</h2><p class="page-sub">Governance, compliance & evidence.</p></div>
-    <div class="stats-row"><${Stat} label="Policies" value=${d('policies').length} accent/><${Stat} label="Ledger" value=${fmt.num(d('ledger').length)}/><${Stat} label="Evidence" value=${d('evidence').length}/></div>
-    <${TabBar} tabs=${['policies','ledger','evidence']} active=${tab} onChange=${setTab}/>
-    ${tab==='policies'?html`<${DataTable} columns=${[{key:'name',label:'Policy',width:'1.5fr'},{key:'type',label:'Type',width:'1fr',mono:true},{key:'action',label:'Action',width:'1fr'},{key:'enabled',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.enabled!==false?'active':'off'} variant=${r.enabled!==false?'success':'muted'}/>`}]} rows=${d('policies')} emptyMsg="No policies."/>`:
-    tab==='ledger'?html`<${DataTable} columns=${[{key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'action',label:'Action',width:'1fr'},{key:'actor',label:'Actor',width:'1fr',mono:true},{key:'hash',label:'Hash',width:'150px',mono:true,render:r=>fmt.hash(r.hash||r.event_hash)}]} rows=${d('ledger')} emptyMsg="No audit events."/>`:
-    html`<${DataTable} columns=${[{key:'name',label:'Pack',width:'1.5fr'},{key:'type',label:'Type',width:'1fr',mono:true},{key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)}]} rows=${d('evidence')} emptyMsg="No evidence packs."/>`}`;
+  const st=data.status||{};
+  const EVENT_COLORS={'proxy_request':'var(--green)','spend_update':'var(--gold)','policy_violation':'var(--red)','admin_action':'var(--leather-light)','feedback':'var(--cream-muted)'};
+  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Audit Ledger & Compliance</h2><p class="page-sub">Immutable hash-chain audit log, policies, evidence packs & feedback.</p></div>
+    <div class="stats-row">
+      <${Stat} label="Ledger Events" value=${fmt.num(d('ledger').length)} accent/>
+      <${Stat} label="Policies" value=${d('policies').length}/>
+      <${Stat} label="Feedback" value=${d('feedback').length}/>
+      <${Stat} label="Chain" value=${chainStatus?chainStatus.valid?'\u2713 Valid':'\u2717 Broken':'Unverified'} sub=${chainStatus?chainStatus.events_checked+' checked':html`<button class="btn btn-sm" style="font-size:0.65rem;padding:2px 6px" onClick=${verifyChain}>${verifying?'Verifying\u2026':'Verify'}</button>`}/>
+    </div>
+    <${TabBar} tabs=${['ledger','policies','evidence','feedback']} active=${tab} onChange=${setTab}/>
+    ${tab==='ledger'?html`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button>
+      <button class="btn btn-sm ${chainStatus?.valid?'primary':''}" onClick=${verifyChain}>${verifying?'Verifying\u2026':chainStatus?chainStatus.valid?'\u2713 Chain Valid':'\u2717 Chain Broken at #'+chainStatus.broken_at_id:'Verify Chain'}</button>
+    </div>
+    <${DataTable} columns=${[
+      {key:'ts',label:'Time',width:'110px',render:r=>fmt.ago(r.created_at)},
+      {key:'type',label:'Type',width:'120px',render:r=>html`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${EVENT_COLORS[r.event_type]||'var(--cream-muted)'};display:inline-block"></span><span class="mono" style="font-size:0.78rem">${r.event_type}</span></span>`},
+      {key:'action',label:'Action',width:'1fr',mono:true},
+      {key:'actor',label:'Actor',width:'100px',mono:true},
+      {key:'resource',label:'Resource',width:'1fr',mono:true,render:r=>html`<span style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${r.resource||'\u2014'}</span>`},
+      {key:'hash',label:'Hash',width:'120px',mono:true,render:r=>fmt.hash(r.hash)}
+    ]} rows=${d('ledger')} onRowClick=${r=>setDetail(r)} emptyMsg="No audit events yet \u2014 ledger auto-records proxy requests, policy changes & admin actions."/>`:
+    tab==='policies'?html`<${DataTable} columns=${[{key:'name',label:'Policy',width:'1.5fr'},{key:'type',label:'Type',width:'1fr',mono:true},{key:'config',label:'Config',width:'1.5fr',mono:true,render:r=>JSON.stringify(r.config||{}).substring(0,60)},{key:'enabled',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.enabled!==false?'active':'off'} variant=${r.enabled!==false?'success':'muted'}/>`}]} rows=${d('policies')} emptyMsg="No policies."/>`:
+    tab==='evidence'?html`<${DataTable} columns=${[{key:'name',label:'Pack',width:'1.5fr'},{key:'event_count',label:'Events',width:'90px',mono:true},{key:'range',label:'Range',width:'1.5fr',mono:true,render:r=>(r.date_from||'?')+' \u2192 '+(r.date_to||'?')},{key:'hash',label:'Hash',width:'120px',mono:true,render:r=>fmt.hash(r.hash)},{key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)}]} rows=${d('evidence')} emptyMsg="No evidence packs."/>`:
+    html`<${DataTable} columns=${[{key:'ts',label:'Time',width:'110px',render:r=>fmt.ago(r.created_at)},{key:'request_id',label:'Request',width:'1fr',mono:true},{key:'rating',label:'Rating',width:'80px',render:r=>'\u2605'.repeat(r.rating||0)+'\u2606'.repeat(5-(r.rating||0))},{key:'comment',label:'Comment',width:'2fr',render:r=>html`<span style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${r.comment||'\u2014'}</span>`},{key:'email',label:'User',width:'1fr',mono:true,render:r=>r.user_email||'\u2014'}]} rows=${d('feedback')} emptyMsg="No feedback submitted."/>`}
+    ${detail&&html`<${Modal} title="Ledger Entry" onClose=${()=>setDetail(null)}><div class="trace-detail">
+      <div class="td-row"><span class="td-label">ID</span><span class="mono">#${detail.id}</span></div>
+      <div class="td-row"><span class="td-label">Type</span><span class="mono">${detail.event_type}</span></div>
+      <div class="td-row"><span class="td-label">Action</span><span class="mono">${detail.action}</span></div>
+      <div class="td-row"><span class="td-label">Actor</span><span class="mono">${detail.actor||'\u2014'}</span></div>
+      <div class="td-row"><span class="td-label">Resource</span><span class="mono">${detail.resource||'\u2014'}</span></div>
+      <div class="td-row"><span class="td-label">Time</span><span class="mono">${detail.created_at}</span></div>
+      <div class="td-row"><span class="td-label">Hash</span><span class="mono" style="font-size:0.7rem;word-break:break-all">${detail.hash}</span></div>
+      <div class="td-row"><span class="td-label">Prev Hash</span><span class="mono" style="font-size:0.7rem;word-break:break-all">${detail.prev_hash||'(genesis)'}</span></div>
+      ${detail.detail?html`<div class="td-section"><div class="td-label">Detail</div><pre class="td-pre">${typeof detail.detail==='string'?detail.detail:JSON.stringify(detail.detail,null,2)}</pre></div>`:''}
+    </div><//>}`
 }
 
 // ─── Studio ────────────────────────────────────────────────────────
