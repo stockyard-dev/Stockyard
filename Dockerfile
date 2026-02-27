@@ -13,4 +13,4 @@ RUN apk add --no-cache ca-certificates tzdata curl
 COPY --from=builder /stockyard /usr/local/bin/stockyard
 RUN chmod +x /usr/local/bin/stockyard
 
-ENTRYPOINT ["stockyard"]
+CMD ["sh", "-c", "echo START PORT=$PORT HOME=$HOME PWD=$PWD && ls -la /usr/local/bin/stockyard && stockyard 2>&1"]
