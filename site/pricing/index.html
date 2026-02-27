@@ -250,6 +250,145 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </section>
 
+<section class="calc-section" style="max-width:800px;margin:0 auto;padding:4rem 2rem">
+  <div class="section-label" style="text-align:center">Cost Calculator</div>
+  <h2 style="text-align:center;font-size:1.8rem;margin-bottom:0.5rem">How much does Stockyard <span style="color:var(--rust-light)">save</span> you?</h2>
+  <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:2.5rem;font-size:0.95rem">Estimate your monthly LLM spend with and without Stockyard's caching, cost caps, and prompt optimization.</p>
+
+  <div style="background:var(--bg2);border:1px solid var(--bg3);padding:2rem;margin-bottom:1.5rem">
+    <div style="margin-bottom:1.5rem">
+      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">DAILY REQUESTS</label>
+      <input type="range" id="calc-reqs" min="100" max="100000" value="5000" step="100" style="width:100%;accent-color:var(--rust-light)" oninput="updateCalc()">
+      <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)"><span>100</span><span id="calc-reqs-val" style="color:var(--cream);font-size:0.85rem">5,000</span><span>100K</span></div>
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">PRIMARY MODEL</label>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="calc-models">
+        <button class="calc-model-btn active" data-input="0.005" data-output="0.015" onclick="selectModel(this)">GPT-4o</button>
+        <button class="calc-model-btn" data-input="0.00015" data-output="0.0006" onclick="selectModel(this)">GPT-4o-mini</button>
+        <button class="calc-model-btn" data-input="0.003" data-output="0.015" onclick="selectModel(this)">Claude 3.5 Sonnet</button>
+        <button class="calc-model-btn" data-input="0.015" data-output="0.075" onclick="selectModel(this)">Claude 3 Opus</button>
+        <button class="calc-model-btn" data-input="0.00025" data-output="0.00125" onclick="selectModel(this)">Gemini Flash</button>
+        <button class="calc-model-btn" data-input="0.01" data-output="0.03" onclick="selectModel(this)">GPT-4 Turbo</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">AVG TOKENS PER REQUEST</label>
+      <div style="display:flex;gap:1rem">
+        <div style="flex:1">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);margin-bottom:0.3rem">Input</div>
+          <input type="range" id="calc-input-tok" min="100" max="8000" value="1000" step="100" style="width:100%;accent-color:var(--rust-light)" oninput="updateCalc()">
+          <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);text-align:center" id="calc-input-tok-val">1,000</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);margin-bottom:0.3rem">Output</div>
+          <input type="range" id="calc-output-tok" min="50" max="4000" value="500" step="50" style="width:100%;accent-color:var(--rust-light)" oninput="updateCalc()">
+          <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);text-align:center" id="calc-output-tok-val">500</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:0.5rem">
+      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">STOCKYARD MODULES ENABLED</label>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="calc-modules">
+        <button class="calc-mod-btn active" data-saving="cache" onclick="toggleMod(this)">cache (30% hit rate)</button>
+        <button class="calc-mod-btn active" data-saving="promptslim" onclick="toggleMod(this)">promptslim (15% shorter)</button>
+        <button class="calc-mod-btn" data-saving="tierdrop" onclick="toggleMod(this)">tierdrop (40% to cheaper model)</button>
+        <button class="calc-mod-btn" data-saving="outputcap" onclick="toggleMod(this)">outputcap (20% fewer output tokens)</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1.5rem;margin-bottom:1rem" id="calc-results">
+    <div style="flex:1;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-bottom:0.5rem">Without Stockyard</div>
+      <div style="font-size:2rem;font-weight:700;color:var(--cream)" id="calc-without">$750</div>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">per month</div>
+    </div>
+    <div style="flex:1;background:var(--bg2);border:1px solid var(--rust);padding:1.5rem;text-align:center">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust-light);margin-bottom:0.5rem">With Stockyard</div>
+      <div style="font-size:2rem;font-weight:700;color:var(--rust-light)" id="calc-with">$443</div>
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">per month (incl. Pro $9.99)</div>
+    </div>
+  </div>
+  <div style="text-align:center;padding:1rem;background:var(--bg2);border:1px solid var(--bg3)">
+    <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light,#5ba86e);margin-bottom:0.3rem">Estimated Monthly Savings</div>
+    <div style="font-size:2.2rem;font-weight:700;color:#5ba86e" id="calc-savings">$307</div>
+    <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)" id="calc-pct">41% reduction</div>
+  </div>
+  <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);text-align:center;margin-top:1rem">Estimates based on published provider pricing. Cache hit rates vary by workload. Actual savings depend on traffic patterns.</p>
+</section>
+
+<style>
+.calc-model-btn,.calc-mod-btn{font-family:var(--font-mono);font-size:0.7rem;padding:0.4rem 0.8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);cursor:pointer;transition:all 0.15s;border-radius:2px}
+.calc-model-btn:hover,.calc-mod-btn:hover{border-color:var(--leather);color:var(--cream)}
+.calc-model-btn.active{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+.calc-mod-btn.active{background:var(--bg3);border-color:var(--leather);color:var(--cream)}
+</style>
+
+<script>
+let calcInputPrice = 0.005, calcOutputPrice = 0.015;
+function selectModel(btn){
+  document.querySelectorAll('.calc-model-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  calcInputPrice = parseFloat(btn.dataset.input);
+  calcOutputPrice = parseFloat(btn.dataset.output);
+  updateCalc();
+}
+function toggleMod(btn){ btn.classList.toggle('active'); updateCalc(); }
+function updateCalc(){
+  const reqs = parseInt(document.getElementById('calc-reqs').value);
+  const inputTok = parseInt(document.getElementById('calc-input-tok').value);
+  const outputTok = parseInt(document.getElementById('calc-output-tok').value);
+
+  document.getElementById('calc-reqs-val').textContent = reqs.toLocaleString();
+  document.getElementById('calc-input-tok-val').textContent = inputTok.toLocaleString();
+  document.getElementById('calc-output-tok-val').textContent = outputTok.toLocaleString();
+
+  const monthlyReqs = reqs * 30;
+  const baseCost = monthlyReqs * ((inputTok/1000)*calcInputPrice + (outputTok/1000)*calcOutputPrice);
+
+  // Calculate savings from enabled modules
+  const mods = document.querySelectorAll('.calc-mod-btn.active');
+  let effectiveReqs = monthlyReqs;
+  let effectiveInputTok = inputTok;
+  let effectiveOutputTok = outputTok;
+  let effectiveInputPrice = calcInputPrice;
+  let tierDropFraction = 0;
+
+  mods.forEach(m => {
+    switch(m.dataset.saving){
+      case 'cache': effectiveReqs *= 0.70; break;
+      case 'promptslim': effectiveInputTok *= 0.85; break;
+      case 'tierdrop': tierDropFraction = 0.40; break;
+      case 'outputcap': effectiveOutputTok *= 0.80; break;
+    }
+  });
+
+  let withCost = effectiveReqs * ((effectiveInputTok/1000)*calcInputPrice + (effectiveOutputTok/1000)*calcOutputPrice);
+  // tierdrop: 40% of remaining requests go to a model 80% cheaper
+  if(tierDropFraction > 0){
+    const cheaperCost = withCost * tierDropFraction * 0.2;
+    const normalCost = withCost * (1 - tierDropFraction);
+    withCost = normalCost + cheaperCost;
+  }
+  // Add Stockyard Pro cost
+  withCost += 9.99;
+
+  const savings = baseCost - withCost;
+  const pct = baseCost > 0 ? Math.round((savings/baseCost)*100) : 0;
+
+  document.getElementById('calc-without').textContent = '$' + Math.round(baseCost).toLocaleString();
+  document.getElementById('calc-with').textContent = '$' + Math.round(withCost).toLocaleString();
+  document.getElementById('calc-savings').textContent = '$' + Math.max(0,Math.round(savings)).toLocaleString();
+  document.getElementById('calc-pct').textContent = Math.max(0,pct) + '% reduction';
+}
+updateCalc();
+</script>
+
+
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<title>Module Graph — Stockyard</title>
+<meta name="description" content="Interactive visualization of Stockyard's 58 middleware modules — categories, dependencies, and execution order.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+
+.page-hero{max-width:700px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;margin-bottom:1rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto}
+
+.graph-container{max-width:1200px;margin:2rem auto;padding:0 2rem}
+.graph-wrapper{position:relative;background:var(--bg2);border:1px solid var(--bg3);border-radius:4px;overflow:hidden}
+
+/* Category legend */
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:0.8rem;padding:1.5rem 2rem;border-bottom:1px solid var(--bg3)}
+.legend-item{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);cursor:pointer;padding:3px 8px;border-radius:3px;transition:all 0.2s}
+.legend-item:hover{background:var(--bg3)}
+.legend-item.active{background:var(--bg3);color:var(--cream)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* SVG graph */
+#graph{width:100%;height:600px;cursor:grab}
+#graph:active{cursor:grabbing}
+#graph text{font-family:'JetBrains Mono',monospace}
+
+/* Detail panel */
+.detail-panel{position:absolute;top:1rem;right:1rem;width:280px;background:var(--bg);border:1px solid var(--bg3);padding:1.2rem;display:none;z-index:10}
+.detail-panel.open{display:block}
+.detail-panel .dp-name{font-family:var(--font-mono);font-size:1rem;color:var(--cream);margin-bottom:0.3rem}
+.detail-panel .dp-cat{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.8rem}
+.detail-panel .dp-desc{font-size:0.85rem;color:var(--cream-dim);margin-bottom:0.8rem;line-height:1.5}
+.detail-panel .dp-section{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);margin:0.8rem 0 0.4rem}
+.detail-panel .dp-rel{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);padding:2px 0}
+.detail-panel .dp-rel span{color:var(--rust-light)}
+.dp-close{position:absolute;top:8px;right:10px;font-family:var(--font-mono);font-size:0.9rem;color:var(--cream-muted);cursor:pointer;background:none;border:none;padding:4px}
+.dp-close:hover{color:var(--cream)}
+.dp-priority{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)}
+
+/* Flow diagram */
+.flow-section{max-width:1200px;margin:3rem auto;padding:0 2rem}
+.flow-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.flow-title::before{content:'—— ';color:var(--rust)}.flow-title::after{content:' ——';color:var(--rust)}
+
+.pipeline{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:0 0 1rem}
+.pipe-stage{flex:1;min-width:110px;text-align:center;position:relative}
+.pipe-stage-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.5rem 0.3rem;border-bottom:2px solid var(--bg3)}
+.pipe-stage-modules{padding:0.6rem 0.3rem;display:flex;flex-direction:column;gap:3px}
+.pipe-mod{font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-dim);padding:3px 6px;border-radius:2px;cursor:pointer;transition:all 0.15s}
+.pipe-mod:hover{background:var(--bg3);color:var(--cream)}
+.pipe-mod.highlighted{background:var(--rust);color:var(--cream)}
+.pipe-arrow{position:absolute;right:-8px;top:50%;transform:translateY(-50%);color:var(--leather);font-size:1.2rem;z-index:1}
+
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
+footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="eyebrow">Module Graph</div>
+  <h1>58 modules. <span class="accent">One chain.</span></h1>
+  <p class="sub">Every request flows through the middleware chain in priority order. Click any module to see what it does, what it pairs with, and where it sits in the pipeline.</p>
+</div>
+
+<!-- Pipeline flow diagram -->
+<div class="flow-section">
+  <div class="flow-title">Request Pipeline — Execution Order</div>
+  <div class="pipeline" id="pipeline"></div>
+</div>
+
+<!-- Interactive graph -->
+<div class="graph-container">
+  <div class="graph-wrapper">
+    <div class="legend" id="legend"></div>
+    <svg id="graph" viewBox="0 0 1100 600"></svg>
+    <div class="detail-panel" id="detail">
+      <button class="dp-close" onclick="closeDetail()">&times;</button>
+      <div class="dp-name" id="dp-name"></div>
+      <div class="dp-cat" id="dp-cat"></div>
+      <div class="dp-priority" id="dp-pri"></div>
+      <div class="dp-desc" id="dp-desc"></div>
+      <div class="dp-section">Runs before</div>
+      <div id="dp-before"></div>
+      <div class="dp-section">Runs after</div>
+      <div id="dp-after"></div>
+      <div class="dp-section">Pairs well with</div>
+      <div id="dp-pairs"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &nbsp;&middot;&nbsp; <a href="https://discord.gg/stockyard" style="color:var(--cream-muted)">Discord</a></p>
+</footer>
+
+<script>
+const MODULES = [
+  {name:"failover",cat:"routing",pri:10,desc:"Automatic provider failover with circuit breaker. Routes to backup providers when primary fails."},
+  {name:"modelswitch",cat:"routing",pri:11,desc:"Route requests to different models based on content, user tier, or custom rules."},
+  {name:"regionroute",cat:"routing",pri:12,desc:"Route to geographically closest provider endpoint for lower latency."},
+  {name:"localsync",cat:"routing",pri:13,desc:"Synchronize routing state across multiple Stockyard instances."},
+  {name:"abrouter",cat:"routing",pri:14,desc:"A/B test traffic splits across providers or model versions."},
+  {name:"embedcache",cat:"caching",pri:21,desc:"Cache embedding requests. Identical inputs return cached vectors instantly."},
+  {name:"cache",cat:"caching",pri:22,desc:"General response cache with configurable TTL and key strategies."},
+  {name:"spend",cat:"cost",pri:30,desc:"Track per-request cost by model and provider. Feeds Observe dashboards."},
+  {name:"tierdrop",cat:"cost",pri:31,desc:"Downgrade model tier (e.g. GPT-4→GPT-3.5) when budget thresholds are hit."},
+  {name:"caps",cat:"cost",pri:31,desc:"Hard spending caps per user, team, or API key. Blocks requests that exceed budget."},
+  {name:"idlekill",cat:"cost",pri:32,desc:"Terminate long-running idle connections to prevent wasted spend."},
+  {name:"outputcap",cat:"cost",pri:33,desc:"Cap max_tokens on responses to control output cost."},
+  {name:"usagepulse",cat:"cost",pri:34,desc:"Real-time usage metrics and threshold alerts for cost monitoring."},
+  {name:"cost_cap",cat:"cost",pri:35,desc:"Aggregate cost caps across all providers with configurable windows."},
+  {name:"keypool",cat:"keys",pri:50,desc:"Round-robin across multiple API keys per provider to distribute rate limits."},
+  {name:"promptslim",cat:"transform",pri:60,desc:"Compress prompts by removing filler words, whitespace, and redundancy."},
+  {name:"tokentrim",cat:"transform",pri:61,desc:"Trim context to fit within model token limits, keeping most recent turns."},
+  {name:"contextpack",cat:"transform",pri:62,desc:"Pack additional context (RAG results, system prompts) into requests."},
+  {name:"chatmem",cat:"transform",pri:63,desc:"Automatic conversation memory — summarize and inject prior turns."},
+  {name:"langbridge",cat:"transform",pri:64,desc:"Auto-translate prompts and responses between languages."},
+  {name:"voicebridge",cat:"transform",pri:65,desc:"Convert speech-to-text inputs and text-to-speech outputs."},
+  {name:"evalgate",cat:"validate",pri:71,desc:"Validate requests against custom eval criteria before forwarding."},
+  {name:"codefence",cat:"validate",pri:72,desc:"Block or sandbox code execution in LLM responses."},
+  {name:"promptguard",cat:"safety",pri:80,desc:"Detect and block prompt injection attempts."},
+  {name:"toxicfilter",cat:"safety",pri:81,desc:"Filter toxic, harmful, or inappropriate content in both directions."},
+  {name:"guardrail",cat:"safety",pri:82,desc:"Configurable content guardrails with block/warn/log actions."},
+  {name:"agegate",cat:"safety",pri:83,desc:"Age-appropriate content filtering based on user profiles."},
+  {name:"hallucicheck",cat:"safety",pri:84,desc:"Detect potential hallucinations by cross-referencing with grounding data."},
+  {name:"secretscan",cat:"safety",pri:85,desc:"Scan prompts and responses for leaked secrets, API keys, and credentials."},
+  {name:"agentguard",cat:"safety",pri:86,desc:"Safety boundaries for autonomous agent loops — prevents runaway actions."},
+  {name:"maskmode",cat:"safety",pri:87,desc:"Mask sensitive data (PII, PHI) in prompts before sending to provider."},
+  {name:"pii_redactor",cat:"safety",pri:88,desc:"Redact personally identifiable information from requests and responses."},
+  {name:"content_filter",cat:"safety",pri:89,desc:"Configurable content classification and filtering pipeline."},
+  {name:"prompt_injection",cat:"safety",pri:90,desc:"Advanced prompt injection detection using multiple heuristic layers."},
+  {name:"toxicity_filter",cat:"safety",pri:91,desc:"Multi-dimensional toxicity scoring with configurable thresholds."},
+  {name:"trust_enforce",cat:"trust",pri:92,desc:"Enforce Trust app policies — block/warn/log per content policy rules."},
+  {name:"anthrofit",cat:"shims",pri:93,desc:"Translate Anthropic SDK format to OpenAI-compatible format transparently."},
+  {name:"geminishim",cat:"shims",pri:94,desc:"Translate Google Gemini SDK format to OpenAI-compatible format."},
+  {name:"streamsnap",cat:"stream",pri:100,desc:"Capture streaming responses for logging and cost calculation."},
+  {name:"ratelimit",cat:"reliability",pri:101,desc:"Per-user, per-key, and global rate limiting with configurable windows."},
+  {name:"retrypilot",cat:"reliability",pri:102,desc:"Intelligent retry with exponential backoff and jitter for transient failures."},
+  {name:"retry",cat:"reliability",pri:103,desc:"Simple retry logic with configurable max attempts for failed requests."},
+  {name:"imageproxy",cat:"multimodal",pri:110,desc:"Proxy image inputs for vision models — resize, compress, and cache."},
+  {name:"tenantwall",cat:"tenant",pri:120,desc:"Hard isolation between tenants — separate configs, keys, and data."},
+  {name:"ipfence",cat:"tenant",pri:121,desc:"IP allowlist/blocklist per tenant or API key."},
+  {name:"llmtap",cat:"observe",pri:130,desc:"Tap into the request/response stream for real-time monitoring."},
+  {name:"logging",cat:"observe",pri:130,desc:"Structured logging for every request with configurable verbosity."},
+  {name:"tracelink",cat:"observe",pri:131,desc:"Link distributed traces across services using trace/span IDs."},
+  {name:"alertpulse",cat:"observe",pri:132,desc:"Real-time alerting on anomalies — latency spikes, error rates, cost surges."},
+  {name:"driftwatch",cat:"observe",pri:133,desc:"Detect model behavior drift over time by comparing output distributions."},
+  {name:"compliancelog",cat:"trust",pri:140,desc:"Immutable compliance audit trail — hash-chained, tamper-evident."},
+  {name:"feedbackloop",cat:"trust",pri:141,desc:"Collect user feedback on responses and route to Trust for review."},
+  {name:"promptpad",cat:"studio",pri:150,desc:"Inject versioned prompt templates from Studio into requests."},
+  {name:"promptlint",cat:"studio",pri:151,desc:"Lint prompts for common issues — ambiguity, injection risk, token waste."},
+  {name:"approvalgate",cat:"studio",pri:152,desc:"Require human approval for certain prompt templates before deployment."},
+  {name:"multicall",cat:"forge",pri:161,desc:"Execute multi-step LLM workflows defined in Forge DAGs."},
+  {name:"mockllm",cat:"forge",pri:162,desc:"Return mock responses for testing workflows without hitting real providers."},
+  {name:"devproxy",cat:"exchange",pri:170,desc:"Development proxy with hot-reload for Exchange pack development."}
+];
+
+const CATEGORIES = {
+  routing:    {color:"#e8753a",label:"Routing"},
+  caching:    {color:"#d4a843",label:"Caching"},
+  cost:       {color:"#4a8c5c",label:"Cost"},
+  keys:       {color:"#7a9ec4",label:"Keys"},
+  transform:  {color:"#9b72cf",label:"Transform"},
+  validate:   {color:"#cf7272",label:"Validate"},
+  safety:     {color:"#e05555",label:"Safety"},
+  trust:      {color:"#c4a87a",label:"Trust"},
+  shims:      {color:"#72a5cf",label:"Shims"},
+  stream:     {color:"#72cfb5",label:"Stream"},
+  reliability:{color:"#8bc472",label:"Reliability"},
+  multimodal: {color:"#cf72a5",label:"Multimodal"},
+  tenant:     {color:"#a08060",label:"Tenant"},
+  observe:    {color:"#5ba0d4",label:"Observe"},
+  studio:     {color:"#cfb572",label:"Studio"},
+  forge:      {color:"#72cfa5",label:"Forge"},
+  exchange:   {color:"#a572cf",label:"Exchange"}
+};
+
+// Define relationships: pairs well with
+const PAIRS = {
+  failover:["retrypilot","regionroute","keypool","modelswitch"],
+  modelswitch:["abrouter","tierdrop","failover"],
+  regionroute:["failover","tenantwall"],
+  abrouter:["modelswitch","spend","driftwatch"],
+  embedcache:["cache","spend","ratelimit"],
+  cache:["embedcache","spend","promptslim","ratelimit"],
+  spend:["caps","cost_cap","tierdrop","usagepulse","alertpulse"],
+  tierdrop:["spend","caps","modelswitch"],
+  caps:["spend","tierdrop","cost_cap","alertpulse"],
+  cost_cap:["spend","caps","alertpulse"],
+  keypool:["failover","ratelimit","tenantwall"],
+  promptslim:["tokentrim","cache","spend"],
+  tokentrim:["promptslim","contextpack"],
+  contextpack:["tokentrim","chatmem","promptpad"],
+  chatmem:["contextpack","tokentrim"],
+  promptguard:["prompt_injection","guardrail","trust_enforce"],
+  toxicfilter:["toxicity_filter","content_filter","guardrail"],
+  guardrail:["trust_enforce","toxicfilter","promptguard"],
+  hallucicheck:["driftwatch","feedbackloop"],
+  secretscan:["pii_redactor","maskmode","compliancelog"],
+  maskmode:["pii_redactor","secretscan"],
+  pii_redactor:["maskmode","secretscan","compliancelog"],
+  trust_enforce:["compliancelog","guardrail","feedbackloop"],
+  anthrofit:["geminishim","streamsnap"],
+  geminishim:["anthrofit","streamsnap"],
+  streamsnap:["logging","tracelink","spend"],
+  ratelimit:["keypool","caps","ipfence"],
+  retrypilot:["failover","retry","keypool"],
+  tenantwall:["ipfence","keypool","compliancelog"],
+  ipfence:["tenantwall","ratelimit"],
+  llmtap:["tracelink","logging","alertpulse"],
+  tracelink:["llmtap","logging","streamsnap"],
+  alertpulse:["spend","usagepulse","driftwatch"],
+  driftwatch:["alertpulse","hallucicheck","feedbackloop"],
+  compliancelog:["trust_enforce","feedbackloop","secretscan"],
+  feedbackloop:["compliancelog","hallucicheck","driftwatch"],
+  promptpad:["promptlint","contextpack","approvalgate"],
+  promptlint:["promptpad","promptguard"],
+  approvalgate:["promptpad","trust_enforce"],
+  multicall:["mockllm","promptpad","tracelink"],
+  mockllm:["multicall","devproxy"]
+};
+
+// Build pipeline
+const pipelineOrder = ["routing","caching","cost","keys","transform","validate","safety","shims","stream","reliability","multimodal","tenant","observe","trust","studio","forge","exchange"];
+
+function buildPipeline(){
+  const el = document.getElementById('pipeline');
+  const catGroups = {};
+  MODULES.forEach(m => {
+    if(!catGroups[m.cat]) catGroups[m.cat] = [];
+    catGroups[m.cat].push(m);
+  });
+  
+  pipelineOrder.forEach((cat,i) => {
+    if(!catGroups[cat]) return;
+    const stage = document.createElement('div');
+    stage.className = 'pipe-stage';
+    const c = CATEGORIES[cat] || {color:'#888',label:cat};
+    stage.innerHTML = `<div class="pipe-stage-label" style="border-color:${c.color};color:${c.color}">${c.label}</div><div class="pipe-stage-modules">${
+      catGroups[cat].map(m => `<div class="pipe-mod" data-mod="${m.name}" onclick="selectModule('${m.name}')">${m.name}</div>`).join('')
+    }</div>${i < pipelineOrder.length-1 ? '<div class="pipe-arrow">→</div>' : ''}`;
+    el.appendChild(stage);
+  });
+}
+
+// Build legend
+function buildLegend(){
+  const el = document.getElementById('legend');
+  const cats = [...new Set(MODULES.map(m=>m.cat))];
+  cats.forEach(cat => {
+    const c = CATEGORIES[cat] || {color:'#888',label:cat};
+    const count = MODULES.filter(m=>m.cat===cat).length;
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.cat = cat;
+    item.innerHTML = `<div class="legend-dot" style="background:${c.color}"></div>${c.label} (${count})`;
+    item.onclick = () => filterCategory(cat);
+    el.appendChild(item);
+  });
+}
+
+// Build force-directed graph
+let nodes = [], selectedNode = null, activeCategory = null;
+
+function buildGraph(){
+  const svg = document.getElementById('graph');
+  const W = 1100, H = 600;
+  
+  // Position nodes by category in a grid layout
+  const cats = [...new Set(MODULES.map(m=>m.cat))];
+  const catPositions = {};
+  const cols = 5;
+  cats.forEach((cat,i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    catPositions[cat] = {
+      cx: 120 + col * (W-200)/cols + (Math.random()-0.5)*30,
+      cy: 80 + row * 150 + (Math.random()-0.5)*20
+    };
+  });
+  
+  // Create nodes with positions
+  nodes = MODULES.map((m,i) => {
+    const cp = catPositions[m.cat];
+    const siblings = MODULES.filter(mm=>mm.cat===m.cat);
+    const idx = siblings.indexOf(m);
+    const angle = (idx / siblings.length) * Math.PI * 2;
+    const radius = 30 + siblings.length * 5;
+    return {
+      ...m, i,
+      x: cp.cx + Math.cos(angle) * radius,
+      y: cp.cy + Math.sin(angle) * radius,
+      vx: 0, vy: 0
+    };
+  });
+  
+  // Simple force simulation
+  for(let iter=0; iter<200; iter++){
+    // Repulsion between all nodes
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        let dx = nodes[j].x - nodes[i].x;
+        let dy = nodes[j].y - nodes[i].y;
+        let dist = Math.sqrt(dx*dx+dy*dy) || 1;
+        let force = 800 / (dist*dist);
+        let fx = dx/dist*force, fy = dy/dist*force;
+        nodes[i].vx -= fx; nodes[i].vy -= fy;
+        nodes[j].vx += fx; nodes[j].vy += fy;
+      }
+    }
+    // Attraction within category
+    nodes.forEach(n => {
+      const cp = catPositions[n.cat];
+      n.vx += (cp.cx - n.x) * 0.01;
+      n.vy += (cp.cy - n.y) * 0.01;
+    });
+    // Attraction along pairs
+    nodes.forEach(n => {
+      const pairs = PAIRS[n.name] || [];
+      pairs.forEach(pName => {
+        const p = nodes.find(nn=>nn.name===pName);
+        if(!p) return;
+        let dx = p.x - n.x, dy = p.y - n.y;
+        let dist = Math.sqrt(dx*dx+dy*dy) || 1;
+        n.vx += dx/dist*0.3;
+        n.vy += dy/dist*0.3;
+      });
+    });
+    // Apply velocity with damping
+    nodes.forEach(n => {
+      n.x += n.vx * 0.3;
+      n.y += n.vy * 0.3;
+      n.vx *= 0.7;
+      n.vy *= 0.7;
+      // Keep in bounds
+      n.x = Math.max(40, Math.min(W-40, n.x));
+      n.y = Math.max(30, Math.min(H-30, n.y));
+    });
+  }
+  
+  renderGraph();
+}
+
+function renderGraph(){
+  const svg = document.getElementById('graph');
+  let html = '<defs><filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  
+  // Draw pair edges (faint)
+  Object.entries(PAIRS).forEach(([from, tos]) => {
+    const fromNode = nodes.find(n=>n.name===from);
+    if(!fromNode) return;
+    tos.forEach(to => {
+      const toNode = nodes.find(n=>n.name===to);
+      if(!toNode) return;
+      const isHighlighted = selectedNode && (selectedNode.name===from || selectedNode.name===to);
+      const opacity = selectedNode ? (isHighlighted ? 0.5 : 0.03) : 0.08;
+      const stroke = isHighlighted ? '#e8753a' : '#c4a87a';
+      const width = isHighlighted ? 1.5 : 0.5;
+      html += `<line x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}" class="edge" data-from="${from}" data-to="${to}"/>`;
+    });
+  });
+  
+  // Draw nodes
+  nodes.forEach(n => {
+    const c = CATEGORIES[n.cat] || {color:'#888'};
+    const isSelected = selectedNode && selectedNode.name === n.name;
+    const isPaired = selectedNode && (PAIRS[selectedNode.name]||[]).includes(n.name);
+    const isSameCat = selectedNode && selectedNode.cat === n.cat && selectedNode.name !== n.name;
+    const isCatFiltered = activeCategory && n.cat !== activeCategory;
+    
+    let opacity = 1, radius = 6, strokeW = 0, strokeC = 'none';
+    if(selectedNode){
+      if(isSelected){ radius = 10; strokeW = 2; strokeC = '#f0e6d3'; }
+      else if(isPaired){ radius = 8; strokeW = 1.5; strokeC = '#e8753a'; opacity = 1; }
+      else if(isSameCat){ opacity = 0.4; }
+      else { opacity = 0.12; }
+    }
+    if(isCatFiltered) opacity = 0.1;
+    
+    const filter = isSelected ? 'filter="url(#glow)"' : '';
+    html += `<g class="node" data-name="${n.name}" onclick="selectModule('${n.name}')" style="cursor:pointer" opacity="${opacity}">`;
+    html += `<circle cx="${n.x}" cy="${n.y}" r="${radius}" fill="${c.color}" stroke="${strokeC}" stroke-width="${strokeW}" ${filter}/>`;
+    
+    // Show label for selected, paired, or if no selection
+    const showLabel = !selectedNode || isSelected || isPaired;
+    if(showLabel){
+      const fontSize = isSelected ? 10 : 8;
+      const fontWeight = isSelected ? 600 : 400;
+      const labelColor = isSelected ? '#f0e6d3' : '#bfb5a3';
+      html += `<text x="${n.x}" y="${n.y-radius-4}" text-anchor="middle" fill="${labelColor}" font-size="${fontSize}" font-weight="${fontWeight}">${n.name}</text>`;
+    }
+    html += '</g>';
+  });
+  
+  svg.innerHTML = html;
+}
+
+function selectModule(name){
+  const node = nodes.find(n=>n.name===name);
+  if(!node) return;
+  
+  if(selectedNode && selectedNode.name === name){
+    selectedNode = null;
+    closeDetail();
+    renderGraph();
+    highlightPipeline(null);
+    return;
+  }
+  
+  selectedNode = node;
+  renderGraph();
+  showDetail(node);
+  highlightPipeline(name);
+}
+
+function showDetail(node){
+  const panel = document.getElementById('detail');
+  const c = CATEGORIES[node.cat] || {color:'#888',label:node.cat};
+  
+  document.getElementById('dp-name').textContent = node.name;
+  document.getElementById('dp-cat').innerHTML = `<span style="color:${c.color}">● </span>${c.label}`;
+  document.getElementById('dp-pri').textContent = `Priority: ${node.pri} (lower = runs first)`;
+  document.getElementById('dp-desc').textContent = node.desc;
+  
+  // Before/after based on priority
+  const before = MODULES.filter(m=>m.pri > node.pri).slice(0,5).map(m=>`<div class="dp-rel"><span>${m.name}</span> (${m.cat})</div>`).join('');
+  const after = MODULES.filter(m=>m.pri < node.pri).slice(-5).map(m=>`<div class="dp-rel"><span>${m.name}</span> (${m.cat})</div>`).join('');
+  const pairs = (PAIRS[node.name]||[]).map(p=>{
+    const pm = MODULES.find(m=>m.name===p);
+    return pm ? `<div class="dp-rel"><span>${p}</span> (${pm.cat})</div>` : '';
+  }).join('');
+  
+  document.getElementById('dp-before').innerHTML = before || '<div class="dp-rel">Last in chain</div>';
+  document.getElementById('dp-after').innerHTML = after || '<div class="dp-rel">First in chain</div>';
+  document.getElementById('dp-pairs').innerHTML = pairs || '<div class="dp-rel">No specific pairings</div>';
+  
+  panel.classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('detail').classList.remove('open');
+  selectedNode = null;
+  renderGraph();
+  highlightPipeline(null);
+}
+
+function highlightPipeline(name){
+  document.querySelectorAll('.pipe-mod').forEach(el => {
+    el.classList.remove('highlighted');
+    if(name){
+      const pairs = PAIRS[name] || [];
+      if(el.dataset.mod === name || pairs.includes(el.dataset.mod)){
+        el.classList.add('highlighted');
+      }
+    }
+  });
+}
+
+function filterCategory(cat){
+  if(activeCategory === cat){
+    activeCategory = null;
+    document.querySelectorAll('.legend-item').forEach(el=>el.classList.remove('active'));
+  } else {
+    activeCategory = cat;
+    document.querySelectorAll('.legend-item').forEach(el=>{
+      el.classList.toggle('active', el.dataset.cat===cat);
+    });
+  }
+  selectedNode = null;
+  closeDetail();
+  renderGraph();
+}
+
+// Init
+buildLegend();
+buildPipeline();
+buildGraph();
+</script>
+</body>
+</html>
