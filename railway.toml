@@ -1,2 +1,7 @@
+[build]
+buildCommand = "chmod +x stockyard"
+
 [deploy]
-startCommand = ""
+startCommand = "./stockyard"
+healthcheckPath = "/health"
+healthcheckTimeout = 5
