@@ -191,17 +191,21 @@ func buildOpenAIBody(req *Request, stream bool) ([]byte, error) {
 	if req.MaxTokens != nil {
 		body["max_tokens"] = *req.MaxTokens
 	}
+	// Only forward known OpenAI parameters from Extra.
+	// Everything else (internal fields, transport headers, middleware state) is dropped.
+	allowedExtra := map[string]bool{
+		"tools": true, "tool_choice": true, "response_format": true,
+		"top_p": true, "frequency_penalty": true, "presence_penalty": true,
+		"stop": true, "n": true, "logprobs": true, "top_logprobs": true,
+		"seed": true, "user": true, "logit_bias": true,
+		"parallel_tool_calls": true, "service_tier": true,
+		"store": true, "metadata": true, "stream_options": true,
+		"reasoning_effort": true, "max_completion_tokens": true,
+	}
 	for k, v := range req.Extra {
-		if len(k) > 0 && k[0] == '_' {
-			continue // skip internal fields (_raw_body, _pool_key, etc.)
+		if allowedExtra[k] {
+			body[k] = v
 		}
-		if len(k) > 1 && k[0] == 'X' && k[1] == '-' {
-			continue // skip transport headers (X-Trace-ID, X-Span-ID, etc.)
-		}
-		if k == "traceparent" || k == "stream" {
-			continue // skip W3C trace + already-handled stream flag
-		}
-		body[k] = v
 	}
 	return json.Marshal(body)
 }
