@@ -13,10 +13,22 @@ import (
 )
 
 type App struct {
-	conn *sql.DB
+	conn  *sql.DB
+	audit func(string, string, string, string, any)
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
+
+// SetAuditor wires the trust audit function for recording exchange events.
+func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
+	a.audit = fn
+}
+
+func (a *App) auditEvent(action, resource string, detail any) {
+	if a.audit != nil {
+		go a.audit("exchange_event", "exchange", resource, action, detail)
+	}
+}
 
 func (a *App) Name() string        { return "exchange" }
 func (a *App) Description() string { return "Pack marketplace, config sharing, environment sync" }
@@ -244,6 +256,9 @@ func (a *App) handleInstallPack(w http.ResponseWriter, r *http.Request) {
 		"skipped": result.Skipped,
 		"errors":  result.Errors,
 	})
+	a.auditEvent("pack_installed", slug, map[string]any{
+		"version": result.Version, "applied": result.Applied, "skipped": result.Skipped,
+	})
 }
 
 // --- Installed ---
@@ -276,6 +291,7 @@ func (a *App) handleUninstall(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, map[string]any{"status": "uninstalled", "removed": result.Applied})
+	a.auditEvent("pack_uninstalled", id, map[string]any{"removed": result.Applied})
 }
 
 // --- Environments ---

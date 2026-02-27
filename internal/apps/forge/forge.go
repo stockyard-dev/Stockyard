@@ -14,12 +14,24 @@ import (
 type App struct {
 	conn      *sql.DB
 	proxyPort int
+	audit     func(string, string, string, string, any)
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
 // SetProxyPort tells the executor which port to call for LLM requests.
 func (a *App) SetProxyPort(port int) { a.proxyPort = port }
+
+// SetAuditor wires the trust audit function for recording workflow events.
+func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
+	a.audit = fn
+}
+
+func (a *App) auditEvent(action, resource string, detail any) {
+	if a.audit != nil {
+		go a.audit("forge_event", "forge", resource, action, detail)
+	}
+}
 
 func (a *App) Name() string        { return "forge" }
 func (a *App) Description() string { return "Workflow engine, tool registry, triggers, sessions, batch" }
@@ -320,6 +332,9 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 	go Execute(context.Background(), a.conn, runID, steps, input.Input, port)
 
 	writeJSON(w, map[string]any{"status": "started", "run_id": runID, "steps_total": len(steps)})
+	a.auditEvent("workflow_run_started", slug, map[string]any{
+		"run_id": runID, "steps_total": len(steps),
+	})
 }
 
 func (a *App) handleListRuns(w http.ResponseWriter, r *http.Request) {
@@ -437,6 +452,7 @@ func (a *App) handleCreateTool(w http.ResponseWriter, r *http.Request) {
 		req.Name, req.Desc, req.Type, string(schema), req.Handler)
 	id, _ := res.LastInsertId()
 	writeJSON(w, map[string]any{"status": "created", "id": id})
+	a.auditEvent("tool_created", req.Name, map[string]any{"id": id, "type": req.Type})
 }
 
 // --- Sessions ---

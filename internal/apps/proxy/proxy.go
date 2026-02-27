@@ -18,6 +18,7 @@ import (
 type App struct {
 	conn   *sql.DB
 	toggle *toggle.Registry
+	audit  func(string, string, string, string, any)
 }
 
 // New creates a new Proxy app instance.
@@ -28,6 +29,17 @@ func New(conn *sql.DB) *App {
 // SetToggleRegistry connects the proxy app to the runtime middleware toggle.
 func (a *App) SetToggleRegistry(reg *toggle.Registry) {
 	a.toggle = reg
+}
+
+// SetAuditor wires the trust audit function for recording admin actions.
+func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
+	a.audit = fn
+}
+
+func (a *App) auditEvent(action, resource string, detail any) {
+	if a.audit != nil {
+		go a.audit("admin_action", "proxy_admin", resource, action, detail)
+	}
 }
 
 func (a *App) Name() string        { return "proxy" }
@@ -196,6 +208,9 @@ func (a *App) handleUpdateModule(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]string{"status": "updated", "module": name})
+	a.auditEvent("module_updated", name, map[string]any{
+		"enabled": req.Enabled, "has_config": req.Config != nil, "has_priority": req.Priority != nil,
+	})
 }
 
 func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
@@ -254,6 +269,9 @@ func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{"status": "updated", "affected": affected, "enabled": req.Enabled})
+	a.auditEvent("bulk_toggle", "proxy_modules", map[string]any{
+		"enabled": req.Enabled, "affected": affected, "category": req.Category,
+	})
 }
 
 func (a *App) handleChain(w http.ResponseWriter, r *http.Request) {

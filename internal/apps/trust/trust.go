@@ -23,6 +23,14 @@ func New(conn *sql.DB) *App { return &App{conn: conn} }
 func (a *App) Name() string        { return "trust" }
 func (a *App) Description() string { return "Audit ledger, compliance, evidence packs, replay lab" }
 
+// Auditor returns a TrustAuditor that other packages can use to record events.
+// This ensures all writes go through the serialized hash chain.
+func (a *App) Auditor() func(eventType, actor, resource, action string, detail any) {
+	return func(eventType, actor, resource, action string, detail any) {
+		a.RecordEvent(eventType, actor, resource, action, detail)
+	}
+}
+
 // RecordEvent appends an entry to the hash-chain audit ledger.
 // Thread-safe — serializes hash chain computation.
 func (a *App) RecordEvent(eventType, actor, resource, action string, detail any) (int64, string) {

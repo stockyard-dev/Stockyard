@@ -353,6 +353,7 @@ func Boot(pc ProductConfig) {
 		toggleReg.SeedFromDB(db.Conn())
 
 		// Wire toggle registry to proxy app (if present)
+		// First pass: wire basic dependencies
 		for _, app := range pc.Apps {
 			if setter, ok := app.(interface{ SetToggleRegistry(*toggle.Registry) }); ok {
 				setter.SetToggleRegistry(toggleReg)
@@ -365,6 +366,34 @@ func Boot(pc ProductConfig) {
 			if setter, ok := app.(interface{ SetBroadcaster(any) }); ok {
 				setter.SetBroadcaster(broadcaster)
 			}
+		}
+
+		// Second pass: extract trust auditor and wire to all apps + middleware
+		var audit func(string, string, string, string, any)
+		for _, app := range pc.Apps {
+			if a, ok := app.(interface {
+				Auditor() func(string, string, string, string, any)
+			}); ok {
+				audit = a.Auditor()
+				break
+			}
+		}
+		if audit != nil {
+			// Wire auditor to apps that want it
+			for _, app := range pc.Apps {
+				if setter, ok := app.(interface {
+					SetAuditor(func(string, string, string, string, any))
+				}); ok {
+					setter.SetAuditor(audit)
+				}
+			}
+			// Record system boot event
+			go audit("system", "engine", "stockyard", "boot", map[string]any{
+				"apps":        len(pc.Apps),
+				"middlewares":  len(middlewares),
+				"port":        cfg.Port,
+			})
+			log.Printf("  Audit:     trust auditor wired to apps")
 		}
 
 		// Mount all app routes on the shared mux
