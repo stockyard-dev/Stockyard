@@ -284,6 +284,7 @@ POST /api/auth/signup                     Create user + API key
 GET  /api/auth/me                         Current user
 PUT  /api/auth/me/providers/{name}        Add provider key
 POST /api/auth/me/keys/{id}/rotate        Rotate API key
+POST /api/auth/me/keys/{id}/rotate        Rotate API key
 GET  /api/observe/traces                  Recent traces
 GET  /api/observe/timeseries?period=7d    Time-bucketed analytics
 GET  /api/observe/costs                   Cost rollups
@@ -301,6 +302,7 @@ POST /api/webhooks                        Register webhook
 POST /api/playground/share                Share playground session
 GET  /api/status                          System status + metrics
 GET  /api/plans                           Pricing plans
+GET  /api/openapi.json                    OpenAPI 3.1 spec
 ```
 
 ## Why not LiteLLM?

@@ -30,6 +30,7 @@ func OpenAPISpec() map[string]any {
 			{"name": "Auth", "description": "Users, API keys, provider keys"},
 			{"name": "Playground", "description": "Shareable playground sessions"},
 			{"name": "Webhooks", "description": "Event delivery to external endpoints"},
+			{"name": "Config", "description": "Configuration export, import, and diff"},
 			{"name": "System", "description": "Health, license, plans"},
 		},
 		"paths": openAPIPaths(),
@@ -174,6 +175,11 @@ func openAPIPaths() map[string]any {
 
 		// Status
 		"/api/status": map[string]any{"get": ep("System status, uptime, component health, request metrics", "System", nil, ok)},
+
+		// Config
+		"/api/config/export": map[string]any{"get": ep("Export full config snapshot (modules, webhooks, policies)", "Config", admin, ok)},
+		"/api/config/import": map[string]any{"post": ep("Import config snapshot — apply module states, add webhooks/policies", "Config", admin, ok)},
+		"/api/config/diff":   map[string]any{"post": ep("Diff current config against uploaded snapshot", "Config", admin, ok)},
 	}
 }
 

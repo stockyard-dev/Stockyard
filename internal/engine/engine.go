@@ -350,6 +350,9 @@ func Boot(pc ProductConfig) {
 	// Status collector (real-time metrics for /api/status)
 	statusCollector := NewStatusCollector()
 	RegisterStatusRoutes(srv.Mux(), statusCollector, db.Conn(), pc.Version)
+
+	// Config export/import/diff
+	RegisterConfigRoutes(srv.Mux(), db.Conn())
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())

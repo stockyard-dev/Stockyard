@@ -1,0 +1,33 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the use case or pain point.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this to work?
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Proxy (middleware, routing)
+        - Observe (tracing, costs, alerts)
+        - Trust (policies, audit)
+        - Studio (experiments, templates)
+        - Forge (workflows)
+        - Exchange (config packs)
+        - Console / Dashboard
+        - CLI
+        - API
+        - Documentation
+        - Other

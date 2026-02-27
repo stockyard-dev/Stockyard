@@ -232,6 +232,9 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
       <tr><td class="method">GET</td><td>/api/license</td><td>License status and usage</td></tr>
       <tr><td class="method">GET</td><td>/api/openapi.json</td><td>OpenAPI 3.1 specification</td></tr>
+      <tr><td class="method">GET</td><td>/api/config/export</td><td>Export full config snapshot (modules, webhooks, policies)</td></tr>
+      <tr><td class="method">POST</td><td>/api/config/import</td><td>Import config snapshot</td></tr>
+      <tr><td class="method">POST</td><td>/api/config/diff</td><td>Diff current config vs uploaded snapshot</td></tr>
     </table>
 
     <div class="pn"><a href="/docs/exchange/">&larr; Exchange</a></div>
