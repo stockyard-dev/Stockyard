@@ -71,6 +71,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 footer{padding:2rem;text-align:center;border-top:1px solid var(--bg3)}
 .sig{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);letter-spacing:2px}
 footer p{font-size:0.65rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.65rem}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 </style>
 <link rel="canonical" href="https://stockyard.dev/forge/builder/">
 </head>
@@ -79,7 +80,8 @@ footer p{font-size:0.65rem;font-family:var(--font-mono);color:var(--cream-muted)
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
-    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
   </div>
 </nav>
 
@@ -188,7 +190,6 @@ let isDraggingNode = null;
 function dragStart(e, type) {
   e.dataTransfer.setData('node-type', type);
 }
-.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 
 function dropNode(e) {
   e.preventDefault();
