@@ -1,4 +1,5 @@
 [deploy]
-startCommand = "stockyard"
+startCommand = "/usr/local/bin/stockyard"
 healthcheckPath = "/health"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
+restartPolicyMaxRetries = 3

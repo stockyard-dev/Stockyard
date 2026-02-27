@@ -15,20 +15,21 @@ FROM alpine:3.20
 
 RUN apk add --no-cache ca-certificates tzdata curl
 
-RUN addgroup -S stockyard && adduser -S stockyard -G stockyard
+RUN addgroup -S stockyard && adduser -S stockyard -G stockyard -h /data
 
 COPY --from=builder /stockyard /usr/local/bin/stockyard
 RUN chmod +x /usr/local/bin/stockyard
 
 RUN mkdir -p /data && chown stockyard:stockyard /data
 
-USER stockyard
-WORKDIR /data
-
+ENV DATA_DIR=/data
 ENV STOCKYARD_DB_PATH=/data/stockyard.db
 ENV STOCKYARD_LOG_FORMAT=json
 ENV PORT=4200
 
 EXPOSE 4200
+
+USER stockyard
+WORKDIR /data
 
 ENTRYPOINT ["stockyard"]
