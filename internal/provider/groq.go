@@ -193,7 +193,13 @@ func buildOpenAIBody(req *Request, stream bool) ([]byte, error) {
 	}
 	for k, v := range req.Extra {
 		if len(k) > 0 && k[0] == '_' {
-			continue // skip internal fields like _raw_body
+			continue // skip internal fields (_raw_body, _pool_key, etc.)
+		}
+		if len(k) > 1 && k[0] == 'X' && k[1] == '-' {
+			continue // skip transport headers (X-Trace-ID, X-Span-ID, etc.)
+		}
+		if k == "traceparent" || k == "stream" {
+			continue // skip W3C trace + already-handled stream flag
 		}
 		body[k] = v
 	}
