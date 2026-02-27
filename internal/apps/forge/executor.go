@@ -113,14 +113,20 @@ func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, inpu
 		}
 		if skip {
 			rc.Results[step.ID] = &StepResult{StepID: step.ID, Status: "skipped", Error: "dependency failed"}
+			logStep(conn, runID, step, rc.Results[step.ID])
 			updateProgress(conn, runID, i+1)
 			continue
 		}
+
+		// Log step start
+		logStepStart(conn, runID, step)
 
 		// Execute the step
 		result := executeStep(ctx, rc, step)
 		rc.Results[step.ID] = result
 
+		// Log step completion
+		logStep(conn, runID, step, result)
 		updateProgress(conn, runID, i+1)
 
 		if result.Status == "error" {
@@ -597,6 +603,25 @@ func topoSort(steps []Step) ([]Step, error) {
 
 func updateProgress(conn *sql.DB, runID string, completed int) {
 	conn.Exec("UPDATE forge_runs SET steps_completed = ? WHERE id = ?", completed, runID)
+}
+
+func logStepStart(conn *sql.DB, runID string, step Step) {
+	now := time.Now().Format(time.RFC3339)
+	conn.Exec(`INSERT INTO forge_step_logs (run_id, step_id, step_type, status, started_at) VALUES (?,?,?,?,?)`,
+		runID, step.ID, step.Type, "running", now)
+}
+
+func logStep(conn *sql.DB, runID string, step Step, result *StepResult) {
+	now := time.Now().Format(time.RFC3339)
+	input := truncate(resolveTemplate(step.Config.Prompt, &RunContext{Input: "", Results: map[string]*StepResult{}}), 2000)
+	output := truncate(result.Output, 5000)
+	// Update existing row or insert if logStepStart wasn't called
+	res, _ := conn.Exec(`UPDATE forge_step_logs SET status = ?, input_text = ?, output_text = ?, tokens_in = ?, tokens_out = ?, latency_ms = ?, error = ?, completed_at = ? WHERE run_id = ? AND step_id = ?`,
+		result.Status, input, output, result.TokensIn, result.TokensOut, result.LatencyMS, result.Error, now, runID, step.ID)
+	if affected, _ := res.RowsAffected(); affected == 0 {
+		conn.Exec(`INSERT INTO forge_step_logs (run_id, step_id, step_type, status, input_text, output_text, tokens_in, tokens_out, latency_ms, error, completed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+			runID, step.ID, step.Type, result.Status, input, output, result.TokensIn, result.TokensOut, result.LatencyMS, result.Error, now)
+	}
 }
 
 func failRun(conn *sql.DB, runID string, errMsg string) {

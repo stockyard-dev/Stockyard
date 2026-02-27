@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/toggle"
@@ -81,35 +82,91 @@ CREATE TABLE IF NOT EXISTS proxy_routes (
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/proxy/modules", a.handleListModules)
+	mux.HandleFunc("GET /api/proxy/modules/{name}", a.handleGetModule)
 	mux.HandleFunc("PUT /api/proxy/modules/{name}", a.handleUpdateModule)
+	mux.HandleFunc("POST /api/proxy/modules/bulk", a.handleBulkToggle)
 	mux.HandleFunc("GET /api/proxy/providers", a.handleListProviders)
 	mux.HandleFunc("POST /api/proxy/providers/{name}/check", a.handleCheckProvider)
 	mux.HandleFunc("GET /api/proxy/routes", a.handleListRoutes)
+	mux.HandleFunc("GET /api/proxy/chain", a.handleChain)
 	mux.HandleFunc("GET /api/proxy/status", a.handleStatus)
 	log.Printf("[proxy] routes registered")
 }
 
 func (a *App) handleListModules(w http.ResponseWriter, r *http.Request) {
-	rows, err := a.conn.Query("SELECT name, category, enabled, config_json, priority FROM proxy_modules ORDER BY priority")
+	// Optional query filters
+	category := r.URL.Query().Get("category")
+	enabledFilter := r.URL.Query().Get("enabled")
+
+	query := "SELECT name, category, enabled, config_json, priority FROM proxy_modules"
+	var args []any
+	var where []string
+	if category != "" {
+		where = append(where, "category = ?")
+		args = append(args, category)
+	}
+	if enabledFilter == "true" {
+		where = append(where, "enabled = 1")
+	} else if enabledFilter == "false" {
+		where = append(where, "enabled = 0")
+	}
+	if len(where) > 0 {
+		query += " WHERE " + strings.Join(where, " AND ")
+	}
+	query += " ORDER BY priority"
+
+	rows, err := a.conn.Query(query, args...)
 	if err != nil {
-		writeJSON(w, []any{})
+		writeJSON(w, map[string]any{"modules": []any{}, "count": 0})
 		return
 	}
 	defer rows.Close()
 
+	// Build set of modules actually in the live chain
+	chainSet := make(map[string]bool)
+	if a.toggle != nil {
+		chainSet = a.toggle.KnownModules()
+	}
+
 	var modules []map[string]any
 	for rows.Next() {
-		var name, category, configJSON string
+		var name, cat, configJSON string
 		var enabled, priority int
-		rows.Scan(&name, &category, &enabled, &configJSON, &priority)
+		rows.Scan(&name, &cat, &enabled, &configJSON, &priority)
 		var cfg any
 		json.Unmarshal([]byte(configJSON), &cfg)
 		modules = append(modules, map[string]any{
-			"name": name, "category": category, "enabled": enabled == 1,
-			"config": cfg, "priority": priority,
+			"name": name, "category": cat, "enabled": enabled == 1,
+			"config": cfg, "priority": priority, "in_chain": chainSet[name],
 		})
 	}
 	writeJSON(w, map[string]any{"modules": modules, "count": len(modules)})
+}
+
+func (a *App) handleGetModule(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	row := a.conn.QueryRow("SELECT name, category, enabled, config_json, priority, updated_at FROM proxy_modules WHERE name = ?", name)
+	var modName, cat, configJSON, updatedAt string
+	var enabled, priority int
+	if err := row.Scan(&modName, &cat, &enabled, &configJSON, &priority, &updatedAt); err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "module not found", "name": name})
+		return
+	}
+	var cfg any
+	json.Unmarshal([]byte(configJSON), &cfg)
+
+	inChain := false
+	if a.toggle != nil {
+		known := a.toggle.KnownModules()
+		inChain = known[name]
+	}
+
+	writeJSON(w, map[string]any{
+		"name": modName, "category": cat, "enabled": enabled == 1,
+		"config": cfg, "priority": priority, "updated_at": updatedAt,
+		"in_chain": inChain,
+	})
 }
 
 func (a *App) handleUpdateModule(w http.ResponseWriter, r *http.Request) {
@@ -139,6 +196,113 @@ func (a *App) handleUpdateModule(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]string{"status": "updated", "module": name})
+}
+
+func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Modules  []string `json:"modules"`  // specific module names
+		Category string   `json:"category"` // or toggle by category
+		Enabled  bool     `json:"enabled"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "invalid request body"})
+		return
+	}
+
+	now := time.Now().Format(time.RFC3339)
+	var affected int64
+
+	if len(req.Modules) > 0 {
+		// Toggle specific modules
+		for _, name := range req.Modules {
+			enabled := 0
+			if req.Enabled { enabled = 1 }
+			res, err := a.conn.Exec("UPDATE proxy_modules SET enabled = ?, updated_at = ? WHERE name = ?", enabled, now, name)
+			if err == nil {
+				n, _ := res.RowsAffected()
+				affected += n
+			}
+			if a.toggle != nil {
+				a.toggle.Set(name, req.Enabled)
+			}
+		}
+	} else if req.Category != "" {
+		// Toggle all modules in a category
+		enabled := 0
+		if req.Enabled { enabled = 1 }
+		res, err := a.conn.Exec("UPDATE proxy_modules SET enabled = ?, updated_at = ? WHERE category = ?", enabled, now, req.Category)
+		if err == nil {
+			affected, _ = res.RowsAffected()
+		}
+		// Update toggle registry for all modules in category
+		if a.toggle != nil {
+			rows, _ := a.conn.Query("SELECT name FROM proxy_modules WHERE category = ?", req.Category)
+			if rows != nil {
+				defer rows.Close()
+				for rows.Next() {
+					var name string
+					rows.Scan(&name)
+					a.toggle.Set(name, req.Enabled)
+				}
+			}
+		}
+	} else {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "provide 'modules' array or 'category' string"})
+		return
+	}
+
+	writeJSON(w, map[string]any{"status": "updated", "affected": affected, "enabled": req.Enabled})
+}
+
+func (a *App) handleChain(w http.ResponseWriter, r *http.Request) {
+	// Report which modules are actually in the live middleware chain
+	// and their current toggle state
+	chainSet := make(map[string]bool)
+	if a.toggle != nil {
+		chainSet = a.toggle.KnownModules()
+	}
+
+	type chainEntry struct {
+		Name    string `json:"name"`
+		Enabled bool   `json:"enabled"`
+	}
+	var chain []chainEntry
+	for name, enabled := range chainSet {
+		chain = append(chain, chainEntry{Name: name, Enabled: enabled})
+	}
+
+	// Also get categories from DB for the chain modules
+	catMap := make(map[string]string)
+	rows, err := a.conn.Query("SELECT name, category FROM proxy_modules")
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var n, c string
+			rows.Scan(&n, &c)
+			catMap[n] = c
+		}
+	}
+
+	type richEntry struct {
+		Name     string `json:"name"`
+		Category string `json:"category"`
+		Enabled  bool   `json:"enabled"`
+		InChain  bool   `json:"in_chain"`
+	}
+	var rich []richEntry
+	for name, enabled := range chainSet {
+		rich = append(rich, richEntry{
+			Name: name, Category: catMap[name], Enabled: enabled, InChain: true,
+		})
+	}
+
+	writeJSON(w, map[string]any{
+		"chain":         rich,
+		"chain_length":  len(rich),
+		"total_modules": len(catMap),
+	})
 }
 
 func (a *App) handleListProviders(w http.ResponseWriter, r *http.Request) {

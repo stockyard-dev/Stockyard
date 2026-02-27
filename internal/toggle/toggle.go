@@ -44,6 +44,18 @@ func (r *Registry) Enabled(name string) bool {
 	return v
 }
 
+// KnownModules returns a copy of all known module states.
+// Modules in this map are actually in the live middleware chain.
+func (r *Registry) KnownModules() map[string]bool {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	out := make(map[string]bool, len(r.state))
+	for k, v := range r.state {
+		out[k] = v
+	}
+	return out
+}
+
 // SeedFromDB loads initial state from proxy_modules table.
 func (r *Registry) SeedFromDB(conn *sql.DB) {
 	rows, err := conn.Query("SELECT name, enabled FROM proxy_modules")

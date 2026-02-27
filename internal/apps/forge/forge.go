@@ -30,6 +30,8 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// Schema evolution: add columns that may not exist in older DBs
+	conn.Exec("ALTER TABLE forge_runs ADD COLUMN workflow_slug TEXT DEFAULT ''")
 	log.Printf("[forge] migrations applied")
 	return nil
 }
@@ -53,6 +55,7 @@ CREATE TABLE IF NOT EXISTS forge_workflows (
 CREATE TABLE IF NOT EXISTS forge_runs (
     id TEXT PRIMARY KEY,
     workflow_id INTEGER REFERENCES forge_workflows(id),
+    workflow_slug TEXT DEFAULT '',
     status TEXT DEFAULT 'pending',
     input_json TEXT DEFAULT '{}',
     output_json TEXT DEFAULT '{}',
@@ -64,6 +67,24 @@ CREATE TABLE IF NOT EXISTS forge_runs (
 );
 CREATE INDEX IF NOT EXISTS idx_runs_workflow ON forge_runs(workflow_id);
 CREATE INDEX IF NOT EXISTS idx_runs_status ON forge_runs(status);
+
+-- Step execution logs (per-step results within a run)
+CREATE TABLE IF NOT EXISTS forge_step_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT REFERENCES forge_runs(id),
+    step_id TEXT NOT NULL,
+    step_type TEXT DEFAULT '',
+    status TEXT DEFAULT 'pending',
+    input_text TEXT DEFAULT '',
+    output_text TEXT DEFAULT '',
+    tokens_in INTEGER DEFAULT 0,
+    tokens_out INTEGER DEFAULT 0,
+    latency_ms INTEGER DEFAULT 0,
+    error TEXT DEFAULT '',
+    started_at TEXT DEFAULT (datetime('now')),
+    completed_at TEXT DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_step_logs_run ON forge_step_logs(run_id);
 
 -- Tool registry
 CREATE TABLE IF NOT EXISTS forge_tools (
@@ -129,6 +150,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/forge/workflows/{slug}/run", a.handleRunWorkflow)
 	mux.HandleFunc("GET /api/forge/runs", a.handleListRuns)
 	mux.HandleFunc("GET /api/forge/runs/{id}", a.handleGetRun)
+	mux.HandleFunc("GET /api/forge/runs/{id}/steps", a.handleGetRunSteps)
 	mux.HandleFunc("DELETE /api/forge/runs/{id}", a.handleDeleteRun)
 
 	// Tools
@@ -285,8 +307,8 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 	inputJSON, _ := json.Marshal(input.Input)
 
 	runID := fmt.Sprintf("run_%s", time.Now().Format("20060102150405.000"))
-	a.conn.Exec("INSERT INTO forge_runs (id, workflow_id, status, input_json, steps_total) VALUES (?,?,?,?,?)",
-		runID, wfID, "running", string(inputJSON), len(steps))
+	a.conn.Exec("INSERT INTO forge_runs (id, workflow_id, workflow_slug, status, input_json, steps_total) VALUES (?,?,?,?,?,?)",
+		runID, wfID, slug, "running", string(inputJSON), len(steps))
 
 	// Determine proxy port — default to 4200 (Stockyard default)
 	port := a.proxyPort
@@ -301,7 +323,7 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) handleListRuns(w http.ResponseWriter, r *http.Request) {
-	rows, _ := a.conn.Query("SELECT id, workflow_id, status, steps_completed, steps_total, started_at, completed_at FROM forge_runs ORDER BY started_at DESC LIMIT 50")
+	rows, _ := a.conn.Query("SELECT id, workflow_id, COALESCE(workflow_slug,''), status, steps_completed, steps_total, error, started_at, completed_at FROM forge_runs ORDER BY started_at DESC LIMIT 50")
 	if rows == nil {
 		writeJSON(w, map[string]any{"runs": []any{}})
 		return
@@ -310,9 +332,9 @@ func (a *App) handleListRuns(w http.ResponseWriter, r *http.Request) {
 	var runs []map[string]any
 	for rows.Next() {
 		var wfID, done, total int
-		var id, status, started, completed string
-		rows.Scan(&id, &wfID, &status, &done, &total, &started, &completed)
-		runs = append(runs, map[string]any{"id": id, "workflow_id": wfID, "status": status, "steps_completed": done, "steps_total": total, "started_at": started, "completed_at": completed})
+		var id, slug, status, errMsg, started, completed string
+		rows.Scan(&id, &wfID, &slug, &status, &done, &total, &errMsg, &started, &completed)
+		runs = append(runs, map[string]any{"id": id, "workflow_id": wfID, "workflow_slug": slug, "status": status, "steps_completed": done, "steps_total": total, "error": errMsg, "started_at": started, "completed_at": completed})
 	}
 	writeJSON(w, map[string]any{"runs": runs})
 }
@@ -320,9 +342,9 @@ func (a *App) handleListRuns(w http.ResponseWriter, r *http.Request) {
 func (a *App) handleGetRun(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var wfID, done, total int
-	var status, inputJSON, outputJSON, errMsg, started, completed string
-	err := a.conn.QueryRow("SELECT workflow_id, status, input_json, output_json, steps_completed, steps_total, error, started_at, completed_at FROM forge_runs WHERE id = ?", id).
-		Scan(&wfID, &status, &inputJSON, &outputJSON, &done, &total, &errMsg, &started, &completed)
+	var status, slug, inputJSON, outputJSON, errMsg, started, completed string
+	err := a.conn.QueryRow("SELECT workflow_id, COALESCE(workflow_slug,''), status, input_json, output_json, steps_completed, steps_total, error, started_at, completed_at FROM forge_runs WHERE id = ?", id).
+		Scan(&wfID, &slug, &status, &inputJSON, &outputJSON, &done, &total, &errMsg, &started, &completed)
 	if err != nil {
 		w.WriteHeader(404)
 		writeJSON(w, map[string]string{"error": "run not found"})
@@ -332,10 +354,34 @@ func (a *App) handleGetRun(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal([]byte(inputJSON), &in)
 	json.Unmarshal([]byte(outputJSON), &out)
 	writeJSON(w, map[string]any{
-		"id": id, "workflow_id": wfID, "status": status, "input": in, "output": out,
+		"id": id, "workflow_id": wfID, "workflow_slug": slug, "status": status,
+		"input": in, "output": out,
 		"steps_completed": done, "steps_total": total, "error": errMsg,
 		"started_at": started, "completed_at": completed,
 	})
+}
+
+func (a *App) handleGetRunSteps(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	rows, err := a.conn.Query("SELECT step_id, step_type, status, input_text, output_text, tokens_in, tokens_out, latency_ms, error, started_at, completed_at FROM forge_step_logs WHERE run_id = ? ORDER BY id ASC", id)
+	if err != nil {
+		writeJSON(w, map[string]any{"steps": []any{}})
+		return
+	}
+	defer rows.Close()
+	var steps []map[string]any
+	for rows.Next() {
+		var stepID, stepType, status, input, output, errMsg, started, completed string
+		var tokIn, tokOut, latency int
+		rows.Scan(&stepID, &stepType, &status, &input, &output, &tokIn, &tokOut, &latency, &errMsg, &started, &completed)
+		steps = append(steps, map[string]any{
+			"step_id": stepID, "step_type": stepType, "status": status,
+			"input": input, "output": output,
+			"tokens_in": tokIn, "tokens_out": tokOut, "latency_ms": latency,
+			"error": errMsg, "started_at": started, "completed_at": completed,
+		})
+	}
+	writeJSON(w, map[string]any{"run_id": id, "steps": steps, "count": len(steps)})
 }
 
 func (a *App) handleDeleteRun(w http.ResponseWriter, r *http.Request) {

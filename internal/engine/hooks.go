@@ -623,9 +623,18 @@ func seedForgeData(conn *sql.DB) {
 		},
 	}
 	for _, w := range workflows {
-		conn.Exec(`INSERT OR IGNORE INTO forge_workflows (slug, name, description, steps_json, trigger_type, enabled) VALUES (?,?,?,?,?,1)`,
+		// Try insert first, then update if exists with empty steps
+		res, _ := conn.Exec(`INSERT OR IGNORE INTO forge_workflows (slug, name, description, steps_json, trigger_type, enabled) VALUES (?,?,?,?,?,1)`,
 			w.slug, w.name, w.desc, w.steps, "manual")
+		if affected, _ := res.RowsAffected(); affected == 0 {
+			// Already exists — update if steps are empty/missing
+			conn.Exec(`UPDATE forge_workflows SET name = ?, description = ?, steps_json = ?, updated_at = datetime('now') WHERE slug = ? AND (steps_json = '[]' OR steps_json = '' OR steps_json IS NULL)`,
+				w.name, w.desc, w.steps, w.slug)
+		}
 	}
+
+	// Clean up any legacy dummy workflows that aren't in the seed
+	conn.Exec(`DELETE FROM forge_workflows WHERE slug = 'persist-proof'`)
 
 	log.Printf("[forge] seeded %d tools + %d workflows", len(tools), len(workflows))
 }

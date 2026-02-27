@@ -68,14 +68,23 @@ function ProxyView(){
   const load=async()=>{const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);setData({modules:m.modules||[],providers:p.providers||[],routes:r.routes||[]})};
   useEffect(()=>{load()},[]);
   const toggleModule=async(name,enabled)=>{const r=await api('/api/proxy/modules/'+name,{method:'PUT',body:JSON.stringify({enabled:!enabled})});if(r._error){setToast({msg:'Failed: '+name,type:'error'});return}setToast({msg:name+' '+(enabled?'disabled':'enabled'),type:'success'});load()};
+  const bulkToggle=async(cat,enabled)=>{const body=cat==='all'?{modules:d('modules').map(m=>m.name),enabled}:{category:cat,enabled};const r=await api('/api/proxy/modules/bulk',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Bulk toggle failed',type:'error'});return}setToast({msg:(r.affected||0)+' modules '+(enabled?'enabled':'disabled'),type:'success'});load()};
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const filtered=d('modules').filter(m=>!filter||m.name.toLowerCase().includes(filter.toLowerCase())||(m.category||'').toLowerCase().includes(filter.toLowerCase()));
   return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers & routes.</p></div>
-    <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
-    <${TabBar} tabs=${['modules','providers','routes']} active=${tab} onChange=${setTab}/>
-    ${tab==='modules'?html`<div style="margin-bottom:12px"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/></div>
-      <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 100px 80px"><span>Module</span><span>Category</span><span>Status</span><span>Toggle</span></div>
-      <div class="dt-body">${filtered.map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 100px 80px">
+    <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
+    <${TabBar} tabs=${['modules','chain','providers','routes']} active=${tab} onChange=${setTab}/>
+    ${tab==='modules'?html`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/>
+      <${Btn} small onClick=${()=>bulkToggle('all',false)} disabled=${!d('modules').some(m=>m.enabled)}>Disable All<//><${Btn} small onClick=${()=>bulkToggle('all',true)}>Enable All<//></div>
+      <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 80px 80px 80px"><span>Module</span><span>Category</span><span>Chain</span><span>Status</span><span>Toggle</span></div>
+      <div class="dt-body">${filtered.map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 80px 80px 80px">
+        <span class="mono">${m.name}</span><span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
+        <span>${m.in_chain?html`<${Badge} text="live" variant="success"/>`:html`<${Badge} text="db" variant="muted"/>`}</span>
+        <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
+        <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
+      </div>`)}</div></div>`:
+    tab==='chain'?html`<div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 100px 80px"><span>Middleware</span><span>Category</span><span>Status</span><span>Toggle</span></div>
+      <div class="dt-body">${d('modules').filter(m=>m.in_chain).map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 100px 80px">
         <span class="mono">${m.name}</span><span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
         <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
         <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
@@ -182,8 +191,10 @@ function ForgeView(){
   const load=async()=>{const[w,r,t]=await Promise.all([api('/api/forge/workflows'),api('/api/forge/runs'),api('/api/forge/tools')]);setData({workflows:w.workflows||[],runs:r.runs||[],tools:t.tools||[]})};
   useEffect(()=>{load()},[]);
   const viewWorkflow=async slug=>{const r=await api('/api/forge/workflows/'+slug);if(!r._error)setSelWf(r)};
-  const runWorkflow=async slug=>{setRunning(slug);const inp=runInput||'Hello, test this workflow';const r=await api('/api/forge/workflows/'+slug+'/run',{method:'POST',body:JSON.stringify({input:inp})});setRunning(null);if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setToast({msg:'Run started: '+r.run_id,type:'success'});setRunInput('');setSelWf(null);setTimeout(load,1500)};
-  const viewRun=async id=>{const r=await api('/api/forge/runs/'+id);if(!r._error)setSelRun(r)};
+  const runWorkflow=async slug=>{setRunning(slug);const inp=runInput||'Hello, test this workflow';const r=await api('/api/forge/workflows/'+slug+'/run',{method:'POST',body:JSON.stringify({input:inp})});setRunning(null);if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setToast({msg:'Run started: '+r.run_id,type:'success'});setRunInput('');setSelWf(null);setTimeout(load,2000);setTimeout(load,5000)};
+  const viewRun=async id=>{const[r,s]=await Promise.all([api('/api/forge/runs/'+id),api('/api/forge/runs/'+id+'/steps')]);if(!r._error){r._stepLogs=s.steps||[];setSelRun(r)}};
+  const refreshRun=async()=>{if(!selRun)return;const[r,s]=await Promise.all([api('/api/forge/runs/'+selRun.id),api('/api/forge/runs/'+selRun.id+'/steps')]);if(!r._error){r._stepLogs=s.steps||[];setSelRun(r)}};
+  useEffect(()=>{if(selRun&&(selRun.status==='running'||selRun.status==='pending')){const t=setInterval(()=>{refreshRun();load()},2000);return()=>clearInterval(t)}},[selRun?.id,selRun?.status]);
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const STEP_COLORS={'llm':'var(--rust-light)','transform':'var(--gold)','tool':'var(--green)','http':'var(--leather-light)','gate':'var(--amber)'};
   return html`<div class="page-head"><div class="page-eyebrow">Forge</div><h2>Workflow Engine</h2><p class="page-sub">DAG workflows, tools & runs. 5 step types: LLM, transform, tool, HTTP, gate.</p></div>
@@ -192,12 +203,13 @@ function ForgeView(){
     ${tab==='workflows'?html`<div class="wf-grid">${d('workflows').map(w=>html`<div key=${w.slug} class="wf-card" onClick=${()=>viewWorkflow(w.slug)}>
       <div class="wf-card-head"><span class="wf-card-name">${w.name}</span><${Badge} text=${w.enabled!==false?'active':'off'} variant=${w.enabled!==false?'success':'muted'}/></div>
       <div class="wf-card-desc">${w.description||'\u2014'}</div>
-      <div class="wf-card-meta"><span class="mono">${w.slug}</span><span class="mono">${w.trigger_type||'manual'}</span></div>
+      <div class="wf-card-meta"><span class="mono">${w.slug}</span><span class="mono">${w.step_count||0} steps</span><span class="mono">${w.trigger_type||'manual'}</span></div>
     </div>`)}</div>${d('workflows').length===0&&html`<div class="empty-state">No workflows. Install the Eval Suite pack or create one via API.</div>`}`:
     tab==='runs'?html`<${DataTable} columns=${[
       {key:'id',label:'Run',width:'140px',mono:true,render:r=>fmt.trunc(r.id,18)},
+      {key:'wf',label:'Workflow',width:'120px',mono:true,render:r=>r.workflow_slug||'#'+r.workflow_id},
       {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'pending'} variant=${r.status==='success'?'success':r.status==='running'?'warn':r.status==='failed'?'danger':'muted'}/>`},
-      {key:'progress',label:'Progress',width:'100px',mono:true,render:r=>(r.steps_completed||0)+'/'+(r.steps_total||0)},
+      {key:'progress',label:'Progress',width:'80px',mono:true,render:r=>(r.steps_completed||0)+'/'+(r.steps_total||0)},
       {key:'ts',label:'Started',width:'100px',render:r=>fmt.ago(r.started_at||r.created_at)},
       {key:'done',label:'Duration',width:'100px',mono:true,render:r=>{if(!r.completed_at||!r.started_at)return r.status==='running'?'running\u2026':'\u2014';const ms=new Date(r.completed_at)-new Date(r.started_at);return fmt.ms(ms)}}
     ]} rows=${d('runs')} onRowClick=${r=>viewRun(r.id)} emptyMsg="No runs yet \u2014 run a workflow to see results here."/>`:
@@ -233,11 +245,24 @@ function ForgeView(){
     <//>`}
     ${selRun&&html`<${Modal} title=${'Run: '+fmt.trunc(selRun.id,20)} onClose=${()=>setSelRun(null)}>
       <div class="wf-detail">
-        <div class="td-row"><span class="td-label">Status</span><span><${Badge} text=${selRun.status} variant=${selRun.status==='success'?'success':selRun.status==='failed'?'danger':'warn'}/></span></div>
+        <div class="td-row"><span class="td-label">Status</span><span><${Badge} text=${selRun.status} variant=${selRun.status==='success'?'success':selRun.status==='failed'?'danger':'warn'}/>${(selRun.status==='running'||selRun.status==='pending')?html` <${Btn} small onClick=${refreshRun}>\u21BB Refresh<//>`:''}</span></div>
+        <div class="td-row"><span class="td-label">Workflow</span><span class="mono">${selRun.workflow_slug||'#'+selRun.workflow_id}</span></div>
         <div class="td-row"><span class="td-label">Progress</span><span class="mono">${selRun.steps_completed||0} / ${selRun.steps_total||0}</span></div>
         ${selRun.error?html`<div class="td-row"><span class="td-label">Error</span><span style="color:var(--red);font-size:0.82rem">${selRun.error}</span></div>`:''}
         ${selRun.input?html`<div class="td-section"><div class="td-label">Input</div><pre class="td-pre">${typeof selRun.input==='string'?selRun.input:JSON.stringify(selRun.input,null,2)}</pre></div>`:''}
-        ${selRun.output?html`<div class="td-section"><div class="td-label">Step Results</div>
+        ${(selRun._stepLogs&&selRun._stepLogs.length>0)?html`<div class="td-section"><div class="td-label">Step Execution Log</div>
+          ${selRun._stepLogs.map((s,i)=>html`<div key=${s.step_id||i} class="run-step-result">
+            <div class="run-step-head">
+              <span class="wf-step-badge" style="background:${STEP_COLORS[s.step_type]||'var(--cream-muted)'}20;color:${STEP_COLORS[s.step_type]||'var(--cream-muted)'}">${s.step_type||'llm'}</span>
+              <span class="mono">${s.step_id}</span>
+              <${Badge} text=${s.status||'?'} variant=${s.status==='success'?'success':s.status==='running'?'warn':s.status==='skipped'?'muted':'danger'}/>
+              ${s.latency_ms?html`<span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">${fmt.ms(s.latency_ms)}</span>`:''}
+            </div>
+            ${s.tokens_in||s.tokens_out?html`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin:4px 0">${s.tokens_in||0} in / ${s.tokens_out||0} out</div>`:''}
+            ${s.output?html`<pre class="td-pre" style="max-height:120px">${fmt.trunc(s.output,500)}</pre>`:''}
+            ${s.error?html`<div style="color:var(--red);font-size:0.78rem;margin-top:4px">${s.error}</div>`:''}
+          </div>`)}
+        </div>`:selRun.output?html`<div class="td-section"><div class="td-label">Step Results</div>
           ${typeof selRun.output==='object'&&selRun.output!==null?Object.entries(selRun.output).map(([k,v])=>html`<div key=${k} class="run-step-result">
             <div class="run-step-head"><span class="mono">${k}</span><${Badge} text=${v.status||'?'} variant=${v.status==='success'?'success':'danger'}/>${v.latency_ms?html`<span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">${fmt.ms(v.latency_ms)}</span>`:''}</div>
             ${v.tokens_in||v.tokens_out?html`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin:4px 0">${v.tokens_in||0} in / ${v.tokens_out||0} out</div>`:''}
