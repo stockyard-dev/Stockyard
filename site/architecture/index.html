@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Architecture — Stockyard</title>
+<meta name="description" content="Interactive architecture diagram showing how a request flows through Stockyard's 58 middleware modules and 6 apps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.hero{text-align:center;padding:4rem 2rem 2rem}
+.hero h1{font-size:2rem;margin-bottom:0.5rem}
+.hero p{color:var(--cream-dim);max-width:600px;margin:0 auto}
+.diagram{max-width:1100px;margin:2rem auto;padding:0 2rem}
+.flow-container{position:relative;background:var(--bg2);border:1px solid var(--bg3);padding:2rem;overflow:hidden}
+.flow-row{display:flex;align-items:center;margin:0.8rem 0;gap:0.5rem;flex-wrap:wrap}
+.flow-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);width:80px;text-align:right;flex-shrink:0}
+.flow-arrow{color:var(--leather);font-size:0.8rem;flex-shrink:0;margin:0 0.3rem}
+.node{font-family:var(--font-mono);font-size:0.65rem;padding:0.3rem 0.6rem;border:1px solid var(--bg3);background:var(--bg);color:var(--cream-dim);cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.node:hover,.node.active{border-color:var(--rust);color:var(--cream);background:var(--bg2)}
+.node.lit{border-color:var(--green-light);color:var(--green-light);box-shadow:0 0 8px rgba(91,168,110,0.3)}
+.node.app-node{border-color:var(--gold);color:var(--gold)}
+.node.app-node:hover,.node.app-node.active{border-color:var(--gold);background:rgba(212,168,67,0.1)}
+.node.provider{border-color:var(--leather-light);color:var(--leather-light)}
+.node.provider:hover{border-color:var(--cream);color:var(--cream)}
+.node.entry{border-color:var(--rust-light);color:var(--rust-light)}
+.node.entry:hover{background:rgba(232,117,58,0.1)}
+.detail-panel{background:var(--bg);border:1px solid var(--bg3);padding:1.5rem;margin-top:1.5rem;display:none}
+.detail-panel.visible{display:block}
+.detail-panel h3{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust-light);margin-bottom:0.5rem}
+.detail-panel p{font-size:0.85rem;color:var(--cream-dim);margin-bottom:0.5rem}
+.detail-panel code{font-family:var(--font-mono);font-size:0.8em;background:var(--bg2);padding:0.1rem 0.3rem;color:var(--leather-light)}
+.controls{text-align:center;margin:1.5rem 0}
+.play-btn{font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem 1.5rem;background:var(--rust);color:var(--cream);border:none;cursor:pointer;letter-spacing:1px;transition:background 0.2s}
+.play-btn:hover{background:var(--rust-light)}
+.play-btn:disabled{opacity:0.5;cursor:not-allowed}
+.legend{display:flex;gap:1.5rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:0.4rem;font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-dim)}
+.legend-dot{width:8px;height:8px;border:1px solid}
+.separator{width:100%;height:1px;background:var(--bg3);margin:0.5rem 0}
+.section-note{max-width:1100px;margin:0 auto;padding:2rem}
+.section-note h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem}
+.section-note p{color:var(--cream-dim);max-width:700px;line-height:1.8;margin-bottom:1rem}
+.section-note code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.flow-label{width:60px;font-size:0.5rem}.node{font-size:0.55rem;padding:0.2rem 0.4rem}.hero h1{font-size:1.5rem}}
+</style>
+<link rel="canonical" href="https://stockyard.dev/architecture/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a>
+    <a href="/blog/">Blog</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+<div class="hero" id="main">
+  <h1>How a request flows through Stockyard</h1>
+  <p>Click any module to learn what it does, or hit Play to watch a request animate through the full chain.</p>
+</div>
+<div class="diagram">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="border-color:var(--rust-light)"></div>Entry point</div>
+    <div class="legend-item"><div class="legend-dot" style="border-color:var(--cream-dim)"></div>Middleware module</div>
+    <div class="legend-item"><div class="legend-dot" style="border-color:var(--gold)"></div>App (auto-records)</div>
+    <div class="legend-item"><div class="legend-dot" style="border-color:var(--leather-light)"></div>Provider</div>
+    <div class="legend-item"><div class="legend-dot" style="border-color:var(--green-light)"></div>Active (animation)</div>
+  </div>
+  <div class="controls"><button class="play-btn" onclick="playAnimation()">&#9654; Play request flow</button></div>
+  <div class="flow-container" id="flow">
+    <div class="flow-row"><div class="flow-label">Your app</div><div class="flow-arrow">&rarr;</div><div class="node entry" data-id="entry" onclick="showDetail(this)">POST /v1/chat/completions</div></div>
+    <div class="separator"></div>
+    <div class="flow-row"><div class="flow-label">Routing</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="fallbackrouter" onclick="showDetail(this)">fallbackrouter</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="modelswitch" onclick="showDetail(this)">modelswitch</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="regionroute" onclick="showDetail(this)">regionroute</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="abrouter" onclick="showDetail(this)">abrouter</div></div>
+    <div class="flow-row"><div class="flow-label">Safety</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="promptguard" onclick="showDetail(this)">promptguard</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="toxicfilter" onclick="showDetail(this)">toxicfilter</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="guardrail" onclick="showDetail(this)">guardrail</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="secretscan" onclick="showDetail(this)">secretscan</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="agentguard" onclick="showDetail(this)">agentguard</div></div>
+    <div class="flow-row"><div class="flow-label">Cost</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="costcap" onclick="showDetail(this)">costcap</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="rateshield" onclick="showDetail(this)">rateshield</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="usagepulse" onclick="showDetail(this)">usagepulse</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="tierdrop" onclick="showDetail(this)">tierdrop</div></div>
+    <div class="flow-row"><div class="flow-label">Cache</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="cachelayer" onclick="showDetail(this)">cachelayer</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="semanticcache" onclick="showDetail(this)">semanticcache</div></div>
+    <div class="flow-row"><div class="flow-label">Transform</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="promptslim" onclick="showDetail(this)">promptslim</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="tokentrim" onclick="showDetail(this)">tokentrim</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="contextpack" onclick="showDetail(this)">contextpack</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="langbridge" onclick="showDetail(this)">langbridge</div></div>
+    <div class="flow-row"><div class="flow-label">Validate</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="structuredshield" onclick="showDetail(this)">structuredshield</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="evalgate" onclick="showDetail(this)">evalgate</div></div>
+    <div class="flow-row"><div class="flow-label">Observe</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="llmtap" onclick="showDetail(this)">llmtap</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="tracelink" onclick="showDetail(this)">tracelink</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="alertpulse" onclick="showDetail(this)">alertpulse</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="driftwatch" onclick="showDetail(this)">driftwatch</div></div>
+    <div class="flow-row"><div class="flow-label">Shims</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="anthrofit" onclick="showDetail(this)">anthrofit</div><div class="flow-arrow">&rarr;</div><div class="node" data-id="geminishim" onclick="showDetail(this)">geminishim</div></div>
+    <div class="separator"></div>
+    <div class="flow-row"><div class="flow-label">Apps</div><div class="flow-arrow">&rarr;</div><div class="node app-node" data-id="observe-app" onclick="showDetail(this)">Observe</div><div class="flow-arrow">+</div><div class="node app-node" data-id="trust-app" onclick="showDetail(this)">Trust</div><span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-dim);margin-left:0.5rem">(auto-record)</span></div>
+    <div class="separator"></div>
+    <div class="flow-row"><div class="flow-label">Provider</div><div class="flow-arrow">&rarr;</div><div class="node provider" data-id="openai" onclick="showDetail(this)">OpenAI</div><div class="node provider" data-id="anthropic" onclick="showDetail(this)">Anthropic</div><div class="node provider" data-id="gemini" onclick="showDetail(this)">Gemini</div><div class="node provider" data-id="groq" onclick="showDetail(this)">Groq</div><div class="node provider" data-id="ollama" onclick="showDetail(this)">Ollama</div><div class="node provider" style="color:var(--leather);border-color:var(--bg3);cursor:default">+11 more</div></div>
+  </div>
+  <div class="detail-panel" id="detail"><h3 id="detail-title">Module</h3><p id="detail-desc">Click any module to see what it does.</p></div>
+</div>
+<div class="section-note">
+  <h2>How it works</h2>
+  <p>Every request enters through the standard OpenAI-compatible <code>/v1/chat/completions</code> endpoint. It flows through the middleware chain in order: routing decides which provider handles it, safety modules check for harmful content, cost modules enforce spending limits, the cache checks for a hit, transforms optimize the prompt, validators ensure output quality, and observe modules record everything.</p>
+  <p>After the middleware chain, the request hits the selected provider. On the way back, the response flows through the chain in reverse. Observe automatically writes a trace record and Trust writes a hash-chained audit entry &mdash; no configuration needed.</p>
+  <p>Every module is wrapped with <code>toggle.Wrap</code>. Disabled modules are bypassed with zero overhead. Toggle any module on or off at runtime via the API or the console &mdash; no restart required.</p>
+</div>
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
+</footer>
+<script>
+const D={entry:{t:'Entry Point',d:'Your app sends a standard OpenAI-compatible request to <code>POST /v1/chat/completions</code>. Stockyard accepts the same payload format as OpenAI, Anthropic (via shim), and all other providers.'},fallbackrouter:{t:'Fallback Router',d:'If the primary provider fails or times out, automatically retry with a fallback. Configurable retry count, timeout, and circuit breaker thresholds.'},modelswitch:{t:'Model Switch',d:'Alias model names to different providers. Map <code>gpt-4o</code> to <code>claude-sonnet-4-5</code> without changing app code.'},regionroute:{t:'Region Route',d:'Route requests to the geographically closest provider endpoint for lower latency.'},abrouter:{t:'A/B Router',d:'Split traffic between models or providers by percentage for A/B testing in production.'},promptguard:{t:'Prompt Guard',d:'Detect and block prompt injection attacks. Pattern matching and heuristic analysis on input messages.'},toxicfilter:{t:'Toxic Filter',d:'Content moderation for both input prompts and output completions. Blocks or flags toxic, harmful, or inappropriate content.'},guardrail:{t:'Guardrail',d:'Custom guardrail rules with configurable actions (block, warn, log). Define patterns and policies for your specific use case.'},secretscan:{t:'Secret Scan',d:'Detect API keys, passwords, SSNs, and other secrets in prompts before they reach the provider. Redact or block.'},agentguard:{t:'Agent Guard',d:'Safety controls for agentic workflows. Limit tool calls, prevent recursive loops, enforce action boundaries.'},costcap:{t:'Cost Cap',d:'Hard and soft spending limits. Set daily, weekly, or monthly caps. Requests are rejected when the hard cap is hit.'},rateshield:{t:'Rate Shield',d:'Per-key and global rate limiting. Token bucket algorithm with configurable burst and sustained rates.'},usagepulse:{t:'Usage Pulse',d:'Real-time usage metering. Tracks requests, tokens, and cost per user, per model, per provider.'},tierdrop:{t:'Tier Drop',d:'Automatically downgrade to a cheaper model when approaching cost limits. <code>gpt-4o</code> falls back to <code>gpt-4o-mini</code>.'},cachelayer:{t:'Cache Layer',d:'Exact-match response caching. Identical prompts return cached responses instantly. Configurable TTL.'},semanticcache:{t:'Semantic Cache',d:'Embedding-based similarity cache. Similar (not identical) prompts can return cached responses. Configurable similarity threshold.'},promptslim:{t:'Prompt Slim',d:'Compress prompts by removing redundant whitespace, unnecessary formatting, and verbose instructions. Reduces token count.'},tokentrim:{t:'Token Trim',d:'Truncate conversations that exceed context window limits. Keeps system messages and recent turns, trims from the middle.'},contextpack:{t:'Context Pack',d:'Smart context window management. Summarize older messages to fit more history into the context window.'},langbridge:{t:'Lang Bridge',d:'Automatic language detection and translation. Send prompts in any language, get responses in the target language.'},structuredshield:{t:'Structured Shield',d:'Validate JSON output against a schema. Retry with corrective prompts if the output doesn\'t match.'},evalgate:{t:'Eval Gate',d:'Quality gate that evaluates outputs against criteria before returning them. Block low-quality responses and retry.'},llmtap:{t:'LLM Tap',d:'Core logging middleware. Records every request and response with full metadata: model, tokens, cost, latency, status.'},tracelink:{t:'Trace Link',d:'Distributed tracing. Assigns trace IDs and links related requests across multi-step workflows.'},alertpulse:{t:'Alert Pulse',d:'Real-time alert evaluation. Checks every request against configured alert rules and fires when thresholds are crossed.'},driftwatch:{t:'Drift Watch',d:'Detect output quality drift over time. Statistical analysis of response characteristics to catch model degradation.'},anthrofit:{t:'Anthrofit',d:'Anthropic API shim. Translates OpenAI-format requests to Claude API format transparently.'},geminishim:{t:'Gemini Shim',d:'Google Gemini API shim. Translates OpenAI-format requests to Gemini API format transparently.'},'observe-app':{t:'Observe App',d:'Every request automatically gets a trace record. Costs are attributed by model and provider. Anomaly detection runs in the background.'},'trust-app':{t:'Trust App',d:'Every request gets a hash-chained audit ledger entry. Each SHA-256 hash includes the previous entry, creating a tamper-evident chain.'},openai:{t:'OpenAI',d:'GPT-4o, GPT-4.1, o3-mini. Auto-configured from <code>OPENAI_API_KEY</code>.'},anthropic:{t:'Anthropic',d:'Claude Sonnet 4.5, Claude Haiku 4.5. Auto-configured from <code>ANTHROPIC_API_KEY</code>.'},gemini:{t:'Google Gemini',d:'Gemini 2.5 Pro, Gemini 2.0 Flash. Auto-configured from <code>GEMINI_API_KEY</code>.'},groq:{t:'Groq',d:'Llama 3.3, Mixtral. Auto-configured from <code>GROQ_API_KEY</code>.'},ollama:{t:'Ollama',d:'Any local model. Auto-detected at <code>localhost:11434</code>.'}};
+function showDetail(el){const id=el.dataset.id;if(!id||!D[id])return;document.querySelectorAll('.node').forEach(n=>n.classList.remove('active'));el.classList.add('active');document.getElementById('detail-title').textContent=D[id].t;document.getElementById('detail-desc').innerHTML=D[id].d;document.getElementById('detail').classList.add('visible')}
+let anim=false;
+async function playAnimation(){if(anim)return;anim=true;const btn=document.querySelector('.play-btn');btn.disabled=true;btn.textContent='Animating...';const nodes=document.querySelectorAll('.node');nodes.forEach(n=>n.classList.remove('lit','active'));document.getElementById('detail').classList.remove('visible');for(const node of nodes){if(node.style.cursor==='default')continue;node.classList.add('lit');const id=node.dataset.id;if(id&&D[id]){document.getElementById('detail-title').textContent=D[id].t;document.getElementById('detail-desc').innerHTML=D[id].d;document.getElementById('detail').classList.add('visible')}await new Promise(r=>setTimeout(r,120))}await new Promise(r=>setTimeout(r,800));nodes.forEach(n=>n.classList.remove('lit'));btn.disabled=false;btn.textContent='\u25B6 Play request flow';anim=false}
+</script>
+</body>
+</html>

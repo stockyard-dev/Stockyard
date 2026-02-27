@@ -31,6 +31,7 @@ func Register(mux *http.ServeMux) {
 		"/vs/litellm/", "/vs/helicone/", "/vs/portkey/",
 		"/blog/", "/blog/why-i-built-stockyard/",
 		"/blog/architecture-decisions/", "/blog/134-tools-one-binary/",
+		"/architecture/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
