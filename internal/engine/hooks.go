@@ -503,10 +503,10 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "log-sensitive-models", "type": "log", "pattern": "gpt-4|claude-opus", "description": "Log all requests to expensive models for cost review"}
 				],
 				"alerts": [
-					{"name": "injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 5, "window": 300, "description": "Alert on >5 injection attempts in 5min"},
-					{"name": "pii-leak", "metric": "pii_redactions", "condition": "gt", "threshold": 10, "window": 300, "description": "Alert on >10 PII redactions in 5min"},
-					{"name": "secret-exposure", "metric": "secrets_found", "condition": "gt", "threshold": 1, "window": 300, "description": "Alert immediately on secret detection"},
-					{"name": "high-error-rate", "metric": "error_rate", "condition": "gt", "threshold": 0.2, "window": 300, "description": "Alert when error rate exceeds 20%"}
+					{"name": "injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 5, "window": "5m", "description": "Alert on >5 injection attempts in 5min"},
+					{"name": "pii-leak", "metric": "pii_redactions", "condition": "gt", "threshold": 10, "window": "5m", "description": "Alert on >10 PII redactions in 5min"},
+					{"name": "secret-exposure", "metric": "secrets_found", "condition": "gt", "threshold": 1, "window": "5m", "description": "Alert immediately on secret detection"},
+					{"name": "high-error-rate", "metric": "error_rate", "condition": "gt", "threshold": 0.2, "window": "5m", "description": "Alert when error rate exceeds 20%"}
 				]
 			}`,
 		},
@@ -536,11 +536,11 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "log-data-extraction", "type": "log", "pattern": "(?i)(dump|export|extract).*(database|table|schema|credentials)", "description": "Log data extraction attempts"}
 				],
 				"alerts": [
-					{"name": "safety-injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 3, "window": 300, "description": "Alert on >3 injection attempts in 5min"},
-					{"name": "safety-pii-burst", "metric": "pii_redactions", "condition": "gt", "threshold": 5, "window": 300, "description": "Alert on >5 PII redactions in 5min"},
-					{"name": "safety-secret-any", "metric": "secrets_found", "condition": "gt", "threshold": 0, "window": 60, "description": "Immediate alert on any secret detection"},
-					{"name": "safety-toxic-spike", "metric": "toxic_flags", "condition": "gt", "threshold": 3, "window": 300, "description": "Alert on >3 toxic content flags in 5min"},
-					{"name": "safety-policy-violations", "metric": "policy_blocks", "condition": "gt", "threshold": 5, "window": 300, "description": "Alert on >5 policy violations in 5min"}
+					{"name": "safety-injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 3, "window": "5m", "description": "Alert on >3 injection attempts in 5min"},
+					{"name": "safety-pii-burst", "metric": "pii_redactions", "condition": "gt", "threshold": 5, "window": "5m", "description": "Alert on >5 PII redactions in 5min"},
+					{"name": "safety-secret-any", "metric": "secrets_found", "condition": "gt", "threshold": 0, "window": "1m", "description": "Immediate alert on any secret detection"},
+					{"name": "safety-toxic-spike", "metric": "toxic_flags", "condition": "gt", "threshold": 3, "window": "5m", "description": "Alert on >3 toxic content flags in 5min"},
+					{"name": "safety-policy-violations", "metric": "policy_blocks", "condition": "gt", "threshold": 5, "window": "5m", "description": "Alert on >5 policy violations in 5min"}
 				]
 			}`,
 		},
@@ -549,7 +549,7 @@ func seedExchangePacks(conn *sql.DB) {
 		id := "pk_" + p.slug
 		conn.Exec(`INSERT OR IGNORE INTO exchange_packs (id, slug, name, description, author, pack_type, tags_json) VALUES (?,?,?,?,?,?,?)`,
 			id, p.slug, p.name, p.desc, p.author, "config", p.tags)
-		conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
+		conn.Exec(`INSERT OR REPLACE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
 			id, "1.0.0", p.content)
 	}
 
