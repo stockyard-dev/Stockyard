@@ -48,8 +48,12 @@ func (a *App) RecordEvent(eventType, actor, resource, action string, detail any)
 	h := sha256.Sum256([]byte(hashInput))
 	hash := hex.EncodeToString(h[:])
 
-	res, _ := a.conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
+	res, err := a.conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
 		eventType, actor, resource, action, string(detailJSON), prevHash, hash, now)
+	if err != nil {
+		log.Printf("[trust] ledger write error: %v", err)
+		return 0, hash
+	}
 	id, _ := res.LastInsertId()
 	return id, hash
 }

@@ -192,6 +192,9 @@ func buildOpenAIBody(req *Request, stream bool) ([]byte, error) {
 		body["max_tokens"] = *req.MaxTokens
 	}
 	for k, v := range req.Extra {
+		if len(k) > 0 && k[0] == '_' {
+			continue // skip internal fields like _raw_body
+		}
 		body[k] = v
 	}
 	return json.Marshal(body)
