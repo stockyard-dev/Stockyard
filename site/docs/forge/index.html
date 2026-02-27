@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Documentation &mdash; Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 6 apps.">
+<title>Forge &mdash; Stockyard</title>
+<meta name="description" content="Stockyard Forge: DAG workflow engine, tool registry, triggers, and batch processing.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -71,7 +71,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/">
+<link rel="canonical" href="https://stockyard.dev/docs/forge/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -105,7 +105,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/observe/">Observe</a>
       <a href="/docs/trust/">Trust</a>
       <a href="/docs/studio/">Studio</a>
-      <a href="/docs/forge/">Forge</a>
+      <a href="/docs/forge/" class="active">Forge</a>
       <a href="/docs/exchange/">Exchange</a>
     </div>
     <div class="sidebar-section">
@@ -114,22 +114,49 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Documentation</h1>
-    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+    <h1>Forge</h1>
+    <p class="subtitle">Multi-step LLM workflows as directed acyclic graphs.</p>
 
-    <div class="ov-grid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Proxy</div><div class="ov-title">Proxy &amp; Modules</div><div class="ov-desc">58 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Trust</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">All 69 REST endpoints with examples.</div></a>
-    </div>
+    <h2 id="workflows">Workflows</h2>
+    <p>Define multi-step workflows where each step can be an LLM call, a transform, or a tool call. Steps declare dependencies and execute in topological order.</p>
+    <pre>
+<span class="comment"># Create a workflow</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \</span>
+<span class="cmd">  -d '{</span>
+<span class="cmd">    "slug": "draft-and-critique",</span>
+<span class="cmd">    "name": "Draft + Critique",</span>
+<span class="cmd">    "steps": [</span>
+<span class="cmd">      {"id":"draft","type":"llm","config":{"model":"gpt-4o-mini","prompt":"Write about {{input}}"}},</span>
+<span class="cmd">      {"id":"critique","type":"llm","depends_on":["draft"],</span>
+<span class="cmd">       "config":{"prompt":"Critique: {{steps.draft.output}}"}},</span>
+<span class="cmd">      {"id":"final","type":"transform","depends_on":["draft","critique"],</span>
+<span class="cmd">       "config":{"expression":"concat"}}</span>
+<span class="cmd">    ]</span>
+<span class="cmd">  }'</span>
+</pre>
 
-    <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
+    <h2 id="running">Running Workflows</h2>
+    <pre>
+<span class="comment"># Run it</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows/draft-and-critique/run \</span>
+<span class="cmd">  -d '{"input": "the future of AI"}'</span>
+
+<span class="comment"># Check status</span>
+<span class="cmd">curl http://localhost:4200/api/forge/runs/{run_id}</span>
+</pre>
+
+    <h2 id="step-types">Step Types</h2>
+    <p>Step types: <code>llm</code> (calls the proxy), <code>transform</code> (concat, extract_json, first_line), <code>tool</code> (external tool calls).</p>
+    <p>Template variables: <code>{{input}}</code> for the run input, <code>{{steps.step_id.output}}</code> for dependency outputs.</p>
+
+    <h2 id="tools">Tool Registry</h2>
+    <pre>
+<span class="comment"># List registered tools</span>
+<span class="cmd">curl http://localhost:4200/api/forge/tools</span>
+</pre>
+    <p>See the <a href="/forge/">Forge product page</a> and the <a href="/forge/builder/">visual workflow builder</a>.</p>
+
+    <div class="pn"><a href="/docs/studio/">&larr; Studio</a><a href="/docs/exchange/" class="next">Exchange &rarr;</a></div>
   </main>
 </div>
 

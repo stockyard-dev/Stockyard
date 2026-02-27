@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Documentation &mdash; Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 6 apps.">
+<title>Proxy &mdash; Stockyard</title>
+<meta name="description" content="Stockyard proxy: 58 middleware modules, 16 providers, routing, and runtime toggles.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -71,7 +71,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/">
+<link rel="canonical" href="https://stockyard.dev/docs/proxy/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -98,7 +98,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Proxy</div>
-      <a href="/docs/proxy/">Modules &amp; Providers</a>
+      <a href="/docs/proxy/" class="active">Modules &amp; Providers</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Apps</div>
@@ -114,22 +114,59 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Documentation</h1>
-    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+    <h1>Proxy</h1>
+    <p class="subtitle">The gateway layer. 58 modules, 16 providers, runtime toggles.</p>
 
-    <div class="ov-grid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Proxy</div><div class="ov-title">Proxy &amp; Modules</div><div class="ov-desc">58 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Trust</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">All 69 REST endpoints with examples.</div></a>
-    </div>
+    <h2 id="overview">Overview</h2>
+    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 58 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
 
-    <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
+    <h2 id="modules">Modules</h2>
+    <p>Modules are organized by category:</p>
+    <table class="endpoint-table">
+      <tr><th>Category</th><th>Modules</th><th>Purpose</th></tr>
+      <tr><td>routing</td><td>fallbackrouter, modelswitch, regionroute, localsync, abrouter</td><td>Provider failover, model aliasing, geo routing</td></tr>
+      <tr><td>caching</td><td>cachelayer, embedcache, semanticcache</td><td>Response and embedding caching</td></tr>
+      <tr><td>cost</td><td>costcap, tierdrop, idlekill, outputcap, usagepulse, rateshield</td><td>Spending limits, rate limiting, usage reporting</td></tr>
+      <tr><td>safety</td><td>promptguard, toxicfilter, guardrail, agegate, hallucicheck, secretscan, agentguard</td><td>Content moderation, injection detection, PII</td></tr>
+      <tr><td>transform</td><td>promptslim, tokentrim, contextpack, chatmem, langbridge, voicebridge</td><td>Prompt compression, context management</td></tr>
+      <tr><td>validate</td><td>structuredshield, evalgate, codefence</td><td>JSON validation, quality gating</td></tr>
+      <tr><td>shims</td><td>anthrofit, geminishim</td><td>Use Claude/Gemini with OpenAI SDK</td></tr>
+      <tr><td>observe</td><td>llmtap, tracelink, alertpulse, driftwatch</td><td>Logging, tracing, alerting, drift detection</td></tr>
+    </table>
+    <p>Every module is wrapped with <code>toggle.Wrap</code> and checks enabled state on every request. Disable a module and it&rsquo;s bypassed instantly.</p>
+    <p>See the <a href="/modules/">interactive module visualization</a> for the full dependency graph.</p>
+
+    <h2 id="providers">Providers</h2>
+    <p>Stockyard supports 16 LLM providers out of the box. Set an environment variable and the provider is auto-configured on boot:</p>
+    <table class="endpoint-table">
+      <tr><th>Provider</th><th>Env Var</th><th>Models</th></tr>
+      <tr><td>OpenAI</td><td><code>OPENAI_API_KEY</code></td><td>gpt-4o, gpt-4.1, o3-mini, etc.</td></tr>
+      <tr><td>Anthropic</td><td><code>ANTHROPIC_API_KEY</code></td><td>claude-sonnet-4-5, claude-haiku-4-5</td></tr>
+      <tr><td>Google Gemini</td><td><code>GEMINI_API_KEY</code></td><td>gemini-2.5-pro, gemini-2.0-flash</td></tr>
+      <tr><td>Groq</td><td><code>GROQ_API_KEY</code></td><td>llama-3.3-70b, mixtral-8x7b</td></tr>
+      <tr><td>Mistral</td><td><code>MISTRAL_API_KEY</code></td><td>mistral-large, codestral</td></tr>
+      <tr><td>DeepSeek</td><td><code>DEEPSEEK_API_KEY</code></td><td>deepseek-chat, deepseek-reasoner</td></tr>
+      <tr><td>Together</td><td><code>TOGETHER_API_KEY</code></td><td>Llama 3.1, Qwen 2.5</td></tr>
+      <tr><td>Fireworks</td><td><code>FIREWORKS_API_KEY</code></td><td>Llama 3.3, Qwen 2.5</td></tr>
+      <tr><td>Perplexity</td><td><code>PERPLEXITY_API_KEY</code></td><td>sonar-pro, sonar</td></tr>
+      <tr><td>xAI</td><td><code>XAI_API_KEY</code></td><td>grok-3, grok-2</td></tr>
+      <tr><td>Cohere</td><td><code>COHERE_API_KEY</code></td><td>command-r-plus, command-a</td></tr>
+      <tr><td>OpenRouter</td><td><code>OPENROUTER_API_KEY</code></td><td>Any model via OpenRouter</td></tr>
+      <tr><td>Replicate</td><td><code>REPLICATE_API_TOKEN</code></td><td>Any model via Replicate</td></tr>
+      <tr><td>Azure OpenAI</td><td><code>AZURE_OPENAI_API_KEY</code></td><td>Azure-hosted models</td></tr>
+      <tr><td>Ollama</td><td>(auto at :11434)</td><td>Any local model</td></tr>
+      <tr><td>LM Studio</td><td>(auto at :1234)</td><td>Any local model</td></tr>
+    </table>
+    <p>Any OpenAI-compatible API works as a custom provider via the user settings or config file.</p>
+
+    <h2 id="routes">Routes</h2>
+    <p>Routes map model patterns to providers. When a request comes in for <code>gpt-4o</code>, the router checks the routes table and sends it to the matching provider.</p>
+    <pre>
+<span class="comment"># List routes</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/routes</span>
+</pre>
+
+    <div class="pn"><a href="/docs/auth/">&larr; Auth &amp; Configuration</a><a href="/docs/observe/" class="next">Observe &rarr;</a></div>
   </main>
 </div>
 

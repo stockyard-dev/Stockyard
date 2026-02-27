@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Documentation &mdash; Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 6 apps.">
+<title>Exchange &mdash; Stockyard</title>
+<meta name="description" content="Stockyard Exchange: config packs, environment sync, and the marketplace.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -71,7 +71,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/">
+<link rel="canonical" href="https://stockyard.dev/docs/exchange/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -106,7 +106,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/trust/">Trust</a>
       <a href="/docs/studio/">Studio</a>
       <a href="/docs/forge/">Forge</a>
-      <a href="/docs/exchange/">Exchange</a>
+      <a href="/docs/exchange/" class="active">Exchange</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Reference</div>
@@ -114,22 +114,39 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Documentation</h1>
-    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+    <h1>Exchange</h1>
+    <p class="subtitle">Config packs. One-click install. Clean uninstall.</p>
 
-    <div class="ov-grid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Proxy</div><div class="ov-title">Proxy &amp; Modules</div><div class="ov-desc">58 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Trust</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">All 69 REST endpoints with examples.</div></a>
-    </div>
+    <h2 id="overview">Overview</h2>
+    <p>Exchange is a config pack marketplace. Packs bundle providers, modules, routes, workflows, templates, policies, and alerts into one installable unit.</p>
 
-    <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
+    <h2 id="packs">Managing Packs</h2>
+    <pre>
+<span class="comment"># List available packs</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/packs</span>
+
+<span class="comment"># Install a pack</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/safety-essentials/install</span>
+
+<span class="comment"># View installed packs</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/installed</span>
+
+<span class="comment"># Uninstall</span>
+<span class="cmd">curl -X DELETE http://localhost:4200/api/exchange/installed/1</span>
+</pre>
+    <div class="note"><strong>Starter packs</strong><br>6 packs ship by default: Safety Essentials, Cost Control, OpenAI Quickstart, Anthropic Quickstart, Multi-Provider Failover, and Evaluation Suite.</div>
+
+    <h2 id="environments">Environments</h2>
+    <pre>
+<span class="comment"># List environments</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/environments</span>
+
+<span class="comment"># Sync environment config</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/environments/production/sync</span>
+</pre>
+    <p>See the <a href="/exchange/">Exchange marketplace</a> for the full pack catalog.</p>
+
+    <div class="pn"><a href="/docs/forge/">&larr; Forge</a><a href="/docs/api/" class="next">API Reference &rarr;</a></div>
   </main>
 </div>
 

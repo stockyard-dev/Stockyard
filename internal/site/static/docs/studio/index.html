@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Documentation &mdash; Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 6 apps.">
+<title>Studio &mdash; Stockyard</title>
+<meta name="description" content="Stockyard Studio: prompt templates, A/B experiments, benchmarks, and snapshot tests.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -71,7 +71,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/">
+<link rel="canonical" href="https://stockyard.dev/docs/studio/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -104,7 +104,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <div class="sidebar-title">Apps</div>
       <a href="/docs/observe/">Observe</a>
       <a href="/docs/trust/">Trust</a>
-      <a href="/docs/studio/">Studio</a>
+      <a href="/docs/studio/" class="active">Studio</a>
       <a href="/docs/forge/">Forge</a>
       <a href="/docs/exchange/">Exchange</a>
     </div>
@@ -114,22 +114,51 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Documentation</h1>
-    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+    <h1>Studio</h1>
+    <p class="subtitle">Version, test, and optimize every prompt in your stack.</p>
 
-    <div class="ov-grid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Proxy</div><div class="ov-title">Proxy &amp; Modules</div><div class="ov-desc">58 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Trust</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">All 69 REST endpoints with examples.</div></a>
-    </div>
+    <h2 id="templates">Prompt Templates</h2>
+    <pre>
+<span class="comment"># Create a versioned prompt template</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \</span>
+<span class="cmd">  -d '{"slug":"summarizer","name":"Summarizer","content":"Summarize: {{text}}"}'</span>
 
-    <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
+<span class="comment"># List all templates</span>
+<span class="cmd">curl http://localhost:4200/api/studio/templates</span>
+</pre>
+    <p>Templates support <code>{{variable}}</code> interpolation. Every edit creates a new version automatically.</p>
+
+    <h2 id="experiments">A/B Experiments</h2>
+    <pre>
+<span class="comment"># Run an A/B test across models</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/experiments/run \</span>
+<span class="cmd">  -d '{</span>
+<span class="cmd">    "name": "speed-vs-quality",</span>
+<span class="cmd">    "prompt": "Explain quantum computing in one paragraph",</span>
+<span class="cmd">    "models": ["gpt-4o","claude-sonnet-4-5-20250929","gemini-2.0-flash"],</span>
+<span class="cmd">    "runs": 3,</span>
+<span class="cmd">    "eval": "length"</span>
+<span class="cmd">  }'</span>
+</pre>
+    <p>Eval methods: <code>length</code> (longer = better), <code>concise</code> (shorter = better), <code>json</code> (valid JSON), <code>contains</code> (keyword match), or empty for cost comparison.</p>
+
+    <h2 id="benchmarks">Benchmarks</h2>
+    <pre>
+<span class="comment"># Run a multi-prompt benchmark</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/benchmarks/run \</span>
+<span class="cmd">  -d '{</span>
+<span class="cmd">    "name": "model-eval-q1",</span>
+<span class="cmd">    "models": ["gpt-4o-mini","deepseek-chat"],</span>
+<span class="cmd">    "prompts": [</span>
+<span class="cmd">      {"name":"summarize","prompt":"Summarize: ...","eval":"concise"},</span>
+<span class="cmd">      {"name":"code","prompt":"Write fizzbuzz","eval":"contains","eval_arg":"for"}</span>
+<span class="cmd">    ],</span>
+<span class="cmd">    "runs": 3</span>
+<span class="cmd">  }'</span>
+</pre>
+    <p>See the <a href="/studio/">Studio product page</a> and the <a href="/studio/diff/">Diff viewer</a>.</p>
+
+    <div class="pn"><a href="/docs/trust/">&larr; Trust</a><a href="/docs/forge/" class="next">Forge &rarr;</a></div>
   </main>
 </div>
 

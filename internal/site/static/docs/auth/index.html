@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Documentation &mdash; Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 6 apps.">
+<title>Auth &amp; Config &mdash; Stockyard</title>
+<meta name="description" content="Stockyard authentication, configuration, and licensing.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -71,7 +71,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/">
+<link rel="canonical" href="https://stockyard.dev/docs/auth/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -94,7 +94,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="sidebar-section">
       <div class="sidebar-title">Getting Started</div>
       <a href="/docs/quickstart/">Quickstart</a>
-      <a href="/docs/auth/">Auth &amp; Config</a>
+      <a href="/docs/auth/" class="active">Auth &amp; Config</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Proxy</div>
@@ -114,22 +114,59 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Documentation</h1>
-    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+    <h1>Auth &amp; Configuration</h1>
+    <p class="subtitle">Multi-user auth, runtime config, and licensing.</p>
 
-    <div class="ov-grid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Proxy</div><div class="ov-title">Proxy &amp; Modules</div><div class="ov-desc">58 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Trust</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">All 69 REST endpoints with examples.</div></a>
-    </div>
+    <h2 id="auth">Authentication</h2>
+    <p>Stockyard has a built-in auth system for multi-user deployments. Users get <code>sk-sy-</code> API keys that route requests through the proxy with per-user provider key resolution.</p>
+    <pre>
+<span class="comment"># Create a user (returns an API key)</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \</span>
+<span class="cmd">  -d '{"email":"alice@example.com","name":"Alice"}'</span>
 
-    <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
+<span class="comment"># Use the key to make requests</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">  -H "Authorization: Bearer sk-sy-..." \</span>
+<span class="cmd">  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'</span>
+
+<span class="comment"># Add a provider key to your account</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/auth/me/providers/openai \</span>
+<span class="cmd">  -H "Authorization: Bearer sk-sy-..." \</span>
+<span class="cmd">  -d '{"api_key":"sk-proj-..."}'</span>
+</pre>
+    <p>Key resolution order: user&rsquo;s own provider key &rarr; global provider. Users can bring their own keys without sharing them.</p>
+
+    <h2 id="configuration">Configuration</h2>
+    <p>Stockyard works with zero configuration. All 58 middleware modules are registered on boot with sensible defaults. You can toggle modules on/off at runtime via the API:</p>
+    <pre>
+<span class="comment"># List all modules</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/modules</span>
+
+<span class="comment"># Disable a module</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \</span>
+<span class="cmd">  -d '{"enabled": false}'</span>
+
+<span class="comment"># Re-enable it</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \</span>
+<span class="cmd">  -d '{"enabled": true}'</span>
+</pre>
+    <p>Module state persists in the embedded SQLite database. Changes take effect immediately &mdash; no restart needed.</p>
+
+    <h2 id="license">License &amp; Pro</h2>
+    <p>Stockyard Community is free for up to 10,000 requests/month and 3 users. To remove all limits, upgrade to Pro ($9.99/month) by setting a license key:</p>
+    <pre>
+<span class="comment"># Set your license key</span>
+<span class="cmd">export STOCKYARD_LICENSE_KEY="SY-eyJ..."</span>
+
+<span class="comment"># Restart Stockyard (or set the env var before first start)</span>
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Verify your tier and usage</span>
+<span class="cmd">curl http://localhost:4200/api/license</span>
+</pre>
+    <p>License keys are available at <a href="/pricing/">stockyard.dev/pricing</a>. Pro and Enterprise keys unlock unlimited requests, unlimited users, and extended retention. All features and modules are available on every tier.</p>
+
+    <div class="pn"><a href="/docs/quickstart/">&larr; Install &amp; Quickstart</a><a href="/docs/proxy/" class="next">Proxy &rarr;</a></div>
   </main>
 </div>
 

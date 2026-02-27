@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Documentation &mdash; Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 6 apps.">
+<title>Quickstart &mdash; Stockyard</title>
+<meta name="description" content="Install Stockyard and send your first LLM request in under a minute.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -71,7 +71,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/">
+<link rel="canonical" href="https://stockyard.dev/docs/quickstart/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -93,7 +93,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-title">Getting Started</div>
-      <a href="/docs/quickstart/">Quickstart</a>
+      <a href="/docs/quickstart/" class="active">Quickstart</a>
       <a href="/docs/auth/">Auth &amp; Config</a>
     </div>
     <div class="sidebar-section">
@@ -114,22 +114,38 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Documentation</h1>
-    <p class="subtitle">Six apps. One binary. Everything you need to know.</p>
+    <h1>Install &amp; Quickstart</h1>
+    <p class="subtitle">Get Stockyard running in under a minute.</p>
 
-    <div class="ov-grid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Proxy</div><div class="ov-title">Proxy &amp; Modules</div><div class="ov-desc">58 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Trust</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">All 69 REST endpoints with examples.</div></a>
-    </div>
+    <h2 id="install">Install</h2>
+    <pre>
+<span class="comment"># Install the binary</span>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
 
-    <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
+<span class="comment"># Start the platform (all 6 apps on port 4200)</span>
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Point your app at the proxy</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+
+<span class="comment"># Make a request (goes through the full middleware chain)</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">  -H "Content-Type: application/json" \</span>
+<span class="cmd">  -H "Authorization: Bearer $OPENAI_API_KEY" \</span>
+<span class="cmd">  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</span>
+</pre>
+    <p>Open <code>http://localhost:4200/ui</code> for the web console. Open <code>http://localhost:4200/api/apps</code> to see all registered apps.</p>
+    <div class="note"><strong>Note</strong><br>Stockyard auto-detects your API key provider from its prefix (sk- &rarr; OpenAI, sk-ant- &rarr; Anthropic, gsk_ &rarr; Groq, etc.) and routes to the correct upstream. No extra configuration needed.</div>
+
+    <h2 id="playground">Playground</h2>
+    <p>Try Stockyard instantly at <a href="/playground">/playground</a>. Paste any provider API key, pick a model, and start chatting. The playground includes real-time trace viewing, live middleware toggles, and a built-in A/B model comparison tool. No signup required.</p>
+
+    <h2 id="console">Console</h2>
+    <p>The web console is served at <code>/ui</code> and gives you a real-time view of all six apps. It shows modules, providers, routes, traces, costs, alerts, templates, workflows, packs, and installed status.</p>
+    <p>The console is built with Preact and has zero external dependencies. It&rsquo;s embedded in the binary and served alongside the API.</p>
+    <p style="margin-top:2rem">For a more detailed walkthrough, see the <a href="/guide/">Guide &mdash; Your first 5 minutes</a>.</p>
+
+    <div class="pn"><a href="/docs/">&larr; Documentation</a><a href="/docs/auth/" class="next">Auth &amp; Configuration &rarr;</a></div>
   </main>
 </div>
 
