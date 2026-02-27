@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Why I Built Stockyard &mdash; Stockyard</title>
+<meta name="description" content="I was building an app with the OpenAI API. Then I shipped it. Within the first week, three things went wrong.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.post-layout{max-width:700px;margin:0 auto;padding:4rem 2rem}
+.post-layout h1{font-size:2rem;line-height:1.3;margin-bottom:0.5rem}
+.post-meta{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);margin-bottom:3rem}
+.post-layout h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:2.5rem;margin-bottom:1rem}
+.post-layout p{color:var(--cream-dim);line-height:1.9;margin-bottom:1.2rem}
+.post-layout code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.post-layout pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+.post-layout pre .comment{color:#5a5040}
+.post-layout pre .cmd{color:var(--cream)}
+.post-layout ul,.post-layout ol{color:var(--cream-dim);margin:0 0 1.5rem 1.5rem;line-height:1.9}
+.post-layout li{margin-bottom:0.3rem}
+.post-layout blockquote{border-left:3px solid var(--rust);padding:0.5rem 1.2rem;margin:1.5rem 0;color:var(--cream-dim);font-style:italic}
+.post-layout strong{color:var(--cream)}
+.post-layout .sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3);font-style:italic}
+.back{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);display:block;margin-bottom:2rem}
+.back:hover{color:var(--rust-light)}
+.blog-list{max-width:700px;margin:0 auto;padding:4rem 2rem}
+.blog-list h1{font-size:2rem;margin-bottom:0.5rem}
+.blog-list .subtitle{color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.blog-entry{padding:1.5rem 0;border-bottom:1px solid var(--bg3)}
+.blog-entry:first-of-type{border-top:1px solid var(--bg3)}
+.blog-entry a{display:block}
+.blog-entry .entry-title{font-size:1.15rem;color:var(--cream);margin-bottom:0.3rem}
+.blog-entry .entry-meta{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-bottom:0.5rem}
+.blog-entry .entry-desc{font-size:0.9rem;color:var(--cream-dim)}
+.blog-entry:hover .entry-title{color:var(--rust-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.post-layout{padding:2rem 1.5rem}.blog-list{padding:2rem 1.5rem}}
+</style>
+<link rel="canonical" href="https://stockyard.dev/blog/why-i-built-stockyard/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="post-layout" id="main">
+
+    <a href="/blog/" class="back">&larr; All posts</a>
+    <h1>Why I Built Stockyard</h1>
+    <div class="post-meta">February 2026</div>
+
+    <p>I was building an app with the OpenAI API. Everything worked great in development. Then I shipped it.</p>
+    <p>Within the first week, three things happened:</p>
+    <ol>
+      <li>My API bill hit $400 and I didn&rsquo;t notice until the invoice.</li>
+      <li>OpenAI went down for 45 minutes on a Tuesday afternoon. My app went down with it.</li>
+      <li>I realized I was paying for the exact same API response dozens of times because users kept asking similar questions.</li>
+    </ol>
+    <p>These are not hard problems. Cost caps, failover routing, and response caching are solved problems in every other part of the stack. But for LLM APIs? You&rsquo;re on your own.</p>
+    <p>I looked at the options. LiteLLM is the big one. But it&rsquo;s Python, it needs Redis and Postgres, and it&rsquo;s one monolithic proxy. I just wanted a spending cap. I didn&rsquo;t want to set up an entire infrastructure stack for it.</p>
+    <p>So I built what I wanted: a single binary I could download and run in 10 seconds.</p>
+
+    <h2>What Stockyard is</h2>
+    <p>Stockyard is a Go proxy that sits between your app and any LLM provider. You don&rsquo;t change your application code &mdash; you just point your <code>OPENAI_BASE_URL</code> at Stockyard instead of directly at OpenAI.</p>
+    <pre>
+<span class="comment"># Install</span>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+
+<span class="comment"># Run</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="cmd">stockyard</span>
+</pre>
+    <p>That&rsquo;s it. Your app now has cost tracking, response caching, rate limiting, provider failover, content safety, prompt management, and an audit trail. There&rsquo;s a dashboard at <code>localhost:4200/ui</code> where you can see everything happening in real-time.</p>
+
+    <h2>Why Go, why single binary</h2>
+    <p>I&rsquo;m tired of tools that need Docker Compose files with 4 services, a Postgres database, and a Redis instance just to add a spending cap to my API calls.</p>
+    <p>Stockyard is a single static binary. No runtime dependencies. No database to manage &mdash; it uses embedded SQLite. No Docker required. Download, run, done.</p>
+    <p>It starts in under 50ms, uses about 12MB of memory, and cross-compiles to every platform. That&rsquo;s the Go advantage.</p>
+
+    <h2>58 modules, six apps, one binary</h2>
+    <p>The proxy is built as composable middleware. There are 58 modules organized across 8 categories &mdash; routing, caching, cost, safety, transform, validate, observe, and shims. Each one is toggleable at runtime via the API. No restarts.</p>
+    <p>Beyond the proxy, there are five more apps baked into the same binary:</p>
+    <ul>
+      <li><strong>Observe</strong> &mdash; Traces, costs, alerts, anomaly detection</li>
+      <li><strong>Trust</strong> &mdash; Hash-chained audit ledger, policies, evidence export</li>
+      <li><strong>Studio</strong> &mdash; Versioned prompt templates, A/B experiments</li>
+      <li><strong>Forge</strong> &mdash; DAG workflow engine with tool registry</li>
+      <li><strong>Exchange</strong> &mdash; Config pack marketplace with one-click install</li>
+    </ul>
+
+    <h2>Try it</h2>
+    <pre>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+<span class="cmd">stockyard</span>
+</pre>
+    <p>Free forever for up to 10,000 requests/month. No credit card. Just download and run.</p>
+
+    <div class="sig">Stockyard. Where LLM traffic gets sorted.</div>
+
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
+</footer>
+</body>
+</html>
