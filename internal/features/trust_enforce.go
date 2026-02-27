@@ -5,9 +5,7 @@ package features
 
 import (
 	"context"
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -310,37 +308,22 @@ func recordViolation(db *sql.DB, policyName, action string, req *provider.Reques
 			model = resp.Model
 		}
 
-		detail, _ := json.Marshal(map[string]any{
+		detail := map[string]any{
 			"policy":   policyName,
 			"action":   action,
 			"model":    model,
 			"provider": prov,
-		})
+		}
 
 		// Report to safety event pipeline
 		severity := "medium"
 		if action == "block" {
 			severity = "high"
 		}
-		reportSafety("policy_violation", severity, "trust_enforce", action, model, "", "", "",
-			map[string]any{"policy": policyName, "provider": prov})
+		reportSafety("policy_violation", severity, "trust_enforce", action, model, "", "", "", detail)
 
-		// Get previous hash for chain
-		var prevHash string
-		db.QueryRow("SELECT hash FROM trust_ledger ORDER BY id DESC LIMIT 1").Scan(&prevHash)
-
-		now := time.Now().UTC().Format(time.RFC3339Nano)
-		hashInput := fmt.Sprintf("%s|%s|%s|%s|%s|%s", prevHash, "policy_violation", action, model, string(detail), now)
-		h := sha256.Sum256([]byte(hashInput))
-		hash := hex.EncodeToString(h[:])
-
-		_, err := db.Exec(
-			`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
-			"policy_violation", prov, model, action, string(detail), prevHash, hash, now,
-		)
-		if err != nil {
-			log.Printf("[trust-enforce] ledger write error: %v", err)
-		}
+		// Record via trust auditor (serialized through Trust.RecordEvent mutex)
+		reportAudit("policy_violation", prov, model, action, detail)
 	}()
 }
 

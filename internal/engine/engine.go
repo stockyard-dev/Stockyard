@@ -408,6 +408,12 @@ func Boot(pc ProductConfig) {
 			}
 		}
 
+		// Wire trust auditor to features so trust_enforce uses serialized hash chain
+		if audit != nil {
+			features.SetAuditFunc(audit)
+			log.Printf("  Audit:     trust auditor wired to middlewares (hash chain safe)")
+		}
+
 		// Mount all app routes on the shared mux
 		registry.RegisterAllRoutes(srv.Mux())
 
