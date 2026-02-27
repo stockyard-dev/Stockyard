@@ -480,6 +480,12 @@ func Boot(pc ProductConfig) {
 	alertEval := observe.NewAlertEvaluator(db.Conn())
 	go alertEval.Start(flushCtx)
 
+	// Register branded 404 handler as catch-all (lowest priority pattern)
+	notFound := site.NotFoundHandler()
+	srv.Mux().HandleFunc("/{path...}", func(w http.ResponseWriter, r *http.Request) {
+		notFound(w, r)
+	})
+
 	// Graceful shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()

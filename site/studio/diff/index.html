@@ -80,8 +80,10 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margi
 footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
 @media(max-width:768px){.diff-view{flex-direction:column}.diff-divider{width:100%;height:1px}.output-compare{flex-direction:column}}
 </style>
+<link rel="canonical" href="https://stockyard.dev/studio/diff/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
@@ -89,7 +91,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   </div>
 </nav>
 
-<div class="page-hero">
+<div class="page-hero" id="main">
   <div class="eyebrow">Studio — Prompt Diff</div>
   <h1>See exactly what <span class="accent">changed.</span></h1>
   <p class="sub">Compare prompt template versions side-by-side. See insertions, deletions, and how each change affects model output.</p>
@@ -232,6 +234,7 @@ function setView(view, btn) {
   btn.classList.add('active');
   loadTemplate();
 }
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 
 function diffLines(oldText, newText) {
   const oldLines = oldText.split('\n');

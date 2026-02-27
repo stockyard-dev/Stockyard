@@ -17,6 +17,7 @@
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}
 a:hover{color:var(--gold)}
@@ -64,8 +65,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .lookup-form{flex-direction:column}
 }
 </style>
+<link rel="canonical" href="https://stockyard.dev/account/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <nav class="nav">
   <a href="/" class="nav-brand">Stockyard</a>

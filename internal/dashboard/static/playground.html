@@ -48,13 +48,25 @@ a{color:var(--rust-light);text-decoration:none}
 .setup-providers{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem}
 .setup-prov{font-family:var(--font-mono);font-size:0.65rem;padding:3px 8px;border:1px solid var(--bg3);color:var(--cream-dim);background:var(--bg)}
 .setup-prov.active{border-color:var(--green);color:var(--green)}
+.key-wrap{position:relative;display:flex;gap:0}
+.key-wrap .setup-input{flex:1;padding-right:2.5rem;margin-bottom:0.6rem}
+.key-toggle{position:absolute;right:8px;top:50%;transform:translateY(calc(-50% - 0.3rem));background:none;border:none;color:var(--cream-dim);cursor:pointer;font-family:var(--font-mono);font-size:0.75rem;padding:4px 6px;line-height:1}
+.key-toggle:hover{color:var(--cream)}
+.setup-system{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.8rem;padding:0.6rem 0.8rem;outline:none;resize:vertical;min-height:50px;max-height:140px;margin-bottom:1.5rem}
+.setup-system:focus{border-color:var(--rust)}
+.param-row{display:flex;gap:1rem;margin-bottom:1.5rem}
+.param-group{flex:1}
+.param-group label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);display:flex;justify-content:space-between;margin-bottom:0.3rem}
+.param-group label span{color:var(--cream-dim)}
+.param-group input[type=range]{width:100%;accent-color:var(--rust);background:transparent;height:4px}
+.param-group input[type=number]{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.8rem;padding:0.4rem 0.6rem;outline:none}
+.param-group input[type=number]:focus{border-color:var(--rust)}
 
 /* LAYOUT */
 .layout{display:grid;grid-template-columns:1fr 340px;height:calc(100vh - 48px)}
 
 /* CHAT PANEL */
 .chat{display:flex;flex-direction:column;border-right:1px solid var(--bg3)}
-.chat-header{padding:0.8rem 1.2rem;border-bottom:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;background:var(--bg2);flex-shrink:0}
 .chat-model{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream)}
 .chat-provider{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);padding:2px 6px;border:1px solid var(--bg3)}
 .chat-messages{flex:1;overflow-y:auto;padding:1.5rem}
@@ -71,8 +83,26 @@ a{color:var(--rust-light);text-decoration:none}
 .chat-typing{padding:0.8rem 1.5rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)}
 .chat-input-wrap{padding:1rem;border-top:1px solid var(--bg3);background:var(--bg2);flex-shrink:0}
 .chat-input-row{display:flex;gap:0.5rem}
-.chat-input{flex:1;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-serif);font-size:0.9rem;padding:0.7rem 1rem;outline:none;resize:none;min-height:44px;max-height:120px}
+.chat-input{flex:1;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-serif);font-size:0.9rem;padding:0.7rem 1rem;outline:none;resize:none;min-height:44px;max-height:120px;overflow-y:auto}
 .chat-input:focus{border-color:var(--rust)}
+.chat-input-hint{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);margin-top:0.3rem;opacity:0.7}
+.chat-header{display:flex;align-items:center;gap:0.8rem;padding:0.6rem 1rem;border-bottom:1px solid var(--bg3);background:var(--bg2);font-family:var(--font-mono);font-size:0.75rem;flex-shrink:0}
+.chat-header-actions{margin-left:auto;display:flex;gap:0.5rem}
+.chat-header-actions button{background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.65rem;padding:3px 10px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s}
+.chat-header-actions button:hover{border-color:var(--rust);color:var(--cream)}
+/* Markdown rendering in assistant messages */
+.msg-body{white-space:pre-wrap;word-break:break-word}
+.msg-assistant .msg-body{white-space:normal}
+.msg-assistant .msg-body p{margin-bottom:0.6em}
+.msg-assistant .msg-body p:last-child{margin-bottom:0}
+.msg-assistant .msg-body pre{background:var(--bg);border:1px solid var(--bg3);padding:0.8rem;margin:0.6em 0;overflow-x:auto;font-family:var(--font-mono);font-size:0.8rem;line-height:1.5}
+.msg-assistant .msg-body code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg);padding:0.1rem 0.3rem}
+.msg-assistant .msg-body pre code{background:none;padding:0;font-size:1em}
+.msg-assistant .msg-body ul,.msg-assistant .msg-body ol{margin:0.5em 0 0.5em 1.5em}
+.msg-assistant .msg-body li{margin-bottom:0.3em}
+.msg-assistant .msg-body strong{color:var(--cream)}
+.msg-assistant .msg-body h1,.msg-assistant .msg-body h2,.msg-assistant .msg-body h3{font-size:1em;color:var(--cream);margin:0.8em 0 0.3em}
+.msg-assistant .msg-body blockquote{border-left:3px solid var(--bg3);padding-left:0.8em;color:var(--cream-dim);margin:0.5em 0}
 .chat-send{background:var(--rust);color:var(--cream);border:none;font-family:var(--font-mono);font-size:0.8rem;padding:0 1.2rem;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
 .chat-send:hover{background:var(--rust-light)}
 .chat-send:disabled{opacity:0.5;cursor:not-allowed}
@@ -140,6 +170,7 @@ a{color:var(--rust-light);text-decoration:none}
   .panel{display:none}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 </head>
 <body>
 
@@ -163,10 +194,13 @@ a{color:var(--rust-light);text-decoration:none}
 <div class="setup" id="setup">
   <div class="setup-box">
     <h2>Try Stockyard Live</h2>
-    <p class="setup-sub">Paste your API key. Your first request routes through 50+ middleware modules. No signup. No data stored.</p>
+    <p class="setup-sub">Paste your API key. Your first request routes through 58 middleware modules. No signup. No data stored.</p>
 
     <label class="setup-label">Your API Key</label>
-    <input type="password" class="setup-input" id="apiKey" placeholder="sk-... or sk-ant-... or gsk_..." autocomplete="off" spellcheck="false">
+    <div class="key-wrap">
+      <input type="password" class="setup-input" id="apiKey" placeholder="sk-... or sk-ant-... or gsk_..." autocomplete="off" spellcheck="false">
+      <button class="key-toggle" onclick="toggleKeyVis()" id="keyToggle" title="Show/hide key">&#9673;</button>
+    </div>
     <div class="setup-detect" id="detect"></div>
 
     <label class="setup-label">Supported Providers</label>
@@ -177,6 +211,21 @@ a{color:var(--rust-light);text-decoration:none}
       <select class="setup-input" id="modelSelect" style="padding:0.7rem">
         <option value="">— paste key first —</option>
       </select>
+    </div>
+
+    <label class="setup-label">System Prompt <span style="font-size:0.6rem;color:var(--cream-dim);text-transform:none;letter-spacing:0">(optional)</span></label>
+    <textarea class="setup-system" id="systemPrompt" rows="2" placeholder="You are a helpful assistant..."></textarea>
+
+    <label class="setup-label">Parameters</label>
+    <div class="param-row">
+      <div class="param-group">
+        <label>Temperature <span id="tempVal">0.7</span></label>
+        <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="document.getElementById('tempVal').textContent=this.value">
+      </div>
+      <div class="param-group">
+        <label>Max Tokens</label>
+        <input type="number" id="maxTokens" value="2048" min="1" max="128000" step="256" placeholder="2048">
+      </div>
     </div>
 
     <button class="setup-btn" id="startBtn" disabled onclick="startPlayground()">Launch Playground</button>
@@ -191,13 +240,18 @@ a{color:var(--rust-light);text-decoration:none}
     <div class="chat-header">
       <span class="chat-model" id="activeModel">—</span>
       <span class="chat-provider" id="activeProvider">—</span>
+      <div class="chat-header-actions">
+        <button onclick="exportChat()" title="Export conversation">Export</button>
+        <button onclick="clearChat()" title="Clear messages">Clear</button>
+      </div>
     </div>
     <div class="chat-messages" id="messages"></div>
     <div class="chat-input-wrap">
       <div class="chat-input-row">
-        <textarea class="chat-input" id="chatInput" rows="1" placeholder="Send a message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+        <textarea class="chat-input" id="chatInput" rows="1" placeholder="Send a message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}" oninput="autoGrow(this)"></textarea>
         <button class="chat-send" id="sendBtn" onclick="sendMessage()">Send</button>
       </div>
+      <div class="chat-input-hint">Shift+Enter for new line</div>
     </div>
   </div>
 
@@ -220,6 +274,9 @@ const state = {
   apiKey: '',
   provider: '',
   model: '',
+  systemPrompt: '',
+  temperature: 0.7,
+  maxTokens: 2048,
   messages: [],     // {role, content, meta}
   traces: [],
   modules: [],
@@ -329,6 +386,9 @@ function startPlayground() {
 
   state.apiKey = key;
   state.model = model;
+  state.systemPrompt = document.getElementById('systemPrompt').value.trim();
+  state.temperature = parseFloat(document.getElementById('temperature').value) || 0.7;
+  state.maxTokens = parseInt(document.getElementById('maxTokens').value) || 2048;
 
   document.getElementById('setup').style.display = 'none';
   document.getElementById('main').style.display = 'grid';
@@ -343,11 +403,18 @@ function resetPlayground() {
   state.apiKey = '';
   state.provider = '';
   state.model = '';
+  state.systemPrompt = '';
+  state.temperature = 0.7;
+  state.maxTokens = 2048;
   state.messages = [];
   state.traces = [];
   state.sending = false;
   document.getElementById('messages').innerHTML = '';
   document.getElementById('apiKey').value = '';
+  document.getElementById('systemPrompt').value = '';
+  document.getElementById('temperature').value = '0.7';
+  document.getElementById('tempVal').textContent = '0.7';
+  document.getElementById('maxTokens').value = '2048';
   document.getElementById('setup').style.display = 'flex';
   document.getElementById('main').style.display = 'none';
 }
@@ -367,7 +434,9 @@ async function sendMessage() {
   addMessage('user', text);
 
   // Build request
-  const msgs = state.messages.map(m => ({role: m.role, content: m.content}));
+  const msgs = [];
+  if (state.systemPrompt) msgs.push({role: 'system', content: state.systemPrompt});
+  msgs.push(...state.messages.map(m => ({role: m.role, content: m.content})));
   const start = performance.now();
 
   try {
@@ -381,6 +450,8 @@ async function sendMessage() {
         model: state.model,
         messages: msgs,
         stream: true,
+        temperature: state.temperature,
+        max_tokens: state.maxTokens,
       }),
     });
 
@@ -415,7 +486,7 @@ async function sendMessage() {
           const delta = chunk.choices?.[0]?.delta?.content;
           if (delta) {
             assistantContent += delta;
-            msgEl.querySelector('.msg-body').textContent = assistantContent;
+            msgEl.querySelector('.msg-body').innerHTML = renderMarkdown(assistantContent);
             // Auto-scroll
             document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
           }
@@ -799,6 +870,64 @@ function renderExpResults(data) {
 }
 
 // ─── UTILS ─────────────────────────────────────────────────────
+// ─── UTILITY FUNCTIONS ─────────────────────────────────────────
+function toggleKeyVis() {
+  const inp = document.getElementById('apiKey');
+  const btn = document.getElementById('keyToggle');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.innerHTML = '&#9679;';
+    btn.title = 'Hide key';
+  } else {
+    inp.type = 'password';
+    btn.innerHTML = '&#9673;';
+    btn.title = 'Show key';
+  }
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function renderMarkdown(text) {
+  if (typeof marked !== 'undefined') {
+    try {
+      marked.setOptions({ breaks: true, gfm: true });
+      return marked.parse(text);
+    } catch(e) {}
+  }
+  return escapeHtml(text);
+}
+
+function clearChat() {
+  state.messages = [];
+  document.getElementById('messages').innerHTML = '';
+}
+
+function exportChat() {
+  if (state.messages.length === 0) return;
+  const lines = [];
+  lines.push('# Stockyard Playground Export');
+  lines.push('Model: ' + state.model);
+  lines.push('Provider: ' + (PROVIDERS[state.provider]?.label || state.provider));
+  if (state.systemPrompt) lines.push('System: ' + state.systemPrompt);
+  lines.push('Temperature: ' + state.temperature);
+  lines.push('Max Tokens: ' + state.maxTokens);
+  lines.push('---\n');
+  for (const m of state.messages) {
+    lines.push('## ' + m.role.toUpperCase());
+    lines.push(m.content + '\n');
+  }
+  const blob = new Blob([lines.join('\n')], {type: 'text/markdown'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'stockyard-chat-' + new Date().toISOString().slice(0,10) + '.md';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function escapeHtml(s) {
   if (!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

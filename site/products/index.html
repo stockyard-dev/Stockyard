@@ -12,9 +12,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <title>Products — Stockyard</title>
-<meta name="description" content="50+ middleware modules organized into 6 apps. Routing, caching, cost control, safety, observability, workflows, and more.">
+<meta name="description" content="58 middleware modules organized into 6 apps. Routing, caching, cost control, safety, observability, workflows, and more.">
 <meta property="og:title" content="Stockyard Products">
-<meta property="og:description" content="50+ middleware modules. 6 apps. One binary. Browse the full module catalog.">
+<meta property="og:description" content="58 middleware modules. 6 apps. One binary. Browse the full module catalog.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -29,6 +29,7 @@
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}
 a:hover{color:var(--gold)}
@@ -93,8 +94,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .mod-desc{display:none}
 }
 </style>
+<link rel="canonical" href="https://stockyard.dev/products/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
@@ -107,9 +110,9 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </nav>
 
-<section class="page-hero">
+<section class="page-hero" id="main">
   <div class="eyebrow">Products</div>
-  <h1>50+ modules. <span class="accent">6 apps.</span></h1>
+  <h1>58 modules. <span class="accent">6 apps.</span></h1>
   <p class="sub">Every module toggleable at runtime. Install packs to configure groups. All included in every plan.</p>
   <div class="cta-group">
     <a href="/cloud/" class="btn btn-primary">Start free</a>

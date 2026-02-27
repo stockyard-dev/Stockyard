@@ -113,3 +113,20 @@ func Register(mux *http.ServeMux) {
 		fileServer.ServeHTTP(w, r)
 	})
 }
+
+// NotFoundHandler returns an http.HandlerFunc that serves the branded 404 page.
+func NotFoundHandler() http.HandlerFunc {
+	sub, err := fs.Sub(staticFiles, "static")
+	if err != nil {
+		return http.NotFound
+	}
+	page, err := fs.ReadFile(sub, "404.html")
+	if err != nil {
+		return http.NotFound
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(page)
+	}
+}

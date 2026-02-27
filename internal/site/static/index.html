@@ -31,6 +31,7 @@
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}
 a:hover{color:var(--gold)}
@@ -135,8 +136,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 .console-gallery img{width:100%;display:block;transition:opacity 0.3s}
 .console-gallery img.hidden{display:none}
 </style>
+<link rel="canonical" href="https://stockyard.dev/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
@@ -150,14 +153,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </nav>
 
-<section class="hero">
+<section class="hero" id="main">
   <div class="hero-eyebrow">Where LLM traffic gets sorted</div>
   <h1>Six apps. One binary. <span class="accent">Zero dependencies.</span></h1>
   <p class="hero-sub">The complete LLM infrastructure platform &mdash; proxy, observe, trust, studio, forge, and exchange. Everything between your app and the model.</p>
 
   <div class="hero-stats">
     <div class="stat"><span class="stat-num">6</span><span class="stat-label">Apps</span></div>
-    <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Modules</span></div>
+    <div class="stat"><span class="stat-num">58</span><span class="stat-label">Modules</span></div>
     <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
     <div class="stat"><span class="stat-num" style="letter-spacing:1px">Zero</span><span class="stat-label">Dependencies</span></div>
   </div>
@@ -172,7 +175,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="problem">
   <div class="problem-inner">
-    <div class="section-label">The problem</div>
+    <h2 class="section-label">The problem</h2>
     <p class="problem-text">
       You shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, workflow orchestration, and a way to share configs across environments. You're not going to set up six different tools with Redis and Postgres just to stop surprise bills.
     </p>
@@ -180,49 +183,49 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </section>
 
 <section class="solution">
-  <div class="section-label gold">The fix</div>
+  <h2 class="section-label gold">The fix</h2>
   <p class="solution-text">
-    Stockyard is one Go binary that gives you six integrated apps. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get a full platform &mdash; proxy with 50+ middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 11 more providers.
+    Stockyard is one Go binary that gives you six integrated apps. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get a full platform &mdash; proxy with 58 middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 11 more providers.
   </p>
 </section>
 
 <section class="apps" id="apps">
   <div class="apps-inner">
-    <div class="section-label leather">The platform</div>
+    <h2 class="section-label leather">The platform</h2>
     <div class="app-grid">
       <div class="app-card"><a href="/products/">
         <span class="app-num">App 01</span>
-        <span class="app-name">Proxy</span>
-        <span class="app-tagline">The gateway layer. 50+ middleware modules, runtime toggles.</span>
+        <h3 class="app-name">Proxy</h3>
+        <span class="app-tagline">The gateway layer. 58 middleware modules, runtime toggles.</span>
         <span class="app-features">Caching &bull; Rate limiting &bull; Cost caps &bull; Failover &bull; PII redaction &bull; Content filter &bull; Retry &bull; Load balancing &bull; Circuit breakers</span>
       </a></div>
       <div class="app-card"><a href="/observe/">
         <span class="app-num">App 02</span>
-        <span class="app-name">Observe</span>
+        <h3 class="app-name">Observe</h3>
         <span class="app-tagline">See everything. Every request, every dollar, every anomaly.</span>
         <span class="app-features">Request tracing &bull; Cost rollups &bull; Latency tracking &bull; Alert rules &bull; Anomaly detection &bull; Daily dashboards</span>
       </a></div>
       <div class="app-card"><a href="/products/">
         <span class="app-num">App 03</span>
-        <span class="app-name">Trust</span>
+        <h3 class="app-name">Trust</h3>
         <span class="app-tagline">Append-only audit ledger. Hash-chained. Tamper-evident.</span>
         <span class="app-features">Audit trails &bull; Evidence packs &bull; Policy engine &bull; Feedback capture &bull; Compliance reports &bull; Replay</span>
       </a></div>
       <div class="app-card"><a href="/products/">
         <span class="app-num">App 04</span>
-        <span class="app-name">Studio</span>
+        <h3 class="app-name">Studio</h3>
         <span class="app-tagline">Prompt engineering, versioned. Experiment, benchmark, snapshot.</span>
         <span class="app-features">Prompt templates &bull; A/B experiments &bull; Benchmarks &bull; Snapshot comparison &bull; Version history</span>
       </a></div>
       <div class="app-card"><a href="/products/">
         <span class="app-num">App 05</span>
-        <span class="app-name">Forge</span>
+        <h3 class="app-name">Forge</h3>
         <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
         <span class="app-features">Topological execution &bull; Template variables &bull; Transform steps &bull; Tool integration &bull; Batch processing</span>
       </a></div>
       <div class="app-card"><a href="/exchange/">
         <span class="app-num">App 06</span>
-        <span class="app-name">Exchange</span>
+        <h3 class="app-name">Exchange</h3>
         <span class="app-tagline">Config packs. Install a stack in one click.</span>
         <span class="app-features">Starter packs &bull; One-click install &bull; Clean uninstall &bull; Environment sync &bull; Version control</span>
       </a></div>
@@ -232,7 +235,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="how">
   <div class="how-inner">
-    <div class="section-label">How it works</div>
+    <h2 class="section-label">How it works</h2>
     <p style="color:var(--cream-dim);margin-bottom:0.5rem">Three commands. Thirty seconds.</p>
     <div class="code-block">
 <span class="comment"># Install</span>
@@ -251,13 +254,15 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </section>
 
 <section class="console-preview">
-  <div class="section-label leather">The Console</div>
+  <h2 class="section-label leather">The Console</h2>
   <p>A full management dashboard — embedded in the binary, no separate UI service needed.</p>
   <div class="console-tabs">
     <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
     <button class="console-tab" onclick="showConsole('observe')">Observe</button>
     <button class="console-tab" onclick="showConsole('proxy')">Proxy</button>
     <button class="console-tab" onclick="showConsole('trust')">Trust</button>
+    <button class="console-tab" onclick="showConsole('studio')">Studio</button>
+    <button class="console-tab" onclick="showConsole('forge')">Forge</button>
     <button class="console-tab" onclick="showConsole('exchange')">Exchange</button>
   </div>
   <div class="console-gallery">
@@ -265,6 +270,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <img id="cs-observe" src="/site-assets/assets/screenshots/console-observe.png" alt="Observe dashboard — traces, costs, latency across providers" class="hidden">
     <img id="cs-proxy" src="/site-assets/assets/screenshots/console-proxy.png" alt="Proxy middleware chain — 58 modules with runtime toggles" class="hidden">
     <img id="cs-trust" src="/site-assets/assets/screenshots/console-trust.png" alt="Trust policies and hash-chained audit ledger" class="hidden">
+    <img id="cs-studio" src="/site-assets/assets/screenshots/console-studio.png" alt="Studio — prompt templates, experiments, benchmarks, snapshot tests" class="hidden">
+    <img id="cs-forge" src="/site-assets/assets/screenshots/console-forge.png" alt="Forge — workflow DAGs, tool registry, triggers, batch queue" class="hidden">
     <img id="cs-exchange" src="/site-assets/assets/screenshots/console-exchange.png" alt="Exchange pack marketplace — one-click config installs" class="hidden">
   </div>
 </section>
@@ -279,7 +286,7 @@ function showConsole(name){
 
 <section class="modules">
   <div class="modules-inner">
-    <div class="section-label leather">50+ middleware modules</div>
+    <h2 class="section-label leather">58 middleware modules</h2>
     <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. Install packs to configure groups at once.</p>
     <div class="module-row"><span class="module-name">rateshield</span><span class="module-cat">Cost</span></div>
     <div class="module-row"><span class="module-name">cost_cap</span><span class="module-cat">Cost</span></div>
@@ -291,12 +298,12 @@ function showConsole(name){
     <div class="module-row"><span class="module-name">circuit_breaker</span><span class="module-cat">Reliability</span></div>
     <div class="module-row"><span class="module-name">retry</span><span class="module-cat">Reliability</span></div>
     <div class="module-row"><span class="module-name">token_budget</span><span class="module-cat">Cost</span></div>
-    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 50+ modules &rarr;</a></p>
+    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 58 modules &rarr;</a></p>
   </div>
 </section>
 
 <section class="compare">
-  <div class="section-label">Why not LiteLLM?</div>
+  <h2 class="section-label">Why not LiteLLM?</h2>
   <table class="compare-table">
     <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th></tr>
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td></tr>
@@ -304,14 +311,14 @@ function showConsole(name){
     <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td></tr>
     <tr><td>Dashboard</td><td class="us">Embedded console</td><td class="them">Separate UI service</td></tr>
     <tr><td>Platform</td><td class="us">6 integrated apps</td><td class="them">One proxy</td></tr>
-    <tr><td>Middleware</td><td class="us">50+ toggleable modules</td><td class="them">Limited callbacks</td></tr>
+    <tr><td>Middleware</td><td class="us">58 toggleable modules</td><td class="them">Limited callbacks</td></tr>
     <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
     <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td></tr>
   </table>
 </section>
 
 <section class="pricing-teaser">
-  <div class="section-label gold">Pricing</div>
+  <h2 class="section-label gold">Pricing</h2>
   <div class="tier-row">
     <div class="tier">
       <div class="tier-name">Community</div>
@@ -331,7 +338,7 @@ function showConsole(name){
       <div class="tier-name">Cloud</div>
       <div class="tier-price has-dollar">29.99</div>
       <div class="tier-period">per month &middot; managed</div>
-      <div class="tier-desc">Zero ops. We run it.</div>
+      <div class="tier-desc">Zero ops. We run it. Get an endpoint in 30 seconds.</div>
       <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start free trial</a>
     </div>
     <div class="tier">

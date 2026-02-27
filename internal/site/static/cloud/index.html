@@ -29,6 +29,7 @@
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}
 a:hover{color:var(--gold)}
@@ -111,8 +112,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .plan-row{flex-direction:column;align-items:center}
 }
 </style>
+<link rel="canonical" href="https://stockyard.dev/cloud/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
@@ -129,7 +132,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="cloud-hero">
   <div class="eyebrow">Stockyard Cloud</div>
   <h1>Full platform. <span class="accent">Zero ops.</span></h1>
-  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 50+ modules, hosted and scaled for you.</p>
+  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 58 modules, hosted and scaled for you.</p>
 </section>
 
 <div class="signup-box" id="signup-form">
@@ -173,7 +176,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="includes-grid">
       <div class="include-item">
         <div class="include-name">Proxy</div>
-        <div class="include-desc">50+ middleware modules with runtime toggles. Route to any provider.</div>
+        <div class="include-desc">58 middleware modules with runtime toggles. Route to any provider.</div>
       </div>
       <div class="include-item">
         <div class="include-name">Observe</div>
@@ -218,7 +221,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">export OPENAI_BASE_URL=https://acme-corp.stockyard.dev/v1</span>
 
 <span class="comment"># That's it. Your app doesn't change.</span>
-<span class="comment"># You get caching, safety, cost caps, logging, and 50+ more features.</span>
+<span class="comment"># You get caching, safety, cost caps, logging, and 58 modules included.</span>
   </div>
 </section>
 
@@ -231,7 +234,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <span class="plan-period">per month</span>
       <div class="plan-feat">
         <span>&#10003;</span> All 6 apps<br>
-        <span>&#10003;</span> 50+ modules<br>
+        <span>&#10003;</span> 58 modules<br>
         <span>&#10003;</span> 500k requests/mo<br>
         <span>&#10003;</span> 30-day trace retention<br>
         <span>&#10003;</span> Custom domain<br>

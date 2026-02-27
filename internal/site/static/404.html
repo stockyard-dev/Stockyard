@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — Stockyard</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/site-assets/assets/favicon/favicon-16x16.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#8a8070;
+  --gold:#d4a843;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3rem;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim);transition:color 0.2s}
+.nav-links a:hover{color:var(--rust-light)}
+.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem}
+.error-code{font-family:var(--font-mono);font-size:clamp(5rem,12vw,8rem);font-weight:700;color:var(--bg3);line-height:1;margin-bottom:1rem}
+.error-title{font-size:1.6rem;margin-bottom:1rem}
+.error-desc{color:var(--cream-dim);font-style:italic;max-width:440px;margin-bottom:2.5rem}
+.links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;font-family:var(--font-mono);font-size:0.85rem}
+.links a{padding:0.6rem 1.5rem;border:1px solid var(--bg3);transition:all 0.2s}
+.links a:hover{border-color:var(--rust);background:var(--bg2)}
+.footer{text-align:center;padding:2rem;font-size:0.7rem;color:var(--cream-muted);font-family:var(--font-mono);border-top:1px solid var(--bg3)}
+.footer a{color:var(--cream-muted)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+<main class="content" id="main">
+  <div class="error-code">404</div>
+  <h1 class="error-title">Nothing at this fence post.</h1>
+  <p class="error-desc">The page you're looking for doesn't exist, was moved, or wandered off the ranch.</p>
+  <div class="links">
+    <a href="/">Homepage</a>
+    <a href="/docs/">Docs</a>
+    <a href="/products/">Products</a>
+    <a href="/pricing/">Pricing</a>
+  </div>
+</main>
+<footer class="footer">
+  <p>&copy; 2025 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a> &middot; <a href="https://discord.gg/stockyard">Discord</a></p>
+</footer>
+</body>
+</html>
