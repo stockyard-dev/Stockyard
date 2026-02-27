@@ -62,6 +62,43 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <div class="release">
   <div class="release-header">
+    <span class="release-version">v1.2.0</span>
+    <span class="release-date">February 27, 2026</span>
+    <span class="release-tag tag-major">Platform</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">New Features</div>
+    <div class="change-item">Webhooks — register HTTP/Slack endpoints for alerts, cost thresholds, trust violations. HMAC-SHA256 signed. Auto-disable after 10 failures.</div>
+    <div class="change-item">API key rotation — <code>POST /api/auth/me/keys/{id}/rotate</code>. Atomic revoke + regenerate, zero downtime.</div>
+    <div class="change-item">Status page — <a href="/status/">/status/</a> with live auto-refresh. <code>GET /api/status</code> returns uptime, request count, error rate, latency, memory, component health.</div>
+    <div class="change-item">Config export/import — snapshot modules, webhooks, and policies. Diff before applying. <code>GET /api/config/export</code>, <code>POST /api/config/import</code>, <code>POST /api/config/diff</code>.</div>
+    <div class="change-item">VS Code extension — status bar indicator, module toggle quick-pick, trace viewer, sidebar tree views for modules/traces/providers.</div>
+    <div class="change-item">Terraform provider — manage modules, webhooks, and trust policies as infrastructure-as-code.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Docs & Site</div>
+    <div class="change-item"><a href="/docs/ops/">Operations docs</a> — doctor, webhooks, OTEL, status monitoring, config export, key rotation.</div>
+    <div class="change-item">API docs expanded with Playground, Webhooks, and System endpoint tables.</div>
+    <div class="change-item">Integration examples — Python, Node.js, curl, webhook setup.</div>
+    <div class="change-item">Sitemap expanded to 38 URLs. Endpoint count updated to 80+.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Infrastructure</div>
+    <div class="change-item">Dockerfile (multi-stage, non-root) + docker-compose.yml with healthcheck.</div>
+    <div class="change-item">GoReleaser config: unified build, Homebrew tap, Docker image, release notes.</div>
+    <div class="change-item">Integration smoke test — builds binary, boots server, hits 40+ endpoints. Runs in CI.</div>
+    <div class="change-item">SECURITY.md, .env.example, GitHub issue templates, CONTRIBUTING.md refresh.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Fixes</div>
+    <div class="change-item">Fixed playground share button — now calls backend API, loads shared sessions via <code>?share={id}</code>.</div>
+    <div class="change-item">Fixed docs sidebar structure (malformed HTML from nav insertion).</div>
+    <div class="change-item">Fixed 404 page favicon paths. Standardized endpoint count to 80+ across all pages.</div>
+  </div>
+</div>
+
+<div class="release">
+  <div class="release-header">
     <span class="release-version">v1.1.0</span>
     <span class="release-date">February 27, 2026</span>
     <span class="release-tag tag-major">Platform</span>
@@ -105,7 +142,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <div class="change-group">
     <div class="change-group-label">Platform</div>
     <div class="change-item">6 flagship apps: Proxy, Observe, Trust, Studio, Forge, Exchange</div>
-    <div class="change-item">69 REST API endpoints across all apps</div>
+    <div class="change-item">80+ REST API endpoints across all apps</div>
     <div class="change-item">Embedded web console at /ui with full dashboard</div>
     <div class="change-item">16 LLM providers auto-configured from environment variables</div>
     <div class="change-item">SQLite storage — zero external dependencies</div>
