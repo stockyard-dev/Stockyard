@@ -247,15 +247,14 @@ func genTraceID() string {
 func seedExchangePacks(conn *sql.DB) {
 	var count int
 	conn.QueryRow("SELECT COUNT(*) FROM exchange_packs").Scan(&count)
-	if count > 0 {
-		return
-	}
 
 	type pack struct {
 		slug, name, desc, author, tags string
 		content                        string
 	}
 
+	// Only seed wave 1 if fresh DB
+	if count == 0 {
 	packs := []pack{
 		{
 			slug: "safety-essentials", name: "Safety Essentials", author: "Stockyard",
@@ -398,8 +397,9 @@ func seedExchangePacks(conn *sql.DB) {
 		conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
 			id, "1.0.0", p.content)
 	}
+	} // end if count == 0
 
-	// Wave 2 packs (OR IGNORE so they appear on existing installs too)
+	// Wave 2 packs — always INSERT OR IGNORE so they appear on existing installs too
 	extraPacks := []pack{
 		{
 			slug: "deepseek-starter", name: "DeepSeek Starter", author: "Stockyard",
@@ -483,7 +483,7 @@ func seedExchangePacks(conn *sql.DB) {
 			id, "1.0.0", p.content)
 	}
 
-	log.Printf("[exchange] seeded %d starter packs + %d extra packs", len(packs), len(extraPacks))
+	log.Printf("[exchange] seeded exchange packs (%d extra)", len(extraPacks))
 }
 
 // seedForgeData populates the Forge tool registry and additional demo workflows.

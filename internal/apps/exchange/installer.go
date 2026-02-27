@@ -213,6 +213,10 @@ func (a *App) installModules(specs []ModuleSpec, r *InstallResult) {
 		}
 		rows, _ := res.RowsAffected()
 		if rows > 0 {
+			// Also flip the live toggle
+			if a.toggle != nil {
+				a.toggle.Set(s.Name, s.Enabled)
+			}
 			r.Applied["modules"]++
 			continue
 		}
@@ -220,6 +224,9 @@ func (a *App) installModules(specs []ModuleSpec, r *InstallResult) {
 		if err != nil {
 			r.Errors["modules"] = append(r.Errors["modules"], fmt.Sprintf("%s: %v", s.Name, err))
 			continue
+		}
+		if a.toggle != nil {
+			a.toggle.Set(s.Name, s.Enabled)
 		}
 		r.Applied["modules"]++
 	}

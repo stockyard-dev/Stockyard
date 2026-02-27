@@ -10,11 +10,14 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/toggle"
 )
 
 type App struct {
-	conn  *sql.DB
-	audit func(string, string, string, string, any)
+	conn   *sql.DB
+	audit  func(string, string, string, string, any)
+	toggle *toggle.Registry
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
@@ -22,6 +25,11 @@ func New(conn *sql.DB) *App { return &App{conn: conn} }
 // SetAuditor wires the trust audit function for recording exchange events.
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 	a.audit = fn
+}
+
+// SetToggleRegistry connects the exchange app to the runtime middleware toggle.
+func (a *App) SetToggleRegistry(reg *toggle.Registry) {
+	a.toggle = reg
 }
 
 func (a *App) auditEvent(action, resource string, detail any) {
@@ -112,6 +120,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/exchange/packs", a.handleCreatePack)
 	mux.HandleFunc("POST /api/exchange/packs/{slug}/versions", a.handleAddVersion)
 	mux.HandleFunc("POST /api/exchange/packs/{slug}/install", a.handleInstallPack)
+	mux.HandleFunc("GET /api/exchange/packs/{slug}/preview", a.handlePreviewPack)
 
 	// Installed
 	mux.HandleFunc("GET /api/exchange/installed", a.handleListInstalled)
@@ -259,6 +268,80 @@ func (a *App) handleInstallPack(w http.ResponseWriter, r *http.Request) {
 	a.auditEvent("pack_installed", slug, map[string]any{
 		"version": result.Version, "applied": result.Applied, "skipped": result.Skipped,
 	})
+}
+
+// --- Preview ---
+
+func (a *App) handlePreviewPack(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+
+	var packID, version, contentJSON string
+	err := a.conn.QueryRow(`
+		SELECT p.id, p.current_version, v.content_json
+		FROM exchange_packs p
+		JOIN exchange_pack_versions v ON v.pack_id = p.id AND v.version = p.current_version
+		WHERE p.slug = ?
+	`, slug).Scan(&packID, &version, &contentJSON)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "pack not found"})
+		return
+	}
+
+	var content PackContent
+	json.Unmarshal([]byte(contentJSON), &content)
+
+	// Check what already exists
+	preview := map[string]any{
+		"slug":    slug,
+		"version": version,
+	}
+
+	sections := []struct {
+		name  string
+		count int
+		items []map[string]any
+	}{
+		{"providers", len(content.Providers), nil},
+		{"routes", len(content.Routes), nil},
+		{"modules", len(content.Modules), nil},
+		{"workflows", len(content.Workflows), nil},
+		{"tools", len(content.Tools), nil},
+		{"templates", len(content.Templates), nil},
+		{"policies", len(content.Policies), nil},
+		{"alerts", len(content.Alerts), nil},
+	}
+
+	changes := make([]map[string]any, 0)
+	for _, s := range sections {
+		if s.count > 0 {
+			changes = append(changes, map[string]any{"section": s.name, "count": s.count})
+		}
+	}
+
+	// Detailed module diffs
+	moduleDiffs := make([]map[string]any, 0)
+	for _, m := range content.Modules {
+		var curEnabled int
+		err := a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = ?", m.Name).Scan(&curEnabled)
+		action := "create"
+		if err == nil {
+			if (curEnabled == 1) == m.Enabled {
+				action = "unchanged"
+			} else {
+				action = "update"
+			}
+		}
+		moduleDiffs = append(moduleDiffs, map[string]any{
+			"name": m.Name, "enabled": m.Enabled, "action": action,
+		})
+	}
+
+	preview["changes"] = changes
+	preview["modules"] = moduleDiffs
+	preview["content"] = content
+
+	writeJSON(w, preview)
 }
 
 // --- Installed ---

@@ -395,22 +395,70 @@ function ForgeView(){
 // ─── Exchange (with install/uninstall) ─────────────────────────────
 function ExchangeView(){
   const[tab,setTab]=useState('packs');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[installing,setInstalling]=useState(null);
-  const load=async()=>{const[p,i]=await Promise.all([api('/api/exchange/packs'),api('/api/exchange/installed')]);setData({packs:p.packs||[],installed:i.installed||[]})};
+  const[preview,setPreview]=useState(null);const[installResult,setInstallResult]=useState(null);
+  const load=async()=>{const[p,i,st]=await Promise.all([api('/api/exchange/packs'),api('/api/exchange/installed'),api('/api/exchange/status')]);setData({packs:p.packs||[],installed:i.installed||[],status:st||{}})};
   useEffect(()=>{load()},[]);
-  const installPack=async(slug)=>{setInstalling(slug);const r=await api('/api/exchange/packs/'+slug+'/install',{method:'POST'});setInstalling(null);if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setToast({msg:slug+' installed! ('+r.applied+' resources)',type:'success'});load()};
+  const previewPack=async(slug)=>{setPreview(null);const r=await api('/api/exchange/packs/'+slug+'/preview');setPreview(r)};
+  const installPack=async(slug)=>{setInstalling(slug);setInstallResult(null);const r=await api('/api/exchange/packs/'+slug+'/install',{method:'POST'});setInstalling(null);if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setInstallResult(r);setToast({msg:slug+' installed!',type:'success'});load()};
   const uninstall=async(id)=>{await api('/api/exchange/installed/'+id,{method:'DELETE'});setToast({msg:'Uninstalled',type:'success'});load()};
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const installedSlugs=new Set(d('installed').map(i=>i.pack_slug));
-  return html`<div class="page-head"><div class="page-eyebrow">Exchange</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs in one click.</p></div>
-    <div class="stats-row"><${Stat} label="Available" value=${d('packs').length} accent/><${Stat} label="Installed" value=${d('installed').length}/></div>
+  const st=data.status||{};
+  const SECTION_ICONS={providers:'\uD83D\uDD0C',routes:'\u2194\uFE0F',modules:'\u2699\uFE0F',workflows:'\u26A1',tools:'\uD83D\uDD27',templates:'\uD83D\uDCDD',policies:'\uD83D\uDEE1\uFE0F',alerts:'\uD83D\uDD14'};
+  return html`<div class="page-head"><div class="page-eyebrow">Exchange</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs to configure middleware, providers, policies, and more in one click.</p></div>
+    <div class="stats-row"><${Stat} label="Available" value=${d('packs').length} accent/><${Stat} label="Installed" value=${d('installed').length}/><${Stat} label="Environments" value=${st.environments||0}/></div>
     <${TabBar} tabs=${['packs','installed']} active=${tab} onChange=${setTab}/>
-    ${tab==='packs'?html`<div class="pack-grid">${d('packs').map(p=>html`<div key=${p.slug} class="pack-card">
-      <div class="pack-name">${p.name||p.slug}</div><div class="pack-desc">${p.description||'\u2014'}</div>
-      <div class="pack-meta"><span class="mono">${p.version||'1.0.0'}</span></div>
-      <div class="pack-actions">${installedSlugs.has(p.slug)?html`<${Badge} text="installed" variant="success"/>`:html`<${Btn} small variant="primary" onClick=${()=>installPack(p.slug)} disabled=${installing===p.slug}>${installing===p.slug?'Installing\u2026':'Install'}<//>`}</div>
-    </div>`)}</div>`:
-    html`<${DataTable} columns=${[{key:'pack_slug',label:'Pack',width:'1fr',mono:true},{key:'version',label:'Version',width:'90px',mono:true},{key:'ts',label:'Installed',width:'110px',render:r=>fmt.ago(r.installed_at||r.created_at)},{key:'a',label:'',width:'100px',render:r=>html`<${Btn} small variant="danger" onClick=${()=>uninstall(r.id)}>Uninstall<//>`}]} rows=${d('installed')} emptyMsg="No packs installed."/>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+    ${tab==='packs'?html`<div class="pack-grid">${d('packs').map(p=>{
+      const isInstalled=installedSlugs.has(p.slug);
+      return html`<div key=${p.slug} class="pack-card ${isInstalled?'pack-installed':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="pack-name">${p.name||p.slug}</div>
+        ${isInstalled?html`<${Badge} text="installed" variant="success"/>`:null}
+      </div>
+      <div class="pack-desc">${p.description||'\u2014'}</div>
+      <div class="pack-meta"><span class="mono" style="font-size:0.72rem">v${p.current_version||'1.0.0'}</span><span style="color:var(--cream-muted);font-size:0.72rem">${p.author||'unknown'}</span><span style="color:var(--cream-muted);font-size:0.72rem">${p.installs||0} installs</span></div>
+      <div class="pack-actions" style="display:flex;gap:6px;margin-top:8px">
+        <${Btn} small onClick=${()=>previewPack(p.slug)}>Preview<//> 
+        ${isInstalled?null:html`<${Btn} small variant="primary" onClick=${()=>installPack(p.slug)} disabled=${installing===p.slug}>${installing===p.slug?'Installing\u2026':'Install'}<//>`}
+      </div>
+    </div>`})}</div>`:
+    html`<${DataTable} columns=${[
+      {key:'pack_slug',label:'Pack',width:'1fr',mono:true},
+      {key:'version',label:'Version',width:'90px',mono:true},
+      {key:'ts',label:'Installed',width:'130px',render:r=>fmt.ago(r.installed_at||r.created_at)},
+      {key:'a',label:'',width:'100px',render:r=>html`<${Btn} small variant="danger" onClick=${()=>uninstall(r.id)}>Uninstall<//>`}
+    ]} rows=${d('installed')} emptyMsg="No packs installed."/>`}
+    ${preview&&html`<${Modal} title=${'Pack: '+preview.slug} onClose=${()=>setPreview(null)}>
+      <div style="font-size:0.82rem">
+        <div style="margin-bottom:10px;color:var(--cream-muted)">v${preview.version} \u2014 Installing will apply:</div>
+        ${(preview.changes||[]).map(c=>html`<div key=${c.section} style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--bg2)">
+          <span>${SECTION_ICONS[c.section]||'\u2022'}</span>
+          <span style="flex:1">${c.section}</span>
+          <span class="mono" style="color:var(--green)">${c.count} item${c.count!==1?'s':''}</span>
+        </div>`)}
+        ${(preview.modules||[]).length>0?html`<div style="margin-top:10px">
+          <div style="font-size:0.75rem;color:var(--cream-muted);margin-bottom:4px">Module changes:</div>
+          ${preview.modules.map(m=>html`<div key=${m.name} style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:0.78rem">
+            <span class="mono">${m.name}</span>
+            <span style="margin-left:auto">${m.action==='unchanged'?html`<${Badge} text="no change" variant="muted"/>`:m.action==='update'?html`<${Badge} text=${'→ '+(m.enabled?'on':'off')} variant="warning"/>`:html`<${Badge} text="new" variant="success"/>`}</span>
+          </div>`)}
+        </div>`:''}
+        <div style="margin-top:12px;display:flex;gap:8px">
+          ${!installedSlugs.has(preview.slug)?html`<${Btn} small variant="primary" onClick=${()=>{setPreview(null);installPack(preview.slug)}}>Install Now<//>`:null}
+          <${Btn} small onClick=${()=>setPreview(null)}>Close<//>
+        </div>
+      </div>
+    <//>`}
+    ${installResult&&html`<${Modal} title="Install Complete" onClose=${()=>setInstallResult(null)}>
+      <div style="font-size:0.82rem">
+        <div style="margin-bottom:8px"><${Badge} text=${installResult.slug+'@'+installResult.version} variant="success"/></div>
+        ${Object.entries(installResult.applied||{}).map(([k,v])=>html`<div key=${k} style="padding:3px 0"><span style="color:var(--green)">\u2713</span> ${k}: <span class="mono">${v}</span> applied</div>`)}
+        ${Object.entries(installResult.skipped||{}).map(([k,v])=>html`<div key=${k} style="padding:3px 0"><span style="color:var(--cream-muted)">\u2013</span> ${k}: <span class="mono">${v}</span> skipped (already exist)</div>`)}
+        ${Object.entries(installResult.errors||{}).map(([k,errs])=>errs.map(e=>html`<div key=${k+e} style="padding:3px 0;color:var(--red)">\u2717 ${k}: ${e}</div>`))}
+        <div style="margin-top:10px"><${Btn} small onClick=${()=>setInstallResult(null)}>Done<//></div>
+      </div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`
 }
 
 // ─── Settings (Users, API Keys, Provider Keys) ─────────────────────
@@ -544,7 +592,7 @@ render(html`<${App}/>`,document.getElementById('root'));
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;font-family:var(--font-mono);font-size:0.8rem;z-index:10000;animation:slideIn 0.2s ease-out;border:1px solid}.toast-success{background:rgba(90,154,74,0.15);color:var(--green);border-color:rgba(90,154,74,0.3)}.toast-error{background:rgba(196,74,58,0.15);color:var(--red);border-color:rgba(196,74,58,0.3)}.toast-info{background:rgba(160,132,92,0.15);color:var(--leather-light);border-color:rgba(160,132,92,0.3)}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9000}.modal{background:var(--bg2);border:1px solid var(--bg3);width:460px;max-width:90vw;max-height:85vh;overflow-y:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bg3)}.modal-title{font-family:var(--font-mono);font-size:0.85rem;letter-spacing:1px;color:var(--cream)}.modal-close{background:none;border:none;color:var(--cream-muted);font-size:1.2rem;cursor:pointer;padding:4px 8px}.modal-close:hover{color:var(--cream)}.modal-body{padding:20px}
 .trace-detail{display:flex;flex-direction:column;gap:8px}.td-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bg3)}.td-label{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--cream-muted)}.td-section{margin-top:12px}.td-pre{background:var(--bg);border:1px solid var(--bg3);padding:12px;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);overflow-x:auto;max-height:200px;overflow-y:auto;margin-top:4px;white-space:pre-wrap;word-break:break-all}
-.pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.pack-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;display:flex;flex-direction:column;gap:8px;transition:border-color 0.15s}.pack-card:hover{border-color:var(--leather)}.pack-name{font-family:var(--font-mono);font-weight:600;font-size:0.9rem;color:var(--cream)}.pack-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;flex:1}.pack-meta{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)}.pack-actions{margin-top:4px}
+.pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.pack-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;display:flex;flex-direction:column;gap:8px;transition:border-color 0.15s}.pack-card:hover{border-color:var(--leather)}.pack-card.pack-installed{border-color:var(--green);opacity:0.85}.pack-name{font-family:var(--font-mono);font-weight:600;font-size:0.9rem;color:var(--cream)}.pack-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;flex:1}.pack-meta{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted);display:flex;gap:12px}.pack-actions{margin-top:4px}
 .settings-layout{display:flex;gap:20px;min-height:400px}.settings-sidebar{width:260px;min-width:260px;background:var(--bg2);border:1px solid var(--bg3)}.settings-sidebar-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)}.settings-main{flex:1;min-width:0}
 .user-list{overflow-y:auto;max-height:500px}.user-item{padding:10px 16px;border-bottom:1px solid var(--bg3);cursor:pointer;transition:background 0.1s}.user-item:hover{background:var(--bg3)}.user-item.active{background:rgba(196,93,44,0.08);border-left:2px solid var(--rust)}.user-email{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}.user-meta{font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:2px}
 .section-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.section-head h3{font-size:1.1rem;font-weight:700}.section-title{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:8px;display:flex;align-items:center;gap:12px}
