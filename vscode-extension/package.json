@@ -1,0 +1,82 @@
+{
+  "name": "stockyard-vscode",
+  "displayName": "Stockyard",
+  "description": "LLM proxy control panel — toggle modules, view traces, manage providers from VS Code",
+  "version": "0.1.0",
+  "publisher": "stockyard-dev",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other", "Machine Learning", "Programming Languages"],
+  "keywords": ["llm", "proxy", "openai", "anthropic", "ai", "stockyard"],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stockyard-dev/stockyard"
+  },
+  "homepage": "https://stockyard.dev",
+  "license": "MIT",
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "stockyard.showStatus", "title": "Stockyard: Show Status" },
+      { "command": "stockyard.toggleModule", "title": "Stockyard: Toggle Module" },
+      { "command": "stockyard.viewTraces", "title": "Stockyard: View Traces" },
+      { "command": "stockyard.openDashboard", "title": "Stockyard: Open Dashboard" },
+      { "command": "stockyard.openPlayground", "title": "Stockyard: Open Playground" }
+    ],
+    "viewsContainers": {
+      "activitybar": [{
+        "id": "stockyard",
+        "title": "Stockyard",
+        "icon": "icon.svg"
+      }]
+    },
+    "views": {
+      "stockyard": [
+        { "id": "stockyard.modules", "name": "Modules" },
+        { "id": "stockyard.traces", "name": "Recent Traces" },
+        { "id": "stockyard.providers", "name": "Providers" }
+      ]
+    },
+    "configuration": {
+      "title": "Stockyard",
+      "properties": {
+        "stockyard.baseUrl": {
+          "type": "string",
+          "default": "http://localhost:4200",
+          "description": "Stockyard proxy base URL"
+        },
+        "stockyard.adminKey": {
+          "type": "string",
+          "default": "",
+          "description": "Admin key for management API access"
+        },
+        "stockyard.autoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-refresh module and trace views"
+        },
+        "stockyard.refreshInterval": {
+          "type": "number",
+          "default": 5000,
+          "description": "Auto-refresh interval in milliseconds"
+        }
+      }
+    },
+    "menus": {
+      "view/title": [
+        { "command": "stockyard.openDashboard", "when": "view == stockyard.modules", "group": "navigation" }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  }
+}

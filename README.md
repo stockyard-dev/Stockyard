@@ -283,6 +283,7 @@ GET  /api/proxy/providers                 List providers
 POST /api/auth/signup                     Create user + API key
 GET  /api/auth/me                         Current user
 PUT  /api/auth/me/providers/{name}        Add provider key
+POST /api/auth/me/keys/{id}/rotate        Rotate API key
 GET  /api/observe/traces                  Recent traces
 GET  /api/observe/timeseries?period=7d    Time-bucketed analytics
 GET  /api/observe/costs                   Cost rollups
@@ -296,6 +297,9 @@ POST /api/forge/workflows                 Create workflow
 POST /api/forge/workflows/{slug}/run      Run workflow
 GET  /api/exchange/packs                  Available packs
 POST /api/exchange/packs/{slug}/install   Install pack
+POST /api/webhooks                        Register webhook
+POST /api/playground/share                Share playground session
+GET  /api/status                          System status + metrics
 GET  /api/plans                           Pricing plans
 ```
 
@@ -337,7 +341,11 @@ export STOCKYARD_LICENSE_KEY="SY-eyJ..."
 - **`stockyard doctor`** — Pre-flight environment check (config, database, ports, API keys, Ollama, disk)
 - **OpenTelemetry export** — Set `OTEL_EXPORTER_OTLP_ENDPOINT` to send traces to Jaeger, Grafana, Datadog, Honeycomb
 - **Playground sharing** — `POST /api/playground/share` creates shareable playground sessions (30-day TTL)
+- **Webhooks** — `POST /api/webhooks` to register Slack or HTTP endpoints for alerts, cost thresholds, trust violations
+- **API key rotation** — `POST /api/auth/me/keys/{id}/rotate` atomically revokes and regenerates
+- **Status page** — `/status/` with live system metrics, `GET /api/status` for programmatic access
 - **GitHub Action** — `stockyard-dev/stockyard/.github/actions/setup-stockyard` for CI/CD pipelines
+- **VS Code extension** — Module toggle, trace viewer, status bar indicator
 - **12 Go benchmarks** — `go test ./internal/proxy/ -bench=. -benchmem` covers the full middleware chain
 
 ## Links
@@ -348,7 +356,10 @@ export STOCKYARD_LICENSE_KEY="SY-eyJ..."
 - **Architecture:** [stockyard.dev/architecture](https://stockyard.dev/architecture/)
 - **Benchmarks:** [stockyard.dev/benchmarks](https://stockyard.dev/benchmarks/)
 - **Blog:** [stockyard.dev/blog](https://stockyard.dev/blog/)
+- **Status:** [stockyard.dev/status](https://stockyard.dev/status/)
 - **Comparisons:** [vs LiteLLM](https://stockyard.dev/vs/litellm/) · [vs Helicone](https://stockyard.dev/vs/helicone/) · [vs Portkey](https://stockyard.dev/vs/portkey/)
+- **Examples:** [examples/](examples/) — Python, Node.js, curl, Docker, webhooks
+- **VS Code:** [vscode-extension/](vscode-extension/) — Module toggle, trace viewer, status bar
 - **API Health:** [stockyard.dev/health](https://stockyard.dev/health)
 
 ## License
