@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Stockyard vs LiteLLM — Stockyard">
-<meta property="og:description" content="Side-by-side comparison of Stockyard and LiteLLM. Architecture, dependencies, performance, and feature differences.">
+<meta property="og:description" content="Stockyard vs LiteLLM: a LiteLLM alternative with built-in observability, audit trails, and prompt management.">
 <meta property="og:url" content="https://stockyard.dev/vs/litellm/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Stockyard vs LiteLLM — Stockyard</title>
-<meta name="description" content="Side-by-side comparison of Stockyard and LiteLLM. Architecture, dependencies, performance, and feature differences.">
+<meta name="description" content="Stockyard vs LiteLLM: a side-by-side comparison. If you're looking for a LiteLLM alternative with built-in observability, audit trails, and prompt management, here's how they differ.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -109,13 +109,13 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <p>LiteLLM is the right choice if you need access to 100+ providers through a single interface and don&rsquo;t need the platform features. It has a large community, extensive provider coverage, and is a proven production proxy. If your stack is already Python-heavy and you&rsquo;re comfortable managing Redis and Postgres, LiteLLM is a solid option.</p>
 
     <h2>When to choose Stockyard</h2>
-    <p>Stockyard is the right choice if you want more than a proxy. If you need observability, audit trails, prompt versioning, A/B experiments, workflow orchestration, and a config marketplace &mdash; all in one binary with zero dependencies &mdash; Stockyard replaces the entire middleware stack, not just the routing layer.</p>
+    <p>Stockyard is the right choice if you want more than a proxy. If you need observability, audit trails, prompt versioning, A/B experiments, workflow orchestration, and a config marketplace &mdash; all in one binary with zero dependencies &mdash; Stockyard replaces the entire middleware stack, not just the routing layer. As an OpenAI-compatible alternative to standalone proxy tools, it gives you the full platform from day one.</p>
     <p>The Go binary deploys anywhere in seconds. No Python runtime, no Redis, no Postgres. The embedded SQLite database handles everything. You get a production dashboard from the first request, not after wiring up a separate UI service.</p>
 
 
   <div class="verdict">
     <div class="verdict-label">The bottom line</div>
-    <p>LiteLLM is a great proxy. Stockyard is a platform. If all you need is model routing, LiteLLM works. If you need routing <em>plus</em> observability, audit trails, prompt management, workflows, and a config marketplace, Stockyard gives you all of that in a single <code>curl | sh</code>.</p>
+    <p>LiteLLM is a great OpenAI proxy. Stockyard is a platform. If all you need is model routing, LiteLLM works. If you need routing <em>plus</em> observability, audit trails, prompt management, workflows, and a config marketplace, Stockyard is a LiteLLM alternative that gives you all of that in a single <code>curl | sh</code>.</p>
   </div>
 
   <div class="cta-row">

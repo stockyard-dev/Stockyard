@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Proxy — Stockyard">
+<meta property="og:title" content="Proxy Docs: 58 Middleware Modules — Stockyard">
 <meta property="og:description" content="Stockyard proxy: 58 middleware modules, 16 providers, routing, and runtime toggles.">
 <meta property="og:url" content="https://stockyard.dev/docs/proxy/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Proxy — Stockyard</title>
-<meta name="description" content="Stockyard proxy: 58 middleware modules, 16 providers, routing, and runtime toggles.">
+<title>Proxy Docs: 58 Middleware Modules — Stockyard</title>
+<meta name="description" content="Stockyard proxy: 58 middleware modules, 16 providers, LLM cache, rate limiting, routing, and runtime toggles.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -134,8 +134,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <table class="endpoint-table">
       <tr><th>Category</th><th>Modules</th><th>Purpose</th></tr>
       <tr><td>routing</td><td>fallbackrouter, modelswitch, regionroute, localsync, abrouter</td><td>Provider failover, model aliasing, geo routing</td></tr>
-      <tr><td>caching</td><td>cachelayer, embedcache, semanticcache</td><td>Response and embedding caching</td></tr>
-      <tr><td>cost</td><td>costcap, tierdrop, idlekill, outputcap, usagepulse, rateshield</td><td>Spending limits, rate limiting, usage reporting</td></tr>
+      <tr><td>caching</td><td>cachelayer, embedcache, semanticcache</td><td>LLM cache for responses and embeddings</td></tr>
+      <tr><td>cost</td><td>costcap, tierdrop, idlekill, outputcap, usagepulse, rateshield</td><td>Spending limits, LLM rate limiting, usage reporting</td></tr>
       <tr><td>safety</td><td>promptguard, toxicfilter, guardrail, agegate, hallucicheck, secretscan, agentguard</td><td>Content moderation, injection detection, PII</td></tr>
       <tr><td>transform</td><td>promptslim, tokentrim, contextpack, chatmem, langbridge, voicebridge</td><td>Prompt compression, context management</td></tr>
       <tr><td>validate</td><td>structuredshield, evalgate, codefence</td><td>JSON validation, quality gating</td></tr>
