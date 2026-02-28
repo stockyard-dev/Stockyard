@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="API Reference — Stockyard">
-<meta property="og:description" content="Complete REST API reference for Stockyard — all 69 endpoints.">
+<meta property="og:description" content="Complete REST API reference for Stockyard — all 62 endpoints.">
 <meta property="og:url" content="https://stockyard.dev/docs/api/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>API Reference — Stockyard</title>
-<meta name="description" content="Complete REST API reference for Stockyard — all 69 endpoints.">
+<meta name="description" content="Complete REST API reference for Stockyard — all 62 endpoints.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -161,7 +161,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>API Reference</h1>
-    <p class="subtitle">All endpoints on a single port. OpenAPI 3.1 spec included.</p>
+    <p class="subtitle">62 REST endpoints. All served on a single port. OpenAPI 3.1 spec included.</p>
 
     <h2 id="overview">Overview</h2>
     <p>All endpoints are served on the same port as the proxy. Full <a href="/api/openapi.json" style="color:var(--rust-light)">OpenAPI 3.1 spec</a> available at <code>/api/openapi.json</code>.</p>
@@ -169,54 +169,75 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="system">System</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/openapi.json</td><td>OpenAPI 3.1 specification</td></tr>
-      <tr><td class="method">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
       <tr><td class="method">GET</td><td>/health</td><td>Health check</td></tr>
-      <tr><td class="method">POST</td><td>/v1/chat/completions</td><td>Proxy LLM request</td></tr>
+      <tr><td class="method">GET</td><td>/api/status</td><td>System status, uptime, metrics, component health</td></tr>
+      <tr><td class="method">GET</td><td>/api/license</td><td>License status and usage</td></tr>
+      <tr><td class="method">GET</td><td>/api/plans</td><td>Available pricing plans</td></tr>
+      <tr><td class="method">POST</td><td>/api/checkout</td><td>Start checkout session</td></tr>
+      <tr><td class="method">GET</td><td>/api/config/export</td><td>Export full config snapshot</td></tr>
+      <tr><td class="method">POST</td><td>/api/config/import</td><td>Import config snapshot</td></tr>
+      <tr><td class="method">POST</td><td>/api/config/diff</td><td>Diff current config vs uploaded snapshot</td></tr>
     </table>
 
     <h2 id="proxy-api">Proxy</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/proxy/modules</td><td>List modules</td></tr>
-      <tr><td class="method">PUT</td><td>/api/proxy/modules/{name}</td><td>Toggle module</td></tr>
-      <tr><td class="method">POST</td><td>/api/proxy/modules/bulk</td><td>Bulk toggle modules</td></tr>
-      <tr><td class="method">GET</td><td>/api/proxy/providers</td><td>List providers</td></tr>
-      <tr><td class="method">GET</td><td>/api/proxy/routes</td><td>List routes</td></tr>
+      <tr><td class="method">POST</td><td>/v1/chat/completions</td><td>Proxy LLM chat request (OpenAI-compatible)</td></tr>
+      <tr><td class="method">POST</td><td>/v1/embeddings</td><td>Proxy embedding request</td></tr>
+      <tr><td class="method">GET</td><td>/api/proxy/modules</td><td>List all middleware modules with status</td></tr>
+      <tr><td class="method">PUT</td><td>/api/proxy/modules/{name}</td><td>Toggle or configure a module</td></tr>
+    </table>
+
+    <h2 id="auth-api">Auth</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">POST</td><td>/api/auth/signup</td><td>Create user + API key</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/me</td><td>Current user info</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/me/keys</td><td>List my API keys</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/me/usage</td><td>My usage stats</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/me/providers/{provider}</td><td>Get my provider key status</td></tr>
+      <tr><td class="method">PUT</td><td>/api/auth/me/providers/{provider}</td><td>Add or update provider key</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/auth/me/providers/{provider}</td><td>Remove my provider key</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/users</td><td>List users (admin)</td></tr>
+      <tr><td class="method">GET</td><td>/api/auth/users/{id}/keys</td><td>List user API keys (admin)</td></tr>
+      <tr><td class="method">POST</td><td>/api/auth/users/{id}/keys</td><td>Create API key for user (admin)</td></tr>
+      <tr><td class="method">POST</td><td>/api/auth/users/{id}/keys/{keyId}/rotate</td><td>Rotate API key (admin)</td></tr>
+      <tr><td class="method">PUT</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Set provider key for user (admin)</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Remove provider key for user (admin)</td></tr>
     </table>
 
     <h2 id="observe-api">Observe</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method">GET</td><td>/api/observe/overview</td><td>Dashboard summary</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/traces</td><td>Recent traces</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/costs</td><td>Cost rollups</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/timeseries</td><td>Time-series data</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/alerts</td><td>Alert rules</td></tr>
-      <tr><td class="method">POST</td><td>/api/observe/alerts</td><td>Create alert</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/anomalies</td><td>Detected anomalies</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/safety/summary</td><td>Safety score summary</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/safety</td><td>Safety events</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/traces</td><td>List recent traces</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/traces/{id}</td><td>Get single trace detail</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/costs</td><td>Cost rollups by day/provider/model</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/timeseries</td><td>Time-series metrics data</td></tr>
+      <tr><td class="method">GET</td><td>/api/observe/alerts</td><td>List alert rules</td></tr>
+      <tr><td class="method">POST</td><td>/api/observe/alerts</td><td>Create alert rule</td></tr>
+      <tr><td class="method">PUT</td><td>/api/observe/alerts/{id}</td><td>Update alert rule</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/observe/alerts/{id}</td><td>Delete alert rule</td></tr>
     </table>
 
     <h2 id="trust-api">Trust</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/trust/ledger</td><td>Audit ledger</td></tr>
-      <tr><td class="method">GET</td><td>/api/trust/policies</td><td>Trust policies</td></tr>
-      <tr><td class="method">POST</td><td>/api/trust/policies</td><td>Create policy</td></tr>
-      <tr><td class="method">GET</td><td>/api/trust/evidence</td><td>Evidence packs</td></tr>
-      <tr><td class="method">GET</td><td>/api/trust/verify</td><td>Verify chain integrity</td></tr>
+      <tr><td class="method">GET</td><td>/api/trust/ledger</td><td>Query audit ledger</td></tr>
+      <tr><td class="method">GET</td><td>/api/trust/policies</td><td>List trust policies</td></tr>
+      <tr><td class="method">POST</td><td>/api/trust/policies</td><td>Create trust policy</td></tr>
+      <tr><td class="method">PUT</td><td>/api/trust/policies/{id}</td><td>Update trust policy</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/trust/policies/{id}</td><td>Delete trust policy</td></tr>
     </table>
 
     <h2 id="studio-api">Studio</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/studio/templates</td><td>Prompt templates</td></tr>
-      <tr><td class="method">POST</td><td>/api/studio/templates</td><td>Create template</td></tr>
-      <tr><td class="method">GET</td><td>/api/studio/experiments</td><td>Experiments</td></tr>
-      <tr><td class="method">POST</td><td>/api/studio/experiments/run</td><td>Run A/B test</td></tr>
-      <tr><td class="method">GET</td><td>/api/studio/experiments/{id}</td><td>Experiment results</td></tr>
+      <tr><td class="method">GET</td><td>/api/studio/status</td><td>Studio app status</td></tr>
+      <tr><td class="method">GET</td><td>/api/studio/templates</td><td>List prompt templates</td></tr>
+      <tr><td class="method">POST</td><td>/api/studio/templates</td><td>Create prompt template</td></tr>
+      <tr><td class="method">POST</td><td>/api/studio/experiments/run</td><td>Run A/B experiment</td></tr>
+      <tr><td class="method">GET</td><td>/api/studio/experiments/{id}</td><td>Get experiment results</td></tr>
       <tr><td class="method">POST</td><td>/api/studio/benchmarks/run</td><td>Run benchmark suite</td></tr>
     </table>
 
@@ -225,32 +246,20 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method">GET</td><td>/api/forge/workflows</td><td>List workflows</td></tr>
       <tr><td class="method">POST</td><td>/api/forge/workflows</td><td>Create workflow</td></tr>
-      <tr><td class="method">POST</td><td>/api/forge/workflows/{slug}/run</td><td>Run workflow</td></tr>
-      <tr><td class="method">GET</td><td>/api/forge/runs/{id}</td><td>Get run status</td></tr>
-      <tr><td class="method">GET</td><td>/api/forge/tools</td><td>Tool registry</td></tr>
-    </table>
-
-    <h2 id="auth-api">Auth</h2>
-    <table class="endpoint-table">
-      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">POST</td><td>/api/auth/signup</td><td>Create user + API key</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/me</td><td>Current user info</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/me/usage</td><td>My usage stats</td></tr>
-      <tr><td class="method">PUT</td><td>/api/auth/me/providers/{name}</td><td>Add provider key</td></tr>
-      <tr><td class="method">POST</td><td>/api/auth/me/keys/{id}/rotate</td><td>Rotate API key (revoke old, generate new)</td></tr>
-      <tr><td class="method">GET</td><td>/api/plans</td><td>Pricing plans</td></tr>
+      <tr><td class="method">GET</td><td>/api/forge/workflows/{id}</td><td>Get workflow detail</td></tr>
+      <tr><td class="method">POST</td><td>/api/forge/workflows/{id}/run</td><td>Execute workflow</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/forge/workflows/{id}</td><td>Delete workflow</td></tr>
     </table>
 
     <h2 id="exchange-api">Exchange</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/packs</td><td>Available packs</td></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/packs/{slug}</td><td>Pack detail</td></tr>
-      <tr><td class="method">POST</td><td>/api/exchange/packs/{slug}/install</td><td>Install pack</td></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/installed</td><td>Installed packs</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/exchange/installed/{id}</td><td>Uninstall pack</td></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/environments</td><td>Environments</td></tr>
-      <tr><td class="method">POST</td><td>/api/exchange/environments/{name}/sync</td><td>Sync environment</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/status</td><td>Exchange app status</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/packs</td><td>List available packs</td></tr>
+      <tr><td class="method">POST</td><td>/api/exchange/packs</td><td>Create pack</td></tr>
+      <tr><td class="method">GET</td><td>/api/exchange/packs/{id}</td><td>Get pack detail</td></tr>
+      <tr><td class="method">POST</td><td>/api/exchange/packs/{id}/install</td><td>Install pack</td></tr>
+      <tr><td class="method">POST</td><td>/api/exchange/packs/{id}/uninstall</td><td>Uninstall pack</td></tr>
     </table>
 
     <h2 id="playground-api">Playground</h2>
@@ -265,21 +274,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method">GET</td><td>/api/webhooks</td><td>List registered webhooks</td></tr>
       <tr><td class="method">POST</td><td>/api/webhooks</td><td>Register a webhook endpoint</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
       <tr><td class="method">POST</td><td>/api/webhooks/test</td><td>Send test event to all webhooks</td></tr>
-    </table>
-
-    <h2 id="system-api">System</h2>
-    <table class="endpoint-table">
-      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/health</td><td>Health check</td></tr>
-      <tr><td class="method">GET</td><td>/api/status</td><td>System status, uptime, metrics, component health</td></tr>
-      <tr><td class="method">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
-      <tr><td class="method">GET</td><td>/api/license</td><td>License status and usage</td></tr>
-      <tr><td class="method">GET</td><td>/api/openapi.json</td><td>OpenAPI 3.1 specification</td></tr>
-      <tr><td class="method">GET</td><td>/api/config/export</td><td>Export full config snapshot (modules, webhooks, policies)</td></tr>
-      <tr><td class="method">POST</td><td>/api/config/import</td><td>Import config snapshot</td></tr>
-      <tr><td class="method">POST</td><td>/api/config/diff</td><td>Diff current config vs uploaded snapshot</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
     </table>
 
     <div class="pn"><a href="/docs/exchange/">&larr; Exchange</a></div>
