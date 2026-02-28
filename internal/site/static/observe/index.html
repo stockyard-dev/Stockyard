@@ -113,6 +113,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .cta-group{flex-direction:column;align-items:center}
   .demo-table{font-size:0.65rem}
 }
+
+.related-apps{padding:3rem 2rem;max-width:740px;margin:0 auto}
+.related-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem}
+.related-grid a{display:block;padding:0.8rem 1rem;background:var(--bg2);border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s}
+.related-grid a:hover{border-color:var(--rust)}
+.related-grid .r-name{color:var(--cream);font-weight:700;font-size:0.9rem}
+.related-grid .r-desc{color:var(--cream-dim);font-size:0.75rem;font-family:var(--font-mono);margin-top:0.2rem}
 </style>
 <link rel="canonical" href="https://stockyard.dev/observe/">
 </head>
@@ -133,7 +141,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </nav>
 
-<section class="obs-hero">
+<section class="obs-hero" id="main">
   <div class="eyebrow">App 02 &mdash; Observe</div>
   <h1>See everything. <span class="accent">Miss nothing.</span></h1>
   <p class="sub">LLM monitoring built into the proxy. Every request traced automatically. Costs rolled up daily. Anomalies caught in real time. No extra tools, no extra config.</p>
@@ -248,6 +256,16 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </section>
 
+
+<section class="related-apps">
+  <div class="related-label">Other apps in the platform</div>
+  <div class="related-grid">
+    <a href="/trust/"><div class="r-name">Trust</div><div class="r-desc">Audit ledger, policies</div></a>
+    <a href="/studio/"><div class="r-name">Studio</div><div class="r-desc">Prompt versioning, A/B tests</div></a>
+    <a href="/forge/"><div class="r-name">Forge</div><div class="r-desc">DAG workflows, tool registry</div></a>
+    <a href="/exchange/"><div class="r-name">Exchange</div><div class="r-desc">Config packs, marketplace</div></a>
+  </div>
+</section>
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>

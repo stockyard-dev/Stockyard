@@ -55,6 +55,13 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.post-layout{padding:2rem 1.5rem}.blog-list{padding:2rem 1.5rem}}
+
+.more-posts{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.more-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.more-posts a{display:block;padding:0.5rem 0;color:var(--cream);text-decoration:none;font-size:0.9rem}
+.more-posts a:hover{color:var(--rust-light)}
+.more-posts .mp-date{color:var(--leather);font-family:var(--font-mono);font-size:0.7rem;margin-left:0.5rem}
+.related-reading{padding:2rem 0;margin-top:2rem;border-top:1px solid var(--bg3)}.related-reading .rl{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}.related-reading ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem}.related-reading li a{display:inline-block;padding:0.4rem 0.8rem;background:var(--bg2);border:1px solid var(--bg3);font-size:0.85rem;text-decoration:none;color:var(--cream);transition:border-color 0.2s}.related-reading li a:hover{border-color:var(--rust)}
 </style>
 <link rel="canonical" href="https://stockyard.dev/blog/134-tools-one-binary/">
 <script type="application/ld+json">
@@ -149,8 +156,25 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Stockyard isn&rsquo;t a framework. It doesn&rsquo;t touch your application code. It&rsquo;s infrastructure &mdash; a proxy that sits between your app and LLM providers. Your app talks to Stockyard the same way it talks to OpenAI: standard <code>/v1/chat/completions</code> API.</p>
     <p>We don&rsquo;t believe the answer to LLM infrastructure fragmentation is &ldquo;build a framework that wraps everything.&rdquo; The answer is a proxy that handles everything transparently.</p>
 
+
+    <div class="more-posts">
+      <div class="more-label">More from the blog</div>
+    <a href="/blog/why-i-built-stockyard/">Why I Built Stockyard<span class="mp-date">Feb 1</span></a>
+    <a href="/blog/architecture-decisions/">Architecture Decisions Behind Stockyard<span class="mp-date">Feb 10</span></a>
+    </div>
     <div class="sig">Stockyard. Where LLM traffic gets sorted.</div>
 
+</div>
+
+<div class="related-reading">
+  <div class="rl">Keep reading</div>
+  <ul>
+    <li><a href="/blog/why-i-built-stockyard/">Why I Built Stockyard</a></li>
+    <li><a href="/blog/architecture-decisions/">Architecture Decisions</a></li>
+    <li><a href="/products/">All 58 Modules</a></li>
+    <li><a href="/exchange/">Exchange Marketplace</a></li>
+    <li><a href="/forge/">Forge Workflows</a></li>
+  </ul>
 </div>
 
 <footer>

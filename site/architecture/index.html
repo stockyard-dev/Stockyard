@@ -113,7 +113,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </div>
 <div class="section-note">
   <h2>How it works</h2>
-  <p>Every request enters through the standard OpenAI-compatible <code>/v1/chat/completions</code> endpoint. It flows through the middleware chain in order: routing decides which provider handles it, safety modules check for harmful content, cost modules enforce spending limits, the cache checks for a hit, transforms optimize the prompt, validators ensure output quality, and observe modules record everything.</p>
+  <p>Every request enters through the standard OpenAI-compatible <code>/v1/chat/completions</code> endpoint. It flows through the middleware chain in order: routing decides which provider handles it, safety modules check for harmful content, cost modules enforce spending limits, the cache checks for a hit, transforms optimize the prompt, validators ensure output quality, and observe modules record everything. After the response, hooks write traces to <a href="/observe/">Observe</a> and audit entries to <a href="/trust/">Trust</a> automatically.</p>
   <p>After the middleware chain, the request hits the selected provider. On the way back, the response flows through the chain in reverse. Observe automatically writes a trace record and Trust writes a hash-chained audit entry &mdash; no configuration needed.</p>
   <p>Every module is wrapped with <code>toggle.Wrap</code>. Disabled modules are bypassed with zero overhead. Toggle any module on or off at runtime via the API or the console &mdash; no restart required.</p>
 </div>
