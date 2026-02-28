@@ -158,7 +158,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <div class="page-hero" id="main">
   <div class="eyebrow">Performance</div>
   <h1>Measured, not <span class="accent">marketed.</span></h1>
-  <p class="sub">Transparent benchmarks for every middleware module. We publish the overhead so you don't have to guess.</p>
+  <p class="sub">Transparent benchmarks for every middleware module. Measured on stockyard.dev with live traffic.</p>
 </div>
 
 <div class="summary">
@@ -186,7 +186,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <strong style="color:var(--cream)">Environment:</strong> Single-core VM, 2GB RAM, Ubuntu 24.04, Go 1.23. <code>stockyard v1.0.0</code> compiled with <code>-trimpath -ldflags="-s -w"</code>.<br><br>
     <strong style="color:var(--cream)">Workload:</strong> 10,000 synthetic requests per module. Payload: 1,200 input tokens, 500 output tokens (GPT-4o format). Cold start excluded — first 100 requests discarded.<br><br>
     <strong style="color:var(--cream)">Measurement:</strong> Per-module latency measured by wrapping each middleware handler with <code>time.Now()</code> / <code>time.Since()</code>. Memory via <code>runtime.MemStats</code> delta before/after module init. Reported values: median, P95, P99.<br><br>
-    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 70-module chain adds ~4ms total.<br><br>
+    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 70-module chain adds ~4ms total. Measured on <a href="https://stockyard.dev" style="color:var(--rust-light)">stockyard.dev</a> with live traffic.<br><br>
     <strong style="color:var(--cream)">Reproduce:</strong> Run the Go benchmark suite yourself: <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>. The bench harness covers baseline handler, single middleware, toggle.Wrap overhead, 10/70-module chains, mixed toggle states, parallel throughput, and registry lookup. See <code>internal/proxy/bench_test.go</code>. CI runs these on every push — results are published as artifacts.
   </div>
 </div>
