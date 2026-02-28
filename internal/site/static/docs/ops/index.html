@@ -286,6 +286,109 @@ curl -X POST localhost:4200/api/auth/me/keys/1/rotate \
 # Admin: rotate any user's key
 curl -X POST localhost:4200/api/auth/users/1/keys/1/rotate</code></pre>
 
+
+    <h2 id="config-export">Config Export &amp; Import</h2>
+    <p>Export the full system configuration as a snapshot:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/config/export \
+  -H "Authorization: Bearer sy_admin_..." \
+  -o stockyard-config.json</span>
+</pre>
+    <p>Import a config snapshot to a different instance:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/config/import \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d @stockyard-config.json</span>
+</pre>
+
+    <h2 id="config-diff">Config Diff</h2>
+    <p>Before importing, diff the snapshot against the current state:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/config/diff \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d @stockyard-config.json</span>
+</pre>
+    <pre>
+{
+  "changes": [
+    {"path": "modules.cachelayer.enabled", "current": false, "incoming": true},
+    {"path": "modules.costcap.config.daily_limit_usd", "current": 10, "incoming": 50}
+  ],
+  "additions": 2,
+  "removals": 0,
+  "modifications": 2
+}
+</pre>
+
+    <h2 id="webhooks-ops">Webhooks</h2>
+    <p>Register webhooks to receive real-time notifications:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/webhooks \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://hooks.slack.com/services/...",
+    "events": ["alert.triggered", "cost.threshold", "module.toggled"],
+    "secret": "whsec_..."
+  }'</span>
+</pre>
+    <p>Test your webhooks:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/webhooks/test \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="monitoring-ops">Monitoring</h2>
+    <p>Health endpoint for load balancers and uptime monitors:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/health</span>
+<span class="comment"># {"status":"ok","uptime":"48h12m","version":"1.0.0"}</span>
+</pre>
+    <p>Detailed system status with component health:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/status \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "status": "healthy",
+  "uptime": "48h12m",
+  "version": "1.0.0",
+  "components": {
+    "proxy": "ok",
+    "observe": "ok",
+    "trust": "ok",
+    "studio": "ok",
+    "forge": "ok",
+    "exchange": "ok"
+  },
+  "database_size_mb": 42.5,
+  "total_requests": 15240
+}
+</pre>
+
+    <h2 id="railway-ops">Railway Deployment</h2>
+    <p>Stockyard runs on Railway with zero configuration. Set environment variables in the Railway dashboard:</p>
+    <pre>
+OPENAI_API_KEY=sk-...
+STOCKYARD_ADMIN_KEY=sy_admin_...
+PORT=4200
+</pre>
+    <div class="note"><strong>Timing:</strong> Railway auto-deploys from the main branch. Allow 120&ndash;180 seconds after push for the deploy to complete and circuit breakers to reset.</div>
+
+    <h2 id="backup-ops">Backup &amp; Recovery</h2>
+    <p>The SQLite database contains all traces, costs, audit logs, and configs. Back it up regularly:</p>
+    <pre>
+<span class="comment"># Export config snapshot (modules, webhooks, policies)</span>
+<span class="cmd">curl http://localhost:4200/api/config/export \
+  -H "Authorization: Bearer sy_admin_..." > backup.json</span>
+
+<span class="comment"># Copy the SQLite database for full backup</span>
+<span class="cmd">cp /data/stockyard.db /backups/stockyard-$(date +%Y%m%d).db</span>
+</pre>
+
     <div class="pn">
       <a href="/docs/exchange/">&larr; Exchange</a>
       <a href="/docs/api/">API Reference &rarr;</a>

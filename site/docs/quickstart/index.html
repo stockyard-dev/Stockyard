@@ -208,6 +208,168 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>The console is built with Preact and has zero external dependencies. It&rsquo;s embedded in the binary and served alongside the API.</p>
     <p style="margin-top:2rem">For a more detailed walkthrough, see the <a href="/guide/">Guide &mdash; Your first 5 minutes</a>.</p>
 
+
+    <h2 id="install">Installation</h2>
+    <p>Stockyard ships as a single binary. Download for your platform or use the install script:</p>
+    <pre>
+<span class="comment"># One-line install (Linux/macOS)</span>
+<span class="cmd">curl -fsSL https://stockyard.dev/install.sh | sh</span>
+
+<span class="comment"># Or download directly</span>
+<span class="cmd">wget https://github.com/stockyard-dev/stockyard/releases/latest/download/stockyard-linux-amd64</span>
+<span class="cmd">chmod +x stockyard-linux-amd64</span>
+<span class="cmd">mv stockyard-linux-amd64 /usr/local/bin/stockyard</span>
+</pre>
+
+    <h2 id="first-request">Your First Request</h2>
+    <p>Start the proxy and send a request through it:</p>
+    <pre>
+<span class="comment"># Start Stockyard with your OpenAI key</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="cmd">stockyard serve</span>
+</pre>
+    <p>In another terminal, send a chat completion:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sy_your_api_key" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</span>
+</pre>
+    <p>The response follows the standard OpenAI format:</p>
+    <pre>
+{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "model": "gpt-4o",
+  "choices": [{
+    "index": 0,
+    "message": {"role": "assistant", "content": "Hello! How can I help you today?"},
+    "finish_reason": "stop"
+  }],
+  "usage": {"prompt_tokens": 9, "completion_tokens": 12, "total_tokens": 21}
+}
+</pre>
+
+    <h2 id="config-file">Configuration File</h2>
+    <p>Create a <code>stockyard.yaml</code> for persistent configuration:</p>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+port: 4200
+admin_key: "sy_admin_your_secret"
+
+providers:
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+  anthropic:
+    api_key: "${ANTHROPIC_API_KEY}"
+
+modules:
+  cachelayer:
+    enabled: true
+    ttl: 3600
+  costcap:
+    enabled: true
+    daily_limit_usd: 10.00
+  promptguard:
+    enabled: true
+  rateshield:
+    enabled: true
+    rpm: 60
+</pre>
+    <p>Environment variables in <code>${...}</code> syntax are expanded at startup. Never commit API keys directly.</p>
+
+    <h2 id="verify-setup">Verify Your Setup</h2>
+    <p>Check that everything is running:</p>
+    <pre>
+<span class="comment"># Health check</span>
+<span class="cmd">curl http://localhost:4200/health</span>
+<span class="comment"># {"status":"ok","uptime":"2m30s"}</span>
+
+<span class="comment"># List active modules</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/modules \
+  -H "Authorization: Bearer sy_admin_your_secret"</span>
+
+<span class="comment"># Check system status</span>
+<span class="cmd">curl http://localhost:4200/api/status \
+  -H "Authorization: Bearer sy_admin_your_secret"</span>
+</pre>
+
+    <h2 id="docker">Docker</h2>
+    <p>Run with Docker for production deployments:</p>
+    <pre>
+<span class="cmd">docker run -d \
+  -p 4200:4200 \
+  -e OPENAI_API_KEY=sk-... \
+  -e STOCKYARD_ADMIN_KEY=sy_admin_... \
+  -v stockyard-data:/data \
+  ghcr.io/stockyard-dev/stockyard:latest</span>
+</pre>
+    <div class="note"><strong>Tip:</strong> The SQLite database lives at <code>/data/stockyard.db</code> by default. Mount a volume to persist traces, costs, and audit logs across restarts.</div>
+
+    <h2 id="common-patterns">Common Patterns</h2>
+    <p>Enable caching and cost limits for a development workflow:</p>
+    <pre>
+<span class="comment"># Enable LLM response caching (saves money during development)</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'</span>
+
+<span class="comment"># Set a daily spending cap of $5</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true, "config": {"daily_limit_usd": 5.0}}'</span>
+</pre>
+
+
+    <h2 id="sdk-examples">SDK Examples</h2>
+    <p>Stockyard is OpenAI API-compatible. Use any OpenAI SDK by pointing it at your Stockyard instance:</p>
+    <pre>
+<span class="comment"># Python — just change the base URL</span>
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:4200/v1",
+    api_key="sy_your_api_key"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
+</pre>
+    <pre>
+<span class="comment"># Node.js</span>
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'http://localhost:4200/v1',
+  apiKey: 'sy_your_api_key'
+});
+
+const res = await client.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Hello!' }]
+});
+console.log(res.choices[0].message.content);
+</pre>
+    <div class="note"><strong>Provider shims:</strong> Request <code>claude-sonnet-4-5</code> or <code>gemini-2.5-pro</code> through the same OpenAI SDK. Stockyard&rsquo;s shim modules handle the format translation automatically.</div>
+
+    <h2 id="next-steps">Next Steps</h2>
+    <p>Now that Stockyard is running, explore:</p>
+    <table class="endpoint-table">
+      <tr><th>Topic</th><th>What you&rsquo;ll learn</th></tr>
+      <tr><td><a href="/docs/auth/">Auth &amp; Config</a></td><td>API keys, provider key management, config files</td></tr>
+      <tr><td><a href="/docs/proxy/">Proxy</a></td><td>Module chain, shims, failover, streaming</td></tr>
+      <tr><td><a href="/docs/observe/">Observe</a></td><td>Traces, cost tracking, alerts, dashboards</td></tr>
+      <tr><td><a href="/docs/trust/">Trust</a></td><td>Audit ledger, compliance policies</td></tr>
+    </table>
+
     <div class="pn"><a href="/docs/">&larr; Documentation</a><a href="/docs/auth/" class="next">Auth &amp; Configuration &rarr;</a></div>
   </main>
 </div>

@@ -193,6 +193,180 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/trust/">Trust product page</a> for the ledger visualization.</p>
 
+
+    <h2 id="ledger">Audit Ledger</h2>
+    <p>Trust maintains a hash-chained, append-only ledger of every LLM interaction. Each entry is linked to the previous via SHA-256, making tampering detectable:</p>
+    <pre>
+<span class="cmd">curl "http://localhost:4200/api/trust/ledger?limit=5" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "entries": [{
+    "id": "le_abc123",
+    "seq": 1247,
+    "timestamp": "2026-02-28T14:30:00Z",
+    "hash": "a1b2c3d4...",
+    "prev_hash": "e5f6a7b8...",
+    "event": "chat_completion",
+    "model": "gpt-4o",
+    "user_id": "usr_abc",
+    "trace_id": "tr_abc123",
+    "verdict": "pass"
+  }],
+  "chain_valid": true
+}
+</pre>
+
+    <h2 id="policies">Trust Policies</h2>
+    <p>Create policies that block, warn, or log based on content rules:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "No PII in outputs",
+    "action": "block",
+    "rules": [{
+      "field": "response.content",
+      "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "description": "Block SSN patterns in LLM output"
+    }]
+  }'</span>
+</pre>
+    <p>Policy actions: <code>block</code> rejects the request, <code>warn</code> logs a warning but allows it through, <code>log</code> records silently.</p>
+
+    <h2 id="manage-policies">Managing Policies</h2>
+    <pre>
+<span class="comment"># List all policies</span>
+<span class="cmd">curl http://localhost:4200/api/trust/policies \
+  -H "Authorization: Bearer sy_admin_..."</span>
+
+<span class="comment"># Update a policy</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/trust/policies/pol_id \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"action": "warn"}'</span>
+
+<span class="comment"># Delete a policy</span>
+<span class="cmd">curl -X DELETE http://localhost:4200/api/trust/policies/pol_id \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="compliance-config">Compliance Configuration</h2>
+    <p>Configure compliance logging in <code>stockyard.yaml</code>:</p>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+apps:
+  trust:
+    retention_days: 90
+    hash_algorithm: "sha256"
+    log_request_body: true
+    log_response_body: true
+    redact_pii: true
+</pre>
+    <div class="note"><strong>Retention:</strong> Ledger entries older than <code>retention_days</code> are automatically pruned. Set to <code>0</code> to retain indefinitely. Hash chain integrity is preserved even after pruning.</div>
+
+    <h2 id="common-patterns-trust">Common Patterns</h2>
+    <p>Typical compliance setup for regulated environments:</p>
+    <pre>
+<span class="comment"># 1. Enable full audit logging</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/compliancelog \
+  -H "Authorization: Bearer sy_admin_..." \
+  -d '{"enabled": true}'</span>
+
+<span class="comment"># 2. Block sensitive content in outputs</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"name": "No financial advice", "action": "block", "rules": [{"field": "response.content", "pattern": "you should (buy|sell|invest)", "description": "Block financial advice patterns"}]}'</span>
+
+<span class="comment"># 3. Enable secret detection in inputs</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/secretscan \
+  -H "Authorization: Bearer sy_admin_..." \
+  -d '{"enabled": true}'</span>
+</pre>
+
+
+    <h2 id="chain-verification">Chain Verification</h2>
+    <p>The hash chain ensures ledger integrity. Each entry&rsquo;s hash includes the previous entry&rsquo;s hash, creating a tamper-evident chain similar to a blockchain:</p>
+    <pre>
+entry[n].hash = SHA256(entry[n].data + entry[n-1].hash)
+</pre>
+    <p>The <code>chain_valid: true</code> field in the ledger response confirms the chain is intact. Any tampering breaks the chain and is immediately detectable.</p>
+
+    <h2 id="feedback-capture">Feedback Capture</h2>
+    <p>The <code>feedbackloop</code> module captures user feedback (thumbs up/down, ratings) and links it to the original trace. This data powers quality tracking and model evaluation over time.</p>
+    <pre>
+<span class="comment"># Enable feedback capture</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/feedbackloop \
+  -H "Authorization: Bearer sy_admin_..." \
+  -d '{"enabled": true}'</span>
+</pre>
+
+    <h2 id="regulatory">Regulatory Compliance</h2>
+    <p>Trust is designed for regulated environments requiring audit trails:</p>
+    <table class="endpoint-table">
+      <tr><th>Requirement</th><th>How Stockyard Helps</th></tr>
+      <tr><td>SOC 2 audit trail</td><td>Hash-chained ledger with immutable entries</td></tr>
+      <tr><td>GDPR right to deletion</td><td>Retention policies with automatic pruning</td></tr>
+      <tr><td>HIPAA logging</td><td>PII redaction in logs, encrypted storage</td></tr>
+      <tr><td>Financial compliance</td><td>Policy rules blocking financial advice patterns</td></tr>
+    </table>
+    <div class="note"><strong>Export:</strong> Use <code>/api/config/export</code> to create snapshots of your compliance configuration for auditors.</div>
+
+
+    <h2 id="trust-config-yaml">Full Configuration Example</h2>
+    <pre>
+<span class="comment"># stockyard.yaml — full Trust configuration</span>
+apps:
+  trust:
+    enabled: true
+    retention_days: 90
+    hash_algorithm: "sha256"
+    log_request_body: true
+    log_response_body: true
+    redact_pii: true
+    verify_on_read: true
+
+modules:
+  compliancelog:
+    enabled: true
+  feedbackloop:
+    enabled: true
+  secretscan:
+    enabled: true
+    config:
+      patterns:
+        - "aws_access_key"
+        - "github_token"
+        - "ssn"
+        - "credit_card"
+</pre>
+    <p>This configuration enables full audit logging with PII redaction, secret scanning, and 90-day retention. The hash chain is verified on every read to detect tampering.</p>
+
+    <h2 id="trust-api-summary">API Summary</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td>GET</td><td><code>/api/trust/ledger</code></td><td>Query audit entries with filters</td></tr>
+      <tr><td>GET</td><td><code>/api/trust/policies</code></td><td>List active policies</td></tr>
+      <tr><td>POST</td><td><code>/api/trust/policies</code></td><td>Create new policy</td></tr>
+      <tr><td>PUT</td><td><code>/api/trust/policies/{id}</code></td><td>Update policy rules or action</td></tr>
+      <tr><td>DELETE</td><td><code>/api/trust/policies/{id}</code></td><td>Remove policy</td></tr>
+    </table>
+
+    <h2 id="trust-export">Exporting Audit Data</h2>
+    <p>Export ledger entries for external compliance tools or long-term archival:</p>
+    <pre>
+<span class="comment"># Export last 30 days of audit data</span>
+<span class="cmd">curl "http://localhost:4200/api/trust/ledger?days=30&limit=10000" \
+  -H "Authorization: Bearer sy_admin_..." > audit-export.json</span>
+</pre>
+    <p>The exported data includes full hash chain information, allowing independent verification of chain integrity by auditors or compliance tools.</p>
+    <p>For automated compliance workflows, combine Trust exports with Observe cost data and Exchange config snapshots to build a complete audit package.</p>
+
+    <p>For the full Trust API reference, see <a href="/docs/api/#trust-api">API Reference: Trust</a>.</p>
+
     <div class="pn"><a href="/docs/observe/">&larr; Observe</a><a href="/docs/studio/" class="next">Studio &rarr;</a></div>
   </main>
 </div>

@@ -166,6 +166,54 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="overview">Overview</h2>
     <p>All endpoints are served on the same port as the proxy. Full <a href="/api/openapi.json" style="color:var(--rust-light)">OpenAPI 3.1 spec</a> available at <code>/api/openapi.json</code>.</p>
 
+    <h2 id="authentication">Authentication</h2>
+    <p>All API endpoints (except <code>/health</code>) require an <code>Authorization</code> header:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/status \
+  -H "Authorization: Bearer sy_admin_your_key"</span>
+</pre>
+    <p>Admin endpoints require an admin key (<code>sy_admin_</code> prefix). User endpoints accept user keys (<code>sy_</code> prefix). The proxy endpoint (<code>/v1/chat/completions</code>) accepts both.</p>
+
+    <h2 id="errors">Error Responses</h2>
+    <p>All errors follow a consistent format:</p>
+    <pre>
+{
+  "error": {
+    "code": "rate_limited",
+    "message": "Rate limit exceeded. Retry after 2s.",
+    "status": 429
+  }
+}
+</pre>
+    <p>Common error codes:</p>
+    <table class="endpoint-table">
+      <tr><th>Status</th><th>Code</th><th>Meaning</th></tr>
+      <tr><td>400</td><td><code>bad_request</code></td><td>Invalid request body or parameters</td></tr>
+      <tr><td>401</td><td><code>unauthorized</code></td><td>Missing or invalid API key</td></tr>
+      <tr><td>403</td><td><code>forbidden</code></td><td>Key lacks required permissions</td></tr>
+      <tr><td>404</td><td><code>not_found</code></td><td>Resource does not exist</td></tr>
+      <tr><td>429</td><td><code>rate_limited</code></td><td>Rate limit or cost cap exceeded</td></tr>
+      <tr><td>500</td><td><code>internal_error</code></td><td>Server error (check logs)</td></tr>
+      <tr><td>502</td><td><code>provider_error</code></td><td>Upstream LLM provider returned an error</td></tr>
+      <tr><td>503</td><td><code>circuit_open</code></td><td>Circuit breaker tripped for provider</td></tr>
+    </table>
+
+    <h2 id="pagination">Pagination</h2>
+    <p>List endpoints support <code>limit</code> and <code>offset</code> query parameters:</p>
+    <pre>
+<span class="cmd">curl "http://localhost:4200/api/observe/traces?limit=20&offset=40" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <p>Responses include <code>total</code> and <code>has_more</code> fields for cursor-based pagination.</p>
+
+    <h2 id="openapi">OpenAPI Spec</h2>
+    <p>The full OpenAPI 3.1 specification is available at <code>/api/openapi.json</code>. Use it with Swagger UI, Postman, or any OpenAPI-compatible tool:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/openapi.json \
+  -H "Authorization: Bearer sy_admin_..." | python3 -m json.tool</span>
+</pre>
+
+
     <h2 id="system">System</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
@@ -277,6 +325,48 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">POST</td><td>/api/webhooks/test</td><td>Send test event to all webhooks</td></tr>
       <tr><td class="method">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
     </table>
+
+    <h2 id="curl-examples">Common Examples</h2>
+    <p>Quick reference for the most frequently used endpoints:</p>
+    <pre>
+<span class="comment"># Send a chat completion through the proxy</span>
+<span class="cmd">curl -X POST http://localhost:4200/v1/chat/completions \
+  -H "Authorization: Bearer sy_your_key" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'</span>
+
+<span class="comment"># Toggle a module on/off</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'</span>
+
+<span class="comment"># Get cost breakdown for the last 7 days</span>
+<span class="cmd">curl "http://localhost:4200/api/observe/costs?days=7" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+
+<span class="comment"># Create a trust policy</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"name":"no-pii","action":"block","rules":[{"field":"response.content","pattern":"\\d{3}-\\d{2}-\\d{4}"}]}'</span>
+
+<span class="comment"># Create and run a workflow</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"name":"test","steps":[{"id":"s1","type":"llm","model":"gpt-4o","prompt":"Say hi"}]}'</span>
+
+<span class="comment"># Export your entire config</span>
+<span class="cmd">curl http://localhost:4200/api/config/export \
+  -H "Authorization: Bearer sy_admin_..." -o config.json</span>
+</pre>
+    <p>For the full OpenAPI specification, visit <code>/api/openapi.json</code> on your running instance.</p>
+    <p>Every endpoint returns JSON with consistent error formatting. See the <a href="#errors">error responses</a> section above for the standard error schema.</p>
+
+    <h2 id="rate-limits-api">Rate Limits</h2>
+    <p>API management endpoints are rate-limited to prevent abuse. The proxy endpoint (<code>/v1/chat/completions</code>) uses the <code>rateshield</code> module for configurable per-key rate limiting. Management endpoints allow 120 requests per minute per admin key.</p>
+    <p>Rate-limited responses include <code>Retry-After</code> and <code>X-RateLimit-Remaining</code> headers.</p>
 
     <div class="pn"><a href="/docs/exchange/">&larr; Exchange</a></div>
   </main>

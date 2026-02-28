@@ -206,6 +206,173 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/observe/">Observe product page</a> for screenshots of the dashboard.</p>
 
+
+    <h2 id="traces">Traces</h2>
+    <p>Every request through the proxy creates a trace. Query recent traces:</p>
+    <pre>
+<span class="cmd">curl "http://localhost:4200/api/observe/traces?limit=10" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <p>Response:</p>
+    <pre>
+{
+  "traces": [{
+    "id": "tr_abc123",
+    "timestamp": "2026-02-28T14:30:00Z",
+    "model": "gpt-4o",
+    "provider": "openai",
+    "status": 200,
+    "latency_ms": 1240,
+    "tokens_in": 450,
+    "tokens_out": 120,
+    "cost_usd": 0.0078,
+    "cached": false,
+    "modules_active": 24
+  }],
+  "total": 1247,
+  "has_more": true
+}
+</pre>
+
+    <h2 id="trace-detail">Trace Detail</h2>
+    <p>Get full detail for a single trace including the module chain execution:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/observe/traces/tr_abc123 \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="costs">Cost Tracking</h2>
+    <p>View cost rollups aggregated by day, provider, or model:</p>
+    <pre>
+<span class="cmd">curl "http://localhost:4200/api/observe/costs?group_by=provider&days=7" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "period": "2026-02-21 to 2026-02-28",
+  "total_usd": 12.47,
+  "breakdown": [
+    {"provider": "openai", "cost_usd": 8.30, "requests": 890},
+    {"provider": "anthropic", "cost_usd": 3.92, "requests": 312},
+    {"provider": "groq", "cost_usd": 0.25, "requests": 445}
+  ]
+}
+</pre>
+
+    <h2 id="timeseries">Time-Series Data</h2>
+    <p>Fetch time-series metrics for charting:</p>
+    <pre>
+<span class="cmd">curl "http://localhost:4200/api/observe/timeseries?metric=latency&interval=1h&days=1" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="alerts">Alert Rules</h2>
+    <p>Create alerts that trigger when thresholds are breached:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/observe/alerts \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "High daily spend",
+    "metric": "cost_usd",
+    "threshold": 50.00,
+    "window": "24h",
+    "action": "webhook",
+    "webhook_url": "https://hooks.slack.com/..."
+  }'</span>
+</pre>
+    <p>Alerts can trigger webhooks, email notifications, or both. Update or delete alerts by ID:</p>
+    <pre>
+<span class="comment"># Update an alert threshold</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/observe/alerts/alert_id \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"threshold": 100.00}'</span>
+
+<span class="comment"># Delete an alert</span>
+<span class="cmd">curl -X DELETE http://localhost:4200/api/observe/alerts/alert_id \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="dashboard">Dashboard Overview</h2>
+    <p>The <code>/api/observe/overview</code> endpoint returns a dashboard summary suitable for building custom UIs:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/observe/overview \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "requests_today": 342,
+  "cost_today_usd": 2.15,
+  "avg_latency_ms": 1180,
+  "cache_hit_rate": 0.23,
+  "active_alerts": 1,
+  "top_model": "gpt-4o",
+  "top_provider": "openai"
+}
+</pre>
+    <div class="note"><strong>Tip:</strong> The built-in dashboard at <code>/ui</code> uses these same API endpoints. You can build your own monitoring UI using the same data.</div>
+
+
+    <h2 id="observe-config">Configuration</h2>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+apps:
+  observe:
+    retention_days: 30
+    cost_tracking: true
+    trace_request_body: false   <span class="comment"># Set true to log full request/response</span>
+    alert_check_interval: 60s
+    anomaly_detection: true
+    anomaly_sensitivity: 0.8
+</pre>
+
+    <h2 id="common-queries">Common Queries</h2>
+    <p>Filter traces by model, provider, status, or date range:</p>
+    <pre>
+<span class="comment"># Traces for a specific model</span>
+<span class="cmd">curl "http://localhost:4200/api/observe/traces?model=gpt-4o&limit=20" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+
+<span class="comment"># Failed requests only</span>
+<span class="cmd">curl "http://localhost:4200/api/observe/traces?status=error&limit=50" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+
+<span class="comment"># Costs grouped by model for the last 30 days</span>
+<span class="cmd">curl "http://localhost:4200/api/observe/costs?group_by=model&days=30" \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="export-data">Exporting Data</h2>
+    <p>Export traces and cost data for external analysis. The Observe API supports pagination via <code>offset</code> and <code>limit</code> parameters, making it straightforward to iterate through large datasets.</p>
+    <div class="note"><strong>Retention:</strong> Traces older than <code>retention_days</code> are automatically pruned. Export regularly if you need long-term storage.</div>
+
+
+    <h2 id="built-in-dashboard">Built-in Dashboard</h2>
+    <p>Stockyard includes a built-in dashboard at <code>/ui</code> that displays real-time metrics, cost charts, and trace logs. The dashboard uses the same API endpoints documented here, so you can also build custom dashboards.</p>
+
+    <h2 id="alerting-patterns">Alerting Patterns</h2>
+    <p>Common alert configurations for production:</p>
+    <table class="endpoint-table">
+      <tr><th>Alert</th><th>Metric</th><th>Threshold</th><th>Window</th></tr>
+      <tr><td>High spend</td><td><code>cost_usd</code></td><td>$50</td><td>24h</td></tr>
+      <tr><td>Error spike</td><td><code>error_rate</code></td><td>10%</td><td>5m</td></tr>
+      <tr><td>Latency degradation</td><td><code>p99_latency_ms</code></td><td>5000ms</td><td>15m</td></tr>
+      <tr><td>Provider down</td><td><code>provider_errors</code></td><td>5</td><td>1m</td></tr>
+    </table>
+
+    <h2 id="observe-opentelemetry">OpenTelemetry Export</h2>
+    <p>Stockyard can export traces in OpenTelemetry format for integration with external monitoring tools like Grafana, Datadog, or Honeycomb. Configure the OTEL exporter in <code>stockyard.yaml</code>:</p>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+apps:
+  observe:
+    otel_endpoint: "http://localhost:4317"
+    otel_protocol: "grpc"
+    otel_service_name: "stockyard-proxy"
+</pre>
+    <p>When configured, every trace is exported to both the internal SQLite store and the external OTEL collector.</p>
+
     <div class="pn"><a href="/docs/proxy/">&larr; Proxy</a><a href="/docs/trust/" class="next">Trust &rarr;</a></div>
   </main>
 </div>

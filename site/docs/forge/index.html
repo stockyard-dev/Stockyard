@@ -202,6 +202,172 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/forge/">Forge product page</a> and the <a href="/forge/builder/">visual workflow builder</a>.</p>
 
+
+    <h2 id="create-workflow">Creating Workflows</h2>
+    <p>Forge uses DAG (directed acyclic graph) definitions to chain LLM calls, transforms, and tool invocations:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "summarize-and-translate",
+    "steps": [
+      {
+        "id": "summarize",
+        "type": "llm",
+        "model": "gpt-4o",
+        "prompt": "Summarize: {{input}}"
+      },
+      {
+        "id": "translate",
+        "type": "llm",
+        "model": "gpt-4o",
+        "prompt": "Translate to Spanish: {{summarize.output}}",
+        "depends_on": ["summarize"]
+      }
+    ]
+  }'</span>
+</pre>
+    <pre>
+{
+  "id": "wf_abc123",
+  "name": "summarize-and-translate",
+  "steps": 2,
+  "created_at": "2026-02-28T12:00:00Z"
+}
+</pre>
+
+    <h2 id="run-workflow">Running Workflows</h2>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows/wf_abc123/run \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"input": "The quarterly results showed a 15% increase in revenue..."}'</span>
+</pre>
+    <pre>
+{
+  "run_id": "run_xyz789",
+  "workflow_id": "wf_abc123",
+  "status": "completed",
+  "steps": {
+    "summarize": {"status": "completed", "output": "Revenue increased 15% quarter-over-quarter..."},
+    "translate": {"status": "completed", "output": "Los ingresos aumentaron un 15%..."}
+  },
+  "total_cost_usd": 0.012,
+  "duration_ms": 2400
+}
+</pre>
+
+    <h2 id="list-workflows">Listing Workflows</h2>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/forge/workflows \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="workflow-detail">Workflow Detail</h2>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/forge/workflows/wf_abc123 \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="parallel-steps">Parallel Execution</h2>
+    <p>Steps without dependencies run in parallel. The <code>multicall</code> module handles fan-out:</p>
+    <pre>
+{
+  "name": "multi-model-compare",
+  "steps": [
+    {"id": "gpt", "type": "llm", "model": "gpt-4o", "prompt": "{{input}}"},
+    {"id": "claude", "type": "llm", "model": "claude-sonnet-4-5", "prompt": "{{input}}"},
+    {"id": "pick_best", "type": "llm", "model": "gpt-4o",
+     "prompt": "Pick the better answer:\nA: {{gpt.output}}\nB: {{claude.output}}",
+     "depends_on": ["gpt", "claude"]}
+  ]
+}
+</pre>
+    <p>Steps <code>gpt</code> and <code>claude</code> run simultaneously. <code>pick_best</code> waits for both.</p>
+
+    <h2 id="delete-workflow">Deleting Workflows</h2>
+    <pre>
+<span class="cmd">curl -X DELETE http://localhost:4200/api/forge/workflows/wf_abc123 \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="forge-config">Forge Configuration</h2>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+apps:
+  forge:
+    max_workflows: 200
+    max_steps_per_workflow: 20
+    execution_timeout: 60s
+    parallel_limit: 5
+</pre>
+    <div class="note"><strong>Tip:</strong> Use the <code>mockllm</code> module during workflow development to get deterministic outputs without burning tokens.</div>
+
+
+    <h2 id="step-types">Step Types</h2>
+    <p>Forge supports several step types within a workflow:</p>
+    <table class="endpoint-table">
+      <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+      <tr><td><code>llm</code></td><td>Call an LLM with a prompt</td><td>Summarize, translate, classify</td></tr>
+      <tr><td><code>transform</code></td><td>Apply a data transformation</td><td>Extract JSON, parse CSV</td></tr>
+      <tr><td><code>condition</code></td><td>Branch based on output</td><td>Route based on sentiment</td></tr>
+      <tr><td><code>tool</code></td><td>Call an external tool or API</td><td>Web search, database lookup</td></tr>
+    </table>
+
+    <h2 id="error-handling">Error Handling</h2>
+    <p>Steps can define fallback behavior when they fail:</p>
+    <pre>
+{
+  "id": "classify",
+  "type": "llm",
+  "model": "gpt-4o",
+  "prompt": "Classify: {{input}}",
+  "on_error": {
+    "action": "fallback",
+    "fallback_model": "gpt-4o-mini",
+    "max_retries": 2
+  }
+}
+</pre>
+    <p>If the primary model fails, the step retries with the fallback model before reporting an error.</p>
+
+    <h2 id="workflow-tips">Workflow Tips</h2>
+    <div class="note"><strong>Testing:</strong> Use <code>mockllm</code> during development to test workflow structure without API calls. Enable it globally or per-step with a test flag.</div>
+    <div class="note"><strong>Cost visibility:</strong> Each workflow run reports <code>total_cost_usd</code> so you can track per-workflow spending in Observe.</div>
+
+
+    <h2 id="variable-reference">Variable References</h2>
+    <p>Steps reference outputs from other steps using <code>{{step_id.output}}</code> syntax. The Forge engine resolves these references and passes data between steps automatically:</p>
+    <pre>
+<span class="comment"># Available variables in each step</span>
+{{input}}              <span class="comment"># Original workflow input</span>
+{{step_id.output}}     <span class="comment"># Output from a completed step</span>
+{{step_id.status}}     <span class="comment"># Step status (completed/failed)</span>
+{{step_id.cost_usd}}   <span class="comment"># Cost of that step</span>
+</pre>
+
+    <h2 id="forge-api-summary">API Summary</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td>GET</td><td><code>/api/forge/workflows</code></td><td>List all workflows</td></tr>
+      <tr><td>POST</td><td><code>/api/forge/workflows</code></td><td>Create workflow</td></tr>
+      <tr><td>GET</td><td><code>/api/forge/workflows/{id}</code></td><td>Workflow detail and step definitions</td></tr>
+      <tr><td>POST</td><td><code>/api/forge/workflows/{id}/run</code></td><td>Execute and get results</td></tr>
+      <tr><td>DELETE</td><td><code>/api/forge/workflows/{id}</code></td><td>Delete workflow</td></tr>
+    </table>
+
+    <h2 id="forge-limits">Limits &amp; Quotas</h2>
+    <table class="endpoint-table">
+      <tr><th>Limit</th><th>Default</th><th>Configurable</th></tr>
+      <tr><td>Max workflows per instance</td><td>200</td><td>Yes</td></tr>
+      <tr><td>Max steps per workflow</td><td>20</td><td>Yes</td></tr>
+      <tr><td>Execution timeout</td><td>60 seconds</td><td>Yes</td></tr>
+      <tr><td>Parallel step limit</td><td>5</td><td>Yes</td></tr>
+      <tr><td>Max input size</td><td>100KB</td><td>Yes</td></tr>
+    </table>
+    <p>Adjust limits in <code>stockyard.yaml</code> under <code>apps.forge</code>. Higher limits may increase memory usage during workflow execution.</p>
+
     <div class="pn"><a href="/docs/studio/">&larr; Studio</a><a href="/docs/exchange/" class="next">Exchange &rarr;</a></div>
   </main>
 </div>

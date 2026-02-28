@@ -212,6 +212,161 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>License keys are available at <a href="/pricing/">stockyard.dev/pricing</a>. Pro and Enterprise keys unlock unlimited requests, unlimited users, and extended retention. All features and modules are available on every tier.</p>
 
+
+    <h2 id="api-keys">API Key Types</h2>
+    <p>Stockyard uses two kinds of keys:</p>
+    <table class="endpoint-table">
+      <tr><th>Key Type</th><th>Prefix</th><th>Purpose</th></tr>
+      <tr><td>Admin key</td><td><code>sy_admin_</code></td><td>Full access to all API endpoints, module toggles, user management</td></tr>
+      <tr><td>User key</td><td><code>sy_</code></td><td>Proxy requests, own usage data, provider key management</td></tr>
+    </table>
+    <p>Admin keys are set via environment variable or config file. User keys are generated via the signup endpoint.</p>
+
+    <h2 id="create-user">Creating Users</h2>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"email": "dev@example.com", "plan": "free"}'</span>
+</pre>
+    <p>Response:</p>
+    <pre>
+{
+  "user_id": "usr_abc123",
+  "email": "dev@example.com",
+  "api_key": "sy_live_k8x...",
+  "plan": "free",
+  "created_at": "2026-02-28T12:00:00Z"
+}
+</pre>
+
+    <h2 id="provider-keys">Provider Key Management</h2>
+    <p>Users bring their own provider keys. Store them via the API:</p>
+    <pre>
+<span class="comment"># Add an OpenAI key for the current user</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/auth/me/providers/openai \
+  -H "Authorization: Bearer sy_live_k8x..." \
+  -H "Content-Type: application/json" \
+  -d '{"api_key": "sk-proj-..."}'</span>
+</pre>
+    <p>Provider keys are encrypted at rest in the SQLite database. They are never logged or exposed through any API endpoint.</p>
+
+    <h2 id="key-rotation">Key Rotation</h2>
+    <p>Rotate a user&rsquo;s API key without downtime:</p>
+    <pre>
+<span class="comment"># Admin: rotate a user's key</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/auth/users/usr_abc123/keys/key_id/rotate \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <p>Response includes the new key. The old key is immediately revoked.</p>
+    <pre>
+{
+  "old_key_id": "key_abc",
+  "new_key": "sy_live_new...",
+  "new_key_id": "key_def",
+  "rotated_at": "2026-02-28T12:00:00Z"
+}
+</pre>
+
+    <h2 id="config-file-auth">Config File Authentication</h2>
+    <p>Set the admin key and default provider keys in <code>stockyard.yaml</code>:</p>
+    <pre>
+admin_key: "${STOCKYARD_ADMIN_KEY}"
+
+providers:
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    org_id: "org-..."           <span class="comment"># optional</span>
+  anthropic:
+    api_key: "${ANTHROPIC_API_KEY}"
+  groq:
+    api_key: "${GROQ_API_KEY}"
+</pre>
+    <div class="note"><strong>Security:</strong> Always use environment variable references (<code>${...}</code>) in config files. Never hardcode API keys. Stockyard expands these at startup.</div>
+
+    <h2 id="usage-tracking">Usage Tracking</h2>
+    <p>Each user can check their own usage:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/auth/me/usage \
+  -H "Authorization: Bearer sy_live_k8x..."</span>
+</pre>
+    <pre>
+{
+  "user_id": "usr_abc123",
+  "period": "2026-02",
+  "requests": 1247,
+  "tokens_in": 892400,
+  "tokens_out": 234100,
+  "cost_usd": 4.82
+}
+</pre>
+
+
+    <h2 id="multi-tenant">Multi-Tenant Setup</h2>
+    <p>Run Stockyard for multiple teams or customers. Each user gets isolated usage tracking and provider keys:</p>
+    <pre>
+<span class="comment"># Create users for different teams</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"email": "team-a@example.com", "plan": "team"}'</span>
+
+<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"email": "team-b@example.com", "plan": "team"}'</span>
+</pre>
+    <p>Enable the <code>tenantwall</code> module to enforce strict isolation between tenants, ensuring one team cannot access another team&rsquo;s data or quota.</p>
+
+    <h2 id="admin-endpoints">Admin User Management</h2>
+    <p>Admins can list users and manage their keys:</p>
+    <pre>
+<span class="comment"># List all users</span>
+<span class="cmd">curl http://localhost:4200/api/auth/users \
+  -H "Authorization: Bearer sy_admin_..."</span>
+
+<span class="comment"># Create a new API key for a user</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/auth/users/usr_abc/keys \
+  -H "Authorization: Bearer sy_admin_..."</span>
+
+<span class="comment"># Set a provider key on behalf of a user</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/auth/users/usr_abc/providers/openai \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"api_key": "sk-proj-..."}'</span>
+</pre>
+    <div class="note"><strong>BYOK model:</strong> Stockyard never stores provider keys in plaintext. Keys are encrypted at rest and never appear in logs, traces, or API responses.</div>
+
+
+    <h2 id="auth-security">Security Best Practices</h2>
+    <p>Follow these practices for production deployments:</p>
+    <table class="endpoint-table">
+      <tr><th>Practice</th><th>Implementation</th></tr>
+      <tr><td>Rotate keys regularly</td><td>Use the <code>/rotate</code> endpoint on a schedule</td></tr>
+      <tr><td>Use env vars for secrets</td><td><code>${STOCKYARD_ADMIN_KEY}</code> in config files</td></tr>
+      <tr><td>Separate admin and user keys</td><td>Never use <code>sy_admin_</code> keys for proxy requests</td></tr>
+      <tr><td>Enable IP allowlisting</td><td>Use <code>ipfence</code> module to restrict access by IP</td></tr>
+      <tr><td>Monitor key usage</td><td>Check <code>/api/auth/me/usage</code> for anomalies</td></tr>
+    </table>
+
+    <h2 id="plans">Plans &amp; Billing</h2>
+    <p>Query available plans:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/plans</span>
+</pre>
+    <pre>
+{
+  "plans": [
+    {"id": "free", "name": "Free", "requests_per_month": 1000, "price_usd": 0},
+    {"id": "pro", "name": "Pro", "requests_per_month": 50000, "price_usd": 29},
+    {"id": "team", "name": "Team", "requests_per_month": 500000, "price_usd": 99}
+  ]
+}
+</pre>
+    <div class="note"><strong>Self-hosted:</strong> When running Stockyard on your own infrastructure, plans are enforced locally. No external billing service is required.</div>
+
+    <p>For detailed API reference with all auth endpoints, see the <a href="/docs/api/#auth-api">API Reference</a>.</p>
+
     <div class="pn"><a href="/docs/quickstart/">&larr; Install &amp; Quickstart</a><a href="/docs/proxy/" class="next">Proxy &rarr;</a></div>
   </main>
 </div>

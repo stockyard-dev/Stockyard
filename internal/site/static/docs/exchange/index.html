@@ -192,6 +192,180 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/exchange/">Exchange marketplace</a> for the full pack catalog.</p>
 
+
+    <h2 id="packs">Config Packs</h2>
+    <p>Packs are bundles of module configs, provider settings, routes, and policies. Install a pack to configure an entire workflow in one click:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/exchange/packs \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "packs": [
+    {"id": "pk_safety", "name": "safety-starter", "description": "Enable promptguard, toxicfilter, secretscan, agegate", "modules": 4},
+    {"id": "pk_cost", "name": "cost-control", "description": "costcap + tierdrop + rateshield + usagepulse", "modules": 4},
+    {"id": "pk_cache", "name": "caching-layer", "description": "cachelayer + embedcache + semanticcache", "modules": 3}
+  ],
+  "total": 3
+}
+</pre>
+
+    <h2 id="install-pack">Installing Packs</h2>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/pk_safety/install \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "installed": true,
+  "pack": "safety-starter",
+  "modules_enabled": ["promptguard", "toxicfilter", "secretscan", "agegate"],
+  "applied_at": "2026-02-28T12:00:00Z"
+}
+</pre>
+
+    <h2 id="uninstall-pack">Uninstalling Packs</h2>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/pk_safety/uninstall \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="create-pack">Creating Custom Packs</h2>
+    <p>Bundle your current module configuration into a shareable pack:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-production-config",
+    "description": "Full production setup with safety, caching, and cost controls",
+    "modules": {
+      "cachelayer": {"enabled": true, "config": {"ttl": 3600}},
+      "costcap": {"enabled": true, "config": {"daily_limit_usd": 50}},
+      "promptguard": {"enabled": true},
+      "rateshield": {"enabled": true, "config": {"rpm": 120}}
+    }
+  }'</span>
+</pre>
+
+    <h2 id="pack-detail">Pack Detail</h2>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/exchange/packs/pk_safety \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="exchange-status">Exchange Status</h2>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/exchange/status \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "available_packs": 3,
+  "installed_packs": 1,
+  "last_sync": "2026-02-28T12:00:00Z"
+}
+</pre>
+
+    <h2 id="exchange-config">Exchange Configuration</h2>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+apps:
+  exchange:
+    auto_sync: true
+    sync_interval: 24h
+    allow_community_packs: false
+</pre>
+    <div class="note"><strong>Environments:</strong> Use the Exchange app to sync configurations between development, staging, and production instances. Export from one, import to another.</div>
+
+
+    <h2 id="config-sync">Config Sync Workflow</h2>
+    <p>Sync configs between environments using export and import:</p>
+    <pre>
+<span class="comment"># 1. Export from development</span>
+<span class="cmd">curl http://dev.stockyard.internal/api/config/export \
+  -H "Authorization: Bearer sy_admin_dev..." > config.json</span>
+
+<span class="comment"># 2. Diff against production</span>
+<span class="cmd">curl -X POST http://prod.stockyard.internal/api/config/diff \
+  -H "Authorization: Bearer sy_admin_prod..." \
+  -d @config.json</span>
+
+<span class="comment"># 3. Import to production (after review)</span>
+<span class="cmd">curl -X POST http://prod.stockyard.internal/api/config/import \
+  -H "Authorization: Bearer sy_admin_prod..." \
+  -d @config.json</span>
+</pre>
+
+    <h2 id="community-packs">Community Packs</h2>
+    <p>Share your pack configurations with the community or keep them private to your organization. Packs can include:</p>
+    <table class="endpoint-table">
+      <tr><th>Component</th><th>What&rsquo;s Included</th></tr>
+      <tr><td>Module configs</td><td>Enable/disable flags and configuration</td></tr>
+      <tr><td>Trust policies</td><td>Compliance and content rules</td></tr>
+      <tr><td>Alert rules</td><td>Threshold alerts and webhook configs</td></tr>
+      <tr><td>Workflow definitions</td><td>Forge DAG workflows</td></tr>
+    </table>
+
+    <h2 id="exchange-tips">Tips</h2>
+    <div class="note"><strong>Version control:</strong> Export your config to a JSON file and commit it to Git alongside your application code. This gives you a full audit trail of configuration changes.</div>
+    <div class="note"><strong>Automation:</strong> Use the Exchange API in CI/CD pipelines to automatically sync configurations on deploy.</div>
+
+
+    <h2 id="exchange-api-summary">API Summary</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td>GET</td><td><code>/api/exchange/status</code></td><td>Exchange app status</td></tr>
+      <tr><td>GET</td><td><code>/api/exchange/packs</code></td><td>List available packs</td></tr>
+      <tr><td>POST</td><td><code>/api/exchange/packs</code></td><td>Create custom pack</td></tr>
+      <tr><td>GET</td><td><code>/api/exchange/packs/{id}</code></td><td>Pack detail with module list</td></tr>
+      <tr><td>POST</td><td><code>/api/exchange/packs/{id}/install</code></td><td>Install and apply pack</td></tr>
+      <tr><td>POST</td><td><code>/api/exchange/packs/{id}/uninstall</code></td><td>Uninstall and revert</td></tr>
+    </table>
+
+    <h2 id="pack-lifecycle">Pack Lifecycle</h2>
+    <p>The typical lifecycle of a config pack:</p>
+    <table class="endpoint-table">
+      <tr><th>Phase</th><th>Action</th></tr>
+      <tr><td>Create</td><td>Bundle current config into a named pack</td></tr>
+      <tr><td>Test</td><td>Install on a staging instance and verify</td></tr>
+      <tr><td>Share</td><td>Publish pack or export as JSON</td></tr>
+      <tr><td>Install</td><td>Apply on production instances</td></tr>
+      <tr><td>Update</td><td>Create new version, reinstall</td></tr>
+    </table>
+    <div class="note"><strong>Rollback:</strong> Uninstalling a pack reverts all module configs to their state before the pack was installed. The previous state is stored as a snapshot.</div>
+
+    <h2 id="exchange-patterns">Common Patterns</h2>
+    <p>Use Exchange packs for environment-specific configurations:</p>
+    <pre>
+<span class="comment"># Development: cache everything, low rate limits</span>
+dev-pack: cachelayer(on) + rateshield(rpm=10) + mockllm(on)
+
+<span class="comment"># Staging: full safety chain, moderate limits</span>
+staging-pack: promptguard(on) + toxicfilter(on) + rateshield(rpm=60)
+
+<span class="comment"># Production: safety + cost + monitoring</span>
+prod-pack: safety-starter + cost-control + alertpulse(on)
+</pre>
+
+    <h2 id="exchange-import-export">Import &amp; Export</h2>
+    <p>Packs can be exported as standalone JSON files for version control or sharing outside the API:</p>
+    <pre>
+<span class="comment"># Export a pack to a file</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/packs/pk_safety \
+  -H "Authorization: Bearer sy_admin_..." > safety-pack.json</span>
+
+<span class="comment"># Import pack from file to another instance</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d @safety-pack.json</span>
+</pre>
+    <p>This enables GitOps workflows where pack definitions live in version control alongside application code.</p>
+
+    <p>For the full Exchange API reference including all parameters and response schemas, see <a href="/docs/api/#exchange-api">API Reference: Exchange</a>.</p>
+    <p>Exchange pairs well with the <a href="/docs/ops/">Ops Guide</a> for production deployment patterns.</p>
+
     <div class="pn"><a href="/docs/forge/">&larr; Forge</a><a href="/docs/api/" class="next">API Reference &rarr;</a></div>
   </main>
 </div>

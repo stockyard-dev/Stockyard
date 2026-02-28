@@ -212,6 +212,171 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">curl http://localhost:4200/api/proxy/routes</span>
 </pre>
 
+
+    <h2 id="toggle-modules">Toggling Modules</h2>
+    <p>Enable or disable any module at runtime without restart:</p>
+    <pre>
+<span class="comment"># Enable the response cache</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'</span>
+
+<span class="comment"># Disable toxicity filtering</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}'</span>
+</pre>
+    <p>Module state changes take effect on the next request. No restart needed.</p>
+
+    <h2 id="module-config">Module Configuration</h2>
+    <p>Modules accept configuration alongside the enabled flag:</p>
+    <pre>
+<span class="comment"># Configure costcap with a $10/day limit</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enabled": true,
+    "config": {
+      "daily_limit_usd": 10.00,
+      "action": "block",
+      "notify_at_pct": 80
+    }
+  }'</span>
+</pre>
+
+    <h2 id="shims">Provider Shims</h2>
+    <p>Shim modules translate between the OpenAI API format and provider-native formats. Enable a shim and route requests to any provider using the standard OpenAI SDK:</p>
+    <pre>
+<span class="comment"># Route Claude requests through the anthrofit shim</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
+  -H "Authorization: Bearer sy_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-5",
+    "messages": [{"role": "user", "content": "Hello from the OpenAI SDK!"}]
+  }'</span>
+</pre>
+    <p>Available shims: anthrofit, geminishim, groqshim, ollamashim, bedrockshim, azureshim, mistralshim, cohereshim, togethershim, deepseekshim, fireworksshim, replicateshim, perplexityshim.</p>
+
+    <h2 id="failover">Failover &amp; Routing</h2>
+    <p>Configure automatic provider failover with the <code>fallbackrouter</code> module:</p>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+modules:
+  fallbackrouter:
+    enabled: true
+    config:
+      chain:
+        - provider: openai
+          model: gpt-4o
+        - provider: anthropic
+          model: claude-sonnet-4-5
+        - provider: groq
+          model: llama-3.3-70b-versatile
+      max_retries: 2
+</pre>
+    <p>If OpenAI fails or is rate-limited, the request automatically falls back to Anthropic, then Groq.</p>
+
+    <h2 id="streaming">Streaming</h2>
+    <p>Streaming works transparently. Set <code>"stream": true</code> in the request body:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
+  -H "Authorization: Bearer sy_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Tell me a joke"}],
+    "stream": true
+  }'</span>
+</pre>
+    <p>The <code>streamsnap</code> module captures the full streamed response for logging without affecting delivery latency.</p>
+
+    <h2 id="embeddings">Embeddings</h2>
+    <p>The proxy also handles embedding requests:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/v1/embeddings \
+  -H "Authorization: Bearer sy_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "text-embedding-3-small",
+    "input": "Stockyard is an LLM proxy"
+  }'</span>
+</pre>
+    <p>The <code>embedcache</code> module caches embedding results for identical inputs, saving both time and cost.</p>
+
+    <h2 id="list-modules">Inspecting Module State</h2>
+    <p>Query the full module list with current status and config:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/proxy/modules \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "modules": [
+    {"name": "fallbackrouter", "enabled": true, "category": "routing", "order": 1},
+    {"name": "cachelayer", "enabled": true, "category": "caching", "order": 13},
+    {"name": "costcap", "enabled": false, "category": "cost", "order": 16}
+  ],
+  "total": 70,
+  "enabled": 24
+}
+</pre>
+
+
+    <h2 id="caching-patterns">Caching Patterns</h2>
+    <p>Stockyard offers three caching layers, each suited to different use cases:</p>
+    <table class="endpoint-table">
+      <tr><th>Module</th><th>Match Strategy</th><th>Best For</th></tr>
+      <tr><td><code>cachelayer</code></td><td>Exact SHA-256 hash</td><td>Identical repeated queries (chatbots, FAQ)</td></tr>
+      <tr><td><code>embedcache</code></td><td>Embedding vector hash</td><td>Embedding deduplication</td></tr>
+      <tr><td><code>semanticcache</code></td><td>Cosine similarity threshold</td><td>Similar but not identical queries</td></tr>
+    </table>
+    <p>Configure cache TTL and similarity thresholds per module:</p>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+modules:
+  cachelayer:
+    enabled: true
+    config:
+      ttl: 3600
+      max_entries: 10000
+  semanticcache:
+    enabled: true
+    config:
+      similarity_threshold: 0.92
+      embedding_model: "text-embedding-3-small"
+</pre>
+
+    <h2 id="safety-chain">Safety Module Chain</h2>
+    <p>For production deployments, enable the full safety chain:</p>
+    <pre>
+<span class="comment"># Enable all safety modules at once</span>
+for module in promptguard toxicfilter guardrail secretscan agentguard; do
+  <span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/$module \
+    -H "Authorization: Bearer sy_admin_..." \
+    -d '{"enabled": true}'</span>
+done
+</pre>
+    <div class="note"><strong>Performance:</strong> The full 70-module chain adds ~4ms of overhead. Safety modules are the heaviest at 0.06&ndash;0.35ms each, but still negligible compared to LLM provider latency (500ms&ndash;3s).</div>
+
+
+    <h2 id="rate-limiting">Rate Limiting</h2>
+    <p>The <code>rateshield</code> module enforces per-user rate limits using a token bucket algorithm:</p>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+modules:
+  rateshield:
+    enabled: true
+    config:
+      rpm: 60           <span class="comment"># Requests per minute</span>
+      burst: 10          <span class="comment"># Allow burst of 10 above limit</span>
+      per: "api_key"     <span class="comment"># Rate limit per API key</span>
+</pre>
+    <p>When rate-limited, the proxy returns HTTP 429 with a <code>Retry-After</code> header indicating when the client can retry.</p>
+
     <div class="pn"><a href="/docs/auth/">&larr; Auth &amp; Configuration</a><a href="/docs/observe/" class="next">Observe &rarr;</a></div>
   </main>
 </div>

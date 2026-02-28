@@ -204,6 +204,169 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/studio/">Studio product page</a> and the <a href="/studio/diff/">Diff viewer</a>.</p>
 
+
+    <h2 id="templates">Prompt Templates</h2>
+    <p>Create versioned prompt templates for reuse and A/B testing:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "customer-support-v1",
+    "system_prompt": "You are a helpful customer support agent for {{company}}. Be concise and friendly.",
+    "variables": ["company"],
+    "model": "gpt-4o",
+    "temperature": 0.3
+  }'</span>
+</pre>
+    <pre>
+{
+  "id": "tpl_abc123",
+  "name": "customer-support-v1",
+  "version": 1,
+  "created_at": "2026-02-28T12:00:00Z"
+}
+</pre>
+
+    <h2 id="list-templates">Listing Templates</h2>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/studio/templates \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "templates": [
+    {"id": "tpl_abc123", "name": "customer-support-v1", "version": 1, "model": "gpt-4o"},
+    {"id": "tpl_def456", "name": "code-review-v2", "version": 2, "model": "claude-sonnet-4-5"}
+  ],
+  "total": 2
+}
+</pre>
+
+    <h2 id="experiments">A/B Experiments</h2>
+    <p>Run experiments to compare prompts, models, or temperatures:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/experiments/run \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "GPT-4o vs Claude on support",
+    "variants": [
+      {"model": "gpt-4o", "template": "customer-support-v1", "variables": {"company": "Acme"}},
+      {"model": "claude-sonnet-4-5", "template": "customer-support-v1", "variables": {"company": "Acme"}}
+    ],
+    "test_inputs": [
+      {"messages": [{"role": "user", "content": "How do I reset my password?"}]},
+      {"messages": [{"role": "user", "content": "I want a refund"}]}
+    ],
+    "eval_criteria": ["helpfulness", "conciseness", "tone"]
+  }'</span>
+</pre>
+    <p>Results include side-by-side comparisons and cost breakdowns:</p>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/studio/experiments/exp_id \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+
+    <h2 id="benchmarks">Benchmark Runs</h2>
+    <p>Run benchmark suites to compare model performance and cost:</p>
+    <pre>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/benchmarks/run \
+  -H "Authorization: Bearer sy_admin_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "models": ["gpt-4o", "claude-sonnet-4-5", "llama-3.3-70b-versatile"],
+    "prompts": ["Explain quantum computing in one paragraph"],
+    "runs_per_model": 3
+  }'</span>
+</pre>
+
+    <h2 id="studio-config">Studio Configuration</h2>
+    <pre>
+<span class="comment"># stockyard.yaml</span>
+apps:
+  studio:
+    max_experiments: 100
+    max_templates: 500
+    default_eval_model: "gpt-4o"
+</pre>
+    <div class="note"><strong>Tip:</strong> Use the <code>promptlint</code> module to automatically validate prompt templates against common anti-patterns before they reach the LLM.</div>
+
+    <h2 id="studio-status">Studio Status</h2>
+    <pre>
+<span class="cmd">curl http://localhost:4200/api/studio/status \
+  -H "Authorization: Bearer sy_admin_..."</span>
+</pre>
+    <pre>
+{
+  "templates": 12,
+  "experiments_run": 47,
+  "last_experiment": "2026-02-27T18:00:00Z"
+}
+</pre>
+
+
+    <h2 id="template-variables">Template Variables</h2>
+    <p>Templates support Mustache-style variables (<code>{{variable}}</code>) that are substituted at runtime. This lets you reuse the same prompt across different contexts:</p>
+    <pre>
+<span class="comment"># Template with variables</span>
+{
+  "name": "product-description",
+  "system_prompt": "Write a {{tone}} product description for {{product}} targeting {{audience}}.",
+  "variables": ["tone", "product", "audience"],
+  "defaults": {"tone": "professional", "audience": "enterprise buyers"}
+}
+</pre>
+    <p>Variables without defaults are required at runtime. Variables with defaults can be overridden.</p>
+
+    <h2 id="version-history">Version History</h2>
+    <p>Each template update creates a new version. Previous versions are preserved for rollback and A/B comparison. The <code>promptpad</code> module automatically resolves template references to the latest version unless a specific version is pinned.</p>
+
+    <h2 id="eval-criteria">Evaluation Criteria</h2>
+    <p>Experiments support custom evaluation criteria. Built-in criteria include: helpfulness, conciseness, tone, accuracy, and relevance. Define custom criteria as natural language descriptions that an evaluator model scores on a 1&ndash;5 scale.</p>
+    <div class="note"><strong>Cost control:</strong> Use <code>mockllm</code> during prompt development to test template rendering and workflow logic without making real API calls.</div>
+
+
+    <h2 id="studio-workflow">Typical Studio Workflow</h2>
+    <p>A typical prompt engineering workflow with Studio:</p>
+    <table class="endpoint-table">
+      <tr><th>Step</th><th>Action</th><th>API</th></tr>
+      <tr><td>1. Draft</td><td>Create a prompt template with variables</td><td><code>POST /api/studio/templates</code></td></tr>
+      <tr><td>2. Lint</td><td>Validate with <code>promptlint</code> module</td><td>Automatic on proxy</td></tr>
+      <tr><td>3. Test</td><td>Run A/B experiment across models</td><td><code>POST /api/studio/experiments/run</code></td></tr>
+      <tr><td>4. Evaluate</td><td>Review results and scores</td><td><code>GET /api/studio/experiments/{id}</code></td></tr>
+      <tr><td>5. Benchmark</td><td>Measure latency and cost across providers</td><td><code>POST /api/studio/benchmarks/run</code></td></tr>
+      <tr><td>6. Deploy</td><td>Pin the winning template version in production</td><td><code>PUT /api/proxy/modules/promptpad</code></td></tr>
+    </table>
+    <div class="note"><strong>Integration:</strong> Studio templates can be referenced in Forge workflows, enabling versioned prompt management across complex multi-step pipelines.</div>
+
+    <h2 id="studio-api-summary">API Summary</h2>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td>GET</td><td><code>/api/studio/status</code></td><td>Studio app health and stats</td></tr>
+      <tr><td>GET</td><td><code>/api/studio/templates</code></td><td>List prompt templates</td></tr>
+      <tr><td>POST</td><td><code>/api/studio/templates</code></td><td>Create versioned template</td></tr>
+      <tr><td>POST</td><td><code>/api/studio/experiments/run</code></td><td>Run A/B experiment</td></tr>
+      <tr><td>GET</td><td><code>/api/studio/experiments/{id}</code></td><td>Get experiment results and scores</td></tr>
+      <tr><td>POST</td><td><code>/api/studio/benchmarks/run</code></td><td>Benchmark models on a prompt set</td></tr>
+    </table>
+    <p>All Studio endpoints require admin authentication. Templates created via the API are immediately available for use through the <code>promptpad</code> proxy module.</p>
+    <div class="note"><strong>Playground:</strong> The built-in <a href="/playground">playground</a> at <code>/playground</code> provides a visual interface for testing templates and running experiments without curl commands.</div>
+
+    <h2 id="studio-prompt-tips">Prompt Engineering Tips</h2>
+    <p>When creating templates in Studio, keep these best practices in mind:</p>
+    <table class="endpoint-table">
+      <tr><th>Practice</th><th>Why It Matters</th></tr>
+      <tr><td>Use system prompts for role</td><td>More consistent behavior across models</td></tr>
+      <tr><td>Keep variables focused</td><td>Smaller variable surface = fewer edge cases</td></tr>
+      <tr><td>Test with multiple models</td><td>Prompts that work on GPT-4o may need tweaks for Claude</td></tr>
+      <tr><td>Version every change</td><td>Studio auto-versions; never edit in place</td></tr>
+      <tr><td>Run experiments before deploy</td><td>A/B test catches regressions that manual review misses</td></tr>
+    </table>
+    <p>For the full Studio API reference, see <a href="/docs/api/#studio-api">API Reference: Studio</a>.</p>
+
+    <p>The <a href="/playground">playground</a> provides an interactive UI for quick prompt experimentation without writing API calls.</p>
+
     <div class="pn"><a href="/docs/trust/">&larr; Trust</a><a href="/docs/forge/" class="next">Forge &rarr;</a></div>
   </main>
 </div>
