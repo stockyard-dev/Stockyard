@@ -7,289 +7,346 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta name="robots" content="noindex, nofollow">
-<title>Marketing Ops — Stockyard</title>
-<meta name="description" content="Internal marketing operations dashboard.">
+<title>Marketing Ops &mdash; Stockyard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--bg4:#362e24;
-  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--bg4:#382e24;
+  --rust:#c45d2c;--rust-light:#e8753a;
   --leather:#a0845c;--leather-light:#c4a87a;--leather-dim:#7a6842;
-  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
-  --gold:#d4a843;--green:#4a9;--green-dim:#2a6848;
-  --red:#c44;--blue:#5a9ec4;--amber:#d4a843;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#8a8070;
+  --gold:#d4a843;--green:#5ba86e;--green-dim:#2a5a38;--red:#c44d2c;--blue:#5a9ec4;
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
-body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+html{font-size:15px}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.6;min-height:100vh;overflow-x:hidden}
 ::selection{background:var(--rust);color:var(--cream)}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bg3)}
-a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4)}
+::-webkit-scrollbar-thumb:hover{background:var(--leather-dim)}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
 button{font-family:var(--font-mono);cursor:pointer;border:none;transition:all .15s}
-code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:.1em .4em;border:1px solid var(--bg3)}
+code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:.1em .4em;border:1px solid var(--bg4)}
+textarea,input{font-family:var(--font-mono);background:var(--bg2);color:var(--cream);border:1px solid var(--bg4)}
+textarea:focus,input:focus{outline:none;border-color:var(--rust)}
 
-/* ── NAV ── */
-.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:240px 1fr 320px;grid-template-rows:52px 1fr;height:100vh}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--bg3);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:10}
+.sidebar{grid-row:2;background:var(--bg2);border-right:1px solid var(--bg3);overflow-y:auto;padding:16px 0}
+.main{grid-row:2;overflow-y:auto;padding:24px 28px}
+.panel{grid-row:2;background:var(--bg2);border-left:1px solid var(--bg3);overflow-y:auto;display:flex;flex-direction:column}
 
-/* ── AUTH GATE ── */
-#auth-gate{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);padding:2rem}
-.auth-box{text-align:center;max-width:360px}
-.auth-box h2{font-size:1.3rem;margin-bottom:.5rem}
-.auth-box p{font-size:.85rem;color:var(--cream-dim);margin-bottom:1.5rem;font-style:italic}
-.auth-box input{width:100%;padding:.7rem 1rem;font-size:.85rem;background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);font-family:var(--font-mono);margin-bottom:.8rem;text-align:center;letter-spacing:2px}
-.auth-box input:focus{outline:none;border-color:var(--rust)}
-.auth-box button{width:100%;padding:.7rem;background:var(--rust);color:var(--cream);font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
-.auth-box button:hover{background:var(--rust-light)}
-.auth-err{color:var(--red);font-family:var(--font-mono);font-size:.7rem;margin-top:.5rem;min-height:1.2em}
-
-/* ── SHELL ── */
-#ops-shell{display:none}
-.shell{display:grid;grid-template-columns:220px 1fr 300px;grid-template-rows:44px 1fr;height:calc(100vh - 64px)}
-.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--bg3);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-family:var(--font-mono);font-size:.65rem}
-.topbar-left{display:flex;align-items:center;gap:16px;color:var(--cream-muted);letter-spacing:1px;text-transform:uppercase}
-.agent-beacon{display:flex;align-items:center;gap:7px}
-.beacon-dot{width:6px;height:6px;border-radius:50%}
+/* ── TOPBAR ── */
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{flex-shrink:0}
+.brand-text{font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;color:var(--leather-light);text-transform:uppercase}
+.brand-sub{font-family:var(--font-mono);font-size:.55rem;letter-spacing:1px;color:var(--leather-dim);margin-left:8px}
+.agent-beacon{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border:1px solid var(--bg4)}
+.beacon-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .beacon-dot.idle{background:var(--leather-dim)}
-.beacon-dot.ready{background:var(--amber);animation:pulse 2s infinite}
+.beacon-dot.ready{background:var(--gold);animation:pulse 2s infinite}
 .beacon-dot.active{background:var(--green);animation:pulse .8s infinite}
+.beacon-label{font-family:var(--font-mono);font-size:.65rem;letter-spacing:1px;color:var(--cream-dim);text-transform:uppercase}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── SIDEBAR ── */
-.sidebar{grid-row:2;background:var(--bg2);border-right:1px solid var(--bg3);overflow-y:auto;padding:12px 0}
-.nav-section{padding:0 10px;margin-bottom:16px}
-.nav-label{font-family:var(--font-mono);font-size:.5rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;margin-bottom:6px;padding:0 8px}
-.nav-btn{display:flex;align-items:center;gap:8px;width:100%;padding:5px 8px;background:none;color:var(--cream-dim);font-size:.7rem;letter-spacing:.3px;text-align:left;margin-bottom:1px}
+.nav-section{padding:0 14px;margin-bottom:20px}
+.nav-label{font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;margin-bottom:8px;padding:0 8px}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;background:none;color:var(--cream-dim);font-size:.72rem;letter-spacing:.5px;border-radius:3px;text-align:left;margin-bottom:1px}
 .nav-btn:hover{background:var(--bg3);color:var(--cream)}
 .nav-btn.active{background:var(--bg3);color:var(--rust-light);border-left:2px solid var(--rust)}
-.nav-btn .ct{margin-left:auto;font-size:.55rem;padding:1px 5px;background:var(--bg3);color:var(--cream-muted);border-radius:2px}
-.nav-btn.active .ct{background:var(--rust);color:var(--cream)}
-.ch-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.nav-btn .badge{margin-left:auto;font-size:.6rem;padding:1px 6px;background:var(--bg4);color:var(--cream-muted);border-radius:2px}
+.nav-btn.active .badge{background:var(--rust);color:var(--cream)}
+.nav-icon{width:16px;text-align:center;font-size:.7rem;flex-shrink:0}
 
-/* ── MAIN ── */
-.main{grid-row:2;overflow-y:auto;padding:20px 24px}
-.vh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.vh h2{font-size:1.2rem}.vh h2 span{color:var(--rust-light)}
-.vh-actions{display:flex;gap:5px}
-.btn{padding:5px 12px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:1px;text-transform:uppercase}
-.btn-rust{background:var(--rust);color:var(--cream)}
+.channel-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── MAIN AREA ── */
+.view-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.view-title{font-family:var(--font-serif);font-size:1.4rem;color:var(--cream)}
+.view-title span{color:var(--rust-light)}
+.view-actions{display:flex;gap:6px}
+.btn{padding:6px 14px;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
+.btn-rust{background:var(--rust);color:var(--cream);border:1px solid var(--rust)}
 .btn-rust:hover{background:var(--rust-light)}
-.btn-ghost{background:none;color:var(--cream-dim);border:1px solid var(--bg3)}
+.btn-ghost{background:none;color:var(--cream-dim);border:1px solid var(--bg4)}
 .btn-ghost:hover{border-color:var(--cream-dim);color:var(--cream)}
 .btn-green{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
 .btn-green:hover{background:var(--green);color:#fff}
-.btn-amber{background:none;color:var(--amber);border:1px solid var(--amber)}
+.btn-amber{background:transparent;color:var(--gold);border:1px solid var(--gold)}
 
 /* ── STATS ── */
-.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:20px}
-.st{padding:10px 12px;background:var(--bg2);border:1px solid var(--bg3);text-align:center}
-.st-n{font-family:var(--font-mono);font-size:1.4rem;font-weight:700;line-height:1}
-.st-l{font-family:var(--font-mono);font-size:.45rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-top:3px}
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:24px}
+.stat-card{padding:14px 16px;background:var(--bg2);border:1px solid var(--bg3);text-align:center;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.stat-num{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;line-height:1}
+.stat-label{font-family:var(--font-mono);font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-top:4px}
 
-/* ── TASKS ── */
-.tl{display:flex;flex-direction:column;gap:3px}
-.tc{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 14px;background:var(--bg2);border:1px solid var(--bg3);cursor:pointer;transition:all .1s}
-.tc:hover{border-color:var(--leather-dim);background:var(--bg3)}
-.tc.sel{border-color:var(--rust);box-shadow:inset 3px 0 0 var(--rust)}
-.tc-ch{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;font-family:var(--font-mono)}
-.tc-info h4{font-family:var(--font-mono);font-size:.7rem;color:var(--cream);font-weight:500;margin-bottom:1px}
-.tc-meta{font-family:var(--font-mono);font-size:.5rem;color:var(--cream-muted)}
-.pill{font-family:var(--font-mono);font-size:.5rem;letter-spacing:1px;padding:2px 8px;text-transform:uppercase;border:1px solid;white-space:nowrap}
+/* ── TASK CARDS ── */
+.task-list{display:flex;flex-direction:column;gap:4px}
+.task-card{display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center;padding:12px 16px;background:var(--bg2);border:1px solid var(--bg3);cursor:pointer;transition:all .12s}
+.task-card:hover{border-color:var(--leather-dim);background:var(--bg3)}
+.task-card.selected{border-color:var(--rust);background:var(--bg3);box-shadow:inset 3px 0 0 var(--rust)}
+.task-channel{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;border-radius:3px;font-family:var(--font-mono)}
+.task-info h4{font-family:var(--font-mono);font-size:.75rem;color:var(--cream);font-weight:500;margin-bottom:2px}
+.task-meta{font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted);letter-spacing:.5px}
+.task-right{display:flex;align-items:center;gap:10px}
+.task-engagement{font-family:var(--font-mono);font-size:.55rem;color:var(--green);text-align:right}
+.status-pill{font-family:var(--font-mono);font-size:.55rem;letter-spacing:1px;padding:3px 10px;text-transform:uppercase;border:1px solid;white-space:nowrap}
+
+/* ── AGENT INSTRUCTIONS (machine-readable) ── */
+.agent-instructions{display:none}
 
 /* ── PANEL ── */
-.panel{grid-row:2;background:var(--bg2);border-left:1px solid var(--bg3);overflow-y:auto;display:flex;flex-direction:column}
-.panel-hd{padding:10px 14px;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;flex-shrink:0}
-.panel-bd{flex:1;overflow-y:auto;padding:14px}
-.panel-empty{padding:30px 16px;text-align:center;color:var(--cream-muted);font-style:italic;font-size:.8rem}
-.d-title{font-size:1rem;margin-bottom:3px}
-.d-meta{font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted);margin-bottom:14px}
-.d-label{font-family:var(--font-mono);font-size:.5rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;margin-bottom:5px}
-.d-content{background:var(--bg);border:1px solid var(--bg3);padding:10px 12px;font-family:var(--font-mono);font-size:.7rem;line-height:1.7;color:var(--cream-dim);white-space:pre-wrap;word-break:break-word;margin-bottom:14px}
-.d-content[contenteditable]:focus{outline:none;border-color:var(--rust);color:var(--cream)}
-.d-actions{display:flex;gap:5px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--bg3)}
+.panel-header{padding:14px 18px;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;flex-shrink:0}
+.panel-body{flex:1;overflow-y:auto;padding:16px 18px}
+.panel-empty{padding:40px 20px;text-align:center;color:var(--cream-muted);font-style:italic;font-size:.85rem}
+.detail-title{font-family:var(--font-serif);font-size:1.1rem;color:var(--cream);margin-bottom:4px}
+.detail-meta{font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-bottom:16px;letter-spacing:.5px}
+.detail-section{margin-bottom:16px}
+.detail-label{font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;margin-bottom:6px}
+.detail-content{background:var(--bg);border:1px solid var(--bg3);padding:12px 14px;font-size:.8rem;line-height:1.7;color:var(--cream-dim);white-space:pre-wrap;word-break:break-word}
+.detail-content.editable{cursor:text;min-height:120px}
+.detail-content.editable:focus{outline:none;border-color:var(--rust);color:var(--cream)}
+.detail-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--bg3)}
 
-/* ── TIMELINE ── */
-.tl-line{position:relative;padding-left:18px}
-.tl-line::before{content:'';position:absolute;left:5px;top:0;bottom:0;width:1px;background:var(--bg3)}
-.tl-item{position:relative;margin-bottom:12px;padding-left:16px;cursor:pointer}
-.tl-item::before{content:'';position:absolute;left:-15px;top:7px;width:7px;height:7px;border-radius:50%;border:2px solid var(--bg3);background:var(--bg)}
-.tl-item.done::before{background:var(--green);border-color:var(--green)}
-.tl-item.live::before{background:var(--amber);border-color:var(--amber);animation:pulse 1.5s infinite}
-.tl-day{font-family:var(--font-mono);font-size:.55rem;color:var(--leather-dim);letter-spacing:1px}
-.tl-title{font-size:.8rem}
-.tl-ch{font-family:var(--font-mono);font-size:.5rem;color:var(--cream-muted)}
+/* ── AGENT LOG ── */
+.log-entry{padding:8px 0;border-bottom:1px solid var(--bg3);display:grid;grid-template-columns:65px 1fr;gap:8px;font-size:.7rem}
+.log-time{font-family:var(--font-mono);color:var(--cream-muted);font-size:.6rem}
+.log-msg{color:var(--cream-dim)}
+.log-msg.success{color:var(--green)}
+.log-msg.warn{color:var(--gold)}
+.log-msg.error{color:var(--red)}
 
-/* ── PROMPTS ── */
-.pr-card{margin-bottom:10px;border:1px solid var(--bg3)}
-.pr-hd{padding:8px 14px;background:var(--bg3);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.pr-hd h4{font-family:var(--font-mono);font-size:.65rem;color:var(--rust-light)}
-.pr-copy{font-family:var(--font-mono);font-size:.5rem;padding:2px 8px;background:var(--bg2);color:var(--cream-dim);border:1px solid var(--bg3)}
-.pr-copy:hover{color:var(--cream);border-color:var(--cream-dim)}
-.pr-body{padding:0;max-height:0;overflow:hidden;transition:max-height .3s}
-.pr-card.open .pr-body{max-height:3000px;padding:12px 14px}
-.pr-body pre{font-family:var(--font-mono);font-size:.58rem;line-height:1.8;color:var(--leather-light);white-space:pre-wrap;margin:0}
+/* ── PROMPT CARDS ── */
+.prompt-card{margin-bottom:16px;border:1px solid var(--bg3)}
+.prompt-header{padding:10px 16px;background:var(--bg3);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.prompt-header h4{font-family:var(--font-mono);font-size:.7rem;color:var(--rust-light);letter-spacing:.5px}
+.prompt-copy-btn{font-size:.55rem;padding:3px 10px;background:var(--bg2);color:var(--cream-dim);border:1px solid var(--bg4)}
+.prompt-copy-btn:hover{color:var(--cream);border-color:var(--cream-dim)}
+.prompt-body{padding:14px 16px;background:var(--bg);font-family:var(--font-mono);font-size:.62rem;line-height:1.8;color:var(--leather-light);white-space:pre-wrap;max-height:0;overflow:hidden;transition:max-height .3s ease}
+.prompt-card.open .prompt-body{max-height:2000px}
 
-/* ── LOG ── */
-.log-row{padding:6px 0;border-bottom:1px solid var(--bg3);display:grid;grid-template-columns:60px 1fr;gap:6px;font-size:.65rem}
-.log-t{font-family:var(--font-mono);color:var(--cream-muted);font-size:.55rem}
-.log-m{color:var(--cream-dim)}.log-m.ok{color:var(--green)}.log-m.warn{color:var(--amber)}.log-m.err{color:var(--red)}
-
-/* ── AGENT INSTRUCTIONS (hidden, machine-readable) ── */
-.agent-data{display:none}
+/* ── SCHEDULE TIMELINE ── */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--bg4)}
+.timeline-item{position:relative;margin-bottom:14px;padding-left:20px}
+.timeline-item::before{content:'';position:absolute;left:-17px;top:8px;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg4);background:var(--bg)}
+.timeline-item.done::before{background:var(--green);border-color:var(--green)}
+.timeline-item.active::before{background:var(--gold);border-color:var(--gold);animation:pulse 1.5s infinite}
+.timeline-day{font-family:var(--font-mono);font-size:.6rem;color:var(--leather-dim);letter-spacing:1px;margin-bottom:2px}
+.timeline-title{font-size:.8rem;color:var(--cream)}
+.timeline-channel{font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted)}
 
 /* ── RESPONSIVE ── */
-@media(max-width:900px){.shell{grid-template-columns:1fr;grid-template-rows:44px auto}.sidebar,.panel{display:none}}
+@media(max-width:1100px){
+  .shell{grid-template-columns:200px 1fr 280px}
+}
+@media(max-width:800px){
+  .shell{grid-template-columns:1fr;grid-template-rows:52px auto}
+  .sidebar,.panel{display:none}
+}
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links">
-    <a href="/products/">Products</a>
-    <a href="/playground">Playground</a>
-    <a href="/cloud/">Cloud</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
-    <a href="/guide/">Guide</a>
-    <a href="/blog/">Blog</a>
-    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
-  </div>
-</nav>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  STOCKYARD MARKETING OPS — AGENT CONTROL PLANE             ║
+  ║                                                            ║
+  ║  This page serves as the home base for Claude in Chrome.   ║
+  ║  The agent reads task data from data-* attributes and      ║
+  ║  the #agent-instructions block to know what to execute.    ║
+  ║                                                            ║
+  ║  HUMAN: Review tasks, edit copy, approve/reject.           ║
+  ║  AGENT: Read approved tasks, navigate to platforms, post.  ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
 
-<!-- Auth Gate -->
-<div id="auth-gate">
-  <div class="auth-box">
-    <h2>Marketing Ops</h2>
-    <p>Internal dashboard &mdash; admin access only</p>
-    <input type="password" id="auth-input" placeholder="Admin token" autofocus>
-    <button onclick="tryAuth()">Enter</button>
-    <div class="auth-err" id="auth-err"></div>
+<!-- Machine-readable instructions for Claude in Chrome -->
+<div id="agent-instructions" class="agent-instructions" aria-hidden="true">
+  <div data-role="system-prompt">
+    You are the Stockyard Marketing Agent. This page is your operations dashboard at stockyard.dev/marketing.
+    
+    YOUR ROLE: Execute approved marketing tasks by navigating to social platforms and posting content.
+    
+    RULES:
+    1. ONLY execute tasks with data-status="approved" — never touch queued, draft, or review tasks.
+    2. For each approved task, read the data-channel, data-content, and data-platform-instructions.
+    3. Navigate to the target platform in a new tab.
+    4. Fill in the content exactly as specified.
+    5. ALWAYS PAUSE before the final submit/post action. Tell the user what you're about to post and ask for confirmation.
+    6. After posting, return to this page and update the task status to "posted."
+    7. Never modify copy without explicit user approval.
+    8. If you encounter CAPTCHAs, 2FA, or errors, stop and report to the user.
+    9. Take a screenshot after every successful post.
+    10. Process tasks in priority order: critical > high > medium > low.
+    
+    READING TASKS: Each .task-card element contains:
+      - data-task-id: unique identifier
+      - data-status: queued|draft|review|approved|posted|failed
+      - data-channel: twitter|linkedin|reddit|hn|blog|devto|github|seo
+      - data-priority: critical|high|medium|low
+      - data-scheduled: when to post (e.g. "Day 1")
+    
+    The full content for each task is in the detail panel when selected, or in the data-content attribute.
+    
+    When you arrive at this page, report: "I see [N] approved tasks ready for execution. Shall I begin?"
   </div>
 </div>
 
-<!-- Ops Shell (hidden until auth) -->
-<div id="ops-shell">
-  <!-- Machine-readable agent instructions -->
-  <div class="agent-data" id="agent-instructions" aria-hidden="true" data-role="system-prompt" data-instructions="You are the Stockyard Marketing Agent. This page is your operations dashboard at stockyard.dev/marketing/. ONLY execute tasks with data-status=approved. For each approved task read data-channel, data-content, and data-platform-instructions. Navigate to target platform, fill content exactly as specified, ALWAYS PAUSE before final submit and ask user to confirm. After posting return here. Never modify copy without approval. Process in priority order: critical, high, medium, low. When you arrive, report how many approved tasks you see and ask to begin."></div>
-
-  <div class="shell">
-    <div class="topbar">
-      <div class="topbar-left">
-        <span>Marketing Ops</span>
-        <span style="color:var(--bg3)">|</span>
-        <span id="task-count"></span>
-      </div>
-      <div class="agent-beacon">
-        <div class="beacon-dot idle" id="b-dot"></div>
-        <span id="b-label" style="color:var(--cream-muted)">Agent: Idle</span>
-      </div>
+<div class="shell" id="app">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" width="22" height="22" fill="none">
+        <rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/>
+        <rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/>
+        <rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/>
+        <rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/>
+      </svg>
+      <span class="brand-text">Marketing Ops</span>
+      <span class="brand-sub">stockyard.dev/marketing</span>
     </div>
+    <div class="agent-beacon" id="agent-beacon">
+      <div class="beacon-dot idle" id="beacon-dot"></div>
+      <span class="beacon-label" id="beacon-label">Agent: Idle</span>
+    </div>
+  </header>
 
-    <nav class="sidebar" id="sidebar"></nav>
-    <main class="main" id="main"></main>
-    <aside class="panel">
-      <div class="panel-hd">Task Detail</div>
-      <div class="panel-bd" id="panel"></div>
-    </aside>
-  </div>
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <!-- MAIN -->
+  <main class="main" id="main-content"></main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="panel" id="right-panel">
+    <div class="panel-header">Task Detail</div>
+    <div class="panel-body" id="panel-body">
+      <div class="panel-empty">Select a task to view details</div>
+    </div>
+  </aside>
 </div>
 
 <script>
-// ── AUTH ──
-function tryAuth(){
-  const v=document.getElementById('auth-input').value;
-  // Accept the token stored in localStorage admin-token, or set it now
-  // Default: "stockyard" (change this or use env-injected token)
-  const stored=localStorage.getItem('sy-mktg-token');
-  if(stored&&v===stored){unlock();return}
-  if(!stored&&v.length>=4){localStorage.setItem('sy-mktg-token',v);unlock();return}
-  if(stored&&v!==stored){document.getElementById('auth-err').textContent='Invalid token';return}
-  document.getElementById('auth-err').textContent='Set a token (4+ chars)';
-}
-document.getElementById('auth-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryAuth()});
-function unlock(){
-  document.getElementById('auth-gate').style.display='none';
-  document.getElementById('ops-shell').style.display='block';
-  boot();
-}
-// Auto-unlock if token exists and URL has ?auto
-if(localStorage.getItem('sy-mktg-token')&&location.search.includes('auto')){unlock()}
-
 // ── DATA ──
-const CH={
-  twitter:{n:"Twitter/X",i:"𝕏",c:"#1DA1F2",bg:"#1a2530"},
-  linkedin:{n:"LinkedIn",i:"in",c:"#0A66C2",bg:"#1a2030"},
-  reddit:{n:"Reddit",i:"⬡",c:"#FF4500",bg:"#2a1a10"},
-  hn:{n:"Hacker News",i:"Y",c:"#FF6600",bg:"#2a1e10"},
-  blog:{n:"Blog",i:"✎",c:"#D4A843",bg:"#2a2610"},
-  devto:{n:"Dev.to",i:"◈",c:"#aaa",bg:"#1a1a1a"},
-  github:{n:"GitHub",i:"⌥",c:"#8B949E",bg:"#1a1e22"},
-  seo:{n:"SEO",i:"◎",c:"#34A853",bg:"#1a2a1e"},
-};
-const ST={
-  queued:{l:"Queued",bg:"#2e261e",b:"#a0845c",t:"#c4a87a"},
-  draft:{l:"Draft",bg:"#1e2a1e",b:"#4a7a4a",t:"#7ab87a"},
-  review:{l:"Review",bg:"#2a2510",b:"#d4a843",t:"#d4a843"},
-  approved:{l:"Approved",bg:"#1e2e1e",b:"#4a9",t:"#4a9"},
-  posted:{l:"Posted",bg:"#1a2030",b:"#5a9ec4",t:"#5a9ec4"},
-  failed:{l:"Failed",bg:"#2e1e1e",b:"#c44",t:"#c44"},
+const CHANNELS = {
+  twitter:  { name:"Twitter/X",  icon:"𝕏", color:"#1DA1F2", bg:"#1a2530" },
+  linkedin: { name:"LinkedIn",   icon:"in", color:"#0A66C2", bg:"#1a2030" },
+  reddit:   { name:"Reddit",     icon:"⬡",  color:"#FF4500", bg:"#2a1a10" },
+  hn:       { name:"Hacker News",icon:"Y",  color:"#FF6600", bg:"#2a1e10" },
+  blog:     { name:"Blog",       icon:"✎",  color:"#D4A843", bg:"#2a2610" },
+  devto:    { name:"Dev.to",     icon:"◈",  color:"#aaa",    bg:"#1a1a1a" },
+  github:   { name:"GitHub",     icon:"⌥",  color:"#8B949E", bg:"#1a1e22" },
+  seo:      { name:"SEO",        icon:"◎",  color:"#34A853", bg:"#1a2a1e" },
 };
 
-const PI={
-twitter:`1. Navigate to twitter.com (logged in)
-2. Click compose button
-3. Type content EXACTLY as provided
-4. If thread: post first tweet, reply with each subsequent
+const STATUS_STYLES = {
+  queued:   { label:"Queued",       bg:"#2e261e", border:"#a0845c", text:"#c4a87a" },
+  draft:    { label:"Draft",        bg:"#1e2a1e", border:"#4a7a4a", text:"#7ab87a" },
+  review:   { label:"Needs Review", bg:"#2a2510", border:"#d4a843", text:"#d4a843" },
+  approved: { label:"Approved",     bg:"#1e2e1e", border:"#4a9",    text:"#4a9"    },
+  posted:   { label:"Posted",       bg:"#1a2030", border:"#5a9ec4", text:"#5a9ec4" },
+  failed:   { label:"Failed",       bg:"#2e1e1e", border:"#c44",    text:"#c44"    },
+};
+
+const PLATFORM_INSTRUCTIONS = {
+  twitter: `PLATFORM: Twitter/X (twitter.com)
+STEPS:
+1. Navigate to twitter.com — you should already be logged in
+2. Click the compose button (blue circle with feather/plus icon)
+3. Type the content EXACTLY as provided
+4. If this is a thread: post the first tweet, then reply to it with each subsequent tweet
 5. Attach image if specified
-6. PAUSE before clicking Post — ask user to confirm
-7. Screenshot posted tweet
-8. Return here, mark as posted`,
-linkedin:`1. Navigate to linkedin.com (logged in)
-2. Click "Start a post" (or "Write article" for long-form)
-3. Enter content exactly as provided
-4. Upload image if specified, add hashtags
-5. PAUSE before clicking Post — ask user to confirm
-6. Screenshot and return here`,
-reddit:`1. Navigate to specified subreddit
-2. Check sidebar rules for self-promotion — STOP if disallowed
-3. Click "Create Post", select Text
-4. Enter title and body exactly
-5. Select flair if required
-6. PAUSE before submitting — ask user to confirm
-7. Screenshot and return here`,
-hn:`1. Navigate to news.ycombinator.com
-2. Click "submit"
-3. Enter title and URL exactly
-4. PAUSE before submitting
-5. After submission, post prepared first comment immediately
-6. Screenshot and return here`,
-blog:`1. This is a blog task — content needs manual publishing
-2. Content is in markdown format
-3. Create the file or notify user for manual publish`,
-devto:`1. Navigate to dev.to (logged in)
+6. ⚠️ PAUSE before clicking "Post" — tell the user what you're about to post
+7. Only click Post after user confirms
+8. Screenshot the posted tweet
+9. Return here and mark task as posted`,
+
+  linkedin: `PLATFORM: LinkedIn (linkedin.com)
+STEPS:
+1. Navigate to linkedin.com — you should already be logged in
+2. Click "Start a post" at top of feed
+3. If this is an article, click "Write article" instead
+4. Enter the content EXACTLY as provided
+5. Upload image if specified
+6. Add hashtags from the content
+7. ⚠️ PAUSE before clicking "Post" — tell the user what you're about to post
+8. Only post after user confirms
+9. Screenshot and return here to mark as posted`,
+
+  reddit: `PLATFORM: Reddit (reddit.com)
+STEPS:
+1. Navigate to the specified subreddit
+2. Check sidebar rules for self-promotion policies — STOP if disallowed
+3. Click "Create Post"
+4. Select "Text" post type
+5. Enter title and body EXACTLY as provided
+6. Select appropriate flair if required
+7. ⚠️ PAUSE before submitting — tell the user what you're about to post
+8. Submit only after user confirms
+9. Screenshot and return here`,
+
+  hn: `PLATFORM: Hacker News (news.ycombinator.com)
+STEPS:
+1. Navigate to news.ycombinator.com
+2. Click "submit" in the top navigation
+3. Enter the title exactly as provided
+4. Enter URL: https://stockyard.dev
+5. ⚠️ PAUSE before submitting
+6. After submission, immediately post the prepared first comment
+7. Monitor for replies for the next few minutes
+8. Screenshot and return here`,
+
+  blog: `PLATFORM: stockyard.dev/blog (internal)
+STEPS:
+1. This content needs to be published to the Stockyard blog
+2. The content is provided in markdown format
+3. Create the blog post file and push to the repo, OR
+4. Notify the user that this is a blog task requiring manual publishing
+5. Provide the formatted content ready to paste`,
+
+  devto: `PLATFORM: Dev.to (dev.to)
+STEPS:
+1. Navigate to dev.to — you should be logged in
 2. Click "Create Post"
-3. Enter title, tags, content as provided
-4. Set canonical URL if cross-posting
-5. PAUSE in preview mode — ask user to confirm
-6. Screenshot and return here`,
-github:`1. Navigate to github.com/stockyard-dev/stockyard
-2. Execute the specified task (README, issue, etc.)
-3. PAUSE before committing — confirm with user
-4. Screenshot and return here`,
-seo:`1. Open Google in incognito
+3. Enter title, tags, and content as provided
+4. Set canonical URL to stockyard.dev/blog/[slug] if cross-posting
+5. Add cover image if specified
+6. ⚠️ PAUSE before publishing — preview first
+7. Publish only after user confirms
+8. Screenshot and return here`,
+
+  github: `PLATFORM: GitHub (github.com/stockyard-dev/stockyard)
+STEPS:
+1. Navigate to the Stockyard repository
+2. Execute the specified GitHub task (README update, issue creation, etc.)
+3. ⚠️ PAUSE before committing/submitting
+4. Confirm with user
+5. Screenshot and return here`,
+
+  seo: `PLATFORM: Google Search + various directories
+STEPS:
+1. Open Google in incognito mode
 2. Search each target keyword
-3. Note Stockyard position (page + rank)
-4. Compile report — no posting required
-5. Report findings to user`,
+3. Note Stockyard's position in results (page and rank)
+4. Compile report: keyword, position, title shown, snippet
+5. Compare to previous week's data if available
+6. Report findings back to user — no posting required`,
 };
 
-const TASKS_DEFAULT=[
-{id:"t1",ch:"twitter",s:"review",p:"critical",d:"Day 1",t:"Launch Thread (5 tweets)",
-c:`TWEET 1 (pin this):
+// Default tasks
+const DEFAULT_TASKS = [
+  { id:"t1", channel:"twitter", status:"review", priority:"critical", scheduled:"Day 1",
+    title:"Launch Thread (5 tweets)",
+    content:`TWEET 1 (pin this):
 Introducing Stockyard — six LLM infrastructure apps in one Go binary.
 
 Proxy. Observe. Trust. Studio. Forge. Exchange.
@@ -299,208 +356,698 @@ Zero dependencies. curl -sSL stockyard.dev/install | sh
 You're running in 30 seconds. 🧵
 
 TWEET 2:
-The problem: you shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, and audit trails. That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.
+The problem: you shipped an app with LLM calls.
+
+Now you need cost caps, caching, safety filters, routing, observability, prompt management, and audit trails.
+
+That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.
 
 TWEET 3:
-Stockyard replaces all of them. One binary. 58 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more. Just change your base URL.
+Stockyard replaces all of them.
+
+One binary. 58 middleware modules. 16 LLM providers.
+
+Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more.
+
+Just change your base URL.
 
 TWEET 4:
-Try it live — no signup needed. Paste your API key in our playground and route your first request through 58 middleware modules: stockyard.dev/playground
+Try it live — no signup needed.
+
+Paste your API key in our playground and route your first request through 58 middleware modules:
+
+stockyard.dev/playground
 
 TWEET 5:
-Free forever self-hosted. Pro $9.99/mo. Cloud (fully managed) $29.99/mo. Every tier gets all 6 apps, all 58 modules, all 16 providers. stockyard.dev`},
-{id:"t2",ch:"hn",s:"review",p:"critical",d:"Day 1",t:"Show HN Submission",
-c:`TITLE: Show HN: Stockyard – Six LLM apps, one Go binary, zero dependencies
+Free forever self-hosted.
+Pro $9.99/mo.
+Cloud (fully managed) $29.99/mo.
+
+Every tier gets all 6 apps, all 58 modules, all 16 providers.
+
+stockyard.dev` },
+
+  { id:"t2", channel:"hn", status:"review", priority:"critical", scheduled:"Day 1",
+    title:"Show HN Submission",
+    content:`TITLE: Show HN: Stockyard – Six LLM apps, one Go binary, zero dependencies
 
 URL: https://stockyard.dev
 
-FIRST COMMENT:
+FIRST COMMENT (post immediately after submission):
 Hey HN, I built Stockyard because I was tired of stitching together separate tools for proxy routing, observability, cost tracking, and compliance every time I shipped an LLM-powered app.
 
-Stockyard is one Go binary with 6 integrated apps: Proxy (58 middleware modules, 16 providers), Observe (traces, costs, anomalies), Trust (audit ledger, policies), Studio (prompt management), Forge (workflow DAGs), Exchange (config marketplace).
+Stockyard is one Go binary that gives you 6 integrated apps:
+• Proxy — 58 middleware modules, 16 providers
+• Observe — traces, costs, anomaly detection
+• Trust — immutable audit ledger, policies
+• Studio — prompt management, experiments
+• Forge — workflow DAGs, tool registry
+• Exchange — config marketplace
 
-Runs on SQLite — no external databases. Try it live: stockyard.dev/playground. Self-hosted is free forever. Happy to answer architecture questions.`},
-{id:"t3",ch:"blog",s:"draft",p:"critical",d:"Day 1",t:"Why We Built Stockyard",c:"Long-form launch post (~2000 words). The pain of 134+ fragmented middleware tools, and why one binary changes everything. Include architecture diagram and real screenshots."},
-{id:"t4",ch:"reddit",s:"queued",p:"high",d:"Day 2",t:"r/golang + r/LocalLLaMA + r/selfhosted",
-c:`SUBREDDIT: r/golang
-TITLE: Built a complete LLM infrastructure platform in Go — single binary, 58 middleware modules, zero deps
-BODY: Pure Go, ~15k LOC, SQLite, 16 provider adapters. Would love architectural feedback. stockyard.dev
+The whole thing runs on SQLite — no external databases needed.
+
+Try it live: stockyard.dev/playground (no signup)
+Self-hosted is free forever.
+
+Happy to answer any questions about the architecture (it's all Go, ~15k LOC, single binary).` },
+
+  { id:"t3", channel:"blog", status:"draft", priority:"critical", scheduled:"Day 1",
+    title:"Why We Built Stockyard",
+    content:`# Why We Built Stockyard — And Why Your LLM Stack Doesn't Need 12 Tools
+
+You shipped an app with LLM calls. Congratulations. Now the real work begins.
+
+You need cost caps so a prompt injection doesn't drain your account overnight. You need caching because identical requests shouldn't cost you twice. You need safety filters, routing between providers, observability, prompt versioning, audit trails for compliance, and some way to share configs across environments.
+
+The ecosystem's answer? 134+ individual tools, each solving one piece of the puzzle. Each with its own database requirements, deployment story, and failure modes.
+
+We built Stockyard because that's insane.
+
+## One Binary. Six Apps.
+
+Stockyard ships as a single Go binary with zero external dependencies. It uses SQLite internally — no Redis, no Postgres, no Docker compose files with 8 services.
+
+curl -sSL stockyard.dev/install | sh and you have a full platform...
+
+[CONTINUE: ~2000 words covering the 6 apps, architecture decisions, why Go + SQLite, and the vision]` },
+
+  { id:"t4", channel:"reddit", status:"queued", priority:"high", scheduled:"Day 2",
+    title:"r/golang + r/LocalLLaMA + r/selfhosted",
+    content:`SUBREDDIT: r/golang
+TITLE: Show r/golang: Built a complete LLM infrastructure platform in Go — single binary, 58 middleware modules, zero dependencies
+
+BODY:
+Been working on Stockyard for a while — it's a single Go binary that gives you 6 integrated LLM infrastructure apps: proxy routing, cost observability, audit logging, prompt management, workflow orchestration, and a config marketplace.
+
+Some technical highlights:
+- Pure Go, ~15k LOC, single binary output
+- SQLite for all persistence (no external DBs)
+- 58 middleware modules in the proxy chain
+- 16 LLM provider adapters (OpenAI, Anthropic, Gemini, Groq, etc.)
+- Hash-chained audit ledger in the Trust app
+- Go 1.22 ServeMux for routing
+
+Would love architectural feedback from this community. The proxy engine is the most interesting piece if you want to dig in.
+
+stockyard.dev | github.com/stockyard-dev/stockyard
 
 ---
+
 SUBREDDIT: r/LocalLLaMA
-TITLE: Open-source LLM proxy with 58 middleware modules — works with Ollama too
-BODY: Single binary, zero deps. Cost tracking, caching, rate limiting for local models. Free forever.
+TITLE: Built an open-source LLM proxy with 58 middleware modules — works with local models via Ollama too
+
+BODY: Stockyard is a self-hosted LLM infrastructure platform. Single binary, zero deps. Supports 16 providers including Ollama for local models. Get cost tracking, caching, rate limiting, and safety filters for your local LLM setup. Free forever. stockyard.dev
 
 ---
+
 SUBREDDIT: r/selfhosted
-TITLE: Self-hosted LLM infrastructure — replaces 6+ tools with one Go binary
-BODY: curl -sSL stockyard.dev/install | sh. SQLite. Zero deps. Free forever.`},
-{id:"t5",ch:"linkedin",s:"queued",p:"high",d:"Day 3",t:"LLM Middleware Sprawl Article",
-c:`Your LLM stack doesn't need 12 tools.
+TITLE: Self-hosted LLM infrastructure platform — replaces 6+ tools with one Go binary
 
-I've been building Stockyard — a complete LLM infrastructure platform that ships as a single Go binary with zero external dependencies. No Redis. No Postgres. No Docker compose files.
+BODY: One Go binary. SQLite. Zero external dependencies. Gives you LLM proxy routing, cost tracking, audit logs, prompt management, workflow engine, and a config marketplace. curl -sSL stockyard.dev/install | sh. Free forever for self-hosted. Would love feedback.` },
 
-curl | sh and you have: proxy routing (16 providers), cost tracking, audit logging, prompt management, workflow orchestration, and a config marketplace.
+  { id:"t5", channel:"linkedin", status:"queued", priority:"high", scheduled:"Day 3",
+    title:"LLM Middleware Sprawl Article",
+    content:`Your LLM stack doesn't need 12 tools.
 
-Replaces 134+ middleware tools. Try it: stockyard.dev/playground
+I've been building Stockyard — a complete LLM infrastructure platform that ships as a single Go binary with zero external dependencies.
 
-#DevTools #LLM #GoLang #AI #Infrastructure #OpenSource`},
-{id:"t6",ch:"blog",s:"queued",p:"high",d:"Day 5",t:"Getting Started in 5 Minutes",c:"Tutorial: install → configure → first proxied request → see it in Observe. ~1200 words with code blocks."},
-{id:"t7",ch:"twitter",s:"queued",p:"medium",d:"Day 7",t:"Module Spotlight Thread",c:"Spotlight 10 of the 58 modules: tenantwall, costcap, retrywright, observe hooks, contentguard, cachebolt, keyrotator, promptlog, loadbalance, modelpicker."},
-{id:"t8",ch:"blog",s:"queued",p:"high",d:"Day 10",t:"Stockyard vs LiteLLM vs Portkey",c:"SEO comparison post ~2500 words. Honest pros/cons. Target: 'llm proxy comparison', 'litellm alternative'."},
-{id:"t9",ch:"seo",s:"queued",p:"medium",d:"Day 10",t:"Directory Submissions (10 sites)",c:"Submit to: awesome-go, awesome-llm-tools, Product Hunt, AlternativeTo, Slant, LibHunt, StackShare, Console.dev, Free for Dev, OpenAlternative."},
-{id:"t10",ch:"twitter",s:"queued",p:"medium",d:"Day 14",t:"Week 2 Metrics Update",c:"Transparent metrics thread: GitHub stars, installs, cloud signups, playground sessions. What worked, what didn't."},
-{id:"t11",ch:"blog",s:"queued",p:"high",d:"Day 15",t:"58 Modules Explained",c:"Reference page: one-liner for each middleware module. SEO target: 'llm proxy middleware'."},
-{id:"t12",ch:"devto",s:"queued",p:"low",d:"Day 16",t:"Cross-post: Getting Started",c:"Republish getting started guide on Dev.to. Set canonical to stockyard.dev/blog/getting-started."},
-{id:"t13",ch:"blog",s:"queued",p:"high",d:"Day 20",t:"Case Study: Budget Wall Saves $5K",c:"Based on real stress test data. Tenantwall caught budget at $5. Show Observe traces, 429→budget exceeded flow."},
-{id:"t14",ch:"twitter",s:"queued",p:"medium",d:"Day 22",t:"Observe Demo Clip",c:"30-second screen recording of Observe with live cost/latency data. 'See everything. Miss nothing.'"},
-{id:"t15",ch:"blog",s:"queued",p:"high",d:"Day 25",t:"Stockyard + Vercel AI SDK",c:"Integration guide ~1500 words. SEO: 'vercel ai sdk proxy', 'vercel ai sdk cost tracking'."},
-{id:"t16",ch:"twitter",s:"queued",p:"high",d:"Day 30",t:"30-Day Recap Thread",c:"Full transparency: stars, installs, cloud users, MRR, biggest wins, biggest misses, next 30 days."},
+No Redis. No Postgres. No Docker compose files. Just curl | sh and you have:
+
+→ Proxy routing across 16 providers
+→ Real-time cost tracking and observability
+→ Immutable audit logging for compliance
+→ Prompt management and versioning
+→ Workflow orchestration (DAG engine)
+→ A config marketplace
+
+It replaces the 134+ middleware tools that teams currently cobble together.
+
+Try the live playground (no signup): stockyard.dev/playground
+
+Self-hosted is free forever.
+
+#DevTools #LLM #GoLang #AI #Infrastructure #OpenSource` },
+
+  { id:"t6", channel:"blog", status:"queued", priority:"high", scheduled:"Day 5",
+    title:"Getting Started in 5 Minutes",
+    content:`# Getting Started with Stockyard in 5 Minutes
+
+[Tutorial: install → configure → first proxied request → see it in Observe]
+
+Estimated length: 1200 words with code blocks and screenshots.
+Include: install command, config file, curl test, playground walkthrough.` },
+
+  { id:"t7", channel:"twitter", status:"queued", priority:"medium", scheduled:"Day 7",
+    title:"Module Spotlight Thread",
+    content:`Stockyard has 58 middleware modules.
+
+Here are 10 that'll save you from writing custom code:
+
+🔒 tenantwall — per-tenant budget enforcement
+💰 costcap — hard spend limits per request/day/month
+🔄 retrywright — automatic retries with exponential backoff
+📊 observe hooks — every request traced with zero config
+🛡️ contentguard — input/output safety filters
+⚡ cachebolt — semantic response caching
+🔑 keyrotator — automatic API key rotation
+📝 promptlog — immutable prompt audit trail
+🌐 loadbalance — weighted provider routing
+🎯 modelpicker — automatic model selection by cost/latency
+
+All 58 ship in the binary. Zero configuration to activate.
+
+stockyard.dev/docs` },
+
+  { id:"t8", channel:"blog", status:"queued", priority:"high", scheduled:"Day 10",
+    title:"Stockyard vs LiteLLM vs Portkey",
+    content:`# Stockyard vs LiteLLM vs Portkey: Honest Comparison
+
+[SEO-targeted comparison. ~2500 words. Honest pros/cons for each. Target keywords: "llm proxy comparison", "litellm alternative", "portkey alternative"]` },
+
+  { id:"t9", channel:"seo", status:"queued", priority:"medium", scheduled:"Day 10",
+    title:"Directory Submissions (10 sites)",
+    content:`Submit Stockyard to these directories:
+
+1. awesome-go (GitHub PR)
+2. awesome-llm-tools (GitHub PR)  
+3. Product Hunt (upcoming page)
+4. AlternativeTo (as alternative to LiteLLM, Helicone, Portkey)
+5. Slant.co
+6. LibHunt
+7. StackShare
+8. Console.dev (submit for review)
+9. Free for Dev (GitHub PR)
+10. OpenAlternative.co
+
+For each: submit with consistent description, screenshot, and category tags.` },
+
+  { id:"t10", channel:"twitter", status:"queued", priority:"medium", scheduled:"Day 14",
+    title:"Week 2 Metrics Update",
+    content:`Week 2 of Stockyard, fully transparent:
+
+⭐ [X] GitHub stars
+📦 [X] self-hosted installs
+☁️ [X] cloud signups
+🎮 [X] playground sessions
+💰 $[X] proxied through the platform
+
+What worked: [fill in]
+What didn't: [fill in]
+What's next: [fill in]
+
+Numbers don't lie. We're just getting started.
+
+stockyard.dev` },
+
+  { id:"t11", channel:"blog", status:"queued", priority:"high", scheduled:"Day 15",
+    title:"58 Modules Explained",
+    content:`# Every Stockyard Module, Explained
+
+[Reference page: one-liner for each of the 58 middleware modules with use case and category. SEO target: "llm proxy middleware", "llm middleware modules"]` },
+
+  { id:"t12", channel:"devto", status:"queued", priority:"low", scheduled:"Day 16",
+    title:"Cross-post: Getting Started",
+    content:`Cross-post the "Getting Started in 5 Minutes" blog post to Dev.to.
+
+Set canonical URL to: https://stockyard.dev/blog/getting-started
+Tags: go, opensource, ai, devtools` },
+
+  { id:"t13", channel:"blog", status:"queued", priority:"high", scheduled:"Day 20",
+    title:"Case Study: Managing LLM Spend",
+    content:`# How Stockyard's Budget Wall Saved $5,000 in Runaway LLM Costs
+
+[Case study based on real stress test data. The tenantwall module caught the budget limit at exactly $5. Show the Observe traces, the 429 → budget exceeded flow, and how it prevents surprise bills.]
+
+Include the actual Observe screenshot from the stress test.` },
+
+  { id:"t14", channel:"twitter", status:"queued", priority:"medium", scheduled:"Day 22",
+    title:"Observe Demo Video Clip",
+    content:`See every LLM request. Miss nothing.
+
+Stockyard Observe traces every request through your proxy automatically:
+
+→ Cost per request
+→ Latency by provider
+→ Token usage
+→ Error rates
+→ Budget enforcement
+
+No Datadog. No Grafana. No config files.
+
+It's built into the binary.
+
+[Attach: 30-second screen recording of Observe page with live data]
+
+stockyard.dev/observe` },
+
+  { id:"t15", channel:"blog", status:"queued", priority:"high", scheduled:"Day 25",
+    title:"Stockyard + Vercel AI SDK Guide",
+    content:`# Using Stockyard with Vercel AI SDK
+
+[Integration guide: how to point Vercel AI SDK at Stockyard proxy. ~1500 words with code examples. SEO target: "vercel ai sdk proxy", "vercel ai sdk cost tracking"]` },
+
+  { id:"t16", channel:"twitter", status:"queued", priority:"high", scheduled:"Day 30",
+    title:"30-Day Recap Thread",
+    content:`30 days of Stockyard. Here's everything:
+
+📊 THE NUMBERS:
+⭐ [X] GitHub stars (started at 0)
+📦 [X] total installs
+☁️ [X] cloud users
+💰 $[X] proxied through the platform
+📝 [X] blog posts published
+🐛 [X] bugs fixed
+
+🏆 BIGGEST WINS:
+[fill in top 3]
+
+😬 BIGGEST MISSES:
+[fill in top 2]
+
+🔮 NEXT 30 DAYS:
+[fill in roadmap highlights]
+
+Building in public is terrifying and addictive.
+
+Thank you to everyone who tried it, broke it, or told us what sucked. We're just getting started.
+
+stockyard.dev` },
 ];
 
-let S={tasks:[],view:"dashboard",filt:"all",cfilt:"all",sel:null,log:[{time:ts(),m:"Ops initialized",t:"ok"}]};
-function ts(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+// ── STATE ──
+let state = {
+  tasks: [],
+  view: "dashboard",
+  filter: "all",
+  channelFilter: "all",
+  selectedId: null,
+  agentStatus: "idle",
+  log: [{ time: now(), msg: "Marketing Ops initialized", type: "info" }],
+};
 
-function load(){
-  const s=localStorage.getItem('sy-mktg');
-  if(s){try{const p=JSON.parse(s);S.tasks=p.tasks||TASKS_DEFAULT;S.log=p.log||S.log}catch(e){S.tasks=TASKS_DEFAULT}}
-  else S.tasks=JSON.parse(JSON.stringify(TASKS_DEFAULT));
+function now() { return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+
+// Load from localStorage or use defaults
+function loadState() {
+  const saved = localStorage.getItem("stockyard-mktg");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      state.tasks = parsed.tasks || DEFAULT_TASKS;
+      state.log = parsed.log || state.log;
+    } catch(e) { state.tasks = DEFAULT_TASKS; }
+  } else {
+    state.tasks = DEFAULT_TASKS;
+  }
 }
-function save(){localStorage.setItem('sy-mktg',JSON.stringify({tasks:S.tasks,log:S.log}))}
-function log(m,t="ok"){S.log.unshift({time:ts(),m,t});if(S.log.length>80)S.log.length=80;save()}
-function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 
-function boot(){load();render()}
-function render(){rSidebar();rMain();rPanel();document.getElementById('task-count').textContent=S.tasks.length+' tasks'}
+function saveState() {
+  localStorage.setItem("stockyard-mktg", JSON.stringify({ tasks: state.tasks, log: state.log }));
+}
 
-function rSidebar(){
-  const cnt={};Object.keys(ST).forEach(k=>cnt[k]=S.tasks.filter(t=>t.s===k).length);
-  const cc={};Object.keys(CH).forEach(k=>cc[k]=S.tasks.filter(t=>t.ch===k).length);
-  document.getElementById('sidebar').innerHTML=`
-    <div class="nav-section"><div class="nav-label">Views</div>
-    ${['dashboard','schedule','prompts','log'].map(v=>`<button class="nav-btn ${S.view===v?'active':''}" onclick="sv('${v}')"><span style="width:14px;text-align:center;font-size:.6rem">${{dashboard:'◫',schedule:'◷',prompts:'⌘',log:'◉'}[v]}</span>${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}
+function addLog(msg, type="info") {
+  state.log.unshift({ time: now(), msg, type });
+  if (state.log.length > 100) state.log.length = 100;
+  saveState();
+}
+
+// ── RENDER ──
+function render() {
+  renderSidebar();
+  renderMain();
+  renderPanel();
+}
+
+function renderSidebar() {
+  const counts = { all: state.tasks.length };
+  Object.keys(STATUS_STYLES).forEach(s => counts[s] = state.tasks.filter(t=>t.status===s).length);
+  const chCounts = {};
+  Object.keys(CHANNELS).forEach(c => chCounts[c] = state.tasks.filter(t=>t.channel===c).length);
+
+  document.getElementById("sidebar").innerHTML = `
+    <div class="nav-section">
+      <div class="nav-label">Views</div>
+      ${["dashboard","schedule","prompts","log"].map(v => `
+        <button class="nav-btn ${state.view===v?'active':''}" onclick="setView('${v}')">
+          <span class="nav-icon">${{dashboard:'◫',schedule:'◷',prompts:'⌘',log:'◉'}[v]}</span>
+          ${v.charAt(0).toUpperCase()+v.slice(1)}
+        </button>
+      `).join("")}
     </div>
-    <div class="nav-section"><div class="nav-label">Status</div>
-    <button class="nav-btn ${S.filt==='all'?'active':''}" onclick="sf('all')">All<span class="ct">${S.tasks.length}</span></button>
-    ${Object.entries(ST).map(([k,v])=>`<button class="nav-btn ${S.filt===k?'active':''}" onclick="sf('${k}')"><span style="color:${v.t};font-size:.5rem">●</span>${v.l}<span class="ct">${cnt[k]||0}</span></button>`).join('')}
+    <div class="nav-section">
+      <div class="nav-label">Status</div>
+      <button class="nav-btn ${state.filter==='all'?'active':''}" onclick="setFilter('all')">
+        <span class="nav-icon">◻</span>All<span class="badge">${counts.all}</span>
+      </button>
+      ${Object.entries(STATUS_STYLES).map(([k,v]) => `
+        <button class="nav-btn ${state.filter===k?'active':''}" onclick="setFilter('${k}')">
+          <span class="nav-icon" style="color:${v.text}">●</span>${v.label}<span class="badge">${counts[k]||0}</span>
+        </button>
+      `).join("")}
     </div>
-    <div class="nav-section"><div class="nav-label">Channels</div>
-    <button class="nav-btn ${S.cfilt==='all'?'active':''}" onclick="scf('all')">All</button>
-    ${Object.entries(CH).map(([k,ch])=>`<button class="nav-btn ${S.cfilt===k?'active':''}" onclick="scf('${k}')"><span class="ch-dot" style="background:${ch.c}"></span>${ch.n}<span class="ct">${cc[k]||0}</span></button>`).join('')}
-    </div>`;
-}
-
-function rMain(){
-  const el=document.getElementById('main');
-  if(S.view==='dashboard')rDash(el);
-  else if(S.view==='schedule')rSched(el);
-  else if(S.view==='prompts')rPrompts(el);
-  else if(S.view==='log')rLog(el);
-}
-
-function rDash(el){
-  const ts=S.tasks.filter(t=>(S.filt==='all'||t.s===S.filt)&&(S.cfilt==='all'||t.ch===S.cfilt));
-  const cnt={};Object.keys(ST).forEach(k=>cnt[k]=S.tasks.filter(t=>t.s===k).length);
-  el.innerHTML=`
-    <div class="vh"><h2>Task <span>Queue</span></h2><div class="vh-actions">
-    ${cnt.review?`<button class="btn btn-amber" onclick="approveAll()">Approve All (${cnt.review})</button>`:''}
-    ${cnt.approved?`<button class="btn btn-green" onclick="runAgent()">Run Agent (${cnt.approved})</button>`:''}
-    <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
-    </div></div>
-    <div class="stats">${[
-      {n:cnt.queued||0,l:"Queued",c:"var(--leather-light)"},
-      {n:cnt.draft||0,l:"Drafts",c:"#7ab87a"},
-      {n:cnt.review||0,l:"Review",c:"var(--amber)"},
-      {n:cnt.approved||0,l:"Approved",c:"var(--green)"},
-      {n:cnt.posted||0,l:"Posted",c:"var(--blue)"},
-      {n:S.tasks.length,l:"Total",c:"var(--cream)"},
-    ].map(s=>`<div class="st"><div class="st-n" style="color:${s.c}">${s.n}</div><div class="st-l">${s.l}</div></div>`).join('')}</div>
-    <div class="tl">${ts.map(t=>{
-      const ch=CH[t.ch],st=ST[t.s];
-      return`<div class="tc ${S.sel===t.id?'sel':''}"
-        data-task-id="${t.id}" data-status="${t.s}" data-channel="${t.ch}" data-priority="${t.p}" data-scheduled="${t.d}"
-        data-content="${encodeURIComponent(t.c)}" data-platform-instructions="${encodeURIComponent(PI[t.ch]||'')}"
-        onclick="sel('${t.id}')">
-        <div class="tc-ch" style="background:${ch.bg};color:${ch.c};border:1px solid ${ch.c}30">${ch.i}</div>
-        <div class="tc-info"><h4>${esc(t.t)}</h4><div class="tc-meta">${ch.n} · ${t.d} · ${t.p}</div></div>
-        <div class="pill" style="background:${st.bg};border-color:${st.b};color:${st.t}">${st.l}</div>
-      </div>`;
-    }).join('')}</div>`;
-}
-
-function rSched(el){
-  const sorted=[...S.tasks].sort((a,b)=>(parseInt(a.d.replace(/\D/g,''))||99)-(parseInt(b.d.replace(/\D/g,''))||99));
-  el.innerHTML=`<div class="vh"><h2>30-Day <span>Schedule</span></h2></div>
-    <div class="tl-line">${sorted.map(t=>{
-      const ch=CH[t.ch],cls=t.s==='posted'?'done':t.s==='approved'?'live':'';
-      return`<div class="tl-item ${cls}" onclick="sel('${t.id}');sv('dashboard')">
-        <div class="tl-day">${t.d}</div><div class="tl-title">${esc(t.t)}</div>
-        <div class="tl-ch" style="color:${ch.c}">${ch.i} ${ch.n} · ${ST[t.s].l}</div></div>`;
-    }).join('')}</div>`;
-}
-
-function rPrompts(el){
-  el.innerHTML=`<div class="vh"><h2>Agent <span>Prompts</span></h2></div>
-    <div style="padding:14px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:16px;font-size:.78rem;line-height:1.8;color:var(--cream-dim)">
-    <strong style="color:var(--cream)">Chrome Agent workflow:</strong><br>
-    1. Approve tasks in Dashboard<br>
-    2. Open Claude in Chrome<br>
-    3. Say: <code>Navigate to stockyard.dev/marketing/ and execute approved tasks</code><br>
-    4. Agent reads page → finds approved tasks → begins execution<br>
-    5. Pauses before every post for your confirmation<br><br>
-    Or copy a platform-specific prompt below.
+    <div class="nav-section">
+      <div class="nav-label">Channels</div>
+      <button class="nav-btn ${state.channelFilter==='all'?'active':''}" onclick="setChannelFilter('all')">
+        <span class="nav-icon">◻</span>All channels
+      </button>
+      ${Object.entries(CHANNELS).map(([k,ch]) => `
+        <button class="nav-btn ${state.channelFilter===k?'active':''}" onclick="setChannelFilter('${k}')">
+          <span class="channel-dot" style="background:${ch.color}"></span>${ch.name}<span class="badge">${chCounts[k]||0}</span>
+        </button>
+      `).join("")}
     </div>
-    <div class="pr-card" id="pr-master"><div class="pr-hd" onclick="tp('master')"><h4>⌘ Master Agent (reads page automatically)</h4><button class="pr-copy" onclick="event.stopPropagation();cp('master')">Copy</button></div>
-    <div class="pr-body"><pre>Navigate to stockyard.dev/marketing/?auto and execute approved marketing tasks.
-
-You are the Stockyard Marketing Agent. Read elements with class "tc" that have data-status="approved". For each: decode data-content and data-platform-instructions (URL-encoded), open the target platform, follow instructions, PAUSE before posting for confirmation. Process in priority order: critical > high > medium > low. Report how many approved tasks you see before starting.</pre></div></div>
-    ${Object.entries(PI).map(([k,v])=>{const ch=CH[k];return`
-    <div class="pr-card" id="pr-${k}"><div class="pr-hd" onclick="tp('${k}')"><h4><span style="color:${ch.c}">${ch.i}</span> ${ch.n} Agent</h4><button class="pr-copy" onclick="event.stopPropagation();cp('${k}')">Copy</button></div>
-    <div class="pr-body"><pre>${esc(v)}</pre></div></div>`;}).join('')}`;
+  `;
 }
 
-function rLog(el){
-  el.innerHTML=`<div class="vh"><h2>Agent <span>Log</span></h2><div class="vh-actions"><button class="btn btn-ghost" onclick="S.log=[{time:ts(),m:'Log cleared',t:'ok'}];save();render()">Clear</button></div></div>
-    <div style="background:var(--bg2);border:1px solid var(--bg3);padding:2px 14px">
-    ${S.log.map(l=>`<div class="log-row"><span class="log-t">${l.time}</span><span class="log-m ${l.t}">${esc(l.m)}</span></div>`).join('')}</div>`;
+function renderMain() {
+  const el = document.getElementById("main-content");
+  if (state.view === "dashboard") renderDashboard(el);
+  else if (state.view === "schedule") renderSchedule(el);
+  else if (state.view === "prompts") renderPrompts(el);
+  else if (state.view === "log") renderLog(el);
 }
 
-function rPanel(){
-  const el=document.getElementById('panel');
-  const t=S.tasks.find(x=>x.id===S.sel);
-  if(!t){el.innerHTML='<div class="panel-empty">Select a task to view details and edit content.<br><br><span style="font-size:.7rem;color:var(--cream-muted)">The Chrome agent reads data-* attributes from task cards. Approve a task to make it executable.</span></div>';return}
-  const ch=CH[t.ch],st=ST[t.s];
-  el.innerHTML=`
-    <div class="d-title">${esc(t.t)}</div>
-    <div class="d-meta"><span style="color:${ch.c}">${ch.i} ${ch.n}</span> · ${t.d} · ${t.p}</div>
-    <div class="pill" style="background:${st.bg};border-color:${st.b};color:${st.t};display:inline-block;margin-bottom:14px">${st.l}</div>
-    <div class="d-label">Content (editable)</div>
-    <div class="d-content" contenteditable="true" id="ed" onblur="uc('${t.id}')">${esc(t.c)}</div>
-    <div class="d-label">Agent Instructions</div>
-    <div class="d-content" style="font-size:.6rem;color:var(--leather-light)">${esc(PI[t.ch]||'N/A')}</div>
-    <div class="d-actions">
-    ${t.s!=='posted'?`
-      <button class="btn btn-green" onclick="ss('${t.id}','approved')">Approve</button>
-      <button class="btn btn-amber" onclick="ss('${t.id}','review')">Review</button>
-      <button class="btn btn-ghost" onclick="ss('${t.id}','queued')">Queue</button>
-      <button class="btn btn-ghost" onclick="ss('${t.id}','draft')">Draft</button>
-    `:'<span style="font-size:.65rem;color:var(--blue)">✓ Posted</span>'}
-    <button class="btn btn-ghost" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="ss('${t.id}','failed')">Failed</button>
-    </div>`;
+function renderDashboard(el) {
+  const tasks = state.tasks.filter(t => {
+    if (state.filter !== "all" && t.status !== state.filter) return false;
+    if (state.channelFilter !== "all" && t.channel !== state.channelFilter) return false;
+    return true;
+  });
+
+  const counts = {};
+  Object.keys(STATUS_STYLES).forEach(s => counts[s] = state.tasks.filter(t=>t.status===s).length);
+
+  const reviewCount = counts.review || 0;
+  const approvedCount = counts.approved || 0;
+
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">Task <span>Queue</span></h2>
+      <div class="view-actions">
+        ${reviewCount > 0 ? `<button class="btn btn-amber" onclick="approveAllReview()">Approve All (${reviewCount})</button>` : ''}
+        ${approvedCount > 0 ? `<button class="btn btn-green" onclick="startAgent()">Run Agent (${approvedCount})</button>` : ''}
+        <button class="btn btn-ghost" onclick="resetTasks()">Reset</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      ${[
+        {n:counts.queued||0, l:"Queued", c:"var(--leather-light)", bc:"var(--leather-dim)"},
+        {n:counts.draft||0, l:"Drafts", c:"#7ab87a", bc:"#3a6a3a"},
+        {n:counts.review||0, l:"Review", c:"var(--gold)", bc:"var(--gold-dim)"},
+        {n:counts.approved||0, l:"Approved", c:"var(--green)", bc:"var(--green-dim)"},
+        {n:counts.posted||0, l:"Posted", c:"var(--blue)", bc:"#2a5070"},
+        {n:state.tasks.length, l:"Total", c:"var(--cream)", bc:"var(--bg4)"},
+      ].map(s => `
+        <div class="stat-card" style="border-bottom-color:${s.bc}">
+          <div class="stat-num" style="color:${s.c}">${s.n}</div>
+          <div class="stat-label">${s.l}</div>
+          <style>.stat-card { border-bottom: 2px solid transparent; }</style>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="task-list">
+      ${tasks.map(t => {
+        const ch = CHANNELS[t.channel];
+        const st = STATUS_STYLES[t.status];
+        return `
+          <div class="task-card ${state.selectedId===t.id?'selected':''}"
+               data-task-id="${t.id}"
+               data-status="${t.status}"
+               data-channel="${t.channel}"
+               data-priority="${t.priority}"
+               data-scheduled="${t.scheduled}"
+               data-content="${encodeURIComponent(t.content)}"
+               data-platform-instructions="${encodeURIComponent(PLATFORM_INSTRUCTIONS[t.channel]||'')}"
+               onclick="selectTask('${t.id}')">
+            <div class="task-channel" style="background:${ch.bg};color:${ch.color};border:1px solid ${ch.color}30">${ch.icon}</div>
+            <div class="task-info">
+              <h4>${t.title}</h4>
+              <div class="task-meta">${ch.name} · ${t.scheduled} · ${t.priority}</div>
+            </div>
+            <div class="task-right">
+              <div class="status-pill" style="background:${st.bg};border-color:${st.border};color:${st.text}">${st.label}</div>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderSchedule(el) {
+  const sorted = [...state.tasks].sort((a,b) => {
+    const da = parseInt(a.scheduled.replace(/\D/g,'')) || 99;
+    const db = parseInt(b.scheduled.replace(/\D/g,'')) || 99;
+    return da - db;
+  });
+
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">30-Day <span>Schedule</span></h2>
+    </div>
+    <div class="timeline">
+      ${sorted.map(t => {
+        const ch = CHANNELS[t.channel];
+        const cls = t.status === "posted" ? "done" : t.status === "approved" ? "active" : "";
+        return `
+          <div class="timeline-item ${cls}" onclick="selectTask('${t.id}');setView('dashboard');" style="cursor:pointer">
+            <div class="timeline-day">${t.scheduled}</div>
+            <div class="timeline-title">${t.title}</div>
+            <div class="timeline-channel" style="color:${ch.color}">${ch.icon} ${ch.name} · ${STATUS_STYLES[t.status].label}</div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderPrompts(el) {
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">Agent <span>Prompts</span></h2>
+    </div>
+    <div style="padding:16px 20px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:20px;font-size:.82rem;line-height:1.8;color:var(--cream-dim)">
+      <strong style="color:var(--cream)">How to use with Claude in Chrome:</strong><br>
+      1. Approve tasks in the Dashboard<br>
+      2. Open the Claude Chrome extension<br>
+      3. Say: <code>Navigate to stockyard.dev/marketing and execute approved tasks</code><br>
+      4. The agent reads the page, finds approved tasks, and begins execution<br>
+      5. It will PAUSE before every post for your confirmation<br><br>
+      Or copy a specific prompt below and paste the task content into it.
+    </div>
+    ${Object.entries(PLATFORM_INSTRUCTIONS).map(([key, prompt]) => {
+      const ch = CHANNELS[key];
+      return `
+        <div class="prompt-card" id="prompt-${key}">
+          <div class="prompt-header" onclick="togglePrompt('${key}')">
+            <h4><span style="color:${ch.color}">${ch.icon}</span> ${ch.name} Agent</h4>
+            <button class="prompt-copy-btn" onclick="event.stopPropagation();copyPrompt('${key}')">Copy</button>
+          </div>
+          <div class="prompt-body">${escHtml(prompt)}</div>
+        </div>
+      `;
+    }).join("")}
+
+    <div class="prompt-card" id="prompt-master">
+      <div class="prompt-header" onclick="togglePrompt('master')">
+        <h4><span style="color:var(--rust-light)">⌘</span> Master Agent (reads page automatically)</h4>
+        <button class="prompt-copy-btn" onclick="event.stopPropagation();copyPrompt('master')">Copy</button>
+      </div>
+      <div class="prompt-body">Navigate to stockyard.dev/marketing (or the current page if already there).
+
+You are the Stockyard Marketing Agent. This page is your operations dashboard.
+
+INSTRUCTIONS:
+1. Read the page. Look for elements with class "task-card" that have data-status="approved".
+2. For each approved task, read:
+   - data-channel (which platform)
+   - data-content (URL-encoded content to post)
+   - data-platform-instructions (URL-encoded step-by-step guide)
+3. Process tasks in priority order: critical > high > medium > low.
+4. For each task:
+   a. Decode the content and platform instructions
+   b. Open the target platform in a new tab
+   c. Follow the platform instructions step by step
+   d. ALWAYS PAUSE before the final submit action
+   e. Ask me to confirm before posting
+   f. After posting, return to this page
+5. Report your progress after each task.
+
+SAFETY RULES:
+- Never post without my explicit confirmation
+- Never modify the copy
+- If you hit a CAPTCHA, 2FA, or error, stop and tell me
+- Take screenshots of everything you post
+- If a platform's rules prevent the post, tell me why
+
+Begin by telling me how many approved tasks you see and asking if I want to start.</div>
+    </div>
+  `;
+}
+
+function renderLog(el) {
+  el.innerHTML = `
+    <div class="view-header">
+      <h2 class="view-title">Agent <span>Log</span></h2>
+      <div class="view-actions">
+        <button class="btn btn-ghost" onclick="clearLog()">Clear</button>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--bg3);padding:4px 16px">
+      ${state.log.map(l => `
+        <div class="log-entry">
+          <span class="log-time">${l.time}</span>
+          <span class="log-msg ${l.type}">${escHtml(l.msg)}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderPanel() {
+  const body = document.getElementById("panel-body");
+  const task = state.tasks.find(t => t.id === state.selectedId);
+  
+  if (!task) {
+    body.innerHTML = `<div class="panel-empty">Select a task to view details<br><br><span style="font-size:.75rem;color:var(--cream-muted)">The Chrome agent reads task data from the cards on the left. Approve a task to make it available for execution.</span></div>`;
+    return;
+  }
+
+  const ch = CHANNELS[task.channel];
+  const st = STATUS_STYLES[task.status];
+
+  body.innerHTML = `
+    <div style="margin-bottom:16px">
+      <div class="detail-title">${escHtml(task.title)}</div>
+      <div class="detail-meta">
+        <span style="color:${ch.color}">${ch.icon} ${ch.name}</span> · ${task.scheduled} · ${task.priority} priority
+      </div>
+      <div class="status-pill" style="background:${st.bg};border-color:${st.border};color:${st.text};display:inline-block;margin-top:6px">${st.label}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-label">Content</div>
+      <div class="detail-content editable" contenteditable="true" id="task-content-editor" onblur="updateContent('${task.id}')">${escHtml(task.content)}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-label">Platform Instructions (for agent)</div>
+      <div class="detail-content" style="font-size:.7rem;color:var(--leather-light)">${escHtml(PLATFORM_INSTRUCTIONS[task.channel]||'No instructions')}</div>
+    </div>
+
+    <div class="detail-actions">
+      ${task.status !== "posted" ? `
+        <button class="btn btn-green" onclick="setStatus('${task.id}','approved')">Approve</button>
+        <button class="btn btn-amber" onclick="setStatus('${task.id}','review')">To Review</button>
+        <button class="btn btn-ghost" onclick="setStatus('${task.id}','queued')">To Queue</button>
+        <button class="btn btn-ghost" onclick="setStatus('${task.id}','draft')">To Draft</button>
+      ` : `
+        <span style="font-size:.7rem;color:var(--blue)">✓ This task has been posted</span>
+      `}
+      <button class="btn btn-ghost" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="setStatus('${task.id}','failed')">Mark Failed</button>
+    </div>
+  `;
 }
 
 // ── ACTIONS ──
-function sv(v){S.view=v;render()}
-function sf(f){S.filt=f;S.view='dashboard';render()}
-function scf(c){S.cfilt=c;S.view='dashboard';render()}
-function sel(id){S.sel=id;render()}
-function ss(id,s){const t=S.tasks.find(x=>x.id===id);if(!t)return;const o=t.s;t.s=s;log(`${t.t}: ${ST[o].l} → ${ST[s].l}`,s==='approved'?'ok':'');save();render()}
-function uc(id){const el=document.getElementById('ed');if(!el)return;const t=S.tasks.find(x=>x.id===id);if(t){t.c=el.innerText;save()}}
-function approveAll(){const n=S.tasks.filter(t=>t.s==='review').length;S.tasks.forEach(t=>{if(t.s==='review')t.s='approved'});log(`Bulk approved ${n} tasks`);save();render();document.getElementById('b-dot').className='beacon-dot ready';document.getElementById('b-label').textContent='Agent: Ready'}
-function runAgent(){const n=S.tasks.filter(t=>t.s==='approved').length;document.getElementById('b-dot').className='beacon-dot active';document.getElementById('b-label').textContent='Agent: Active';log(`Agent started — ${n} approved tasks`);log('Waiting for Chrome agent to read tasks...');save();render()}
-function resetAll(){if(!confirm('Reset all tasks to defaults?'))return;S.tasks=JSON.parse(JSON.stringify(TASKS_DEFAULT));S.sel=null;log('Tasks reset to defaults','warn');save();render()}
-function tp(k){document.getElementById('pr-'+k).classList.toggle('open')}
-function cp(k){const el=document.querySelector('#pr-'+k+' pre');if(!el)return;navigator.clipboard.writeText(el.textContent).then(()=>{const b=document.querySelector('#pr-'+k+' .pr-copy');b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1500)})}
+function setView(v) { state.view = v; render(); }
+function setFilter(f) { state.filter = f; state.view = "dashboard"; render(); }
+function setChannelFilter(c) { state.channelFilter = c; state.view = "dashboard"; render(); }
+
+function selectTask(id) {
+  state.selectedId = id;
+  render();
+}
+
+function setStatus(id, status) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  const old = task.status;
+  task.status = status;
+  addLog(`${task.title}: ${STATUS_STYLES[old].label} → ${STATUS_STYLES[status].label}`, status === "approved" ? "success" : "info");
+  saveState();
+  render();
+}
+
+function updateContent(id) {
+  const el = document.getElementById("task-content-editor");
+  if (!el) return;
+  const task = state.tasks.find(t => t.id === id);
+  if (task) {
+    task.content = el.innerText;
+    saveState();
+  }
+}
+
+function approveAllReview() {
+  const count = state.tasks.filter(t => t.status === "review").length;
+  state.tasks.forEach(t => { if (t.status === "review") t.status = "approved"; });
+  addLog(`Bulk approved ${count} tasks`, "success");
+  saveState();
+  render();
+  updateBeacon("ready");
+}
+
+function startAgent() {
+  const approved = state.tasks.filter(t => t.status === "approved");
+  if (!approved.length) return;
+  updateBeacon("active");
+  addLog(`Agent started — ${approved.length} tasks ready for execution`, "success");
+  addLog("Waiting for Claude in Chrome to read approved tasks...", "info");
+  saveState();
+  render();
+}
+
+function resetTasks() {
+  if (!confirm("Reset all tasks to defaults? This cannot be undone.")) return;
+  state.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+  state.selectedId = null;
+  addLog("All tasks reset to defaults", "warn");
+  saveState();
+  render();
+}
+
+function clearLog() {
+  state.log = [{ time: now(), msg: "Log cleared", type: "info" }];
+  saveState();
+  render();
+}
+
+function updateBeacon(status) {
+  state.agentStatus = status;
+  const dot = document.getElementById("beacon-dot");
+  const label = document.getElementById("beacon-label");
+  dot.className = "beacon-dot " + status;
+  label.textContent = "Agent: " + status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+function togglePrompt(key) {
+  document.getElementById("prompt-" + key).classList.toggle("open");
+}
+
+function copyPrompt(key) {
+  let text;
+  if (key === "master") {
+    text = document.querySelector("#prompt-master .prompt-body").textContent;
+  } else {
+    text = PLATFORM_INSTRUCTIONS[key] || "";
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector(`#prompt-${key} .prompt-copy-btn`);
+    btn.textContent = "Copied!";
+    setTimeout(() => btn.textContent = "Copy", 1500);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ── INIT ──
+loadState();
+render();
 </script>
 </body>
 </html>
