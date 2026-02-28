@@ -6,6 +6,10 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:title" content="Architecture Decisions Behind Stockyard — Stockyard">
+<meta property="og:description" content="Why Go, why SQLite, why a single binary, and why 58 middleware modules instead of a plugin system.">
+<meta property="og:url" content="https://stockyard.dev/blog/architecture-decisions/">
+<meta property="og:type" content="article">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Architecture Decisions Behind Stockyard — Stockyard</title>
@@ -53,6 +57,35 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 @media(max-width:700px){.post-layout{padding:2rem 1.5rem}.blog-list{padding:2rem 1.5rem}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/blog/architecture-decisions/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Architecture Decisions Behind Stockyard",
+  "description": "Why Go, why SQLite, why a single binary, and why 58 middleware modules instead of a plugin system.",
+  "url": "https://stockyard.dev/blog/architecture-decisions/",
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-10",
+  "wordCount": 546,
+  "author": {
+    "@type": "Person",
+    "name": "Michael"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Stockyard",
+    "url": "https://stockyard.dev",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://stockyard.dev/blog/architecture-decisions/"
+  }
+}
+</script>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -75,7 +108,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <a href="/blog/" class="back">&larr; All posts</a>
     <h1>Architecture Decisions Behind Stockyard</h1>
-    <div class="post-meta">February 2026</div>
+    <div class="post-meta"><time datetime="2026-02-10">February 10, 2026</time> &middot; Michael</div>
 
     <p>Every architectural decision in Stockyard traces back to one principle: a developer should be able to go from zero to a fully-instrumented LLM proxy in under 60 seconds. Here&rsquo;s what that forced us to choose, and what we gave up.</p>
 
