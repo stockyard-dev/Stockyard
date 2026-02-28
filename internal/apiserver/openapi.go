@@ -12,7 +12,7 @@ func OpenAPISpec() map[string]any {
 		"info": map[string]any{
 			"title":       "Stockyard API",
 			"version":     "1.0.0",
-			"description": "LLM gateway with 6 apps, 58 middleware modules, and 16 providers. Drop-in OpenAI-compatible proxy with observability, trust policies, A/B testing, and workflow orchestration.",
+			"description": "LLM gateway with 6 apps, 70 middleware modules, and 16 providers. Drop-in OpenAI-compatible proxy with observability, trust policies, A/B testing, and workflow orchestration.",
 			"contact":     map[string]string{"email": "hello@stockyard.dev", "url": "https://stockyard.dev"},
 			"license":     map[string]string{"name": "MIT", "url": "https://github.com/stockyard-dev/stockyard/blob/main/LICENSE"},
 		},

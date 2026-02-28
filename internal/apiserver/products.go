@@ -25,7 +25,7 @@ func Plans() []Plan {
 			PriceCents: 0,
 			Features: []string{
 				"All 6 apps",
-				"58 middleware modules",
+				"70 middleware modules",
 				"All 16 providers",
 				"10,000 requests/mo",
 				"SQLite storage",
