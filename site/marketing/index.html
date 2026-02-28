@@ -306,7 +306,7 @@ async function api(path, opts = {}) {
 }
 
 // ── STATE ──
-let S = { tasks: [], view: 'dashboard', filter: 'all', chFilter: 'all', sel: null, log: [], stats: {} };
+let S = { tasks: [], view: 'dashboard', filter: 'all', chFilter: 'all', sel: null, log: [], stats: {}, presets: null };
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -510,9 +510,39 @@ async function renderLog(el) {
   </div>`;
 }
 
-function renderAddTask(el) {
+async function renderAddTask(el) {
+  // Load presets from API
+  if (!S.presets) {
+    const data = await api('/api/marketing/presets');
+    S.presets = data._error ? [] : data;
+  }
+
+  // Group presets by channel
+  const groups = {};
+  S.presets.forEach(p => {
+    if (!groups[p.channel]) groups[p.channel] = [];
+    groups[p.channel].push(p);
+  });
+
   el.innerHTML = `
     <h2 style="font-size:1.2rem;margin-bottom:16px">Add <span style="color:var(--rust-light)">Task</span></h2>
+
+    <div style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;margin-bottom:8px">Start from a preset</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px" id="preset-grid">
+      ${Object.entries(groups).map(([ch, presets]) => {
+        const c = CHANNELS[ch] || CHANNELS.twitter;
+        return presets.map(p => `
+          <button onclick="applyPreset('${p.id}')" style="
+            padding:6px 12px;background:${c.bg};border:1px solid ${c.color}25;color:${c.color};
+            font-family:var(--font-mono);font-size:.62rem;cursor:pointer;transition:all .12s;
+            display:flex;align-items:center;gap:6px;
+          " onmouseover="this.style.borderColor='${c.color}'" onmouseout="this.style.borderColor='${c.color}25'">
+            <span style="font-weight:700">${c.icon}</span> ${esc(p.name)}
+          </button>
+        `).join('');
+      }).join('')}
+    </div>
+
     <div style="display:flex;flex-direction:column;gap:12px;max-width:600px">
       <div>
         <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Title</label>
@@ -541,13 +571,28 @@ function renderAddTask(el) {
       </div>
       <div>
         <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Content</label>
-        <textarea id="new-content" style="width:100%;padding:10px;font-size:.8rem;min-height:200px;resize:vertical" placeholder="The full post content, tweet thread, blog outline, etc."></textarea>
+        <textarea id="new-content" style="width:100%;padding:10px;font-size:.8rem;min-height:200px;resize:vertical;line-height:1.7" placeholder="The full post content, tweet thread, blog outline, etc."></textarea>
       </div>
       <div style="display:flex;gap:6px">
         <button class="btn btn-rust" onclick="createTask()">Create Task</button>
         <button class="btn btn-ghost" onclick="setView('dashboard')">Cancel</button>
       </div>
     </div>`;
+}
+
+function applyPreset(presetId) {
+  const p = (S.presets || []).find(x => x.id === presetId);
+  if (!p) return;
+  const title = document.getElementById('new-title');
+  const channel = document.getElementById('new-channel');
+  const priority = document.getElementById('new-priority');
+  const content = document.getElementById('new-content');
+  if (title) title.value = p.title;
+  if (channel) channel.value = p.channel;
+  if (priority) priority.value = p.priority;
+  if (content) content.value = p.content;
+  // Flash the content area
+  if (content) { content.style.borderColor = 'var(--rust)'; setTimeout(() => content.style.borderColor = '', 800); }
 }
 
 function renderPanel() {

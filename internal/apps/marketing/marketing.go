@@ -75,6 +75,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/marketing/tasks/bulk-status", a.bulkStatus)
 	mux.HandleFunc("POST /api/marketing/tasks/seed", a.seedDefaults)
 
+	// Presets
+	mux.HandleFunc("GET /api/marketing/presets", a.listPresets)
+
 	// Stats
 	mux.HandleFunc("GET /api/marketing/stats", a.stats)
 
@@ -107,6 +110,16 @@ type LogEntry struct {
 	Action    string `json:"action"`
 	Detail    string `json:"detail,omitempty"`
 	CreatedAt string `json:"created_at"`
+}
+
+type Preset struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Channel  string `json:"channel"`
+	Priority string `json:"priority"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	Tags     string `json:"tags"`
 }
 
 // ── Handlers ──
@@ -410,6 +423,25 @@ func (a *App) clearLog(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, map[string]any{"cleared": true})
 }
 
+func (a *App) listPresets(w http.ResponseWriter, r *http.Request) {
+	// Optional filter by channel
+	ch := r.URL.Query().Get("channel")
+	if ch != "" {
+		var filtered []Preset
+		for _, p := range presets {
+			if p.Channel == ch {
+				filtered = append(filtered, p)
+			}
+		}
+		if filtered == nil {
+			filtered = []Preset{}
+		}
+		jsonOK(w, filtered)
+		return
+	}
+	jsonOK(w, presets)
+}
+
 // ── Helpers ──
 
 func (a *App) addLog(taskID, action, detail string) {
@@ -474,4 +506,441 @@ var defaultTasks = []struct {
 		"Integration guide. ~1500 words with code. SEO: vercel ai sdk proxy, vercel ai sdk cost tracking."},
 	{"t16", "twitter", "queued", "high", "Day 30", "30-Day Recap Thread",
 		"Full transparency thread: stars, installs, cloud users, dollars proxied, biggest wins, biggest misses, next 30 days."},
+}
+
+// ── Presets ──
+
+var presets = []Preset{
+	// Twitter
+	{ID: "p-tweet-single", Name: "Single Tweet", Channel: "twitter", Priority: "medium", Tags: "social,quick",
+		Title: "[Topic] Tweet",
+		Content: `[One-liner hook that stops the scroll]
+
+[2-3 sentences of substance — what, why, proof]
+
+[CTA: link, question, or call to action]
+
+stockyard.dev`},
+
+	{ID: "p-tweet-thread", Name: "Tweet Thread", Channel: "twitter", Priority: "high", Tags: "social,longform",
+		Title: "[Topic] Thread",
+		Content: `TWEET 1 (hook — pin this):
+[Bold claim or surprising fact that demands the click]
+
+🧵
+
+TWEET 2 (the problem):
+[What pain does the audience feel? Be specific.]
+
+TWEET 3 (the insight):
+[What did you learn/build/discover?]
+
+TWEET 4 (proof):
+[Numbers, screenshots, code snippets, before/after]
+
+TWEET 5 (CTA):
+[What should they do next? Try it, follow, reply]
+
+stockyard.dev`},
+
+	{ID: "p-tweet-metrics", Name: "Metrics Update", Channel: "twitter", Priority: "medium", Tags: "social,transparency",
+		Title: "Week [N] Metrics Update",
+		Content: `Week [N] of Stockyard, fully transparent:
+
+⭐ [X] GitHub stars
+📦 [X] installs
+☁️ [X] cloud signups
+🎮 [X] playground sessions
+💰 $[X] proxied
+
+What worked: [fill in]
+What didn't: [fill in]
+What's next: [fill in]
+
+stockyard.dev`},
+
+	{ID: "p-tweet-module", Name: "Module Spotlight", Channel: "twitter", Priority: "low", Tags: "social,feature",
+		Title: "[Module Name] Spotlight",
+		Content: `[Module emoji] [Module name] — [one-liner of what it does]
+
+The problem: [what sucks without it]
+The fix: [what the module does in 1-2 sentences]
+
+Before: [code or scenario without]
+After: [code or scenario with]
+
+Ships in the binary. Zero config to activate.
+
+stockyard.dev/docs`},
+
+	// LinkedIn
+	{ID: "p-linkedin-article", Name: "LinkedIn Article", Channel: "linkedin", Priority: "high", Tags: "social,longform",
+		Title: "[Topic] — LinkedIn",
+		Content: `[Opening line: contrarian take or surprising stat that hooks eng managers and CTOs]
+
+[2-3 paragraphs: the problem, your perspective, what you built/learned]
+
+[Key takeaways as arrow list:]
+→ [Takeaway 1]
+→ [Takeaway 2]
+→ [Takeaway 3]
+
+[CTA: try it, read more, comment]
+
+stockyard.dev
+
+#DevTools #LLM #GoLang #AI #Infrastructure #OpenSource`},
+
+	{ID: "p-linkedin-launch", Name: "LinkedIn Launch Post", Channel: "linkedin", Priority: "critical", Tags: "social,launch",
+		Title: "[Feature/Product] Launch — LinkedIn",
+		Content: `[Attention-grabbing first line — this shows in the preview]
+
+I just shipped [what you shipped].
+
+Here's why it matters:
+
+→ [Benefit 1 — quantified if possible]
+→ [Benefit 2]
+→ [Benefit 3]
+
+[1 paragraph of backstory: why you built it, what you learned]
+
+Try it now (no signup): stockyard.dev/playground
+
+#DevTools #LLM #OpenSource`},
+
+	// Reddit
+	{ID: "p-reddit-show", Name: "Show r/ Post", Channel: "reddit", Priority: "high", Tags: "community,launch",
+		Title: "Show r/[subreddit]: [what you built]",
+		Content: `SUBREDDIT: r/[subreddit]
+TITLE: Show r/[subreddit]: [Built/Created] [what] — [key differentiator]
+
+BODY:
+[1-2 sentence intro: what it is and why you built it]
+
+Some highlights:
+- [Technical detail the community cares about]
+- [Technical detail 2]
+- [Technical detail 3]
+
+[What feedback you're looking for]
+
+[Link] | [GitHub link if applicable]
+
+---
+NOTE: Check subreddit rules before posting. Adjust tone for community — r/golang wants architecture, r/selfhosted wants deployment simplicity, r/LocalLLaMA wants model support details.`},
+
+	{ID: "p-reddit-discussion", Name: "Reddit Discussion", Channel: "reddit", Priority: "medium", Tags: "community,engagement",
+		Title: "[Discussion Topic] — r/[subreddit]",
+		Content: `SUBREDDIT: r/[subreddit]
+TITLE: [Genuine question or discussion starter — NOT promotional]
+
+BODY:
+[Share your experience or observation — 2-3 paragraphs]
+
+[Ask a genuine question that invites replies]
+
+[Optional: mention your project naturally in context, not as the focus]
+
+---
+NOTE: Discussion posts build community trust. Lead with value, not promotion.`},
+
+	// Hacker News
+	{ID: "p-hn-show", Name: "Show HN", Channel: "hn", Priority: "critical", Tags: "community,launch",
+		Title: "Show HN: [Product] — [one-line description]",
+		Content: `TITLE: Show HN: [Product] – [Short description, no hype]
+URL: https://stockyard.dev
+
+FIRST COMMENT (post immediately after submission):
+Hey HN, I built [product] because [genuine problem you experienced].
+
+[2-3 paragraphs: what it does, technical architecture, interesting decisions]
+
+Technical details HN will care about:
+• [Language/framework choice and why]
+• [Architecture decision and tradeoff]
+• [Performance characteristic or interesting constraint]
+
+[What you're looking for: feedback, users, contributors, etc.]
+
+Happy to answer questions about [specific technical area].
+
+---
+TIMING: Post between 8-10am ET on Tuesday-Thursday for best visibility.
+TONE: Technical, honest, no marketing speak. HN hates hype.`},
+
+	// Blog — SEO
+	{ID: "p-blog-seo-comparison", Name: "SEO: X vs Y Comparison", Channel: "blog", Priority: "high", Tags: "content,seo",
+		Title: "[Product A] vs [Product B] vs [Product C]: [Year] Comparison",
+		Content: `# [Product A] vs [Product B] vs [Product C]: Honest Comparison ([Year])
+
+TARGET KEYWORDS: "[product a] vs [product b]", "[product a] alternative", "[product b] alternative"
+TARGET LENGTH: 2000-3000 words
+
+## TL;DR
+[3-sentence summary with clear recommendation for different use cases]
+
+## What Each Tool Does
+[1 paragraph per product — factual, no spin]
+
+## Feature Comparison
+| Feature | [Product A] | [Product B] | [Product C] |
+|---------|-------------|-------------|-------------|
+| [Feature 1] | ✅/❌ | ✅/❌ | ✅/❌ |
+| [Feature 2] | ... | ... | ... |
+| Pricing | ... | ... | ... |
+| Self-hosted | ... | ... | ... |
+
+## When to Choose [Product A]
+[Honest assessment — who it's best for and why]
+
+## When to Choose [Product B]
+[Same treatment]
+
+## When to Choose [Product C]
+[Same treatment]
+
+## Our Take
+[Balanced conclusion. Acknowledge where competitors win.]
+
+---
+SEO NOTES: Include competitor names in H2s. Answer "which is better" directly. Add schema markup for comparison.`},
+
+	{ID: "p-blog-seo-howto", Name: "SEO: How-To Tutorial", Channel: "blog", Priority: "high", Tags: "content,seo,tutorial",
+		Title: "How to [Accomplish X] with [Technology]",
+		Content: `# How to [Accomplish X] with [Technology] (Step-by-Step)
+
+TARGET KEYWORDS: "how to [x]", "[technology] [x] tutorial", "[x] guide"
+TARGET LENGTH: 1500-2000 words
+
+## Why [X] Matters
+[1-2 paragraphs: the problem this solves, who needs it]
+
+## Prerequisites
+- [Requirement 1]
+- [Requirement 2]
+
+## Step 1: [First Action]
+[Explanation]
+` + "```" + `bash
+# code example
+` + "```" + `
+
+## Step 2: [Second Action]
+[Explanation with code]
+
+## Step 3: [Third Action]
+[Explanation with code]
+
+## Verify It Works
+[How to confirm success — expected output, screenshot]
+
+## Common Issues
+**[Issue 1]**: [Fix]
+**[Issue 2]**: [Fix]
+
+## What's Next
+[Link to advanced topics, related guides]
+
+---
+SEO NOTES: Use numbered steps. Include code blocks (Google rich snippets). Answer related questions in subheadings.`},
+
+	{ID: "p-blog-seo-listicle", Name: "SEO: Listicle / Roundup", Channel: "blog", Priority: "medium", Tags: "content,seo",
+		Title: "[N] Best [Things] for [Use Case] in [Year]",
+		Content: `# [N] Best [Things] for [Use Case] ([Year])
+
+TARGET KEYWORDS: "best [things] for [use case]", "top [things] [year]"
+TARGET LENGTH: 2000-2500 words
+
+## Quick Picks
+| Tool | Best For | Price |
+|------|----------|-------|
+| [#1] | [use case] | [price] |
+| [#2] | [use case] | [price] |
+
+## 1. [Tool Name] — Best for [Specific Use Case]
+[2-3 paragraphs: what it does, standout features, who it's for]
+**Pros:** [list]
+**Cons:** [list]
+**Pricing:** [details]
+
+## 2. [Tool Name] — Best for [Specific Use Case]
+[Same structure]
+
+[...repeat for all N items]
+
+## How We Evaluated
+[Brief methodology — what criteria, how tested]
+
+## FAQ
+**Q: [Common question]?**
+A: [Direct answer]
+
+---
+SEO NOTES: Put Stockyard in a natural position (not always #1 — credibility matters). Include FAQ for People Also Ask snippets.`},
+
+	{ID: "p-blog-case-study", Name: "Case Study", Channel: "blog", Priority: "high", Tags: "content,social-proof",
+		Title: "How [Company/User] [Achieved Result] with Stockyard",
+		Content: `# How [Company/User] [Achieved Specific Result] with Stockyard
+
+TARGET LENGTH: 1500-2000 words
+
+## The Challenge
+[What problem were they facing? Be specific — numbers, pain points, failed alternatives]
+
+## What They Tried Before
+[Previous solutions and why they fell short]
+
+## The Solution
+[How Stockyard fit in — specific modules, configuration, deployment]
+
+## Implementation
+[Timeline, steps, any surprising discoveries]
+
+` + "```" + `yaml
+# Relevant config snippet
+` + "```" + `
+
+## Results
+[Quantified outcomes]
+- [Metric 1]: [Before] → [After]
+- [Metric 2]: [Before] → [After]
+- [Metric 3]: [Before] → [After]
+
+## Key Takeaway
+[1-2 sentences: the insight others can apply]
+
+---
+NOTES: If no real customer yet, write from your own stress test / dogfooding data. "How we prevented a $5K surprise bill" is a valid case study.`},
+
+	{ID: "p-blog-technical", Name: "Technical Deep Dive", Channel: "blog", Priority: "medium", Tags: "content,engineering",
+		Title: "How [Technical Thing] Works Inside Stockyard",
+		Content: `# How [Technical Thing] Works Inside Stockyard
+
+TARGET LENGTH: 2000-3000 words
+AUDIENCE: Engineers who want to understand the internals
+
+## The Problem
+[What architectural challenge did this solve?]
+
+## Design Constraints
+[What requirements shaped the solution?]
+- [Constraint 1]
+- [Constraint 2]
+
+## The Approach
+[High-level explanation of the solution]
+
+## Implementation
+[Walk through the code/architecture]
+
+` + "```" + `go
+// Key code snippet with comments
+` + "```" + `
+
+## Tradeoffs
+[What did you give up? What would you do differently?]
+
+## Benchmarks
+[Performance data if applicable]
+
+## Conclusion
+[What you learned, what's next]
+
+---
+NOTES: Engineers share deep technical content. This builds credibility on HN and r/golang.`},
+
+	// Dev.to
+	{ID: "p-devto-crosspost", Name: "Dev.to Cross-Post", Channel: "devto", Priority: "low", Tags: "content,distribution",
+		Title: "[Cross-post title]",
+		Content: `[Cross-post from stockyard.dev/blog/[slug]]
+
+CANONICAL URL: https://stockyard.dev/blog/[slug]
+TAGS: go, opensource, ai, devtools
+COVER IMAGE: [URL or upload]
+
+---
+NOTE: Always set canonical URL to your blog. Dev.to gives extra reach but you want SEO juice on your domain.`},
+
+	// GitHub
+	{ID: "p-github-readme", Name: "README Update", Channel: "github", Priority: "medium", Tags: "repo,maintenance",
+		Title: "README: [What Changed]",
+		Content: `UPDATE: [What section to add/change in README.md]
+
+CHANGES:
+- [Change 1]
+- [Change 2]
+
+NEW CONTENT:
+[The actual markdown to add/replace]
+
+---
+NOTE: README is the #1 conversion page. Keep it scannable: badges at top, install command prominent, screenshot/GIF above the fold.`},
+
+	{ID: "p-github-release", Name: "GitHub Release Notes", Channel: "github", Priority: "high", Tags: "repo,launch",
+		Title: "Release v[X.Y.Z]",
+		Content: `## What's New in v[X.Y.Z]
+
+### Highlights
+- ✨ [Major feature 1]
+- ✨ [Major feature 2]
+
+### Improvements
+- [Improvement 1]
+- [Improvement 2]
+
+### Bug Fixes
+- [Fix 1]
+- [Fix 2]
+
+### Breaking Changes
+- [If any — be explicit about migration path]
+
+### Install / Upgrade
+` + "```" + `bash
+curl -sSL stockyard.dev/install | sh
+` + "```" + `
+
+Full changelog: [link]`},
+
+	// SEO
+	{ID: "p-seo-audit", Name: "SEO Keyword Audit", Channel: "seo", Priority: "medium", Tags: "monitoring,seo",
+		Title: "Weekly SEO Audit — [Date]",
+		Content: `SEARCH KEYWORDS TO CHECK (in incognito):
+
+1. "llm proxy" — Target: page 1
+2. "llm middleware" — Target: page 1-2
+3. "llm cost tracking" — Target: page 1
+4. "litellm alternative" — Target: page 1
+5. "helicone alternative" — Target: page 1
+6. "portkey alternative" — Target: page 1
+7. "llm observability open source" — Target: page 1-2
+8. "llm api gateway" — Target: page 1
+
+RECORD FOR EACH:
+- Position (page + rank, e.g. "P1 #7")
+- Title shown in SERP
+- Which URL ranks
+- Change from last week (↑/↓/→)
+
+ALSO CHECK:
+- Google Search Console for new queries driving impressions
+- Any new backlinks (check GitHub referrals)
+- Competitor ranking changes for same keywords`},
+
+	{ID: "p-seo-directory", Name: "Directory Submission", Channel: "seo", Priority: "low", Tags: "distribution,seo",
+		Title: "Submit to [Directory Name]",
+		Content: `DIRECTORY: [Name] ([URL])
+
+SUBMISSION INFO:
+- Title: Stockyard — Six LLM apps, one Go binary, zero dependencies
+- Short description: Open-source LLM infrastructure platform with proxy routing, cost tracking, audit logging, prompt management, workflow engine, and config marketplace. Single binary, SQLite, self-hosted.
+- Category: [Developer Tools / AI / Infrastructure]
+- Tags: [llm, proxy, go, open-source, ai, devtools]
+- URL: https://stockyard.dev
+- GitHub: https://github.com/stockyard-dev/stockyard
+- Screenshot: [attach from /marketing/screenshots/]
+
+---
+NOTE: Maintain consistent descriptions across directories for SEO signal consistency.`},
 }
