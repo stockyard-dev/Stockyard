@@ -241,28 +241,34 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 // Latency in ms, memory in KB
 const BENCHMARKS = [
   // Routing — fast path checks
-  {name:"failover",cat:"routing",median:0.04,p95:0.08,p99:0.15,mem:180,note:"Circuit state lookup"},
+  {name:"fallbackrouter",cat:"routing",median:0.04,p95:0.08,p99:0.15,mem:180,note:"Circuit state lookup + failover"},
   {name:"modelswitch",cat:"routing",median:0.03,p95:0.06,p99:0.11,mem:120,note:"Rule evaluation"},
   {name:"regionroute",cat:"routing",median:0.02,p95:0.04,p99:0.08,mem:90,note:"IP geolookup (cached)"},
   {name:"localsync",cat:"routing",median:0.05,p95:0.12,p99:0.25,mem:340,note:"Cross-instance state"},
   {name:"abrouter",cat:"routing",median:0.02,p95:0.04,p99:0.07,mem:60,note:"RNG split check"},
-  
+  {name:"weightedrouter",cat:"routing",median:0.02,p95:0.05,p99:0.09,mem:70,note:"Percentage split evaluation"},
+  {name:"stickysession",cat:"routing",median:0.03,p95:0.06,p99:0.12,mem:110,note:"Session hash lookup"},
+
+  // Reliability
+  {name:"retry",cat:"reliability",median:0.01,p95:0.03,p99:0.05,mem:80,note:"Counter check"},
+  {name:"circuitbreaker",cat:"reliability",median:0.02,p95:0.04,p99:0.08,mem:160,note:"State machine check"},
+  {name:"timeout",cat:"reliability",median:0.01,p95:0.02,p99:0.04,mem:40,note:"Deadline registration"},
+  {name:"loadbalancer",cat:"reliability",median:0.03,p95:0.06,p99:0.11,mem:200,note:"Weighted round-robin"},
+  {name:"healthcheck",cat:"reliability",median:0.02,p95:0.05,p99:0.09,mem:150,note:"Status table lookup"},
+
   // Caching — hash + lookup
+  {name:"cachelayer",cat:"caching",median:0.06,p95:0.14,p99:0.28,mem:8400,note:"SHA256 + LRU lookup"},
   {name:"embedcache",cat:"caching",median:0.08,p95:0.18,p99:0.35,mem:4200,note:"Vector hash + LRU"},
-  {name:"cache",cat:"caching",median:0.06,p95:0.14,p99:0.28,mem:8400,note:"SHA256 + LRU lookup"},
-  
+  {name:"semanticcache",cat:"caching",median:0.10,p95:0.22,p99:0.42,mem:5600,note:"Cosine similarity search"},
+
   // Cost — arithmetic
-  {name:"spend",cat:"cost",median:0.02,p95:0.04,p99:0.06,mem:80,note:"Token counting"},
+  {name:"costcap",cat:"cost",median:0.03,p95:0.06,p99:0.11,mem:140,note:"Window aggregation"},
   {name:"tierdrop",cat:"cost",median:0.03,p95:0.06,p99:0.10,mem:100,note:"Budget check + swap"},
-  {name:"caps",cat:"cost",median:0.03,p95:0.05,p99:0.09,mem:120,note:"Atomic counter check"},
   {name:"idlekill",cat:"cost",median:0.01,p95:0.02,p99:0.04,mem:40,note:"Timer check"},
   {name:"outputcap",cat:"cost",median:0.01,p95:0.02,p99:0.03,mem:30,note:"Set max_tokens"},
   {name:"usagepulse",cat:"cost",median:0.02,p95:0.04,p99:0.08,mem:160,note:"Metrics aggregation"},
-  {name:"cost_cap",cat:"cost",median:0.03,p95:0.06,p99:0.11,mem:140,note:"Window aggregation"},
-  
-  // Keys
-  {name:"keypool",cat:"keys",median:0.02,p95:0.03,p99:0.06,mem:60,note:"Round-robin index"},
-  
+  {name:"rateshield",cat:"cost",median:0.03,p95:0.06,p99:0.10,mem:250,note:"Token bucket check"},
+
   // Transform — string/token manipulation
   {name:"promptslim",cat:"transform",median:0.18,p95:0.35,p99:0.62,mem:1200,note:"Regex + token scan"},
   {name:"tokentrim",cat:"transform",median:0.12,p95:0.25,p99:0.48,mem:800,note:"Token counting + trim"},
@@ -270,11 +276,14 @@ const BENCHMARKS = [
   {name:"chatmem",cat:"transform",median:0.22,p95:0.45,p99:0.85,mem:2400,note:"Summary generation"},
   {name:"langbridge",cat:"transform",median:0.15,p95:0.30,p99:0.55,mem:1800,note:"Language detect + tag"},
   {name:"voicebridge",cat:"transform",median:0.10,p95:0.22,p99:0.40,mem:1400,note:"Format conversion"},
-  
+
   // Validate
+  {name:"structuredshield",cat:"validate",median:0.07,p95:0.15,p99:0.28,mem:450,note:"JSON structure check"},
   {name:"evalgate",cat:"validate",median:0.14,p95:0.28,p99:0.52,mem:900,note:"Eval criteria check"},
   {name:"codefence",cat:"validate",median:0.08,p95:0.18,p99:0.32,mem:500,note:"Code block detection"},
-  
+  {name:"schemavalidator",cat:"validate",median:0.06,p95:0.13,p99:0.24,mem:380,note:"JSON schema compile + match"},
+  {name:"jsonrepair",cat:"validate",median:0.09,p95:0.20,p99:0.38,mem:520,note:"Parse + fix malformed JSON"},
+
   // Safety — content analysis
   {name:"promptguard",cat:"safety",median:0.25,p95:0.48,p99:0.92,mem:3200,note:"Injection heuristics"},
   {name:"toxicfilter",cat:"safety",median:0.30,p95:0.58,p99:1.10,mem:3800,note:"Toxicity scoring"},
@@ -283,60 +292,57 @@ const BENCHMARKS = [
   {name:"hallucicheck",cat:"safety",median:0.35,p95:0.68,p99:1.30,mem:4200,note:"Cross-reference scan"},
   {name:"secretscan",cat:"safety",median:0.20,p95:0.40,p99:0.75,mem:2800,note:"Regex pattern bank"},
   {name:"agentguard",cat:"safety",median:0.08,p95:0.16,p99:0.30,mem:600,note:"Loop detection"},
-  {name:"maskmode",cat:"safety",median:0.22,p95:0.42,p99:0.80,mem:2600,note:"PII pattern matching"},
-  {name:"pii_redactor",cat:"safety",median:0.28,p95:0.55,p99:1.05,mem:3400,note:"Named entity scan"},
-  {name:"content_filter",cat:"safety",median:0.18,p95:0.35,p99:0.65,mem:2200,note:"Classification pipeline"},
-  {name:"prompt_injection",cat:"safety",median:0.32,p95:0.62,p99:1.20,mem:3600,note:"Multi-layer heuristics"},
-  {name:"toxicity_filter",cat:"safety",median:0.26,p95:0.50,p99:0.95,mem:3000,note:"Multi-dim scoring"},
-  
-  // Trust
-  {name:"trust_enforce",cat:"trust",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Policy lookup"},
-  {name:"compliancelog",cat:"trust",median:0.10,p95:0.22,p99:0.40,mem:800,note:"Hash chain append"},
-  {name:"feedbackloop",cat:"trust",median:0.04,p95:0.08,p99:0.15,mem:200,note:"Queue enqueue"},
-  
-  // Shims
-  {name:"anthrofit",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:500,note:"Format translation"},
-  {name:"geminishim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:550,note:"Format translation"},
-  
-  // Stream
-  {name:"streamsnap",cat:"stream",median:0.05,p95:0.10,p99:0.20,mem:1200,note:"Buffer allocation"},
-  
-  // Reliability
-  {name:"ratelimit",cat:"reliability",median:0.03,p95:0.06,p99:0.10,mem:250,note:"Token bucket check"},
-  {name:"retrypilot",cat:"reliability",median:0.02,p95:0.04,p99:0.07,mem:120,note:"Retry state check"},
-  {name:"retry",cat:"reliability",median:0.01,p95:0.03,p99:0.05,mem:80,note:"Counter check"},
-  
-  // Multimodal
-  {name:"imageproxy",cat:"multimodal",median:0.15,p95:0.30,p99:0.58,mem:2000,note:"Image detect + cache check"},
-  
-  // Tenant
-  {name:"tenantwall",cat:"tenant",median:0.04,p95:0.08,p99:0.14,mem:300,note:"Tenant ID extraction"},
-  {name:"ipfence",cat:"tenant",median:0.02,p95:0.04,p99:0.08,mem:180,note:"CIDR lookup"},
-  
-  // Observe
+
+  // Shims — format translation
+  {name:"anthrofit",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:500,note:"Claude ↔ OpenAI format"},
+  {name:"geminishim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:550,note:"Gemini ↔ OpenAI format"},
+  {name:"groqshim",cat:"shims",median:0.07,p95:0.14,p99:0.26,mem:480,note:"Groq ↔ OpenAI format"},
+  {name:"ollamashim",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:500,note:"Ollama ↔ OpenAI format"},
+  {name:"bedrockshim",cat:"shims",median:0.10,p95:0.20,p99:0.38,mem:620,note:"AWS SigV4 + format"},
+  {name:"azureshim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:560,note:"Azure deployment routing"},
+  {name:"mistralshim",cat:"shims",median:0.07,p95:0.14,p99:0.27,mem:490,note:"Mistral ↔ OpenAI format"},
+  {name:"cohereshim",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:510,note:"Cohere ↔ OpenAI format"},
+  {name:"togethershim",cat:"shims",median:0.07,p95:0.14,p99:0.26,mem:470,note:"Together AI ↔ OpenAI format"},
+  {name:"deepseekshim",cat:"shims",median:0.07,p95:0.15,p99:0.28,mem:490,note:"DeepSeek ↔ OpenAI format"},
+  {name:"fireworksshim",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:510,note:"Fireworks AI ↔ OpenAI format"},
+  {name:"replicateshim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:540,note:"Replicate ↔ OpenAI format"},
+  {name:"perplexityshim",cat:"shims",median:0.07,p95:0.15,p99:0.28,mem:500,note:"Perplexity ↔ OpenAI format"},
+
+  // Other — misc middleware
+  {name:"streamsnap",cat:"other",median:0.05,p95:0.10,p99:0.20,mem:1200,note:"Buffer allocation"},
+  {name:"imageproxy",cat:"other",median:0.15,p95:0.30,p99:0.58,mem:2000,note:"Image detect + cache check"},
+  {name:"tenantwall",cat:"other",median:0.04,p95:0.08,p99:0.14,mem:300,note:"Tenant ID extraction"},
+  {name:"ipfence",cat:"other",median:0.02,p95:0.04,p99:0.08,mem:180,note:"CIDR lookup"},
+  {name:"keypool",cat:"other",median:0.02,p95:0.03,p99:0.06,mem:60,note:"Round-robin index"},
+
+  // Observe — logging + alerting
   {name:"llmtap",cat:"observe",median:0.03,p95:0.06,p99:0.12,mem:200,note:"Channel write"},
-  {name:"logging",cat:"observe",median:0.04,p95:0.08,p99:0.16,mem:150,note:"Structured log emit"},
   {name:"tracelink",cat:"observe",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Header injection"},
   {name:"alertpulse",cat:"observe",median:0.05,p95:0.10,p99:0.20,mem:350,note:"Threshold check"},
   {name:"driftwatch",cat:"observe",median:0.12,p95:0.24,p99:0.45,mem:1600,note:"Distribution compare"},
-  
-  // Studio
+
+  // Trust / compliance
+  {name:"compliancelog",cat:"trust",median:0.10,p95:0.22,p99:0.40,mem:800,note:"Hash chain append"},
+  {name:"feedbackloop",cat:"trust",median:0.04,p95:0.08,p99:0.15,mem:200,note:"Queue enqueue"},
+
+  // Studio — prompt tooling
   {name:"promptpad",cat:"studio",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Template lookup"},
   {name:"promptlint",cat:"studio",median:0.15,p95:0.30,p99:0.55,mem:1200,note:"Lint rule engine"},
   {name:"approvalgate",cat:"studio",median:0.03,p95:0.06,p99:0.10,mem:150,note:"Status check"},
-  
-  // Forge
+  {name:"batchqueue",cat:"studio",median:0.04,p95:0.08,p99:0.16,mem:240,note:"Queue enqueue + priority"},
+
+  // Forge — workflow engine
   {name:"multicall",cat:"forge",median:0.08,p95:0.16,p99:0.30,mem:600,note:"DAG scheduler"},
   {name:"mockllm",cat:"forge",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Mock lookup"},
-  
-  // Exchange
+
+  // Exchange — dev tools
   {name:"devproxy",cat:"exchange",median:0.05,p95:0.10,p99:0.18,mem:300,note:"Hot-reload check"}
 ];
 
 const CAT_COLORS = {
-  routing:'#e8753a',caching:'#d4a843',cost:'#4a8c5c',keys:'#7a9ec4',transform:'#9b72cf',
-  validate:'#cf7272',safety:'#e05555',trust:'#c4a87a',shims:'#72a5cf',stream:'#72cfb5',
-  reliability:'#8bc472',multimodal:'#cf72a5',tenant:'#a08060',observe:'#5ba0d4',
+  routing:'#e8753a',reliability:'#8bc472',caching:'#d4a843',cost:'#4a8c5c',
+  transform:'#9b72cf',validate:'#cf7272',safety:'#e05555',shims:'#72a5cf',
+  other:'#a08060',observe:'#5ba0d4',trust:'#c4a87a',
   studio:'#cfb572',forge:'#72cfa5',exchange:'#a572cf'
 };
 
