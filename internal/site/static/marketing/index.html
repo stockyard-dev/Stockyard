@@ -181,6 +181,14 @@ textarea:focus,input:focus{outline:none;border-color:var(--rust)}
   ╚══════════════════════════════════════════════════════════════╝
 -->
 
+<!-- Auth gate (shown until admin key entered) -->
+<div id="auth-gate" style="max-width:400px;margin:15vh auto;padding:2rem;text-align:center">
+  <h1 style="font-size:1.5rem;margin-bottom:.5rem">Marketing Ops</h1>
+  <p style="color:var(--cream-dim);font-size:.9rem;margin-bottom:2rem;font-style:italic">Enter your admin key to continue.</p>
+  <input id="auth-input" type="password" placeholder="admin key" autofocus
+    style="width:100%;padding:.8rem 1rem;font-family:var(--font-mono);font-size:.9rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);text-align:center;letter-spacing:2px">
+</div>
+
 <!-- Machine-readable instructions for Claude in Chrome -->
 <div id="agent-instructions" class="agent-instructions" aria-hidden="true">
   <div data-role="system-prompt">
@@ -213,7 +221,7 @@ textarea:focus,input:focus{outline:none;border-color:var(--rust)}
   </div>
 </div>
 
-<div class="shell" id="app">
+<div class="shell" id="app" style="display:none">
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand">
@@ -247,48 +255,8 @@ textarea:focus,input:focus{outline:none;border-color:var(--rust)}
   </aside>
 </div>
 
-<!-- Add Task Modal -->
-<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <h3>New Task</h3>
-    <label>Title</label>
-    <input type="text" id="m-title" placeholder="e.g. Launch Thread (5 tweets)">
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-      <div><label>Channel</label>
-        <select id="m-channel">
-          <option value="twitter">Twitter/X</option>
-          <option value="linkedin">LinkedIn</option>
-          <option value="reddit">Reddit</option>
-          <option value="hn">Hacker News</option>
-          <option value="blog">Blog</option>
-          <option value="devto">Dev.to</option>
-          <option value="github">GitHub</option>
-          <option value="seo">SEO</option>
-        </select>
-      </div>
-      <div><label>Priority</label>
-        <select id="m-priority">
-          <option value="medium">Medium</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-      <div><label>Scheduled</label>
-        <input type="text" id="m-day" placeholder="Day 1" value="Day 1">
-      </div>
-    </div>
-    <label>Content</label>
-    <textarea id="m-content" placeholder="The full post content, instructions, or brief..."></textarea>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-rust" onclick="addTask()">Add Task</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ── DATA ──
+// ── CONFIG ──
 const CHANNELS = {
   twitter:  { name:"Twitter/X",  icon:"𝕏", color:"#1DA1F2", bg:"#1a2530" },
   linkedin: { name:"LinkedIn",   icon:"in", color:"#0A66C2", bg:"#1a2030" },
@@ -299,906 +267,445 @@ const CHANNELS = {
   github:   { name:"GitHub",     icon:"⌥",  color:"#8B949E", bg:"#1a1e22" },
   seo:      { name:"SEO",        icon:"◎",  color:"#34A853", bg:"#1a2a1e" },
 };
-
 const STATUS_STYLES = {
-  queued:   { label:"Queued",       bg:"#2e261e", border:"#a0845c", text:"#c4a87a" },
-  draft:    { label:"Draft",        bg:"#1e2a1e", border:"#4a7a4a", text:"#7ab87a" },
-  review:   { label:"Needs Review", bg:"#2a2510", border:"#d4a843", text:"#d4a843" },
-  approved: { label:"Approved",     bg:"#1e2e1e", border:"#4a9",    text:"#4a9"    },
-  posted:   { label:"Posted",       bg:"#1a2030", border:"#5a9ec4", text:"#5a9ec4" },
-  failed:   { label:"Failed",       bg:"#2e1e1e", border:"#c44",    text:"#c44"    },
+  queued:   { l:"Queued",       bg:"#2e261e", bc:"#a0845c", c:"#c4a87a" },
+  draft:    { l:"Draft",        bg:"#1e2a1e", bc:"#4a7a4a", c:"#7ab87a" },
+  review:   { l:"Needs Review", bg:"#2a2510", bc:"#d4a843", c:"#d4a843" },
+  approved: { l:"Approved",     bg:"#1e2e1e", bc:"#5ba86e", c:"#5ba86e" },
+  posted:   { l:"Posted",       bg:"#1a2030", bc:"#5a9ec4", c:"#5a9ec4" },
+  failed:   { l:"Failed",       bg:"#2e1e1e", bc:"#c44d2c", c:"#c44d2c" },
 };
-
 const PLATFORM_INSTRUCTIONS = {
-  twitter: `PLATFORM: Twitter/X (twitter.com)
-STEPS:
-1. Navigate to twitter.com — you should already be logged in
-2. Click the compose button (blue circle with feather/plus icon)
-3. Type the content EXACTLY as provided
-4. If this is a thread: post the first tweet, then reply to it with each subsequent tweet
-5. Attach image if specified
-6. ⚠️ PAUSE before clicking "Post" — tell the user what you're about to post
-7. Only click Post after user confirms
-8. Screenshot the posted tweet
-9. Return here and mark task as posted`,
-
-  linkedin: `PLATFORM: LinkedIn (linkedin.com)
-STEPS:
-1. Navigate to linkedin.com — you should already be logged in
-2. Click "Start a post" at top of feed
-3. If this is an article, click "Write article" instead
-4. Enter the content EXACTLY as provided
-5. Upload image if specified
-6. Add hashtags from the content
-7. ⚠️ PAUSE before clicking "Post" — tell the user what you're about to post
-8. Only post after user confirms
-9. Screenshot and return here to mark as posted`,
-
-  reddit: `PLATFORM: Reddit (reddit.com)
-STEPS:
-1. Navigate to the specified subreddit
-2. Check sidebar rules for self-promotion policies — STOP if disallowed
-3. Click "Create Post"
-4. Select "Text" post type
-5. Enter title and body EXACTLY as provided
-6. Select appropriate flair if required
-7. ⚠️ PAUSE before submitting — tell the user what you're about to post
-8. Submit only after user confirms
-9. Screenshot and return here`,
-
-  hn: `PLATFORM: Hacker News (news.ycombinator.com)
-STEPS:
-1. Navigate to news.ycombinator.com
-2. Click "submit" in the top navigation
-3. Enter the title exactly as provided
-4. Enter URL: https://stockyard.dev
-5. ⚠️ PAUSE before submitting
-6. After submission, immediately post the prepared first comment
-7. Monitor for replies for the next few minutes
-8. Screenshot and return here`,
-
-  blog: `PLATFORM: stockyard.dev/blog (internal)
-STEPS:
-1. This content needs to be published to the Stockyard blog
-2. The content is provided in markdown format
-3. Create the blog post file and push to the repo, OR
-4. Notify the user that this is a blog task requiring manual publishing
-5. Provide the formatted content ready to paste`,
-
-  devto: `PLATFORM: Dev.to (dev.to)
-STEPS:
-1. Navigate to dev.to — you should be logged in
-2. Click "Create Post"
-3. Enter title, tags, and content as provided
-4. Set canonical URL to stockyard.dev/blog/[slug] if cross-posting
-5. Add cover image if specified
-6. ⚠️ PAUSE before publishing — preview first
-7. Publish only after user confirms
-8. Screenshot and return here`,
-
-  github: `PLATFORM: GitHub (github.com/stockyard-dev/stockyard)
-STEPS:
-1. Navigate to the Stockyard repository
-2. Execute the specified GitHub task (README update, issue creation, etc.)
-3. ⚠️ PAUSE before committing/submitting
-4. Confirm with user
-5. Screenshot and return here`,
-
-  seo: `PLATFORM: Google Search + various directories
-STEPS:
-1. Open Google in incognito mode
-2. Search each target keyword
-3. Note Stockyard's position in results (page and rank)
-4. Compile report: keyword, position, title shown, snippet
-5. Compare to previous week's data if available
-6. Report findings back to user — no posting required`,
+  twitter: "1. Navigate to twitter.com\n2. Click compose\n3. Type content EXACTLY\n4. For threads: post first, reply each\n5. PAUSE before Post — confirm with user\n6. Screenshot result",
+  linkedin: "1. Navigate to linkedin.com\n2. Click 'Start a post'\n3. Enter content EXACTLY\n4. PAUSE before Post — confirm with user\n5. Screenshot result",
+  reddit: "1. Navigate to subreddit\n2. Check sidebar rules — STOP if self-promo disallowed\n3. Create Text post\n4. PAUSE before Submit — confirm with user\n5. Screenshot result",
+  hn: "1. Navigate to news.ycombinator.com\n2. Click submit\n3. Enter title + URL\n4. PAUSE before Submit\n5. Post prepared first comment\n6. Screenshot result",
+  blog: "1. Blog content in markdown\n2. Needs manual publish or git push\n3. Provide formatted content",
+  devto: "1. Navigate to dev.to\n2. Click Create Post\n3. Enter title, tags, content\n4. Set canonical URL if cross-posting\n5. PAUSE before Publish\n6. Screenshot result",
+  github: "1. Navigate to repo\n2. Execute specified task\n3. PAUSE before committing\n4. Screenshot result",
+  seo: "1. Open Google in incognito\n2. Search each keyword\n3. Note position\n4. Report findings — no posting",
 };
 
-// Default tasks
-const DEFAULT_TASKS = [
-  { id:"t1", channel:"twitter", status:"review", priority:"critical", scheduled:"Day 1",
-    title:"Launch Thread (5 tweets)",
-    content:`TWEET 1 (pin this):
-Introducing Stockyard — six LLM infrastructure apps in one Go binary.
-
-Proxy. Observe. Trust. Studio. Forge. Exchange.
-
-Zero dependencies. curl -sSL stockyard.dev/install | sh
-
-You're running in 30 seconds. 🧵
-
-TWEET 2:
-The problem: you shipped an app with LLM calls.
-
-Now you need cost caps, caching, safety filters, routing, observability, prompt management, and audit trails.
-
-That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.
-
-TWEET 3:
-Stockyard replaces all of them.
-
-One binary. 58 middleware modules. 16 LLM providers.
-
-Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more.
-
-Just change your base URL.
-
-TWEET 4:
-Try it live — no signup needed.
-
-Paste your API key in our playground and route your first request through 58 middleware modules:
-
-stockyard.dev/playground
-
-TWEET 5:
-Free forever self-hosted.
-Pro $9.99/mo.
-Cloud (fully managed) $29.99/mo.
-
-Every tier gets all 6 apps, all 58 modules, all 16 providers.
-
-stockyard.dev` },
-
-  { id:"t2", channel:"hn", status:"review", priority:"critical", scheduled:"Day 1",
-    title:"Show HN Submission",
-    content:`TITLE: Show HN: Stockyard – Six LLM apps, one Go binary, zero dependencies
-
-URL: https://stockyard.dev
-
-FIRST COMMENT (post immediately after submission):
-Hey HN, I built Stockyard because I was tired of stitching together separate tools for proxy routing, observability, cost tracking, and compliance every time I shipped an LLM-powered app.
-
-Stockyard is one Go binary that gives you 6 integrated apps:
-• Proxy — 58 middleware modules, 16 providers
-• Observe — traces, costs, anomaly detection
-• Trust — immutable audit ledger, policies
-• Studio — prompt management, experiments
-• Forge — workflow DAGs, tool registry
-• Exchange — config marketplace
-
-The whole thing runs on SQLite — no external databases needed.
-
-Try it live: stockyard.dev/playground (no signup)
-Self-hosted is free forever.
-
-Happy to answer any questions about the architecture (it's all Go, ~15k LOC, single binary).` },
-
-  { id:"t3", channel:"blog", status:"draft", priority:"critical", scheduled:"Day 1",
-    title:"Why We Built Stockyard",
-    content:`# Why We Built Stockyard — And Why Your LLM Stack Doesn't Need 12 Tools
-
-You shipped an app with LLM calls. Congratulations. Now the real work begins.
-
-You need cost caps so a prompt injection doesn't drain your account overnight. You need caching because identical requests shouldn't cost you twice. You need safety filters, routing between providers, observability, prompt versioning, audit trails for compliance, and some way to share configs across environments.
-
-The ecosystem's answer? 134+ individual tools, each solving one piece of the puzzle. Each with its own database requirements, deployment story, and failure modes.
-
-We built Stockyard because that's insane.
-
-## One Binary. Six Apps.
-
-Stockyard ships as a single Go binary with zero external dependencies. It uses SQLite internally — no Redis, no Postgres, no Docker compose files with 8 services.
-
-curl -sSL stockyard.dev/install | sh and you have a full platform...
-
-[CONTINUE: ~2000 words covering the 6 apps, architecture decisions, why Go + SQLite, and the vision]` },
-
-  { id:"t4", channel:"reddit", status:"queued", priority:"high", scheduled:"Day 2",
-    title:"r/golang + r/LocalLLaMA + r/selfhosted",
-    content:`SUBREDDIT: r/golang
-TITLE: Show r/golang: Built a complete LLM infrastructure platform in Go — single binary, 58 middleware modules, zero dependencies
-
-BODY:
-Been working on Stockyard for a while — it's a single Go binary that gives you 6 integrated LLM infrastructure apps: proxy routing, cost observability, audit logging, prompt management, workflow orchestration, and a config marketplace.
-
-Some technical highlights:
-- Pure Go, ~15k LOC, single binary output
-- SQLite for all persistence (no external DBs)
-- 58 middleware modules in the proxy chain
-- 16 LLM provider adapters (OpenAI, Anthropic, Gemini, Groq, etc.)
-- Hash-chained audit ledger in the Trust app
-- Go 1.22 ServeMux for routing
-
-Would love architectural feedback from this community. The proxy engine is the most interesting piece if you want to dig in.
-
-stockyard.dev | github.com/stockyard-dev/stockyard
-
----
-
-SUBREDDIT: r/LocalLLaMA
-TITLE: Built an open-source LLM proxy with 58 middleware modules — works with local models via Ollama too
-
-BODY: Stockyard is a self-hosted LLM infrastructure platform. Single binary, zero deps. Supports 16 providers including Ollama for local models. Get cost tracking, caching, rate limiting, and safety filters for your local LLM setup. Free forever. stockyard.dev
-
----
-
-SUBREDDIT: r/selfhosted
-TITLE: Self-hosted LLM infrastructure platform — replaces 6+ tools with one Go binary
-
-BODY: One Go binary. SQLite. Zero external dependencies. Gives you LLM proxy routing, cost tracking, audit logs, prompt management, workflow engine, and a config marketplace. curl -sSL stockyard.dev/install | sh. Free forever for self-hosted. Would love feedback.` },
-
-  { id:"t5", channel:"linkedin", status:"queued", priority:"high", scheduled:"Day 3",
-    title:"LLM Middleware Sprawl Article",
-    content:`Your LLM stack doesn't need 12 tools.
-
-I've been building Stockyard — a complete LLM infrastructure platform that ships as a single Go binary with zero external dependencies.
-
-No Redis. No Postgres. No Docker compose files. Just curl | sh and you have:
-
-→ Proxy routing across 16 providers
-→ Real-time cost tracking and observability
-→ Immutable audit logging for compliance
-→ Prompt management and versioning
-→ Workflow orchestration (DAG engine)
-→ A config marketplace
-
-It replaces the 134+ middleware tools that teams currently cobble together.
-
-Try the live playground (no signup): stockyard.dev/playground
-
-Self-hosted is free forever.
-
-#DevTools #LLM #GoLang #AI #Infrastructure #OpenSource` },
-
-  { id:"t6", channel:"blog", status:"queued", priority:"high", scheduled:"Day 5",
-    title:"Getting Started in 5 Minutes",
-    content:`# Getting Started with Stockyard in 5 Minutes
-
-[Tutorial: install → configure → first proxied request → see it in Observe]
-
-Estimated length: 1200 words with code blocks and screenshots.
-Include: install command, config file, curl test, playground walkthrough.` },
-
-  { id:"t7", channel:"twitter", status:"queued", priority:"medium", scheduled:"Day 7",
-    title:"Module Spotlight Thread",
-    content:`Stockyard has 58 middleware modules.
-
-Here are 10 that'll save you from writing custom code:
-
-🔒 tenantwall — per-tenant budget enforcement
-💰 costcap — hard spend limits per request/day/month
-🔄 retrywright — automatic retries with exponential backoff
-📊 observe hooks — every request traced with zero config
-🛡️ contentguard — input/output safety filters
-⚡ cachebolt — semantic response caching
-🔑 keyrotator — automatic API key rotation
-📝 promptlog — immutable prompt audit trail
-🌐 loadbalance — weighted provider routing
-🎯 modelpicker — automatic model selection by cost/latency
-
-All 58 ship in the binary. Zero configuration to activate.
-
-stockyard.dev/docs` },
-
-  { id:"t8", channel:"blog", status:"queued", priority:"high", scheduled:"Day 10",
-    title:"Stockyard vs LiteLLM vs Portkey",
-    content:`# Stockyard vs LiteLLM vs Portkey: Honest Comparison
-
-[SEO-targeted comparison. ~2500 words. Honest pros/cons for each. Target keywords: "llm proxy comparison", "litellm alternative", "portkey alternative"]` },
-
-  { id:"t9", channel:"seo", status:"queued", priority:"medium", scheduled:"Day 10",
-    title:"Directory Submissions (10 sites)",
-    content:`Submit Stockyard to these directories:
-
-1. awesome-go (GitHub PR)
-2. awesome-llm-tools (GitHub PR)  
-3. Product Hunt (upcoming page)
-4. AlternativeTo (as alternative to LiteLLM, Helicone, Portkey)
-5. Slant.co
-6. LibHunt
-7. StackShare
-8. Console.dev (submit for review)
-9. Free for Dev (GitHub PR)
-10. OpenAlternative.co
-
-For each: submit with consistent description, screenshot, and category tags.` },
-
-  { id:"t10", channel:"twitter", status:"queued", priority:"medium", scheduled:"Day 14",
-    title:"Week 2 Metrics Update",
-    content:`Week 2 of Stockyard, fully transparent:
-
-⭐ [X] GitHub stars
-📦 [X] self-hosted installs
-☁️ [X] cloud signups
-🎮 [X] playground sessions
-💰 $[X] proxied through the platform
-
-What worked: [fill in]
-What didn't: [fill in]
-What's next: [fill in]
-
-Numbers don't lie. We're just getting started.
-
-stockyard.dev` },
-
-  { id:"t11", channel:"blog", status:"queued", priority:"high", scheduled:"Day 15",
-    title:"58 Modules Explained",
-    content:`# Every Stockyard Module, Explained
-
-[Reference page: one-liner for each of the 58 middleware modules with use case and category. SEO target: "llm proxy middleware", "llm middleware modules"]` },
-
-  { id:"t12", channel:"devto", status:"queued", priority:"low", scheduled:"Day 16",
-    title:"Cross-post: Getting Started",
-    content:`Cross-post the "Getting Started in 5 Minutes" blog post to Dev.to.
-
-Set canonical URL to: https://stockyard.dev/blog/getting-started
-Tags: go, opensource, ai, devtools` },
-
-  { id:"t13", channel:"blog", status:"queued", priority:"high", scheduled:"Day 20",
-    title:"Case Study: Managing LLM Spend",
-    content:`# How Stockyard's Budget Wall Saved $5,000 in Runaway LLM Costs
-
-[Case study based on real stress test data. The tenantwall module caught the budget limit at exactly $5. Show the Observe traces, the 429 → budget exceeded flow, and how it prevents surprise bills.]
-
-Include the actual Observe screenshot from the stress test.` },
-
-  { id:"t14", channel:"twitter", status:"queued", priority:"medium", scheduled:"Day 22",
-    title:"Observe Demo Video Clip",
-    content:`See every LLM request. Miss nothing.
-
-Stockyard Observe traces every request through your proxy automatically:
-
-→ Cost per request
-→ Latency by provider
-→ Token usage
-→ Error rates
-→ Budget enforcement
-
-No Datadog. No Grafana. No config files.
-
-It's built into the binary.
-
-[Attach: 30-second screen recording of Observe page with live data]
-
-stockyard.dev/observe` },
-
-  { id:"t15", channel:"blog", status:"queued", priority:"high", scheduled:"Day 25",
-    title:"Stockyard + Vercel AI SDK Guide",
-    content:`# Using Stockyard with Vercel AI SDK
-
-[Integration guide: how to point Vercel AI SDK at Stockyard proxy. ~1500 words with code examples. SEO target: "vercel ai sdk proxy", "vercel ai sdk cost tracking"]` },
-
-  { id:"t16", channel:"twitter", status:"queued", priority:"high", scheduled:"Day 30",
-    title:"30-Day Recap Thread",
-    content:`30 days of Stockyard. Here's everything:
-
-📊 THE NUMBERS:
-⭐ [X] GitHub stars (started at 0)
-📦 [X] total installs
-☁️ [X] cloud users
-💰 $[X] proxied through the platform
-📝 [X] blog posts published
-🐛 [X] bugs fixed
-
-🏆 BIGGEST WINS:
-[fill in top 3]
-
-😬 BIGGEST MISSES:
-[fill in top 2]
-
-🔮 NEXT 30 DAYS:
-[fill in roadmap highlights]
-
-Building in public is terrifying and addictive.
-
-Thank you to everyone who tried it, broke it, or told us what sucked. We're just getting started.
-
-stockyard.dev` },
-];
-
-// ── STATE ──
-let state = {
-  tasks: [],
-  view: "dashboard",
-  filter: "all",
-  channelFilter: "all",
-  selectedId: null,
-  agentStatus: "idle",
-  log: [{ time: now(), msg: "Marketing Ops initialized", type: "info" }],
-};
-
-function now() { return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
-
-// Load from localStorage or use defaults
-function loadState() {
-  const saved = localStorage.getItem("stockyard-mktg");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      state.tasks = parsed.tasks || DEFAULT_TASKS;
-      state.log = parsed.log || state.log;
-    } catch(e) { state.tasks = DEFAULT_TASKS; }
-  } else {
-    state.tasks = DEFAULT_TASKS;
+// ── API CLIENT ──
+let _adminKey = sessionStorage.getItem('sy_admin_key') || '';
+async function api(path, opts = {}) {
+  const headers = opts.headers || {};
+  if (_adminKey) headers['X-Admin-Key'] = _adminKey;
+  if (opts.body && typeof opts.body === 'string') headers['Content-Type'] = 'application/json';
+  try {
+    const r = await fetch(path, { ...opts, headers });
+    if (!r.ok) {
+      const t = await r.text().catch(() => '');
+      try { return { _error: r.status, ...JSON.parse(t) }; }
+      catch { return { _error: r.status, message: t }; }
+    }
+    return await r.json();
+  } catch (e) {
+    return { _error: e.message };
   }
 }
 
-function saveState() {
-  localStorage.setItem("stockyard-mktg", JSON.stringify({ tasks: state.tasks, log: state.log }));
+// ── STATE ──
+let S = { tasks: [], view: 'dashboard', filter: 'all', chFilter: 'all', sel: null, log: [], stats: {} };
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── DATA LOADING ──
+async function loadTasks() {
+  let url = '/api/marketing/tasks';
+  const params = [];
+  if (S.filter !== 'all') params.push('status=' + S.filter);
+  if (S.chFilter !== 'all') params.push('channel=' + S.chFilter);
+  // Always load all for stats, filter client-side for now
+  const data = await api('/api/marketing/tasks');
+  if (data._error) { console.error('Failed to load tasks:', data); return; }
+  S.tasks = data;
 }
 
-function addLog(msg, type="info") {
-  state.log.unshift({ time: now(), msg, type });
-  if (state.log.length > 100) state.log.length = 100;
-  saveState();
+async function loadStats() {
+  const data = await api('/api/marketing/stats');
+  if (!data._error) S.stats = data;
+}
+
+async function loadLog() {
+  const data = await api('/api/marketing/log');
+  if (!data._error) S.log = data;
+}
+
+async function seedIfEmpty() {
+  const data = await api('/api/marketing/tasks');
+  if (!data._error && data.length === 0) {
+    await api('/api/marketing/tasks/seed', { method: 'POST', body: '{}' });
+    await loadTasks();
+  } else if (!data._error) {
+    S.tasks = data;
+  }
 }
 
 // ── RENDER ──
-function render() {
+function filteredTasks() {
+  return S.tasks.filter(t =>
+    (S.filter === 'all' || t.status === S.filter) &&
+    (S.chFilter === 'all' || t.channel === S.chFilter)
+  );
+}
+
+function statusCounts() {
+  const cn = {};
+  Object.keys(STATUS_STYLES).forEach(s => cn[s] = S.tasks.filter(t => t.status === s).length);
+  cn.total = S.tasks.length;
+  return cn;
+}
+
+function channelCounts() {
+  const cn = {};
+  Object.keys(CHANNELS).forEach(c => cn[c] = S.tasks.filter(t => t.channel === c).length);
+  return cn;
+}
+
+async function render() {
   renderSidebar();
   renderMain();
   renderPanel();
 }
 
 function renderSidebar() {
-  const counts = { all: state.tasks.length };
-  Object.keys(STATUS_STYLES).forEach(s => counts[s] = state.tasks.filter(t=>t.status===s).length);
-  const chCounts = {};
-  Object.keys(CHANNELS).forEach(c => chCounts[c] = state.tasks.filter(t=>t.channel===c).length);
-
-  document.getElementById("sidebar").innerHTML = `
-    <div class="nav-section">
-      <div class="nav-label">Views</div>
-      ${["dashboard","schedule","prompts","log"].map(v => `
-        <button class="nav-btn ${state.view===v?'active':''}" onclick="setView('${v}')">
-          <span class="nav-icon">${{dashboard:'◫',schedule:'◷',prompts:'⌘',log:'◉'}[v]}</span>
-          ${v.charAt(0).toUpperCase()+v.slice(1)}
-        </button>
-      `).join("")}
+  const cn = statusCounts();
+  const cc = channelCounts();
+  document.getElementById('sidebar').innerHTML = `
+    <div class="nav-section"><div class="nav-label">Views</div>
+    ${[['dashboard','◫'],['schedule','◷'],['prompts','⌘'],['log','◉'],['add','＋']].map(([v,i]) => `
+      <button class="nav-btn ${S.view===v?'active':''}" onclick="setView('${v}')">
+        <span style="width:14px;text-align:center;font-size:.65rem">${i}</span>${v[0].toUpperCase()+v.slice(1)}
+      </button>`).join('')}
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Status</div>
-      <button class="nav-btn ${state.filter==='all'?'active':''}" onclick="setFilter('all')">
-        <span class="nav-icon">◻</span>All<span class="badge">${counts.all}</span>
-      </button>
-      ${Object.entries(STATUS_STYLES).map(([k,v]) => `
-        <button class="nav-btn ${state.filter===k?'active':''}" onclick="setFilter('${k}')">
-          <span class="nav-icon" style="color:${v.text}">●</span>${v.label}<span class="badge">${counts[k]||0}</span>
-        </button>
-      `).join("")}
+    <div class="nav-section"><div class="nav-label">Status</div>
+    <button class="nav-btn ${S.filter==='all'?'active':''}" onclick="setFilter('all')">All<span class="badge">${cn.total}</span></button>
+    ${Object.entries(STATUS_STYLES).map(([k,v]) => `
+      <button class="nav-btn ${S.filter===k?'active':''}" onclick="setFilter('${k}')">
+        <span class="ch-dot" style="background:${v.c}"></span>${v.l}<span class="badge">${cn[k]||0}</span>
+      </button>`).join('')}
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Channels</div>
-      <button class="nav-btn ${state.channelFilter==='all'?'active':''}" onclick="setChannelFilter('all')">
-        <span class="nav-icon">◻</span>All channels
-      </button>
-      ${Object.entries(CHANNELS).map(([k,ch]) => `
-        <button class="nav-btn ${state.channelFilter===k?'active':''}" onclick="setChannelFilter('${k}')">
-          <span class="channel-dot" style="background:${ch.color}"></span>${ch.name}<span class="badge">${chCounts[k]||0}</span>
-        </button>
-      `).join("")}
-    </div>
-  `;
+    <div class="nav-section"><div class="nav-label">Channels</div>
+    <button class="nav-btn ${S.chFilter==='all'?'active':''}" onclick="setChannelFilter('all')">All</button>
+    ${Object.entries(CHANNELS).map(([k,v]) => `
+      <button class="nav-btn ${S.chFilter===k?'active':''}" onclick="setChannelFilter('${k}')">
+        <span class="ch-dot" style="background:${v.color}"></span>${v.name}<span class="badge">${cc[k]||0}</span>
+      </button>`).join('')}
+    </div>`;
 }
 
 function renderMain() {
-  const el = document.getElementById("main-content");
-  if (state.view === "dashboard") renderDashboard(el);
-  else if (state.view === "schedule") renderSchedule(el);
-  else if (state.view === "prompts") renderPrompts(el);
-  else if (state.view === "log") renderLog(el);
+  const el = document.getElementById('main-content');
+  if (S.view === 'dashboard') renderDashboard(el);
+  else if (S.view === 'schedule') renderSchedule(el);
+  else if (S.view === 'prompts') renderPrompts(el);
+  else if (S.view === 'log') renderLog(el);
+  else if (S.view === 'add') renderAddTask(el);
 }
 
 function renderDashboard(el) {
-  const tasks = state.tasks.filter(t => {
-    if (state.filter !== "all" && t.status !== state.filter) return false;
-    if (state.channelFilter !== "all" && t.channel !== state.channelFilter) return false;
-    return true;
-  });
-
-  const counts = {};
-  Object.keys(STATUS_STYLES).forEach(s => counts[s] = state.tasks.filter(t=>t.status===s).length);
-
-  const reviewCount = counts.review || 0;
-  const approvedCount = counts.approved || 0;
-
+  const tasks = filteredTasks();
+  const cn = statusCounts();
   el.innerHTML = `
-    <div class="view-header">
-      <h2 class="view-title">Task <span>Queue</span></h2>
-      <div class="view-actions">
-        <button class="btn btn-rust" onclick="showAddTask()">+ New Task</button>
-        ${reviewCount > 0 ? `<button class="btn btn-amber" onclick="approveAllReview()">Approve All (${reviewCount})</button>` : ''}
-        ${approvedCount > 0 ? `<button class="btn btn-green" onclick="startAgent()">Run Agent (${approvedCount})</button>` : ''}
-        <button class="btn btn-ghost" onclick="exportTasks()">Export</button>
-        <label class="btn btn-ghost" style="cursor:pointer"><input type="file" accept=".json" onchange="importTasks(event)" style="display:none">Import</label>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2 style="font-size:1.2rem">Task <span style="color:var(--rust-light)">Queue</span></h2>
+      <div style="display:flex;gap:5px">
+        ${cn.review ? `<button class="btn btn-amber" onclick="approveAllReview()">Approve All (${cn.review})</button>` : ''}
+        ${cn.approved ? `<button class="btn btn-green" onclick="startAgent()">Run Agent (${cn.approved})</button>` : ''}
         <button class="btn btn-ghost" onclick="resetTasks()">Reset</button>
       </div>
     </div>
-
     <div class="stats-row">
-      ${[
-        {n:counts.queued||0, l:"Queued", c:"var(--leather-light)", bc:"var(--leather-dim)"},
-        {n:counts.draft||0, l:"Drafts", c:"#7ab87a", bc:"#3a6a3a"},
-        {n:counts.review||0, l:"Review", c:"var(--gold)", bc:"var(--gold-dim)"},
-        {n:counts.approved||0, l:"Approved", c:"var(--green)", bc:"var(--green-dim)"},
-        {n:counts.posted||0, l:"Posted", c:"var(--blue)", bc:"#2a5070"},
-        {n:state.tasks.length, l:"Total", c:"var(--cream)", bc:"var(--bg4)"},
-      ].map(s => `
-        <div class="stat-card" style="border-bottom-color:${s.bc}">
-          <div class="stat-num" style="color:${s.c}">${s.n}</div>
-          <div class="stat-label">${s.l}</div>
-          <style>.stat-card { border-bottom: 2px solid transparent; }</style>
-        </div>
-      `).join("")}
+    ${[
+      {n:cn.queued||0,l:'Queued',c:'var(--leather-light)'},
+      {n:cn.draft||0,l:'Drafts',c:'#7ab87a'},
+      {n:cn.review||0,l:'Review',c:'var(--gold)'},
+      {n:cn.approved||0,l:'Approved',c:'var(--green)'},
+      {n:cn.posted||0,l:'Posted',c:'var(--blue)'},
+      {n:cn.total,l:'Total',c:'var(--cream)'},
+    ].map(s => `<div class="stat-card"><div class="stat-num" style="color:${s.c}">${s.n}</div><div class="stat-label">${s.l}</div></div>`).join('')}
     </div>
-
-    <div class="task-list">
-      ${tasks.map(t => {
-        const ch = CHANNELS[t.channel];
-        const st = STATUS_STYLES[t.status];
-        return `
-          <div class="task-card ${state.selectedId===t.id?'selected':''}"
-               data-task-id="${t.id}"
-               data-status="${t.status}"
-               data-channel="${t.channel}"
-               data-priority="${t.priority}"
-               data-scheduled="${t.scheduled}"
-               data-content="${encodeURIComponent(t.content)}"
-               data-platform-instructions="${encodeURIComponent(PLATFORM_INSTRUCTIONS[t.channel]||'')}"
-               onclick="selectTask('${t.id}')">
-            <div class="task-channel" style="background:${ch.bg};color:${ch.color};border:1px solid ${ch.color}30">${ch.icon}</div>
-            <div class="task-info">
-              <h4>${t.title}</h4>
-              <div class="task-meta">${ch.name} · ${t.scheduled} · ${t.priority}</div>
-            </div>
-            <div class="task-right">
-              <div class="status-pill" style="background:${st.bg};border-color:${st.border};color:${st.text}">${st.label}</div>
-            </div>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
+    <div class="task-list">${tasks.map(t => {
+      const ch = CHANNELS[t.channel] || CHANNELS.twitter;
+      const st = STATUS_STYLES[t.status] || STATUS_STYLES.queued;
+      return `<div class="task-card ${S.sel===t.id?'selected':''}"
+        data-task-id="${t.id}" data-status="${t.status}" data-channel="${t.channel}"
+        data-priority="${t.priority}" data-scheduled="${t.scheduled||''}"
+        data-content="${encodeURIComponent(t.content||'')}"
+        data-platform-instructions="${encodeURIComponent(PLATFORM_INSTRUCTIONS[t.channel]||'')}"
+        onclick="selectTask('${t.id}')">
+        <div class="task-channel" style="background:${ch.bg};color:${ch.color};border:1px solid ${ch.color}30">${ch.icon}</div>
+        <div class="task-info"><h4>${esc(t.title)}</h4><div class="task-meta">${ch.name} · ${t.scheduled||''} · ${t.priority}</div></div>
+        <div class="task-right"><div class="status-pill" style="background:${st.bg};border-color:${st.bc};color:${st.c}">${st.l}</div></div>
+      </div>`;
+    }).join('')}</div>`;
 }
 
 function renderSchedule(el) {
-  const sorted = [...state.tasks].sort((a,b) => {
-    const da = parseInt(a.scheduled.replace(/\D/g,'')) || 99;
-    const db = parseInt(b.scheduled.replace(/\D/g,'')) || 99;
-    return da - db;
-  });
-
-  el.innerHTML = `
-    <div class="view-header">
-      <h2 class="view-title">30-Day <span>Schedule</span></h2>
-    </div>
-    <div class="timeline">
-      ${sorted.map(t => {
-        const ch = CHANNELS[t.channel];
-        const cls = t.status === "posted" ? "done" : t.status === "approved" ? "active" : "";
-        return `
-          <div class="timeline-item ${cls}" onclick="selectTask('${t.id}');setView('dashboard');" style="cursor:pointer">
-            <div class="timeline-day">${t.scheduled}</div>
-            <div class="timeline-title">${t.title}</div>
-            <div class="timeline-channel" style="color:${ch.color}">${ch.icon} ${ch.name} · ${STATUS_STYLES[t.status].label}</div>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
+  const sorted = [...S.tasks].sort((a,b) =>
+    (parseInt((a.scheduled||'99').replace(/\D/g,''))||99) - (parseInt((b.scheduled||'99').replace(/\D/g,''))||99));
+  el.innerHTML = `<h2 style="font-size:1.2rem;margin-bottom:16px">30-Day <span style="color:var(--rust-light)">Schedule</span></h2>
+    <div class="timeline">${sorted.map(t => {
+      const ch = CHANNELS[t.channel] || CHANNELS.twitter;
+      const cls = t.status==='posted'?'done':t.status==='approved'?'active':'';
+      return `<div class="timeline-item ${cls}" style="cursor:pointer" onclick="selectTask('${t.id}');setView('dashboard')">
+        <div class="timeline-day">${t.scheduled||''}</div>
+        <div class="timeline-title">${esc(t.title)}</div>
+        <div class="timeline-channel" style="color:${ch.color}">${ch.icon} ${ch.name} · ${(STATUS_STYLES[t.status]||{}).l||t.status}</div>
+      </div>`;
+    }).join('')}</div>`;
 }
 
 function renderPrompts(el) {
-  el.innerHTML = `
-    <div class="view-header">
-      <h2 class="view-title">Agent <span>Prompts</span></h2>
-    </div>
-    <div style="padding:16px 20px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:20px;font-size:.82rem;line-height:1.8;color:var(--cream-dim)">
+  el.innerHTML = `<h2 style="font-size:1.2rem;margin-bottom:16px">Agent <span style="color:var(--rust-light)">Prompts</span></h2>
+    <div style="padding:14px;background:var(--bg2);border:1px solid var(--bg3);margin-bottom:18px;font-size:.8rem;line-height:1.8;color:var(--cream-dim)">
       <strong style="color:var(--cream)">How to use with Claude in Chrome:</strong><br>
       1. Approve tasks in the Dashboard<br>
-      2. Open the Claude Chrome extension<br>
-      3. Say: <code>Navigate to stockyard.dev/marketing and execute approved tasks</code><br>
-      4. The agent reads the page, finds approved tasks, and begins execution<br>
-      5. It will PAUSE before every post for your confirmation<br><br>
-      Or copy a specific prompt below and paste the task content into it.
+      2. Open Claude in Chrome on this page<br>
+      3. Say: <code>Read this page and execute all approved marketing tasks</code><br>
+      4. The agent reads task cards, finds approved ones, begins execution<br>
+      5. It will <strong style="color:var(--gold)">PAUSE before every post</strong> for your confirmation
     </div>
-    ${Object.entries(PLATFORM_INSTRUCTIONS).map(([key, prompt]) => {
-      const ch = CHANNELS[key];
-      return `
-        <div class="prompt-card" id="prompt-${key}">
-          <div class="prompt-header" onclick="togglePrompt('${key}')">
-            <h4><span style="color:${ch.color}">${ch.icon}</span> ${ch.name} Agent</h4>
-            <button class="prompt-copy-btn" onclick="event.stopPropagation();copyPrompt('${key}')">Copy</button>
-          </div>
-          <div class="prompt-body">${escHtml(prompt)}</div>
-        </div>
-      `;
-    }).join("")}
-
     <div class="prompt-card" id="prompt-master">
       <div class="prompt-header" onclick="togglePrompt('master')">
-        <h4><span style="color:var(--rust-light)">⌘</span> Master Agent (reads page automatically)</h4>
+        <h4>⌘ Master Agent Prompt</h4>
         <button class="prompt-copy-btn" onclick="event.stopPropagation();copyPrompt('master')">Copy</button>
       </div>
-      <div class="prompt-body">Navigate to stockyard.dev/marketing (or the current page if already there).
+      <div class="prompt-body" id="pb-master">Read this page at stockyard.dev/marketing. You are the Stockyard Marketing Agent.
 
-You are the Stockyard Marketing Agent. This page is your operations dashboard.
+Look for elements with class "task-card" that have data-status="approved". For each:
+1. Decode data-content (URL-encoded) and data-platform-instructions
+2. Open the target platform in a new tab
+3. Follow the platform instructions step by step
+4. ALWAYS PAUSE before clicking Post/Submit — ask me to confirm
+5. After posting, return here and tell me it's done
 
-INSTRUCTIONS:
-1. Read the page. Look for elements with class "task-card" that have data-status="approved".
-2. For each approved task, read:
-   - data-channel (which platform)
-   - data-content (URL-encoded content to post)
-   - data-platform-instructions (URL-encoded step-by-step guide)
-3. Process tasks in priority order: critical > high > medium > low.
-4. For each task:
-   a. Decode the content and platform instructions
-   b. Open the target platform in a new tab
-   c. Follow the platform instructions step by step
-   d. ALWAYS PAUSE before the final submit action
-   e. Ask me to confirm before posting
-   f. After posting, return to this page
-5. Report your progress after each task.
-
-SAFETY RULES:
-- Never post without my explicit confirmation
-- Never modify the copy
-- If you hit a CAPTCHA, 2FA, or error, stop and tell me
-- Take screenshots of everything you post
-- If a platform's rules prevent the post, tell me why
-
-Begin by telling me how many approved tasks you see and asking if I want to start.</div>
+Process in priority order: critical > high > medium > low.
+Never modify copy. Stop on CAPTCHAs or errors. Screenshot everything.</div>
     </div>
-  `;
+    ${Object.entries(PLATFORM_INSTRUCTIONS).map(([k,p]) => {
+      const ch = CHANNELS[k];
+      return `<div class="prompt-card" id="prompt-${k}">
+        <div class="prompt-header" onclick="togglePrompt('${k}')">
+          <h4><span style="color:${ch.color}">${ch.icon}</span> ${ch.name} Agent</h4>
+          <button class="prompt-copy-btn" onclick="event.stopPropagation();copyPrompt('${k}')">Copy</button>
+        </div>
+        <div class="prompt-body" id="pb-${k}">${esc(p)}</div>
+      </div>`;
+    }).join('')}`;
 }
 
-function renderLog(el) {
+async function renderLog(el) {
+  await loadLog();
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="font-size:1.2rem">Agent <span style="color:var(--rust-light)">Log</span></h2>
+    <button class="btn btn-ghost" onclick="clearLog()">Clear</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--bg3);padding:4px 14px">
+    ${S.log.length ? S.log.map(l => `<div class="log-entry">
+      <span class="log-time">${(l.created_at||'').substring(11,19)}</span>
+      <span class="log-msg ${l.action==='status_change'?'success':l.action==='deleted'?'warn':''}">${esc(l.action)}: ${esc(l.detail)}</span>
+    </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--cream-muted);font-style:italic">No activity yet</div>'}
+  </div>`;
+}
+
+function renderAddTask(el) {
   el.innerHTML = `
-    <div class="view-header">
-      <h2 class="view-title">Agent <span>Log</span></h2>
-      <div class="view-actions">
-        <button class="btn btn-ghost" onclick="clearLog()">Clear</button>
+    <h2 style="font-size:1.2rem;margin-bottom:16px">Add <span style="color:var(--rust-light)">Task</span></h2>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:600px">
+      <div>
+        <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Title</label>
+        <input id="new-title" style="width:100%;padding:8px 10px;font-size:.85rem" placeholder="e.g. Product Hunt Launch Post">
       </div>
-    </div>
-    <div style="background:var(--bg2);border:1px solid var(--bg3);padding:4px 16px">
-      ${state.log.map(l => `
-        <div class="log-entry">
-          <span class="log-time">${l.time}</span>
-          <span class="log-msg ${l.type}">${escHtml(l.msg)}</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div>
+          <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Channel</label>
+          <select id="new-channel" style="width:100%;padding:8px;font-family:var(--font-mono);font-size:.8rem;background:var(--bg2);color:var(--cream);border:1px solid var(--bg4)">
+            ${Object.entries(CHANNELS).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('')}
+          </select>
         </div>
-      `).join("")}
-    </div>
-  `;
+        <div>
+          <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Priority</label>
+          <select id="new-priority" style="width:100%;padding:8px;font-family:var(--font-mono);font-size:.8rem;background:var(--bg2);color:var(--cream);border:1px solid var(--bg4)">
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Scheduled</label>
+          <input id="new-scheduled" style="width:100%;padding:8px 10px;font-size:.85rem" placeholder="e.g. Day 31">
+        </div>
+      </div>
+      <div>
+        <label style="font-family:var(--font-mono);font-size:.55rem;letter-spacing:2px;color:var(--leather-dim);text-transform:uppercase;display:block;margin-bottom:4px">Content</label>
+        <textarea id="new-content" style="width:100%;padding:10px;font-size:.8rem;min-height:200px;resize:vertical" placeholder="The full post content, tweet thread, blog outline, etc."></textarea>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-rust" onclick="createTask()">Create Task</button>
+        <button class="btn btn-ghost" onclick="setView('dashboard')">Cancel</button>
+      </div>
+    </div>`;
 }
 
 function renderPanel() {
-  const body = document.getElementById("panel-body");
-  const task = state.tasks.find(t => t.id === state.selectedId);
-  
+  const body = document.getElementById('panel-body');
+  const task = S.tasks.find(t => t.id === S.sel);
   if (!task) {
-    body.innerHTML = `<div class="panel-empty">Select a task to view details<br><br><span style="font-size:.75rem;color:var(--cream-muted)">The Chrome agent reads task data from the cards on the left. Approve a task to make it available for execution.</span></div>`;
+    body.innerHTML = '<div class="panel-empty">Select a task to view and edit<br><br><span style="font-size:.72rem;color:var(--cream-muted)">Approve tasks to make them available for Chrome agent execution.</span></div>';
     return;
   }
-
-  const ch = CHANNELS[task.channel];
-  const st = STATUS_STYLES[task.status];
-
+  const ch = CHANNELS[task.channel] || CHANNELS.twitter;
+  const st = STATUS_STYLES[task.status] || STATUS_STYLES.queued;
   body.innerHTML = `
-    <div style="margin-bottom:16px">
-      <div class="detail-title">${escHtml(task.title)}</div>
-      <div class="detail-meta">
-        <span style="color:${ch.color}">${ch.icon} ${ch.name}</span> · ${task.scheduled} · ${task.priority} priority
-      </div>
-      <div class="status-pill" style="background:${st.bg};border-color:${st.border};color:${st.text};display:inline-block;margin-top:6px">${st.label}</div>
+    <div style="margin-bottom:14px">
+      <div class="detail-title">${esc(task.title)}</div>
+      <div class="detail-meta"><span style="color:${ch.color}">${ch.icon} ${ch.name}</span> · ${task.scheduled||''} · ${task.priority}</div>
+      <div class="status-pill" style="background:${st.bg};border-color:${st.bc};color:${st.c};display:inline-block;margin-top:4px">${st.l}</div>
     </div>
-
     <div class="detail-section">
-      <div class="detail-label">Content</div>
-      <div class="detail-content editable" contenteditable="true" id="task-content-editor" onblur="updateContent('${task.id}')">${escHtml(task.content)}</div>
+      <div class="detail-label">Content (click to edit)</div>
+      <div class="detail-content editable" contenteditable="true" id="task-editor" onblur="saveContent('${task.id}')">${esc(task.content)}</div>
     </div>
-
     <div class="detail-section">
-      <div class="detail-label">Platform Instructions (for agent)</div>
-      <div class="detail-content" style="font-size:.7rem;color:var(--leather-light)">${escHtml(PLATFORM_INSTRUCTIONS[task.channel]||'No instructions')}</div>
+      <div class="detail-label">Agent Instructions</div>
+      <div class="detail-content" style="font-size:.65rem;color:var(--leather-light);min-height:auto">${esc(PLATFORM_INSTRUCTIONS[task.channel]||'None')}</div>
     </div>
-
     <div class="detail-actions">
-      ${task.status !== "posted" ? `
+      ${task.status !== 'posted' ? `
         <button class="btn btn-green" onclick="setStatus('${task.id}','approved')">Approve</button>
-        <button class="btn btn-amber" onclick="setStatus('${task.id}','review')">To Review</button>
-        <button class="btn btn-ghost" onclick="setStatus('${task.id}','queued')">To Queue</button>
-        <button class="btn btn-ghost" onclick="setStatus('${task.id}','draft')">To Draft</button>
-      ` : `
-        <span style="font-size:.7rem;color:var(--blue)">✓ This task has been posted</span>
-      `}
-      <button class="btn btn-ghost" onclick="duplicateTask('${task.id}')" title="Duplicate">Dupe</button>
-      <button class="btn btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="deleteTask('${task.id}')">Delete</button>
-      <button class="btn btn-ghost" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="setStatus('${task.id}','failed')">Mark Failed</button>
-    </div>
-  `;
+        <button class="btn btn-amber" onclick="setStatus('${task.id}','review')">Review</button>
+        <button class="btn btn-ghost" onclick="setStatus('${task.id}','queued')">Queue</button>
+        <button class="btn btn-ghost" onclick="setStatus('${task.id}','draft')">Draft</button>
+      ` : '<span style="font-size:.7rem;color:var(--blue)">✓ Posted</span>'}
+      <button class="btn btn-ghost" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="deleteTask('${task.id}')">Delete</button>
+    </div>`;
 }
 
-// ── ACTIONS ──
-function setView(v) { state.view = v; render(); }
-function setFilter(f) { state.filter = f; state.view = "dashboard"; render(); }
-function setChannelFilter(c) { state.channelFilter = c; state.view = "dashboard"; render(); }
+// ── ACTIONS (all API-backed) ──
 
-function selectTask(id) {
-  state.selectedId = id;
+function setView(v) { S.view = v; render(); }
+function setFilter(f) { S.filter = f; S.view = 'dashboard'; render(); }
+function setChannelFilter(c) { S.chFilter = c; S.view = 'dashboard'; render(); }
+function selectTask(id) { S.sel = id; render(); }
+
+async function setStatus(id, status) {
+  await api(`/api/marketing/tasks/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });
+  await loadTasks();
   render();
 }
 
-function setStatus(id, status) {
-  const task = state.tasks.find(t => t.id === id);
-  if (!task) return;
-  const old = task.status;
-  task.status = status;
-  addLog(`${task.title}: ${STATUS_STYLES[old].label} → ${STATUS_STYLES[status].label}`, status === "approved" ? "success" : "info");
-  saveState();
-  render();
-}
-
-function updateContent(id) {
-  const el = document.getElementById("task-content-editor");
+async function saveContent(id) {
+  const el = document.getElementById('task-editor');
   if (!el) return;
-  const task = state.tasks.find(t => t.id === id);
-  if (task) {
-    task.content = el.innerText;
-    saveState();
-  }
+  await api(`/api/marketing/tasks/${id}`, { method: 'PUT', body: JSON.stringify({ content: el.innerText }) });
+  await loadTasks();
 }
 
-function approveAllReview() {
-  const count = state.tasks.filter(t => t.status === "review").length;
-  state.tasks.forEach(t => { if (t.status === "review") t.status = "approved"; });
-  addLog(`Bulk approved ${count} tasks`, "success");
-  saveState();
+async function approveAllReview() {
+  await api('/api/marketing/tasks/bulk-status', { method: 'POST', body: JSON.stringify({ from_status: 'review', to_status: 'approved' }) });
+  await loadTasks();
   render();
-  updateBeacon("ready");
+  updateBeacon('ready');
 }
 
 function startAgent() {
-  const approved = state.tasks.filter(t => t.status === "approved");
-  if (!approved.length) return;
-  updateBeacon("active");
-  addLog(`Agent started — ${approved.length} tasks ready for execution`, "success");
-  addLog("Waiting for Claude in Chrome to read approved tasks...", "info");
-  saveState();
+  updateBeacon('active');
   render();
 }
 
-function resetTasks() {
-  if (!confirm("Reset all tasks to defaults? This cannot be undone.")) return;
-  state.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
-  state.selectedId = null;
-  addLog("All tasks reset to defaults", "warn");
-  saveState();
+async function createTask() {
+  const title = document.getElementById('new-title').value.trim();
+  if (!title) return;
+  const task = {
+    title,
+    channel: document.getElementById('new-channel').value,
+    priority: document.getElementById('new-priority').value,
+    scheduled: document.getElementById('new-scheduled').value.trim(),
+    content: document.getElementById('new-content').value,
+    status: 'queued',
+  };
+  await api('/api/marketing/tasks', { method: 'POST', body: JSON.stringify(task) });
+  await loadTasks();
+  S.view = 'dashboard';
   render();
 }
 
-function clearLog() {
-  state.log = [{ time: now(), msg: "Log cleared", type: "info" }];
-  saveState();
+async function deleteTask(id) {
+  if (!confirm('Delete this task?')) return;
+  await api(`/api/marketing/tasks/${id}`, { method: 'DELETE' });
+  S.sel = null;
+  await loadTasks();
+  render();
+}
+
+async function resetTasks() {
+  if (!confirm('Delete all tasks and re-seed defaults?')) return;
+  // Delete all
+  for (const t of S.tasks) {
+    await api(`/api/marketing/tasks/${t.id}`, { method: 'DELETE' });
+  }
+  // Re-seed
+  await api('/api/marketing/tasks/seed', { method: 'POST', body: '{}' });
+  S.sel = null;
+  await loadTasks();
+  render();
+}
+
+async function clearLog() {
+  await api('/api/marketing/log', { method: 'DELETE' });
+  S.log = [];
   render();
 }
 
 function updateBeacon(status) {
-  state.agentStatus = status;
-  const dot = document.getElementById("beacon-dot");
-  const label = document.getElementById("beacon-label");
-  dot.className = "beacon-dot " + status;
-  label.textContent = "Agent: " + status.charAt(0).toUpperCase() + status.slice(1);
+  const dot = document.getElementById('beacon-dot');
+  const lbl = document.getElementById('beacon-label');
+  if (dot) dot.className = 'beacon-dot ' + status;
+  if (lbl) lbl.textContent = 'Agent: ' + status[0].toUpperCase() + status.slice(1);
 }
 
-function togglePrompt(key) {
-  document.getElementById("prompt-" + key).classList.toggle("open");
-}
-
-function copyPrompt(key) {
-  let text;
-  if (key === "master") {
-    text = document.querySelector("#prompt-master .prompt-body").textContent;
-  } else {
-    text = PLATFORM_INSTRUCTIONS[key] || "";
-  }
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelector(`#prompt-${key} .prompt-copy-btn`);
-    btn.textContent = "Copied!";
-    setTimeout(() => btn.textContent = "Copy", 1500);
+function togglePrompt(k) { document.getElementById('prompt-'+k).classList.toggle('open'); }
+function copyPrompt(k) {
+  const el = document.getElementById('pb-'+k);
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const b = document.querySelector('#prompt-'+k+' .prompt-copy-btn');
+    b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy',1500);
   });
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+// ── AUTH ──
+const authInput = document.getElementById('auth-input');
+const authGate = document.getElementById('auth-gate');
+const opsEl = document.getElementById('app');
+
+if (sessionStorage.getItem('sy_mktg_auth') === '1') {
+  authGate.style.display = 'none';
+  opsEl.querySelector('.shell') ? null : null;
+  init();
 }
 
-// ── ADD / DELETE / DUPLICATE / EXPORT / IMPORT ──
-function showAddTask() {
-  document.getElementById('modal-bg').classList.add('show');
-  document.getElementById('m-title').value = '';
-  document.getElementById('m-content').value = '';
-  document.getElementById('m-day').value = 'Day ' + (Math.max(...state.tasks.map(t => parseInt(t.scheduled.replace(/\D/g,'')) || 0), 0) + 1);
-  setTimeout(() => document.getElementById('m-title').focus(), 50);
-}
+authInput.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const v = authInput.value.trim();
+  if (!v) return;
+  _adminKey = v;
+  sessionStorage.setItem('sy_admin_key', v);
+  sessionStorage.setItem('sy_mktg_auth', '1');
+  authGate.style.display = 'none';
+  init();
+});
 
-function closeModal() {
-  document.getElementById('modal-bg').classList.remove('show');
-}
-
-function addTask() {
-  const title = document.getElementById('m-title').value.trim();
-  const content = document.getElementById('m-content').value.trim();
-  const channel = document.getElementById('m-channel').value;
-  const priority = document.getElementById('m-priority').value;
-  const day = document.getElementById('m-day').value.trim() || 'Day 1';
-  if (!title) { document.getElementById('m-title').style.borderColor = 'var(--red)'; return; }
-  const id = 't' + Date.now();
-  state.tasks.push({ id, channel, status: 'queued', priority, scheduled: day, title, content: content || '[Content TBD]' });
-  addLog(`Added task: ${title}`, 'success');
-  saveState();
-  closeModal();
-  state.selectedId = id;
+async function init() {
+  // Show the ops grid
+  document.getElementById('app').style.display = '';
+  await seedIfEmpty();
+  if (!S.tasks.length) await loadTasks();
   render();
 }
-
-function deleteTask(id) {
-  const task = state.tasks.find(t => t.id === id);
-  if (!task) return;
-  if (!confirm(`Delete "${task.title}"?`)) return;
-  state.tasks = state.tasks.filter(t => t.id !== id);
-  if (state.selectedId === id) state.selectedId = null;
-  addLog(`Deleted: ${task.title}`, 'warn');
-  saveState();
-  render();
-}
-
-function duplicateTask(id) {
-  const task = state.tasks.find(t => t.id === id);
-  if (!task) return;
-  const dupe = { ...task, id: 't' + Date.now(), status: 'draft', title: task.title + ' (copy)' };
-  const idx = state.tasks.findIndex(t => t.id === id);
-  state.tasks.splice(idx + 1, 0, dupe);
-  addLog(`Duplicated: ${task.title}`, 'info');
-  saveState();
-  state.selectedId = dupe.id;
-  render();
-}
-
-function exportTasks() {
-  const data = JSON.stringify(state.tasks, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'stockyard-marketing-tasks-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  addLog(`Exported ${state.tasks.length} tasks`, 'info');
-}
-
-function importTasks(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (!Array.isArray(imported)) throw new Error('Expected array');
-      const valid = imported.filter(t => t.title && t.channel && t.content);
-      if (!valid.length) throw new Error('No valid tasks found');
-      if (confirm(`Import ${valid.length} tasks? This will ADD to existing tasks.`)) {
-        valid.forEach(t => {
-          if (!t.id) t.id = 't' + Date.now() + Math.random().toString(36).slice(2,6);
-          if (!t.status) t.status = 'queued';
-          if (!t.priority) t.priority = 'medium';
-          if (!t.scheduled) t.scheduled = 'Day 1';
-          state.tasks.push(t);
-        });
-        addLog(`Imported ${valid.length} tasks`, 'success');
-        saveState();
-        render();
-      }
-    } catch(err) {
-      alert('Invalid file: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-// ── INIT ──
-loadState();
-render();
 </script>
+
 </body>
 </html>

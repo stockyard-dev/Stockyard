@@ -12,6 +12,7 @@ package main
 import (
 	"github.com/stockyard-dev/stockyard/internal/apps/exchange"
 	"github.com/stockyard-dev/stockyard/internal/apps/forge"
+	"github.com/stockyard-dev/stockyard/internal/apps/marketing"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	proxyapp "github.com/stockyard-dev/stockyard/internal/apps/proxy"
 	"github.com/stockyard-dev/stockyard/internal/apps/studio"
@@ -39,6 +40,7 @@ func main() {
 			studio.New(nil),
 			forge.New(nil),
 			exchange.New(nil),
+			marketing.New(nil),
 		},
 		Features: engine.Features{
 			SpendTracking:  true,
