@@ -144,6 +144,18 @@ textarea:focus,input:focus{outline:none;border-color:var(--rust)}
 .timeline-title{font-size:.8rem;color:var(--cream)}
 .timeline-channel{font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted)}
 
+/* ── ADD TASK MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bg4);padding:24px;width:520px;max-width:92vw;max-height:85vh;overflow-y:auto}
+.modal h3{font-family:var(--font-serif,'Libre Baskerville',serif);font-size:1.1rem;margin-bottom:16px;color:var(--cream)}
+.modal label{display:block;font-family:var(--font-mono,'JetBrains Mono',monospace);font-size:.6rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather-dim);margin:12px 0 4px}
+.modal input,.modal select,.modal textarea{width:100%;padding:8px 10px;font-size:.8rem;background:var(--bg);border:1px solid var(--bg4);color:var(--cream);font-family:var(--font-mono,'JetBrains Mono',monospace)}
+.modal input:focus,.modal select:focus,.modal textarea:focus{outline:none;border-color:var(--rust)}
+.modal textarea{min-height:160px;resize:vertical;line-height:1.6}
+.modal select{appearance:none;cursor:pointer}
+.modal-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bg4)}
+
 /* ── RESPONSIVE ── */
 @media(max-width:1100px){
   .shell{grid-template-columns:200px 1fr 280px}
@@ -233,6 +245,46 @@ textarea:focus,input:focus{outline:none;border-color:var(--rust)}
       <div class="panel-empty">Select a task to view details</div>
     </div>
   </aside>
+</div>
+
+<!-- Add Task Modal -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3>New Task</h3>
+    <label>Title</label>
+    <input type="text" id="m-title" placeholder="e.g. Launch Thread (5 tweets)">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div><label>Channel</label>
+        <select id="m-channel">
+          <option value="twitter">Twitter/X</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="reddit">Reddit</option>
+          <option value="hn">Hacker News</option>
+          <option value="blog">Blog</option>
+          <option value="devto">Dev.to</option>
+          <option value="github">GitHub</option>
+          <option value="seo">SEO</option>
+        </select>
+      </div>
+      <div><label>Priority</label>
+        <select id="m-priority">
+          <option value="medium">Medium</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div><label>Scheduled</label>
+        <input type="text" id="m-day" placeholder="Day 1" value="Day 1">
+      </div>
+    </div>
+    <label>Content</label>
+    <textarea id="m-content" placeholder="The full post content, instructions, or brief..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-rust" onclick="addTask()">Add Task</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -744,8 +796,11 @@ function renderDashboard(el) {
     <div class="view-header">
       <h2 class="view-title">Task <span>Queue</span></h2>
       <div class="view-actions">
+        <button class="btn btn-rust" onclick="showAddTask()">+ New Task</button>
         ${reviewCount > 0 ? `<button class="btn btn-amber" onclick="approveAllReview()">Approve All (${reviewCount})</button>` : ''}
         ${approvedCount > 0 ? `<button class="btn btn-green" onclick="startAgent()">Run Agent (${approvedCount})</button>` : ''}
+        <button class="btn btn-ghost" onclick="exportTasks()">Export</button>
+        <label class="btn btn-ghost" style="cursor:pointer"><input type="file" accept=".json" onchange="importTasks(event)" style="display:none">Import</label>
         <button class="btn btn-ghost" onclick="resetTasks()">Reset</button>
       </div>
     </div>
@@ -946,6 +1001,8 @@ function renderPanel() {
       ` : `
         <span style="font-size:.7rem;color:var(--blue)">✓ This task has been posted</span>
       `}
+      <button class="btn btn-ghost" onclick="duplicateTask('${task.id}')" title="Duplicate">Dupe</button>
+      <button class="btn btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="deleteTask('${task.id}')">Delete</button>
       <button class="btn btn-ghost" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="setStatus('${task.id}','failed')">Mark Failed</button>
     </div>
   `;
@@ -1043,6 +1100,100 @@ function copyPrompt(key) {
 
 function escHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ── ADD / DELETE / DUPLICATE / EXPORT / IMPORT ──
+function showAddTask() {
+  document.getElementById('modal-bg').classList.add('show');
+  document.getElementById('m-title').value = '';
+  document.getElementById('m-content').value = '';
+  document.getElementById('m-day').value = 'Day ' + (Math.max(...state.tasks.map(t => parseInt(t.scheduled.replace(/\D/g,'')) || 0), 0) + 1);
+  setTimeout(() => document.getElementById('m-title').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+}
+
+function addTask() {
+  const title = document.getElementById('m-title').value.trim();
+  const content = document.getElementById('m-content').value.trim();
+  const channel = document.getElementById('m-channel').value;
+  const priority = document.getElementById('m-priority').value;
+  const day = document.getElementById('m-day').value.trim() || 'Day 1';
+  if (!title) { document.getElementById('m-title').style.borderColor = 'var(--red)'; return; }
+  const id = 't' + Date.now();
+  state.tasks.push({ id, channel, status: 'queued', priority, scheduled: day, title, content: content || '[Content TBD]' });
+  addLog(`Added task: ${title}`, 'success');
+  saveState();
+  closeModal();
+  state.selectedId = id;
+  render();
+}
+
+function deleteTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  if (!confirm(`Delete "${task.title}"?`)) return;
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  if (state.selectedId === id) state.selectedId = null;
+  addLog(`Deleted: ${task.title}`, 'warn');
+  saveState();
+  render();
+}
+
+function duplicateTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  const dupe = { ...task, id: 't' + Date.now(), status: 'draft', title: task.title + ' (copy)' };
+  const idx = state.tasks.findIndex(t => t.id === id);
+  state.tasks.splice(idx + 1, 0, dupe);
+  addLog(`Duplicated: ${task.title}`, 'info');
+  saveState();
+  state.selectedId = dupe.id;
+  render();
+}
+
+function exportTasks() {
+  const data = JSON.stringify(state.tasks, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'stockyard-marketing-tasks-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  addLog(`Exported ${state.tasks.length} tasks`, 'info');
+}
+
+function importTasks(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('Expected array');
+      const valid = imported.filter(t => t.title && t.channel && t.content);
+      if (!valid.length) throw new Error('No valid tasks found');
+      if (confirm(`Import ${valid.length} tasks? This will ADD to existing tasks.`)) {
+        valid.forEach(t => {
+          if (!t.id) t.id = 't' + Date.now() + Math.random().toString(36).slice(2,6);
+          if (!t.status) t.status = 'queued';
+          if (!t.priority) t.priority = 'medium';
+          if (!t.scheduled) t.scheduled = 'Day 1';
+          state.tasks.push(t);
+        });
+        addLog(`Imported ${valid.length} tasks`, 'success');
+        saveState();
+        render();
+      }
+    } catch(err) {
+      alert('Invalid file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 // ── INIT ──
