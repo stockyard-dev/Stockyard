@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <title>Status — Stockyard</title>
 <meta name="description" content="Real-time system status for Stockyard. Uptime, component health, request metrics.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,9 +47,13 @@ h1{font-size:2rem;margin-bottom:0.3rem}
 .comp-status.down{background:rgba(196,77,44,0.15);color:var(--red)}
 .comp-detail{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-left:auto}
 .refresh{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);text-align:center;margin-top:1rem}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 </style>
+<link rel="canonical" href="https://stockyard.dev/status/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a class="nav-brand" href="/">
     <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="2" y="8" width="28" height="4" rx="1" fill="#c45d2c"/><rect x="6" y="14" width="20" height="3" rx="1" fill="#a0845c"/><rect x="4" y="19" width="24" height="3" rx="1" fill="#c45d2c"/><rect x="8" y="24" width="16" height="3" rx="1" fill="#a0845c"/><rect x="14" y="4" width="4" height="4" rx="1" fill="#d4a843"/></svg>
@@ -77,8 +86,10 @@ h1{font-size:2rem;margin-bottom:0.3rem}
 </p>
 </div>
 
-<footer style="text-align:center;padding:3rem 2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);border-top:1px solid var(--bg3)">
-  <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/changelog/">Changelog</a> · <a href="/status/">Status</a>
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
 
 <script>
