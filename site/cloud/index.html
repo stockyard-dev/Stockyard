@@ -134,7 +134,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="cloud-hero">
   <div class="eyebrow">Stockyard Cloud</div>
   <h1>Full platform. <span class="accent">Zero ops.</span></h1>
-  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 58 modules, hosted and scaled for you.</p>
+  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 58 modules, hosted and scaled for you. No servers to manage, no binaries to update, no backups to configure.</p>
 </section>
 
 <div class="signup-box" id="signup-form">
@@ -213,6 +213,39 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </section>
 
 <section class="endpoint-preview">
+  <div class="section-label" style="color:var(--leather-light)">What you skip</div>
+  <p style="color:var(--cream-dim);font-size:0.95rem;margin-bottom:2rem">Self-hosting Stockyard means managing all of this yourself. With Cloud, we handle it.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--bg3)">
+    <div style="padding:1.5rem;border-right:1px solid var(--bg3);border-bottom:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.8rem">Self-hosted</div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);line-height:2.2">
+        <div>Provision a server or VPS</div>
+        <div>Configure SSL certificates</div>
+        <div>Set up reverse proxy (nginx/caddy)</div>
+        <div>Write backup scripts</div>
+        <div>Monitor uptime &amp; disk space</div>
+        <div>Handle binary updates</div>
+        <div>Scale when traffic spikes</div>
+        <div>Debug networking issues</div>
+      </div>
+    </div>
+    <div style="padding:1.5rem;border-bottom:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.8rem">Cloud</div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream);line-height:2.2">
+        <div style="color:var(--green-light)">&#10003; Handled</div>
+        <div style="color:var(--green-light)">&#10003; Handled</div>
+        <div style="color:var(--green-light)">&#10003; Handled</div>
+        <div style="color:var(--green-light)">&#10003; Daily, automatic</div>
+        <div style="color:var(--green-light)">&#10003; 24/7 monitoring</div>
+        <div style="color:var(--green-light)">&#10003; Always latest</div>
+        <div style="color:var(--green-light)">&#10003; Auto-scaling</div>
+        <div style="color:var(--green-light)">&#10003; We debug it</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="endpoint-preview" style="padding-top:2rem">
   <div class="section-label">Drop-in replacement</div>
   <p style="color:var(--cream-dim);font-size:0.95rem">Point your existing OpenAI SDK at Stockyard. One line change, zero code rewrites.</p>
   <div class="code-block">

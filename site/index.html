@@ -168,11 +168,11 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 
   <div class="cta-group">
-    <a href="/playground" class="btn btn-primary">Try the playground</a>
-    <a href="/cloud/" class="btn btn-secondary">Start free</a>
+    <a href="/cloud/" class="btn btn-primary">Start free &mdash; 30 seconds</a>
+    <a href="/playground" class="btn btn-secondary">Try the playground</a>
     <a href="#apps" class="btn btn-secondary">See the platform</a>
   </div>
-  <code class="install-cmd" onclick="navigator.clipboard.writeText('curl -sSL stockyard.dev/install | sh').then(()=>{this.dataset.copied='true';this.textContent='✓ Copied!';setTimeout(()=>{this.textContent='curl -sSL stockyard.dev/install | sh';this.dataset.copied=''},2000)})" style="cursor:pointer" title="Click to copy">curl -sSL stockyard.dev/install | sh</code>
+  <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--leather);margin-top:0.5rem">Or <a href="/docs/quickstart/#install" style="color:var(--leather-light)">self-host the binary</a> on your own infrastructure.</p>
 </section>
 
 <section class="problem">
@@ -237,7 +237,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="console-preview">
   <h2 class="section-label leather">The Console</h2>
-  <p>A full management dashboard — embedded in the binary, no separate UI service needed.</p>
+  <p>A full management dashboard. Cloud users get it instantly at their endpoint. Self-hosted users access it locally.</p>
   <div class="console-tabs">
     <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
     <button class="console-tab" onclick="showConsole('observe')">Observe</button>
@@ -269,21 +269,31 @@ function showConsole(name){
 <section class="how">
   <div class="how-inner">
     <h2 class="section-label">How it works</h2>
-    <p style="color:var(--cream-dim);margin-bottom:0.5rem">Three commands. Thirty seconds.</p>
+    <p style="color:var(--cream-dim);margin-bottom:0.5rem">One line change. That's it.</p>
     <div class="code-block">
-<span class="comment"># Install</span>
-<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+<span class="comment"># Sign up at stockyard.dev/cloud — you get your endpoint in 30 seconds</span>
 
-<span class="comment"># Run (starts all 6 apps on :4200 with console at /ui)</span>
-<span class="cmd">stockyard</span>
-
-<span class="comment"># Point your app at the proxy</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+<span class="comment"># Point your app at Stockyard</span>
+<span class="cmd">export OPENAI_BASE_URL=https://your-team.stockyard.dev/v1</span>
 
 <span class="comment"># That's it. Every LLM call now flows through the platform.</span>
-<span class="comment"># Open http://localhost:4200/ui for the live console.</span>
+<span class="comment"># Console, traces, cost caps, caching — all live at your-team.stockyard.dev</span>
     </div>
-    <a href="/guide/" style="display:block;margin-top:1rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--rust-light)">See what happens next → Your first 5 minutes</a>
+
+    <details style="margin-top:2rem;border:1px solid var(--bg3);padding:0">
+      <summary style="padding:1rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">
+        <span>Prefer to self-host?</span>
+        <span style="font-size:0.65rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase">Advanced</span>
+      </summary>
+      <div class="code-block" style="border:none;border-top:1px solid var(--bg3)">
+<span class="comment"># You'll need to manage your own server, SSL, backups, and updates</span>
+<span class="cmd">curl -sSL stockyard.dev/install | sh</span>
+<span class="cmd">stockyard</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+      </div>
+    </details>
+
+    <a href="/guide/" style="display:block;margin-top:1rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--rust-light)">Your first 5 minutes &rarr;</a>
   </div>
 </section>
 
@@ -326,23 +336,23 @@ function showConsole(name){
     <div class="tier">
       <div class="tier-name">Community</div>
       <div class="tier-price">Free</div>
-      <div class="tier-period">forever &middot; self-hosted</div>
-      <div class="tier-desc">Full platform. 10k reqs/mo.</div>
+      <div class="tier-period">self-hosted &middot; you manage</div>
+      <div class="tier-desc">Full platform on your infrastructure. You handle deployment, updates, and backups.</div>
       <a href="/docs/quickstart/#install" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get the binary</a>
     </div>
-    <div class="tier tier-highlight">
+    <div class="tier">
       <div class="tier-name">Pro</div>
       <div class="tier-price has-dollar">9.99</div>
       <div class="tier-period">per month &middot; self-hosted</div>
-      <div class="tier-desc">Unlimited everything.</div>
-      <a href="/docs/auth/#license" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Start with Pro</a>
+      <div class="tier-desc">Remove all limits. You still manage your own server.</div>
+      <a href="/docs/auth/#license" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start with Pro</a>
     </div>
-    <div class="tier">
+    <div class="tier tier-highlight">
       <div class="tier-name">Cloud</div>
       <div class="tier-price has-dollar">29.99</div>
-      <div class="tier-period">per month &middot; managed</div>
-      <div class="tier-desc">Zero ops. We run it. Get an endpoint in 30 seconds.</div>
-      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start free trial</a>
+      <div class="tier-period">per month &middot; fully managed</div>
+      <div class="tier-desc">Zero ops. We run everything. Get an endpoint in 30 seconds.</div>
+      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Start free trial</a>
     </div>
     <div class="tier">
       <div class="tier-name">Enterprise</div>
@@ -369,10 +379,10 @@ function showConsole(name){
 
 <section class="footer-cta">
   <h2>Ship with confidence.</h2>
-  <p>Six apps. One binary. No dependencies. Works in 30 seconds.</p>
+  <p>Six apps. Zero ops. Get your endpoint in 30 seconds.</p>
   <div class="cta-group">
     <a href="/cloud/" class="btn btn-primary">Start free</a>
-    <a href="/products/" class="btn btn-secondary">Browse all modules</a>
+    <a href="/pricing/" class="btn btn-secondary">Compare plans</a>
   </div>
 </section>
 

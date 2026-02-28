@@ -12,7 +12,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <title>Pricing — Stockyard</title>
-<meta name="description" content="Stockyard pricing. Community free forever. Pro $9.99/mo. Cloud $29.99/mo. Enterprise custom.">
+<meta name="description" content="Stockyard pricing. Community free, self-hosted. Pro $9.99/mo. Cloud $29.99/mo, fully managed. Enterprise custom.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -116,7 +116,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="page-hero" id="main">
   <div class="eyebrow">Pricing</div>
   <h1>Full platform. <span class="accent">Every tier.</span></h1>
-  <p class="sub">All 6 apps, 58 modules, and 16 providers included at every level. Pick how you want to run it.</p>
+  <p class="sub">All 6 apps, 58 modules, and 16 providers included at every level. The only difference is who runs it.</p>
 </section>
 
 <p class="all-note">No per-token markup. You pay your LLM providers directly. Stockyard pricing is for the platform only.</p>
@@ -127,8 +127,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="tier">
       <div class="tier-name">Community</div>
       <div class="tier-price">Free</div>
-      <span class="tier-per">forever &middot; self-hosted</span>
-      <div class="tier-desc">Full platform on your infrastructure. One binary, zero dependencies.</div>
+      <span class="tier-per">self-hosted &middot; you manage</span>
+      <div class="tier-desc">Full platform on your infrastructure. You handle deployment, SSL, updates, and backups.</div>
       <ul class="tier-feat">
         <li><span class="k">&#10003;</span> All 6 apps</li>
         <li><span class="k">&#10003;</span> 58 middleware modules</li>
@@ -136,17 +136,17 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <li><span class="k">&#10003;</span> 10,000 requests/mo</li>
         <li><span class="k">&#10003;</span> 7-day retention</li>
         <li><span class="k">&#10003;</span> 3 users</li>
-        <li><span class="k">&#10003;</span> Web console</li>
+        <li><span class="k">&#10003;</span> Web console (local)</li>
         <li><span class="k">&#10003;</span> Community support (GitHub)</li>
       </ul>
       <a href="/docs/quickstart/#install" class="tier-btn g">Get the binary</a>
     </div>
 
-    <div class="tier tier-pop">
+    <div class="tier">
       <div class="tier-name">Pro</div>
       <div class="tier-price"><span class="d">$</span>9<span class="c">.99</span></div>
       <span class="tier-per">per month &middot; self-hosted</span>
-      <div class="tier-desc">Remove all limits. Unlimited requests, users, and retention.</div>
+      <div class="tier-desc">Remove all limits. You still manage your own server, updates, and uptime.</div>
       <ul class="tier-feat">
         <li><span class="k">&#10003;</span> Everything in Community</li>
         <li><span class="k">&#10003;</span> Unlimited requests</li>
@@ -157,14 +157,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <li><span class="k">&#10003;</span> Priority support</li>
         <li><span class="k">&#10003;</span> License key</li>
       </ul>
-      <a href="/docs/auth/#license" class="tier-btn p">Start with Pro</a>
+      <a href="/docs/auth/#license" class="tier-btn s">Start with Pro</a>
     </div>
 
-    <div class="tier">
+    <div class="tier tier-pop">
       <div class="tier-name">Cloud</div>
       <div class="tier-price"><span class="d">$</span>29<span class="c">.99</span></div>
       <span class="tier-per">per month &middot; fully managed</span>
-      <div class="tier-desc">Zero ops. We run it. Get an endpoint in 30 seconds.</div>
+      <div class="tier-desc">Zero ops. We handle deployment, scaling, SSL, backups, and updates. You get an endpoint.</div>
       <ul class="tier-feat">
         <li><span class="k">&#10003;</span> Everything in Pro</li>
         <li><span class="k">&#10003;</span> Managed infrastructure</li>
@@ -175,7 +175,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <li><span class="k">&#10003;</span> Custom domain</li>
         <li><span class="k">&#10003;</span> Email support</li>
       </ul>
-      <a href="/cloud/" class="tier-btn s">Start free trial</a>
+      <a href="/cloud/" class="tier-btn p">Start free trial</a>
     </div>
 
     <div class="tier">
@@ -211,6 +211,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="f">Users</td><td>3</td><td class="y">Unlimited</td><td class="y">Unlimited</td><td class="y">Unlimited</td></tr>
       <tr><td class="f">Retention</td><td>7 days</td><td class="y">Unlimited</td><td>30 days</td><td class="h">1 year</td></tr>
       <tr><td class="f">Hosting</td><td>Self-hosted</td><td>Self-hosted</td><td class="y">Managed</td><td class="y">Dedicated</td></tr>
+      <tr><td class="f">You manage</td><td>Server, SSL, updates, backups</td><td>Server, SSL, updates</td><td class="y">Nothing</td><td class="y">Nothing</td></tr>
       <tr><td class="f">Auto-scaling</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
       <tr><td class="f">Backups</td><td class="n">&mdash;</td><td class="y">Auto</td><td class="y">Daily</td><td class="y">Continuous</td></tr>
       <tr><td class="f">Email alerts</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
@@ -226,17 +227,17 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
   <div class="faq-item">
     <div class="faq-q">Is Community really free?</div>
-    <div class="faq-a">Yes. All 6 apps, all 58 modules, all 16 providers. No feature gating. The 10K request/mo limit and 3-user cap are the only restrictions. For most side projects and small teams, that's plenty.</div>
+    <div class="faq-a">Yes. All 6 apps, all 58 modules, all 16 providers. No feature gating. The 10K request/mo limit and 3-user cap are the only restrictions. You'll need to handle your own server setup, SSL certificates, updates, and backups — but for hobbyists and tinkerers who want full control, it's a complete platform.</div>
   </div>
 
   <div class="faq-item">
     <div class="faq-q">What does Pro unlock?</div>
-    <div class="faq-a">Unlimited requests, users, retention, auto-backups, and email alerts. It's for teams running Stockyard on their own servers who've outgrown the free limits. You get a license key that removes the caps.</div>
+    <div class="faq-a">Unlimited requests, users, retention, auto-backups, and email alerts. It's for teams running Stockyard on their own infrastructure who've outgrown the free limits. You still manage your own servers and deployment — Pro removes the usage caps, not the ops work.</div>
   </div>
 
   <div class="faq-item">
-    <div class="faq-q">Why Cloud over Pro?</div>
-    <div class="faq-a">Zero ops. No server to maintain, no Docker, no deploys, no backup scripts. You get a managed endpoint in 30 seconds. Pro is for teams who want to self-host but need unlimited capacity.</div>
+    <div class="faq-q">Why Cloud over self-hosted?</div>
+    <div class="faq-a">Self-hosting means you manage the server, keep the binary updated, configure SSL, set up backups, monitor uptime, and handle scaling as traffic grows. Cloud eliminates all of that. You get a managed endpoint in 30 seconds — we handle infrastructure, updates, backups, scaling, and monitoring. Most teams choose Cloud so they can focus on their product instead of their proxy.</div>
   </div>
 
   <div class="faq-item">
