@@ -307,7 +307,7 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	url, err := s.stripe.CreateCheckoutSession(product, tier, req.Email, priceID)
 	if err != nil {
 		log.Printf("checkout error: %v", err)
-		writeErr(w, http.StatusInternalServerError, "failed to create checkout session")
+		writeErr(w, http.StatusInternalServerError, fmt.Sprintf("checkout: %v", err))
 		return
 	}
 
