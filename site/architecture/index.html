@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Architecture — Stockyard">
-<meta property="og:description" content="Interactive architecture diagram showing how a request flows through Stockyard's 58 middleware modules and 6 apps.">
+<meta property="og:description" content="Interactive architecture diagram showing how a request flows through Stockyard's 70 middleware modules and 6 apps.">
 <meta property="og:url" content="https://stockyard.dev/architecture/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Architecture — Stockyard</title>
-<meta name="description" content="Interactive architecture diagram showing how a request flows through Stockyard's 58 middleware modules and 6 apps.">
+<meta name="description" content="Interactive architecture diagram showing how a request flows through Stockyard's 70 middleware modules and 6 apps.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -62,6 +62,41 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.flow-label{width:60px;font-size:0.5rem}.node{font-size:0.55rem;padding:0.2rem 0.4rem}.hero h1{font-size:1.5rem}}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
 </style>
 <link rel="canonical" href="https://stockyard.dev/architecture/">
 </head>
@@ -69,6 +104,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -128,5 +165,10 @@ function showDetail(el){const id=el.dataset.id;if(!id||!D[id])return;document.qu
 let anim=false;
 async function playAnimation(){if(anim)return;anim=true;const btn=document.querySelector('.play-btn');btn.disabled=true;btn.textContent='Animating...';const nodes=document.querySelectorAll('.node');nodes.forEach(n=>n.classList.remove('lit','active'));document.getElementById('detail').classList.remove('visible');for(const node of nodes){if(node.style.cursor==='default')continue;node.classList.add('lit');const id=node.dataset.id;if(id&&D[id]){document.getElementById('detail-title').textContent=D[id].t;document.getElementById('detail-desc').innerHTML=D[id].d;document.getElementById('detail').classList.add('visible')}await new Promise(r=>setTimeout(r,120))}await new Promise(r=>setTimeout(r,800));nodes.forEach(n=>n.classList.remove('lit'));btn.disabled=false;btn.textContent='\u25B6 Play request flow';anim=false}
 </script>
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+
 </body>
 </html>

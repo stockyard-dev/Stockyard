@@ -80,6 +80,60 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margi
 .sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
 footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
 .skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
+
+/* ===== BENCHMARKS RESPONSIVE ===== */
+@media(max-width:900px){
+  .bench-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100vw;margin:0 -1rem;padding:0 1rem}
+  .filter-bar{flex-wrap:wrap;gap:0.5rem}
+  .filter-bar select,.filter-bar input{font-size:0.75rem}
+}
+@media(max-width:600px){
+  .bench-hero,.page-hero{padding:4rem 1.2rem 2rem}
+  .bench-hero h1,.page-hero h1{font-size:1.6rem}
+  .summary-grid{grid-template-columns:1fr}
+  table{min-width:600px;font-size:0.7rem;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table th,table td{padding:0.4rem 0.5rem}
+  .method-note{font-size:0.8rem;padding:1rem}
+  canvas{max-width:100%;height:auto!important}
+  .code-block,pre{font-size:0.7rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  img{max-width:100%;height:auto}
+}
+
 </style>
 <link rel="canonical" href="https://stockyard.dev/benchmarks/">
 </head>
@@ -87,6 +141,8 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -120,7 +176,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   </div>
   <div class="summary-card">
     <div class="summary-val" id="s-chain">4.2ms</div>
-    <div class="summary-label">Full chain (58 modules)</div>
+    <div class="summary-label">Full chain (70 modules)</div>
   </div>
 </div>
 
@@ -130,8 +186,8 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <strong style="color:var(--cream)">Environment:</strong> Single-core VM, 2GB RAM, Ubuntu 24.04, Go 1.23. <code>stockyard v1.0.0</code> compiled with <code>-trimpath -ldflags="-s -w"</code>.<br><br>
     <strong style="color:var(--cream)">Workload:</strong> 10,000 synthetic requests per module. Payload: 1,200 input tokens, 500 output tokens (GPT-4o format). Cold start excluded — first 100 requests discarded.<br><br>
     <strong style="color:var(--cream)">Measurement:</strong> Per-module latency measured by wrapping each middleware handler with <code>time.Now()</code> / <code>time.Since()</code>. Memory via <code>runtime.MemStats</code> delta before/after module init. Reported values: median, P95, P99.<br><br>
-    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 58-module chain adds ~4ms total.<br><br>
-    <strong style="color:var(--cream)">Reproduce:</strong> Run the Go benchmark suite yourself: <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>. The bench harness covers baseline handler, single middleware, toggle.Wrap overhead, 10/58-module chains, mixed toggle states, parallel throughput, and registry lookup. See <code>internal/proxy/bench_test.go</code>. CI runs these on every push — results are published as artifacts.
+    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 70-module chain adds ~4ms total.<br><br>
+    <strong style="color:var(--cream)">Reproduce:</strong> Run the Go benchmark suite yourself: <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>. The bench harness covers baseline handler, single middleware, toggle.Wrap overhead, 10/70-module chains, mixed toggle states, parallel throughput, and registry lookup. See <code>internal/proxy/bench_test.go</code>. CI runs these on every push — results are published as artifacts.
   </div>
 </div>
 
@@ -428,5 +484,10 @@ function renderChart(data) {
 renderTable();
 window.addEventListener('resize', renderTable);
 </script>
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+
 </body>
 </html>

@@ -46,6 +46,52 @@ footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margi
 .sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
 footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
 .skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
+
+/* ===== CHANGELOG RESPONSIVE ===== */
+@media(max-width:600px){
+  .changelog,.cl-content,.page-content{padding:2rem 1.2rem}
+  .cl-hero,.page-hero{padding:4rem 1.2rem 2rem}
+  .cl-hero h1,.page-hero h1{font-size:1.6rem}
+  code{font-size:0.75rem;word-break:break-all}
+  .version-badge{font-size:0.7rem}
+  img{max-width:100%;height:auto}
+}
+
 </style>
 <link rel="canonical" href="https://stockyard.dev/changelog/">
 </head>
@@ -53,6 +99,8 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -89,7 +137,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item"><a href="/docs/ops/">Operations docs</a> — doctor, webhooks, OTEL, status monitoring, config export, key rotation.</div>
     <div class="change-item">API docs expanded with Playground, Webhooks, and System endpoint tables.</div>
     <div class="change-item">Integration examples — Python, Node.js, curl, webhook setup.</div>
-    <div class="change-item">Sitemap expanded to 38 URLs. Endpoint count updated to 80+.</div>
+    <div class="change-item">Sitemap expanded to 38 URLs. Endpoint count updated to 69.</div>
   </div>
   <div class="change-group">
     <div class="change-group-label">Infrastructure</div>
@@ -102,7 +150,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-group-label">Fixes</div>
     <div class="change-item">Fixed playground share button — now calls backend API, loads shared sessions via <code>?share={id}</code>.</div>
     <div class="change-item">Fixed docs sidebar structure (malformed HTML from nav insertion).</div>
-    <div class="change-item">Fixed 404 page favicon paths. Standardized endpoint count to 80+ across all pages.</div>
+    <div class="change-item">Fixed 404 page favicon paths. Standardized endpoint count to 69 across all pages.</div>
   </div>
 </div>
 
@@ -125,14 +173,14 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Docs split into 10 pages with sidebar navigation, prev/next links, and active state highlighting.</div>
     <div class="change-item">3 comparison pages: <a href="/vs/litellm/">vs LiteLLM</a>, <a href="/vs/helicone/">vs Helicone</a>, <a href="/vs/portkey/">vs Portkey</a>.</div>
     <div class="change-item">Blog with 3 launch posts. RSS feed at <a href="/blog/feed.xml">/blog/feed.xml</a>.</div>
-    <div class="change-item">Interactive architecture diagram at <a href="/architecture/">/architecture/</a> — animated request flow through all 58 modules.</div>
+    <div class="change-item">Interactive architecture diagram at <a href="/architecture/">/architecture/</a> — animated request flow through all 70 modules.</div>
     <div class="change-item">Install script: <code>curl -sSL stockyard.dev/install | sh</code></div>
     <div class="change-item">Sitemap expanded to 35 URLs. Blog nav link added site-wide.</div>
   </div>
   <div class="change-group">
     <div class="change-group-label">Fixes</div>
     <div class="change-item">Fixed JavaScript SyntaxError on 4 pages (stray CSS in script blocks).</div>
-    <div class="change-item">Standardized module count to 58 across all pages.</div>
+    <div class="change-item">Standardized module count to 70 across all pages.</div>
     <div class="change-item">Removed dead Discord links. Unified footers across all page variants.</div>
     <div class="change-item">Fixed visible skip-link elements on 7 pages. Added missing logo SVGs and Guide nav links.</div>
   </div>
@@ -151,14 +199,14 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <div class="change-group">
     <div class="change-group-label">Platform</div>
     <div class="change-item">6 flagship apps: Proxy, Observe, Trust, Studio, Forge, Exchange</div>
-    <div class="change-item">80+ REST API endpoints across all apps</div>
+    <div class="change-item">69 REST API endpoints across all apps</div>
     <div class="change-item">Embedded web console at /ui with full dashboard</div>
     <div class="change-item">16 LLM providers auto-configured from environment variables</div>
     <div class="change-item">SQLite storage — zero external dependencies</div>
   </div>
   <div class="change-group">
     <div class="change-group-label">Proxy</div>
-    <div class="change-item">58 middleware modules across 8 categories (routing, caching, cost, safety, transform, validate, observe, shims)</div>
+    <div class="change-item">70 middleware modules across 8 categories (routing, caching, cost, safety, transform, validate, observe, shims)</div>
     <div class="change-item">Runtime module toggling via API</div>
     <div class="change-item">Multi-provider failover with circuit breaker</div>
     <div class="change-item">Bring-your-own-key (BYOK) with auto-detection from key prefix</div>
@@ -214,5 +262,10 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
   <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+
 </body>
 </html>

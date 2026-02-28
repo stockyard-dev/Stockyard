@@ -62,6 +62,50 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 .more-posts a:hover{color:var(--rust-light)}
 .more-posts .mp-date{color:var(--leather);font-family:var(--font-mono);font-size:0.7rem;margin-left:0.5rem}
 .related-reading{padding:2rem 0;margin-top:2rem;border-top:1px solid var(--bg3)}.related-reading .rl{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}.related-reading ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem}.related-reading li a{display:inline-block;padding:0.4rem 0.8rem;background:var(--bg2);border:1px solid var(--bg3);font-size:0.85rem;text-decoration:none;color:var(--cream);transition:border-color 0.2s}.related-reading li a:hover{border-color:var(--rust)}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
+
+/* ===== BLOG RESPONSIVE ===== */
+@media(max-width:600px){
+  .blog-hero,.page-hero{padding:4rem 1.2rem 2rem}
+  .blog-hero h1,.page-hero h1{font-size:1.6rem}
+  img{max-width:100%;height:auto}
+  .code-block,pre{font-size:0.7rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+}
+
 </style>
 <link rel="canonical" href="https://stockyard.dev/blog/why-i-built-stockyard/">
 <script type="application/ld+json">
@@ -99,6 +143,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -145,8 +191,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Stockyard is a single static binary. No runtime dependencies. No database to manage &mdash; it uses embedded SQLite. No Docker required. Download, run, done.</p>
     <p>It starts in under 50ms, uses about 12MB of memory, and cross-compiles to every platform. That&rsquo;s the Go advantage.</p>
 
-    <h2>58 modules, six apps, one binary</h2>
-    <p>The proxy is built as composable middleware. There are 58 modules organized across 8 categories &mdash; routing, caching, cost, safety, transform, validate, observe, and shims. Each one is toggleable at runtime via the API. No restarts.</p>
+    <h2>70 modules, six apps, one binary</h2>
+    <p>The proxy is built as composable middleware. There are 70 modules organized across 8 categories &mdash; routing, caching, cost, safety, transform, validate, observe, and shims. Each one is toggleable at runtime via the API. No restarts.</p>
     <p>Beyond the proxy, there are five more apps baked into the same binary:</p>
     <ul>
       <li><strong>Observe</strong> &mdash; Traces, costs, alerts, anomaly detection</li>
@@ -189,5 +235,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
   <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+
 </body>
 </html>

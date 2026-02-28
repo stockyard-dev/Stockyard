@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>Guide — Your First 5 Minutes — Stockyard</title>
-<meta name="description" content="Install Stockyard, send your first request, explore the console, and see what 58 middleware modules actually do — in under 5 minutes.">
+<meta name="description" content="Install Stockyard, send your first request, explore the console, and see what 70 middleware modules actually do — in under 5 minutes.">
 <meta property="og:title" content="Your First 5 Minutes with Stockyard">
 <meta property="og:description" content="From install to traces in 5 minutes. See what the platform actually does.">
 <meta property="og:type" content="website">
@@ -118,6 +118,60 @@ footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--bg3);font-
 footer .sig{font-family:var(--font-serif);font-size:1rem;color:var(--leather-light);font-style:italic}
 footer a{color:var(--cream-dim)}
 footer a:hover{color:var(--rust-light)}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
+
+/* ===== GUIDE RESPONSIVE ===== */
+@media(max-width:768px){
+  .guide-hero{padding:4rem 1.2rem 2rem}
+  .steps{padding:2rem 1.2rem 3rem}
+  .step{padding-left:0;padding-top:50px}
+  .step-num{position:relative;left:0;top:0;margin-bottom:0.8rem}
+  .code-block{font-size:0.7rem;padding:0.8rem 1rem;max-width:calc(100vw - 2.4rem);overflow-x:auto;white-space:pre;word-break:normal}
+  .outcome{font-size:0.72rem}
+  .screenshot-frame{margin:1rem 0}
+  .scenario-grid{grid-template-columns:1fr}
+  .lang-tabs,.code-tabs{flex-wrap:wrap;gap:0}
+  .lang-tab,.code-tab{font-size:0.7rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+@media(max-width:480px){
+  .guide-hero h1{font-size:1.6rem}
+  .guide-hero .sub{font-size:0.9rem}
+}
+
 </style>
 </head>
 <body>
@@ -125,6 +179,8 @@ footer a:hover{color:var(--rust-light)}
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -157,7 +213,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="cmd">curl -sSL stockyard.dev/install | sh</span>
       </div>
       <div class="outcome">
-        <strong>What just happened:</strong> A ~15MB Go binary is now on your PATH. It contains all 6 apps, 58 middleware modules, an embedded SQLite database, and a full web console. Nothing else was installed.
+        <strong>What just happened:</strong> A ~15MB Go binary is now on your PATH. It contains all 6 apps, 70 middleware modules, an embedded SQLite database, and a full web console. Nothing else was installed.
       </div>
     </div>
   </div>
@@ -173,9 +229,9 @@ footer a:hover{color:var(--rust-light)}
 <span class="comment"># Output:</span>
 <span class="comment"># Stockyard v1.0 — Where LLM traffic gets sorted</span>
 <span class="comment"># ┌─────────────────────────────────────────────┐</span>
-<span class="comment"># │  Proxy      :4200/v1    ✓ 58 modules active │</span>
+<span class="comment"># │  Proxy      :4200/v1    ✓ 70 modules active │</span>
 <span class="comment"># │  Console    :4200/ui    ✓ 6 apps loaded     │</span>
-<span class="comment"># │  API        :4200/api   ✓ 80+ endpoints      │</span>
+<span class="comment"># │  API        :4200/api   ✓ 69 endpoints      │</span>
 <span class="comment"># │  Playground :4200/play  ✓ ready              │</span>
 <span class="comment"># └─────────────────────────────────────────────┘</span>
       </div>
@@ -206,7 +262,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="fn">client</span> = <span class="fn">OpenAI</span>(<span class="kw">base_url</span>=<span class="str">"http://localhost:4200/v1"</span>)
       </div>
       <div class="outcome">
-        <strong>What just happened:</strong> Your request hit the proxy, flowed through 58 middleware modules (rate limiter, cost tracker, safety filter, semantic cache, etc.), reached OpenAI, and the response came back — with a trace logged in Observe and an audit event written to Trust. You didn't configure any of that.
+        <strong>What just happened:</strong> Your request hit the proxy, flowed through 70 middleware modules (rate limiter, cost tracker, safety filter, semantic cache, etc.), reached OpenAI, and the response came back — with a trace logged in Observe and an audit event written to Trust. You didn't configure any of that.
       </div>
     </div>
   </div>
@@ -232,7 +288,7 @@ footer a:hover{color:var(--rust-light)}
     <h3>Toggle a module</h3>
     <p class="step-sub">Turn features on and off at runtime — no restart, no redeploy.</p>
     <div class="step-body">
-      <p>Navigate to <strong>Proxy</strong> in the sidebar. You'll see all 58 modules with toggle switches.</p>
+      <p>Navigate to <strong>Proxy</strong> in the sidebar. You'll see all 70 modules with toggle switches.</p>
       <div class="code-block">
 <span class="comment"># Or via the API:</span>
 <span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cost-cap \</span>
@@ -418,6 +474,11 @@ function showLang(name) {
   document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
 }
+</script>
+
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 </script>
 
 </body>

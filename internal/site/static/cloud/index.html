@@ -113,6 +113,41 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .includes-grid{grid-template-columns:1fr}
   .plan-row{flex-direction:column;align-items:center}
 }
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
 </style>
 <link rel="canonical" href="https://stockyard.dev/cloud/">
 </head>
@@ -121,6 +156,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -136,7 +173,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="cloud-hero" id="main">
   <div class="eyebrow">Stockyard Cloud</div>
   <h1>Full platform. <span class="accent">Zero ops.</span></h1>
-  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 58 modules, hosted and scaled for you. No servers to manage, no binaries to update, no backups to configure.</p>
+  <p class="sub">Get a managed Stockyard endpoint in 30 seconds. All six apps, 70 modules, hosted and scaled for you. No servers to manage, no binaries to update, no backups to configure.</p>
 </section>
 
 <div class="signup-box" id="signup-form">
@@ -180,7 +217,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="includes-grid">
       <div class="include-item">
         <div class="include-name">Proxy</div>
-        <div class="include-desc">58 middleware modules with runtime toggles. Route to any provider.</div>
+        <div class="include-desc">70 middleware modules with runtime toggles. Route to any provider.</div>
       </div>
       <div class="include-item">
         <div class="include-name">Observe</div>
@@ -208,7 +245,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       </div>
       <div class="include-item">
         <div class="include-name">API</div>
-        <div class="include-desc">Full REST API. 80+ endpoints. Manage everything programmatically.</div>
+        <div class="include-desc">Full REST API. 69 endpoints. Manage everything programmatically.</div>
       </div>
     </div>
   </div>
@@ -258,7 +295,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">export OPENAI_BASE_URL=https://acme-corp.stockyard.dev/v1</span>
 
 <span class="comment"># That's it. Your app doesn't change.</span>
-<span class="comment"># You get caching, safety, cost caps, logging, and 58 modules included.</span>
+<span class="comment"># You get caching, safety, cost caps, logging, and 70 modules included.</span>
   </div>
 </section>
 
@@ -271,7 +308,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <span class="plan-period">per month</span>
       <div class="plan-feat">
         <span>&#10003;</span> All 6 apps<br>
-        <span>&#10003;</span> 58 modules<br>
+        <span>&#10003;</span> 70 modules<br>
         <span>&#10003;</span> 500k requests/mo<br>
         <span>&#10003;</span> 30-day trace retention<br>
         <span>&#10003;</span> Custom domain<br>
@@ -325,6 +362,11 @@ async function handleSignup(e) {
     alert('Signup failed. Please try again.');
   }
 }
+</script>
+
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 </script>
 
 </body>

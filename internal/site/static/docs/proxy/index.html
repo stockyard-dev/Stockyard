@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Proxy Docs: 58 Middleware Modules — Stockyard">
-<meta property="og:description" content="Stockyard proxy: 58 middleware modules, 16 providers, routing, and runtime toggles.">
+<meta property="og:title" content="Proxy Docs: 70 Middleware Modules — Stockyard">
+<meta property="og:description" content="Stockyard proxy: 70 middleware modules, 16 providers, routing, and runtime toggles.">
 <meta property="og:url" content="https://stockyard.dev/docs/proxy/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Proxy Docs: 58 Middleware Modules — Stockyard</title>
-<meta name="description" content="Stockyard proxy: 58 middleware modules, 16 providers, LLM cache, rate limiting, routing, and runtime toggles.">
+<title>Proxy Docs: 70 Middleware Modules — Stockyard</title>
+<meta name="description" content="Stockyard proxy: 70 middleware modules, 16 providers, LLM cache, rate limiting, routing, and runtime toggles.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -74,6 +74,41 @@ pre:hover .copy-btn{opacity:1}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/proxy/">
 </head>
@@ -82,6 +117,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/playground">Playground</a>
@@ -124,10 +161,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>Proxy</h1>
-    <p class="subtitle">The gateway layer. 58 modules, 16 providers, runtime toggles.</p>
+    <p class="subtitle">The gateway layer. 70 modules, 16 providers, runtime toggles.</p>
 
     <h2 id="overview">Overview</h2>
-    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 58 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
+    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 70 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
 
     <h2 id="modules">Modules</h2>
     <p>Modules are organized by category:</p>
@@ -200,5 +237,10 @@ document.querySelectorAll('.content pre').forEach(pre => {
   pre.appendChild(btn);
 });
 </script>
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+
 </body>
 </html>
