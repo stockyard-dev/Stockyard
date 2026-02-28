@@ -99,7 +99,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 
 	// Cloud API
-	s.mux.HandleFunc("POST /api/cloud/signup", s.handleCloudSignup)
+	s.mux.HandleFunc("POST /api/cloud/tenants", s.handleCloudSignup)
 	s.mux.HandleFunc("GET /api/cloud/tenant", s.handleCloudGetTenant)
 	s.mux.HandleFunc("PUT /api/cloud/keys", s.handleCloudUpdateKeys)
 	s.mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
@@ -151,7 +151,7 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 
 	// Cloud
-	mux.HandleFunc("POST /api/cloud/signup", s.handleCloudSignup)
+	mux.HandleFunc("POST /api/cloud/tenants", s.handleCloudSignup)
 	mux.HandleFunc("GET /api/cloud/tenant", s.handleCloudGetTenant)
 	mux.HandleFunc("PUT /api/cloud/keys", s.handleCloudUpdateKeys)
 	mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
