@@ -306,9 +306,20 @@ async function api(path, opts = {}) {
 }
 
 // ── STATE ──
-let S = { tasks: [], view: 'dashboard', filter: 'all', chFilter: 'all', sel: null, log: [], stats: {}, presets: null };
+let S = { tasks: [], view: 'dashboard', filter: 'all', chFilter: 'all', sel: null, log: [], stats: {}, presets: null, search: '' };
+
+// Character limits by channel (0 = no limit)
+const CHAR_LIMITS = { twitter: 280, linkedin: 3000, hn: 80, reddit: 40000, blog: 0, devto: 0, github: 0, seo: 0 };
+// hn limit is for title only
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function highlight(text, query) {
+  if (!query) return esc(text);
+  const safe = esc(text);
+  const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return safe.replace(new RegExp('('+q+')', 'gi'), '<mark style="background:var(--rust);color:var(--cream);padding:0 2px">$1</mark>');
+}
 
 // ── DATA LOADING ──
 async function loadTasks() {
@@ -344,9 +355,11 @@ async function seedIfEmpty() {
 
 // ── RENDER ──
 function filteredTasks() {
+  const q = S.search.toLowerCase();
   return S.tasks.filter(t =>
     (S.filter === 'all' || t.status === S.filter) &&
-    (S.chFilter === 'all' || t.channel === S.chFilter)
+    (S.chFilter === 'all' || t.channel === S.chFilter) &&
+    (!q || t.title.toLowerCase().includes(q) || (t.content||'').toLowerCase().includes(q))
   );
 }
 
@@ -364,9 +377,17 @@ function channelCounts() {
 }
 
 async function render() {
+  const hadSearchFocus = document.activeElement?.id === 'search-box';
+  const searchPos = hadSearchFocus ? document.getElementById('search-box')?.selectionStart : null;
   renderSidebar();
   renderMain();
   renderPanel();
+  updateTabTitle();
+  // Restore search focus
+  if (hadSearchFocus) {
+    const box = document.getElementById('search-box');
+    if (box) { box.focus(); if (searchPos !== null) box.setSelectionRange(searchPos, searchPos); }
+  }
 }
 
 function renderSidebar() {
@@ -408,13 +429,19 @@ function renderDashboard(el) {
   const tasks = filteredTasks();
   const cn = statusCounts();
   el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <h2 style="font-size:1.2rem">Task <span style="color:var(--rust-light)">Queue</span></h2>
       <div style="display:flex;gap:5px">
         ${cn.review ? `<button class="btn btn-amber" onclick="approveAllReview()">Approve All (${cn.review})</button>` : ''}
         ${cn.approved ? `<button class="btn btn-green" onclick="startAgent()">Run Agent (${cn.approved})</button>` : ''}
+        ${cn.posted ? `<button class="btn btn-ghost" onclick="clearPosted()">Clear Posted (${cn.posted})</button>` : ''}
         <button class="btn btn-ghost" onclick="resetTasks()">Reset</button>
       </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <input id="search-box" type="text" value="${esc(S.search)}" placeholder="Search tasks…  (/ to focus)"
+        oninput="S.search=this.value;render()"
+        style="width:100%;padding:7px 12px;font-family:var(--font-mono);font-size:.72rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream)">
     </div>
     <div class="stats-row">
     ${[
@@ -436,7 +463,7 @@ function renderDashboard(el) {
         data-platform-instructions="${encodeURIComponent(PLATFORM_INSTRUCTIONS[t.channel]||'')}"
         onclick="selectTask('${t.id}')">
         <div class="task-channel" style="background:${ch.bg};color:${ch.color};border:1px solid ${ch.color}30">${ch.icon}</div>
-        <div class="task-info"><h4>${esc(t.title)}</h4><div class="task-meta">${ch.name} · ${t.scheduled||''} · ${t.priority}</div></div>
+        <div class="task-info"><h4>${highlight(t.title, S.search)}</h4><div class="task-meta">${ch.name} · ${t.scheduled||''} · ${t.priority}</div></div>
         <div class="task-right"><div class="status-pill" style="background:${st.bg};border-color:${st.bc};color:${st.c}">${st.l}</div></div>
       </div>`;
     }).join('')}</div>`;
@@ -599,20 +626,43 @@ function renderPanel() {
   const body = document.getElementById('panel-body');
   const task = S.tasks.find(t => t.id === S.sel);
   if (!task) {
-    body.innerHTML = '<div class="panel-empty">Select a task to view and edit<br><br><span style="font-size:.72rem;color:var(--cream-muted)">Approve tasks to make them available for Chrome agent execution.</span></div>';
+    body.innerHTML = `<div class="panel-empty">Select a task to view and edit
+      <div style="font-size:.65rem;color:var(--cream-muted);margin-top:16px;text-align:left;line-height:2">
+        <strong style="color:var(--leather-light)">Shortcuts</strong><br>
+        <kbd style="padding:1px 5px;background:var(--bg3);font-family:var(--font-mono);font-size:.6rem">/</kbd> Search &nbsp;
+        <kbd style="padding:1px 5px;background:var(--bg3);font-family:var(--font-mono);font-size:.6rem">n</kbd> New task &nbsp;
+        <kbd style="padding:1px 5px;background:var(--bg3);font-family:var(--font-mono);font-size:.6rem">j</kbd><kbd style="padding:1px 5px;background:var(--bg3);font-family:var(--font-mono);font-size:.6rem">k</kbd> Navigate &nbsp;
+        <kbd style="padding:1px 5px;background:var(--bg3);font-family:var(--font-mono);font-size:.6rem">a</kbd> Approve &nbsp;
+        <kbd style="padding:1px 5px;background:var(--bg3);font-family:var(--font-mono);font-size:.6rem">d</kbd> Duplicate
+      </div>
+    </div>`;
     return;
   }
   const ch = CHANNELS[task.channel] || CHANNELS.twitter;
   const st = STATUS_STYLES[task.status] || STATUS_STYLES.queued;
+  const content = task.content || '';
+  const charCount = content.length;
+  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const limit = CHAR_LIMITS[task.channel] || 0;
+  const overLimit = limit > 0 && charCount > limit;
+
   body.innerHTML = `
-    <div style="margin-bottom:14px">
+    <div style="margin-bottom:10px">
       <div class="detail-title">${esc(task.title)}</div>
       <div class="detail-meta"><span style="color:${ch.color}">${ch.icon} ${ch.name}</span> · ${task.scheduled||''} · ${task.priority}</div>
       <div class="status-pill" style="background:${st.bg};border-color:${st.bc};color:${st.c};display:inline-block;margin-top:4px">${st.l}</div>
     </div>
     <div class="detail-section">
-      <div class="detail-label">Content (click to edit)</div>
-      <div class="detail-content editable" contenteditable="true" id="task-editor" onblur="saveContent('${task.id}')">${esc(task.content)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <div class="detail-label" style="margin:0">Content</div>
+        <button onclick="copyContent()" style="font-family:var(--font-mono);font-size:.52rem;padding:2px 8px;background:var(--bg3);color:var(--cream-dim);border:1px solid var(--bg4);cursor:pointer" id="copy-btn">Copy</button>
+      </div>
+      <div class="detail-content editable" contenteditable="true" id="task-editor"
+        oninput="updateCounter()" onblur="saveContent('${task.id}')">${esc(content)}</div>
+      <div id="char-counter" style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.55rem;margin-top:4px;padding:0 2px">
+        <span style="color:var(--cream-muted)">${wordCount} words</span>
+        <span style="color:${overLimit ? 'var(--red)' : 'var(--cream-muted)'}">${charCount}${limit ? ' / ' + limit : ''} chars${overLimit ? ' ⚠' : ''}</span>
+      </div>
     </div>
     <div class="detail-section">
       <div class="detail-label">Agent Instructions</div>
@@ -623,8 +673,8 @@ function renderPanel() {
         <button class="btn btn-green" onclick="setStatus('${task.id}','approved')">Approve</button>
         <button class="btn btn-amber" onclick="setStatus('${task.id}','review')">Review</button>
         <button class="btn btn-ghost" onclick="setStatus('${task.id}','queued')">Queue</button>
-        <button class="btn btn-ghost" onclick="setStatus('${task.id}','draft')">Draft</button>
       ` : '<span style="font-size:.7rem;color:var(--blue)">✓ Posted</span>'}
+      <button class="btn btn-ghost" onclick="duplicateTask('${task.id}')" title="Duplicate this task">Dup</button>
       <button class="btn btn-ghost" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="deleteTask('${task.id}')">Delete</button>
     </div>`;
 }
@@ -639,6 +689,7 @@ function selectTask(id) { S.sel = id; render(); }
 async function setStatus(id, status) {
   await api(`/api/marketing/tasks/${id}`, { method: 'PUT', body: JSON.stringify({ status }) });
   await loadTasks();
+  updateTabTitle();
   render();
 }
 
@@ -647,13 +698,68 @@ async function saveContent(id) {
   if (!el) return;
   await api(`/api/marketing/tasks/${id}`, { method: 'PUT', body: JSON.stringify({ content: el.innerText }) });
   await loadTasks();
+  // Flash saved indicator
+  const btn = document.getElementById('copy-btn');
+  if (btn) { const orig = btn.textContent; btn.textContent = 'Saved ✓'; btn.style.color='var(--green)'; setTimeout(() => { btn.textContent = orig; btn.style.color=''; }, 1200); }
+}
+
+function updateCounter() {
+  const el = document.getElementById('task-editor');
+  const counter = document.getElementById('char-counter');
+  if (!el || !counter) return;
+  const text = el.innerText || '';
+  const chars = text.length;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const task = S.tasks.find(t => t.id === S.sel);
+  const limit = task ? (CHAR_LIMITS[task.channel] || 0) : 0;
+  const over = limit > 0 && chars > limit;
+  counter.innerHTML = `
+    <span style="color:var(--cream-muted)">${words} words</span>
+    <span style="color:${over ? 'var(--red)' : 'var(--cream-muted)'}">${chars}${limit ? ' / ' + limit : ''} chars${over ? ' ⚠' : ''}</span>`;
+}
+
+function copyContent() {
+  const task = S.tasks.find(t => t.id === S.sel);
+  if (!task) return;
+  navigator.clipboard.writeText(task.content || '').then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.textContent = 'Copied!'; btn.style.color='var(--green)'; setTimeout(() => { btn.textContent = 'Copy'; btn.style.color=''; }, 1200); }
+  });
+}
+
+async function duplicateTask(id) {
+  const task = S.tasks.find(t => t.id === id);
+  if (!task) return;
+  const dup = {
+    title: task.title + ' (copy)',
+    channel: task.channel,
+    priority: task.priority,
+    scheduled: task.scheduled,
+    content: task.content,
+    status: 'draft',
+  };
+  const result = await api('/api/marketing/tasks', { method: 'POST', body: JSON.stringify(dup) });
+  await loadTasks();
+  if (result && result.id) S.sel = result.id;
+  updateTabTitle();
+  render();
 }
 
 async function approveAllReview() {
   await api('/api/marketing/tasks/bulk-status', { method: 'POST', body: JSON.stringify({ from_status: 'review', to_status: 'approved' }) });
   await loadTasks();
+  updateTabTitle();
   render();
   updateBeacon('ready');
+}
+
+async function clearPosted() {
+  const posted = S.tasks.filter(t => t.status === 'posted');
+  for (const t of posted) await api(`/api/marketing/tasks/${t.id}`, { method: 'DELETE' });
+  S.sel = null;
+  await loadTasks();
+  updateTabTitle();
+  render();
 }
 
 function startAgent() {
@@ -720,6 +826,70 @@ function copyPrompt(k) {
     b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy',1500);
   });
 }
+
+// ── TAB TITLE ──
+function updateTabTitle() {
+  const pending = S.tasks.filter(t => t.status !== 'posted').length;
+  document.title = pending ? `(${pending}) Marketing Ops — Stockyard` : 'Marketing Ops — Stockyard';
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', e => {
+  // Skip if typing in an input/textarea/contenteditable
+  const tag = (e.target.tagName||'').toLowerCase();
+  const editable = e.target.isContentEditable;
+  const inField = tag === 'input' || tag === 'textarea' || tag === 'select' || editable;
+
+  // / always focuses search (unless already in a field)
+  if (e.key === '/' && !inField && S.view === 'dashboard') {
+    e.preventDefault();
+    const box = document.getElementById('search-box');
+    if (box) box.focus();
+    return;
+  }
+
+  // Escape blurs current field and clears search
+  if (e.key === 'Escape') {
+    if (inField) { e.target.blur(); return; }
+    if (S.search) { S.search = ''; render(); return; }
+    if (S.sel) { S.sel = null; render(); return; }
+    return;
+  }
+
+  if (inField) return;
+
+  const tasks = filteredTasks();
+  const idx = tasks.findIndex(t => t.id === S.sel);
+
+  switch (e.key) {
+    case 'n': setView('add'); break;
+    case 'j': // next task
+      if (tasks.length) { selectTask(tasks[Math.min(idx + 1, tasks.length - 1)].id); }
+      break;
+    case 'k': // prev task
+      if (tasks.length && idx > 0) { selectTask(tasks[idx - 1].id); }
+      break;
+    case 'a': // approve selected
+      if (S.sel) { setStatus(S.sel, 'approved'); }
+      break;
+    case 'r': // review selected
+      if (S.sel) { setStatus(S.sel, 'review'); }
+      break;
+    case 'q': // queue selected
+      if (S.sel) { setStatus(S.sel, 'queued'); }
+      break;
+    case 'd': // duplicate selected
+      if (S.sel) { duplicateTask(S.sel); }
+      break;
+    case 'c': // copy content
+      if (S.sel) { copyContent(); }
+      break;
+    case '1': setView('dashboard'); break;
+    case '2': setView('schedule'); break;
+    case '3': setView('prompts'); break;
+    case '4': setView('log'); break;
+  }
+});
 
 // ── AUTH ──
 const authInput = document.getElementById('auth-input');
