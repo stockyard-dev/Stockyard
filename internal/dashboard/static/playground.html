@@ -139,6 +139,36 @@ a{color:var(--rust-light);text-decoration:none}
 .mod-toggle input:checked+.mod-slider::before{transform:translateX(14px);background:var(--cream)}
 .mod-filter{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem;margin-bottom:0.8rem;outline:none}
 
+/* STACK TAB */
+.stack-chain{display:flex;flex-direction:column;gap:0}
+.stack-node{display:flex;align-items:center;gap:8px;padding:6px 10px;font-family:var(--font-mono);font-size:0.7rem;background:var(--bg);border:1px solid var(--bg3);border-bottom:none}
+.stack-node:last-child{border-bottom:1px solid var(--bg3)}
+.stack-node .stack-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.stack-node .stack-name{color:var(--cream);flex:1}
+.stack-node .stack-cat{color:var(--leather);font-size:0.6rem}
+.stack-arrow{text-align:center;color:var(--leather);font-size:0.7rem;line-height:1;padding:2px 0}
+.stack-empty{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);text-align:center;padding:2rem 1rem}
+.stack-count{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-bottom:8px}
+.deploy-cta{margin-top:12px;background:linear-gradient(135deg,#2a1f14,#1e1810);border:1px solid var(--gold);padding:14px;text-align:center}
+.deploy-cta h4{font-family:var(--font-mono);font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.deploy-cta p{font-size:0.75rem;color:var(--cream-dim);margin-bottom:10px}
+.deploy-cta .deploy-btn{display:inline-block;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.75rem;padding:8px 20px;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:background 0.2s}
+.deploy-cta .deploy-btn:hover{background:var(--rust-light)}
+.deploy-cta .deploy-share{display:block;margin-top:8px;font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);background:none;border:none;cursor:pointer;text-decoration:underline}
+.deploy-cta .deploy-share:hover{color:var(--cream-dim)}
+
+/* SIGNUP NUDGE */
+.signup-nudge{background:linear-gradient(135deg,#2a1f14,#1e1810);border:1px solid var(--gold);padding:14px 16px;margin:12px 0;animation:fadeIn 0.4s}
+.signup-nudge-inner{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.signup-nudge .nudge-icon{font-size:1.2rem;flex-shrink:0}
+.signup-nudge .nudge-text{flex:1;font-size:0.8rem;color:var(--cream-dim);min-width:150px}
+.signup-nudge .nudge-text strong{color:var(--cream);display:block;margin-bottom:2px}
+.signup-nudge .nudge-cta{font-family:var(--font-mono);font-size:0.7rem;background:var(--rust);color:var(--cream);padding:6px 14px;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;text-decoration:none;flex-shrink:0;transition:background 0.2s}
+.signup-nudge .nudge-cta:hover{background:var(--rust-light)}
+.signup-nudge .nudge-dismiss{background:none;border:none;color:var(--cream-dim);cursor:pointer;font-size:0.8rem;padding:2px 6px;opacity:0.5}
+.signup-nudge .nudge-dismiss:hover{opacity:1}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
 /* EXPERIMENT TAB */
 .exp-form{display:flex;flex-direction:column;gap:0.8rem}
 .exp-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem;display:block}
@@ -194,7 +224,7 @@ a{color:var(--rust-light);text-decoration:none}
 <div class="setup" id="setup">
   <div class="setup-box">
     <h2>Try Stockyard Live</h2>
-    <p class="setup-sub">Paste your API key. Your first request routes through 58 middleware modules. No signup. No data stored.</p>
+    <p class="setup-sub">Paste your API key. Your first request routes through 70 middleware modules. No signup. No data stored.</p>
 
     <label class="setup-label">Your API Key</label>
     <div class="key-wrap">
@@ -260,6 +290,7 @@ a{color:var(--rust-light);text-decoration:none}
     <div class="panel-tabs">
       <button class="panel-tab active" onclick="showTab('traces')">Traces</button>
       <button class="panel-tab" onclick="showTab('modules')">Modules</button>
+      <button class="panel-tab" onclick="showTab('stack')">Stack</button>
       <button class="panel-tab" onclick="showTab('experiment')">A/B Test</button>
     </div>
     <div class="panel-content" id="panelContent">
@@ -522,6 +553,12 @@ async function sendMessage() {
     state.sending = false;
     document.getElementById('sendBtn').disabled = false;
     document.getElementById('chatInput').focus();
+    
+    // Signup nudge after 3 exchanges
+    const exchanges = state.messages.filter(m => m.role === 'assistant').length;
+    if (exchanges === 3 && !sessionStorage.getItem('sy_nudge_dismissed')) {
+      showSignupNudge();
+    }
   }
 }
 
@@ -561,6 +598,7 @@ function showTab(tab) {
 
   if (tab === 'traces') renderTraces();
   else if (tab === 'modules') renderModules();
+  else if (tab === 'stack') renderStack();
   else if (tab === 'experiment') renderExperiment();
 }
 
@@ -643,6 +681,122 @@ async function toggleModule(name, enabled) {
     const m = state.modules.find(m => m.name === name);
     if (m) m.enabled = enabled;
   } catch(e) {}
+}
+
+// ─── STACK BUILDER ─────────────────────────────────────────────
+function renderStack() {
+  const el = document.getElementById('panelContent');
+  const enabled = state.modules.filter(m => m.enabled);
+  
+  if (enabled.length === 0) {
+    el.innerHTML = `<div class="stack-empty">
+      <div style="font-size:1.5rem;margin-bottom:8px">⚡</div>
+      <div>No modules enabled yet.</div>
+      <div style="margin-top:4px;font-size:0.7rem;color:var(--leather)">Go to Modules tab to build your stack.</div>
+    </div>
+    <div class="deploy-cta">
+      <h4>Deploy This Stack</h4>
+      <p>Get your own Stockyard endpoint with these modules running 24/7.</p>
+      <a href="/cloud/" class="deploy-btn">Start Free →</a>
+    </div>`;
+    return;
+  }
+
+  // Group by category
+  const cats = {};
+  enabled.forEach(m => {
+    const cat = m.category || 'other';
+    if (!cats[cat]) cats[cat] = [];
+    cats[cat].push(m);
+  });
+
+  // Build chain visualization
+  let chain = `<div class="stack-count">${enabled.length} module${enabled.length===1?'':'s'} active · ${Object.keys(cats).length} categor${Object.keys(cats).length===1?'y':'ies'}</div>`;
+  chain += '<div class="stack-chain">';
+  chain += '<div class="stack-node"><span class="stack-dot" style="background:var(--blue)"></span><span class="stack-name">Request In</span></div>';
+  chain += '<div class="stack-arrow">↓</div>';
+  
+  const order = ['safety','auth','routing','caching','cost','transform','quality','observability','other'];
+  order.forEach(cat => {
+    if (!cats[cat]) return;
+    cats[cat].forEach(m => {
+      chain += `<div class="stack-node"><span class="stack-dot"></span><span class="stack-name">${escapeHtml(m.name)}</span><span class="stack-cat">${cat}</span></div>`;
+      chain += '<div class="stack-arrow">↓</div>';
+    });
+  });
+  
+  chain += '<div class="stack-node"><span class="stack-dot" style="background:var(--rust-light)"></span><span class="stack-name">→ ' + escapeHtml(state.provider || 'Provider') + '</span></div>';
+  chain += '</div>';
+
+  // Config export
+  const config = {
+    provider: state.provider,
+    model: state.model,
+    modules: enabled.map(m => m.name),
+    system_prompt: state.systemPrompt || undefined,
+    temperature: state.temperature,
+    max_tokens: state.maxTokens
+  };
+  
+  chain += `<div style="margin-top:12px">
+    <button onclick="copyStackConfig()" style="width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;padding:6px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'" id="copy-config-btn">Copy Config JSON</button>
+  </div>`;
+
+  // Deploy CTA
+  chain += `<div class="deploy-cta">
+    <h4>Deploy This Stack</h4>
+    <p>${enabled.length} modules configured and tested. Get a managed endpoint running this exact stack.</p>
+    <a href="/cloud/" class="deploy-btn">Deploy on Stockyard Cloud →</a>
+    <button class="deploy-share" onclick="shareStackConfig()">or share this config with your team</button>
+  </div>`;
+
+  el.innerHTML = chain;
+
+  // Store config for copy/share
+  window._stackConfig = config;
+}
+
+function copyStackConfig() {
+  if (!window._stackConfig) return;
+  const json = JSON.stringify(window._stackConfig, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    const btn = document.getElementById('copy-config-btn');
+    btn.textContent = '✓ Copied!';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Copy Config JSON'; btn.style.borderColor = 'var(--bg3)'; btn.style.color = 'var(--cream-dim)'; }, 2000);
+  });
+}
+
+async function shareStackConfig() {
+  if (!window._stackConfig) return;
+  try {
+    const payload = {
+      model: state.model,
+      provider: state.provider,
+      messages: state.messages,
+      modules: window._stackConfig.modules,
+    };
+    const resp = await fetch('/api/playground/share', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      const url = window.location.origin + '/playground?share=' + data.id;
+      await navigator.clipboard.writeText(url);
+      alert('Stack link copied to clipboard!');
+    } else {
+      // Fallback: encode in hash
+      const encoded = btoa(JSON.stringify(window._stackConfig));
+      const url = window.location.origin + '/playground#stack=' + encoded;
+      await navigator.clipboard.writeText(url);
+      alert('Stack link copied to clipboard!');
+    }
+  } catch(e) {
+    console.error('Share failed:', e);
+  }
 }
 
 // ─── EXPERIMENT ────────────────────────────────────────────────
@@ -933,6 +1087,36 @@ function escapeHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ─── SIGNUP NUDGE ──────────────────────────────────────────────
+function showSignupNudge() {
+  const messagesEl = document.getElementById('messages');
+  if (!messagesEl) return;
+  
+  const enabled = state.modules.filter(m => m.enabled).length;
+  const exchanges = state.messages.filter(m => m.role === 'assistant').length;
+  
+  const nudge = document.createElement('div');
+  nudge.className = 'signup-nudge';
+  nudge.innerHTML = `<div class="signup-nudge-inner">
+    <span class="nudge-icon">⚡</span>
+    <div class="nudge-text">
+      <strong>Like what you see?</strong>
+      ${exchanges} exchanges through ${enabled || 'all'} modules. Get your own endpoint — same stack, always on, zero config.
+    </div>
+    <a href="/cloud/" class="nudge-cta">Deploy Free →</a>
+    <button class="nudge-dismiss" onclick="dismissNudge(this)">✕</button>
+  </div>`;
+  
+  messagesEl.appendChild(nudge);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function dismissNudge(btn) {
+  const nudge = btn.closest('.signup-nudge');
+  if (nudge) nudge.remove();
+  sessionStorage.setItem('sy_nudge_dismissed', '1');
+}
+
 // ─── SHARE SESSION ─────────────────────────────────────────────
 async function shareSession() {
   if(!state.messages.length) {
@@ -1049,8 +1233,44 @@ async function loadSharedSession() {
   } catch(e) { console.log('Failed to load shared session from hash:', e); }
 }
 
+// Load stack config from #stack= hash
+function loadSharedStack() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#stack=')) return;
+  try {
+    const config = JSON.parse(atob(hash.slice(7)));
+    if (config.modules && Array.isArray(config.modules)) {
+      // Pre-enable modules from shared config
+      state._pendingModules = config.modules;
+      if (config.provider) state.provider = config.provider;
+      if (config.model) state.model = config.model;
+      if (config.system_prompt) state.systemPrompt = config.system_prompt;
+      if (config.temperature) state.temperature = config.temperature;
+      
+      // Show banner
+      setTimeout(() => {
+        const messagesEl = document.getElementById('messages');
+        if (messagesEl) {
+          const banner = document.createElement('div');
+          banner.className = 'signup-nudge';
+          banner.innerHTML = `<div class="signup-nudge-inner">
+            <span class="nudge-icon">📦</span>
+            <div class="nudge-text">
+              <strong>Shared Stack Loaded</strong>
+              ${config.modules.length} modules configured. Add your API key above to try it.
+            </div>
+            <button class="nudge-cta" onclick="showTab('stack');document.querySelectorAll('.panel-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.panel-tab')[2].classList.add('active')">View Stack</button>
+          </div>`;
+          messagesEl.appendChild(banner);
+        }
+      }, 500);
+    }
+  } catch(e) { console.log('Failed to load shared stack:', e); }
+}
+
 // ─── INIT ──────────────────────────────────────────────────────
 loadSharedSession();
+loadSharedStack();
 initSetup();
 </script>
 </body>
