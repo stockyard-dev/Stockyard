@@ -111,6 +111,16 @@ CREATE TABLE IF NOT EXISTS exchange_sync_log (
     status TEXT DEFAULT 'success',
     synced_at TEXT DEFAULT (datetime('now'))
 );
+
+-- Email captures from pack install gate
+CREATE TABLE IF NOT EXISTS exchange_gate_captures (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    pack_slug TEXT DEFAULT '',
+    source TEXT DEFAULT 'exchange_page',
+    created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_gate_email ON exchange_gate_captures(email);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
@@ -134,6 +144,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Status
 	mux.HandleFunc("GET /api/exchange/status", a.handleStatus)
+
+	// Install gate (email capture — no auth required)
+	mux.HandleFunc("POST /api/exchange/gate", a.handleGateCapture)
+	mux.HandleFunc("GET /api/exchange/gate/stats", a.handleGateStats)
 
 	log.Printf("[exchange] routes registered")
 }
@@ -459,4 +473,84 @@ func (a *App) handleStatus(w http.ResponseWriter, r *http.Request) {
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(v)
+}
+
+// --- Gate (email capture) ---
+
+func (a *App) handleGateCapture(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Email    string `json:"email"`
+		PackSlug string `json:"pack_slug"`
+		Source   string `json:"source"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if req.Email == "" || len(req.Email) < 3 {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "email required"})
+		return
+	}
+	if req.Source == "" {
+		req.Source = "exchange_page"
+	}
+
+	_, err := a.conn.Exec(
+		"INSERT INTO exchange_gate_captures (email, pack_slug, source) VALUES (?,?,?)",
+		req.Email, req.PackSlug, req.Source,
+	)
+	if err != nil {
+		log.Printf("[exchange] gate capture error: %v", err)
+	}
+
+	a.auditEvent("gate_capture", req.PackSlug, map[string]any{
+		"email": req.Email, "source": req.Source,
+	})
+
+	writeJSON(w, map[string]any{
+		"status":    "captured",
+		"email":     req.Email,
+		"pack_slug": req.PackSlug,
+	})
+}
+
+func (a *App) handleGateStats(w http.ResponseWriter, r *http.Request) {
+	var total int
+	a.conn.QueryRow("SELECT COUNT(*) FROM exchange_gate_captures").Scan(&total)
+
+	var uniqueEmails int
+	a.conn.QueryRow("SELECT COUNT(DISTINCT email) FROM exchange_gate_captures").Scan(&uniqueEmails)
+
+	// Top packs by capture
+	rows, _ := a.conn.Query("SELECT pack_slug, COUNT(*) as cnt FROM exchange_gate_captures GROUP BY pack_slug ORDER BY cnt DESC LIMIT 10")
+	var topPacks []map[string]any
+	if rows != nil {
+		defer rows.Close()
+		for rows.Next() {
+			var slug string
+			var cnt int
+			rows.Scan(&slug, &cnt)
+			topPacks = append(topPacks, map[string]any{"pack_slug": slug, "count": cnt})
+		}
+	}
+
+	// Recent captures
+	recentRows, _ := a.conn.Query("SELECT email, pack_slug, source, created_at FROM exchange_gate_captures ORDER BY created_at DESC LIMIT 20")
+	var recent []map[string]any
+	if recentRows != nil {
+		defer recentRows.Close()
+		for recentRows.Next() {
+			var email, slug, source, created string
+			recentRows.Scan(&email, &slug, &source, &created)
+			recent = append(recent, map[string]any{
+				"email": email, "pack_slug": slug, "source": source, "created_at": created,
+			})
+		}
+	}
+
+	writeJSON(w, map[string]any{
+		"total_captures": total,
+		"unique_emails":  uniqueEmails,
+		"top_packs":      topPacks,
+		"recent":         recent,
+	})
 }

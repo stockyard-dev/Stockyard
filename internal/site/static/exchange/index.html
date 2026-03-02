@@ -76,6 +76,45 @@ a:hover{color:var(--gold)}
 .pack-install{font-family:var(--font-mono);font-size:0.75rem;padding:0.5rem 1rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);cursor:pointer;transition:all 0.2s;margin-top:1rem;width:100%;text-align:center}
 .pack-install:hover{border-color:var(--rust);color:var(--cream)}
 .pack-install.installed{border-color:var(--green);color:var(--green-light);cursor:default}
+.pack-install.gated{border-color:var(--gold);color:var(--gold)}
+
+/* Gate modal */
+.gate-overlay{position:fixed;inset:0;background:rgba(10,8,6,0.88);z-index:1000;display:flex;align-items:center;justify-content:center;animation:gateFade 0.2s}
+@keyframes gateFade{from{opacity:0}to{opacity:1}}
+.gate-box{background:var(--bg2);border:1px solid var(--bg3);padding:2.5rem;max-width:440px;width:92%;position:relative;text-align:center}
+.gate-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--cream-dim);font-size:1.2rem;cursor:pointer}
+.gate-close:hover{color:var(--cream)}
+.gate-icon{font-size:2rem;margin-bottom:10px}
+.gate-title{font-size:1.15rem;margin-bottom:6px}
+.gate-sub{color:var(--cream-dim);font-size:0.85rem;margin-bottom:1.5rem;font-style:italic}
+.gate-form{display:flex;gap:0}
+.gate-input{flex:1;background:var(--bg);border:1px solid var(--bg3);border-right:none;color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;padding:0.7rem 1rem;outline:none}
+.gate-input:focus{border-color:var(--rust)}
+.gate-btn{background:var(--rust);border:1px solid var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.8rem;padding:0.7rem 1.2rem;cursor:pointer;white-space:nowrap;transition:background 0.2s}
+.gate-btn:hover{background:var(--rust-light)}
+.gate-error{font-family:var(--font-mono);font-size:0.75rem;color:#ef4444;margin-top:6px;min-height:1.2em}
+.gate-note{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:1rem}
+.gate-divider{display:flex;align-items:center;gap:12px;margin:1.2rem 0;color:var(--leather);font-family:var(--font-mono);font-size:0.7rem}
+.gate-divider::before,.gate-divider::after{content:'';flex:1;height:1px;background:var(--bg3)}
+.gate-alt{text-align:center}
+.gate-cloud{font-family:var(--font-mono);font-size:0.8rem;color:var(--gold)}
+.gate-cloud:hover{color:var(--rust-light)}
+.gate-cloud-sub{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:4px}
+
+/* Install instructions */
+.install-instructions{background:var(--bg2);border:1px solid var(--gold);margin-top:1.5rem;padding:1.5rem;animation:gateFade 0.3s}
+.inst-header{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;padding-bottom:10px;border-bottom:1px solid var(--bg3)}
+.inst-icon{color:var(--green-light);font-size:1.2rem}
+.inst-header strong{display:block;font-size:0.9rem}
+.inst-email{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)}
+.inst-close{margin-left:auto;background:none;border:none;color:var(--cream-dim);cursor:pointer;font-size:1rem}
+.inst-close:hover{color:var(--cream)}
+.inst-steps{display:flex;flex-direction:column;gap:14px}
+.inst-step{display:flex;gap:12px;align-items:flex-start}
+.inst-num{font-family:var(--font-mono);font-size:0.7rem;background:var(--rust-dark);color:var(--cream);width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.inst-label{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather-light);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
+.inst-code{display:block;background:var(--bg);border:1px solid var(--bg3);padding:8px 12px;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);line-height:1.6;word-break:break-all}
+.inst-cloud{font-family:var(--font-mono);font-size:0.8rem;color:var(--gold)}
 
 /* How it works */
 .how{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
@@ -331,28 +370,137 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <script>
 const API = 'https://stockyard.dev';
 
-async function installPack(slug, btn) {
-  if (btn.classList.contains('installed')) return;
-  btn.textContent = 'Installing...';
-  try {
-    const res = await fetch(API + '/api/exchange/packs/' + slug + '/install', { method: 'POST' });
-    if (res.status === 401 || res.status === 403) {
-      btn.textContent = 'Run locally to install';
-      btn.title = 'Install packs by running Stockyard on your machine: stockyard exchange install ' + slug;
-      return;
-    }
-    const data = await res.json();
-    if (data.error) {
-      btn.textContent = data.error.includes('already installed') ? 'Already installed ✓' : 'Error';
-      if (data.error.includes('already installed')) btn.classList.add('installed');
-      return;
-    }
-    btn.textContent = 'Installed ✓';
-    btn.classList.add('installed');
-  } catch (e) {
-    btn.textContent = 'Run locally to install';
-    btn.title = 'Install packs by running Stockyard on your machine';
+function installPack(slug, btn) {
+  // Gate: show signup modal instead of direct install
+  showInstallGate(slug, btn);
+}
+
+function showInstallGate(slug, btn) {
+  // Check if already signed up this session
+  const email = sessionStorage.getItem('sy_exchange_email');
+  if (email) {
+    showInstallInstructions(slug, email, btn);
+    return;
   }
+
+  // Create modal overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'gate-overlay';
+  overlay.id = 'install-gate';
+  overlay.innerHTML = `
+    <div class="gate-box">
+      <button class="gate-close" onclick="closeGate()">&times;</button>
+      <div class="gate-icon">📦</div>
+      <h3 class="gate-title">Install ${escapeHtml(slug)}</h3>
+      <p class="gate-sub">Enter your email to install packs and get your Stockyard endpoint.</p>
+      <div class="gate-form">
+        <input type="email" id="gate-email" class="gate-input" placeholder="you@company.com" onkeydown="if(event.key==='Enter')submitGate('${slug}')">
+        <button class="gate-btn" onclick="submitGate('${slug}')">Get Install Command</button>
+      </div>
+      <div id="gate-error" class="gate-error"></div>
+      <div class="gate-note">Free forever on Community tier. No credit card required.</div>
+      <div class="gate-divider"><span>or</span></div>
+      <div class="gate-alt">
+        <a href="/cloud/" class="gate-cloud">Deploy on Stockyard Cloud →</a>
+        <div class="gate-cloud-sub">Packs pre-installed. Zero config. 30-second setup.</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(() => document.getElementById('gate-email')?.focus(), 100);
+
+  // Track which pack triggered the gate
+  overlay.dataset.btn = btn ? 'true' : '';
+  overlay.dataset.slug = slug;
+}
+
+async function submitGate(slug) {
+  const email = document.getElementById('gate-email')?.value?.trim();
+  const errEl = document.getElementById('gate-error');
+  if (!email || !email.includes('@')) {
+    errEl.textContent = 'Please enter a valid email.';
+    return;
+  }
+
+  // Record email capture
+  try {
+    await fetch(API + '/api/exchange/gate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, pack_slug: slug, source: 'exchange_page' })
+    });
+  } catch(e) {}
+
+  sessionStorage.setItem('sy_exchange_email', email);
+  closeGate();
+  
+  // Find the button that triggered this
+  const btns = document.querySelectorAll('.pack-install');
+  const btn = Array.from(btns).find(b => b.onclick?.toString().includes(slug));
+  showInstallInstructions(slug, email, btn);
+}
+
+function showInstallInstructions(slug, email, btn) {
+  // Update button
+  if (btn) {
+    btn.textContent = 'Instructions ↓';
+    btn.classList.add('gated');
+  }
+
+  // Remove existing instructions
+  document.querySelectorAll('.install-instructions').forEach(el => el.remove());
+
+  // Show install instructions panel below the pack grid
+  const grid = document.getElementById('pack-grid');
+  if (!grid) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'install-instructions';
+  panel.innerHTML = `
+    <div class="inst-header">
+      <span class="inst-icon">✓</span>
+      <div>
+        <strong>Install ${escapeHtml(slug)}</strong>
+        <div class="inst-email">${escapeHtml(email)}</div>
+      </div>
+      <button class="inst-close" onclick="this.closest('.install-instructions').remove()">✕</button>
+    </div>
+    <div class="inst-steps">
+      <div class="inst-step">
+        <span class="inst-num">1</span>
+        <div>
+          <div class="inst-label">Start Stockyard</div>
+          <code class="inst-code">curl -fsSL https://stockyard.dev/install.sh | sh<br>stockyard serve</code>
+        </div>
+      </div>
+      <div class="inst-step">
+        <span class="inst-num">2</span>
+        <div>
+          <div class="inst-label">Install the pack</div>
+          <code class="inst-code">curl -X POST http://localhost:4400/api/exchange/packs/${escapeHtml(slug)}/install</code>
+        </div>
+      </div>
+      <div class="inst-step">
+        <span class="inst-num">3</span>
+        <div>
+          <div class="inst-label">Or deploy on Cloud (zero config)</div>
+          <a href="/cloud/" class="inst-cloud">Start free on Stockyard Cloud →</a>
+        </div>
+      </div>
+    </div>
+  `;
+  grid.after(panel);
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeGate() {
+  const gate = document.getElementById('install-gate');
+  if (gate) gate.remove();
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 </script>
 
