@@ -13,3 +13,13 @@ function DataTable({columns,rows,emptyMsg,onRowClick}){
   return html`<div class="data-table"><div class="dt-head" style="grid-template-columns:${gc}">${columns.map(c=>html`<span key=${c.key}>${c.label}</span>`)}</div><div class="dt-body">${rows.map((row,i)=>html`<div key=${row.id||i} class="dt-row ${onRowClick?'dt-clickable':''}" style="grid-template-columns:${gc}" onClick=${()=>onRowClick&&onRowClick(row)}>${columns.map(c=>html`<span key=${c.key} class="${c.mono?'mono':''} ${c.accent?'dt-accent':''}">${c.render?c.render(row):row[c.key]||'\u2014'}</span>`)}</div>`)}</div></div>`;
 }
 
+function UpgradeBanner(){
+  const[triggers,setTriggers]=useState([]);const[dismissed,setDismissed]=useState(()=>JSON.parse(sessionStorage.getItem('sy_dismissed_triggers')||'[]'));const[idx,setIdx]=useState(0);
+  useEffect(()=>{(async()=>{const r=await api('/api/upgrade-prompts');if(r.triggers)setTriggers(r.triggers)})()},[]);
+  const visible=triggers.filter(t=>!dismissed.includes(t.id));
+  if(visible.length===0)return null;
+  const t=visible[idx%visible.length]||visible[0];
+  const dismiss=()=>{const d=[...dismissed,t.id];setDismissed(d);sessionStorage.setItem('sy_dismissed_triggers',JSON.stringify(d))};
+  return html`<div class="upgrade-banner"><div class="upgrade-banner-inner"><span class="upgrade-badge">\u2191 Upgrade</span><strong>${t.title}</strong><span class="upgrade-msg">${t.message}</span><a href=${t.cta_link} class="upgrade-cta">${t.cta}</a><button class="upgrade-dismiss" onClick=${dismiss}>\u2715</button>${visible.length>1&&html`<button class="upgrade-next" onClick=${()=>setIdx(i=>i+1)}>\u203A</button>`}</div></div>`;
+}
+

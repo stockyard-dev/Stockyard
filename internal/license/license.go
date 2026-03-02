@@ -21,7 +21,9 @@ type Tier string
 
 const (
 	TierCommunity  Tier = "community"
+	TierIndividual Tier = "individual"
 	TierPro        Tier = "pro"
+	TierTeam       Tier = "team"
 	TierCloud      Tier = "cloud"
 	TierEnterprise Tier = "enterprise"
 )
@@ -174,8 +176,12 @@ func TierFromString(s string) Tier {
 	switch strings.ToLower(s) {
 	case "community":
 		return TierCommunity
+	case "individual":
+		return TierIndividual
 	case "pro":
 		return TierPro
+	case "team":
+		return TierTeam
 	case "cloud":
 		return TierCloud
 	case "enterprise":

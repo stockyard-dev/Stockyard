@@ -52,6 +52,16 @@ function DataTable({columns,rows,emptyMsg,onRowClick}){
   return html`<div class="data-table"><div class="dt-head" style="grid-template-columns:${gc}">${columns.map(c=>html`<span key=${c.key}>${c.label}</span>`)}</div><div class="dt-body">${rows.map((row,i)=>html`<div key=${row.id||i} class="dt-row ${onRowClick?'dt-clickable':''}" style="grid-template-columns:${gc}" onClick=${()=>onRowClick&&onRowClick(row)}>${columns.map(c=>html`<span key=${c.key} class="${c.mono?'mono':''} ${c.accent?'dt-accent':''}">${c.render?c.render(row):row[c.key]||'\u2014'}</span>`)}</div>`)}</div></div>`;
 }
 
+function UpgradeBanner(){
+  const[triggers,setTriggers]=useState([]);const[dismissed,setDismissed]=useState(()=>JSON.parse(sessionStorage.getItem('sy_dismissed_triggers')||'[]'));const[idx,setIdx]=useState(0);
+  useEffect(()=>{(async()=>{const r=await api('/api/upgrade-prompts');if(r.triggers)setTriggers(r.triggers)})()},[]);
+  const visible=triggers.filter(t=>!dismissed.includes(t.id));
+  if(visible.length===0)return null;
+  const t=visible[idx%visible.length]||visible[0];
+  const dismiss=()=>{const d=[...dismissed,t.id];setDismissed(d);sessionStorage.setItem('sy_dismissed_triggers',JSON.stringify(d))};
+  return html`<div class="upgrade-banner"><div class="upgrade-banner-inner"><span class="upgrade-badge">\u2191 Upgrade</span><strong>${t.title}</strong><span class="upgrade-msg">${t.message}</span><a href=${t.cta_link} class="upgrade-cta">${t.cta}</a><button class="upgrade-dismiss" onClick=${dismiss}>\u2715</button>${visible.length>1&&html`<button class="upgrade-next" onClick=${()=>setIdx(i=>i+1)}>\u203A</button>`}</div></div>`;
+}
+
 // ─── Overview ──────────────────────────────────────────────────────
 function OverviewView(){
   const[apps,setApps]=useState(null);const[users,setUsers]=useState([]);const[mods,setMods]=useState(0);
@@ -742,7 +752,7 @@ function App(){
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
     <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 6 apps \u00B7 69 endpoints</span></div>
-  </nav><main class="content"><${View} key=${active}/></main></div>`;
+  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));
 </script>
@@ -817,6 +827,15 @@ render(html`<${App}/>`,document.getElementById('root'));
 .live-trace{border-left:3px solid var(--green)}.live-spend{border-left:3px solid var(--gold)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.upgrade-banner{background:linear-gradient(135deg,#2a1f14,#1e1810);border:1px solid var(--rust-dark,#8b3d1a);border-left:3px solid var(--gold,#d4a843);margin:0 0 16px;animation:fadeIn 0.3s}
+.upgrade-banner-inner{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap;font-size:0.8rem}
+.upgrade-badge{font-family:var(--font-mono);font-size:0.6rem;background:var(--gold,#d4a843);color:var(--bg,#1a1410);padding:2px 6px;letter-spacing:1px;text-transform:uppercase;font-weight:600;flex-shrink:0}
+.upgrade-banner strong{color:var(--cream,#f0e6d3);flex-shrink:0}
+.upgrade-msg{color:var(--cream-dim,#bfb5a3);flex:1;min-width:200px}
+.upgrade-cta{font-family:var(--font-mono);font-size:0.75rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);padding:5px 12px;text-decoration:none;flex-shrink:0;transition:background 0.2s}
+.upgrade-cta:hover{background:var(--rust-light,#e8753a)}
+.upgrade-dismiss,.upgrade-next{background:none;border:none;color:var(--cream-dim,#bfb5a3);cursor:pointer;font-size:0.9rem;padding:2px 6px;opacity:0.6}
+.upgrade-dismiss:hover,.upgrade-next:hover{opacity:1;color:var(--cream,#f0e6d3)}
 </style>
 </head>
 <body><div id="root"></div></body>

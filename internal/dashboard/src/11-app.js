@@ -56,6 +56,6 @@ function App(){
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
     <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 6 apps \u00B7 69 endpoints</span></div>
-  </nav><main class="content"><${View} key=${active}/></main></div>`;
+  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));

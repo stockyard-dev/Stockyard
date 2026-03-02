@@ -488,6 +488,12 @@ func Boot(pc ProductConfig) {
 	})
 	log.Printf("  License:   tier=%s valid=%v", licEnforcer.Tier(), lic.Valid)
 
+	// Usage counters + upgrade triggers
+	GlobalUsageCounters = NewUsageCounters(db.Conn())
+	GlobalUsageCounters.RecordBoot()
+	srv.Mux().HandleFunc("GET /api/upgrade-prompts", UpgradePromptsHandler(licEnforcer, GlobalUsageCounters))
+	log.Printf("  Upgrades:  http://localhost:%d/api/upgrade-prompts", cfg.Port)
+
 	// OpenAPI spec
 	srv.Mux().HandleFunc("GET /api/openapi.json", apiserver.HandleOpenAPI)
 	log.Printf("  OpenAPI:   http://localhost:%d/api/openapi.json", cfg.Port)

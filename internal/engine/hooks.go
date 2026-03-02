@@ -68,6 +68,17 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 				GlobalStatus.RecordRequest(duration, err != nil)
 			}
 
+			// Usage counters for upgrade triggers
+			if GlobalUsageCounters != nil {
+				cacheHit := resp != nil && resp.CacheHit
+				var costSaved float64
+				if cacheHit && resp != nil {
+					// Estimate savings: what this request would have cost
+					costSaved = float64(resp.Usage.PromptTokens)*0.002/1000 + float64(resp.Usage.CompletionTokens)*0.006/1000
+				}
+				GlobalUsageCounters.RecordRequest(req.Provider, cacheHit, costSaved)
+			}
+
 			return resp, err
 		}
 	}

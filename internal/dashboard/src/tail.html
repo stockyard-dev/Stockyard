@@ -70,6 +70,15 @@
 .live-trace{border-left:3px solid var(--green)}.live-spend{border-left:3px solid var(--gold)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.upgrade-banner{background:linear-gradient(135deg,#2a1f14,#1e1810);border:1px solid var(--rust-dark,#8b3d1a);border-left:3px solid var(--gold,#d4a843);margin:0 0 16px;animation:fadeIn 0.3s}
+.upgrade-banner-inner{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap;font-size:0.8rem}
+.upgrade-badge{font-family:var(--font-mono);font-size:0.6rem;background:var(--gold,#d4a843);color:var(--bg,#1a1410);padding:2px 6px;letter-spacing:1px;text-transform:uppercase;font-weight:600;flex-shrink:0}
+.upgrade-banner strong{color:var(--cream,#f0e6d3);flex-shrink:0}
+.upgrade-msg{color:var(--cream-dim,#bfb5a3);flex:1;min-width:200px}
+.upgrade-cta{font-family:var(--font-mono);font-size:0.75rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);padding:5px 12px;text-decoration:none;flex-shrink:0;transition:background 0.2s}
+.upgrade-cta:hover{background:var(--rust-light,#e8753a)}
+.upgrade-dismiss,.upgrade-next{background:none;border:none;color:var(--cream-dim,#bfb5a3);cursor:pointer;font-size:0.9rem;padding:2px 6px;opacity:0.6}
+.upgrade-dismiss:hover,.upgrade-next:hover{opacity:1;color:var(--cream,#f0e6d3)}
 </style>
 </head>
 <body><div id="root"></div></body>

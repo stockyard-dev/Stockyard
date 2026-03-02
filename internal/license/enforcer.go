@@ -10,6 +10,8 @@ import (
 // TierLimits defines the operational limits for a pricing tier.
 type TierLimits struct {
 	MaxRequestsPerMonth int64 // 0 = unlimited
+	MaxProviders        int   // 0 = unlimited
+	MaxModules          int   // 0 = unlimited
 	MaxUsers            int   // 0 = unlimited
 	RetentionDays       int   // 0 = unlimited
 	EmailAlerts         bool
@@ -20,20 +22,46 @@ type TierLimits struct {
 // Limits returns the TierLimits for a given tier.
 func Limits(tier Tier) TierLimits {
 	switch tier {
+	case TierIndividual:
+		return TierLimits{
+			MaxRequestsPerMonth: 10_000,
+			MaxProviders:        16, // all
+			MaxModules:          70, // all
+			MaxUsers:            1,
+			RetentionDays:       30,
+			EmailAlerts:         true,
+			AutoBackups:         false,
+			PrioritySupport:     false,
+		}
 	case TierPro:
 		return TierLimits{
 			MaxRequestsPerMonth: 0, // unlimited
-			MaxUsers:            0, // unlimited
-			RetentionDays:       0, // unlimited
+			MaxProviders:        16,
+			MaxModules:          70,
+			MaxUsers:            1,
+			RetentionDays:       90,
+			EmailAlerts:         true,
+			AutoBackups:         true,
+			PrioritySupport:     true,
+		}
+	case TierTeam:
+		return TierLimits{
+			MaxRequestsPerMonth: 0, // unlimited
+			MaxProviders:        16,
+			MaxModules:          70,
+			MaxUsers:            5, // included, +$25/seat after
+			RetentionDays:       365,
 			EmailAlerts:         true,
 			AutoBackups:         true,
 			PrioritySupport:     true,
 		}
 	case TierCloud:
 		return TierLimits{
-			MaxRequestsPerMonth: 500_000,
-			MaxUsers:            0, // unlimited
-			RetentionDays:       30,
+			MaxRequestsPerMonth: 0, // unlimited (legacy, maps to Pro)
+			MaxProviders:        16,
+			MaxModules:          70,
+			MaxUsers:            0,
+			RetentionDays:       90,
 			EmailAlerts:         true,
 			AutoBackups:         true,
 			PrioritySupport:     true,
@@ -41,16 +69,20 @@ func Limits(tier Tier) TierLimits {
 	case TierEnterprise:
 		return TierLimits{
 			MaxRequestsPerMonth: 0,
-			MaxUsers:            0,
-			RetentionDays:       365,
+			MaxProviders:        16,
+			MaxModules:          70,
+			MaxUsers:            0, // unlimited
+			RetentionDays:       0, // unlimited
 			EmailAlerts:         true,
 			AutoBackups:         true,
 			PrioritySupport:     true,
 		}
 	default: // TierCommunity (no license key)
 		return TierLimits{
-			MaxRequestsPerMonth: 10_000,
-			MaxUsers:            3,
+			MaxRequestsPerMonth: 1_000,
+			MaxProviders:        3,
+			MaxModules:          20,
+			MaxUsers:            1,
 			RetentionDays:       7,
 			EmailAlerts:         false,
 			AutoBackups:         false,
