@@ -138,6 +138,11 @@ func isPublicRoute(method, path string) bool {
 		return true
 	}
 
+	// Public POST endpoints
+	if method == "POST" && path == "/api/exchange/gate" {
+		return true // Email capture — public endpoint
+	}
+
 	// Public GET endpoints (informational / marketing / playground)
 	if method == "GET" {
 		switch {
@@ -151,8 +156,6 @@ func isPublicRoute(method, path string) bool {
 			return true // GET /api/exchange/packs/{slug} — pack detail
 		case path == "/api/exchange/status":
 			return true
-		case path == "/api/exchange/gate":
-			return true // Email capture — public endpoint
 		case path == "/api/products" || strings.HasPrefix(path, "/api/products/"):
 			return true
 		case path == "/api/plans":
