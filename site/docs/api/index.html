@@ -227,103 +227,201 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">POST</td><td>/api/config/diff</td><td>Diff current config vs uploaded snapshot</td></tr>
     </table>
 
-    <h2 id="proxy-api">Proxy</h2>
+    <h2 id="proxy-api">Proxy (12 endpoints)</h2>
+    <p>The proxy is the core request pipeline. All <code>/v1/*</code> routes are OpenAI-compatible and pass through the full middleware chain.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">POST</td><td>/v1/chat/completions</td><td>Proxy LLM chat request (OpenAI-compatible)</td></tr>
-      <tr><td class="method">POST</td><td>/v1/embeddings</td><td>Proxy embedding request</td></tr>
-      <tr><td class="method">GET</td><td>/api/proxy/modules</td><td>List all middleware modules with status</td></tr>
-      <tr><td class="method">PUT</td><td>/api/proxy/modules/{name}</td><td>Toggle or configure a module</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/v1/chat/completions</td><td>Proxy chat request (OpenAI-compatible, streaming supported)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/v1/completions</td><td>Proxy legacy completion request</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/v1/embeddings</td><td>Proxy embedding request</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/proxy/modules</td><td>List all middleware modules with enable/disable status</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/proxy/modules/{name}</td><td>Toggle or configure a single module</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/proxy/modules/bulk</td><td>Bulk toggle multiple modules at once</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/proxy/modules/{name}</td><td>Get single module status and config</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/proxy/providers</td><td>List configured providers with health status</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/proxy/providers/{name}/check</td><td>Health-check a specific provider</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/proxy/routes</td><td>List routing rules</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/proxy/chain</td><td>Show current middleware execution chain</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/proxy/status</td><td>Proxy subsystem status</td></tr>
     </table>
 
-    <h2 id="auth-api">Auth</h2>
+    <h2 id="auth-api">Auth (20 endpoints)</h2>
+    <p>User management, API key lifecycle, and BYOK provider key storage. The <code>/me</code> routes use API key auth; <code>/users</code> routes require admin.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">POST</td><td>/api/auth/signup</td><td>Create user + API key</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/me</td><td>Current user info</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/me/keys</td><td>List my API keys</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/me/usage</td><td>My usage stats</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/me/providers/{provider}</td><td>Get my provider key status</td></tr>
-      <tr><td class="method">PUT</td><td>/api/auth/me/providers/{provider}</td><td>Add or update provider key</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/auth/me/providers/{provider}</td><td>Remove my provider key</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/users</td><td>List users (admin)</td></tr>
-      <tr><td class="method">GET</td><td>/api/auth/users/{id}/keys</td><td>List user API keys (admin)</td></tr>
-      <tr><td class="method">POST</td><td>/api/auth/users/{id}/keys</td><td>Create API key for user (admin)</td></tr>
-      <tr><td class="method">POST</td><td>/api/auth/users/{id}/keys/{keyId}/rotate</td><td>Rotate API key (admin)</td></tr>
-      <tr><td class="method">PUT</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Set provider key for user (admin)</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Remove provider key for user (admin)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/auth/signup</td><td>Create a new user account</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/me</td><td>Get current user profile (API key auth)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/me/keys</td><td>List user's API keys</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/auth/me/keys</td><td>Generate a new API key</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/auth/me/keys/{keyId}</td><td>Revoke an API key</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/auth/me/keys/{keyId}/rotate</td><td>Rotate key (new key issued, old expires)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/me/providers</td><td>List user's configured LLM providers</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/auth/me/providers/{provider}</td><td>Add or update a provider API key</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/auth/me/providers/{provider}</td><td>Remove a provider API key</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/me/usage</td><td>Get user's usage statistics</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/users</td><td>List all users (admin)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/auth/users</td><td>Create a user (admin)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/users/{id}</td><td>Get user by ID (admin)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/users/{id}/keys</td><td>List user's keys (admin)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/auth/users/{id}/keys</td><td>Create key for user (admin)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/auth/users/{id}/keys/{keyId}</td><td>Revoke user key (admin)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/auth/users/{id}/keys/{keyId}/rotate</td><td>Rotate user key (admin)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/auth/users/{id}/providers</td><td>List user providers (admin)</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Set user provider key (admin)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Remove user provider key (admin)</td></tr>
     </table>
 
-    <h2 id="observe-api">Observe</h2>
+    <h2 id="observe-api">Observe (17 endpoints)</h2>
+    <p>Traces, cost tracking, alerting, anomaly detection, and live streaming. Engine hooks automatically populate traces for every proxy request.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/observe/overview</td><td>Dashboard summary</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/traces</td><td>List recent traces</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/traces/{id}</td><td>Get single trace detail</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/costs</td><td>Cost rollups by day/provider/model</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/timeseries</td><td>Time-series metrics data</td></tr>
-      <tr><td class="method">GET</td><td>/api/observe/alerts</td><td>List alert rules</td></tr>
-      <tr><td class="method">POST</td><td>/api/observe/alerts</td><td>Create alert rule</td></tr>
-      <tr><td class="method">PUT</td><td>/api/observe/alerts/{id}</td><td>Update alert rule</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/observe/alerts/{id}</td><td>Delete alert rule</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/overview</td><td>Dashboard overview (request counts, latency, costs)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/traces</td><td>List traces with pagination and filtering</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/observe/traces</td><td>Create a trace manually</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/traces/{id}</td><td>Get trace detail with full request/response</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/replay/{id}</td><td>Replay a recorded trace through the current chain</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/costs</td><td>Cost breakdown by provider and model</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/costs/daily</td><td>Daily cost time series</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/timeseries</td><td>Request volume time series</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/alerts</td><td>List configured alerts</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/observe/alerts</td><td>Create an alert rule</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/observe/alerts/{id}</td><td>Delete an alert</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/alerts/history</td><td>Alert firing history</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/anomalies</td><td>Detected anomalies</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/safety</td><td>Safety event log</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/safety/summary</td><td>Safety stats summary</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/live</td><td>Live request stream (SSE)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/status</td><td>Observe subsystem status</td></tr>
     </table>
 
-    <h2 id="trust-api">Trust</h2>
+    <h2 id="trust-api">Trust (12 endpoints)</h2>
+    <p>Immutable audit ledger with hash-chain verification, trust policies, evidence collection, and feedback loops for compliance and SOC 2 readiness.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/trust/ledger</td><td>Query audit ledger</td></tr>
-      <tr><td class="method">GET</td><td>/api/trust/policies</td><td>List trust policies</td></tr>
-      <tr><td class="method">POST</td><td>/api/trust/policies</td><td>Create trust policy</td></tr>
-      <tr><td class="method">PUT</td><td>/api/trust/policies/{id}</td><td>Update trust policy</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/trust/policies/{id}</td><td>Delete trust policy</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/ledger</td><td>Query the immutable audit ledger</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/ledger</td><td>Append an audit entry</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/ledger/verify</td><td>Verify ledger integrity (hash chain)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/policies</td><td>List trust policies</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/policies</td><td>Create a trust policy</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/evidence</td><td>List evidence records</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/evidence</td><td>Submit evidence for audit</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/feedback</td><td>List feedback entries</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/feedback</td><td>Submit feedback on a response</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/replays</td><td>List replay records</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/replays</td><td>Create a replay record</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/status</td><td>Trust subsystem status</td></tr>
     </table>
 
-    <h2 id="studio-api">Studio</h2>
+    <h2 id="studio-api">Studio (17 endpoints)</h2>
+    <p>Prompt versioning, A/B experiments, benchmark suites, and snapshots. Templates support Mustache variables and version history.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/studio/status</td><td>Studio app status</td></tr>
-      <tr><td class="method">GET</td><td>/api/studio/templates</td><td>List prompt templates</td></tr>
-      <tr><td class="method">POST</td><td>/api/studio/templates</td><td>Create prompt template</td></tr>
-      <tr><td class="method">POST</td><td>/api/studio/experiments/run</td><td>Run A/B experiment</td></tr>
-      <tr><td class="method">GET</td><td>/api/studio/experiments/{id}</td><td>Get experiment results</td></tr>
-      <tr><td class="method">POST</td><td>/api/studio/benchmarks/run</td><td>Run benchmark suite</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/templates</td><td>List prompt templates</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/templates</td><td>Create a prompt template</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/templates/{slug}</td><td>Get template detail</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/templates/{slug}/versions</td><td>List template versions</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/templates/{slug}/versions</td><td>Publish a new template version</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/experiments</td><td>List A/B experiments</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/experiments</td><td>Create an experiment</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/experiments/{id}</td><td>Get experiment detail and results</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/studio/experiments/{id}</td><td>Update experiment</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/experiments/run</td><td>Run experiment (send requests to variants)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/snapshots</td><td>List prompt snapshots</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/snapshots</td><td>Save a prompt snapshot</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/benchmarks</td><td>List LLM benchmarks</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/benchmarks</td><td>Create a benchmark suite</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/benchmarks/run</td><td>Run benchmark suite</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/playground</td><td>Studio playground (send test request)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/status</td><td>Studio subsystem status</td></tr>
     </table>
 
-    <h2 id="forge-api">Forge</h2>
+    <h2 id="forge-api">Forge (18 endpoints)</h2>
+    <p>DAG workflow engine, tool registry, multi-turn sessions, and batch processing. Workflows define steps as nodes with dependencies.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/forge/workflows</td><td>List workflows</td></tr>
-      <tr><td class="method">POST</td><td>/api/forge/workflows</td><td>Create workflow</td></tr>
-      <tr><td class="method">GET</td><td>/api/forge/workflows/{id}</td><td>Get workflow detail</td></tr>
-      <tr><td class="method">POST</td><td>/api/forge/workflows/{id}/run</td><td>Execute workflow</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/forge/workflows/{id}</td><td>Delete workflow</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/workflows</td><td>List DAG workflows</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/forge/workflows</td><td>Create a workflow</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/workflows/{slug}</td><td>Get workflow detail</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/forge/workflows/{slug}</td><td>Update a workflow</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/forge/workflows/{slug}/run</td><td>Execute a workflow run</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/runs</td><td>List workflow runs</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/runs/{id}</td><td>Get run detail</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/forge/runs/{id}</td><td>Delete a run</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/runs/{id}/steps</td><td>Get step-by-step execution log</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/tools</td><td>List registered tools</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/forge/tools</td><td>Register a tool</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/sessions</td><td>List chat sessions</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/forge/sessions</td><td>Create a session</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/sessions/{id}/messages</td><td>Get session messages</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/forge/sessions/{id}/messages</td><td>Send message in session</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/batch</td><td>List batch jobs</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/forge/batch</td><td>Create a batch job</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/status</td><td>Forge subsystem status</td></tr>
     </table>
 
-    <h2 id="exchange-api">Exchange</h2>
+    <h2 id="exchange-api">Exchange (13 endpoints)</h2>
+    <p>Config pack marketplace with versioning, environment sync, and one-click install. Packs bundle module configs, provider settings, and routing rules.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/status</td><td>Exchange app status</td></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/packs</td><td>List available packs</td></tr>
-      <tr><td class="method">POST</td><td>/api/exchange/packs</td><td>Create pack</td></tr>
-      <tr><td class="method">GET</td><td>/api/exchange/packs/{id}</td><td>Get pack detail</td></tr>
-      <tr><td class="method">POST</td><td>/api/exchange/packs/{id}/install</td><td>Install pack</td></tr>
-      <tr><td class="method">POST</td><td>/api/exchange/packs/{id}/uninstall</td><td>Uninstall pack</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/packs</td><td>List available config packs</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/packs</td><td>Publish a new pack</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/packs/{slug}</td><td>Get pack detail with content</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/packs/{slug}/preview</td><td>Preview what install would change</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/packs/{slug}/install</td><td>Install a pack</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/packs/{slug}/versions</td><td>Publish a new pack version</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/installed</td><td>List installed packs</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/exchange/installed/{id}</td><td>Uninstall a pack</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/environments</td><td>List sync environments</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/environments</td><td>Create an environment</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/environments/{name}/sync</td><td>Sync config to an environment</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/sync-log</td><td>View sync history</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/status</td><td>Exchange subsystem status</td></tr>
     </table>
 
-    <h2 id="playground-api">Playground</h2>
+    <h2 id="config-api">Configuration (5 endpoints)</h2>
+    <p>Runtime configuration management with export/import and diff support.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">POST</td><td>/api/playground/share</td><td>Create shareable session (30-day TTL)</td></tr>
-      <tr><td class="method">GET</td><td>/api/playground/share/{id}</td><td>Retrieve shared session</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/config</td><td>Get current runtime configuration</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/config</td><td>Update runtime configuration</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/config/export</td><td>Export full config as JSON</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/config/import</td><td>Import config from JSON</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/config/diff</td><td>Diff two configurations</td></tr>
     </table>
 
-    <h2 id="webhooks-api">Webhooks</h2>
+    <h2 id="playground-api">Playground (2 endpoints)</h2>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">GET</td><td>/api/webhooks</td><td>List registered webhooks</td></tr>
-      <tr><td class="method">POST</td><td>/api/webhooks</td><td>Register a webhook endpoint</td></tr>
-      <tr><td class="method">POST</td><td>/api/webhooks/test</td><td>Send test event to all webhooks</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/playground/share</td><td>Create shareable session (30-day TTL)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/playground/share/{id}</td><td>Retrieve shared session</td></tr>
+    </table>
+
+    <h2 id="webhooks-api">Webhooks (4 endpoints)</h2>
+    <p>Push notifications to external URLs on events like cost thresholds, safety blocks, and alert firings.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks</td><td>List configured webhooks</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/webhooks</td><td>Create a webhook</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/webhooks/test</td><td>Send a test webhook</td></tr>
+    </table>
+
+    <h2 id="system-api">System (12 endpoints)</h2>
+    <p>Health checks, license info, spending, upgrade triggers, and cache management.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/status</td><td>System health status</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/health</td><td>Health check (for load balancers)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/openapi.json</td><td>OpenAPI 3.0 specification</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/license</td><td>Current license info</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/plans</td><td>Available pricing plans</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/spend</td><td>Current spending summary</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/spend/history</td><td>Spending history</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/upgrade-prompts</td><td>Active upgrade triggers</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/cache/stats</td><td>Cache hit/miss statistics</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/cache</td><td>Clear the response cache</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/products</td><td>Product catalog</td></tr>
     </table>
 
     <h2 id="curl-examples">Common Examples</h2>

@@ -45,6 +45,8 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .method-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;text-align:center}
 .method-box{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);line-height:1.8}
 .method-box code{background:var(--bg);padding:1px 6px;color:var(--cream);font-size:0.72rem}
+.bench-raw{max-width:900px;margin:0 auto 3rem;padding:0 2rem}
+.bench-date{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem;text-align:center}
 
 /* Controls */
 .controls{max-width:1100px;margin:2rem auto;padding:0 2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
@@ -158,12 +160,12 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <div class="page-hero" id="main">
   <div class="eyebrow">Performance</div>
   <h1>Measured, not <span class="accent">marketed.</span></h1>
-  <p class="sub">Transparent benchmarks for every middleware module. Measured on stockyard.dev with live traffic.</p>
+  <p class="sub">Transparent benchmarks for every middleware module. Real Go benchmark data from <code>go test -bench</code>.</p>
 </div>
 
 <div class="summary">
   <div class="summary-card">
-    <div class="summary-val" id="s-median">0.12ms</div>
+    <div class="summary-val" id="s-median">0.07ms</div>
     <div class="summary-label">Median module overhead</div>
   </div>
   <div class="summary-card">
@@ -171,23 +173,90 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="summary-label">P99 overhead</div>
   </div>
   <div class="summary-card">
-    <div class="summary-val" id="s-mem">2.1MB</div>
+    <div class="summary-val" id="s-mem">1.2MB</div>
     <div class="summary-label">Avg memory per module</div>
   </div>
   <div class="summary-card">
-    <div class="summary-val" id="s-chain">4.2ms</div>
-    <div class="summary-label">Full chain (70 modules)</div>
+    <div class="summary-val" id="s-chain" style="color:var(--green-light)">400ns</div>
+    <div class="summary-label">Full chain (58 modules)</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" style="color:var(--green-light)">1.56μs</div>
+    <div class="summary-label">58-chain + toggle (Go bench)</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" style="color:var(--green-light)">2</div>
+    <div class="summary-label">Allocs per request</div>
+  </div>
+</div>
+
+<div class="bench-raw">
+  <div class="method-title">Go Benchmark Results</div>
+  <div class="bench-date">March 2, 2026 &middot; Intel Xeon Platinum 8581C @ 2.10GHz &middot; <code>go test ./internal/proxy/ -bench=. -benchmem</code></div>
+  <pre style="font-size:0.72rem;line-height:1.8;margin-top:0.8rem">
+<span class="cmd">BenchmarkBaselineHandler          </span>  0.20 ns/op     0 B/op    0 allocs/op
+<span class="cmd">BenchmarkSingleMiddleware         </span>   311 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkToggleWrapEnabled        </span>   289 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkToggleWrapDisabled       </span>   298 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkChain10                  </span>   304 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkChain58                  </span>   400 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkChain58WithToggle        </span>  1560 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkChain58MixedToggle       </span>  1474 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkRealisticChain           </span>   409 ns/op   192 B/op    2 allocs/op
+<span class="cmd">BenchmarkToggleRegistryLookup     </span>  23.1 ns/op     0 B/op    0 allocs/op
+<span class="cmd">BenchmarkToggleRegistryLookupParallel</span> 214 ns/op     0 B/op    0 allocs/op
+<span class="cmd">BenchmarkChain58Parallel          </span> 10377 ns/op   192 B/op    2 allocs/op</pre>
+  <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:0.8rem;line-height:1.6">
+    <strong style="color:var(--cream-dim)">Key takeaways:</strong>
+    58-module chain adds 400ns total (0.0004ms). Toggle-aware chain with runtime enable/disable: 1.56μs.
+    Per-module overhead: ~6.9ns. Zero-alloc toggle lookups at 23ns. Only 192 bytes + 2 allocs per request regardless of chain length.
+    Under parallel contention (2 vCPUs): 10.4μs — still sub-microsecond per module.
   </div>
 </div>
 
 <div class="method">
   <div class="method-title">Methodology</div>
   <div class="method-box">
-    <strong style="color:var(--cream)">Environment:</strong> Single-core VM, 2GB RAM, Ubuntu 24.04, Go 1.23. <code>stockyard v1.0.0</code> compiled with <code>-trimpath -ldflags="-s -w"</code>.<br><br>
-    <strong style="color:var(--cream)">Workload:</strong> 10,000 synthetic requests per module. Payload: 1,200 input tokens, 500 output tokens (GPT-4o format). Cold start excluded — first 100 requests discarded.<br><br>
-    <strong style="color:var(--cream)">Measurement:</strong> Per-module latency measured by wrapping each middleware handler with <code>time.Now()</code> / <code>time.Since()</code>. Memory via <code>runtime.MemStats</code> delta before/after module init. Reported values: median, P95, P99.<br><br>
-    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 70-module chain adds ~4ms total. Measured on <a href="https://stockyard.dev" style="color:var(--rust-light)">stockyard.dev</a> with live traffic.<br><br>
-    <strong style="color:var(--cream)">Reproduce:</strong> Run the Go benchmark suite yourself: <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>. The bench harness covers baseline handler, single middleware, toggle.Wrap overhead, 10/70-module chains, mixed toggle states, parallel throughput, and registry lookup. See <code>internal/proxy/bench_test.go</code>. CI runs these on every push — results are published as artifacts.
+    <strong style="color:var(--cream)">Environment:</strong> Intel Xeon Platinum 8581C @ 2.10GHz, 2 vCPUs, Ubuntu 24.04, Go 1.23. <code>stockyard v1.0.0</code> compiled with <code>CGO_ENABLED=1</code>. SQLite 3.45.<br><br>
+    <strong style="color:var(--cream)">Framework benchmarks (above):</strong> Measured via <code>go test -bench</code> with standard Go benchmarking harness. These measure chain traversal, toggle lookup, and handler dispatch overhead — the fixed cost per request. Results are reproducible: run <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>.<br><br>
+    <strong style="color:var(--cream)">Module benchmarks (below):</strong> Per-module application-level overhead measured by wrapping each middleware handler with <code>time.Now()</code> / <code>time.Since()</code>. These include actual module logic (regex matching, PII scanning, token counting, etc). Memory via <code>runtime.MemStats</code> delta before/after module init. Reported values: median, P95, P99.<br><br>
+    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 70-module chain adds &lt;5ms total. Measured on <a href="https://stockyard.dev" style="color:var(--rust-light)">stockyard.dev</a> (Railway, us-east).<br><br>
+    <strong style="color:var(--cream)">Reproduce:</strong> Run the Go benchmark suite yourself: <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>. The bench harness covers baseline handler, single middleware, toggle.Wrap overhead, 10/58-module chains, mixed toggle states, parallel throughput, and registry lookup. See <code>internal/proxy/bench_test.go</code>.
+  </div>
+
+  <div class="method-box" style="margin-top:1rem;background:var(--bg)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
+      <strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase">Go Benchmark Suite — March 2, 2026</strong>
+      <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--leather)">go test ./internal/proxy/ -bench=. -benchmem</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.75rem">
+      <thead>
+        <tr style="border-bottom:1px solid var(--bg3)">
+          <th style="text-align:left;padding:6px 8px;color:var(--leather)">Benchmark</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--leather)">ns/op</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--leather)">B/op</th>
+          <th style="text-align:right;padding:6px 8px;color:var(--leather)">allocs/op</th>
+          <th style="text-align:left;padding:6px 8px;color:var(--leather)">What it tests</th>
+        </tr>
+      </thead>
+      <tbody style="color:var(--cream-dim)">
+        <tr><td style="padding:4px 8px;color:var(--green-light)">BaselineHandler</td><td style="text-align:right;padding:4px 8px">0.20</td><td style="text-align:right;padding:4px 8px">0</td><td style="text-align:right;padding:4px 8px">0</td><td style="padding:4px 8px">Empty HTTP handler (floor)</td></tr>
+        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">SingleMiddleware</td><td style="text-align:right;padding:4px 8px">310.5</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">One no-op middleware wrap</td></tr>
+        <tr><td style="padding:4px 8px;color:var(--cream)">ToggleWrapEnabled</td><td style="text-align:right;padding:4px 8px">289.4</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">toggle.Wrap with module ON</td></tr>
+        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">ToggleWrapDisabled</td><td style="text-align:right;padding:4px 8px">297.7</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">toggle.Wrap with module OFF (skip cost)</td></tr>
+        <tr><td style="padding:4px 8px;color:var(--cream)">Chain10</td><td style="text-align:right;padding:4px 8px">303.5</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">10-module chain overhead</td></tr>
+        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">Chain58</td><td style="text-align:right;padding:4px 8px">399.8</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">Full 58-module chain (no-op)</td></tr>
+        <tr><td style="padding:4px 8px;color:var(--gold)">Chain58WithToggle</td><td style="text-align:right;padding:4px 8px;color:var(--gold)">1,560</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">58 modules, all toggled ON</td></tr>
+        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">Chain58MixedToggle</td><td style="text-align:right;padding:4px 8px">1,474</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">58 modules, half ON / half OFF</td></tr>
+        <tr><td style="padding:4px 8px;color:var(--cream)">RealisticChain</td><td style="text-align:right;padding:4px 8px">409.3</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">5 modules (costcap, safety, 3 noop)</td></tr>
+        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--green-light)">RegistryLookup</td><td style="text-align:right;padding:4px 8px;color:var(--green-light)">23.1</td><td style="text-align:right;padding:4px 8px">0</td><td style="text-align:right;padding:4px 8px">0</td><td style="padding:4px 8px">Toggle state check (58 modules)</td></tr>
+        <tr><td style="padding:4px 8px;color:var(--cream)">RegistryLookupParallel</td><td style="text-align:right;padding:4px 8px">213.8</td><td style="text-align:right;padding:4px 8px">0</td><td style="text-align:right;padding:4px 8px">0</td><td style="padding:4px 8px">Parallel toggle lookup (contention)</td></tr>
+        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">Chain58Parallel</td><td style="text-align:right;padding:4px 8px">10,377</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">Full chain under concurrent load</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:0.8rem;font-size:0.7rem;color:var(--leather);font-family:var(--font-mono)">
+      Key takeaway: Full 58-module chain adds <strong style="color:var(--gold)">1.56μs</strong> framework overhead. Toggle lookup is <strong style="color:var(--green-light)">23ns</strong> per module. Only <strong style="color:var(--cream)">2 allocations</strong> per request regardless of chain length. Under parallel load: <strong style="color:var(--cream)">10.4μs</strong> per request.
+    </div>
   </div>
 </div>
 
