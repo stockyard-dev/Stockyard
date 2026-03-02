@@ -6,8 +6,6 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Pricing: Free Self-Hosted, $29.99 Cloud — Stockyard">
-<meta property="og:description" content="Stockyard pricing. Community free, self-hosted. Pro $9.99/mo. Cloud $29.99/mo, fully managed. Enterprise custom.">
 <meta property="og:url" content="https://stockyard.dev/pricing/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -15,8 +13,10 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<title>Pricing: Free Self-Hosted, $29.99 Cloud — Stockyard</title>
-<meta name="description" content="Stockyard pricing. Community free, self-hosted. Pro $9.99/mo. Cloud $29.99/mo, fully managed. Enterprise custom.">
+<title>Pricing: Free to Start, Pro $49/mo — Stockyard</title>
+<meta name="description" content="Stockyard pricing. Community free forever. Individual $9.99/mo. Pro $49/mo cloud-managed. Team $149/mo. Enterprise $499/mo. Annual billing saves 2 months.">
+<meta property="og:title" content="Pricing: Free to Start, Pro $49/mo — Stockyard">
+<meta property="og:description" content="LLM proxy suite. Free community tier. Pro at $49/mo with cloud hosting. Enterprise at $499/mo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -27,90 +27,106 @@
   --leather:#a0845c;--leather-light:#c4a87a;
   --cream:#f0e6d3;--cream-dim:#bfb5a3;
   --gold:#d4a843;
-  --green:#4a8c5c;--green-light:#5ba86e;
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
-.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}
 a:hover{color:var(--gold)}
 
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
 .nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
 .nav-links a{color:var(--cream-dim)}
 .nav-links a:hover{color:var(--rust-light)}
 
-.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
-.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold);font-weight:600}
+.btn-gold:hover{background:#e0b84d;border-color:#e0b84d}
+.btn-rust{background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-weight:600}
+.btn-rust:hover{background:var(--rust-light);border-color:var(--rust-light)}
+.btn:disabled,.btn.loading{opacity:0.5;cursor:wait}
 
-.page-hero{max-width:700px;margin:0 auto;padding:7rem 2rem 3rem;text-align:center}
-.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
-.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
-.page-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
-.page-hero h1 .accent{color:var(--rust-light)}
-.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto}
+.page-header{max-width:700px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
+.page-header .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.page-header .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1rem}
+.page-header h1{font-size:clamp(2rem,5vw,3rem);line-height:1.2;margin-bottom:1rem}
+.page-header h1 .accent{color:var(--rust-light)}
+.page-header .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic}
 
-.all-note{text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather-light);padding:0 2rem 2rem;max-width:600px;margin:0 auto}
+.billing-toggle{text-align:center;margin:2rem 0 3rem;display:flex;align-items:center;justify-content:center;gap:1rem}
+.billing-toggle span{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);cursor:pointer;transition:color 0.2s}
+.billing-toggle span.active{color:var(--cream)}
+.toggle-track{width:48px;height:24px;background:var(--bg3);border:1px solid var(--leather);border-radius:12px;position:relative;cursor:pointer;transition:background 0.2s}
+.toggle-track.annual{background:var(--rust-dark);border-color:var(--rust)}
+.toggle-knob{width:18px;height:18px;background:var(--cream);border-radius:50%;position:absolute;top:2px;left:3px;transition:left 0.2s}
+.toggle-track.annual .toggle-knob{left:25px}
+.annual-badge{font-family:var(--font-mono);font-size:0.65rem;background:var(--gold);color:var(--bg);padding:0.15rem 0.5rem;border-radius:2px;font-weight:600}
 
-.tiers{padding:2rem 2rem 5rem;max-width:1100px;margin:0 auto}
-.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
-.tier{padding:2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);display:flex;flex-direction:column}
-.tier-pop{border-color:var(--rust);position:relative}
-.tier-pop::before{content:'Most popular';position:absolute;top:-0.7rem;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--bg);background:var(--rust);padding:0.15rem 0.7rem;white-space:nowrap}
-.tier-name{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
-.tier-price{font-size:2.8rem;font-weight:700;color:var(--cream);line-height:1}
-.tier-price .d{font-size:1rem;vertical-align:super;color:var(--leather-light);margin-right:2px}
-.tier-price .c{font-size:1.2rem;color:var(--leather-light)}
-.tier-per{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:0.3rem;margin-bottom:1.2rem;display:block}
-.tier-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem;min-height:2.5rem}
-.tier-feat{list-style:none;margin-bottom:1.5rem;flex:1}
-.tier-feat li{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);padding:0.35rem 0;border-bottom:1px solid var(--bg3);display:flex;align-items:center;gap:0.4rem}
-.tier-feat li .k{color:var(--green-light);font-size:0.85rem}
-.tier-btn{display:block;width:100%;text-align:center;padding:0.7rem;font-family:var(--font-mono);font-size:0.8rem;border:2px solid;cursor:pointer;text-decoration:none;transition:all 0.2s}
-.tier-btn.p{background:var(--rust);color:var(--cream);border-color:var(--rust)}
-.tier-btn.p:hover{background:var(--rust-light);border-color:var(--rust-light)}
-.tier-btn.s{background:transparent;color:var(--cream);border-color:var(--leather)}
-.tier-btn.s:hover{border-color:var(--cream)}
-.tier-btn.g{background:transparent;color:var(--cream-dim);border-color:var(--bg3)}
-.tier-btn.g:hover{border-color:var(--leather);color:var(--cream)}
+.pricing-section{padding:0 2rem 4rem;max-width:1200px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2rem;align-items:start}
+.tier{padding:2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);text-align:center;position:relative;transition:border-color 0.2s}
+.tier:hover{border-color:var(--leather)}
+.tier.featured{border-color:var(--rust);background:var(--bg);transform:scale(1.03);z-index:1}
+.tier.featured::after{content:'Most popular';position:absolute;top:-0.6rem;left:50%;transform:translateX(-50%);background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.6rem;padding:0.15rem 0.6rem;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.tier-name{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--leather-light);margin-bottom:0.8rem}
+.tier-price{font-size:2.5rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
+.tier-price .dollar{font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
+.tier-price-free{font-size:2.5rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
+.tier-period{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-bottom:0.3rem}
+.tier-annual-note{font-family:var(--font-mono);font-size:0.6rem;color:var(--gold);margin-bottom:1.2rem;min-height:1em}
+.tier-features{list-style:none;text-align:left;margin-bottom:1.5rem;font-size:0.8rem;color:var(--cream-dim)}
+.tier-features li{padding:0.35rem 0;padding-left:1.2rem;position:relative}
+.tier-features li::before{content:'\2014';position:absolute;left:0;color:var(--rust)}
+.tier-cta{width:100%}
 
-.compare{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.compare-inner{max-width:900px;margin:0 auto}
-.ct{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.78rem}
-.ct th,.ct td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
-.ct th{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
-.ct td{color:var(--cream-dim)}
-.ct .f{color:var(--cream);font-family:var(--font-mono);font-size:0.72rem}
-.ct .y{color:var(--green-light)}
-.ct .n{color:var(--leather)}
-.ct .h{color:var(--cream);font-weight:700}
+.compare{padding:4rem 2rem;max-width:1000px;margin:0 auto}
+.compare-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
+.compare table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.compare th{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather-light);padding:0.8rem;text-align:center;border-bottom:2px solid var(--bg3)}
+.compare th:first-child{text-align:left}
+.compare td{padding:0.6rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:center}
+.compare td:first-child{text-align:left;color:var(--cream);font-family:var(--font-mono);font-size:0.75rem}
+.compare .check{color:var(--rust-light)}
+.compare .highlight-col{background:rgba(196,93,44,0.08)}
 
-.faq{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.how{padding:4rem 2rem;max-width:700px;margin:0 auto}
+.how-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
+.how-step{display:flex;gap:1.5rem;margin-bottom:2rem;align-items:flex-start}
+.how-num{font-family:var(--font-mono);font-size:1.5rem;color:var(--rust);font-weight:700;min-width:2rem}
+.how-text h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}
+.how-text p{font-size:0.9rem;color:var(--cream-dim)}
+.how-text code{font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em}
+
+.faq{padding:4rem 2rem;max-width:700px;margin:0 auto}
+.faq-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
 .faq-item{border-bottom:1px solid var(--bg3);padding:1.5rem 0}
-.faq-q{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
-.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+.faq-q{font-weight:700;margin-bottom:0.5rem;color:var(--cream)}
+.faq-a{font-size:0.9rem;color:var(--cream-dim)}
+.faq-a code{font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em}
 
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 
-@media(max-width:900px){.tier-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:550px){.tier-grid{grid-template-columns:1fr}.tier-pop::before{top:-0.6rem}.ct{font-size:0.65rem;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}.ct th,.ct td{padding:0.3rem 0.4rem}.calc-wrap{padding:1rem}.calc-wrap input[type="range"]{width:100%}}
-
-/* ===== MOBILE NAV ===== */
+.nav-brand{display:flex;align-items:center;gap:10px}
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
 .nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
 .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .nav-toggle.open span:nth-child(2){opacity:0}
 .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .nav-overlay{display:none}
+
+@media(max-width:1100px){
+  .pricing-grid{grid-template-columns:repeat(3,1fr)}
+  .tier.featured{transform:none}
+}
 @media(max-width:768px){
-  .nav{padding:0.8rem 1.2rem}
   .nav-toggle{display:block}
   .nav-links{
     display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    width:260px;background:var(--bg2);border-left:1px solid var(--bg3);
     padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
     box-shadow:-4px 0 20px rgba(0,0,0,0.5)
   }
@@ -119,64 +135,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
   .nav-overlay.open{display:block}
 }
-
-
-/* ===== GLOBAL MOBILE FIXES ===== */
-@media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:wrap;gap:0}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+@media(max-width:700px){
+  .pricing-grid{grid-template-columns:1fr}
+  .compare{overflow-x:auto}
+  .compare table{min-width:700px}
 }
-
 </style>
-<link rel="canonical" href="https://stockyard.dev/pricing/">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Is Stockyard really free?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. The Community tier is free forever for self-hosted use. You get all 70 modules, all 6 apps, and all 16 providers with no usage caps. You handle deployment, SSL, updates, and backups."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What does Pro add over Community?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Pro removes usage caps and adds priority support and early access to new features. You still manage your own servers and deployment \u2014 Pro removes the usage limits, not the ops work."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Why Cloud over self-hosted?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Self-hosting means you manage server provisioning, SSL certificates, reverse proxy, backup scripts, uptime monitoring, binary updates, traffic scaling, and network debugging. Cloud eliminates all of that \u2014 you get an endpoint and start building."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I switch plans later?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Upgrade or downgrade anytime. If you migrate from self-hosted to Cloud, we help you transfer your configuration."
-      }
-    }
-  ]
-}
-</script>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
 
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
@@ -194,287 +160,207 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </nav>
 
-<section class="page-hero" id="main">
+<section class="page-header">
   <div class="eyebrow">Pricing</div>
-  <h1>Full platform. <span class="accent">Every tier.</span></h1>
-  <p class="sub">All 6 apps, 70 modules, and 16 providers included at every level. The only difference is who runs it.</p>
+  <h1>Start free. <span class="accent">Scale as you grow.</span></h1>
+  <p class="sub">Free community tier. No credit card required. Upgrade when you're ready.</p>
 </section>
 
-<p class="all-note">No per-token markup. You pay your LLM providers directly. Stockyard pricing is for the platform only.</p>
+<div class="billing-toggle">
+  <span id="label-monthly" class="active" onclick="setBilling('monthly')">Monthly</span>
+  <div id="toggle-track" class="toggle-track" onclick="toggleBilling()">
+    <div class="toggle-knob"></div>
+  </div>
+  <span id="label-annual" onclick="setBilling('annual')">Annual</span>
+  <span class="annual-badge">Save 2 months</span>
+</div>
 
-<section class="tiers">
-  <div class="tier-grid">
+<section class="pricing-section">
+  <div class="pricing-grid">
 
     <div class="tier">
       <div class="tier-name">Community</div>
-      <div class="tier-price">Free</div>
-      <span class="tier-per">self-hosted &middot; you manage</span>
-      <div class="tier-desc">Full platform on your infrastructure. You handle deployment, SSL, updates, and backups.</div>
-      <ul class="tier-feat">
-        <li><span class="k">&#10003;</span> All 6 apps</li>
-        <li><span class="k">&#10003;</span> 70 middleware modules</li>
-        <li><span class="k">&#10003;</span> 16 providers</li>
-        <li><span class="k">&#10003;</span> 10,000 requests/mo</li>
-        <li><span class="k">&#10003;</span> 7-day retention</li>
-        <li><span class="k">&#10003;</span> 3 users</li>
-        <li><span class="k">&#10003;</span> Web console (local)</li>
-        <li><span class="k">&#10003;</span> Community support (GitHub)</li>
+      <div class="tier-price-free">Free</div>
+      <div class="tier-period">forever</div>
+      <div class="tier-annual-note">&nbsp;</div>
+      <ul class="tier-features">
+        <li>1,000 requests/month</li>
+        <li>3 providers</li>
+        <li>20 basic modules</li>
+        <li>7-day audit retention</li>
+        <li>Playground access</li>
+        <li>Community support</li>
       </ul>
-      <a href="/docs/quickstart/#install" class="tier-btn g">Get the binary</a>
+      <a href="https://github.com/stockyard-dev/stockyard" class="btn btn-secondary tier-cta">Download</a>
     </div>
 
     <div class="tier">
-      <div class="tier-name">Pro</div>
-      <div class="tier-price"><span class="d">$</span>9<span class="c">.99</span></div>
-      <span class="tier-per">per month &middot; self-hosted</span>
-      <div class="tier-desc">Remove all limits. You still manage your own server, updates, and uptime.</div>
-      <ul class="tier-feat">
-        <li><span class="k">&#10003;</span> Everything in Community</li>
-        <li><span class="k">&#10003;</span> Unlimited requests</li>
-        <li><span class="k">&#10003;</span> Unlimited retention</li>
-        <li><span class="k">&#10003;</span> Unlimited users</li>
-        <li><span class="k">&#10003;</span> Auto-backups</li>
-        <li><span class="k">&#10003;</span> Email alerts</li>
-        <li><span class="k">&#10003;</span> Priority support</li>
-        <li><span class="k">&#10003;</span> License key</li>
+      <div class="tier-name">Individual</div>
+      <div class="tier-price" data-monthly="9.99" data-annual="99"><span class="dollar">$</span><span class="price-val">9.99</span></div>
+      <div class="tier-period"><span class="period-text">per month</span></div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$21/yr"></span>&nbsp;</div>
+      <ul class="tier-features">
+        <li>10,000 requests/month</li>
+        <li>All 16 providers</li>
+        <li>All 70 modules</li>
+        <li>All 6 apps</li>
+        <li>30-day audit retention</li>
+        <li>Email support</li>
       </ul>
-      <a href="/docs/auth/#license" class="tier-btn s">Start with Pro</a>
+      <button onclick="checkout('stockyard','individual')" class="btn btn-secondary tier-cta">Get started</button>
     </div>
 
-    <div class="tier tier-pop">
-      <div class="tier-name">Cloud</div>
-      <div class="tier-price"><span class="d">$</span>29<span class="c">.99</span></div>
-      <span class="tier-per">per month &middot; fully managed</span>
-      <div class="tier-desc">Zero ops. We handle deployment, scaling, SSL, backups, and updates. You get an endpoint.</div>
-      <ul class="tier-feat">
-        <li><span class="k">&#10003;</span> Everything in Pro</li>
-        <li><span class="k">&#10003;</span> Managed infrastructure</li>
-        <li><span class="k">&#10003;</span> 500k requests/mo</li>
-        <li><span class="k">&#10003;</span> Auto-scaling</li>
-        <li><span class="k">&#10003;</span> 30-day retention</li>
-        <li><span class="k">&#10003;</span> Daily backups</li>
-        <li><span class="k">&#10003;</span> Custom domain</li>
-        <li><span class="k">&#10003;</span> Email support</li>
+    <div class="tier featured">
+      <div class="tier-name">Pro</div>
+      <div class="tier-price" data-monthly="49" data-annual="490"><span class="dollar">$</span><span class="price-val">49</span></div>
+      <div class="tier-period"><span class="period-text">per month</span></div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$98/yr"></span>&nbsp;</div>
+      <ul class="tier-features">
+        <li>Unlimited requests</li>
+        <li>All 16 providers</li>
+        <li>All 70 modules</li>
+        <li>Cloud managed &mdash; zero ops</li>
+        <li>90-day audit retention</li>
+        <li>Auto backups</li>
+        <li>Priority email support</li>
       </ul>
-      <a href="/cloud/" class="tier-btn p">Start free trial</a>
+      <button onclick="checkout('stockyard','pro')" class="btn btn-gold tier-cta">Go Pro</button>
+    </div>
+
+    <div class="tier">
+      <div class="tier-name">Team</div>
+      <div class="tier-price" data-monthly="149" data-annual="1,490"><span class="dollar">$</span><span class="price-val">149</span></div>
+      <div class="tier-period"><span class="period-text">per month</span></div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$298/yr"></span>&nbsp;</div>
+      <ul class="tier-features">
+        <li>Everything in Pro</li>
+        <li>5 seats included</li>
+        <li>+$25/seat/month after 5</li>
+        <li>Shared dashboard</li>
+        <li>Team-level audit trails</li>
+        <li>1-year audit retention</li>
+        <li>Slack + email support</li>
+      </ul>
+      <button onclick="checkout('stockyard','team')" class="btn btn-rust tier-cta">Start team</button>
     </div>
 
     <div class="tier">
       <div class="tier-name">Enterprise</div>
-      <div class="tier-price">Custom</div>
-      <span class="tier-per">annual contract</span>
-      <div class="tier-desc">Dedicated infrastructure, compliance, and a support engineer who knows your stack.</div>
-      <ul class="tier-feat">
-        <li><span class="k">&#10003;</span> Everything in Cloud</li>
-        <li><span class="k">&#10003;</span> Unlimited requests</li>
-        <li><span class="k">&#10003;</span> Dedicated instance</li>
-        <li><span class="k">&#10003;</span> SSO / SAML</li>
-        <li><span class="k">&#10003;</span> 99.9% SLA</li>
-        <li><span class="k">&#10003;</span> 1-year retention</li>
-        <li><span class="k">&#10003;</span> Audit export</li>
-        <li><span class="k">&#10003;</span> Dedicated engineer</li>
+      <div class="tier-price" data-monthly="499" data-annual="4,990"><span class="dollar">$</span><span class="price-val">499</span></div>
+      <div class="tier-period"><span class="period-text">per month</span></div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$998/yr"></span>&nbsp;</div>
+      <ul class="tier-features">
+        <li>Everything in Team</li>
+        <li>Unlimited seats</li>
+        <li>Unlimited audit retention</li>
+        <li>Custom modules</li>
+        <li>SSO &amp; SAML</li>
+        <li>SLA &amp; compliance export</li>
+        <li>Dedicated support</li>
       </ul>
-      <a href="mailto:enterprise@stockyard.dev" class="tier-btn s">Contact sales</a>
+      <a href="mailto:enterprise@stockyard.dev" class="btn btn-secondary tier-cta">Contact sales</a>
     </div>
 
   </div>
 </section>
 
 <section class="compare">
-  <div class="compare-inner">
-    <div class="section-label leather">Feature comparison</div>
-    <table class="ct">
-      <tr><th>Feature</th><th>Community</th><th>Pro</th><th>Cloud</th><th>Enterprise</th></tr>
-      <tr><td class="f">Apps</td><td class="h">6</td><td class="h">6</td><td class="h">6</td><td class="h">6</td></tr>
-      <tr><td class="f">Modules</td><td class="h">70</td><td class="h">70</td><td class="h">70</td><td class="h">70</td></tr>
-      <tr><td class="f">Providers</td><td class="h">16</td><td class="h">16</td><td class="h">16</td><td class="h">16</td></tr>
-      <tr><td class="f">Requests</td><td>10k/mo</td><td class="y">Unlimited</td><td>500k/mo</td><td class="y">Unlimited</td></tr>
-      <tr><td class="f">Users</td><td>3</td><td class="y">Unlimited</td><td class="y">Unlimited</td><td class="y">Unlimited</td></tr>
-      <tr><td class="f">Retention</td><td>7 days</td><td class="y">Unlimited</td><td>30 days</td><td class="h">1 year</td></tr>
-      <tr><td class="f">Hosting</td><td>Self-hosted</td><td>Self-hosted</td><td class="y">Managed</td><td class="y">Dedicated</td></tr>
-      <tr><td class="f">You manage</td><td>Server, SSL, updates, backups</td><td>Server, SSL, updates</td><td class="y">Nothing</td><td class="y">Nothing</td></tr>
-      <tr><td class="f">Auto-scaling</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
-      <tr><td class="f">Backups</td><td class="n">&mdash;</td><td class="y">Auto</td><td class="y">Daily</td><td class="y">Continuous</td></tr>
-      <tr><td class="f">Email alerts</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
-      <tr><td class="f">SSO / SAML</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">&#10003;</td></tr>
-      <tr><td class="f">SLA</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="y">99.9%</td></tr>
-      <tr><td class="f">Support</td><td>Community</td><td class="h">Priority</td><td class="h">Email</td><td class="h">Dedicated</td></tr>
-    </table>
+  <div class="compare-label">Compare plans</div>
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Community</th>
+        <th>Individual</th>
+        <th class="highlight-col">Pro</th>
+        <th>Team</th>
+        <th>Enterprise</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Monthly price</td><td>Free</td><td>$9.99</td><td class="highlight-col">$49</td><td>$149</td><td>$499</td></tr>
+      <tr><td>Annual price</td><td>Free</td><td>$99/yr</td><td class="highlight-col">$490/yr</td><td>$1,490/yr</td><td>$4,990/yr</td></tr>
+      <tr><td>Hosting</td><td>Self-hosted</td><td>Self-hosted</td><td class="highlight-col">Cloud managed</td><td>Cloud managed</td><td>Dedicated</td></tr>
+      <tr><td>Seats</td><td>1</td><td>1</td><td class="highlight-col">1</td><td>5 included</td><td>Unlimited</td></tr>
+      <tr><td>Requests/month</td><td>1,000</td><td>10,000</td><td class="highlight-col">Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Providers</td><td>3</td><td>All 16</td><td class="highlight-col">All 16</td><td>All 16</td><td>All 16 + custom</td></tr>
+      <tr><td>Modules</td><td>20 basic</td><td>All 70</td><td class="highlight-col">All 70</td><td>All 70</td><td>All 70 + custom</td></tr>
+      <tr><td>Audit retention</td><td>7 days</td><td>30 days</td><td class="highlight-col">90 days</td><td>1 year</td><td>Unlimited</td></tr>
+      <tr><td>Support</td><td>Community</td><td>Email</td><td class="highlight-col">Priority email</td><td>Slack + email</td><td>Dedicated + SLA</td></tr>
+      <tr><td>Playground</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>All 6 apps</td><td>&mdash;</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Cloud managed</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Team dashboard</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>SSO / SAML</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
+      <tr><td>SLA</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="how">
+  <div class="how-label">How it works</div>
+  <div class="how-step">
+    <div class="how-num">1</div>
+    <div class="how-text">
+      <h3>Download the binary</h3>
+      <p>One command: <code>brew install stockyard-dev/tap/stockyard</code> or <code>npx</code>, <code>docker</code>, or <code>curl</code>.</p>
+    </div>
+  </div>
+  <div class="how-step">
+    <div class="how-num">2</div>
+    <div class="how-text">
+      <h3>Run it</h3>
+      <p>Set your LLM API key, run the binary. Dashboard appears at <code>localhost/ui</code>.</p>
+    </div>
+  </div>
+  <div class="how-step">
+    <div class="how-num">3</div>
+    <div class="how-text">
+      <h3>Upgrade when you're ready</h3>
+      <p>Community tier works forever. When you need more requests, modules, or cloud hosting &mdash; upgrade and get a license key. Set <code>STOCKYARD_LICENSE_KEY=SY-...</code> and restart.</p>
+    </div>
   </div>
 </section>
 
 <section class="faq">
-  <div class="section-label">Frequently asked</div>
-
+  <div class="faq-label">Common questions</div>
   <div class="faq-item">
-    <div class="faq-q">Is Community really free?</div>
-    <div class="faq-a">Yes. All 6 apps, all 70 modules, all 16 providers. No feature gating. The 10K request/mo limit and 3-user cap are the only restrictions. You'll need to handle your own server setup, SSL certificates, updates, and backups — but for hobbyists and tinkerers who want full control, it's a complete platform.</div>
+    <div class="faq-q">What do I get for free?</div>
+    <div class="faq-a">The Community tier gives you 1,000 requests/month, 3 providers, 20 middleware modules, and 7-day audit retention. No credit card, no time limit.</div>
   </div>
-
   <div class="faq-item">
-    <div class="faq-q">What does Pro unlock?</div>
-    <div class="faq-a">Unlimited requests, users, retention, auto-backups, and email alerts. It's for teams running Stockyard on their own infrastructure who've outgrown the free limits. You still manage your own servers and deployment — Pro removes the usage caps, not the ops work.</div>
+    <div class="faq-q">What's the difference between Individual and Pro?</div>
+    <div class="faq-a">Individual is self-hosted &mdash; you run the binary on your own server. Pro is cloud-managed &mdash; we run it for you with zero ops, auto backups, and 90-day audit retention. Both get all 70 modules and all 16 providers.</div>
   </div>
-
   <div class="faq-item">
-    <div class="faq-q">Why Cloud over self-hosted?</div>
-    <div class="faq-a">Self-hosting means you manage the server, keep the binary updated, configure SSL, set up backups, monitor uptime, and handle scaling as traffic grows. Cloud eliminates all of that. You get a managed endpoint in 30 seconds — we handle infrastructure, updates, backups, scaling, and monitoring. Most teams choose Cloud so they can focus on their product instead of their proxy.</div>
+    <div class="faq-q">Can I save with annual billing?</div>
+    <div class="faq-a">Yes. Annual plans give you 2 months free: Individual $99/yr (save $21), Pro $490/yr (save $98), Team $1,490/yr (save $298), Enterprise $4,990/yr (save $998).</div>
   </div>
-
   <div class="faq-item">
-    <div class="faq-q">Can I switch tiers?</div>
-    <div class="faq-a">Yes. Upgrade Community to Pro with a license key — same binary. Move to Cloud by exporting config via Exchange environment sync. Downgrade anytime.</div>
+    <div class="faq-q">How does Team pricing work for more than 5 people?</div>
+    <div class="faq-a">Team includes 5 seats. Additional seats are $25/seat/month. So a 10-person team is $149 + (5 &times; $25) = $274/month.</div>
   </div>
-
   <div class="faq-item">
-    <div class="faq-q">Do you mark up LLM costs?</div>
-    <div class="faq-a">No. Stockyard never touches your API keys or charges per token. You pay your LLM providers directly. Stockyard pricing is for the platform only.</div>
+    <div class="faq-q">How does the license key work?</div>
+    <div class="faq-a">After purchase, you receive a license key via email. Set <code>STOCKYARD_LICENSE_KEY=SY-...</code> in your environment. The proxy validates it offline using cryptographic signatures &mdash; no phone-home, no network dependency.</div>
   </div>
-
   <div class="faq-item">
-    <div class="faq-q">What counts as a request?</div>
-    <div class="faq-a">One LLM API call through the proxy = one request. Dashboard views, management API calls, and Exchange operations don't count.</div>
+    <div class="faq-q">What happens when my subscription expires?</div>
+    <div class="faq-a">Your proxy reverts to the Community tier (1,000 requests/month, 3 providers, 20 modules). No data loss, no config changes. Re-subscribe anytime.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What providers are supported?</div>
+    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Do I need to change my application code?</div>
+    <div class="faq-a">No. Point your <code>OPENAI_BASE_URL</code> at the Stockyard proxy. Your existing OpenAI SDK calls work unchanged.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What does Enterprise include beyond Team?</div>
+    <div class="faq-a">Unlimited seats, unlimited audit retention, custom module development, SSO/SAML, SLA with uptime guarantees, compliance export, and a dedicated support channel. Email <a href="mailto:enterprise@stockyard.dev">enterprise@stockyard.dev</a> to discuss.</div>
   </div>
 </section>
-
-<section class="calc-section" style="max-width:800px;margin:0 auto;padding:4rem 2rem">
-  <div class="section-label" style="text-align:center">Cost Calculator</div>
-  <h2 style="text-align:center;font-size:1.8rem;margin-bottom:0.5rem">How much does Stockyard <span style="color:var(--rust-light)">save</span> you?</h2>
-  <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:2.5rem;font-size:0.95rem">Estimate your monthly LLM spend with and without Stockyard's caching, cost caps, and prompt optimization.</p>
-
-  <div style="background:var(--bg2);border:1px solid var(--bg3);padding:2rem;margin-bottom:1.5rem">
-    <div style="margin-bottom:1.5rem">
-      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">DAILY REQUESTS</label>
-      <input type="range" id="calc-reqs" min="100" max="100000" value="5000" step="100" style="width:100%;accent-color:var(--rust-light)" oninput="updateCalc()">
-      <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)"><span>100</span><span id="calc-reqs-val" style="color:var(--cream);font-size:0.85rem">5,000</span><span>100K</span></div>
-    </div>
-
-    <div style="margin-bottom:1.5rem">
-      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">PRIMARY MODEL</label>
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="calc-models">
-        <button class="calc-model-btn active" data-input="0.005" data-output="0.015" onclick="selectModel(this)">GPT-4o</button>
-        <button class="calc-model-btn" data-input="0.00015" data-output="0.0006" onclick="selectModel(this)">GPT-4o-mini</button>
-        <button class="calc-model-btn" data-input="0.003" data-output="0.015" onclick="selectModel(this)">Claude 3.5 Sonnet</button>
-        <button class="calc-model-btn" data-input="0.015" data-output="0.075" onclick="selectModel(this)">Claude 3 Opus</button>
-        <button class="calc-model-btn" data-input="0.00025" data-output="0.00125" onclick="selectModel(this)">Gemini Flash</button>
-        <button class="calc-model-btn" data-input="0.01" data-output="0.03" onclick="selectModel(this)">GPT-4 Turbo</button>
-      </div>
-    </div>
-
-    <div style="margin-bottom:1.5rem">
-      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">AVG TOKENS PER REQUEST</label>
-      <div style="display:flex;gap:1rem">
-        <div style="flex:1">
-          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);margin-bottom:0.3rem">Input</div>
-          <input type="range" id="calc-input-tok" min="100" max="8000" value="1000" step="100" style="width:100%;accent-color:var(--rust-light)" oninput="updateCalc()">
-          <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);text-align:center" id="calc-input-tok-val">1,000</div>
-        </div>
-        <div style="flex:1">
-          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);margin-bottom:0.3rem">Output</div>
-          <input type="range" id="calc-output-tok" min="50" max="4000" value="500" step="50" style="width:100%;accent-color:var(--rust-light)" oninput="updateCalc()">
-          <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);text-align:center" id="calc-output-tok-val">500</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-bottom:0.5rem">
-      <label style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--leather-light);display:block;margin-bottom:0.5rem">STOCKYARD MODULES ENABLED</label>
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="calc-modules">
-        <button class="calc-mod-btn active" data-saving="cache" onclick="toggleMod(this)">cache (30% hit rate)</button>
-        <button class="calc-mod-btn active" data-saving="promptslim" onclick="toggleMod(this)">promptslim (15% shorter)</button>
-        <button class="calc-mod-btn" data-saving="tierdrop" onclick="toggleMod(this)">tierdrop (40% to cheaper model)</button>
-        <button class="calc-mod-btn" data-saving="outputcap" onclick="toggleMod(this)">outputcap (20% fewer output tokens)</button>
-      </div>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:1.5rem;margin-bottom:1rem" id="calc-results">
-    <div style="flex:1;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-bottom:0.5rem">Without Stockyard</div>
-      <div style="font-size:2rem;font-weight:700;color:var(--cream)" id="calc-without">$750</div>
-      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">per month</div>
-    </div>
-    <div style="flex:1;background:var(--bg2);border:1px solid var(--rust);padding:1.5rem;text-align:center">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust-light);margin-bottom:0.5rem">With Stockyard</div>
-      <div style="font-size:2rem;font-weight:700;color:var(--rust-light)" id="calc-with">$443</div>
-      <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">per month (incl. Pro $9.99)</div>
-    </div>
-  </div>
-  <div style="text-align:center;padding:1rem;background:var(--bg2);border:1px solid var(--bg3)">
-    <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light,#5ba86e);margin-bottom:0.3rem">Estimated Monthly Savings</div>
-    <div style="font-size:2.2rem;font-weight:700;color:#5ba86e" id="calc-savings">$307</div>
-    <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)" id="calc-pct">41% reduction</div>
-  </div>
-  <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);text-align:center;margin-top:1rem">Estimates based on published provider pricing. Cache hit rates vary by workload. Actual savings depend on traffic patterns.</p>
-</section>
-
-<style>
-.calc-model-btn,.calc-mod-btn{font-family:var(--font-mono);font-size:0.7rem;padding:0.4rem 0.8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream-dim);cursor:pointer;transition:all 0.15s;border-radius:2px}
-.calc-model-btn:hover,.calc-mod-btn:hover{border-color:var(--leather);color:var(--cream)}
-.calc-model-btn.active{background:var(--rust);border-color:var(--rust);color:var(--cream)}
-.calc-mod-btn.active{background:var(--bg3);border-color:var(--leather);color:var(--cream)}
-</style>
-
-<script>
-let calcInputPrice = 0.005, calcOutputPrice = 0.015;
-function selectModel(btn){
-  document.querySelectorAll('.calc-model-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  calcInputPrice = parseFloat(btn.dataset.input);
-  calcOutputPrice = parseFloat(btn.dataset.output);
-  updateCalc();
-}
-function toggleMod(btn){ btn.classList.toggle('active'); updateCalc(); }
-function updateCalc(){
-  const reqs = parseInt(document.getElementById('calc-reqs').value);
-  const inputTok = parseInt(document.getElementById('calc-input-tok').value);
-  const outputTok = parseInt(document.getElementById('calc-output-tok').value);
-
-  document.getElementById('calc-reqs-val').textContent = reqs.toLocaleString();
-  document.getElementById('calc-input-tok-val').textContent = inputTok.toLocaleString();
-  document.getElementById('calc-output-tok-val').textContent = outputTok.toLocaleString();
-
-  const monthlyReqs = reqs * 30;
-  const baseCost = monthlyReqs * ((inputTok/1000)*calcInputPrice + (outputTok/1000)*calcOutputPrice);
-
-  // Calculate savings from enabled modules
-  const mods = document.querySelectorAll('.calc-mod-btn.active');
-  let effectiveReqs = monthlyReqs;
-  let effectiveInputTok = inputTok;
-  let effectiveOutputTok = outputTok;
-  let effectiveInputPrice = calcInputPrice;
-  let tierDropFraction = 0;
-
-  mods.forEach(m => {
-    switch(m.dataset.saving){
-      case 'cache': effectiveReqs *= 0.70; break;
-      case 'promptslim': effectiveInputTok *= 0.85; break;
-      case 'tierdrop': tierDropFraction = 0.40; break;
-      case 'outputcap': effectiveOutputTok *= 0.80; break;
-    }
-  });
-
-  let withCost = effectiveReqs * ((effectiveInputTok/1000)*calcInputPrice + (effectiveOutputTok/1000)*calcOutputPrice);
-  // tierdrop: 40% of remaining requests go to a model 80% cheaper
-  if(tierDropFraction > 0){
-    const cheaperCost = withCost * tierDropFraction * 0.2;
-    const normalCost = withCost * (1 - tierDropFraction);
-    withCost = normalCost + cheaperCost;
-  }
-  // Add Stockyard Pro cost
-  withCost += 9.99;
-
-  const savings = baseCost - withCost;
-  const pct = baseCost > 0 ? Math.round((savings/baseCost)*100) : 0;
-
-  document.getElementById('calc-without').textContent = '$' + Math.round(baseCost).toLocaleString();
-  document.getElementById('calc-with').textContent = '$' + Math.round(withCost).toLocaleString();
-  document.getElementById('calc-savings').textContent = '$' + Math.max(0,Math.round(savings)).toLocaleString();
-  document.getElementById('calc-pct').textContent = Math.max(0,pct) + '% reduction';
-}
-updateCalc();
-</script>
-
 
 <footer>
   <p class="sig">Stockyard.</p>
@@ -482,6 +368,78 @@ updateCalc();
   <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
 
+<script>
+const API_BASE = window.STOCKYARD_API || 'https://api.stockyard.dev';
+let billingMode = 'monthly';
+
+function setBilling(mode) {
+  billingMode = mode;
+  const track = document.getElementById('toggle-track');
+  const labelM = document.getElementById('label-monthly');
+  const labelA = document.getElementById('label-annual');
+
+  if (mode === 'annual') {
+    track.classList.add('annual');
+    labelA.classList.add('active');
+    labelM.classList.remove('active');
+  } else {
+    track.classList.remove('annual');
+    labelM.classList.add('active');
+    labelA.classList.remove('active');
+  }
+
+  document.querySelectorAll('.tier-price[data-monthly]').forEach(el => {
+    const val = el.querySelector('.price-val');
+    val.textContent = mode === 'annual' ? el.dataset.annual : el.dataset.monthly;
+  });
+
+  document.querySelectorAll('.period-text').forEach(el => {
+    el.textContent = mode === 'annual' ? 'per year' : 'per month';
+  });
+
+  document.querySelectorAll('.annual-savings').forEach(el => {
+    el.textContent = mode === 'annual' ? 'Save ' + el.dataset.save : '';
+  });
+}
+
+function toggleBilling() {
+  setBilling(billingMode === 'monthly' ? 'annual' : 'monthly');
+}
+
+async function checkout(product, tier) {
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.textContent = 'Redirecting...';
+  btn.disabled = true;
+
+  const checkoutTier = billingMode === 'annual' ? tier + '_annual' : tier;
+
+  try {
+    const res = await fetch(API_BASE + '/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product, tier: checkoutTier })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Checkout failed');
+    }
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error('No checkout URL returned');
+    }
+  } catch (e) {
+    console.error('Checkout error:', e);
+    btn.textContent = 'Error — try again';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = originalText; }, 3000);
+  }
+}
+</script>
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}

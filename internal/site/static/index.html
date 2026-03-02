@@ -102,7 +102,7 @@ a:hover{color:var(--gold)}
 .compare-table .them{color:var(--cream-dim)}
 
 .pricing-teaser{padding:5rem 2rem;text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.tier-row{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:960px;margin-left:auto;margin-right:auto}
+.tier-row{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:1100px;margin-left:auto;margin-right:auto}
 .tier{flex:1;min-width:180px;max-width:220px;padding:1.5rem 1.2rem;border:1px solid var(--bg3);text-align:center}
 .tier-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
 .tier-price{font-size:2.5rem;font-weight:700;color:var(--cream)}
@@ -204,11 +204,35 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         },
         {
           "@type": "Offer",
-          "name": "Cloud",
-          "price": "29.99",
+          "name": "Individual",
+          "price": "9.99",
           "priceCurrency": "USD",
           "billingIncrement": "Monthly",
-          "description": "Fully managed, zero ops"
+          "description": "Self-hosted, all modules"
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro",
+          "price": "49",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "Cloud managed, zero ops"
+        },
+        {
+          "@type": "Offer",
+          "name": "Team",
+          "price": "149",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "5 seats, shared dashboard"
+        },
+        {
+          "@type": "Offer",
+          "name": "Enterprise",
+          "price": "499",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "Unlimited seats, SSO, SLA"
         }
       ],
       "featureList": [
@@ -430,24 +454,31 @@ function showConsole(name){
       <a href="/docs/quickstart/#install" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get the binary</a>
     </div>
     <div class="tier">
-      <div class="tier-name">Pro</div>
+      <div class="tier-name">Individual</div>
       <div class="tier-price has-dollar">9.99</div>
       <div class="tier-period">per month &middot; self-hosted</div>
-      <div class="tier-desc">Remove all limits. You still manage your own server.</div>
-      <a href="/docs/auth/#license" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start with Pro</a>
+      <div class="tier-desc">All 70 modules. All 16 providers. All 6 apps.</div>
+      <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get started</a>
     </div>
     <div class="tier tier-highlight">
-      <div class="tier-name">Cloud</div>
-      <div class="tier-price has-dollar">29.99</div>
-      <div class="tier-period">per month &middot; fully managed</div>
-      <div class="tier-desc">Zero ops. We run everything. Get an endpoint in 30 seconds.</div>
-      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Start free trial</a>
+      <div class="tier-name">Pro</div>
+      <div class="tier-price has-dollar">49</div>
+      <div class="tier-period">per month &middot; cloud managed</div>
+      <div class="tier-desc">Zero ops. We run everything. Unlimited requests.</div>
+      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Go Pro</a>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Team</div>
+      <div class="tier-price has-dollar">149</div>
+      <div class="tier-period">per month &middot; 5 seats included</div>
+      <div class="tier-desc">Shared dashboard. Team audit trails. 1-year retention.</div>
+      <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start team</a>
     </div>
     <div class="tier">
       <div class="tier-name">Enterprise</div>
-      <div class="tier-price">Custom</div>
-      <div class="tier-period">&nbsp;</div>
-      <div class="tier-desc">SSO, SLA, dedicated support.</div>
+      <div class="tier-price has-dollar">499</div>
+      <div class="tier-period">per month</div>
+      <div class="tier-desc">SSO, SLA, unlimited seats, dedicated support.</div>
       <a href="mailto:enterprise@stockyard.dev" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Contact sales</a>
     </div>
   </div>
