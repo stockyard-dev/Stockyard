@@ -279,6 +279,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <h3 class="feat-name">Zero Config</h3>
         <div class="feat-desc">Trust hooks into every proxy request automatically. The ledger starts recording the moment you boot the binary. No code changes, no agents.</div>
       </div>
+      <div class="feat">
+        <h3 class="feat-name">Encryption at Rest</h3>
+        <div class="feat-desc">Provider API keys are encrypted with AES-256-GCM before touching disk. Keys are decrypted only in-memory for outbound calls. Bring your own encryption key or let Stockyard auto-generate one.</div>
+      </div>
     </div>
   </div>
 </section>

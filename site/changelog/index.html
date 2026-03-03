@@ -119,6 +119,26 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <div class="release">
   <div class="release-header">
+    <span class="release-version">v1.3.0</span>
+    <span class="release-date">March 3, 2026</span>
+    <span class="release-tag tag-major">Security</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">New Features</div>
+    <div class="change-item">Provider key encryption at rest — all BYOK provider API keys (OpenAI, Anthropic, etc.) are now encrypted with AES-256-GCM before being written to SQLite. Existing plaintext keys are auto-migrated on startup.</div>
+    <div class="change-item">Configurable encryption key — set <code>STOCKYARD_ENCRYPTION_KEY</code> env var for deterministic key derivation, or let Stockyard auto-generate and persist a random key.</div>
+    <div class="change-item">Benchmark page updated with real <code>go test -bench</code> data — measured on Xeon Platinum 8581C. 58-module chain: 400ns, toggle chain: 1.56μs, registry lookup: 23ns.</div>
+    <div class="change-item">API reference expanded to 130+ documented endpoints across 11 sections with color-coded methods.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Security</div>
+    <div class="change-item">Provider keys are decrypted only in-memory for outbound API calls. The <code>ProviderKey</code> JSON struct never includes the <code>api_key</code> field. Keys never appear in logs, traces, or API responses.</div>
+    <div class="change-item">Legacy plaintext keys are detected by the absence of the <code>enc:</code> prefix and transparently encrypted on next read or startup migration.</div>
+  </div>
+</div>
+
+<div class="release">
+  <div class="release-header">
     <span class="release-version">v1.2.0</span>
     <span class="release-date">February 27, 2026</span>
     <span class="release-tag tag-major">Platform</span>

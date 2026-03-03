@@ -105,7 +105,8 @@ type ProviderKey struct {
 
 // Store manages users, API keys, and provider keys.
 type Store struct {
-	db *sql.DB
+	db     *sql.DB
+	encKey []byte // AES-256 key for provider key encryption at rest
 }
 
 // NewStore creates a new auth store and runs migrations.
@@ -114,7 +115,20 @@ func NewStore(db *sql.DB) (*Store, error) {
 	if _, err := db.Exec(schema); err != nil {
 		return nil, fmt.Errorf("auth migration: %w", err)
 	}
-	log.Println("[auth] migrations applied")
+
+	// Initialize AES-256-GCM encryption for provider keys at rest
+	encKey, err := initEncryptionKey(db)
+	if err != nil {
+		return nil, fmt.Errorf("encryption init: %w", err)
+	}
+	s.encKey = encKey
+
+	// Migrate any existing plaintext provider keys to encrypted
+	if err := migrateEncryptExistingKeys(db, encKey); err != nil {
+		log.Printf("[auth] warning: provider key migration failed: %v", err)
+	}
+
+	log.Println("[auth] migrations applied (provider keys encrypted at rest)")
 	return s, nil
 }
 
@@ -390,29 +404,41 @@ func (s *Store) RotateKey(userID int64, keyID int64) (*APIKeyWithSecret, error) 
 
 // ─── Provider Key Operations ───────────────────────────────────────────────
 
-// SetProviderKey stores or updates a user's provider API key.
+// SetProviderKey stores or updates a user's provider API key (encrypted at rest).
 func (s *Store) SetProviderKey(userID int64, providerName, apiKey, baseURL string) error {
 	providerName = strings.TrimSpace(strings.ToLower(providerName))
 	if providerName == "" || apiKey == "" {
 		return errors.New("provider and api_key are required")
 	}
-	_, err := s.db.Exec(
+	encrypted, err := encrypt(apiKey, s.encKey)
+	if err != nil {
+		return fmt.Errorf("encrypt provider key: %w", err)
+	}
+	_, err = s.db.Exec(
 		`INSERT INTO user_provider_keys (user_id, provider, api_key, base_url)
 		 VALUES (?, ?, ?, ?)
 		 ON CONFLICT(user_id, provider) DO UPDATE SET api_key = excluded.api_key, base_url = excluded.base_url, updated_at = CURRENT_TIMESTAMP`,
-		userID, providerName, apiKey, baseURL,
+		userID, providerName, encrypted, baseURL,
 	)
 	return err
 }
 
-// GetProviderKey returns a user's API key for a specific provider.
+// GetProviderKey returns a user's API key for a specific provider (decrypted).
 func (s *Store) GetProviderKey(userID int64, providerName string) (apiKey, baseURL string, err error) {
+	var encryptedKey string
 	err = s.db.QueryRow(
 		`SELECT api_key, base_url FROM user_provider_keys WHERE user_id = ? AND provider = ?`,
 		userID, providerName,
-	).Scan(&apiKey, &baseURL)
+	).Scan(&encryptedKey, &baseURL)
 	if err == sql.ErrNoRows {
 		return "", "", nil
+	}
+	if err != nil {
+		return "", "", err
+	}
+	apiKey, err = decrypt(encryptedKey, s.encKey)
+	if err != nil {
+		return "", "", fmt.Errorf("decrypt provider key: %w", err)
 	}
 	return
 }
@@ -469,10 +495,16 @@ func (s *Store) GetAllProviderKeys(userID int64) (map[string]ProviderKeyFull, er
 	keys := make(map[string]ProviderKeyFull)
 	for rows.Next() {
 		var pk ProviderKeyFull
-		var prov string
-		if err := rows.Scan(&prov, &pk.APIKey, &pk.BaseURL); err != nil {
+		var prov, encryptedKey string
+		if err := rows.Scan(&prov, &encryptedKey, &pk.BaseURL); err != nil {
 			return nil, err
 		}
+		decrypted, err := decrypt(encryptedKey, s.encKey)
+		if err != nil {
+			log.Printf("[auth] warning: failed to decrypt key for provider %s: %v", prov, err)
+			continue
+		}
+		pk.APIKey = decrypted
 		keys[prov] = pk
 	}
 	return keys, nil

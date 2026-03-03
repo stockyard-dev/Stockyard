@@ -249,7 +249,20 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   -H "Content-Type: application/json" \
   -d '{"api_key": "sk-proj-..."}'</span>
 </pre>
-    <p>Provider keys are encrypted at rest in the SQLite database. They are never logged or exposed through any API endpoint.</p>
+    <p>Provider keys are encrypted with AES-256-GCM before being written to SQLite. They are decrypted only in-memory when making outbound API calls. Keys never appear in logs, traces, or API responses.</p>
+
+    <h2 id="encryption">Encryption at Rest</h2>
+    <p>All provider API keys (OpenAI, Anthropic, etc.) are encrypted using AES-256-GCM before touching disk. The encryption key is resolved in this order:</p>
+    <pre>
+<span class="comment"># Option 1: Bring your own encryption key (recommended for production)</span>
+<span class="cmd">export STOCKYARD_ENCRYPTION_KEY="your-secret-passphrase"</span>
+
+<span class="comment"># Option 2: Auto-generated (default)</span>
+<span class="comment"># If no env var is set, a random 32-byte key is generated on first boot</span>
+<span class="comment"># and persisted in the stockyard_secrets table.</span>
+</pre>
+    <p>Existing plaintext keys are automatically migrated to encrypted format on startup. The ciphertext format is <code>enc:</code> + base64(nonce || ciphertext || tag) &mdash; each encryption uses a unique random nonce, so the same key produces different ciphertexts each time.</p>
+    <div class="note"><strong>Security model:</strong> Provider keys are only decrypted server-side when creating outbound provider connections. The <code>GET /api/auth/me/providers</code> endpoint returns provider names and status but never the key values. The <code>ProviderKey</code> JSON struct has no <code>api_key</code> field.</div>
 
     <h2 id="key-rotation">Key Rotation</h2>
     <p>Rotate a user&rsquo;s API key without downtime:</p>
