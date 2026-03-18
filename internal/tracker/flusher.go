@@ -16,8 +16,18 @@ type Flusher struct {
 	counter  *SpendCounter
 	store    SpendStore
 	interval time.Duration
-	last     map[string]float64 // last flushed values per project
+	last     map[string]lastFlushed // last flushed values per project
 }
+
+// lastFlushed tracks what was last successfully written for a project.
+type lastFlushed struct {
+	cost      float64
+	tokensIn  int
+	tokensOut int
+}
+
+// maxFlushRetries is the number of retry attempts for a failed DB write.
+const maxFlushRetries = 3
 
 // NewFlusher creates a new spend flusher.
 func NewFlusher(counter *SpendCounter, store SpendStore, interval time.Duration) *Flusher {
@@ -28,7 +38,7 @@ func NewFlusher(counter *SpendCounter, store SpendStore, interval time.Duration)
 		counter:  counter,
 		store:    store,
 		interval: interval,
-		last:     make(map[string]float64),
+		last:     make(map[string]lastFlushed),
 	}
 }
 
@@ -53,17 +63,37 @@ func (f *Flusher) Start(ctx context.Context) {
 func (f *Flusher) flush() {
 	all := f.counter.GetAll()
 	for project, spend := range all {
-		lastVal := f.last[project]
-		delta := spend.Today - lastVal
-		if delta <= 0 {
+		prev := f.last[project]
+		costDelta := spend.Today - prev.cost
+		tokenInDelta := spend.TokensIn - prev.tokensIn
+		tokenOutDelta := spend.TokensOut - prev.tokensOut
+
+		if costDelta <= 0 && tokenInDelta <= 0 && tokenOutDelta <= 0 {
 			continue
 		}
 
-		if err := f.store.UpsertSpendRollup(project, delta, 0, 0); err != nil {
-			log.Printf("flusher: upsert failed for %s: %v", project, err)
+		// Retry transient DB errors with short backoff
+		var err error
+		for attempt := 0; attempt < maxFlushRetries; attempt++ {
+			err = f.store.UpsertSpendRollup(project, costDelta, tokenInDelta, tokenOutDelta)
+			if err == nil {
+				break
+			}
+			if attempt < maxFlushRetries-1 {
+				time.Sleep(time.Duration(attempt+1) * 100 * time.Millisecond)
+			}
+		}
+
+		if err != nil {
+			// Don't update f.last — the delta will be retried on the next flush cycle
+			log.Printf("flusher: upsert failed for %s after %d attempts: %v", project, maxFlushRetries, err)
 			continue
 		}
-		f.last[project] = spend.Today
+		f.last[project] = lastFlushed{
+			cost:      spend.Today,
+			tokensIn:  spend.TokensIn,
+			tokensOut: spend.TokensOut,
+		}
 	}
 }
 
