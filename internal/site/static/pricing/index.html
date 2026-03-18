@@ -120,6 +120,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .pricing-grid{grid-template-columns:repeat(3,1fr)}
   .tier.featured{transform:none}
 }
+@media(max-width:900px){
+  .pricing-grid{grid-template-columns:repeat(2,1fr)}
+}
+noscript .annual-note{display:block;text-align:center;font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:2rem}
 @media(max-width:768px){
   .nav-toggle{display:block}
   .nav-links{
@@ -205,7 +209,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <li>30-day audit retention</li>
         <li>Email support</li>
       </ul>
-      <button onclick="checkout('stockyard','individual')" class="btn btn-secondary tier-cta">Get started</button>
+      <button onclick="checkout('stockyard','individual',event)" class="btn btn-secondary tier-cta">Get started</button>
     </div>
 
     <div class="tier featured">
@@ -222,7 +226,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <li>Auto backups</li>
         <li>Priority email support</li>
       </ul>
-      <button onclick="checkout('stockyard','pro')" class="btn btn-rust tier-cta">Go Pro</button>
+      <button onclick="checkout('stockyard','pro',event)" class="btn btn-rust tier-cta">Go Pro</button>
     </div>
 
     <div class="tier">
@@ -239,7 +243,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <li>1-year audit retention</li>
         <li>Slack + email support</li>
       </ul>
-      <button onclick="checkout('stockyard','team')" class="btn btn-rust tier-cta">Start team</button>
+      <button onclick="checkout('stockyard','team',event)" class="btn btn-rust tier-cta">Start team</button>
     </div>
 
     <div class="tier">
@@ -404,8 +408,8 @@ function toggleBilling() {
   setBilling(billingMode === 'monthly' ? 'annual' : 'monthly');
 }
 
-async function checkout(product, tier) {
-  const btn = event.target;
+async function checkout(product, tier, e) {
+  const btn = e ? e.target : document.activeElement;
   const originalText = btn.textContent;
   btn.textContent = 'Redirecting...';
   btn.disabled = true;
@@ -439,7 +443,9 @@ async function checkout(product, tier) {
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
+<noscript><p class="annual-note">Annual billing saves 2 months. Enable JavaScript to toggle between monthly and annual pricing.</p></noscript>
 
 </body>
 </html>
