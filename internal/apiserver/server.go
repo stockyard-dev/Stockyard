@@ -256,14 +256,24 @@ func (s *Server) handleCORS(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Plan    string `json:"plan"`    // new: "cloud" or "enterprise"
-		Product string `json:"product"` // legacy compat
-		Tier    string `json:"tier"`    // legacy compat
-		Email   string `json:"email"`
+		Plan     string `json:"plan"`     // new: "cloud" or "enterprise"
+		Product  string `json:"product"`  // legacy compat
+		Tier     string `json:"tier"`     // legacy compat
+		Interval string `json:"interval"` // "monthly" (default) or "annual"
+		Email    string `json:"email"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeErr(w, http.StatusBadRequest, "invalid JSON")
 		return
+	}
+
+	// Normalize interval
+	interval := strings.ToLower(req.Interval)
+	if interval != "annual" && interval != "yearly" {
+		interval = "monthly"
+	}
+	if interval == "yearly" {
+		interval = "annual"
 	}
 
 	// Support both new plan-based and legacy product/tier checkout
@@ -296,11 +306,11 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Look up Stripe price ID
-	priceID := getPriceID(product, tier)
+	// Look up Stripe price ID (with interval support)
+	priceID := getPriceID(product, tier, interval)
 	if priceID == "" {
-		writeErr(w, http.StatusBadRequest, fmt.Sprintf("no price configured for %s/%s — set STRIPE_PRICE_%s_%s",
-			product, tier, strings.ToUpper(product), strings.ToUpper(tier)))
+		writeErr(w, http.StatusBadRequest, fmt.Sprintf("no price configured for %s/%s/%s — set STRIPE_PRICE_%s_%s_%s",
+			product, tier, interval, strings.ToUpper(product), strings.ToUpper(tier), strings.ToUpper(interval)))
 		return
 	}
 
@@ -749,7 +759,7 @@ func (s *Server) handleCloudUpgrade(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create Stripe checkout for Cloud Pro
-	priceID := getPriceID("cloud", "pro")
+	priceID := getPriceID("cloud", "pro", "monthly")
 	if priceID == "" {
 		writeErr(w, http.StatusInternalServerError, "cloud pro price not configured")
 		return
@@ -932,20 +942,34 @@ func (s *Server) seedExchange() {
 
 // --- Helpers ---
 
-func getPriceID(product, tier string) string {
-	// Convention: STRIPE_PRICE_{PRODUCT}_{TIER}
-	// e.g., STRIPE_PRICE_STOCKYARD_PRO, STRIPE_PRICE_COSTCAP_STANDARD
+func getPriceID(product, tier, interval string) string {
+	// Convention: STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}
+	// e.g., STRIPE_PRICE_STOCKYARD_INDIVIDUAL_MONTHLY, STRIPE_PRICE_STOCKYARD_PRO_ANNUAL
 	//
-	// Fallback: if no product-specific price, check STRIPE_PRICE_DEFAULT_{TIER}
-	// This supports the simplified pricing model where all individual products
-	// share the same $9.99/mo price.
-	key := fmt.Sprintf("STRIPE_PRICE_%s_%s", strings.ToUpper(product), strings.ToUpper(tier))
-	if v := os.Getenv(key); v != "" {
+	// Fallback chain:
+	//   1. STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}
+	//   2. STRIPE_PRICE_{PRODUCT}_{TIER} (backward compat, assumes monthly)
+	//   3. STRIPE_PRICE_DEFAULT_{TIER}_{INTERVAL}
+	//   4. STRIPE_PRICE_DEFAULT_{TIER}
+
+	p := strings.ToUpper(product)
+	t := strings.ToUpper(tier)
+	i := strings.ToUpper(interval)
+
+	// Try product + tier + interval
+	if v := os.Getenv(fmt.Sprintf("STRIPE_PRICE_%s_%s_%s", p, t, i)); v != "" {
 		return v
 	}
-	// Fallback to default price for this tier
-	fallback := fmt.Sprintf("STRIPE_PRICE_DEFAULT_%s", strings.ToUpper(tier))
-	return os.Getenv(fallback)
+	// Fallback: product + tier (no interval — backward compat)
+	if v := os.Getenv(fmt.Sprintf("STRIPE_PRICE_%s_%s", p, t)); v != "" {
+		return v
+	}
+	// Fallback: default + tier + interval
+	if v := os.Getenv(fmt.Sprintf("STRIPE_PRICE_DEFAULT_%s_%s", t, i)); v != "" {
+		return v
+	}
+	// Fallback: default + tier
+	return os.Getenv(fmt.Sprintf("STRIPE_PRICE_DEFAULT_%s", t))
 }
 
 func maskKey(key string) string {

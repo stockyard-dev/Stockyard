@@ -412,13 +412,11 @@ async function checkout(product, tier) {
   btn.textContent = 'Redirecting...';
   btn.disabled = true;
 
-  const checkoutTier = billingMode === 'annual' ? tier + '_annual' : tier;
-
   try {
     const res = await fetch(API_BASE + '/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product, tier: checkoutTier })
+      body: JSON.stringify({ product, tier, interval: billingMode })
     });
 
     if (!res.ok) {

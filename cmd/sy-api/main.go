@@ -23,12 +23,12 @@
 //	RESEND_API_KEY          Resend API key (alternative to SMTP)
 //	STRIPE_SUCCESS_URL      Checkout success redirect
 //	STRIPE_CANCEL_URL       Checkout cancel redirect
-//	STRIPE_PRICE_{PRODUCT}_{TIER}  Stripe price IDs per product/tier
+//	STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}  Stripe price IDs per product/tier/interval
 //
 // Stripe price ID examples:
 //
-//	STRIPE_PRICE_DEFAULT_STANDARD=price_1abc...   (Individual product $9.99/mo)
-//	STRIPE_PRICE_STOCKYARD_PRO=price_2def...      (Pro — all products $29.99/mo)
+//	STRIPE_PRICE_STOCKYARD_INDIVIDUAL_MONTHLY=price_1TCPvRRkoFWvoLHJOLAhqftZ
+//	STRIPE_PRICE_STOCKYARD_PRO_ANNUAL=price_1TCPvTRkoFWvoLHJitNyzJLL
 package main
 
 import (
