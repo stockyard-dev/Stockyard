@@ -10,8 +10,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -298,6 +301,10 @@ func RegisterWebhookRoutes(mux *http.ServeMux, wm *WebhookManager) {
 			http.Error(w, `{"error":"url required"}`, http.StatusBadRequest)
 			return
 		}
+		if err := validateWebhookURL(body.URL); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error":%q}`, err.Error()), http.StatusBadRequest)
+			return
+		}
 		if body.Events == "" {
 			body.Events = "*"
 		}
@@ -440,6 +447,40 @@ func RegisterWebhookRoutes(mux *http.ServeMux, wm *WebhookManager) {
 			"recent_failures_1h":   recentFailures,
 		})
 	})
+}
+
+// validateWebhookURL checks that a webhook URL is safe (not targeting internal services).
+func validateWebhookURL(rawURL string) error {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return fmt.Errorf("invalid URL")
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("only http and https URLs are allowed")
+	}
+	hostname := u.Hostname()
+	lower := strings.ToLower(hostname)
+
+	// Block known internal/metadata hostnames
+	blocked := []string{
+		"localhost", "metadata.google.internal", "metadata.goog",
+		"169.254.169.254", "168.63.129.16", // AWS/Azure metadata
+	}
+	for _, b := range blocked {
+		if lower == b {
+			return fmt.Errorf("webhook URL must not target internal services")
+		}
+	}
+
+	// Block private/loopback IPs
+	ip := net.ParseIP(hostname)
+	if ip != nil {
+		if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() {
+			return fmt.Errorf("webhook URL must not target private or loopback addresses")
+		}
+	}
+
+	return nil
 }
 
 func safeDiv(a, b float64) float64 {

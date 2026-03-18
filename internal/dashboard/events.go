@@ -87,7 +87,10 @@ func (b *Broadcaster) handleSSE(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("X-Accel-Buffering", "no")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// Restrict SSE to same-origin; the admin auth middleware handles CORS for
+	// cross-origin requests from allowed origins (stockyard.dev, localhost).
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-Frame-Options", "DENY")
 
 	ch := make(chan []byte, 32)
 

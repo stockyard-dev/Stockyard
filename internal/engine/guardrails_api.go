@@ -3,12 +3,26 @@ package engine
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/stockyard-dev/stockyard/internal/features"
 )
+
+// maxPatternLength is the maximum length of a guardrail regex pattern.
+const maxPatternLength = 1024
+
+// validateRegexPattern checks that a pattern compiles and isn't excessively complex.
+func validateRegexPattern(pattern string) error {
+	if len(pattern) > maxPatternLength {
+		return fmt.Errorf("pattern too long (max %d characters)", maxPatternLength)
+	}
+	_, err := regexp.Compile("(?i)" + pattern)
+	return err
+}
 
 // RegisterGuardrailRoutes mounts guardrail management routes.
 func RegisterGuardrailRoutes(mux *http.ServeMux, mgr *features.GuardrailManager, conn *sql.DB) {
@@ -40,6 +54,10 @@ func RegisterGuardrailRoutes(mux *http.ServeMux, mgr *features.GuardrailManager,
 		}
 		if body.Name == "" || body.Pattern == "" {
 			jsonError(w, http.StatusBadRequest, "name and pattern are required")
+			return
+		}
+		if err := validateRegexPattern(body.Pattern); err != nil {
+			jsonError(w, http.StatusBadRequest, "invalid regex pattern: "+err.Error())
 			return
 		}
 		if body.Type == "" {
@@ -103,6 +121,25 @@ func RegisterGuardrailRoutes(mux *http.ServeMux, mgr *features.GuardrailManager,
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			jsonError(w, http.StatusBadRequest, "invalid JSON")
 			return
+		}
+
+		// Validate pattern if being updated
+		if body.Pattern != nil {
+			if err := validateRegexPattern(*body.Pattern); err != nil {
+				jsonError(w, http.StatusBadRequest, "invalid regex pattern: "+err.Error())
+				return
+			}
+		}
+
+		// Validate action if being updated
+		if body.Action != nil {
+			switch *body.Action {
+			case "block", "redact", "warn", "log":
+				// valid
+			default:
+				jsonError(w, http.StatusBadRequest, "action must be one of: block, redact, warn, log")
+				return
+			}
 		}
 
 		// Build dynamic UPDATE

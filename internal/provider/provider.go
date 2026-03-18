@@ -116,7 +116,12 @@ type ProviderAPIError struct {
 }
 
 func (e *ProviderAPIError) Error() string {
-	return fmt.Sprintf("%s: status %d: %s", e.Provider, e.StatusCode, e.Body)
+	// Truncate body to prevent leaking full API responses in error messages/logs
+	body := e.Body
+	if len(body) > 500 {
+		body = body[:500] + "...(truncated)"
+	}
+	return fmt.Sprintf("%s: status %d: %s", e.Provider, e.StatusCode, body)
 }
 
 // IsRetryable returns true for 5xx errors and 429 (rate limit).
