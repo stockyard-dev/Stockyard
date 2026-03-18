@@ -1,8 +1,8 @@
 package apiserver
 
 // ─── Pricing Plans ─────────────────────────────────────────────────────
-// Stockyard uses a 4-tier pricing model:
-//   Community (free) → Pro ($9.99) → Cloud ($29.99) → Enterprise (custom)
+// Stockyard uses a 5-tier pricing model:
+//   Community (free) → Individual ($9.99) → Pro ($49) → Team ($149) → Enterprise ($499)
 // All tiers include the full platform (6 apps, 58 modules, all providers).
 
 // Plan represents a Stockyard pricing tier.
@@ -39,7 +39,7 @@ func Plans() []Plan {
 			},
 		},
 		{
-			Slug: "pro", Name: "Pro", Tagline: "Unlimited self-hosted. Priority support.",
+			Slug: "individual", Name: "Individual", Tagline: "Unlimited self-hosted. Priority support.",
 			PriceCents: 999, // $9.99/mo
 			Features: []string{
 				"Everything in Community",
@@ -58,35 +58,53 @@ func Plans() []Plan {
 			},
 		},
 		{
-			Slug: "cloud", Name: "Cloud", Tagline: "Fully managed. Zero ops.",
-			PriceCents: 2999, // $29.99/mo
+			Slug: "pro", Name: "Pro", Tagline: "Cloud-managed. Zero ops.",
+			PriceCents: 4900, // $49/mo
 			Features: []string{
-				"Everything in Pro",
+				"Everything in Individual",
 				"Managed infrastructure",
 				"Auto-scaling",
-				"30-day trace retention",
+				"90-day trace retention",
 				"Daily backups",
 				"Email support",
 				"Custom domain",
 			},
 			Limits: map[string]string{
 				"requests":  "500,000/mo",
-				"retention": "30 days",
+				"retention": "90 days",
 				"support":   "email",
 				"users":     "unlimited",
 			},
 		},
 		{
-			Slug: "enterprise", Name: "Enterprise", Tagline: "Unlimited scale. Dedicated support.",
-			PriceCents: 0, Custom: true,
+			Slug: "team", Name: "Team", Tagline: "Multi-seat. Shared configs.",
+			PriceCents: 14900, // $149/mo
 			Features: []string{
-				"Everything in Cloud",
-				"Dedicated infrastructure",
+				"Everything in Pro",
 				"SSO / SAML",
+				"Team dashboards",
+				"Shared configs",
+				"Role-based access",
+				"Priority support",
+			},
+			Limits: map[string]string{
+				"requests":  "unlimited",
+				"retention": "180 days",
+				"support":   "priority",
+				"users":     "unlimited",
+			},
+		},
+		{
+			Slug: "enterprise", Name: "Enterprise", Tagline: "Dedicated infrastructure. Custom SLAs.",
+			PriceCents: 49900, // $499/mo
+			Features: []string{
+				"Everything in Team",
+				"Dedicated infrastructure",
 				"99.9% SLA",
 				"1-year retention",
 				"Dedicated support engineer",
 				"Custom integrations",
+				"On-prem option",
 			},
 			Limits: map[string]string{
 				"requests":  "unlimited",
