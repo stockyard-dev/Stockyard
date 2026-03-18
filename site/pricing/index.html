@@ -423,7 +423,7 @@ async function checkout(product, tier) {
     }
 
     const data = await res.json();
-    if (data.url) {
+    if (data.url && (data.url.startsWith('https://checkout.stripe.com/') || data.url.startsWith('/'))) {
       window.location.href = data.url;
     } else {
       throw new Error('No checkout URL returned');

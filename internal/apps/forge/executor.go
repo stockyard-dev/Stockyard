@@ -8,10 +8,73 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
+
+// isSafeURL validates that a URL is safe to request (not targeting internal services).
+// Blocks private IP ranges, loopback, link-local, and non-HTTP(S) schemes.
+func isSafeURL(rawURL string) error {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return fmt.Errorf("invalid URL: %w", err)
+	}
+	scheme := strings.ToLower(u.Scheme)
+	if scheme != "http" && scheme != "https" {
+		return fmt.Errorf("blocked scheme %q (only http/https allowed)", scheme)
+	}
+	host := u.Hostname()
+	ip := net.ParseIP(host)
+	if ip == nil {
+		// Resolve hostname to check IP
+		addrs, err := net.LookupIP(host)
+		if err != nil {
+			return fmt.Errorf("cannot resolve host %q: %w", host, err)
+		}
+		for _, addr := range addrs {
+			if isPrivateIP(addr) {
+				return fmt.Errorf("blocked request to private IP %s (host %s)", addr, host)
+			}
+		}
+		return nil
+	}
+	if isPrivateIP(ip) {
+		return fmt.Errorf("blocked request to private/internal IP %s", ip)
+	}
+	return nil
+}
+
+func isPrivateIP(ip net.IP) bool {
+	privateRanges := []struct {
+		network *net.IPNet
+	}{
+		{mustParseCIDR("10.0.0.0/8")},
+		{mustParseCIDR("172.16.0.0/12")},
+		{mustParseCIDR("192.168.0.0/16")},
+		{mustParseCIDR("127.0.0.0/8")},
+		{mustParseCIDR("169.254.0.0/16")},
+		{mustParseCIDR("::1/128")},
+		{mustParseCIDR("fc00::/7")},
+		{mustParseCIDR("fe80::/10")},
+	}
+	for _, r := range privateRanges {
+		if r.network.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
+func mustParseCIDR(s string) *net.IPNet {
+	_, n, err := net.ParseCIDR(s)
+	if err != nil {
+		panic(err)
+	}
+	return n
+}
 
 // Step defines a single node in the workflow DAG.
 type Step struct {
@@ -340,6 +403,9 @@ func executeToolStep(ctx context.Context, rc *RunContext, step Step, start time.
 
 	// If handler is a URL, call it; otherwise treat as a built-in
 	if handler != "" && (strings.HasPrefix(handler, "http://") || strings.HasPrefix(handler, "https://")) {
+		if err := isSafeURL(handler); err != nil {
+			return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool handler url blocked: %v", err), LatencyMS: time.Since(start).Milliseconds()}
+		}
 		return callToolEndpoint(ctx, rc, step, handler, argsJSON, start)
 	}
 
@@ -400,9 +466,14 @@ func callToolEndpoint(ctx context.Context, rc *RunContext, step Step, url string
 
 // executeHTTPStep makes an arbitrary HTTP request.
 func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.Time) *StepResult {
-	url := resolveTemplate(step.Config.URL, rc)
-	if url == "" {
+	rawURL := resolveTemplate(step.Config.URL, rc)
+	if rawURL == "" {
 		return &StepResult{StepID: step.ID, Status: "error", Error: "url required for http step", LatencyMS: time.Since(start).Milliseconds()}
+	}
+
+	// SSRF protection: block requests to private/internal IPs
+	if err := isSafeURL(rawURL); err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("url blocked: %v", err), LatencyMS: time.Since(start).Milliseconds()}
 	}
 
 	method := step.Config.Method
@@ -418,7 +489,7 @@ func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.
 	stepCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(stepCtx, method, url, bodyReader)
+	req, err := http.NewRequestWithContext(stepCtx, method, rawURL, bodyReader)
 	if err != nil {
 		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: time.Since(start).Milliseconds()}
 	}

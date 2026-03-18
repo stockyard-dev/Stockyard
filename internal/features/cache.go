@@ -52,11 +52,17 @@ func NewCache(cfg CacheConfig) *Cache {
 }
 
 // CacheKey generates a deterministic key from model + messages.
-func CacheKey(model string, messages []provider.Message) string {
+// Includes userID to prevent cross-user cache leakage. Pass "" for shared/anonymous cache.
+func CacheKey(model string, messages []provider.Message, userID ...string) string {
+	uid := ""
+	if len(userID) > 0 {
+		uid = userID[0]
+	}
 	data, _ := json.Marshal(struct {
+		UserID   string             `json:"uid,omitempty"`
 		Model    string             `json:"model"`
 		Messages []provider.Message `json:"messages"`
-	}{model, messages})
+	}{uid, model, messages})
 	hash := sha256.Sum256(data)
 	return hex.EncodeToString(hash[:])
 }
@@ -82,9 +88,21 @@ func (c *Cache) Set(key string, entry *CacheEntry) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	// Evict if at capacity (simple: just skip — proper LRU in v1.1)
+	// Evict oldest entry if at capacity
 	if len(c.entries) >= c.config.MaxEntries {
-		return
+		var oldestKey string
+		var oldestTime time.Time
+		first := true
+		for k, e := range c.entries {
+			if first || e.CreatedAt.Before(oldestTime) {
+				oldestKey = k
+				oldestTime = e.CreatedAt
+				first = false
+			}
+		}
+		if oldestKey != "" {
+			delete(c.entries, oldestKey)
+		}
 	}
 	c.entries[key] = entry
 }
@@ -136,7 +154,8 @@ func CacheMiddleware(cache *Cache) proxy.Middleware {
 			}
 
 			// Step 1: Always try exact match first (fast path)
-			key := CacheKey(req.Model, req.Messages)
+			// Include UserID in cache key to prevent cross-user data leakage
+			key := CacheKey(req.Model, req.Messages, req.UserID)
 			if entry := cache.Get(key); entry != nil {
 				resp := *entry.Response
 				resp.CacheHit = true

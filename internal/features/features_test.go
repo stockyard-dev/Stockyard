@@ -33,6 +33,17 @@ func TestCacheKey(t *testing.T) {
 	if len(key1) != 64 {
 		t.Errorf("key length = %d, want 64", len(key1))
 	}
+
+	// Different users = different keys (cross-user isolation)
+	keyUser1 := CacheKey("gpt-4o-mini", msgs1, "user-1")
+	keyUser2 := CacheKey("gpt-4o-mini", msgs1, "user-2")
+	keyNoUser := CacheKey("gpt-4o-mini", msgs1)
+	if keyUser1 == keyUser2 {
+		t.Error("different users should produce different cache keys")
+	}
+	if keyUser1 == keyNoUser {
+		t.Error("user-scoped key should differ from anonymous key")
+	}
 }
 
 func TestCacheGetSet(t *testing.T) {

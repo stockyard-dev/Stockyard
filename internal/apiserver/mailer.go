@@ -1,12 +1,39 @@
 package apiserver
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/smtp"
 	"os"
 	"strings"
 )
+
+// ValidateEmail performs basic email validation and rejects injection attempts.
+func ValidateEmail(email string) error {
+	email = strings.TrimSpace(email)
+	if email == "" {
+		return errors.New("email is required")
+	}
+	if len(email) > 254 {
+		return errors.New("email too long")
+	}
+	if !strings.Contains(email, "@") || !strings.Contains(email, ".") {
+		return errors.New("invalid email format")
+	}
+	// Reject header injection characters
+	if strings.ContainsAny(email, "\r\n\x00") {
+		return errors.New("email contains invalid characters")
+	}
+	return nil
+}
+
+// sanitizeHeader removes CR/LF from header values to prevent header injection.
+func sanitizeHeader(s string) string {
+	s = strings.ReplaceAll(s, "\r", "")
+	s = strings.ReplaceAll(s, "\n", "")
+	return s
+}
 
 // Mailer sends transactional emails.
 type Mailer interface {
@@ -104,18 +131,23 @@ func (m *SMTPMailer) Send(to, subject, body string) error {
 }
 
 func (m *SMTPMailer) send(to, subject, body string) error {
+	if err := ValidateEmail(to); err != nil {
+		return fmt.Errorf("invalid recipient: %w", err)
+	}
+
 	from := m.From
 	if from == "" {
 		from = "hello@stockyard.dev"
 	}
 
+	// Sanitize header values to prevent header injection
 	msg := fmt.Sprintf("From: %s <%s>\r\n"+
 		"To: %s\r\n"+
 		"Subject: %s\r\n"+
 		"MIME-Version: 1.0\r\n"+
 		"Content-Type: text/plain; charset=UTF-8\r\n"+
 		"\r\n%s",
-		m.FromName, from, to, subject, body)
+		sanitizeHeader(m.FromName), from, sanitizeHeader(to), sanitizeHeader(subject), body)
 
 	addr := m.Host + ":" + m.Port
 	var auth smtp.Auth
@@ -197,8 +229,11 @@ func (m *ResendMailer) Send(to, subject, body string) error {
 }
 
 func (m *ResendMailer) sendResend(to, subject, text string) error {
+	if err := ValidateEmail(to); err != nil {
+		return fmt.Errorf("invalid recipient: %w", err)
+	}
 	payload := fmt.Sprintf(`{"from":"Stockyard <hello@stockyard.dev>","to":["%s"],"subject":"%s","text":"%s"}`,
-		to, escapeJSON(subject), escapeJSON(text))
+		escapeJSON(to), escapeJSON(subject), escapeJSON(text))
 
 	req, _ := newHTTPRequest("POST", "https://api.resend.com/emails", strings.NewReader(payload))
 	req.Header.Set("Authorization", "Bearer "+m.APIKey)
