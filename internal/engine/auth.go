@@ -26,12 +26,18 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
-		// CORS headers on all responses
+		// CORS headers on all responses (exact-match origin validation)
 		origin := r.Header.Get("Origin")
 		if origin != "" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
+			if origin == "https://stockyard.dev" || origin == "http://stockyard.dev" ||
+				origin == "http://localhost" || strings.HasPrefix(origin, "http://localhost:") ||
+				origin == "http://127.0.0.1" || strings.HasPrefix(origin, "http://127.0.0.1:") {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+			} else {
+				w.Header().Set("Access-Control-Allow-Origin", "https://stockyard.dev")
+			}
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Key")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Admin-Key, X-Stockyard-Key")
 			w.Header().Set("Access-Control-Max-Age", "86400")
 		}
 
@@ -119,11 +125,6 @@ func extractAdminKey(r *http.Request) string {
 	auth := r.Header.Get("Authorization")
 	if strings.HasPrefix(auth, "Bearer ") {
 		return strings.TrimPrefix(auth, "Bearer ")
-	}
-
-	// Check query param (for browser/webhook convenience)
-	if key := r.URL.Query().Get("admin_key"); key != "" {
-		return key
 	}
 
 	return ""

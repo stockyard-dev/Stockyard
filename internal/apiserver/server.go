@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -183,16 +184,31 @@ func (s *Server) Start() error {
 
 // --- Middleware ---
 
+// corsAllowedOrigin checks if an origin is allowed via exact match.
+func corsAllowedOrigin(origin string) bool {
+	if origin == "" {
+		return false
+	}
+	// Exact match on allowed origins
+	if origin == "https://stockyard.dev" || origin == "http://stockyard.dev" {
+		return true
+	}
+	// Allow localhost on any port for development
+	if origin == "http://localhost" || strings.HasPrefix(origin, "http://localhost:") {
+		return true
+	}
+	if origin == "http://127.0.0.1" || strings.HasPrefix(origin, "http://127.0.0.1:") {
+		return true
+	}
+	return false
+}
+
 func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin == "" {
-			origin = "*"
-		}
-		// Allow stockyard.dev and localhost origins
-		if strings.Contains(origin, "stockyard.dev") || strings.Contains(origin, "localhost") {
+		if corsAllowedOrigin(origin) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
-		} else {
+		} else if origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", "https://stockyard.dev")
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -216,9 +232,14 @@ func (s *Server) adminAuth(next http.HandlerFunc) http.HandlerFunc {
 		}
 		key := r.Header.Get("X-Admin-Key")
 		if key == "" {
-			key = r.URL.Query().Get("admin_key")
+			key = r.Header.Get("Authorization")
+			if strings.HasPrefix(key, "Bearer ") {
+				key = strings.TrimPrefix(key, "Bearer ")
+			} else {
+				key = ""
+			}
 		}
-		if key != s.adminKey {
+		if key == "" || subtle.ConstantTimeCompare([]byte(key), []byte(s.adminKey)) != 1 {
 			writeErr(w, http.StatusUnauthorized, "invalid admin key")
 			return
 		}

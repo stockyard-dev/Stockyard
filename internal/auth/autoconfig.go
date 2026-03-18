@@ -71,15 +71,16 @@ func AutoConfigMiddleware(store *Store, factory *ProviderFactory) func(http.Hand
 			// If user also sent X-Stockyard-Key, save the provider key for future use
 			syKey := r.Header.Get("X-Stockyard-Key")
 			if strings.HasPrefix(syKey, "sk-sy-") {
-				go func() {
-					user, _, err := store.ValidateKey(syKey)
+				// Capture variables to avoid closure race condition
+				go func(sk, pn, k string) {
+					user, _, err := store.ValidateKey(sk)
 					if err == nil && user != nil {
-						if err := store.SetProviderKey(user.ID, providerName, key, ""); err == nil {
-							log.Printf("[autoconfig] saved %s key for user %s", providerName, user.Email)
+						if err := store.SetProviderKey(user.ID, pn, k, ""); err == nil {
+							log.Printf("[autoconfig] saved %s key for user %s", pn, user.Email)
 							factory.InvalidateCache(user.ID)
 						}
 					}
-				}()
+				}(syKey, providerName, key)
 			}
 
 			next.ServeHTTP(w, r.WithContext(ctx))

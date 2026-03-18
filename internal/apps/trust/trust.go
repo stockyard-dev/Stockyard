@@ -210,7 +210,11 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 func (a *App) handleListLedger(w http.ResponseWriter, r *http.Request) {
 	limit := "100"
 	if l := r.URL.Query().Get("limit"); l != "" {
-		limit = l
+		// Validate limit is a reasonable number
+		var n int
+		if _, err := fmt.Sscanf(l, "%d", &n); err == nil && n > 0 && n <= 1000 {
+			limit = l
+		}
 	}
 	rows, _ := a.conn.Query("SELECT id, event_type, actor, resource, action, detail_json, prev_hash, hash, created_at FROM trust_ledger ORDER BY id DESC LIMIT ?", limit)
 	if rows == nil {
@@ -243,7 +247,14 @@ func (a *App) handleAppendLedger(w http.ResponseWriter, r *http.Request) {
 		Action    string `json:"action"`
 		Detail    any    `json:"detail"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, map[string]any{"error": "invalid JSON"})
+		return
+	}
+	if req.EventType == "" || req.Action == "" {
+		writeJSON(w, map[string]any{"error": "event_type and action are required"})
+		return
+	}
 
 	id, hash := a.RecordEvent(req.EventType, req.Actor, req.Resource, req.Action, req.Detail)
 	writeJSON(w, map[string]any{"status": "appended", "id": id, "hash": hash})

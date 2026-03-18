@@ -11,6 +11,13 @@ import (
 //go:embed static
 var staticFiles embed.FS
 
+// setSecurityHeaders adds standard security headers to the response.
+func setSecurityHeaders(w http.ResponseWriter) {
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-Frame-Options", "DENY")
+	w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+}
+
 // Register mounts the site routes on the given ServeMux.
 func Register(mux *http.ServeMux) {
 	// Strip the "static/" prefix so files are served from root
@@ -44,6 +51,7 @@ func Register(mux *http.ServeMux) {
 			http.NotFound(w, r)
 			return
 		}
+		setSecurityHeaders(w)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Header().Set("Cache-Control", "public, max-age=300")
 		w.Write(data)
@@ -63,6 +71,7 @@ func Register(mux *http.ServeMux) {
 				http.NotFound(w, r)
 				return
 			}
+			setSecurityHeaders(w)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.Header().Set("Cache-Control", "public, max-age=300")
 			w.Write(data)
@@ -148,6 +157,7 @@ func NotFoundHandler() http.HandlerFunc {
 		return http.NotFound
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		setSecurityHeaders(w)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(page)

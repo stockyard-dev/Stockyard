@@ -75,7 +75,7 @@ func (a *API) handleSpend(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleSpendHistory(w http.ResponseWriter, r *http.Request) {
 	days := 30
 	if d := r.URL.Query().Get("days"); d != "" {
-		if n, err := strconv.Atoi(d); err == nil {
+		if n, err := strconv.Atoi(d); err == nil && n > 0 && n <= 365 {
 			days = n
 		}
 	}
@@ -91,6 +91,15 @@ func (a *API) handleSpendHistory(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleLogs(w http.ResponseWriter, r *http.Request) {
 	page := queryInt(r, "page", 1)
 	limit := queryInt(r, "limit", 50)
+	if limit > 500 {
+		limit = 500
+	}
+	if limit < 1 {
+		limit = 1
+	}
+	if page < 1 {
+		page = 1
+	}
 	project := r.URL.Query().Get("project")
 	offset := (page - 1) * limit
 

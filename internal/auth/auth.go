@@ -15,7 +15,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -186,7 +188,7 @@ func (s *Store) GetUserByEmail(email string) (*User, error) {
 // CountUsers returns the total number of users.
 func (s *Store) CountUsers() int {
 	var count int
-	s.db.QueryRow("SELECT COUNT(*) FROM auth_users").Scan(&count)
+	s.db.QueryRow("SELECT COUNT(*) FROM users").Scan(&count)
 	return count
 }
 
@@ -404,11 +406,44 @@ func (s *Store) RotateKey(userID int64, keyID int64) (*APIKeyWithSecret, error) 
 
 // ─── Provider Key Operations ───────────────────────────────────────────────
 
+// validateBaseURL checks that a provider base URL is safe (no SSRF to internal services).
+func validateBaseURL(baseURL string) error {
+	if baseURL == "" {
+		return nil
+	}
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return fmt.Errorf("invalid base URL: %w", err)
+	}
+	scheme := strings.ToLower(u.Scheme)
+	if scheme != "http" && scheme != "https" {
+		return fmt.Errorf("base URL must use http or https scheme")
+	}
+	host := u.Hostname()
+	if host == "" {
+		return errors.New("base URL must include a hostname")
+	}
+	// Block known internal/metadata hostnames
+	if host == "metadata.google.internal" {
+		return fmt.Errorf("blocked internal hostname: %s", host)
+	}
+	ip := net.ParseIP(host)
+	if ip != nil {
+		if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+			return fmt.Errorf("base URL must not target private/internal IP: %s", ip)
+		}
+	}
+	return nil
+}
+
 // SetProviderKey stores or updates a user's provider API key (encrypted at rest).
 func (s *Store) SetProviderKey(userID int64, providerName, apiKey, baseURL string) error {
 	providerName = strings.TrimSpace(strings.ToLower(providerName))
 	if providerName == "" || apiKey == "" {
 		return errors.New("provider and api_key are required")
+	}
+	if err := validateBaseURL(baseURL); err != nil {
+		return err
 	}
 	encrypted, err := encrypt(apiKey, s.encKey)
 	if err != nil {
