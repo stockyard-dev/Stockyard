@@ -128,6 +128,13 @@ func (g *Gemini) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 		scanner.Buffer(make([]byte, 0, 256*1024), 256*1024)
 
 		for scanner.Scan() {
+			// Check if the request context has been cancelled (client disconnect)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
 			line := scanner.Text()
 			if line == "" || !strings.HasPrefix(line, "data: ") {
 				continue

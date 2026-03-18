@@ -608,11 +608,21 @@ func Boot(pc ProductConfig) {
 	<-ctx.Done()
 	log.Println("shutting down...")
 	nurture.Stop()
+
+	// Shut down the HTTP server first so in-flight requests complete
+	// and their spend data is recorded before the flusher stops.
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer shutdownCancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("server shutdown error: %v", err)
+	}
+
+	// Now cancel the flusher — triggers a final flush of remaining data
 	flushCancel()
+
 	if otelExp != nil {
 		otelExp.Close()
 	}
-	srv.Shutdown(context.Background())
 	db.Close()
 }
 
