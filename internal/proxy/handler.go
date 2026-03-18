@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -41,7 +42,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-		writeError(w, classifyError(err), err.Error())
+		writeError(w, classifyError(err), sanitizeError(err))
 		return
 	}
 
@@ -56,9 +57,10 @@ func (s *Server) handleCompletions(w http.ResponseWriter, r *http.Request) {
 
 // handleEmbeddings handles POST /v1/embeddings
 func (s *Server) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(nil, r.Body, maxRequestBodySize)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "read body: "+err.Error())
+		writeError(w, http.StatusRequestEntityTooLarge, "request body too large or unreadable")
 		return
 	}
 	defer r.Body.Close()
@@ -222,12 +224,16 @@ func (s *Server) handleProviderTest(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// maxRequestBodySize is the maximum allowed request body size (10 MB).
+const maxRequestBodySize = 10 * 1024 * 1024
+
 // parseRequest extracts a canonical Request from an HTTP request.
 // Returns the request and the raw body bytes.
 func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error) {
+	r.Body = http.MaxBytesReader(nil, r.Body, maxRequestBodySize)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return nil, nil, fmt.Errorf("read body: %w", err)
+		return nil, nil, fmt.Errorf("request body too large or unreadable")
 	}
 	defer r.Body.Close()
 
@@ -328,6 +334,35 @@ func searchString(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+// sanitizeError returns a client-safe error message, stripping internal details
+// like file paths, SQL errors, and provider implementation details.
+func sanitizeError(err error) string {
+	if err == nil {
+		return "internal error"
+	}
+	msg := err.Error()
+	// Allow through well-known client-facing error messages
+	switch {
+	case strings.Contains(msg, "cap exceeded") || strings.Contains(msg, "cap_exceeded"):
+		return msg
+	case strings.Contains(msg, "rate limit") || strings.Contains(msg, "status 429"):
+		return "rate limit exceeded"
+	case strings.Contains(msg, "no providers configured"):
+		return "no providers configured for the requested model"
+	case strings.Contains(msg, "circuit open"):
+		return "service temporarily unavailable"
+	case strings.Contains(msg, "status 401") || strings.Contains(msg, "invalid API key"):
+		return "authentication error with upstream provider"
+	case strings.Contains(msg, "status 403"):
+		return "forbidden by upstream provider"
+	case strings.Contains(msg, "all providers failed"):
+		return "all providers failed to process the request"
+	default:
+		log.Printf("proxy error (sanitized): %v", err)
+		return "internal proxy error"
+	}
 }
 
 // extractClientIP extracts the real client IP from the HTTP request.

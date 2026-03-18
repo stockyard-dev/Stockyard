@@ -31,19 +31,24 @@ func (sc *SpendCounter) Add(project string, amount float64) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 
+	now := time.Now()
+
 	ps, ok := sc.projects[project]
 	if !ok {
-		ps = &ProjectSpend{}
+		ps = &ProjectSpend{Updated: now}
 		sc.projects[project] = ps
 	}
 
-	now := time.Now()
-	// Reset daily counter if day changed
-	if ps.Updated.Day() != now.Day() || ps.Updated.Month() != now.Month() {
+	// Reset daily counter if the calendar day changed.
+	// Compare year+month+day to handle month/year boundaries correctly.
+	prevY, prevM, prevD := ps.Updated.Date()
+	curY, curM, curD := now.Date()
+
+	if prevY != curY || prevM != curM || prevD != curD {
 		ps.Today = 0
 	}
 	// Reset monthly counter if month changed
-	if ps.Updated.Month() != now.Month() || ps.Updated.Year() != now.Year() {
+	if prevY != curY || prevM != curM {
 		ps.Month = 0
 	}
 

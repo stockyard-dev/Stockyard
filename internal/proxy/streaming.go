@@ -114,11 +114,16 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 
 	_ = usedProvider // tracked via OnStreamComplete below
 
-	// Pipe chunks directly to client, flushing each one
+	// Pipe chunks directly to client, flushing each one.
+	// On write error (client disconnect), drain the stream channel so the
+	// provider goroutine isn't blocked forever trying to send.
 	var lastTokens int
 	for chunk := range stream {
 		if chunk.Error != nil {
 			writeSSEError(w, flusher, chunk.Error.Error())
+			// Drain remaining chunks so provider goroutine can exit
+			for range stream {
+			}
 			return
 		}
 
@@ -127,6 +132,9 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 		_, writeErr := w.Write(chunk.Data)
 		if writeErr != nil {
 			log.Printf("stream write error: %v", writeErr)
+			// Drain remaining chunks so provider goroutine can exit
+			for range stream {
+			}
 			return
 		}
 		flusher.Flush()

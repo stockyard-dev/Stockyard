@@ -130,6 +130,13 @@ func (g *Groq) SendStream(ctx context.Context, req *Request) (<-chan StreamChunk
 
 		scanner := bufio.NewScanner(httpResp.Body)
 		for scanner.Scan() {
+			// Check if the request context has been cancelled (client disconnect)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
 			line := scanner.Text()
 			if line == "" || !strings.HasPrefix(line, "data: ") {
 				continue

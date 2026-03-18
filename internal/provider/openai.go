@@ -135,6 +135,13 @@ func (o *OpenAI) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 		tokensSoFar := 0
 
 		for scanner.Scan() {
+			// Check if the request context has been cancelled (client disconnect)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
 			line := scanner.Text()
 			if line == "" {
 				continue

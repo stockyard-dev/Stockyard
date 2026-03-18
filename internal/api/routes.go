@@ -4,6 +4,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -82,7 +83,8 @@ func (a *API) handleSpendHistory(w http.ResponseWriter, r *http.Request) {
 	project := r.URL.Query().Get("project")
 	history, err := a.db.GetSpendHistory(project, days)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.Printf("api: GetSpendHistory error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve spend history")
 		return
 	}
 	writeJSON(w, map[string]any{"daily": history})
@@ -105,7 +107,8 @@ func (a *API) handleLogs(w http.ResponseWriter, r *http.Request) {
 
 	logs, total, err := a.db.ListRequests(project, limit, offset)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.Printf("api: ListRequests error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve request logs")
 		return
 	}
 	writeJSON(w, map[string]any{
@@ -118,22 +121,24 @@ func (a *API) handleLogs(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) handleLogDetail(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	log, err := a.db.GetRequest(id)
+	entry, err := a.db.GetRequest(id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.Printf("api: GetRequest error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve request")
 		return
 	}
-	if log == nil {
+	if entry == nil {
 		writeError(w, http.StatusNotFound, "request not found")
 		return
 	}
-	writeJSON(w, log)
+	writeJSON(w, entry)
 }
 
 func (a *API) handleCacheStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := a.db.GetCacheStats()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.Printf("api: GetCacheStats error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve cache stats")
 		return
 	}
 	writeJSON(w, stats)
@@ -141,7 +146,8 @@ func (a *API) handleCacheStats(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) handleCacheClear(w http.ResponseWriter, r *http.Request) {
 	if err := a.db.ClearCache(); err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.Printf("api: ClearCache error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to clear cache")
 		return
 	}
 	writeJSON(w, map[string]string{"status": "cleared"})
@@ -161,7 +167,8 @@ func (a *API) handleReplay(w http.ResponseWriter, r *http.Request) {
 	// Load the original request from storage
 	logEntry, err := a.db.GetRequest(id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.Printf("api: GetRequest (replay) error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve request for replay")
 		return
 	}
 	if logEntry == nil {
@@ -180,7 +187,8 @@ func (a *API) handleReplay(w http.ResponseWriter, r *http.Request) {
 	// Parse the stored request body back into a provider.Request
 	var req provider.Request
 	if err := json.Unmarshal([]byte(logEntry.RequestBody), &req); err != nil {
-		writeError(w, http.StatusBadRequest, "failed to parse stored request: "+err.Error())
+		log.Printf("api: parse stored request error: %v", err)
+		writeError(w, http.StatusBadRequest, "failed to parse stored request")
 		return
 	}
 

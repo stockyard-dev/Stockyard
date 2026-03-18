@@ -113,6 +113,13 @@ func (a *Anthropic) SendStream(ctx context.Context, req *Request) (<-chan Stream
 		sentRole := false
 
 		for scanner.Scan() {
+			// Check if the request context has been cancelled (client disconnect)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
 			line := scanner.Text()
 
 			// Skip empty lines and event: lines (Anthropic SSE format uses
