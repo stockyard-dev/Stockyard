@@ -9,10 +9,11 @@ Generated from live screenshots of [stockyard.dev](https://stockyard.dev).
 | `screenshots/homepage-hero.png` | Homepage hero — headline, stats, nav |
 | `screenshots/console-preview.png` | Console section with tabbed app previews |
 | `screenshots/pricing-table.png` | Pricing tiers and feature comparison |
-| `screenshots/observe-traces.png` | Observe app — request traces table |
-| `screenshots/trust-ledger.png` | Trust app — hash-chained audit ledger |
-| `screenshots/studio-templates.png` | Studio app — templates and A/B experiments |
-| `screenshots/forge-dag.png` | Forge app — DAG workflow builder |
+| `screenshots/observe-traces.png` | Observe app — request traces with 6 providers |
+| `screenshots/trust-ledger.png` | Trust app — hash-chained audit ledger + policies |
+| `screenshots/studio-templates.png` | Studio app — templates, A/B experiments, benchmarks |
+| `screenshots/forge-dag.png` | Forge app — DAG workflow with CSS connectors |
+| `screenshots/exchange-packs.png` | Exchange app — 13-pack marketplace |
 | `screenshots/modules-grid.png` | 58 middleware modules grid |
 | `screenshots/playground.png` | Interactive LLM playground |
 
