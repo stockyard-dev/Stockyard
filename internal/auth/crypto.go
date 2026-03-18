@@ -44,9 +44,18 @@ func initEncryptionKey(db *sql.DB) ([]byte, error) {
 
 	// 1. Check env var
 	if envKey := strings.TrimSpace(os.Getenv("STOCKYARD_ENCRYPTION_KEY")); envKey != "" {
-		h := sha256.Sum256([]byte(envKey))
+		if len(envKey) < 16 {
+			return nil, fmt.Errorf("STOCKYARD_ENCRYPTION_KEY must be at least 16 characters (got %d)", len(envKey))
+		}
+		// Use SHA-256 with a fixed salt to derive a 256-bit key.
+		// For keys >= 32 chars this provides adequate entropy.
+		salt := []byte("stockyard-encryption-key-v1")
+		h := sha256.New()
+		h.Write(salt)
+		h.Write([]byte(envKey))
+		key := h.Sum(nil)
 		log.Println("[auth] encryption key loaded from STOCKYARD_ENCRYPTION_KEY")
-		return h[:], nil
+		return key, nil
 	}
 
 	// 2. Check stored key
@@ -104,7 +113,9 @@ func decrypt(ciphertext string, key []byte) (string, error) {
 		return "", nil
 	}
 	if !strings.HasPrefix(ciphertext, encPrefix) {
-		// Legacy plaintext — return as-is (will be encrypted on next write)
+		// Legacy plaintext — return as-is but log a warning.
+		// These will be encrypted on next write or startup migration.
+		log.Println("[auth] WARNING: plaintext provider key detected — will be encrypted on next write")
 		return ciphertext, nil
 	}
 	data, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(ciphertext, encPrefix))

@@ -140,14 +140,14 @@ func (m *SMTPMailer) send(to, subject, body string) error {
 		from = "hello@stockyard.dev"
 	}
 
-	// Sanitize header values to prevent header injection
+	// Sanitize all header values to prevent header injection
 	msg := fmt.Sprintf("From: %s <%s>\r\n"+
 		"To: %s\r\n"+
 		"Subject: %s\r\n"+
 		"MIME-Version: 1.0\r\n"+
 		"Content-Type: text/plain; charset=UTF-8\r\n"+
 		"\r\n%s",
-		sanitizeHeader(m.FromName), from, sanitizeHeader(to), sanitizeHeader(subject), body)
+		sanitizeHeader(m.FromName), sanitizeHeader(from), sanitizeHeader(to), sanitizeHeader(subject), body)
 
 	addr := m.Host + ":" + m.Port
 	var auth smtp.Auth

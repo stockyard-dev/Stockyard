@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
@@ -132,7 +133,8 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	providerStatus := make(map[string]string)
 	for name, p := range s.config.Providers {
 		if err := p.HealthCheck(r.Context()); err != nil {
-			providerStatus[name] = "unhealthy: " + err.Error()
+			log.Printf("health check: %s: %v", name, err)
+			providerStatus[name] = "unhealthy"
 		} else {
 			providerStatus[name] = "healthy"
 		}
@@ -366,21 +368,26 @@ func sanitizeError(err error) string {
 }
 
 // extractClientIP extracts the real client IP from the HTTP request.
-// Checks X-Forwarded-For, X-Real-IP, then falls back to RemoteAddr.
+// Only trusts X-Forwarded-For and X-Real-IP if STOCKYARD_TRUST_PROXY is set,
+// since these headers can be spoofed by direct clients.
+// Falls back to RemoteAddr which is always the actual TCP peer.
 func extractClientIP(r *http.Request) string {
-	// Try X-Forwarded-For first (leftmost IP is the client)
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		parts := strings.SplitN(xff, ",", 2)
-		ip := strings.TrimSpace(parts[0])
-		if net.ParseIP(ip) != nil {
-			return ip
+	// Only trust proxy headers if explicitly configured
+	if os.Getenv("STOCKYARD_TRUST_PROXY") != "" {
+		// Try X-Forwarded-For first (leftmost IP is the client)
+		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+			parts := strings.SplitN(xff, ",", 2)
+			ip := strings.TrimSpace(parts[0])
+			if net.ParseIP(ip) != nil {
+				return ip
+			}
 		}
-	}
-	// Try X-Real-IP
-	if xri := r.Header.Get("X-Real-IP"); xri != "" {
-		ip := strings.TrimSpace(xri)
-		if net.ParseIP(ip) != nil {
-			return ip
+		// Try X-Real-IP
+		if xri := r.Header.Get("X-Real-IP"); xri != "" {
+			ip := strings.TrimSpace(xri)
+			if net.ParseIP(ip) != nil {
+				return ip
+			}
 		}
 	}
 	// Fall back to RemoteAddr

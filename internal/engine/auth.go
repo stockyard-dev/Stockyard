@@ -88,8 +88,13 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// If no admin key set, pass through (dev mode)
+		// If no admin key set, allow read-only access but block writes (dev mode)
 		if adminKey == "" {
+			if r.Method != "GET" && r.Method != "HEAD" && strings.HasPrefix(path, "/api/") {
+				log.Printf("⚠️  Blocked unauthenticated %s %s — set STOCKYARD_ADMIN_KEY to enable", r.Method, path)
+				http.Error(w, `{"error":"admin key required for write operations — set STOCKYARD_ADMIN_KEY"}`, http.StatusForbidden)
+				return
+			}
 			next.ServeHTTP(w, r)
 			return
 		}

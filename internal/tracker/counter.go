@@ -36,7 +36,17 @@ func (sc *SpendCounter) Add(project string, amount float64) {
 }
 
 // AddWithTokens increments the spend counter for a project, including token counts.
+// Negative amounts and token counts are silently ignored to prevent manipulation.
 func (sc *SpendCounter) AddWithTokens(project string, amount float64, tokensIn, tokensOut int) {
+	if amount < 0 {
+		amount = 0
+	}
+	if tokensIn < 0 {
+		tokensIn = 0
+	}
+	if tokensOut < 0 {
+		tokensOut = 0
+	}
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 
@@ -94,9 +104,19 @@ func (sc *SpendCounter) GetAll() map[string]ProjectSpend {
 }
 
 // AddUserWithTokens increments the spend counter for a user, including token counts.
+// Negative amounts and token counts are silently ignored to prevent manipulation.
 func (sc *SpendCounter) AddUserWithTokens(userID string, amount float64, tokensIn, tokensOut int) {
 	if userID == "" {
 		return
+	}
+	if amount < 0 {
+		amount = 0
+	}
+	if tokensIn < 0 {
+		tokensIn = 0
+	}
+	if tokensOut < 0 {
+		tokensOut = 0
 	}
 	sc.mu.Lock()
 	defer sc.mu.Unlock()

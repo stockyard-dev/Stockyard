@@ -293,6 +293,14 @@ func (a *API) handleSetUserSpendCap(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
+	if body.DailyCap < 0 || body.MonthlyCap < 0 {
+		writeError(w, http.StatusBadRequest, "spend caps must be non-negative")
+		return
+	}
+	if body.DailyCap > 1_000_000 || body.MonthlyCap > 10_000_000 {
+		writeError(w, http.StatusBadRequest, "spend caps exceed maximum allowed value")
+		return
+	}
 	if err := a.db.SetUserSpendCap(userID, body.DailyCap, body.MonthlyCap, body.SoftCap); err != nil {
 		log.Printf("api: SetUserSpendCap error: %v", err)
 		writeError(w, http.StatusInternalServerError, "failed to set user spend cap")
