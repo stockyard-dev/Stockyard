@@ -29,10 +29,10 @@ Generated from live screenshots of [stockyard.dev](https://stockyard.dev).
 ## Product Hunt Gallery (1270×760)
 
 1. `cards/product-hunt-gallery/01-hero.png` — Homepage hero
-2. `cards/product-hunt-gallery/02-forge.png` — Forge workflow builder
-3. `cards/product-hunt-gallery/03-observe.png` — Observe traces
-4. `cards/product-hunt-gallery/04-studio.png` — Studio templates
-5. `cards/product-hunt-gallery/05-trust.png` — Trust audit ledger
+2. `cards/product-hunt-gallery/02-observe.png` — Observe traces (6 providers)
+3. `cards/product-hunt-gallery/03-trust.png` — Trust audit ledger + policies
+4. `cards/product-hunt-gallery/04-studio.png` — Studio templates + A/B experiments
+5. `cards/product-hunt-gallery/05-forge.png` — Forge DAG workflow builder
 
 ## Copy (`copy.json`)
 
