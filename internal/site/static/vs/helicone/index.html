@@ -92,6 +92,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
 }
 
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/vs/helicone/">
 </head>
@@ -173,6 +174,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
 
 </body>
