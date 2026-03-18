@@ -347,9 +347,39 @@ func (a *App) handleListProviders(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleCheckProvider(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
+	if name == "" {
+		writeJSON(w, map[string]string{"error": "provider name required"})
+		return
+	}
+
+	// Look up the provider's base URL
+	var baseURL string
+	err := a.conn.QueryRow("SELECT base_url FROM proxy_providers WHERE name = ?", name).Scan(&baseURL)
+	if err != nil {
+		writeJSON(w, map[string]string{"error": "provider not found", "provider": name})
+		return
+	}
+
 	now := time.Now().Format(time.RFC3339)
-	a.conn.Exec("UPDATE proxy_providers SET last_check = ?, status = 'active' WHERE name = ?", now, name)
-	writeJSON(w, map[string]string{"status": "checked", "provider": name})
+	status := "active"
+
+	// Actually probe the provider if a base URL is configured
+	if baseURL != "" {
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Get(baseURL)
+		if err != nil {
+			status = "unreachable"
+			log.Printf("[proxy] health check for %s failed: %v", name, err)
+		} else {
+			resp.Body.Close()
+			if resp.StatusCode >= 500 {
+				status = "degraded"
+			}
+		}
+	}
+
+	a.conn.Exec("UPDATE proxy_providers SET last_check = ?, status = ? WHERE name = ?", now, status, name)
+	writeJSON(w, map[string]string{"status": status, "provider": name, "checked_at": now})
 }
 
 func (a *App) handleListRoutes(w http.ResponseWriter, r *http.Request) {

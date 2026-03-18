@@ -624,9 +624,15 @@ func (db *SqliteDB) scanTenant(query string, args ...any) (*CloudTenant, error) 
 	t.StripeCustomerID = stripeCust
 	t.StripeSubscriptionID = stripeSub
 	t.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
-	json.Unmarshal([]byte(providerJSON), &t.ProviderKeys)
-	json.Unmarshal([]byte(configJSON), &t.ProxyConfig)
-	json.Unmarshal([]byte(productsJSON), &t.EnabledProducts)
+	if err := json.Unmarshal([]byte(providerJSON), &t.ProviderKeys); err != nil {
+		log.Printf("[cloud] warning: failed to parse provider_keys_json for tenant %s: %v", t.ID, err)
+	}
+	if err := json.Unmarshal([]byte(configJSON), &t.ProxyConfig); err != nil {
+		log.Printf("[cloud] warning: failed to parse proxy_config_json for tenant %s: %v", t.ID, err)
+	}
+	if err := json.Unmarshal([]byte(productsJSON), &t.EnabledProducts); err != nil {
+		log.Printf("[cloud] warning: failed to parse enabled_products_json for tenant %s: %v", t.ID, err)
+	}
 	if t.ProviderKeys == nil {
 		t.ProviderKeys = make(map[string]string)
 	}
@@ -738,9 +744,15 @@ func (db *SqliteDB) ListTenants() []*CloudTenant {
 		t.StripeCustomerID = stripeCust
 		t.StripeSubscriptionID = stripeSub
 		t.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
-		json.Unmarshal([]byte(providerJSON), &t.ProviderKeys)
-		json.Unmarshal([]byte(configJSON), &t.ProxyConfig)
-		json.Unmarshal([]byte(productsJSON), &t.EnabledProducts)
+		if err := json.Unmarshal([]byte(providerJSON), &t.ProviderKeys); err != nil {
+			log.Printf("[cloud] warning: failed to parse provider_keys_json: %v", err)
+		}
+		if err := json.Unmarshal([]byte(configJSON), &t.ProxyConfig); err != nil {
+			log.Printf("[cloud] warning: failed to parse proxy_config_json: %v", err)
+		}
+		if err := json.Unmarshal([]byte(productsJSON), &t.EnabledProducts); err != nil {
+			log.Printf("[cloud] warning: failed to parse enabled_products_json: %v", err)
+		}
 		result = append(result, t)
 	}
 	return result

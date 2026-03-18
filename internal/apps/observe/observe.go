@@ -53,6 +53,9 @@ CREATE TABLE IF NOT EXISTS observe_traces (
 );
 CREATE INDEX IF NOT EXISTS idx_traces_request ON observe_traces(request_id);
 CREATE INDEX IF NOT EXISTS idx_traces_created ON observe_traces(created_at);
+CREATE INDEX IF NOT EXISTS idx_traces_provider ON observe_traces(provider);
+CREATE INDEX IF NOT EXISTS idx_traces_model ON observe_traces(model);
+CREATE INDEX IF NOT EXISTS idx_traces_status ON observe_traces(status);
 
 CREATE TABLE IF NOT EXISTS observe_alert_rules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,6 +93,7 @@ CREATE TABLE IF NOT EXISTS observe_cost_daily (
     UNIQUE(date, provider, model)
 );
 CREATE INDEX IF NOT EXISTS idx_cost_daily_date ON observe_cost_daily(date);
+CREATE INDEX IF NOT EXISTS idx_cost_daily_provider ON observe_cost_daily(provider);
 
 CREATE TABLE IF NOT EXISTS observe_anomalies (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

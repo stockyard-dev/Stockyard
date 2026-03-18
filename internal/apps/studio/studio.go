@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -412,7 +413,6 @@ func (a *App) handlePlayground(w http.ResponseWriter, r *http.Request) {
 		Prompt string `json:"prompt"`
 		System string `json:"system"`
 		Model  string `json:"model"`
-		APIKey string `json:"api_key"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(400)
@@ -425,12 +425,18 @@ func (a *App) handlePlayground(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Extract API key from Authorization header (not request body) for security
+	apiKey := ""
+	if auth := r.Header.Get("Authorization"); strings.HasPrefix(auth, "Bearer ") {
+		apiKey = strings.TrimPrefix(auth, "Bearer ")
+	}
+
 	expReq := RunExperimentRequest{
 		Prompt: req.Prompt,
 		System: req.System,
 		Models: []string{req.Model},
 		Runs:   1,
-		APIKey: req.APIKey,
+		APIKey: apiKey,
 	}
 
 	run := a.runner.executeRun(r.Context(), expReq, req.Model)

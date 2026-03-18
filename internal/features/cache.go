@@ -164,7 +164,7 @@ func CacheMiddleware(cache *Cache) proxy.Middleware {
 
 			// Step 2: Try semantic match if enabled
 			if cache.semantic != nil {
-				if entry := cache.semantic.FindSimilar(req.Model, req.Messages); entry != nil {
+				if entry := cache.semantic.FindSimilar(req.Model, req.Messages, req.UserID); entry != nil {
 					resp := *entry.Response
 					resp.CacheHit = true
 					return &resp, nil
@@ -186,7 +186,7 @@ func CacheMiddleware(cache *Cache) proxy.Middleware {
 			}
 			cache.Set(key, entry)
 			if cache.semantic != nil {
-				cache.semantic.Store(req.Model, req.Messages, entry)
+				cache.semantic.Store(req.Model, req.Messages, entry, req.UserID)
 			}
 
 			return resp, nil
