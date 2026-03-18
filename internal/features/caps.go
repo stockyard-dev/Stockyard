@@ -60,12 +60,17 @@ func CapsMiddleware(caps map[string]CapConfig, counter *tracker.SpendCounter) pr
 			if capCfg.DailyCap > 0 {
 				estimated := tracker.EstimateRequestCost(req.Model, req.Messages)
 				if spend.Today+estimated > capCfg.DailyCap && !capCfg.SoftCap {
-					return nil, &CapError{
-						Cap:     capCfg.DailyCap,
-						Spent:   spend.Today,
-						Period:  "daily",
+					capErr := &CapError{
+						Cap:      capCfg.DailyCap,
+						Spent:    spend.Today,
+						Period:   "daily",
 						ResetsAt: nextMidnight(),
 					}
+					fireWebhook("spend.cap_exceeded", map[string]any{
+						"project": req.Project, "user_id": req.UserID,
+						"period": "daily", "spent": spend.Today, "cap": capCfg.DailyCap,
+					})
+					return nil, capErr
 				}
 			}
 
@@ -73,12 +78,17 @@ func CapsMiddleware(caps map[string]CapConfig, counter *tracker.SpendCounter) pr
 			if capCfg.MonthlyCap > 0 {
 				estimated := tracker.EstimateRequestCost(req.Model, req.Messages)
 				if spend.Month+estimated > capCfg.MonthlyCap && !capCfg.SoftCap {
-					return nil, &CapError{
-						Cap:     capCfg.MonthlyCap,
-						Spent:   spend.Month,
-						Period:  "monthly",
+					capErr := &CapError{
+						Cap:      capCfg.MonthlyCap,
+						Spent:    spend.Month,
+						Period:   "monthly",
 						ResetsAt: nextMonthStart(),
 					}
+					fireWebhook("spend.cap_exceeded", map[string]any{
+						"project": req.Project, "user_id": req.UserID,
+						"period": "monthly", "spent": spend.Month, "cap": capCfg.MonthlyCap,
+					})
+					return nil, capErr
 				}
 			}
 

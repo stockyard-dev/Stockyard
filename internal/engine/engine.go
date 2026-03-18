@@ -344,8 +344,14 @@ func Boot(pc ProductConfig) {
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 
+	// Guardrail manager (runtime-configurable rules via API)
+	guardrailMgr := features.NewGuardrailManager(db.Conn())
+	guardrailMgr.SetBroadcaster(broadcaster)
+	RegisterGuardrailRoutes(srv.Mux(), guardrailMgr, db.Conn())
+
 	// Webhook manager (alerts, cost thresholds, trust violations → Slack, HTTP, etc.)
 	webhookMgr := NewWebhookManager(db.Conn())
+	webhookMgr.SetBroadcaster(broadcaster)
 	RegisterWebhookRoutes(srv.Mux(), webhookMgr)
 
 	// Status collector (real-time metrics for /api/status)
@@ -441,6 +447,16 @@ func Boot(pc ProductConfig) {
 			features.SetAuditFunc(audit)
 			log.Printf("  Audit:     trust auditor wired to middlewares (hash chain safe)")
 		}
+
+		// Wire webhook firer so feature middlewares can dispatch webhook events
+		features.SetWebhookFirer(func(eventType string, data any) {
+			webhookMgr.Fire(context.Background(), WebhookEvent{
+				Type:      eventType,
+				Timestamp: time.Now(),
+				Data:      data,
+			})
+		})
+		log.Printf("  Webhooks:  firer wired to middlewares")
 
 		// Mount all app routes on the shared mux
 		registry.RegisterAllRoutes(srv.Mux())
@@ -1401,8 +1417,11 @@ func buildPreFlight(pc ProductConfig, cfg *config.Config, counter *tracker.Spend
 			inputTokens := tracker.CountInputTokens(req.Model, req.Messages)
 			cost := provider.CalculateCost(req.Model, inputTokens, outputTokens)
 			counter.AddWithTokens(req.Project, cost, inputTokens, outputTokens)
-			log.Printf("stream spend: project=%s model=%s tokens_in=%d tokens_out=%d cost=$%.6f provider=%s",
-				req.Project, req.Model, inputTokens, outputTokens, cost, providerName)
+			if req.UserID != "" {
+				counter.AddUserWithTokens(req.UserID, cost, inputTokens, outputTokens)
+			}
+			log.Printf("stream spend: project=%s user=%s model=%s tokens_in=%d tokens_out=%d cost=$%.6f provider=%s",
+				req.Project, req.UserID, req.Model, inputTokens, outputTokens, cost, providerName)
 		}
 	}
 

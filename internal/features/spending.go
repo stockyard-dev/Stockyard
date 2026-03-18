@@ -40,8 +40,13 @@ func SpendMiddleware(cfg SpendConfig) proxy.Middleware {
 
 			cost := provider.CalculateCost(req.Model, tokensIn, tokensOut)
 
-			// Update in-memory counter with cost and token counts
+			// Update in-memory counters with cost and token counts
 			cfg.Counter.AddWithTokens(req.Project, cost, tokensIn, tokensOut)
+
+			// Also track per-user spend
+			if req.UserID != "" {
+				cfg.Counter.AddUserWithTokens(req.UserID, cost, tokensIn, tokensOut)
+			}
 
 			// Check alert thresholds
 			if cfg.Alerter != nil && cfg.Caps != nil {
@@ -70,6 +75,17 @@ func SpendMiddleware(cfg SpendConfig) proxy.Middleware {
 					"month":   spend.Month,
 					"cap":     capVal,
 				})
+
+				// Also broadcast per-user spend if user identified
+				if req.UserID != "" {
+					userSpend := cfg.Counter.GetUser(req.UserID)
+					cfg.Broadcaster.Send(map[string]any{
+						"type":    "user_spend_update",
+						"user_id": req.UserID,
+						"today":   userSpend.Today,
+						"month":   userSpend.Month,
+					})
+				}
 			}
 
 			return resp, nil

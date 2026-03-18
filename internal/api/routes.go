@@ -51,6 +51,12 @@ func (a *API) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/config", a.handleGetConfig)
 	mux.HandleFunc("POST /api/config", a.handleUpdateConfig)
 	mux.HandleFunc("POST /api/replay/{id}", a.handleReplay)
+
+	// Per-user spend endpoints
+	mux.HandleFunc("GET /api/users/{id}/spend", a.handleUserSpend)
+	mux.HandleFunc("GET /api/users/{id}/spend/history", a.handleUserSpendHistory)
+	mux.HandleFunc("GET /api/users/{id}/spend/cap", a.handleGetUserSpendCap)
+	mux.HandleFunc("PUT /api/users/{id}/spend/cap", a.handleSetUserSpendCap)
 }
 
 func (a *API) handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -222,6 +228,77 @@ func (a *API) handleReplay(w http.ResponseWriter, r *http.Request) {
 		"original_id": id,
 		"response":    resp,
 	})
+}
+
+// --- Per-User Spend Handlers ---
+
+func (a *API) handleUserSpend(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("id")
+	spend := a.counter.GetUser(userID)
+	writeJSON(w, map[string]any{
+		"user_id": userID,
+		"today":   spend.Today,
+		"month":   spend.Month,
+		"tokens_in":  spend.TokensIn,
+		"tokens_out": spend.TokensOut,
+	})
+}
+
+func (a *API) handleUserSpendHistory(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("id")
+	days := 30
+	if d := r.URL.Query().Get("days"); d != "" {
+		if n, err := strconv.Atoi(d); err == nil && n > 0 && n <= 365 {
+			days = n
+		}
+	}
+	history, err := a.db.GetUserSpendHistory(userID, days)
+	if err != nil {
+		log.Printf("api: GetUserSpendHistory error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve user spend history")
+		return
+	}
+	writeJSON(w, map[string]any{"daily": history})
+}
+
+func (a *API) handleGetUserSpendCap(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("id")
+	cap, err := a.db.GetUserSpendCap(userID)
+	if err != nil {
+		log.Printf("api: GetUserSpendCap error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve user spend cap")
+		return
+	}
+	if cap == nil {
+		writeJSON(w, map[string]any{
+			"user_id":     userID,
+			"daily_cap":   0,
+			"monthly_cap": 0,
+			"soft_cap":    false,
+			"configured":  false,
+		})
+		return
+	}
+	writeJSON(w, cap)
+}
+
+func (a *API) handleSetUserSpendCap(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("id")
+	var body struct {
+		DailyCap   float64 `json:"daily_cap"`
+		MonthlyCap float64 `json:"monthly_cap"`
+		SoftCap    bool    `json:"soft_cap"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+	if err := a.db.SetUserSpendCap(userID, body.DailyCap, body.MonthlyCap, body.SoftCap); err != nil {
+		log.Printf("api: SetUserSpendCap error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to set user spend cap")
+		return
+	}
+	writeJSON(w, map[string]string{"status": "updated"})
 }
 
 // Helpers
