@@ -43,8 +43,8 @@ a:hover{color:var(--gold)}
 .btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
 .btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
 .btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
-.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold);font-weight:600}
-.btn-gold:hover{background:#e0b84d;border-color:#e0b84d}
+.btn-gold{background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-weight:600}
+.btn-gold:hover{background:var(--rust-light);border-color:var(--rust-light)}
 .btn-rust{background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-weight:600}
 .btn-rust:hover{background:var(--rust-light);border-color:var(--rust-light)}
 .btn:disabled,.btn.loading{opacity:0.5;cursor:wait}
@@ -369,7 +369,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </footer>
 
 <script>
-const API_BASE = window.STOCKYARD_API || 'https://api.stockyard.dev';
+const API_BASE = window.STOCKYARD_API || 'https://stockyard.dev';
 let billingMode = 'monthly';
 
 function setBilling(mode) {
