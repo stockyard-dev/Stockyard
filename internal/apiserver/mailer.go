@@ -12,6 +12,8 @@ import (
 type Mailer interface {
 	SendLicenseKey(to, productName, tier, licenseKey string) error
 	SendCancellation(to, productName string) error
+	// Send sends a plain-text email to one recipient.
+	Send(to, subject, body string) error
 }
 
 // SMTPMailer sends emails via SMTP.
@@ -96,6 +98,11 @@ We'd love to know what we could do better. Just reply to this email.
 	return m.send(to, subject, body)
 }
 
+// Send sends a plain-text email via SMTP.
+func (m *SMTPMailer) Send(to, subject, body string) error {
+	return m.send(to, subject, body)
+}
+
 func (m *SMTPMailer) send(to, subject, body string) error {
 	from := m.From
 	if from == "" {
@@ -142,6 +149,12 @@ func (m *LogMailer) SendCancellation(to, productName string) error {
 	return nil
 }
 
+// Send logs the email instead of sending it.
+func (m *LogMailer) Send(to, subject, body string) error {
+	log.Printf("📧 [dev] Email to %s: %s", to, subject)
+	return nil
+}
+
 // NewMailer creates the appropriate mailer based on environment.
 func NewMailer() Mailer {
 	smtp := SMTPMailerFromEnv()
@@ -176,6 +189,11 @@ func (m *ResendMailer) SendCancellation(to, productName string) error {
 		fmt.Sprintf("Your %s subscription has been canceled", productName),
 		fmt.Sprintf("Your %s subscription has been canceled. Your key works until the billing period ends.\n\nRe-subscribe anytime at stockyard.dev/pricing\n\n— Stockyard", productName),
 	)
+}
+
+// Send sends a plain-text email via Resend.
+func (m *ResendMailer) Send(to, subject, body string) error {
+	return m.sendResend(to, subject, body)
 }
 
 func (m *ResendMailer) sendResend(to, subject, text string) error {

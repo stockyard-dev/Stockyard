@@ -4,6 +4,7 @@ package engine
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -518,15 +519,31 @@ func Boot(pc ProductConfig) {
 	nurture := apiserver.NewNurtureRunner(db.Conn(), mailer)
 	nurture.Start()
 
-	// Nurture stats endpoint
+	// adminKeyOK validates the admin bearer token using constant-time comparison.
+	// Returns false if STOCKYARD_ADMIN_KEY is unset (prevents empty-key bypass).
+	adminKeyOK := func(r *http.Request) bool {
+		key := os.Getenv("STOCKYARD_ADMIN_KEY")
+		if key == "" {
+			return false
+		}
+		got := r.Header.Get("Authorization")
+		expect := "Bearer " + key
+		return subtle.ConstantTimeCompare([]byte(got), []byte(expect)) == 1
+	}
+
+	// Nurture stats endpoint (admin only)
 	srv.Mux().HandleFunc("GET /api/nurture/stats", func(w http.ResponseWriter, r *http.Request) {
+		if !adminKeyOK(r) {
+			http.Error(w, "unauthorized", 401)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(apiserver.GetNurtureStats(db.Conn()))
 	})
 
 	// Manual nurture trigger (admin only)
 	srv.Mux().HandleFunc("POST /api/nurture/run", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer "+os.Getenv("STOCKYARD_ADMIN_KEY") {
+		if !adminKeyOK(r) {
 			http.Error(w, "unauthorized", 401)
 			return
 		}
@@ -537,7 +554,7 @@ func Boot(pc ProductConfig) {
 
 	// Blast email to all captured leads (admin only)
 	srv.Mux().HandleFunc("POST /api/nurture/blast", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer "+os.Getenv("STOCKYARD_ADMIN_KEY") {
+		if !adminKeyOK(r) {
 			http.Error(w, "unauthorized", 401)
 			return
 		}
@@ -590,6 +607,7 @@ func Boot(pc ProductConfig) {
 
 	<-ctx.Done()
 	log.Println("shutting down...")
+	nurture.Stop()
 	flushCancel()
 	if otelExp != nil {
 		otelExp.Close()

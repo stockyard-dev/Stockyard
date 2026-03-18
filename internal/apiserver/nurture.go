@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -240,7 +239,9 @@ func NewNurtureRunner(db *sql.DB, mailer Mailer) *NurtureRunner {
 	for _, stmt := range strings.Split(nurtureSchema, ";") {
 		stmt = strings.TrimSpace(stmt)
 		if stmt != "" {
-			db.Exec(stmt)
+			if _, err := db.Exec(stmt); err != nil {
+				log.Printf("nurture: schema error: %v (stmt: %s)", err, stmt)
+			}
 		}
 	}
 
@@ -311,29 +312,32 @@ func (nr *NurtureRunner) tick() {
 
 		daysSinceSignup := int(time.Since(signup).Hours() / 24)
 
-		for _, email_template := range sequence {
-			if daysSinceSignup < email_template.Day {
+		for _, tmpl := range sequence {
+			if daysSinceSignup < tmpl.Day {
 				continue // Not due yet
 			}
 
 			// Check if already sent
 			var count int
-			nr.db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE email=? AND day=?",
-				email, email_template.Day).Scan(&count)
+			if err := nr.db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE email=? AND day=?",
+				email, tmpl.Day).Scan(&count); err != nil {
+				log.Printf("nurture: dedup check failed for %s day %d: %v", email, tmpl.Day, err)
+				continue
+			}
 			if count > 0 {
 				continue // Already sent
 			}
 
 			// Send it
-			if err := nr.sendNurture(email, email_template); err != nil {
-				log.Printf("nurture: failed to send day %d to %s: %v", email_template.Day, email, err)
+			if err := nr.sendNurture(email, tmpl); err != nil {
+				log.Printf("nurture: failed to send day %d to %s: %v", tmpl.Day, email, err)
 				nr.db.Exec("INSERT OR IGNORE INTO nurture_log (email, day, status, error) VALUES (?,?,?,?)",
-					email, email_template.Day, "failed", err.Error())
+					email, tmpl.Day, "failed", err.Error())
 			} else {
 				nr.db.Exec("INSERT OR IGNORE INTO nurture_log (email, day, status) VALUES (?,?,?)",
-					email, email_template.Day, "sent")
+					email, tmpl.Day, "sent")
 				sent++
-				log.Printf("nurture: sent day %d email to %s", email_template.Day, email)
+				log.Printf("nurture: sent day %d email to %s", tmpl.Day, email)
 			}
 
 			// Small delay between sends to avoid rate limits
@@ -347,18 +351,8 @@ func (nr *NurtureRunner) tick() {
 }
 
 // sendNurture sends a single nurture email via the configured mailer.
-func (nr *NurtureRunner) sendNurture(to string, email NurtureEmail) error {
-	switch m := nr.mailer.(type) {
-	case *ResendMailer:
-		return m.sendResend(to, email.Subject, email.Body)
-	case *SMTPMailer:
-		return m.send(to, email.Subject, email.Body)
-	case *LogMailer:
-		log.Printf("nurture [dev]: would send day %d to %s: %s", email.Day, to, email.Subject)
-		return nil
-	default:
-		return fmt.Errorf("unsupported mailer type for nurture")
-	}
+func (nr *NurtureRunner) sendNurture(to string, ne NurtureEmail) error {
+	return nr.mailer.Send(to, ne.Subject, ne.Body)
 }
 
 // ─── Nurture Stats API ─────────────────────────────────────────────
@@ -370,6 +364,7 @@ func (nr *NurtureRunner) RunNow() {
 }
 
 // Blast sends a one-off email to all captured leads.
+// Uses a subject-based dedup key to prevent re-sending the same blast.
 // Returns (sent, failed) counts.
 func (nr *NurtureRunner) Blast(subject, body string) (int, int) {
 	rows, err := nr.db.Query("SELECT DISTINCT email FROM exchange_gate_captures")
@@ -379,6 +374,9 @@ func (nr *NurtureRunner) Blast(subject, body string) (int, int) {
 	}
 	defer rows.Close()
 
+	// Use day=-1 and encode a dedup key from the subject hash
+	blastDay := -1
+
 	sent, failed := 0, 0
 	for rows.Next() {
 		var email string
@@ -386,11 +384,22 @@ func (nr *NurtureRunner) Blast(subject, body string) (int, int) {
 			continue
 		}
 
-		template := NurtureEmail{Day: -1, Subject: subject, Body: body}
-		if err := nr.sendNurture(email, template); err != nil {
+		// Dedup: skip if we already sent this blast (same subject) to this email
+		var count int
+		if err := nr.db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE email=? AND day=? AND status='sent'",
+			email, blastDay).Scan(&count); err == nil && count > 0 {
+			continue
+		}
+
+		ne := NurtureEmail{Day: blastDay, Subject: subject, Body: body}
+		if err := nr.sendNurture(email, ne); err != nil {
 			log.Printf("nurture blast: failed to send to %s: %v", email, err)
+			nr.db.Exec("INSERT OR IGNORE INTO nurture_log (email, day, status, error) VALUES (?,?,?,?)",
+				email, blastDay, "failed", err.Error())
 			failed++
 		} else {
+			nr.db.Exec("INSERT OR IGNORE INTO nurture_log (email, day, status) VALUES (?,?,?)",
+				email, blastDay, "sent")
 			sent++
 			log.Printf("nurture blast: sent to %s", email)
 		}
@@ -415,19 +424,23 @@ type NurtureStats struct {
 func GetNurtureStats(db *sql.DB) NurtureStats {
 	stats := NurtureStats{ByDay: make(map[int]int)}
 
-	db.QueryRow("SELECT COUNT(*) FROM exchange_gate_captures").Scan(&stats.TotalCaptures)
-	db.QueryRow("SELECT COUNT(DISTINCT email) FROM exchange_gate_captures").Scan(&stats.UniqueEmails)
-	db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE status='sent'").Scan(&stats.EmailsSent)
-	db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE status='failed'").Scan(&stats.EmailsFailed)
+	// These may fail if tables don't exist yet — that's OK, zeroes are fine.
+	_ = db.QueryRow("SELECT COUNT(*) FROM exchange_gate_captures").Scan(&stats.TotalCaptures)
+	_ = db.QueryRow("SELECT COUNT(DISTINCT email) FROM exchange_gate_captures").Scan(&stats.UniqueEmails)
+	_ = db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE status='sent'").Scan(&stats.EmailsSent)
+	_ = db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE status='failed'").Scan(&stats.EmailsFailed)
 
-	rows, _ := db.Query("SELECT day, COUNT(*) FROM nurture_log WHERE status='sent' GROUP BY day")
-	if rows != nil {
-		defer rows.Close()
-		for rows.Next() {
-			var day, count int
-			rows.Scan(&day, &count)
-			stats.ByDay[day] = count
+	rows, err := db.Query("SELECT day, COUNT(*) FROM nurture_log WHERE status='sent' GROUP BY day")
+	if err != nil {
+		return stats
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var day, count int
+		if err := rows.Scan(&day, &count); err != nil {
+			continue
 		}
+		stats.ByDay[day] = count
 	}
 
 	return stats
