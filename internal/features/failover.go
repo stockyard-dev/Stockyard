@@ -24,6 +24,7 @@ type FailoverConfig struct {
 // CircuitBreaker tracks provider health for failover decisions.
 type CircuitBreaker struct {
 	mu              sync.Mutex
+	name            string // provider name, for event reporting
 	failures        int
 	threshold       int
 	state           string // "closed", "open", "half-open"
@@ -33,7 +34,13 @@ type CircuitBreaker struct {
 
 // NewCircuitBreaker creates a new circuit breaker.
 func NewCircuitBreaker(threshold int, recovery time.Duration) *CircuitBreaker {
+	return NewCircuitBreakerNamed("", threshold, recovery)
+}
+
+// NewCircuitBreakerNamed creates a circuit breaker with a provider name for event reporting.
+func NewCircuitBreakerNamed(name string, threshold int, recovery time.Duration) *CircuitBreaker {
 	return &CircuitBreaker{
+		name:            name,
 		threshold:       threshold,
 		state:           "closed",
 		recoveryTimeout: recovery,
@@ -64,19 +71,39 @@ func (cb *CircuitBreaker) Allow() bool {
 // RecordSuccess records a successful request.
 func (cb *CircuitBreaker) RecordSuccess() {
 	cb.mu.Lock()
-	defer cb.mu.Unlock()
+	prevState := cb.state
 	cb.failures = 0
 	cb.state = "closed"
+	cb.mu.Unlock()
+
+	if prevState != "closed" && cb.name != "" {
+		fireWebhook("provider.health_changed", map[string]any{
+			"provider":   cb.name,
+			"state":      "closed",
+			"prev_state": prevState,
+		})
+	}
 }
 
 // RecordFailure records a failed request.
 func (cb *CircuitBreaker) RecordFailure() {
 	cb.mu.Lock()
-	defer cb.mu.Unlock()
+	prevState := cb.state
 	cb.failures++
 	cb.lastFailure = time.Now()
 	if cb.state == "half-open" || cb.failures >= cb.threshold {
 		cb.state = "open"
+	}
+	newState := cb.state
+	cb.mu.Unlock()
+
+	if prevState != newState && cb.name != "" {
+		fireWebhook("provider.health_changed", map[string]any{
+			"provider":   cb.name,
+			"state":      newState,
+			"prev_state": prevState,
+			"failures":   cb.failures,
+		})
 	}
 }
 
@@ -98,7 +125,7 @@ type FailoverRouter struct {
 func NewFailoverRouter(cfg FailoverConfig) *FailoverRouter {
 	breakers := make(map[string]*CircuitBreaker)
 	for _, p := range cfg.Providers {
-		breakers[p] = NewCircuitBreaker(cfg.FailureThreshold, cfg.RecoveryTimeout)
+		breakers[p] = NewCircuitBreakerNamed(p, cfg.FailureThreshold, cfg.RecoveryTimeout)
 	}
 	return &FailoverRouter{
 		config:   cfg,
