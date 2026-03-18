@@ -513,6 +513,47 @@ func Boot(pc ProductConfig) {
 	alertEval := observe.NewAlertEvaluator(db.Conn())
 	go alertEval.Start(flushCtx)
 
+	// Start nurture email sequence (checks hourly, sends drip emails to captured leads)
+	mailer := apiserver.NewMailer()
+	nurture := apiserver.NewNurtureRunner(db.Conn(), mailer)
+	nurture.Start()
+
+	// Nurture stats endpoint
+	srv.Mux().HandleFunc("GET /api/nurture/stats", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(apiserver.GetNurtureStats(db.Conn()))
+	})
+
+	// Manual nurture trigger (admin only)
+	srv.Mux().HandleFunc("POST /api/nurture/run", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer "+cfg.AdminKey {
+			http.Error(w, "unauthorized", 401)
+			return
+		}
+		go nurture.RunNow()
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"status": "triggered"})
+	})
+
+	// Blast email to all captured leads (admin only)
+	srv.Mux().HandleFunc("POST /api/nurture/blast", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer "+cfg.AdminKey {
+			http.Error(w, "unauthorized", 401)
+			return
+		}
+		var req struct {
+			Subject string `json:"subject"`
+			Body    string `json:"body"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Subject == "" || req.Body == "" {
+			http.Error(w, "need subject and body", 400)
+			return
+		}
+		sent, failed := nurture.Blast(req.Subject, req.Body)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]int{"sent": sent, "failed": failed})
+	})
+
 	// Register branded 404 handler as catch-all (lowest priority pattern)
 	notFound := site.NotFoundHandler()
 	srv.Mux().HandleFunc("/{path...}", func(w http.ResponseWriter, r *http.Request) {
