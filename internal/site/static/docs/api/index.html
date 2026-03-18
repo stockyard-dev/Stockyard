@@ -159,6 +159,12 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/exchange/">Exchange</a>
     </div>
     <div class="sidebar-section">
+      <div class="sidebar-title">Features</div>
+      <a href="/docs/api/#guardrails-api">Guardrails</a>
+      <a href="/docs/api/#webhooks-api">Webhooks</a>
+      <a href="/docs/api/#user-spend-api">User Spend</a>
+    </div>
+    <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
       <a href="/docs/ops/">Ops Guide</a>
     </div>
@@ -404,14 +410,41 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/playground/share/{id}</td><td>Retrieve shared session</td></tr>
     </table>
 
-    <h2 id="webhooks-api">Webhooks (4 endpoints)</h2>
-    <p>Push notifications to external URLs on events like cost thresholds, safety blocks, and alert firings.</p>
+    <h2 id="webhooks-api">Webhooks (6 endpoints)</h2>
+    <p>Push notifications to external URLs on events like cost thresholds, safety blocks, provider health changes, and guardrail violations. Deliveries are logged and retried automatically.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks</td><td>List configured webhooks</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/webhooks</td><td>Create a webhook</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/webhooks/test</td><td>Send a test webhook</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks/{id}/deliveries</td><td>Recent delivery log (status, latency, retries)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks/{id}/stats</td><td>Delivery statistics (success rate, avg latency)</td></tr>
+    </table>
+    <p style="margin-top:0.8rem">Supported event types: <code>webhook.test</code>, <code>alert.fired</code>, <code>cost.threshold</code>, <code>spend.cap_exceeded</code>, <code>provider.health_changed</code>, <code>guardrail.violation</code>, <code>trust.violation</code>. Use <code>*</code> to receive all events.</p>
+
+    <h2 id="guardrails-api">Guardrails (8 endpoints)</h2>
+    <p>Runtime-configurable content guardrail rules. Rules are regex-based, scoped per-project, and support block/redact/warn/log actions. Cached in memory with 60-second TTL.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails</td><td>List all guardrail rules (filter by ?project=)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/guardrails</td><td>Create a guardrail rule</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails/{id}</td><td>Get a single rule</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/guardrails/{id}</td><td>Update a rule</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/guardrails/{id}</td><td>Delete a rule</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/guardrails/test</td><td>Dry-run text against rules (no provider call)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails/stats</td><td>Analytics counters (blocked, flagged, per-rule hits)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails/events</td><td>Recent violation events</td></tr>
+    </table>
+
+    <h2 id="user-spend-api">User Spend (4 endpoints)</h2>
+    <p>Per-user spend tracking and caps. The <code>/api/users/{id}/spend</code> endpoint reads from the fast in-memory counter; history reads from daily rollups in the database.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend</td><td>Current user spend (today, month, tokens)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend/history</td><td>Daily spend rollups (?days=30)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend/cap</td><td>Get user spend cap configuration</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/users/{id}/spend/cap</td><td>Set user daily/monthly spend caps</td></tr>
     </table>
 
     <h2 id="system-api">System (12 endpoints)</h2>
