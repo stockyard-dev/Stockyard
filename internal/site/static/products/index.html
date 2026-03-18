@@ -13,10 +13,10 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<title>Products: 70 LLM Middleware Modules — Stockyard</title>
-<meta name="description" content="The complete LLM platform: 70 middleware modules in 6 apps. Routing, LLM cache, rate limiting, cost control, safety, observability, workflows, and more.">
+<title>Products: 58 LLM Middleware Modules — Stockyard</title>
+<meta name="description" content="The complete LLM platform: 58 middleware modules in 6 apps. Routing, LLM cache, rate limiting, cost control, safety, observability, workflows, and more.">
 <meta property="og:title" content="Stockyard Products">
-<meta property="og:description" content="The complete LLM platform: 70 middleware modules, 6 apps, one binary. LLM cache, rate limiting, observability, audit, and more.">
+<meta property="og:description" content="The complete LLM platform: 58 middleware modules, 6 apps, one binary. LLM cache, rate limiting, observability, audit, and more.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -89,11 +89,20 @@ a:hover{color:var(--gold)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 
+/* Capability cards for Apps 02-06 (distinct from middleware modules) */
+.cap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0.8rem}
+.cap-card{padding:0.8rem 1rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.15s;display:flex;align-items:center;gap:0.8rem}
+.cap-card:hover{border-color:var(--leather)}
+.cap-dot{width:6px;height:6px;border-radius:50%;background:var(--leather-light);flex-shrink:0}
+.cap-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
+.cap-desc{font-size:0.7rem;color:var(--cream-dim);margin-left:auto;flex-shrink:0}
+
 @media(max-width:600px){
   .page-hero{padding:5rem 1.5rem 2rem}
   .mod-grid{grid-template-columns:1fr}
+  .cap-grid{grid-template-columns:1fr}
   .endpoint-grid{grid-template-columns:1fr}
-  .mod-desc{display:none}
+  .mod-desc,.cap-desc{display:none}
 }
 
 /* ===== MOBILE NAV ===== */
@@ -154,7 +163,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="page-hero" id="main">
   <div class="eyebrow">Products</div>
-  <h1>70 modules. <span class="accent">6 apps.</span></h1>
+  <h1>58 modules. <span class="accent">6 apps.</span></h1>
   <p class="sub">A complete LLM platform. Every module toggleable at runtime. Install packs to configure groups. All included in every plan.</p>
   <div class="cta-group">
     <a href="/cloud/" class="btn btn-primary">Start free</a>
@@ -164,10 +173,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <div class="app-section">
   <div class="app-header"><span class="app-number">App 01</span><span class="app-title">Proxy</span></div>
-  <div class="app-desc">The gateway. 70 middleware modules in a chain, every one toggleable at runtime via API.</div>
+  <div class="app-desc">The gateway. 58 middleware modules in a chain, every one toggleable at runtime via API.</div>
 
   <div class="cat-bar">
-    <span class="cat-chip active" onclick="filterCat(this,'all')">All</span>
+    <span class="cat-chip active" onclick="filterCat(this,'all')">All 58</span>
     <span class="cat-chip" onclick="filterCat(this,'routing')">Routing</span>
     <span class="cat-chip" onclick="filterCat(this,'reliability')">Reliability</span>
     <span class="cat-chip" onclick="filterCat(this,'caching')">Caching</span>
@@ -177,35 +186,40 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <span class="cat-chip" onclick="filterCat(this,'validate')">Validate</span>
     <span class="cat-chip" onclick="filterCat(this,'observe')">Observe</span>
     <span class="cat-chip" onclick="filterCat(this,'shims')">Shims</span>
+    <span class="cat-chip" onclick="filterCat(this,'trust')">Trust</span>
+    <span class="cat-chip" onclick="filterCat(this,'studio')">Studio</span>
+    <span class="cat-chip" onclick="filterCat(this,'forge')">Forge</span>
     <span class="cat-chip" onclick="filterCat(this,'other')">Other</span>
   </div>
 
   <div class="mod-grid" id="mod-grid">
-    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">fallbackrouter</span><span class="mod-desc">Provider failover</span></div>
+    <!-- routing (5) -->
+    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">failover</span><span class="mod-desc">Provider failover</span></div>
     <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">modelswitch</span><span class="mod-desc">Model aliasing</span></div>
     <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">regionroute</span><span class="mod-desc">Geo-based routing</span></div>
     <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">localsync</span><span class="mod-desc">Local model sync</span></div>
     <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">abrouter</span><span class="mod-desc">A/B traffic splits</span></div>
-    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">weightedrouter</span><span class="mod-desc">Percentage-based split</span></div>
-    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">stickysession</span><span class="mod-desc">Pin users to providers</span></div>
 
+    <!-- reliability (3) -->
     <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">retry</span><span class="mod-desc">Exponential backoff</span></div>
-    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">circuitbreaker</span><span class="mod-desc">Fail-fast on errors</span></div>
-    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">timeout</span><span class="mod-desc">Deadline enforcement</span></div>
-    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">loadbalancer</span><span class="mod-desc">Distribute across providers</span></div>
-    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">healthcheck</span><span class="mod-desc">Provider health polling</span></div>
+    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">retrypilot</span><span class="mod-desc">Smart retry logic</span></div>
+    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">ratelimit</span><span class="mod-desc">Rate limiting</span></div>
 
-    <div class="mod-card" data-cat="caching"><span class="mod-dot"></span><span class="mod-name">cachelayer</span><span class="mod-desc">Response caching</span></div>
+    <!-- caching (2) -->
+    <div class="mod-card" data-cat="caching"><span class="mod-dot"></span><span class="mod-name">cache</span><span class="mod-desc">Response caching</span></div>
     <div class="mod-card" data-cat="caching"><span class="mod-dot"></span><span class="mod-name">embedcache</span><span class="mod-desc">Embedding cache</span></div>
-    <div class="mod-card" data-cat="caching"><span class="mod-dot"></span><span class="mod-name">semanticcache</span><span class="mod-desc">Semantic similarity</span></div>
 
-    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">costcap</span><span class="mod-desc">Spending limits</span></div>
-    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">tierdrop</span><span class="mod-desc">Auto-downgrade</span></div>
+    <!-- cost (8) -->
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">spend</span><span class="mod-desc">Spend tracking</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">tierdrop</span><span class="mod-desc">Auto-downgrade models</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">caps</span><span class="mod-desc">Budget caps</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">cost_cap</span><span class="mod-desc">Spending limits</span></div>
     <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">idlekill</span><span class="mod-desc">Kill idle requests</span></div>
     <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">outputcap</span><span class="mod-desc">Max output tokens</span></div>
     <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">usagepulse</span><span class="mod-desc">Usage reporting</span></div>
-    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">rateshield</span><span class="mod-desc">Rate limiting</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">keypool</span><span class="mod-desc">API key rotation</span></div>
 
+    <!-- transform (6) -->
     <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">promptslim</span><span class="mod-desc">Prompt compression</span></div>
     <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">tokentrim</span><span class="mod-desc">Token trimming</span></div>
     <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">contextpack</span><span class="mod-desc">Context packing</span></div>
@@ -213,53 +227,54 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">langbridge</span><span class="mod-desc">Language detection</span></div>
     <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">voicebridge</span><span class="mod-desc">Audio transcription</span></div>
 
-    <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">structuredshield</span><span class="mod-desc">JSON validation</span></div>
+    <!-- validate (2) -->
     <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">evalgate</span><span class="mod-desc">Quality gating</span></div>
     <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">codefence</span><span class="mod-desc">Code validation</span></div>
-    <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">schemavalidator</span><span class="mod-desc">JSON schema check</span></div>
-    <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">jsonrepair</span><span class="mod-desc">Fix malformed JSON</span></div>
 
+    <!-- safety (12) -->
     <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">promptguard</span><span class="mod-desc">Injection detection</span></div>
     <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">toxicfilter</span><span class="mod-desc">Content moderation</span></div>
     <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">guardrail</span><span class="mod-desc">Topic fencing</span></div>
-    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">agegate</span><span class="mod-desc">Age-appropriate</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">agegate</span><span class="mod-desc">Age-appropriate filter</span></div>
     <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">hallucicheck</span><span class="mod-desc">Hallucination detect</span></div>
     <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">secretscan</span><span class="mod-desc">Secret detection</span></div>
     <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">agentguard</span><span class="mod-desc">Agent safety</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">maskmode</span><span class="mod-desc">PII masking</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">pii_redactor</span><span class="mod-desc">PII redaction</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">content_filter</span><span class="mod-desc">Content filtering</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">prompt_injection</span><span class="mod-desc">Injection blocking</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">toxicity_filter</span><span class="mod-desc">Toxicity screening</span></div>
 
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">anthrofit</span><span class="mod-desc">Claude via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">geminishim</span><span class="mod-desc">Gemini via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">groqshim</span><span class="mod-desc">Groq via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">ollamashim</span><span class="mod-desc">Ollama via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">bedrockshim</span><span class="mod-desc">AWS Bedrock adapter</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">azureshim</span><span class="mod-desc">Azure OpenAI adapter</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">mistralshim</span><span class="mod-desc">Mistral via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">cohereshim</span><span class="mod-desc">Cohere via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">togethershim</span><span class="mod-desc">Together AI adapter</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">deepseekshim</span><span class="mod-desc">DeepSeek via OpenAI SDK</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">fireworksshim</span><span class="mod-desc">Fireworks AI adapter</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">replicateshim</span><span class="mod-desc">Replicate adapter</span></div>
-    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">perplexityshim</span><span class="mod-desc">Perplexity via OpenAI SDK</span></div>
-
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">streamsnap</span><span class="mod-desc">Stream capture</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">imageproxy</span><span class="mod-desc">Vision/image proxy</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">tenantwall</span><span class="mod-desc">Multi-tenant isolation</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">ipfence</span><span class="mod-desc">IP allowlist</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">keypool</span><span class="mod-desc">API key rotation</span></div>
-
+    <!-- observe (6) -->
     <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">llmtap</span><span class="mod-desc">Request logging</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">logging</span><span class="mod-desc">Structured logging</span></div>
     <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">tracelink</span><span class="mod-desc">Distributed tracing</span></div>
     <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">alertpulse</span><span class="mod-desc">Real-time alerts</span></div>
     <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">driftwatch</span><span class="mod-desc">Model drift detection</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">streamsnap</span><span class="mod-desc">Stream capture</span></div>
 
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">compliancelog</span><span class="mod-desc">Audit logging</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">feedbackloop</span><span class="mod-desc">User feedback</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">promptpad</span><span class="mod-desc">Prompt management</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">promptlint</span><span class="mod-desc">Prompt validation</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">approvalgate</span><span class="mod-desc">Human approval</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">batchqueue</span><span class="mod-desc">Batch processing</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">multicall</span><span class="mod-desc">Parallel fan-out</span></div>
-    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">mockllm</span><span class="mod-desc">Deterministic mock</span></div>
+    <!-- shims (2) -->
+    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">anthrofit</span><span class="mod-desc">Claude via OpenAI SDK</span></div>
+    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">geminishim</span><span class="mod-desc">Gemini via OpenAI SDK</span></div>
+
+    <!-- trust (3) -->
+    <div class="mod-card" data-cat="trust"><span class="mod-dot"></span><span class="mod-name">compliancelog</span><span class="mod-desc">Audit logging</span></div>
+    <div class="mod-card" data-cat="trust"><span class="mod-dot"></span><span class="mod-name">feedbackloop</span><span class="mod-desc">User feedback</span></div>
+    <div class="mod-card" data-cat="trust"><span class="mod-dot"></span><span class="mod-name">trust_enforce</span><span class="mod-desc">Policy enforcement</span></div>
+
+    <!-- studio (3) -->
+    <div class="mod-card" data-cat="studio"><span class="mod-dot"></span><span class="mod-name">promptpad</span><span class="mod-desc">Prompt management</span></div>
+    <div class="mod-card" data-cat="studio"><span class="mod-dot"></span><span class="mod-name">promptlint</span><span class="mod-desc">Prompt validation</span></div>
+    <div class="mod-card" data-cat="studio"><span class="mod-dot"></span><span class="mod-name">approvalgate</span><span class="mod-desc">Human approval</span></div>
+
+    <!-- forge (2) -->
+    <div class="mod-card" data-cat="forge"><span class="mod-dot"></span><span class="mod-name">multicall</span><span class="mod-desc">Parallel fan-out</span></div>
+    <div class="mod-card" data-cat="forge"><span class="mod-dot"></span><span class="mod-name">mockllm</span><span class="mod-desc">Deterministic mock</span></div>
+
+    <!-- other (4) -->
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">imageproxy</span><span class="mod-desc">Vision/image proxy</span></div>
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">tenantwall</span><span class="mod-desc">Multi-tenant isolation</span></div>
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">ipfence</span><span class="mod-desc">IP allowlist</span></div>
     <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">devproxy</span><span class="mod-desc">Dev/staging proxy</span></div>
   </div>
 </div>
@@ -267,57 +282,57 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <div class="app-section" style="background:var(--bg2)">
   <div class="app-header"><span class="app-number">App 02</span><span class="app-title">Observe</span></div>
   <div class="app-desc">Automatic tracing, cost dashboards, alerts, and anomaly detection for every LLM request.</div>
-  <div class="mod-grid">
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">traces</span><span class="mod-desc">Full request logging</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">costs</span><span class="mod-desc">Daily cost rollups</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">alerts</span><span class="mod-desc">Threshold alerting</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">anomalies</span><span class="mod-desc">Anomaly detection</span></div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Trace explorer</span><span class="cap-desc">Full request logging</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Cost dashboard</span><span class="cap-desc">Daily cost rollups</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Alert rules</span><span class="cap-desc">Threshold alerting</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Anomaly detection</span><span class="cap-desc">Drift &amp; outlier alerts</span></div>
   </div>
 </div>
 
 <div class="app-section">
   <div class="app-header"><span class="app-number">App 03</span><span class="app-title">Trust</span></div>
   <div class="app-desc">Append-only audit ledger with hash-chain integrity, evidence packs, and policy enforcement.</div>
-  <div class="mod-grid">
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">ledger</span><span class="mod-desc">Hash-chained audit trail</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">evidence</span><span class="mod-desc">Evidence packs</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">policies</span><span class="mod-desc">Block/warn/log rules</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">feedback</span><span class="mod-desc">User feedback capture</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">replays</span><span class="mod-desc">Request replay</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">encryption</span><span class="mod-desc">AES-256-GCM at rest</span></div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Audit ledger</span><span class="cap-desc">Hash-chained audit trail</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Evidence packs</span><span class="cap-desc">Exportable compliance bundles</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Policy engine</span><span class="cap-desc">Block/warn/log rules</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Feedback capture</span><span class="cap-desc">User feedback collection</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Replay lab</span><span class="cap-desc">Request replay</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Encryption</span><span class="cap-desc">AES-256-GCM at rest</span></div>
   </div>
 </div>
 
 <div class="app-section" style="background:var(--bg2)">
   <div class="app-header"><span class="app-number">App 04</span><span class="app-title">Studio</span></div>
   <div class="app-desc">Versioned prompt templates, A/B experiments, benchmarks, and snapshot comparison.</div>
-  <div class="mod-grid">
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">templates</span><span class="mod-desc">Versioned prompts</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">experiments</span><span class="mod-desc">A/B testing</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">benchmarks</span><span class="mod-desc">Model comparisons</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">snapshots</span><span class="mod-desc">Point-in-time saves</span></div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Prompt templates</span><span class="cap-desc">Versioned prompts</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Experiments</span><span class="cap-desc">A/B testing</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Benchmarks</span><span class="cap-desc">Model comparisons</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Snapshots</span><span class="cap-desc">Point-in-time saves</span></div>
   </div>
 </div>
 
 <div class="app-section">
   <div class="app-header"><span class="app-number">App 05</span><span class="app-title">Forge</span></div>
   <div class="app-desc">DAG workflow engine. Chain LLM calls, transforms, and tool calls with dependency ordering.</div>
-  <div class="mod-grid">
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">workflows</span><span class="mod-desc">DAG definitions</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">runs</span><span class="mod-desc">Execution tracking</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">tools</span><span class="mod-desc">Tool registry</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">sessions</span><span class="mod-desc">Stateful chat</span></div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Workflow DAGs</span><span class="cap-desc">DAG definitions</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Run tracker</span><span class="cap-desc">Execution tracking</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Tool registry</span><span class="cap-desc">External tool calls</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Sessions</span><span class="cap-desc">Stateful chat</span></div>
   </div>
 </div>
 
 <div class="app-section" style="background:var(--bg2)">
   <div class="app-header"><span class="app-number">App 06</span><span class="app-title">Exchange</span></div>
   <div class="app-desc">Config pack marketplace. Install providers, modules, routes, workflows, and alerts in one click.</div>
-  <div class="mod-grid">
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">packs</span><span class="mod-desc">Pack marketplace</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">installer</span><span class="mod-desc">One-click apply</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">environments</span><span class="mod-desc">Env sync</span></div>
-    <div class="mod-card"><span class="mod-dot"></span><span class="mod-name">sync</span><span class="mod-desc">Push/pull configs</span></div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Pack marketplace</span><span class="cap-desc">Browse &amp; install packs</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Installer</span><span class="cap-desc">One-click apply</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Environments</span><span class="cap-desc">Env sync</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Config sync</span><span class="cap-desc">Push/pull configs</span></div>
   </div>
 </div>
 

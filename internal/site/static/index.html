@@ -181,7 +181,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       "name": "Stockyard",
       "url": "https://stockyard.dev",
       "logo": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png",
-      "description": "Open-source LLM proxy suite. Six apps, 70 middleware modules, one binary.",
+      "description": "Open-source LLM proxy suite. Six apps, 58 middleware modules, one binary.",
       "sameAs": [
         "https://github.com/stockyard-dev/stockyard"
       ]
@@ -236,7 +236,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         }
       ],
       "featureList": [
-        "70 middleware modules",
+        "58 middleware modules",
         "16 LLM providers",
         "Cost tracking and anomaly detection",
         "Hash-chained audit ledger",
@@ -300,7 +300,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <section class="solution">
   <h2 class="section-label gold">The fix</h2>
   <p class="solution-text">
-    Stockyard is an OpenAI-compatible proxy and LLM platform in a single Go binary. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get six integrated apps &mdash; proxy with 70 middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, AWS Bedrock, Azure OpenAI, Mistral, Cohere, Together AI, DeepSeek, Fireworks AI, Replicate, Perplexity, Hugging Face, and VLLM.
+    Stockyard is an OpenAI-compatible proxy and LLM platform in a single Go binary. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get six integrated apps &mdash; proxy with 58 middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, AWS Bedrock, Azure OpenAI, Mistral, Cohere, Together AI, DeepSeek, Fireworks AI, Replicate, Perplexity, Hugging Face, and VLLM.
   </p>
 </section>
 
@@ -311,7 +311,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <div class="app-card"><a href="/products/">
         <span class="app-num">App 01</span>
         <h3 class="app-name">Proxy</h3>
-        <span class="app-tagline">The LLM gateway layer. 70 middleware modules, runtime toggles.</span>
+        <span class="app-tagline">The LLM gateway layer. 58 middleware modules, runtime toggles.</span>
         <span class="app-features">Caching &bull; Rate limiting &bull; Cost caps &bull; Failover &bull; PII redaction &bull; Content filter &bull; Retry &bull; Load balancing &bull; Circuit breakers</span>
       </a></div>
       <div class="app-card"><a href="/observe/">
@@ -363,7 +363,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="console-gallery">
     <picture><source srcset="/site-assets/assets/screenshots/console-overview.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-overview.png" id="cs-overview"  alt="Stockyard console — system overview showing all 6 apps running" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" id="cs-observe"  alt="Observe dashboard — traces, costs, latency across providers" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-proxy.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-proxy.png" id="cs-proxy"  alt="Proxy middleware chain — 70 modules with runtime toggles" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-proxy.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-proxy.png" id="cs-proxy"  alt="Proxy middleware chain — 58 modules with runtime toggles" class="hidden" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-trust.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-trust.png" id="cs-trust"  alt="Trust policies and hash-chained audit ledger" class="hidden" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-studio.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-studio.png" id="cs-studio"  alt="Studio — prompt templates, experiments, benchmarks, snapshot tests" class="hidden" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-forge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-forge.png" id="cs-forge"  alt="Forge — workflow DAGs, tool registry, triggers, batch queue" class="hidden" loading="lazy"></picture>
@@ -412,7 +412,7 @@ function showConsole(name){
 
 <section class="modules">
   <div class="modules-inner">
-    <h2 class="section-label leather">70 middleware modules</h2>
+    <h2 class="section-label leather">58 middleware modules</h2>
     <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. Install packs to configure groups at once.</p>
     <div class="module-row"><span class="module-name">rateshield</span><span class="module-cat">Cost</span></div>
     <div class="module-row"><span class="module-name">costcap</span><span class="module-cat">Cost</span></div>
@@ -424,7 +424,7 @@ function showConsole(name){
     <div class="module-row"><span class="module-name">circuitbreaker</span><span class="module-cat">Reliability</span></div>
     <div class="module-row"><span class="module-name">retry</span><span class="module-cat">Reliability</span></div>
     <div class="module-row"><span class="module-name">tokenbudget</span><span class="module-cat">Cost</span></div>
-    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 70 modules &rarr;</a></p>
+    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 58 modules &rarr;</a></p>
   </div>
 </section>
 
@@ -457,7 +457,7 @@ function showConsole(name){
       <div class="tier-name">Individual</div>
       <div class="tier-price has-dollar">9.99</div>
       <div class="tier-period">per month &middot; self-hosted</div>
-      <div class="tier-desc">All 70 modules. All 16 providers. All 6 apps.</div>
+      <div class="tier-desc">All 58 modules. All 16 providers. All 6 apps.</div>
       <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get started</a>
     </div>
     <div class="tier tier-highlight">

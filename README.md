@@ -11,7 +11,7 @@
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-BSL_1.1-E8753A)](LICENSE)
 [![Deploy](https://img.shields.io/badge/Deploy_in-30s-C4A87A)](https://stockyard.dev/docs)
-[![Modules](https://img.shields.io/badge/Modules-70-E8753A)](https://stockyard.dev/docs)
+[![Modules](https://img.shields.io/badge/Modules-58-E8753A)](https://stockyard.dev/docs)
 [![Providers](https://img.shields.io/badge/Providers-16-C4A87A)](https://stockyard.dev/docs)
 
 </div>
@@ -42,7 +42,7 @@ stockyard serve
 
 | App | What it does | Key features |
 |-----|-------------|--------------|
-| **Proxy** | Gateway layer | 70 middleware modules, 16 providers, OpenAI-compatible endpoint |
+| **Proxy** | Gateway layer | 58 middleware modules, 16 providers, OpenAI-compatible endpoint |
 | **Observe** | See everything | Automatic tracing, per-model cost attribution, anomaly detection |
 | **Trust** | Immutable audit | SHA-256 hash-chained ledger, tamper-evident logging, policy engine |
 | **Studio** | Prompt engineering | Version control, side-by-side diffing, A/B experimentation |
@@ -105,7 +105,7 @@ response = client.chat.completions.create(
 )
 ```
 
-### 70 Middleware Modules — Runtime-Toggled
+### 58 Middleware Modules — Runtime-Toggled
 
 ```bash
 # Enable caching
