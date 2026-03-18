@@ -338,7 +338,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="endpoints">
   <div class="section-label">API endpoints</div>
-  <p style="color:var(--cream-dim);font-size:0.9rem;margin-bottom:0.5rem">62 REST endpoints across all 6 apps. Full programmatic control over everything.</p>
+  <p style="color:var(--cream-dim);font-size:0.9rem;margin-bottom:0.5rem">130+ REST endpoints across all 6 apps. Full programmatic control over everything.</p>
   <div class="endpoint-grid">
     <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/apps</span></div>
     <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/proxy/modules</span></div>
@@ -381,6 +381,7 @@ function filterCat(chip, cat) {
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
 
 </body>
