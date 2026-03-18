@@ -2,6 +2,7 @@ package storage
 
 import (
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -76,7 +77,11 @@ func (db *DB) ListRequests(project string, limit, offset int) ([]RequestLog, int
 			&r.Status, &r.CacheHit, &r.FailoverUsed, &r.Error); err != nil {
 			return nil, 0, err
 		}
-		r.Timestamp, _ = time.Parse(time.RFC3339, ts)
+		if t, err := time.Parse(time.RFC3339, ts); err == nil {
+			r.Timestamp = t
+		} else {
+			log.Printf("[storage] warning: invalid timestamp %q for request %s: %v", ts, r.ID, err)
+		}
 		logs = append(logs, r)
 	}
 
@@ -102,6 +107,10 @@ func (db *DB) GetRequest(id string) (*RequestLog, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Timestamp, _ = time.Parse(time.RFC3339, ts)
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		r.Timestamp = t
+	} else {
+		log.Printf("[storage] warning: invalid timestamp %q for request %s: %v", ts, r.ID, err)
+	}
 	return &r, nil
 }

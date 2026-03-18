@@ -268,7 +268,10 @@ func executeLLMStep(ctx context.Context, rc *RunContext, step Step, start time.T
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("read response: %v", err), LatencyMS: latency}
+	}
 
 	if resp.StatusCode != 200 {
 		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("proxy returned %d: %s", resp.StatusCode, truncate(string(respBody), 200)), LatencyMS: latency}
@@ -456,7 +459,10 @@ func callToolEndpoint(ctx context.Context, rc *RunContext, step Step, url string
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("read tool response: %v", err), LatencyMS: latency}
+	}
 	if resp.StatusCode >= 400 {
 		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool returned %d: %s", resp.StatusCode, truncate(string(body), 200)), LatencyMS: latency}
 	}
@@ -508,7 +514,10 @@ func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("read http response: %v", err), LatencyMS: latency}
+	}
 	if resp.StatusCode >= 400 {
 		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("http %d: %s", resp.StatusCode, truncate(string(body), 200)), LatencyMS: latency}
 	}

@@ -27,6 +27,7 @@ type SemanticCache struct {
 
 type semanticEntry struct {
 	key       string
+	userID    string // for per-user isolation
 	vector    sparseVec
 	entry     *CacheEntry
 	expiresAt time.Time
@@ -49,9 +50,15 @@ func NewSemanticCache(threshold float64, maxItems int, ttl time.Duration) *Seman
 }
 
 // FindSimilar returns the best matching cache entry if similarity >= threshold.
-func (sc *SemanticCache) FindSimilar(model string, messages []provider.Message) *CacheEntry {
+// userID scopes the search to a specific user (pass "" for anonymous/shared).
+func (sc *SemanticCache) FindSimilar(model string, messages []provider.Message, userID ...string) *CacheEntry {
 	sc.mu.RLock()
 	defer sc.mu.RUnlock()
+
+	uid := ""
+	if len(userID) > 0 {
+		uid = userID[0]
+	}
 
 	queryVec := vectorize(model, messages)
 	now := time.Now()
@@ -62,6 +69,10 @@ func (sc *SemanticCache) FindSimilar(model string, messages []provider.Message) 
 	for i := range sc.entries {
 		e := &sc.entries[i]
 		if now.After(e.expiresAt) {
+			continue
+		}
+		// Only match entries from the same user
+		if e.userID != uid {
 			continue
 		}
 		sim := cosineSimilarity(queryVec, e.vector)
@@ -78,9 +89,15 @@ func (sc *SemanticCache) FindSimilar(model string, messages []provider.Message) 
 }
 
 // Store adds a response to the semantic cache.
-func (sc *SemanticCache) Store(model string, messages []provider.Message, entry *CacheEntry) {
+// userID scopes the entry to a specific user (pass "" for anonymous/shared).
+func (sc *SemanticCache) Store(model string, messages []provider.Message, entry *CacheEntry, userID ...string) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
+
+	uid := ""
+	if len(userID) > 0 {
+		uid = userID[0]
+	}
 
 	// Evict expired entries
 	now := time.Now()
@@ -98,10 +115,11 @@ func (sc *SemanticCache) Store(model string, messages []provider.Message, entry 
 	}
 
 	vec := vectorize(model, messages)
-	key := CacheKey(model, messages)
+	key := CacheKey(model, messages, uid)
 
 	sc.entries = append(sc.entries, semanticEntry{
 		key:       key,
+		userID:    uid,
 		vector:    vec,
 		entry:     entry,
 		expiresAt: now.Add(sc.ttl),
@@ -227,13 +245,13 @@ func NewSemanticCacheFromConfig(cfg config.SemanticCacheConfig) *SemanticCache {
 func SemanticCacheMiddleware(sc *SemanticCache) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
-			// Check cache
-			if cached := sc.FindSimilar(req.Model, req.Messages); cached != nil {
+			// Check cache (scoped to user)
+			if cached := sc.FindSimilar(req.Model, req.Messages, req.UserID); cached != nil {
 				return cached.Response, nil
 			}
 			resp, err := next(ctx, req)
 			if err == nil && resp != nil {
-				sc.Store(req.Model, req.Messages, &CacheEntry{Response: resp})
+				sc.Store(req.Model, req.Messages, &CacheEntry{Response: resp}, req.UserID)
 			}
 			return resp, err
 		}

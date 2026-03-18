@@ -180,11 +180,14 @@ func (f *ProviderFactory) ResolveProvider(ctx context.Context, providerName stri
 	// Check cache first
 	cacheKey := cacheKeyFor(user.ID, providerName)
 	if cached, ok := f.cache.Load(cacheKey); ok {
-		cp := cached.(cachedProvider)
-		if time.Now().Before(cp.expires) {
+		cp, ok := cached.(cachedProvider)
+		if !ok {
+			f.cache.Delete(cacheKey)
+		} else if time.Now().Before(cp.expires) {
 			return cp.provider, nil
+		} else {
+			f.cache.Delete(cacheKey)
 		}
-		f.cache.Delete(cacheKey)
 	}
 
 	// Look up user's provider key
