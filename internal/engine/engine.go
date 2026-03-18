@@ -526,7 +526,7 @@ func Boot(pc ProductConfig) {
 
 	// Manual nurture trigger (admin only)
 	srv.Mux().HandleFunc("POST /api/nurture/run", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer "+cfg.AdminKey {
+		if r.Header.Get("Authorization") != "Bearer "+os.Getenv("STOCKYARD_ADMIN_KEY") {
 			http.Error(w, "unauthorized", 401)
 			return
 		}
@@ -537,7 +537,7 @@ func Boot(pc ProductConfig) {
 
 	// Blast email to all captured leads (admin only)
 	srv.Mux().HandleFunc("POST /api/nurture/blast", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer "+cfg.AdminKey {
+		if r.Header.Get("Authorization") != "Bearer "+os.Getenv("STOCKYARD_ADMIN_KEY") {
 			http.Error(w, "unauthorized", 401)
 			return
 		}
