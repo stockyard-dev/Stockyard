@@ -1400,7 +1400,7 @@ func buildPreFlight(pc ProductConfig, cfg *config.Config, counter *tracker.Spend
 		pf.OnStreamComplete = func(req *provider.Request, providerName string, outputTokens int) {
 			inputTokens := tracker.CountInputTokens(req.Model, req.Messages)
 			cost := provider.CalculateCost(req.Model, inputTokens, outputTokens)
-			counter.Add(req.Project, cost)
+			counter.AddWithTokens(req.Project, cost, inputTokens, outputTokens)
 			log.Printf("stream spend: project=%s model=%s tokens_in=%d tokens_out=%d cost=$%.6f provider=%s",
 				req.Project, req.Model, inputTokens, outputTokens, cost, providerName)
 		}

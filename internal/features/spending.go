@@ -40,8 +40,8 @@ func SpendMiddleware(cfg SpendConfig) proxy.Middleware {
 
 			cost := provider.CalculateCost(req.Model, tokensIn, tokensOut)
 
-			// Update in-memory counter
-			cfg.Counter.Add(req.Project, cost)
+			// Update in-memory counter with cost and token counts
+			cfg.Counter.AddWithTokens(req.Project, cost, tokensIn, tokensOut)
 
 			// Check alert thresholds
 			if cfg.Alerter != nil && cfg.Caps != nil {

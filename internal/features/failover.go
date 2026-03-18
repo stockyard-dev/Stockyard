@@ -122,6 +122,9 @@ func isRetryableError(err error) bool {
 }
 
 // FailoverMiddleware returns middleware that tries providers in priority order.
+// Note: failover retries requests on alternate providers, which is safe for
+// idempotent read-only completions. Streaming requests are handled separately
+// via the streaming failover path in proxy/streaming.go, not this middleware.
 func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
@@ -131,7 +134,14 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 				return next(ctx, req)
 			}
 
+			// Streaming requests should not be retried through this middleware
+			// as they are handled by the streaming failover path directly.
+			if req.Stream {
+				return next(ctx, req)
+			}
+
 			var lastErr error
+			attempted := 0
 
 			for _, name := range router.config.Providers {
 				cb, ok := router.breakers[name]
@@ -150,6 +160,7 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 
 				resp, err := sender(ctx, req)
 				req.Provider = origProvider // restore
+				attempted++
 
 				if err != nil {
 					if !isRetryableError(err) {
@@ -160,6 +171,11 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 					cb.RecordFailure()
 					lastErr = err
 					log.Printf("failover: %s failed (%v), trying next", name, err)
+
+					// Check context cancellation before trying next provider
+					if ctx.Err() != nil {
+						return nil, fmt.Errorf("failover aborted: %w", ctx.Err())
+					}
 					continue
 				}
 
@@ -168,6 +184,9 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 				return resp, nil
 			}
 
+			if attempted == 0 {
+				return nil, fmt.Errorf("all providers unavailable (circuit breakers open)")
+			}
 			return nil, fmt.Errorf("all providers failed, last error: %w", lastErr)
 		}
 	}

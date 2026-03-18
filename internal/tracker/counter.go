@@ -7,9 +7,11 @@ import (
 
 // ProjectSpend tracks cumulative spend for a project.
 type ProjectSpend struct {
-	Today   float64
-	Month   float64
-	Updated time.Time
+	Today    float64
+	Month    float64
+	TokensIn  int
+	TokensOut int
+	Updated  time.Time
 }
 
 // SpendCounter maintains in-memory spend counters per project.
@@ -28,6 +30,11 @@ func NewSpendCounter() *SpendCounter {
 
 // Add increments the spend counter for a project.
 func (sc *SpendCounter) Add(project string, amount float64) {
+	sc.AddWithTokens(project, amount, 0, 0)
+}
+
+// AddWithTokens increments the spend counter for a project, including token counts.
+func (sc *SpendCounter) AddWithTokens(project string, amount float64, tokensIn, tokensOut int) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 
@@ -46,6 +53,8 @@ func (sc *SpendCounter) Add(project string, amount float64) {
 
 	if prevY != curY || prevM != curM || prevD != curD {
 		ps.Today = 0
+		ps.TokensIn = 0
+		ps.TokensOut = 0
 	}
 	// Reset monthly counter if month changed
 	if prevY != curY || prevM != curM {
@@ -54,6 +63,8 @@ func (sc *SpendCounter) Add(project string, amount float64) {
 
 	ps.Today += amount
 	ps.Month += amount
+	ps.TokensIn += tokensIn
+	ps.TokensOut += tokensOut
 	ps.Updated = now
 }
 
