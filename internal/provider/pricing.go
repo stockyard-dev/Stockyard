@@ -112,6 +112,11 @@ func CalculateCost(model string, inputTokens, outputTokens int) float64 {
 	return float64(estimatedChars) * FallbackPerCharUSD
 }
 
+// ListPricing returns the full pricing table (for cost estimator UI).
+func ListPricing() map[string]ModelPricing {
+	return pricingTable
+}
+
 // ProviderForModel returns the provider name for a known model.
 func ProviderForModel(model string) string {
 	if p, ok := GetPricing(model); ok {

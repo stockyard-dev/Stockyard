@@ -170,7 +170,8 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"outputcap", "cost", pc.Features.OutputCap, 34},
 		{"usagepulse", "cost", pc.Features.UsagePulse, 35},
 		{"responseheaders", "observe", true, 35},
-		{"billingmeter", "billing", false, 36},
+		{"costwarn", "cost", true, 36},
+		{"billingmeter", "billing", false, 37},
 		// Rate
 		{"ratelimit", "rate", pc.Features.RateLimiting, 40},
 		{"ipfence", "tenant", pc.Features.IPFence, 41},
@@ -280,12 +281,12 @@ func seedExchangePacks(conn *sql.DB) {
 
 	// Only seed wave 1 if fresh DB
 	if count == 0 {
-	packs := []pack{
-		{
-			slug: "safety-essentials", name: "Safety Essentials", author: "Stockyard",
-			desc: "Core safety modules: PII redaction, content filtering, prompt injection detection, and trust policies",
-			tags: `["safety","trust","recommended"]`,
-			content: `{
+		packs := []pack{
+			{
+				slug: "safety-essentials", name: "Safety Essentials", author: "Stockyard",
+				desc: "Core safety modules: PII redaction, content filtering, prompt injection detection, and trust policies",
+				tags: `["safety","trust","recommended"]`,
+				content: `{
 				"modules": [
 					{"name": "pii_redactor", "enabled": true},
 					{"name": "content_filter", "enabled": true},
@@ -301,12 +302,12 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "injection-spike", "metric": "injection_blocks", "condition": "gt", "threshold": 5, "window": "1h", "channel": "default", "enabled": true}
 				]
 			}`,
-		},
-		{
-			slug: "cost-control", name: "Cost Control Pack", author: "Stockyard",
-			desc: "Rate limiting, cost caps, token budgets, and cost alerting — keep your LLM spend under control",
-			tags: `["cost","billing","recommended"]`,
-			content: `{
+			},
+			{
+				slug: "cost-control", name: "Cost Control Pack", author: "Stockyard",
+				desc: "Rate limiting, cost caps, token budgets, and cost alerting — keep your LLM spend under control",
+				tags: `["cost","billing","recommended"]`,
+				content: `{
 				"modules": [
 					{"name": "rateshield", "enabled": true},
 					{"name": "cost_cap", "enabled": true},
@@ -319,12 +320,12 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "rate-limit-spike", "metric": "rate_limited", "condition": "gt", "threshold": 20, "window": "5m", "channel": "default", "enabled": true}
 				]
 			}`,
-		},
-		{
-			slug: "openai-quickstart", name: "OpenAI Quickstart", author: "Stockyard",
-			desc: "Pre-configured OpenAI provider with model routing, caching, and a starter prompt template",
-			tags: `["openai","quickstart","provider"]`,
-			content: `{
+			},
+			{
+				slug: "openai-quickstart", name: "OpenAI Quickstart", author: "Stockyard",
+				desc: "Pre-configured OpenAI provider with model routing, caching, and a starter prompt template",
+				tags: `["openai","quickstart","provider"]`,
+				content: `{
 				"providers": [
 					{"name": "openai", "base_url": "https://api.openai.com/v1", "auth_type": "bearer", "priority": 1, "models": "gpt-4o,gpt-4o-mini,gpt-4-turbo,o1,o1-mini,o3-mini"}
 				],
@@ -341,12 +342,12 @@ func seedExchangePacks(conn *sql.DB) {
 					{"slug": "general-assistant", "name": "General Assistant", "description": "Versatile assistant template with system instructions", "template": "You are a helpful, accurate, and concise assistant. Answer the user's question directly.\n\nUser: {{input}}", "model": "gpt-4o-mini", "tags": "general,starter"}
 				]
 			}`,
-		},
-		{
-			slug: "anthropic-quickstart", name: "Anthropic Quickstart", author: "Stockyard",
-			desc: "Pre-configured Anthropic provider with Claude model routing and prompt template",
-			tags: `["anthropic","quickstart","provider"]`,
-			content: `{
+			},
+			{
+				slug: "anthropic-quickstart", name: "Anthropic Quickstart", author: "Stockyard",
+				desc: "Pre-configured Anthropic provider with Claude model routing and prompt template",
+				tags: `["anthropic","quickstart","provider"]`,
+				content: `{
 				"providers": [
 					{"name": "anthropic", "base_url": "https://api.anthropic.com/v1", "auth_type": "header", "priority": 1, "models": "claude-sonnet-4-20250514,claude-haiku-4-5-20251001,claude-opus-4-5-20250918"}
 				],
@@ -361,12 +362,12 @@ func seedExchangePacks(conn *sql.DB) {
 					{"slug": "claude-analyst", "name": "Claude Analyst", "description": "Analysis-focused template for Claude", "template": "Analyze the following and provide structured insights:\n\n{{input}}", "model": "claude-sonnet-4-20250514", "tags": "analysis,claude"}
 				]
 			}`,
-		},
-		{
-			slug: "multi-provider-failover", name: "Multi-Provider Failover", author: "Stockyard",
-			desc: "Configure OpenAI + Anthropic with automatic failover, health checks, and load balancing",
-			tags: `["failover","reliability","advanced"]`,
-			content: `{
+			},
+			{
+				slug: "multi-provider-failover", name: "Multi-Provider Failover", author: "Stockyard",
+				desc: "Configure OpenAI + Anthropic with automatic failover, health checks, and load balancing",
+				tags: `["failover","reliability","advanced"]`,
+				content: `{
 				"providers": [
 					{"name": "openai", "base_url": "https://api.openai.com/v1", "auth_type": "bearer", "priority": 1, "models": "gpt-4o,gpt-4o-mini"},
 					{"name": "anthropic", "base_url": "https://api.anthropic.com/v1", "auth_type": "header", "priority": 2, "models": "claude-sonnet-4-20250514,claude-haiku-4-5-20251001"}
@@ -383,12 +384,12 @@ func seedExchangePacks(conn *sql.DB) {
 					{"name": "failover-triggered", "metric": "failovers", "condition": "gt", "threshold": 0, "window": "5m", "channel": "default", "enabled": true}
 				]
 			}`,
-		},
-		{
-			slug: "eval-suite", name: "Evaluation Suite", author: "Stockyard",
-			desc: "Workflows and templates for systematic LLM evaluation: accuracy, hallucination detection, and regression testing",
-			tags: `["eval","testing","studio"]`,
-			content: `{
+			},
+			{
+				slug: "eval-suite", name: "Evaluation Suite", author: "Stockyard",
+				desc: "Workflows and templates for systematic LLM evaluation: accuracy, hallucination detection, and regression testing",
+				tags: `["eval","testing","studio"]`,
+				content: `{
 				"workflows": [
 					{
 						"slug": "eval-accuracy", "name": "Accuracy Evaluator",
@@ -412,16 +413,16 @@ func seedExchangePacks(conn *sql.DB) {
 					{"slug": "eval-rubric", "name": "Eval Rubric", "description": "Rubric-based evaluation template", "template": "Evaluate the following response using this rubric:\n- Accuracy (1-10)\n- Completeness (1-10)\n- Clarity (1-10)\n- Relevance (1-10)\n\nResponse:\n{{input}}\n\nProvide scores as JSON.", "model": "gpt-4o", "tags": "eval,grading"}
 				]
 			}`,
-		},
-	}
+			},
+		}
 
-	for _, p := range packs {
-		id := "pk_" + p.slug
-		conn.Exec(`INSERT OR IGNORE INTO exchange_packs (id, slug, name, description, author, pack_type, tags_json) VALUES (?,?,?,?,?,?,?)`,
-			id, p.slug, p.name, p.desc, p.author, "config", p.tags)
-		conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
-			id, "1.0.0", p.content)
-	}
+		for _, p := range packs {
+			id := "pk_" + p.slug
+			conn.Exec(`INSERT OR IGNORE INTO exchange_packs (id, slug, name, description, author, pack_type, tags_json) VALUES (?,?,?,?,?,?,?)`,
+				id, p.slug, p.name, p.desc, p.author, "config", p.tags)
+			conn.Exec(`INSERT OR IGNORE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
+				id, "1.0.0", p.content)
+		}
 	} // end if count == 0
 
 	// Wave 2 packs — always INSERT OR IGNORE so they appear on existing installs too
@@ -712,15 +713,15 @@ func seedTrustData(conn *sql.DB) {
 	// Repair policies from earlier pack installs that had wrong JSON keys
 	// (used "type" instead of "policy_type" and were missing "enabled": true)
 	policyTypeMap := map[string]string{
-		"block-pii-output":       "block",
+		"block-pii-output":        "block",
 		"block-injection-attempt": "block",
-		"block-secret-leak":      "block",
-		"block-injection":        "block",
-		"block-secrets":          "block",
-		"warn-harmful-content":   "warn",
-		"warn-toxic":             "warn",
-		"log-data-extraction":    "log",
-		"log-sensitive-models":   "log",
+		"block-secret-leak":       "block",
+		"block-injection":         "block",
+		"block-secrets":           "block",
+		"warn-harmful-content":    "warn",
+		"warn-toxic":              "warn",
+		"log-data-extraction":     "log",
+		"log-sensitive-models":    "log",
 	}
 	for name, ptype := range policyTypeMap {
 		conn.Exec(`UPDATE trust_policies SET type = ?, enabled = 1 WHERE name = ? AND (type = '' OR enabled = 0)`, ptype, name)
