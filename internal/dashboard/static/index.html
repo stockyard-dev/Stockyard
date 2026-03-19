@@ -692,26 +692,167 @@ function SettingsView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-// ─── Bill (Coming Soon) ─────────────────────────────────────────────
+// ─── Bill ─────────────────────────────────────────────────────────
 function BillingView(){
-  const[email,setEmail]=useState('');const[submitted,setSubmitted]=useState(false);const[toast,setToast]=useState(null);
-  const submit=async()=>{if(!email)return;const r=await api('/api/billing/waitlist',{method:'POST',body:JSON.stringify({email})});if(r.status==='subscribed'){setSubmitted(true);setToast({msg:'You\'ll be notified when Bill launches!',type:'success'})}else{setToast({msg:'Failed to subscribe',type:'error'})}};
-  const features=[
-    {title:'Per-Customer Metering',desc:'See exactly what each customer costs you. Attribute every token to the right account.',icon:'\u25CE'},
-    {title:'Plans & Limits',desc:'Set spending caps, rate limits, and model access per customer. Block or alert on overage.',icon:'\u2B21'},
-    {title:'Invoices & Stripe',desc:'Generate invoices automatically. Sync to Stripe with one click.',icon:'\u21C4'},
-  ];
-  return html`<div class="page-head"><div class="page-eyebrow">Bill</div><h2 style="font-size:1.5rem">Usage metering and billing for AI products</h2><p class="page-sub">Track per-customer LLM costs, enforce spending limits, and generate invoices. Coming soon.</p></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:2rem 0">${features.map(f=>html`<div key=${f.title} style="border:1px solid var(--bg3);padding:1.5rem;background:var(--bg)">
-      <div style="font-size:1.5rem;margin-bottom:0.5rem;color:var(--rust)">${f.icon}</div>
-      <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.5rem">${f.title}</div>
-      <div style="font-size:0.82rem;color:var(--cream-dim);line-height:1.5">${f.desc}</div>
-    </div>`)}</div>
-    <div style="border:1px solid var(--bg3);padding:1.5rem;background:var(--bg2);max-width:480px">
-      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem">Notify me when Bill launches</div>
-      ${submitted?html`<div style="color:var(--green);font-size:0.85rem">\u2713 You're on the list. We'll email you when it's ready.</div>`:html`<div style="display:flex;gap:8px"><input class="field-input" placeholder="you@company.com" value=${email} onInput=${e=>setEmail(e.target.value)} style="flex:1" onKeyDown=${e=>e.key==='Enter'&&submit()}/><${Btn} variant="primary" onClick=${submit} disabled=${!email}>Notify me<//></div>`}
-    </div>
+  const[tab,setTab]=useState('customers');
+  const tabs=[{id:'customers',label:'Customers'},{id:'plans',label:'Plans'},{id:'usage',label:'Usage'},{id:'invoices',label:'Invoices'},{id:'keys',label:'Keys'},{id:'stripe',label:'Stripe'}];
+  return html`<div class="page-head"><div class="page-eyebrow">Bill</div><h2 style="font-size:1.5rem">Per-Customer Usage Metering & Billing</h2><p class="page-sub">Track LLM costs per customer, enforce plan limits, generate invoices.</p></div>
+    <div style="display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3);padding-bottom:8px">${tabs.map(t=>html`<button key=${t.id} onClick=${()=>setTab(t.id)} style="padding:6px 14px;font-size:0.82rem;font-family:var(--font-mono);border:none;cursor:pointer;background:${tab===t.id?'var(--bg3)':'transparent'};color:${tab===t.id?'var(--cream)':'var(--cream-dim)'};border-radius:4px">${t.label}</button>`)}</div>
+    ${tab==='customers'&&html`<${BillCustomers}/>`}
+    ${tab==='plans'&&html`<${BillPlans}/>`}
+    ${tab==='usage'&&html`<${BillUsage}/>`}
+    ${tab==='invoices'&&html`<${BillInvoices}/>`}
+    ${tab==='keys'&&html`<${BillKeys}/>`}
+    ${tab==='stripe'&&html`<${BillStripe}/>`}`;
+}
+function BillCustomers(){
+  const[custs,setCusts]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[name,setName]=useState('');const[email,setEmail]=useState('');const[extID,setExtID]=useState('');
+  const load=async()=>{const r=await api('/api/billing/customers');if(Array.isArray(r))setCusts(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const r=await api('/api/billing/customers',{method:'POST',body:JSON.stringify({name,email,external_id:extID,account_id:'default'})});if(r.id){setShow(false);setName('');setEmail('');setExtID('');load();setToast({msg:'Customer created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const del=async(id)=>{if(!confirm('Delete customer '+id+'?'))return;await api('/api/billing/customers/'+id,{method:'DELETE'});load();setToast({msg:'Deleted',type:'success'})};
+  const cents=c=>(c/100).toFixed(2);
+  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${custs.length} customers</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Customer<//></div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+    <thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['Name','Email','External ID','Plan','This Month','Actions'].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${custs.map(c=>html`<tr key=${c.id} style="border-bottom:1px solid var(--bg2)">
+      <td style="padding:8px"><span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)">${c.name||'—'}</span><div style="font-size:0.72rem;color:var(--cream-dim);font-family:var(--font-mono)">${c.id}</div></td>
+      <td style="padding:8px;color:var(--cream-dim)">${c.email||'—'}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)">${c.external_id||'—'}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${c.current_plan||'none'}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">$${cents(c.period_cost_cents||0)}</td>
+      <td style="padding:8px"><${Btn} small onClick=${()=>del(c.id)}>\u2715<//></td>
+    </tr>`)}</tbody></table></div>
+    ${show&&html`<${Modal} title="New Customer" onClose=${()=>setShow(false)}>
+      <${Input} label="Name" value=${name} onChange=${setName} placeholder="Acme Corp"/>
+      <${Input} label="Email" value=${email} onChange=${setEmail} placeholder="billing@acme.com"/>
+      <${Input} label="External ID" value=${extID} onChange=${setExtID} placeholder="Optional (Stripe cus_...)"/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!name&&!email}>Create<//></div>
+    <//>`}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillPlans(){
+  const[plans,setPlans]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[pName,setPName]=useState('');const[rpm,setRpm]=useState('60');const[reqMonth,setReqMonth]=useState('10000');
+  const[capCents,setCapCents]=useState('5000');const[overage,setOverage]=useState('block');
+  const load=async()=>{const r=await api('/api/billing/plans');if(Array.isArray(r))setPlans(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const limits={requests_per_month:parseInt(reqMonth)||0,spend_cap_cents:parseInt(capCents)||0,rate_limit_rpm:parseInt(rpm)||0,overage};const r=await api('/api/billing/plans',{method:'POST',body:JSON.stringify({name:pName,limits,account_id:'default'})});if(r.id){setShow(false);setPName('');load();setToast({msg:'Plan created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${plans.length} plans</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Plan<//></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">${plans.map(p=>{
+      const l=typeof p.limits==='string'?JSON.parse(p.limits||'{}'):p.limits||{};
+      return html`<div key=${p.id} style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.75rem">${p.name}</div>
+        <div style="font-size:0.78rem;color:var(--cream-dim);line-height:1.8">
+          <div>\u25B8 ${l.requests_per_month||'\u221E'} req/month</div>
+          <div>\u25B8 $${((l.spend_cap_cents||0)/100).toFixed(0)} spend cap</div>
+          <div>\u25B8 ${l.rate_limit_rpm||'\u221E'} RPM</div>
+          <div>\u25B8 Overage: <span style="color:${l.overage==='block'?'var(--rust)':'var(--gold)'}">${l.overage||'allow'}</span></div>
+        </div>
+        <div style="margin-top:8px;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim)">${p.id}</div>
+      </div>`})}</div>
+    ${show&&html`<${Modal} title="New Plan" onClose=${()=>setShow(false)}>
+      <${Input} label="Plan Name" value=${pName} onChange=${setPName} placeholder="Starter"/>
+      <${Input} label="Requests / Month" value=${reqMonth} onChange=${setReqMonth} placeholder="10000"/>
+      <${Input} label="Spend Cap (cents)" value=${capCents} onChange=${setCapCents} placeholder="5000"/>
+      <${Input} label="RPM Limit" value=${rpm} onChange=${setRpm} placeholder="60"/>
+      <${Select} label="Overage Behavior" value=${overage} onChange=${setOverage} options=${[{value:'block',label:'Block'},{value:'alert',label:'Alert'},{value:'allow',label:'Allow'}]}/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!pName}>Create<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillUsage(){
+  const[summary,setSummary]=useState(null);const[byModel,setByModel]=useState([]);const[byCust,setByCust]=useState([]);
+  const load=async()=>{const[s,m,c]=await Promise.all([api('/api/billing/usage/summary'),api('/api/billing/usage/by-model'),api('/api/billing/usage/by-customer')]);setSummary(s);if(Array.isArray(m))setByModel(m);if(Array.isArray(c))setByCust(c)};
+  useEffect(()=>{load()},[]);
+  const cents=c=>(c/100).toFixed(2);
+  const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
+  return html`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem">
+    <${Stat} label="Total Requests" value=${fmtN(summary?.total_requests||0)}/>
+    <${Stat} label="Total Cost" value=${'$'+cents(summary?.total_cost_cents||0)} accent/>
+    <${Stat} label="Input Tokens" value=${fmtN(summary?.total_input_tokens||0)}/>
+    <${Stat} label="Output Tokens" value=${fmtN(summary?.total_output_tokens||0)}/>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.75rem">By Model</div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.78rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim)">${['Model','Requests','Cost'].map(h=>html`<th style="padding:6px;text-align:left;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${byModel.map(m=>html`<tr key=${m.model} style="border-bottom:1px solid var(--bg2)"><td style="padding:6px;font-family:var(--font-mono)">${m.model}</td><td style="padding:6px">${fmtN(m.requests)}</td><td style="padding:6px">$${cents(m.cost_cents)}</td></tr>`)}</tbody></table></div>
+    <div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.75rem">By Customer</div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.78rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim)">${['Customer','Requests','Cost'].map(h=>html`<th style="padding:6px;text-align:left;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${byCust.map(c=>html`<tr key=${c.customer_id} style="border-bottom:1px solid var(--bg2)"><td style="padding:6px;font-family:var(--font-mono)">${c.customer_id||'unattributed'}</td><td style="padding:6px">${fmtN(c.requests)}</td><td style="padding:6px">$${cents(c.cost_cents)}</td></tr>`)}</tbody></table></div>
+  </div>`;
+}
+function BillInvoices(){
+  const[invoices,setInvoices]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[custID,setCustID]=useState('');const[period,setPeriod]=useState(new Date().toISOString().slice(0,7));
+  const load=async()=>{const r=await api('/api/billing/invoices');if(Array.isArray(r))setInvoices(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const r=await api('/api/billing/invoices',{method:'POST',body:JSON.stringify({customer_id:custID,period})});if(r.id){setShow(false);load();setToast({msg:'Invoice '+r.id+' created — $'+(r.total_cents/100).toFixed(2),type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const cents=c=>(c/100).toFixed(2);
+  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${invoices.length} invoices</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Invoice<//></div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['Invoice','Customer','Period','Amount','Status',''].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${invoices.map(inv=>html`<tr key=${inv.id} style="border-bottom:1px solid var(--bg2)">
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${inv.id}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${inv.customer_id}</td>
+      <td style="padding:8px">${inv.period}</td>
+      <td style="padding:8px;font-family:var(--font-mono)">$${cents(inv.total_cents)}</td>
+      <td style="padding:8px"><span style="padding:2px 8px;border-radius:3px;font-size:0.72rem;font-weight:600;background:${inv.status==='paid'?'#d4edda':inv.status==='sent'?'#cce5ff':'#fff3cd'};color:${inv.status==='paid'?'#155724':inv.status==='sent'?'#004085':'#856404'}">${inv.status}</span></td>
+      <td style="padding:8px"><a href=${'/api/billing/invoices/'+inv.id+'/html'} target="_blank" style="color:var(--rust);font-size:0.78rem;text-decoration:none">View \u2197</a></td>
+    </tr>`)}</tbody></table>
+    ${show&&html`<${Modal} title="Generate Invoice" onClose=${()=>setShow(false)}>
+      <${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/>
+      <${Input} label="Period" value=${period} onChange=${setPeriod} placeholder="2026-03"/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!custID||!period}>Generate<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillKeys(){
+  const[keys,setKeys]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[userID,setUserID]=useState('');const[custID,setCustID]=useState('');
+  const load=async()=>{const r=await api('/api/billing/customer-keys');if(Array.isArray(r))setKeys(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const r=await api('/api/billing/customer-keys',{method:'POST',body:JSON.stringify({user_id:userID,customer_id:custID})});if(r.status==='created'){setShow(false);setUserID('');setCustID('');load();setToast({msg:'Key mapping created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const del=async(uid)=>{await api('/api/billing/customer-keys/'+uid,{method:'DELETE'});load();setToast({msg:'Deleted',type:'success'})};
+  return html`<div style="margin-bottom:1rem"><div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:1rem">Map API key users to billing customers. When a request arrives with a user ID, billing automatically attributes usage to the linked customer.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${keys.length} mappings</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Mapping<//></div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['User ID','Customer ID','Customer Name','Created',''].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${keys.map(k=>html`<tr key=${k.user_id} style="border-bottom:1px solid var(--bg2)">
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${k.user_id}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${k.customer_id}</td>
+      <td style="padding:8px">${k.customer_name||'—'}</td>
+      <td style="padding:8px;font-size:0.78rem;color:var(--cream-dim)">${k.created_at}</td>
+      <td style="padding:8px"><${Btn} small onClick=${()=>del(k.user_id)}>\u2715<//></td>
+    </tr>`)}</tbody></table>
+    ${show&&html`<${Modal} title="New Key Mapping" onClose=${()=>setShow(false)}>
+      <${Input} label="User ID" value=${userID} onChange=${setUserID} placeholder="User ID from API key" mono/>
+      <${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!userID||!custID}>Create<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillStripe(){
+  const[status,setStatus]=useState(null);const[toast,setToast]=useState(null);const[custID,setCustID]=useState('');const[syncing,setSyncing]=useState(false);
+  const load=async()=>{const r=await api('/api/billing/stripe/status');setStatus(r)};
+  useEffect(()=>{load()},[]);
+  const sync=async()=>{if(!custID)return;setSyncing(true);const r=await api('/api/billing/stripe/sync-customer',{method:'POST',body:JSON.stringify({customer_id:custID})});setSyncing(false);if(r.stripe_id){setToast({msg:r.action+': '+r.stripe_id,type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  return html`<div style="margin-bottom:1.5rem">
+    <div style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg);margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem">
+        <span style="width:8px;height:8px;border-radius:50%;background:${status?.enabled?'var(--green)':'var(--cream-dim)'}"></span>
+        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)">Stripe ${status?.enabled?'Connected':'Not Configured'}</span>
+      </div>
+      ${!status?.enabled&&html`<div style="font-size:0.82rem;color:var(--cream-dim);line-height:1.5">Set the <code style="background:var(--bg2);padding:2px 6px;border-radius:3px">STRIPE_SECRET_KEY</code> environment variable to enable Stripe integration. Supports customer sync, invoice creation, and payment webhooks.</div>`}
+    </div>
+    ${status?.enabled&&html`<div style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg)">
+      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:1rem">Sync Customer to Stripe</div>
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <div style="flex:1"><${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/></div>
+        <${Btn} variant="primary" onClick=${sync} disabled=${!custID||syncing}>${syncing?'Syncing...':'Sync'}<//>
+      </div>
+    </div>`}
+  </div>
+  ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
 const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,settings:SettingsView};
@@ -774,7 +915,7 @@ function App(){
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 76 endpoints</span></div>
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 88 endpoints</span></div>
   </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));

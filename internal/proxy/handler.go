@@ -286,6 +286,11 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 	req.Schema = r.Header.Get("X-Schema")
 	req.Provider = r.Header.Get("X-Provider")
 
+	// Store auth header for JWT claim extraction by billing meter
+	if authHeader := r.Header.Get("Authorization"); authHeader != "" {
+		req.Extra["_auth_header"] = authHeader
+	}
+
 	// Extract client IP for IP-based access control
 	req.ClientIP = extractClientIP(r)
 
@@ -356,6 +361,7 @@ func isBillingError(err error) bool {
 	msg := err.Error()
 	return strings.Contains(msg, "monthly request limit") ||
 		strings.Contains(msg, "monthly spend cap") ||
+		strings.Contains(msg, "rate limit exceeded") ||
 		strings.Contains(msg, "not allowed by plan") ||
 		strings.Contains(msg, "blocked by plan")
 }

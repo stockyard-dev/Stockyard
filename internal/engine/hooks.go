@@ -12,6 +12,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/slog"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
@@ -26,6 +27,9 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			start := time.Now()
 			traceID := genTraceID()
+
+			// Pass trace ID to billing meter via context
+			ctx = features.BillingTraceContext(ctx, traceID)
 
 			// Call the rest of the chain
 			resp, err := next(ctx, req)
