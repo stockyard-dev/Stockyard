@@ -10,6 +10,7 @@
 package main
 
 import (
+	"github.com/stockyard-dev/stockyard/internal/apps/billing"
 	"github.com/stockyard-dev/stockyard/internal/apps/exchange"
 	"github.com/stockyard-dev/stockyard/internal/apps/forge"
 	"github.com/stockyard-dev/stockyard/internal/apps/marketing"
@@ -40,6 +41,7 @@ func main() {
 			studio.New(nil),
 			forge.New(nil),
 			exchange.New(nil),
+			billing.New(nil),
 			marketing.New(nil),
 		},
 		Features: engine.Features{
@@ -98,6 +100,7 @@ func main() {
 			LangBridge:    true,
 			ContextWindow: true,
 			RegionRoute:   true,
+			BillingMeter:  true,
 			ChainForge:    true,
 			CronLLM:       true,
 			WebhookRelay:  true,

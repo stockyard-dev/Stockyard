@@ -100,6 +100,9 @@ type Features struct {
 	ContextWindow bool
 	RegionRoute   bool
 
+	// Billing
+	BillingMeter bool
+
 	// Phase 3 P3 expansion
 	ChainForge    bool
 	CronLLM       bool
@@ -863,6 +866,13 @@ func buildMiddlewares(reg *toggle.Registry,
 	if pc.Features.SpendCaps {
 		caps := buildCaps(cfg)
 		add("caps", features.CapsMiddleware(caps, counter))
+	}
+
+	// BillingMeter — per-customer usage metering and plan limit enforcement
+	if pc.Features.BillingMeter && db != nil {
+		meter := features.NewBillingMeter(db.Conn())
+		add("billingmeter", features.BillingMeterMiddleware(meter))
+		log.Printf("billingmeter: per-customer metering enabled")
 	}
 
 	// UsagePulse — multi-dimensional metering (after caps, before routing)
