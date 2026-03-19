@@ -85,7 +85,7 @@ Link related LLM calls into trace trees. Correlate multi-step agent workflows. O
 
 ## Part of Stockyard
 
-TraceLink is one of 32 Stockyard products. Get the full suite at [stockyard.dev](https://stockyard.dev) — all tools for \$19/mo (saves 89% vs buying individually).
+TraceLink is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
 
 ## License
 

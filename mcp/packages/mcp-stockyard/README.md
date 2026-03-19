@@ -1,6 +1,6 @@
 # @stockyard/mcp-stockyard
 
-> The complete LLM infrastructure suite
+> Self-hosted LLM proxy and control plane
 
 All 125 Stockyard products in one binary. Cost control, caching, validation, routing, security, analytics, and more.
 

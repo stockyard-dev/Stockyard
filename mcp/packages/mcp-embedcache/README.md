@@ -85,7 +85,7 @@ Embedding response caching for /v1/embeddings. Content-hash deduplication, per-i
 
 ## Part of Stockyard
 
-EmbedCache is one of 32 Stockyard products. Get the full suite at [stockyard.dev](https://stockyard.dev) — all tools for \$19/mo (saves 89% vs buying individually).
+EmbedCache is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
 
 ## License
 

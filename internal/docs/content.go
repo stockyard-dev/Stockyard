@@ -437,8 +437,8 @@ func pageLicense() Page {
 <table>
 <tr><th>Tier</th><th>Individual Product</th><th>Suite (58 modules)</th><th>Limits</th></tr>
 <tr><td>Free</td><td>$0</td><td>$0</td><td>1,000 requests/day, 5 products max (suite)</td></tr>
-<tr><td>Starter</td><td>$9/mo</td><td>$19/mo</td><td>10,000 requests/day</td></tr>
-<tr><td>Pro</td><td>$29/mo</td><td>$59/mo</td><td>100,000 requests/day</td></tr>
+<tr><td>Individual</td><td>$9.99/mo</td><td>$9.99/mo</td><td>10,000 requests/day</td></tr>
+<tr><td>Pro</td><td>$49/mo</td><td>$49/mo</td><td>100,000 requests/day</td></tr>
 <tr><td>Team</td><td>$79/mo</td><td>$149/mo</td><td>Unlimited requests</td></tr>
 <tr><td>Enterprise</td><td>Custom</td><td>$299+/mo</td><td>Custom terms, SLA, support</td></tr>
 </table>

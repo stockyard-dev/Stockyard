@@ -86,7 +86,7 @@ IP-level access control for LLM proxy endpoints. Allowlist, denylist, CIDR range
 
 ## Part of Stockyard
 
-IPFence is one of 32 Stockyard products. Get the full suite at [stockyard.dev](https://stockyard.dev) — all tools for \$19/mo (saves 89% vs buying individually).
+IPFence is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
 
 ## License
 
