@@ -92,6 +92,33 @@ CREATE TABLE IF NOT EXISTS billing_rollups (
 
 CREATE INDEX IF NOT EXISTS idx_rollups_account_period ON billing_rollups(account_id, period);
 
+CREATE TABLE IF NOT EXISTS billing_customer_keys (
+    user_id TEXT NOT NULL,
+    customer_id TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS billing_payments (
+    id TEXT PRIMARY KEY,
+    customer_id TEXT NOT NULL,
+    stripe_invoice_id TEXT,
+    amount_cents INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS billing_invoices (
+    id TEXT PRIMARY KEY,
+    account_id TEXT NOT NULL,
+    customer_id TEXT NOT NULL,
+    period TEXT NOT NULL,
+    total_cents INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'draft',
+    line_items TEXT NOT NULL DEFAULT '[]',
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS billing_waitlist (
     email TEXT PRIMARY KEY,
     created_at TEXT DEFAULT (datetime('now'))
@@ -122,6 +149,20 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Customer status
 	mux.HandleFunc("GET /api/billing/customers/{id}/status", a.handleCustomerStatus)
+
+	// Invoices (local)
+	mux.HandleFunc("POST /api/billing/invoices", a.handleCreateInvoice)
+	mux.HandleFunc("GET /api/billing/invoices", a.handleListInvoices)
+	mux.HandleFunc("GET /api/billing/invoices/{id}", a.handleGetInvoice)
+	mux.HandleFunc("GET /api/billing/invoices/{id}/html", a.handleInvoiceHTML)
+
+	// Customer keys (sub-key → customer mapping)
+	mux.HandleFunc("POST /api/billing/customer-keys", a.handleCreateCustomerKey)
+	mux.HandleFunc("GET /api/billing/customer-keys", a.handleListCustomerKeys)
+	mux.HandleFunc("DELETE /api/billing/customer-keys/{userID}", a.handleDeleteCustomerKey)
+
+	// Stripe integration
+	a.registerStripeRoutes(mux)
 
 	// Waitlist
 	mux.HandleFunc("POST /api/billing/waitlist", a.handleWaitlist)
