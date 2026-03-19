@@ -522,6 +522,30 @@ func Boot(pc ProductConfig) {
 	srv.Mux().HandleFunc("GET /api/upgrade-prompts", UpgradePromptsHandler(licEnforcer, GlobalUsageCounters))
 	log.Printf("  Upgrades:  http://localhost:%d/api/upgrade-prompts", cfg.Port)
 
+	// Changelog — embedded entries served to console "What's New" panel
+	srv.Mux().HandleFunc("GET /api/changelog", func(w http.ResponseWriter, r *http.Request) {
+		entries := []map[string]string{
+			{"date": "2026-03-19", "title": "Billing Phase 2", "body": "Per-customer metering, Stripe integration, invoice generation, and a full billing dashboard."},
+			{"date": "2026-03-18", "title": "Custom Response Headers", "body": "X-Stockyard-* headers on every proxied response: trace ID, cost, model, tokens, latency."},
+			{"date": "2026-03-17", "title": "Exchange Pack Marketplace", "body": "Install pre-built config packs: safety, cost control, provider quickstarts, and more."},
+			{"date": "2026-03-16", "title": "Forge Workflow Engine", "body": "Build multi-step LLM pipelines with DAG execution, conditional branching, and tool integration."},
+			{"date": "2026-03-15", "title": "Trust Ledger & Policies", "body": "Append-only audit chain, runtime policy enforcement, and compliance logging."},
+			{"date": "2026-03-14", "title": "Studio Prompt Lab", "body": "Version-controlled prompt templates, A/B experiments, and evaluation workflows."},
+			{"date": "2026-03-13", "title": "v1.0 Launch", "body": "Stockyard ships with 7 apps, 88 endpoints, and 50+ proxy middleware modules."},
+		}
+		limit := 5
+		if l := r.URL.Query().Get("limit"); l != "" {
+			if n := 0; fmt.Sscanf(l, "%d", &n) == nil && n > 0 && n < len(entries) {
+				limit = n
+			}
+		}
+		if limit > len(entries) {
+			limit = len(entries)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(entries[:limit])
+	})
+
 	// OpenAPI spec
 	srv.Mux().HandleFunc("GET /api/openapi.json", apiserver.HandleOpenAPI)
 	log.Printf("  OpenAPI:   http://localhost:%d/api/openapi.json", cfg.Port)
@@ -867,6 +891,10 @@ func buildMiddlewares(reg *toggle.Registry,
 		caps := buildCaps(cfg)
 		add("caps", features.CapsMiddleware(caps, counter))
 	}
+
+	// ResponseHeaders — add X-Stockyard-* metadata headers to every response
+	add("responseheaders", features.ResponseHeadersMiddleware())
+	log.Printf("responseheaders: custom response headers enabled")
 
 	// BillingMeter — per-customer usage metering and plan limit enforcement
 	if pc.Features.BillingMeter && db != nil {

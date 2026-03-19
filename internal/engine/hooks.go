@@ -169,6 +169,7 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"idlekill", "cost", pc.Features.IdleKill, 33},
 		{"outputcap", "cost", pc.Features.OutputCap, 34},
 		{"usagepulse", "cost", pc.Features.UsagePulse, 35},
+		{"responseheaders", "observe", true, 35},
 		{"billingmeter", "billing", false, 36},
 		// Rate
 		{"ratelimit", "rate", pc.Features.RateLimiting, 40},

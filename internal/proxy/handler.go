@@ -65,6 +65,15 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Set custom response headers from middleware metadata
+	if resp.Meta != nil {
+		for k, v := range resp.Meta {
+			w.Header().Set(k, v)
+		}
+		// Expose custom headers to browser JS via CORS
+		w.Header().Set("Access-Control-Expose-Headers", "X-Stockyard-Trace-Id, X-Stockyard-Cost, X-Stockyard-Model, X-Stockyard-Provider, X-Stockyard-Cached, X-Stockyard-Latency-Ms, X-Stockyard-Tokens-In, X-Stockyard-Tokens-Out, X-Stockyard-Cost-Cents")
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 }
