@@ -43,4 +43,4 @@ docker run -p 6400:6400 -e OPENAI_API_KEY=sk-... stockyard/streamtransform
 
 ## Part of Stockyard
 
-StreamTransform is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use StreamTransform standalone.
+StreamTransform is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

@@ -42,4 +42,4 @@ docker run -p 6480:6480 -e OPENAI_API_KEY=sk-... stockyard/envsync
 
 ## Part of Stockyard
 
-EnvSync is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use EnvSync standalone.
+EnvSync is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

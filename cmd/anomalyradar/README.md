@@ -42,4 +42,4 @@ docker run -p 6470:6470 -e OPENAI_API_KEY=sk-... stockyard/anomalyradar
 
 ## Part of Stockyard
 
-AnomalyRadar is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use AnomalyRadar standalone.
+AnomalyRadar is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

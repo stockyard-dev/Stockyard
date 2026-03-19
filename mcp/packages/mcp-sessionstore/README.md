@@ -37,7 +37,7 @@ npx @stockyard/mcp-sessionstore
 
 ## Part of Stockyard
 
-SessionStore is one of 125 products in the [Stockyard](https://stockyard.dev) LLM infrastructure suite. Use standalone or as part of the full suite.
+SessionStore is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
 
 ## License
 

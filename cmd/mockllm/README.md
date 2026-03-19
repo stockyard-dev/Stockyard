@@ -48,4 +48,4 @@ docker run -p 5660:5660 -e OPENAI_API_KEY=sk-... stockyard/mockllm
 
 ## Part of Stockyard
 
-MockLLM is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use MockLLM standalone.
+MockLLM is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

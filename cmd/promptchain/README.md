@@ -45,4 +45,4 @@ docker run -p 6250:6250 -e OPENAI_API_KEY=sk-... stockyard/promptchain
 
 ## Part of Stockyard
 
-PromptChain is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use PromptChain standalone.
+PromptChain is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

@@ -52,4 +52,4 @@ docker run -p 5640:5640 -e OPENAI_API_KEY=sk-... stockyard/alertpulse
 
 ## Part of Stockyard
 
-AlertPulse is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use AlertPulse standalone.
+AlertPulse is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

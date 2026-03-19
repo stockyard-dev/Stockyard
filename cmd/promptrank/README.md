@@ -41,4 +41,4 @@ docker run -p 6460:6460 -e OPENAI_API_KEY=sk-... stockyard/promptrank
 
 ## Part of Stockyard
 
-PromptRank is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use PromptRank standalone.
+PromptRank is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

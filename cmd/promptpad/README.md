@@ -47,4 +47,4 @@ docker run -p 4800:4800 -e OPENAI_API_KEY=sk-... stockyard/promptpad
 
 ## Part of Stockyard
 
-PromptPad is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use PromptPad standalone.
+PromptPad is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

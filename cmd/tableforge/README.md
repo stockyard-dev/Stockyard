@@ -42,4 +42,4 @@ docker run -p 6090:6090 -e OPENAI_API_KEY=sk-... stockyard/tableforge
 
 ## Part of Stockyard
 
-TableForge is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use TableForge standalone.
+TableForge is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

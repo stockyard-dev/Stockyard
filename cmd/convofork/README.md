@@ -41,4 +41,4 @@ docker run -p 6200:6200 -e OPENAI_API_KEY=sk-... stockyard/convofork
 
 ## Part of Stockyard
 
-ConvoFork is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use ConvoFork standalone.
+ConvoFork is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

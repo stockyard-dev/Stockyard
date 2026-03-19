@@ -6,7 +6,7 @@ Code samples showing how to integrate Stockyard with your application.
 
 ```bash
 # Start Stockyard
-curl -sSL stockyard.dev/install | sh
+curl -sSL stockyard.dev/install.sh | sh
 stockyard
 
 # Your app just changes the base URL

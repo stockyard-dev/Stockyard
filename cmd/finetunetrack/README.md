@@ -44,4 +44,4 @@ docker run -p 6520:6520 -e OPENAI_API_KEY=sk-... stockyard/finetunetrack
 
 ## Part of Stockyard
 
-FineTuneTrack is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use FineTuneTrack standalone.
+FineTuneTrack is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

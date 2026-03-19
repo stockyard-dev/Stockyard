@@ -42,4 +42,4 @@ docker run -p 6510:6510 -e OPENAI_API_KEY=sk-... stockyard/embedrouter
 
 ## Part of Stockyard
 
-EmbedRouter is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use EmbedRouter standalone.
+EmbedRouter is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
