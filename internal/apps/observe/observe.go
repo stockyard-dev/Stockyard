@@ -4,6 +4,7 @@ package observe
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -160,6 +161,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Favorites
 	mux.HandleFunc("GET /api/observe/favorites", a.handleListFavorites)
 	mux.HandleFunc("POST /api/observe/traces/{id}/favorite", a.handleToggleFavorite)
+
+	// Heatmap
+	mux.HandleFunc("GET /api/observe/heatmap", a.handleHeatmap)
 
 	// Live SSE status (how many dashboard clients connected, recent event count)
 	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
@@ -746,6 +750,97 @@ func (a *App) handleSafetySummary(w http.ResponseWriter, r *http.Request) {
 			"critical": critical, "high": high, "medium": medium, "low": low,
 		},
 		"by_type": byType,
+	})
+}
+
+// handleHeatmap returns latency distribution data grouped by time interval and latency bucket.
+// Query params: range=24h|7d|30d (default 24h)
+func (a *App) handleHeatmap(w http.ResponseWriter, r *http.Request) {
+	rangeParam := r.URL.Query().Get("range")
+	if rangeParam == "" {
+		rangeParam = "24h"
+	}
+
+	// Determine time format and lookback based on range
+	var timeFmt, lookback string
+	switch rangeParam {
+	case "7d":
+		timeFmt = "%Y-%m-%d %H:00" // 4-hour would be complex in SQLite, use hourly
+		lookback = "-7 days"
+	case "30d":
+		timeFmt = "%Y-%m-%d"
+		lookback = "-30 days"
+	default: // 24h
+		timeFmt = "%Y-%m-%d %H:00"
+		lookback = "-24 hours"
+	}
+
+	// Latency buckets: 0-200ms, 200-500ms, 500ms-1s, 1-2s, 2-5s, 5s+
+	bucketSQL := `CASE
+		WHEN duration_ms < 200 THEN '0-200ms'
+		WHEN duration_ms < 500 THEN '200-500ms'
+		WHEN duration_ms < 1000 THEN '500ms-1s'
+		WHEN duration_ms < 2000 THEN '1-2s'
+		WHEN duration_ms < 5000 THEN '2-5s'
+		ELSE '5s+'
+	END`
+
+	query := fmt.Sprintf(`SELECT strftime('%s', created_at) as interval,
+		%s as bucket,
+		COUNT(*) as count
+		FROM observe_traces
+		WHERE created_at >= datetime('now', '%s')
+		GROUP BY interval, bucket
+		ORDER BY interval, bucket`, timeFmt, bucketSQL, lookback)
+
+	rows, err := a.conn.Query(query)
+	if err != nil {
+		writeJSON(w, map[string]any{"cells": []any{}, "error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	// Collect cells
+	type cell struct {
+		Interval string `json:"interval"`
+		Bucket   string `json:"bucket"`
+		Count    int64  `json:"count"`
+	}
+	var cells []cell
+	var maxCount int64
+	intervals := map[string]bool{}
+	for rows.Next() {
+		var c cell
+		rows.Scan(&c.Interval, &c.Bucket, &c.Count)
+		cells = append(cells, c)
+		if c.Count > maxCount {
+			maxCount = c.Count
+		}
+		intervals[c.Interval] = true
+	}
+
+	// Build sorted interval list
+	var intervalList []string
+	for k := range intervals {
+		intervalList = append(intervalList, k)
+	}
+	// Sort intervals chronologically (they're already in YYYY-MM-DD or YYYY-MM-DD HH:00 format)
+	for i := 0; i < len(intervalList)-1; i++ {
+		for j := i + 1; j < len(intervalList); j++ {
+			if intervalList[i] > intervalList[j] {
+				intervalList[i], intervalList[j] = intervalList[j], intervalList[i]
+			}
+		}
+	}
+
+	bucketOrder := []string{"0-200ms", "200-500ms", "500ms-1s", "1-2s", "2-5s", "5s+"}
+
+	writeJSON(w, map[string]any{
+		"cells":     cells,
+		"intervals": intervalList,
+		"buckets":   bucketOrder,
+		"max_count": maxCount,
+		"range":     rangeParam,
 	})
 }
 

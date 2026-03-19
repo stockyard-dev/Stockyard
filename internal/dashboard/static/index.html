@@ -164,11 +164,72 @@ function DonutChart({items,size=160}){
     </div>`)}</div>
   </div>`;
 }
+function LatencyHeatmap({data,range,onRangeChange}){
+  if(!data||!data.cells||data.cells.length===0)return html`<div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">${['24h','7d','30d'].map(r=>html`<button key=${r} class="btn btn-sm ${range===r?'primary':''}" onClick=${()=>onRangeChange(r)}>${r}</button>`)}</div>
+    <div class="empty-state" style="padding:32px">No latency data yet. Send requests to see the heatmap.</div></div>`;
+  const intervals=data.intervals||[];const buckets=data.buckets||[];const maxC=data.max_count||1;
+  const cellW=Math.max(20,Math.min(40,600/Math.max(intervals.length,1)));const cellH=28;const leftPad=80;const topPad=24;
+  // Build cell map
+  const cellMap={};(data.cells||[]).forEach(c=>{cellMap[c.interval+'|'+c.bucket]=c.count});
+  // Log scale color
+  const heatColor=(count)=>{if(count===0)return'var(--bg2)';const t=Math.log(count+1)/Math.log(maxC+1);const r=Math.round(60+t*136);const g=Math.round(40-t*20);const b=Math.round(20-t*10);return`rgb(${r},${g},${b})`};
+  return html`<div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">${['24h','7d','30d'].map(r=>html`<button key=${r} class="btn btn-sm ${range===r?'primary':''}" onClick=${()=>onRangeChange(r)}>${r}</button>`)}</div>
+    <div style="overflow-x:auto"><svg width=${leftPad+intervals.length*cellW+10} height=${topPad+buckets.length*cellH+10} style="display:block">
+      ${buckets.map((b,bi)=>html`<text key=${'l'+bi} x=${leftPad-6} y=${topPad+bi*cellH+cellH/2+4} text-anchor="end" fill="var(--cream-dim)" font-size="9" font-family="var(--font-mono)">${b}</text>`)}
+      ${intervals.map((iv,ii)=>{const label=range==='30d'?iv.slice(5):iv.slice(11,16);return ii%Math.max(1,Math.floor(intervals.length/12))===0?html`<text key=${'t'+ii} x=${leftPad+ii*cellW+cellW/2} y=${topPad-6} text-anchor="middle" fill="var(--cream-muted)" font-size="8" font-family="var(--font-mono)">${label}</text>`:null})}
+      ${intervals.map((iv,ii)=>buckets.map((b,bi)=>{const count=cellMap[iv+'|'+b]||0;return html`<rect key=${iv+b} x=${leftPad+ii*cellW} y=${topPad+bi*cellH} width=${cellW-1} height=${cellH-1} fill=${heatColor(count)} rx="2"><title>${iv}\n${b}: ${count} requests</title></rect>`}))}
+    </svg></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+      <span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">fewer</span>
+      ${[0,0.2,0.4,0.6,0.8,1].map(t=>html`<span key=${t} style="width:14px;height:14px;background:${t===0?'var(--bg2)':`rgb(${Math.round(60+t*136)},${Math.round(40-t*20)},${Math.round(20-t*10)})`};border-radius:2px;display:inline-block"></span>`)}
+      <span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">more</span>
+    </div>
+  </div>`;
+}
+function TraceCompare({a,b,onClose}){
+  const diff=(va,vb)=>va!==vb?'color:var(--rust-light);font-weight:600':'';
+  const costDiff=a.cost_usd&&b.cost_usd?((b.cost_usd-a.cost_usd)/Math.max(a.cost_usd,0.0001)*100).toFixed(0):null;
+  const latDiff=a.duration_ms&&b.duration_ms?((b.duration_ms-a.duration_ms)/Math.max(a.duration_ms,1)*100).toFixed(0):null;
+  const fields=[
+    ['Model',a.model,b.model],['Provider',a.provider,b.provider],
+    ['Tokens In',fmt.num(a.tokens_in),fmt.num(b.tokens_in)],['Tokens Out',fmt.num(a.tokens_out),fmt.num(b.tokens_out)],
+    ['Latency',fmt.ms(a.duration_ms),fmt.ms(b.duration_ms)],['Cost',fmt.usd(a.cost_usd),fmt.usd(b.cost_usd)],
+    ['Status',a.status,b.status],['Time',fmt.ago(a.created_at),fmt.ago(b.created_at)],
+  ];
+  return html`<${Modal} title="Trace Comparison" onClose=${onClose}>
+    <div style="display:grid;grid-template-columns:120px 1fr 1fr;gap:0;font-size:0.82rem">
+      <div style="padding:8px;font-weight:600;color:var(--cream-muted);border-bottom:1px solid var(--bg3)"></div>
+      <div style="padding:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--rust);border-bottom:1px solid var(--bg3)">Trace A</div>
+      <div style="padding:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--gold);border-bottom:1px solid var(--bg3)">Trace B</div>
+      ${fields.map(([label,va,vb])=>html`<${Fragment} key=${label}>
+        <div style="padding:8px;color:var(--cream-muted);border-bottom:1px solid var(--bg2)">${label}</div>
+        <div style="padding:8px;font-family:var(--font-mono);border-bottom:1px solid var(--bg2);${diff(va,vb)}">${va||'\u2014'}</div>
+        <div style="padding:8px;font-family:var(--font-mono);border-bottom:1px solid var(--bg2);${diff(va,vb)}">${vb||'\u2014'}</div>
+      <//>`)}
+    </div>
+    ${(costDiff||latDiff)&&html`<div style="margin-top:16px;padding:12px;border:1px solid var(--bg3);background:var(--bg)">
+      <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:8px">Delta</div>
+      <div style="display:flex;gap:24px;font-size:0.8rem">
+        ${costDiff&&html`<div><span style="color:var(--cream-dim)">Cost: </span><span class="mono" style="color:${costDiff>0?'var(--red)':'var(--green)'}">${costDiff>0?'+':''}${costDiff}%</span></div>`}
+        ${latDiff&&html`<div><span style="color:var(--cream-dim)">Latency: </span><span class="mono" style="color:${latDiff>0?'var(--red)':'var(--green)'}">${latDiff>0?'+':''}${latDiff}%</span></div>`}
+      </div>
+    </div>`}
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted)">A: ${a.id}</div>
+      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted)">B: ${b.id}</div>
+    </div>
+  <//>`;
+}
+const Fragment=({children})=>children;
 function ObserveView(){
   const[tab,setTab]=useState('live');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[ts,setTs]=useState({});const[period,setPeriod]=useState('24h');
   const[liveEvents,setLiveEvents]=useState([]);const[sseStatus,setSseStatus]=useState('connecting');const[livePaused,setLivePaused]=useState(false);
   const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);
   const[showFavs,setShowFavs]=useState(false);
+  const[heatData,setHeatData]=useState(null);const[heatRange,setHeatRange]=useState('24h');
+  const[compareA,setCompareA]=useState(null);const[compareB,setCompareB]=useState(null);const[showCompare,setShowCompare]=useState(false);
   const liveRef=useRef([]);const maxLive=200;
 
   // SSE connection
@@ -198,6 +259,7 @@ function ObserveView(){
   const reload=async()=>{const src=showFavs?'favorites=true':'source=real';const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?'+src),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
   useEffect(()=>{reload()},[showFavs]);
   useEffect(()=>{(async()=>{const r=await api('/api/observe/timeseries?period='+period);setTs(r||{})})()},[period]);
+  useEffect(()=>{(async()=>{const r=await api('/api/observe/heatmap?range='+heatRange);setHeatData(r||{})})()},[heatRange]);
   // Auto-refresh persisted data every 15s when on live tab
   useEffect(()=>{if(tab==='live'){const t=setInterval(reload,15000);return()=>clearInterval(t)}},[tab]);
 
@@ -214,7 +276,7 @@ function ObserveView(){
       <${Stat} label="Total Traces" value=${fmt.num(ov.total_traces||0)}/>
       <${Stat} label="Live Feed" value=${liveEvents.length} sub=${html`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${sseDot};display:inline-block;${sseStatus==='connected'?'animation:pulse 2s infinite':''}"></span>${sseStatus}</span>`}/>
     </div>
-    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','alerts','safety']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
+    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','heatmap','alerts','safety']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
     ${tab==='live'?html`
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
         <button class="btn btn-sm ${livePaused?'':'primary'}" onClick=${()=>setLivePaused(!livePaused)}>${livePaused?'\u25B6 Resume':'\u23F8 Pause'}</button>
@@ -249,7 +311,10 @@ function ObserveView(){
         <div class="chart-card"><div class="chart-title">Cost by Provider (7d)</div><${MiniBar} items=${provs.map((p,i)=>({label:p.provider||'unknown',value:p.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(p.cost_usd)}))} width=${340} height=${140}/></div>
         <div class="chart-card"><div class="chart-title">Cost by Model (7d)</div><${MiniBar} items=${models.map((m,i)=>({label:(m.model||'unknown').split('/').pop().substring(0,16),value:m.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(m.cost_usd)}))} width=${340} height=${140}/></div>
       </div>`:
-    tab==='traces'?html`<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button><button class="btn btn-sm ${showFavs?'primary':''}" onClick=${()=>setShowFavs(!showFavs)}>\u2605 ${showFavs?'Favorites':'All'}</button></div><${DataTable} columns=${[
+    tab==='traces'?html`<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button><button class="btn btn-sm ${showFavs?'primary':''}" onClick=${()=>setShowFavs(!showFavs)}>\u2605 ${showFavs?'Favorites':'All'}</button>
+      ${compareA&&compareB?html`<${Btn} variant="primary" small onClick=${()=>setShowCompare(true)}>Compare 2 traces<//>`:compareA?html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Select 1 more trace to compare</span>`:html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Click \u2610 to compare traces</span>`}
+      ${(compareA||compareB)&&html`<button class="btn btn-sm" onClick=${()=>{setCompareA(null);setCompareB(null)}}>Clear</button>`}</div><${DataTable} columns=${[
+      {key:'cmp',label:'\u2610',width:'32px',render:r=>{const sel=compareA?.id===r.id||compareB?.id===r.id;return html`<span onClick=${e=>{e.stopPropagation();if(sel){if(compareA?.id===r.id)setCompareA(null);else setCompareB(null)}else if(!compareA)setCompareA(r);else if(!compareB)setCompareB(r)}} style="cursor:pointer;font-size:0.9rem;color:${sel?'var(--rust)':'var(--bg3)'}">${sel?'\u2611':'\u2610'}</span>`}},
       {key:'fav',label:'\u2605',width:'36px',render:r=>html`<span onClick=${e=>{e.stopPropagation();toggleFav(r.id)}} style="cursor:pointer;font-size:1rem;color:${r.favorited?'var(--gold)':'var(--bg3)'}">${r.favorited?'\u2605':'\u2606'}</span>`},
       {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},{key:'provider',label:'Provider',width:'110px',mono:true},
       {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},{key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
@@ -268,6 +333,7 @@ function ObserveView(){
       </div>
     </div>
     <${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost||r.cost_usd)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
+    tab==='heatmap'?html`<${LatencyHeatmap} data=${heatData} range=${heatRange} onRangeChange=${setHeatRange}/>`:
     tab==='alerts'?html`<${DataTable} columns=${[{key:'name',label:'Alert',width:'1.5fr'},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'threshold',label:'Threshold',width:'110px',mono:true},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.last_fired?'fired':'active'} variant=${r.last_fired?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured."/>`:
     html`<div class="safety-dash">
       <div class="stats-row" style="margin-bottom:16px">
@@ -301,7 +367,8 @@ function ObserveView(){
       ${detail.user_id?html`<div class="td-row"><span class="td-label">User ID</span><span class="mono">#${detail.user_id}</span></div>`:''}
       ${detail.request_body?html`<div class="td-section"><div class="td-label">Request</div><pre class="td-pre">${typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body,null,2)}</pre></div>`:''}
       ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
-    </div><//>}`
+    </div><//>}`}
+    ${showCompare&&compareA&&compareB&&html`<${TraceCompare} a=${compareA} b=${compareB} onClose=${()=>setShowCompare(false)}/>`}
 }
 
 // ─── Trust ─────────────────────────────────────────────────────────
