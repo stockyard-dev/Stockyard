@@ -26,7 +26,7 @@ func Limits(tier Tier) TierLimits {
 		return TierLimits{
 			MaxRequestsPerMonth: 10_000,
 			MaxProviders:        16, // all
-			MaxModules:          70, // all
+			MaxModules:          58, // all
 			MaxUsers:            1,
 			RetentionDays:       30,
 			EmailAlerts:         true,
@@ -37,7 +37,7 @@ func Limits(tier Tier) TierLimits {
 		return TierLimits{
 			MaxRequestsPerMonth: 0, // unlimited
 			MaxProviders:        16,
-			MaxModules:          70,
+			MaxModules:          58,
 			MaxUsers:            1,
 			RetentionDays:       90,
 			EmailAlerts:         true,
@@ -48,7 +48,7 @@ func Limits(tier Tier) TierLimits {
 		return TierLimits{
 			MaxRequestsPerMonth: 0, // unlimited
 			MaxProviders:        16,
-			MaxModules:          70,
+			MaxModules:          58,
 			MaxUsers:            5, // included, +$25/seat after
 			RetentionDays:       365,
 			EmailAlerts:         true,
@@ -59,7 +59,7 @@ func Limits(tier Tier) TierLimits {
 		return TierLimits{
 			MaxRequestsPerMonth: 0, // unlimited (legacy, maps to Pro)
 			MaxProviders:        16,
-			MaxModules:          70,
+			MaxModules:          58,
 			MaxUsers:            0,
 			RetentionDays:       90,
 			EmailAlerts:         true,
@@ -70,7 +70,7 @@ func Limits(tier Tier) TierLimits {
 		return TierLimits{
 			MaxRequestsPerMonth: 0,
 			MaxProviders:        16,
-			MaxModules:          70,
+			MaxModules:          58,
 			MaxUsers:            0, // unlimited
 			RetentionDays:       0, // unlimited
 			EmailAlerts:         true,

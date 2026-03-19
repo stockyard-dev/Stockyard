@@ -343,7 +343,7 @@ Console: http://localhost:4200/ui</span>
       <div class="app-card"><a href="/observe/">
         <span class="app-num">App 02</span>
         <h3 class="app-name">Observe</h3>
-        <span class="app-tagline">See everything. Every request, every dollar, every anomaly.</span>
+        <span class="app-tagline">Request tracing, cost dashboards, and alerts.</span>
         <span class="app-features">Request tracing &bull; Cost rollups &bull; Latency tracking &bull; Alert rules &bull; Anomaly detection &bull; Daily dashboards</span>
       </a></div>
       <div class="app-card"><a href="/trust/">
@@ -464,7 +464,7 @@ function showConsole(name){
     <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td></tr>
     <tr><td>Dashboard</td><td class="us">Embedded console</td><td class="them">Separate UI service</td></tr>
     <tr><td>Platform</td><td class="us">6 integrated apps</td><td class="them">One proxy</td></tr>
-    <tr><td>Middleware</td><td class="us">70 toggleable modules</td><td class="them">Limited callbacks</td></tr>
+    <tr><td>Middleware</td><td class="us">58 toggleable modules</td><td class="them">Limited callbacks</td></tr>
     <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
     <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td></tr>
   </table>
@@ -474,17 +474,17 @@ function showConsole(name){
   <h2 class="section-label gold">Pricing</h2>
   <div class="tier-row">
     <div class="tier">
-      <div class="tier-name">Community</div>
+      <div class="tier-name">Free</div>
       <div class="tier-price">Free</div>
       <div class="tier-period">self-hosted &middot; you manage</div>
-      <div class="tier-desc">Full platform on your infrastructure. You handle deployment, updates, and backups.</div>
+      <div class="tier-desc">20 modules, 3 providers, 1,000 req/mo. Self-hosted on your infrastructure.</div>
       <a href="/docs/quickstart/#install" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get the binary</a>
     </div>
     <div class="tier">
       <div class="tier-name">Individual</div>
       <div class="tier-price has-dollar">9.99</div>
       <div class="tier-period">per month &middot; self-hosted</div>
-      <div class="tier-desc">All 58 modules. All 16 providers. All 6 apps.</div>
+      <div class="tier-desc">All 58 modules, all 16 providers. 10K req/mo. Self-hosted.</div>
       <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get started</a>
     </div>
     <div class="tier tier-highlight">
@@ -528,7 +528,7 @@ function showConsole(name){
   <h2>Ship with confidence.</h2>
   <p>Self-hosted LLM control plane. Install the binary or try managed cloud.</p>
   <div class="cta-group">
-    <a href="/cloud/" class="btn btn-primary">Start free</a>
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
     <a href="/pricing/" class="btn btn-secondary">Compare plans</a>
   </div>
 </section>
