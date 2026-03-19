@@ -27,7 +27,7 @@
   --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
   --leather:#a0845c;--leather-light:#c4a87a;
   --cream:#f0e6d3;--cream-dim:#bfb5a3;
-  --gold:#d4a843;
+  --gold:#d4a843;--green-light:#5ba86e;
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
@@ -269,23 +269,30 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </nav>
 
 <section class="hero" id="main">
-  <div class="hero-eyebrow">Where LLM traffic gets sorted</div>
-  <h1>Six apps. One binary. <span class="accent">Zero dependencies.</span></h1>
-  <p class="hero-sub">The complete LLM gateway and proxy platform &mdash; observe, trust, studio, forge, and exchange. Everything between your app and the model.</p>
+  <div class="hero-eyebrow">Self-hosted LLM control plane</div>
+  <h1>One binary. <span class="accent">Every request traced.</span></h1>
+  <p class="hero-sub">Point your OPENAI_BASE_URL at Stockyard and get cost tracking, caching, safety filters, rate limiting, audit trails, and observability &mdash; without adding dependencies to your stack.</p>
 
   <div class="hero-stats">
-    <div class="stat"><span class="stat-num">6</span><span class="stat-label">Apps</span></div>
-    <div class="stat"><span class="stat-num">70</span><span class="stat-label">Modules</span></div>
+    <div class="stat"><span class="stat-num">58</span><span class="stat-label">Modules</span></div>
     <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
-    <div class="stat"><span class="stat-num" style="letter-spacing:1px">Zero</span><span class="stat-label">Dependencies</span></div>
+    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></div>
+    <div class="stat"><span class="stat-num">~15MB</span><span class="stat-label">Binary</span></div>
   </div>
 
   <div class="cta-group">
-    <a href="/cloud/" class="btn btn-primary">Start free &mdash; 30 seconds</a>
+    <a href="/guide/" class="btn btn-primary">Install in 30 seconds</a>
     <a href="/playground" class="btn btn-secondary">Try the playground</a>
-    <a href="#apps" class="btn btn-secondary">See the platform</a>
   </div>
-  <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--leather);margin-top:0.5rem">Or <a href="/docs/quickstart/#install" style="color:var(--leather-light)">self-host the binary</a> on your own infrastructure.</p>
+
+  <!-- Trust strip: let skeptics verify claims immediately -->
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
+    <a href="https://github.com/stockyard-dev/stockyard" style="color:var(--cream-dim)">GitHub &rarr;</a>
+    <a href="/benchmarks/" style="color:var(--cream-dim)">Benchmarks &rarr;</a>
+    <a href="/api/openapi.json" style="color:var(--cream-dim)">OpenAPI spec &rarr;</a>
+    <a href="/changelog/" style="color:var(--cream-dim)">Changelog &rarr;</a>
+    <a href="/docs/auth/" style="color:var(--cream-dim)">Security &rarr;</a>
+  </div>
 </section>
 
 <section class="problem">
@@ -298,10 +305,29 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </section>
 
 <section class="solution">
-  <h2 class="section-label gold">The fix</h2>
-  <p class="solution-text">
-    Stockyard is an OpenAI-compatible proxy and LLM platform in a single Go binary. Point your <code style="font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.9em">OPENAI_BASE_URL</code> at it and you get six integrated apps &mdash; proxy with 58 middleware modules, real-time observability, trust and audit trails, prompt studio, DAG workflow engine, and a config marketplace. Works with OpenAI, Anthropic, Gemini, Groq, Ollama, AWS Bedrock, Azure OpenAI, Mistral, Cohere, Together AI, DeepSeek, Fireworks AI, Replicate, Perplexity, Hugging Face, and VLLM.
-  </p>
+  <h2 class="section-label gold">See it work</h2>
+  <div style="max-width:700px;margin:0 auto">
+    <pre style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);line-height:1.7;overflow-x:auto"><span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl -fsSL stockyard.dev/install.sh | sh</span>
+<span style="color:var(--green-light)">✓ Stockyard installed (~15MB)</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">stockyard serve</span>
+<span style="color:var(--green-light)">Proxy:   http://localhost:4200/v1   ✓ 58 modules active
+Console: http://localhost:4200/ui</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/v1/chat/completions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
+<span style="color:var(--green-light)">{"choices":[{"message":{"content":"Hello! How can I help?"}}], ...}</span>
+
+<span style="color:var(--leather)"># That request just hit 58 modules. Check what happened:</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/observe/traces?limit=1</span>
+<span style="color:var(--gold)">→ model: gpt-4o-mini | cost: $0.00014 | latency: 1,204ms | cached: false</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/trust/ledger?limit=1</span>
+<span style="color:var(--gold)">→ hash: 6b69ef01... | prev: 0378b55a... | chain: intact</span></pre>
+    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">One binary. No Redis. No Postgres. No Docker. Open <a href="/playground" style="color:var(--rust-light)">the playground</a> to try without installing.</p>
+  </div>
 </section>
 
 <section class="apps" id="apps">
