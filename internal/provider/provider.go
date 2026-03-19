@@ -82,6 +82,10 @@ type Response struct {
 	Provider string        `json:"-"`
 	Latency  time.Duration `json:"-"`
 	CacheHit bool          `json:"-"`
+
+	// Meta holds key-value pairs that the HTTP handler will set as response headers.
+	// Populated by the responseheaders middleware.
+	Meta map[string]string `json:"-"`
 }
 
 // StreamChunk represents a single chunk in a streaming response.

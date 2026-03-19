@@ -900,9 +900,81 @@ function AuthGate({onAuth}){
   </div></div>`;
 }
 
+// ─── Changelog Panel ──────────────────────────────────────────────
+function ChangelogPanel({onClose}){
+  const[entries,setEntries]=useState([]);
+  useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=5');if(Array.isArray(r))setEntries(r)})()},[]);
+  useEffect(()=>{localStorage.setItem('sy_changelog_seen',Date.now().toString())},[]);
+  return html`<div style="position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--bg2);border-left:1px solid var(--bg3);z-index:1000;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,0.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--bg3)">
+      <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)">What's New</span>
+      <button onClick=${onClose} style="border:none;background:none;color:var(--cream-dim);cursor:pointer;font-size:1rem">\u2715</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px">
+      ${entries.map(e=>html`<div key=${e.date} style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--bg3)">
+        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust);margin-bottom:4px">${e.date}</div>
+        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:6px">${e.title}</div>
+        <div style="font-size:0.8rem;color:var(--cream-dim);line-height:1.5">${e.body}</div>
+      </div>`)}
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid var(--bg3);text-align:center">
+      <a href="https://stockyard.dev/changelog" target="_blank" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);text-decoration:none">View full changelog \u2197</a>
+    </div>
+  </div>`;
+}
+
+// ─── Keyboard Shortcuts ───────────────────────────────────────────
+function ShortcutsModal({onClose}){
+  const shortcuts=[
+    ['g then o','Go to Overview'],['g then p','Go to Proxy'],['g then b','Go to Observe'],
+    ['g then t','Go to Trust'],['g then s','Go to Studio'],['g then f','Go to Forge'],
+    ['g then e','Go to Exchange'],['g then i','Go to Bill'],
+    ['r','Refresh current view'],['?','Show shortcuts'],['Esc','Close modal/panel'],
+  ];
+  return html`<${Modal} title="Keyboard Shortcuts" onClose=${onClose}>
+    <table style="width:100%;font-size:0.82rem;border-collapse:collapse">
+      ${shortcuts.map(([key,desc])=>html`<tr key=${key} style="border-bottom:1px solid var(--bg3)">
+        <td style="padding:8px 12px;width:140px"><kbd style="font-family:var(--font-mono);font-size:0.78rem;background:var(--bg3);padding:2px 8px;border-radius:3px;color:var(--cream)">${key}</kbd></td>
+        <td style="padding:8px 12px;color:var(--cream-dim)">${desc}</td>
+      </tr>`)}
+    </table>
+  <//>`;
+}
+
+function useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts){
+  const pending=useRef(null);
+  useEffect(()=>{
+    const navMap={o:'overview',p:'proxy',b:'observe',t:'trust',s:'studio',f:'forge',e:'exchange',i:'billing'};
+    const handler=(e)=>{
+      const tag=e.target.tagName;
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||e.target.isContentEditable)return;
+      if(e.key==='Escape'){setShowChangelog(false);setShowShortcuts(false);return}
+      if(e.key==='?'&&!e.shiftKey){e.preventDefault();setShowShortcuts(s=>!s);return}
+      if(e.key==='r'&&!e.ctrlKey&&!e.metaKey){window.dispatchEvent(new CustomEvent('sy-refresh'));return}
+      if(pending.current){
+        clearTimeout(pending.current.timer);
+        const dest=navMap[e.key];
+        if(dest)setActive(dest);
+        pending.current=null;return;
+      }
+      if(e.key==='g'){
+        const timer=setTimeout(()=>{pending.current=null},1000);
+        pending.current={timer};
+      }
+    };
+    document.addEventListener('keydown',handler);
+    return()=>document.removeEventListener('keydown',handler);
+  },[]);
+}
+
 function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);const View=VIEWS[active]||OverviewView;
+  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
+  const[showChangelog,setShowChangelog]=useState(false);const[showShortcuts,setShowShortcuts]=useState(false);
+  const[hasNew,setHasNew]=useState(false);
+  const View=VIEWS[active]||OverviewView;
+  useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts);
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
+  useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=1');if(Array.isArray(r)&&r.length>0){const lastSeen=parseInt(localStorage.getItem('sy_changelog_seen')||'0');const entryDate=new Date(r[0].date).getTime();if(entryDate>lastSeen)setHasNew(true)}})()},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
   if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
@@ -911,12 +983,16 @@ function App(){
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
+    <button class="nav-item" onClick=${()=>{setShowChangelog(s=>!s);setHasNew(false)}} title="What's New"><span class="nav-icon" style="position:relative">\u2605${hasNew&&html`<span style="position:absolute;top:-2px;right:-4px;width:6px;height:6px;background:var(--rust);border-radius:50%"></span>`}</span><span class="nav-label">What's New</span></button>
     <button class="nav-item ${active==='settings'?'active':''}" onClick=${()=>setActive('settings')}><span class="nav-icon">\u2699</span><span class="nav-label">Settings</span></button>
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 88 endpoints</span></div>
-  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 88 endpoints</span><div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-top:2px">Press ? for shortcuts</div></div>
+  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main>
+    ${showChangelog&&html`<${ChangelogPanel} onClose=${()=>setShowChangelog(false)}/>`}
+    ${showShortcuts&&html`<${ShortcutsModal} onClose=${()=>setShowShortcuts(false)}/>`}
+  </div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));
 </script>
