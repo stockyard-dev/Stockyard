@@ -85,7 +85,7 @@ Request watchdog middleware. Kill LLM requests exceeding time, token, or cost li
 
 ## Part of Stockyard
 
-IdleKill is one of 32 Stockyard products. Get the full suite at [stockyard.dev](https://stockyard.dev) — all tools for \$19/mo (saves 89% vs buying individually).
+IdleKill is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
 
 ## License
 

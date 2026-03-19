@@ -475,7 +475,7 @@ var defaultTasks = []struct {
 	ID, Channel, Status, Priority, Scheduled, Title, Content string
 }{
 	{"t1", "twitter", "review", "critical", "Day 1", "Launch Thread (5 tweets)",
-		"TWEET 1 (pin this):\nIntroducing Stockyard — six LLM infrastructure apps in one Go binary.\n\nProxy. Observe. Trust. Studio. Forge. Exchange.\n\nZero dependencies. curl -sSL stockyard.dev/install | sh\n\nYou're running in 30 seconds. 🧵\n\nTWEET 2:\nThe problem: you shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, and audit trails. That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.\n\nTWEET 3:\nStockyard replaces all of them. One binary. 58 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more. Just change your base URL.\n\nTWEET 4:\nTry it live — no signup needed. Paste your API key in our playground and route your first request through 58 middleware modules: stockyard.dev/playground\n\nTWEET 5:\nFree forever self-hosted. Individual $9.99/mo. Pro $49/mo. Team $149/mo. Enterprise $499/mo. Every tier gets all 6 apps, all 58 modules, all 16 providers. stockyard.dev"},
+		"TWEET 1 (pin this):\nIntroducing Stockyard — six LLM infrastructure apps in one Go binary.\n\nProxy. Observe. Trust. Studio. Forge. Exchange.\n\nZero dependencies. curl -sSL stockyard.dev/install.sh | sh\n\nYou're running in 30 seconds. 🧵\n\nTWEET 2:\nThe problem: you shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, and audit trails. That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.\n\nTWEET 3:\nStockyard replaces all of them. One binary. 58 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more. Just change your base URL.\n\nTWEET 4:\nTry it live — no signup needed. Paste your API key in our playground and route your first request through 58 middleware modules: stockyard.dev/playground\n\nTWEET 5:\nFree forever self-hosted. Individual $9.99/mo. Pro $49/mo. Team $149/mo. Enterprise $499/mo. Every tier gets all 6 apps, all 58 modules, all 16 providers. stockyard.dev"},
 	{"t2", "hn", "review", "critical", "Day 1", "Show HN Submission",
 		"TITLE: Show HN: Stockyard – Six LLM apps, one Go binary, zero dependencies\nURL: https://stockyard.dev\n\nFIRST COMMENT:\nHey HN, I built Stockyard because I was tired of stitching together separate tools for proxy routing, observability, cost tracking, and compliance every time I shipped an LLM-powered app.\n\nStockyard is one Go binary that gives you 6 integrated apps:\n• Proxy — 58 middleware modules, 16 providers\n• Observe — traces, costs, anomaly detection\n• Trust — immutable audit ledger, policies\n• Studio — prompt management, experiments\n• Forge — workflow DAGs, tool registry\n• Exchange — config marketplace\n\nThe whole thing runs on SQLite — no external databases. Try it live: stockyard.dev/playground. Self-hosted is free forever."},
 	{"t3", "blog", "draft", "critical", "Day 1", "Why We Built Stockyard",
@@ -898,7 +898,7 @@ NOTE: README is the #1 conversion page. Keep it scannable: badges at top, instal
 
 ### Install / Upgrade
 ` + "```" + `bash
-curl -sSL stockyard.dev/install | sh
+curl -sSL stockyard.dev/install.sh | sh
 ` + "```" + `
 
 Full changelog: [link]`},

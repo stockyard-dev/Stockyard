@@ -68,7 +68,7 @@ Tag: v1.0.0
 Title: Stockyard v1.0 — Six apps, one binary, zero dependencies
 
 Body:
-The first stable release of Stockyard. A complete LLM infrastructure platform in a single Go binary.
+The first stable release of Stockyard. A self-hosted LLM proxy and control plane in one Go binary.
 
 Highlights:
 - 58 middleware modules, runtime-toggleable via API
@@ -193,7 +193,7 @@ Same template as Discord, adapted per community tone. Keep it short — Slack fa
 **Priority:** high · **Status:** queued
 
 ```
-TITLE: I built a complete LLM platform in a single Go binary — launching today
+TITLE: I built a self-hosted LLM proxy and control plane in one Go binary — launching today
 
 Sections:
 1. The Problem — fragmented tooling for LLM apps

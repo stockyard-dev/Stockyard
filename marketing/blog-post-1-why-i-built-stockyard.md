@@ -54,7 +54,7 @@ Each one has its own embedded dashboard and works with OpenAI, Anthropic, Gemini
 
 ## Pricing
 
-One product free forever (1,000 requests/day). Individual products at $9.99/mo. All 20 for $29.99/mo.
+Community free forever. Individual $9.99/mo. Pro $49/mo. Individual $9.99/mo. Pro $49/mo. Team $149/mo.
 
 No credit card for the free tier. Download and run.
 

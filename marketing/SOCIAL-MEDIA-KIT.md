@@ -153,7 +153,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
 ### Repository Settings
 - **Description:**
   ```
-  The complete LLM infrastructure platform. Six apps, one binary, zero dependencies. Proxy · Observe · Trust · Studio · Forge · Exchange.
+  Self-hosted LLM proxy and control plane. Six apps, one binary, zero dependencies. Proxy · Observe · Trust · Studio · Forge · Exchange.
   ```
 - **Website:** https://stockyard.dev
 - **Topics:** `llm` `proxy` `go` `sqlite` `ai` `middleware` `observability` `devtools` `open-source` `infrastructure`
@@ -164,7 +164,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
 - **Title:** `Stockyard v1.0 — Six apps, one binary, zero dependencies`
 - **Body:**
   ```
-  The first stable release of Stockyard. A complete LLM infrastructure platform in a single Go binary.
+  The first stable release of Stockyard. A self-hosted LLM proxy and control plane in one Go binary.
 
   ### Highlights
   - 58 middleware modules, runtime-toggleable via API
@@ -222,7 +222,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
 
 ### About (2000 chars max):
 ```
-Stockyard is the complete LLM infrastructure platform in a single Go binary. Instead of stitching together separate tools for proxy routing, observability, cost tracking, audit trails, prompt management, and workflow orchestration, Stockyard gives you six integrated apps:
+Stockyard is a self-hosted LLM proxy and control plane in one Go binary. Instead of stitching together separate tools for proxy routing, observability, cost tracking, audit trails, prompt management, and workflow orchestration, Stockyard gives you six integrated apps:
 
 Proxy — 58 middleware modules with runtime toggles. Route through OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more providers. Caching, rate limiting, cost caps, safety filters, failover — all in the request chain.
 
@@ -270,7 +270,7 @@ Try the playground (no signup): stockyard.dev/playground
 
 **r/golang:**
 ```
-Title: Show r/golang: Built a complete LLM platform in Go — single binary, embedded SQLite, 58 middleware modules
+Title: Show r/golang: Built a self-hosted LLM proxy and control plane in Go — single binary, embedded SQLite, 58 middleware modules
 
 Body:
 I've been working on Stockyard, an LLM infrastructure platform that ships as a single Go binary with zero external dependencies.
@@ -359,7 +359,7 @@ Happy to answer questions!
 
 Same template as Discord, shortened:
 ```
-Launched Stockyard — complete LLM platform in a single Go binary. 58 middleware modules, 16 providers, zero dependencies.
+Launched Stockyard — self-hosted LLM proxy and control plane in one Go binary. 58 middleware modules, 16 providers, zero dependencies.
 
 Proxy + observability + audit trails + prompt management + workflow engine + config marketplace.
 
@@ -374,7 +374,7 @@ Free self-hosted: stockyard.dev/playground
 
 ### Post:
 ```
-Title: I built a complete LLM platform in a single Go binary — launching today
+Title: I built a self-hosted LLM proxy and control plane in one Go binary — launching today
 
 I'm Michael, solo founder of Stockyard. Here's the story.
 
@@ -439,7 +439,7 @@ Note: Requires invitation to post. Keep title factual.
 - **Handle:** @stockyarddev
 - **Description:**
   ```
-  Stockyard is the complete LLM infrastructure platform. Six apps, one binary, zero dependencies. Tutorials, demos, and deep dives into LLM infrastructure.
+  Stockyard is the self-hosted LLM proxy and control plane. Six apps, one binary, zero dependencies. Tutorials, demos, and deep dives into LLM infrastructure.
 
   Website: https://stockyard.dev
   GitHub: https://github.com/stockyard-dev/stockyard
@@ -465,7 +465,7 @@ Note: Requires invitation to post. Keep title factual.
 
 ### Publication
 - **Name:** Stockyard
-- **Description:** Building the complete LLM infrastructure platform in Go.
+- **Description:** Self-hosted LLM proxy and control plane. Built in Go.
 - **Tags:** LLM, AI Infrastructure, DevOps, Go, Open Source
 
 ---

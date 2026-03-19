@@ -29,7 +29,7 @@ func NurtureSequence() []NurtureEmail {
 			Subject: "Welcome to Stockyard — here's what you just unlocked",
 			Body: `Hey!
 
-Welcome to Stockyard. You just got access to the complete LLM infrastructure platform — six apps, 58 middleware modules, 16 providers, one binary.
+Welcome to Stockyard. You just got access to the self-hosted LLM proxy and control plane — six apps, 58 middleware modules, 16 providers, one binary.
 
 Here's the fastest way to see it in action:
 
@@ -37,7 +37,7 @@ Here's the fastest way to see it in action:
    https://stockyard.dev/playground
 
 2. Or install locally in 30 seconds:
-   curl -sSL stockyard.dev/install | sh
+   curl -sSL stockyard.dev/install.sh | sh
    stockyard serve
 
 3. Then point your app at it:
