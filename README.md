@@ -2,182 +2,203 @@
 
 # ═══ STOCKYARD ═══
 
-### The complete LLM infrastructure platform
+### Self-hosted LLM proxy and control plane in one Go binary
 
-**Six apps. One binary. Zero dependencies.**
-
-[Website](https://stockyard.dev) · [Documentation](https://stockyard.dev/docs) · [Changelog](https://stockyard.dev/changelog) · [Pricing](https://stockyard.dev/pricing)
+[Website](https://stockyard.dev) · [Docs](https://stockyard.dev/docs) · [Playground](https://stockyard.dev/playground) · [Changelog](https://stockyard.dev/changelog)
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-BSL_1.1-E8753A)](LICENSE)
-[![Deploy](https://img.shields.io/badge/Deploy_in-30s-C4A87A)](https://stockyard.dev/docs)
-[![Modules](https://img.shields.io/badge/Modules-58-E8753A)](https://stockyard.dev/docs)
+[![Modules](https://img.shields.io/badge/Modules-58-E8753A)](https://stockyard.dev/products)
 [![Providers](https://img.shields.io/badge/Providers-16-C4A87A)](https://stockyard.dev/docs)
 
 </div>
 
 ---
 
-## The Problem
+Stockyard sits between your app and your LLM providers. Point your `OPENAI_BASE_URL` at it and you get cost tracking, caching, safety filters, rate limiting, audit trails, and observability — without adding any dependencies to your stack.
 
-Teams building with LLMs cobble together **5–10 separate tools** for basic proxy routing, observability, safety guardrails, and audit compliance. There are **134+ standalone middleware tools** in the ecosystem — each with its own runtime, database, config format, and failure modes.
+Single Go binary. Embedded SQLite. No Redis, no Postgres, no Docker required.
 
-The result: fragile stacks, opaque costs, zero audit trails, and weeks of integration work.
-
-## The Solution
-
-Stockyard replaces your entire LLM middleware stack with **one Go binary** and **embedded SQLite**. No Redis. No Postgres. No Docker compose files. Deploy in 30 seconds.
+## See It Work in 60 Seconds
 
 ```bash
-# Install
+# Install (~15MB binary)
 curl -fsSL https://stockyard.dev/install.sh | sh
 
-# Run
+# Start (all services on one port)
 stockyard serve
+# → Stockyard running on :4200
+# → Proxy:   http://localhost:4200/v1
+# → Console: http://localhost:4200/ui
 
-# That's it. All 6 apps are running.
+# Send a request through the proxy
+curl http://localhost:4200/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
 ```
 
-## Six Apps, One Platform
+That request just flowed through 58 middleware modules — rate limiter, cost tracker, safety filter, cache check, audit logger — and back. No configuration. Check the results:
 
-| App | What it does | Key features |
-|-----|-------------|--------------|
-| **Proxy** | Gateway layer | 58 middleware modules, 16 providers, OpenAI-compatible endpoint |
-| **Observe** | See everything | Automatic tracing, per-model cost attribution, anomaly detection |
-| **Trust** | Immutable audit | SHA-256 hash-chained ledger, tamper-evident logging, policy engine |
-| **Studio** | Prompt engineering | Version control, side-by-side diffing, A/B experimentation |
-| **Forge** | Workflow engine | DAG-based orchestration, tool registry, visual builder |
-| **Exchange** | Config marketplace | Pre-built packs, one-click install, share stacks across teams |
+```bash
+# See the trace (cost, latency, tokens, provider)
+curl http://localhost:4200/api/observe/traces?limit=1
+
+# See the audit event (hash-chained, tamper-evident)
+curl http://localhost:4200/api/trust/ledger?limit=1
+
+# See cost attribution
+curl http://localhost:4200/api/observe/costs
+```
+
+Or open `http://localhost:4200/ui` in your browser for the full dashboard.
+
+## What You Get
+
+| Component | What it does |
+|-----------|-------------|
+| **Proxy** | OpenAI-compatible gateway with 58 middleware modules and 16 provider integrations |
+| **Observe** | Automatic request tracing, per-model cost dashboards, anomaly detection, alerts |
+| **Trust** | SHA-256 hash-chained audit ledger, policy enforcement, compliance evidence export |
+| **Studio** | Versioned prompt templates, A/B experiments, model benchmarks |
+| **Forge** | DAG workflow engine for chaining LLM calls, transforms, and tool calls |
+| **Exchange** | Config pack marketplace — install pre-built provider/module/workflow bundles |
+
+All six run from the same binary on the same port. No microservices.
+
+## When Stockyard Is NOT the Right Fit
+
+- **You only need a thin API shim.** If you just want to swap between OpenAI and Anthropic with no middleware, [LiteLLM](https://github.com/BerriAI/litellm) is simpler.
+- **You need 100+ provider integrations.** Stockyard supports 16 providers today. LiteLLM supports 100+.
+- **You want managed-only.** Stockyard is self-hosted first. Managed cloud is available but the core experience is running the binary yourself.
+- **You need a prompt-only tool.** If you only want prompt versioning and don't need a proxy, dedicated tools like PromptLayer or Humanloop are more focused.
+- **You're not using LLMs in production yet.** Stockyard solves production problems — cost overruns, audit requirements, safety filtering, provider failover. If you're still prototyping, you don't need this yet.
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                   Client SDK                     │
-│            (OpenAI-compatible API)               │
-└──────────────────────┬──────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────┐
-│                 STOCKYARD PROXY                  │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐           │
-│  │  Rate   │→│  Cache  │→│  Route  │→ Provider  │
-│  │ Limiter │ │         │ │         │  (16 LLMs) │
-│  └─────────┘ └─────────┘ └─────────┘           │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐           │
-│  │  Safety │ │  Cost   │ │ Guards  │            │
-│  │ Filters │ │Controls │ │  Rails  │            │
-│  └─────────┘ └─────────┘ └─────────┘           │
-└──────────┬────────────────────┬─────────────────┘
-           │                    │
-    ┌──────▼──────┐     ┌──────▼──────┐
-    │   OBSERVE   │     │    TRUST    │
-    │   Traces    │     │  Hash-chain │
-    │   Costs     │     │   Ledger    │
-    │   Alerts    │     │  Policies   │
-    └─────────────┘     └─────────────┘
-
-    ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-    │   STUDIO    │  │    FORGE    │  │  EXCHANGE   │
-    │  Prompts    │  │  Workflows  │  │   Configs   │
-    │  Versions   │  │    DAGs     │  │   Packs     │
-    └─────────────┘  └─────────────┘  └─────────────┘
-
-    ┌─────────────────────────────────────────────┐
-    │           Embedded SQLite (WAL)              │
-    └─────────────────────────────────────────────┘
+Your App (OpenAI SDK)
+        │
+        ▼
+┌─── STOCKYARD (:4200) ───────────────────────┐
+│                                               │
+│  Request → [58 middleware modules] → Provider │
+│            rate limit → cache → safety →      │
+│            cost cap → route → failover        │
+│                                               │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐     │
+│  │ Observe  │ │  Trust   │ │  Studio  │     │
+│  │ traces   │ │ audit    │ │ prompts  │     │
+│  │ costs    │ │ policies │ │ A/B test │     │
+│  └──────────┘ └──────────┘ └──────────┘     │
+│  ┌──────────┐ ┌──────────┐                  │
+│  │  Forge   │ │ Exchange │  SQLite (WAL)    │
+│  │ workflows│ │ packs    │  ~15MB binary    │
+│  └──────────┘ └──────────┘                  │
+└───────────────────────────────────────────────┘
 ```
 
-## Quick Start
+- **Single binary**, single port, single process. No orchestration.
+- **Embedded SQLite** with WAL mode. No external database.
+- **58 middleware modules**, each toggleable at runtime via `PUT /api/proxy/modules/{name}`.
+- **16 LLM providers**: OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Ollama, VLLM, AWS Bedrock, Azure OpenAI, Cohere, Together AI, Fireworks, Replicate, Perplexity, Hugging Face.
+- **AES-256-GCM encryption** for all provider keys at rest.
+- **400ns per-request overhead** across the full 58-module chain ([benchmarks](https://stockyard.dev/benchmarks)).
 
-### OpenAI-Compatible Proxy
+## Use It With Any OpenAI SDK
 
 ```python
 from openai import OpenAI
 
+# Just change the base URL. Everything else stays the same.
 client = OpenAI(
-    base_url="http://localhost:8080/v1",
-    api_key="sk-stockyard-..."
+    base_url="http://localhost:4200/v1",
+    api_key="your-openai-key"
 )
 
 response = client.chat.completions.create(
-    model="gpt-4",
+    model="gpt-4o-mini",
     messages=[{"role": "user", "content": "Hello!"}]
 )
 ```
 
-### 58 Middleware Modules — Runtime-Toggled
+Works with any OpenAI-compatible client — Python, Node, Go, curl. Switch providers by changing the model name.
+
+## Toggle Modules at Runtime
 
 ```bash
-# Enable caching
-curl -X PUT localhost:8080/api/proxy/modules/cache \
-  -d '{"enabled": true, "ttl": 300}'
+# Check what's running
+curl localhost:4200/api/proxy/modules | jq '.count'
+# → 58
 
-# Enable rate limiting
-curl -X PUT localhost:8080/api/proxy/modules/rate-limit \
-  -d '{"enabled": true, "rpm": 100}'
+# Disable caching
+curl -X PUT localhost:4200/api/proxy/modules/cache -d '{"enabled": false}'
+
+# Enable rate limiting at 100 RPM
+curl -X PUT localhost:4200/api/proxy/modules/ratelimit -d '{"enabled": true, "rpm": 100}'
 ```
 
-### Hash-Chain Audit
+## vs LiteLLM
 
-```bash
-# Verify audit chain integrity
-curl localhost:8080/api/trust/verify
-# → {"valid": true, "events": 15847, "chain_intact": true}
+LiteLLM is a Python LLM router. Stockyard is a router plus local observability and audit in one deploy.
 
-# Export for compliance
-curl localhost:8080/api/trust/export?format=csv > audit.csv
-```
-
-## Why Stockyard
-
-| | Stockyard | LiteLLM | Helicone | Portkey |
-|---|:---:|:---:|:---:|:---:|
-| LLM proxy | ✅ | ✅ | ❌ | ✅ |
-| Observability | ✅ | Basic | ✅ | ✅ |
-| Hash-chain audit | ✅ | ❌ | ❌ | ❌ |
-| Prompt versioning | ✅ | ❌ | ❌ | ✅ |
-| Workflow engine | ✅ | ❌ | ❌ | ❌ |
-| Config marketplace | ✅ | ❌ | ❌ | ❌ |
-| Self-hosted binary | ✅ | Complex | ❌ | Enterprise |
-| Zero dependencies | ✅ | ❌ | N/A | N/A |
+| | Stockyard | LiteLLM |
+|---|---|---|
+| Language | Go | Python |
+| Dependencies | Zero (single binary) | Redis + Postgres + Docker |
+| Database | Embedded SQLite | External Postgres |
+| Observability | Built-in (Observe) | External (Langfuse, etc.) |
+| Audit trail | Hash-chained ledger | Not included |
+| Prompt management | Built-in (Studio) | Not included |
+| Workflow engine | Built-in (Forge) | Not included |
+| Providers | 16 | 100+ |
+| Self-hosted | `curl install`, 30s | Docker Compose |
+| Binary size | ~15MB | ~200MB Docker image |
 
 ## Security
 
-- **Provider keys encrypted at rest** — AES-256-GCM with random nonce per write. Decrypted only in-memory for outbound API calls.
-- **Configurable encryption key** — Set `STOCKYARD_ENCRYPTION_KEY` or let Stockyard auto-generate and persist one.
-- **Stockyard API keys hashed** — SHA-256 hash stored, never the raw key. Prefix-only display.
-- **Hash-chained audit ledger** — Every event cryptographically linked to the previous. Tampering breaks the chain.
-- **No key leakage** — Provider keys never appear in logs, traces, API responses, or the web UI.
+- **Provider keys encrypted at rest** — AES-256-GCM with random nonce per write
+- **Hash-chained audit ledger** — every event cryptographically linked to the previous
+- **API keys hashed** — SHA-256, never stored in plaintext
+- **No key leakage** — provider keys never appear in logs, traces, or API responses
+
+## Build from Source
+
+```bash
+git clone https://github.com/stockyard-dev/stockyard.git
+cd stockyard
+CGO_ENABLED=0 go build -o stockyard ./cmd/stockyard/
+./stockyard serve
+```
+
+Requires Go 1.22+. No other dependencies.
 
 ## Pricing
 
-| Tier | Price | For |
-|------|-------|-----|
-| **Community** | Free forever | Full binary, self-hosted, all modules |
-| **Individual** | $9.99/mo | Extended analytics, 5 providers |
-| **Pro** | $49/mo | All modules, priority support |
-| **Team** | $149/mo | Multi-user, shared dashboards |
-| **Enterprise** | $499/mo | On-prem, SSO/SAML, SLA |
+Self-hosted Community tier is free with no feature restrictions (10K requests/month cap). Paid tiers start at $9.99/mo for unlimited requests.
+
+See [stockyard.dev/pricing](https://stockyard.dev/pricing) for details.
 
 ## Documentation
 
-- [Getting Started](https://stockyard.dev/docs)
+- [Getting Started (5 min)](https://stockyard.dev/guide)
 - [API Reference](https://stockyard.dev/docs/api)
-- [Module Catalog](https://stockyard.dev/docs/modules)
-- [Deployment Guide](https://stockyard.dev/docs/deploy)
-
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- [Module Catalog](https://stockyard.dev/products)
+- [vs LiteLLM](https://stockyard.dev/vs/litellm)
 
 ## License
 
-Business Source License 1.1 — see [LICENSE](LICENSE) for details. Community edition is free for all use cases.
+Stockyard is licensed under [BSL 1.1](LICENSE) (Business Source License). Source code is available and free for non-production use. Production use requires a license for organizations exceeding the usage grant. See the [LICENSE](LICENSE) file for full terms.
+
+This is **not** an OSI-approved open-source license. If that matters to your evaluation, see the license file before deploying.
 
 ---
 
 <div align="center">
 
-**[stockyard.dev](https://stockyard.dev)** · Built with 🤠 in the frontier
+**[stockyard.dev](https://stockyard.dev)** — Where LLM traffic gets sorted.
 
 </div>
