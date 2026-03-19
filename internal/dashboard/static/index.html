@@ -520,6 +520,11 @@ function StudioView(){
   const[prompt,setPrompt]=useState('');const[system,setSystem]=useState('');const[models,setModels]=useState(['gpt-4o-mini']);
   const[running,setRunning]=useState(false);const[pgResult,setPgResult]=useState(null);const[compareMode,setCompareMode]=useState(false);
   const[expResult,setExpResult]=useState(null);const[selExp,setSelExp]=useState(null);
+  // Version diff state
+  const[diffSlug,setDiffSlug]=useState(null);const[versions,setVersions]=useState([]);const[diffData,setDiffData]=useState(null);const[diffV1,setDiffV1]=useState('');const[diffV2,setDiffV2]=useState('');
+  const loadVersions=async(slug)=>{const r=await api('/api/studio/templates/'+slug+'/versions');setVersions(r.versions||[]);setDiffSlug(slug);setDiffData(null);setDiffV1('');setDiffV2('');if(r.versions&&r.versions.length>=2){setDiffV1(String(r.versions[r.versions.length-1].version));setDiffV2(String(r.versions[0].version))}};
+  const loadDiff=async()=>{if(!diffSlug||!diffV1||!diffV2)return;const r=await api('/api/studio/templates/'+diffSlug+'/diff?v1='+diffV1+'&v2='+diffV2);if(!r._error)setDiffData(r)};
+  useEffect(()=>{if(diffV1&&diffV2&&diffSlug)loadDiff()},[diffV1,diffV2]);
   const MODEL_LIST=['gpt-4o-mini','gpt-4o','gpt-4.1-mini','gpt-4.1','claude-sonnet-4-5-20250929','claude-haiku-4-5-20251001','gemini-2.5-flash','deepseek-chat','mistral-small-latest','llama-3.3-70b-versatile'];
   const load=async()=>{const[t,e,b]=await Promise.all([api('/api/studio/templates'),api('/api/studio/experiments'),api('/api/studio/benchmarks')]);setData({templates:t.templates||[],experiments:e.experiments||[],benchmarks:b.benchmarks||[]})};
   useEffect(()=>{load()},[]);
@@ -606,8 +611,36 @@ function StudioView(){
       <div class="pack-name">${t.name||t.slug}</div>
       <div class="pack-desc">${t.description||'\u2014'}</div>
       <div class="pack-meta"><span class="mono">${t.slug}</span>${t.model?html`<span class="mono">${t.model}</span>`:null}<span class="mono">v${t.current_version||1}</span></div>
-      <div style="margin-top:6px"><${Btn} small onClick=${e=>{e.stopPropagation();loadTemplate(t.slug)}}>Load in Playground<//></div>
-    </div>`)}</div>${d('templates').length===0?html`<div class="empty-state">No templates. Install the Dev Productivity pack to get starter templates.</div>`:''}`:
+      <div style="margin-top:6px;display:flex;gap:6px"><${Btn} small onClick=${e=>{e.stopPropagation();loadTemplate(t.slug)}}>Load in Playground<//><${Btn} small onClick=${e=>{e.stopPropagation();loadVersions(t.slug)}}>History<//></div>
+    </div>`)}</div>${d('templates').length===0?html`<div class="empty-state">No templates. Install the Dev Productivity pack to get starter templates.</div>`:''}
+    ${diffSlug&&html`<${Modal} title=${'Version History: '+diffSlug} onClose=${()=>setDiffSlug(null)}>
+      <div style="margin-bottom:12px">
+        <div class="section-title" style="margin-bottom:8px">${versions.length} version${versions.length!==1?'s':''}</div>
+        <div style="max-height:120px;overflow-y:auto;border:1px solid var(--bg3);margin-bottom:12px">
+          ${versions.map(v=>html`<div key=${v.version} style="display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--bg3);font-size:0.78rem">
+            <span class="mono" style="font-weight:600">v${v.version}</span>
+            <span style="color:var(--cream-dim)">${v.change_note||'\u2014'}</span>
+            <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${v.author||'\u2014'}</span>
+            <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${fmt.ago(v.created_at)}</span>
+          </div>`)}
+        </div>
+        ${versions.length>=2?html`<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <${Select} label="From" value=${diffV1} onChange=${setDiffV1} options=${versions.map(v=>({value:String(v.version),label:'v'+v.version}))}/>
+          <span style="color:var(--cream-muted);margin-top:18px">\u2192</span>
+          <${Select} label="To" value=${diffV2} onChange=${setDiffV2} options=${versions.map(v=>({value:String(v.version),label:'v'+v.version}))}/>
+        </div>`:html`<div style="color:var(--cream-muted);font-size:0.82rem">Need at least 2 versions to diff.</div>`}
+        ${diffData&&html`<div style="margin-bottom:8px;font-size:0.78rem;color:var(--cream-dim)">
+          <span style="color:var(--green)">+${diffData.lines_added} added</span> \u00B7 <span style="color:var(--red)">-${diffData.lines_removed} removed</span>
+          ${diffData.v1?.change_note?html` \u00B7 v${diffData.v1.version}: ${diffData.v1.change_note}`:''}
+          ${diffData.v2?.change_note?html` \u2192 v${diffData.v2.version}: ${diffData.v2.change_note}`:''}
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--bg3);max-height:300px;overflow-y:auto;font-family:var(--font-mono);font-size:0.75rem;line-height:1.6">
+          ${(diffData.diff||[]).map((d,i)=>html`<div key=${i} style="padding:1px 8px;background:${d.type==='added'?'rgba(90,154,74,0.12)':d.type==='removed'?'rgba(196,74,58,0.12)':'transparent'};color:${d.type==='added'?'var(--green)':d.type==='removed'?'var(--red)':'var(--cream-dim)'}">
+            <span style="display:inline-block;width:18px;color:var(--cream-muted)">${d.type==='added'?'+':d.type==='removed'?'-':' '}</span>${d.text||'\u00A0'}
+          </div>`)}
+        </div>`}
+      </div>
+    <//>`}`:
     tab==='experiments'?html`<${DataTable} columns=${[
       {key:'name',label:'Experiment',width:'1.5fr',mono:true},
       {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'draft'} variant=${r.status==='completed'?'success':r.status==='running'?'warn':'muted'}/>`},
@@ -1107,6 +1140,9 @@ function App(){
   const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
   const[showChangelog,setShowChangelog]=useState(false);const[showShortcuts,setShowShortcuts]=useState(false);
   const[hasNew,setHasNew]=useState(false);
+  const[theme,setThemeState]=useState(()=>localStorage.getItem('sy_theme')||'dark');
+  const setTheme=(t)=>{setThemeState(t);localStorage.setItem('sy_theme',t);document.documentElement.setAttribute('data-theme',t)};
+  useEffect(()=>{document.documentElement.setAttribute('data-theme',theme)},[]);
   const View=VIEWS[active]||OverviewView;
   useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts);
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
@@ -1120,6 +1156,7 @@ function App(){
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
     <button class="nav-item" onClick=${()=>{setShowChangelog(s=>!s);setHasNew(false)}} title="What's New"><span class="nav-icon" style="position:relative">\u2605${hasNew&&html`<span style="position:absolute;top:-2px;right:-4px;width:6px;height:6px;background:var(--rust);border-radius:50%"></span>`}</span><span class="nav-label">What's New</span></button>
+    <button class="nav-item" onClick=${()=>setTheme(theme==='dark'?'light':'dark')} title=${theme==='dark'?'Switch to light mode':'Switch to dark mode'}><span class="nav-icon">${theme==='dark'?'\u263E':'\u2600'}</span><span class="nav-label">${theme==='dark'?'Light Mode':'Dark Mode'}</span></button>
     <button class="nav-item ${active==='settings'?'active':''}" onClick=${()=>setActive('settings')}><span class="nav-icon">\u2699</span><span class="nav-label">Settings</span></button>
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
@@ -1133,7 +1170,8 @@ function App(){
 render(html`<${App}/>`,document.getElementById('root'));
 </script>
 <style>
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5a9a4a;--green-s:rgba(90,154,74,0.15);--red:#c44a3a;--red-s:rgba(196,74,58,0.15);--amber:#d4a843;--amber-s:rgba(212,168,67,0.15);--muted-s:rgba(160,132,92,0.1);--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace;--nav-w:220px}
+:root,html[data-theme="dark"]{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5a9a4a;--green-s:rgba(90,154,74,0.15);--red:#c44a3a;--red-s:rgba(196,74,58,0.15);--amber:#d4a843;--amber-s:rgba(212,168,67,0.15);--muted-s:rgba(160,132,92,0.1);--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace;--nav-w:220px}
+html[data-theme="light"]{--bg:#f5f0e8;--bg2:#ede6da;--bg3:#ddd5c7;--rust:#b84e20;--rust-light:#d4622e;--rust-dark:#8b3d1a;--leather:#7a6545;--leather-light:#5c4a30;--cream:#1a1410;--cream-dim:#3d342a;--cream-muted:#8a7e70;--gold:#a07820;--green:#3a7a30;--green-s:rgba(58,122,48,0.12);--red:#b33a2a;--red-s:rgba(179,58,42,0.12);--amber:#a07820;--amber-s:rgba(160,120,32,0.12);--muted-s:rgba(120,100,70,0.08)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px}body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.6;-webkit-font-smoothing:antialiased}.mono{font-family:var(--font-mono)}code{font-family:var(--font-mono);font-size:0.85em}
 .shell{display:flex;height:100vh;overflow:hidden}
 .nav{width:var(--nav-w);min-width:var(--nav-w);background:var(--bg2);border-right:1px solid var(--bg3);display:flex;flex-direction:column;padding:20px 12px;gap:2px;overflow-y:auto}
