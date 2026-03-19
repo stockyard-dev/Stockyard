@@ -47,4 +47,4 @@ docker run -p 5850:5850 -e OPENAI_API_KEY=sk-... stockyard/approvalgate
 
 ## Part of Stockyard
 
-ApprovalGate is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use ApprovalGate standalone.
+ApprovalGate is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

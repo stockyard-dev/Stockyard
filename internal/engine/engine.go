@@ -461,12 +461,20 @@ func Boot(pc ProductConfig) {
 		// Mount all app routes on the shared mux
 		registry.RegisterAllRoutes(srv.Mux())
 
-		// /api/apps — list all registered apps
+		// /api/apps — list all registered apps (excludes internal apps)
 		srv.Mux().HandleFunc("GET /api/apps", func(w http.ResponseWriter, r *http.Request) {
+			allApps := registry.AppList()
+			var publicApps []map[string]string
+			for _, a := range allApps {
+				if a["name"] == "marketing" {
+					continue // internal app, not user-facing
+				}
+				publicApps = append(publicApps, a)
+			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]any{
-				"apps":  registry.AppList(),
-				"count": len(registry.Apps()),
+				"apps":  publicApps,
+				"count": len(publicApps),
 			})
 		})
 		log.Printf("  Apps:      %d registered (/api/apps)", len(pc.Apps))

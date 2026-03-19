@@ -46,4 +46,4 @@ docker run -p 6070:6070 -e OPENAI_API_KEY=sk-... stockyard/mirrortest
 
 ## Part of Stockyard
 
-MirrorTest is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use MirrorTest standalone.
+MirrorTest is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

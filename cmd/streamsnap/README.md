@@ -46,4 +46,4 @@ docker run -p 5200:5200 -e OPENAI_API_KEY=sk-... stockyard/streamsnap
 
 ## Part of Stockyard
 
-StreamSnap is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use StreamSnap standalone.
+StreamSnap is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

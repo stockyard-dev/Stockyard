@@ -45,4 +45,4 @@ docker run -p 5770:5770 -e OPENAI_API_KEY=sk-... stockyard/feedbackloop
 
 ## Part of Stockyard
 
-FeedbackLoop is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use FeedbackLoop standalone.
+FeedbackLoop is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

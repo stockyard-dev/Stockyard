@@ -44,4 +44,4 @@ docker run -p 6590:6590 -e OPENAI_API_KEY=sk-... stockyard/queuepriority
 
 ## Part of Stockyard
 
-QueuePriority is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use QueuePriority standalone.
+QueuePriority is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

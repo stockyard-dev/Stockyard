@@ -48,4 +48,4 @@ docker run -p 5950:5950 -e OPENAI_API_KEY=sk-... stockyard/webhookrelay
 
 ## Part of Stockyard
 
-WebhookRelay is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use WebhookRelay standalone.
+WebhookRelay is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

@@ -49,4 +49,4 @@ docker run -p 5620:5620 -e OPENAI_API_KEY=sk-... stockyard/secretscan
 
 ## Part of Stockyard
 
-SecretScan is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use SecretScan standalone.
+SecretScan is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

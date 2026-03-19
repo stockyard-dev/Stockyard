@@ -435,7 +435,7 @@ func pageLicense() Page {
 <h2 id="tiers">Tiers</h2>
 
 <table>
-<tr><th>Tier</th><th>Individual Product</th><th>Suite (125 products)</th><th>Limits</th></tr>
+<tr><th>Tier</th><th>Individual Product</th><th>Suite (58 modules)</th><th>Limits</th></tr>
 <tr><td>Free</td><td>$0</td><td>$0</td><td>1,000 requests/day, 5 products max (suite)</td></tr>
 <tr><td>Starter</td><td>$9/mo</td><td>$19/mo</td><td>10,000 requests/day</td></tr>
 <tr><td>Pro</td><td>$29/mo</td><td>$59/mo</td><td>100,000 requests/day</td></tr>
@@ -445,7 +445,7 @@ func pageLicense() Page {
 
 <div class="callout tip">
 <span class="callout-label">Suite value</span>
-The suite at $59/mo covers all 125 products. That is $0.47 per tool per month. Buying just 3 individual products at Pro tier costs more than the entire suite.
+The suite at all tiers include all 58 modules. That is 
 </div>
 
 <h2 id="activation">Activation</h2>

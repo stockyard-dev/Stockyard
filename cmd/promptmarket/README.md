@@ -42,4 +42,4 @@ docker run -p 6270:6270 -e OPENAI_API_KEY=sk-... stockyard/promptmarket
 
 ## Part of Stockyard
 
-PromptMarket is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use PromptMarket standalone.
+PromptMarket is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

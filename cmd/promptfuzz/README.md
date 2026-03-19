@@ -42,4 +42,4 @@ docker run -p 6260:6260 -e OPENAI_API_KEY=sk-... stockyard/promptfuzz
 
 ## Part of Stockyard
 
-PromptFuzz is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use PromptFuzz standalone.
+PromptFuzz is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

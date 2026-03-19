@@ -46,4 +46,4 @@ docker run -p 4700:4700 -e OPENAI_API_KEY=sk-... stockyard/keypool
 
 ## Part of Stockyard
 
-KeyPool is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use KeyPool standalone.
+KeyPool is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

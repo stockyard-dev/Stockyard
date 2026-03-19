@@ -161,7 +161,7 @@ func pricingSection(p apiserver.Product) string {
 	if p.IsSuite {
 		return `<table>
 <tr><th>Tier</th><th>Price</th><th>Includes</th></tr>
-<tr><td>Free</td><td>$0</td><td>All 125 products, 1,000 requests/day</td></tr>
+<tr><td>Free</td><td>$0</td><td>All 58 modules, 1,000 requests/day</td></tr>
 <tr><td>Starter</td><td>$19/mo</td><td>10,000 requests/day</td></tr>
 <tr><td>Pro</td><td>$59/mo</td><td>100,000 requests/day</td></tr>
 <tr><td>Team</td><td>$149/mo</td><td>Unlimited</td></tr>
@@ -173,9 +173,9 @@ func pricingSection(p apiserver.Product) string {
 	return fmt.Sprintf(`<table>
 <tr><th>Tier</th><th>Individual</th><th>Via Suite</th></tr>
 <tr><td>Free</td><td>$0</td><td>$0</td></tr>
-<tr><td>Starter</td><td>$9/mo</td><td>$19/mo (125 products)</td></tr>
-<tr><td>Pro</td><td>$29/mo</td><td>$59/mo (125 products)</td></tr>
-<tr><td>Team</td><td>$79/mo</td><td>$149/mo (125 products)</td></tr>
+<tr><td>Starter</td><td>$9.99/mo</td><td>$9.99/mo</td></tr>
+<tr><td>Pro</td><td>$49/mo</td><td>$49/mo</td></tr>
+<tr><td>Team</td><td>$149/mo</td><td>$149/mo</td></tr>
 </table>
 
 <div class="callout tip">

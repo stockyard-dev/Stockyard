@@ -42,4 +42,4 @@ docker run -p 6530:6530 -e OPENAI_API_KEY=sk-... stockyard/agentreplay
 
 ## Part of Stockyard
 
-AgentReplay is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use AgentReplay standalone.
+AgentReplay is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

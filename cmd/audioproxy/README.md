@@ -45,4 +45,4 @@ docker run -p 6160:6160 -e OPENAI_API_KEY=sk-... stockyard/audioproxy
 
 ## Part of Stockyard
 
-AudioProxy is one of 125 products in [Stockyard](https://stockyard.dev) — the complete LLM infrastructure suite. Get all 125 tools for $59/mo, or use AudioProxy standalone.
+AudioProxy is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.

@@ -36,7 +36,7 @@ npx @stockyard/mcp-docparse
 
 ## Part of Stockyard
 
-DocParse is one of 125 products in the [Stockyard](https://stockyard.dev) LLM infrastructure suite. Use standalone or as part of the full suite.
+DocParse is part of [Stockyard](https://stockyard.dev) — an open-source LLM proxy and control plane. MIT licensed.
 
 ## License
 
