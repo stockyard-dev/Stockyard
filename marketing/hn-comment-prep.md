@@ -19,7 +19,7 @@ Stockyard puts all of that in one binary with one SQLite database. No orchestrat
 Fair question. The audit ledger is SHA-256 hash-chained — each event includes the hash of the previous event, so any tampering breaks the chain. You can verify it yourself:
 
 ```
-curl localhost:4200/api/trust/verify
+curl localhost:4200/api/trust/ledger/verify
 ```
 
 The code is in `internal/features/compliancelog.go` if you want to inspect the implementation. Provider keys are encrypted with AES-256-GCM at rest (`internal/auth/crypto.go`).
