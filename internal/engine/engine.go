@@ -538,7 +538,8 @@ func Boot(pc ProductConfig) {
 		}
 		limit := 5
 		if l := r.URL.Query().Get("limit"); l != "" {
-			if n := 0; fmt.Sscanf(l, "%d", &n) == nil && n > 0 && n < len(entries) {
+			n := 0
+			if _, err := fmt.Sscanf(l, "%d", &n); err == nil && n > 0 && n < len(entries) {
 				limit = n
 			}
 		}
