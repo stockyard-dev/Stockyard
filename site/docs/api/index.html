@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="API Reference — Stockyard">
-<meta property="og:description" content="Complete REST API reference for Stockyard — all 62 endpoints.">
+<meta property="og:description" content="Complete REST API reference for Stockyard — 62 endpoints.">
 <meta property="og:url" content="https://stockyard.dev/docs/api/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>API Reference — Stockyard</title>
-<meta name="description" content="Complete REST API reference for Stockyard — all 62 endpoints.">
+<meta name="description" content="Complete REST API reference for Stockyard — 62 endpoints.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -43,7 +43,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
 .sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
 .content{padding:3rem 2.5rem}
-.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content h1{font-size:clamp(1.8rem,4vw,2.5rem);margin-bottom:0.5rem}
 .content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
 .content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
 .content h2:first-of-type{margin-top:0;padding-top:0;border:none}
@@ -73,7 +73,14 @@ pre:hover .copy-btn{opacity:1}
 .pn .next{margin-left:auto}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+.docs-sidebar-toggle{display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:900;background:var(--rust);color:var(--cream);border:none;padding:0.6rem 1rem;font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+@media(max-width:700px){
+  .docs-layout{grid-template-columns:1fr}
+  .sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:260px;z-index:998;background:var(--bg2);border-right:1px solid var(--bg3);padding-top:3rem;box-shadow:4px 0 20px rgba(0,0,0,0.5)}
+  .sidebar.open{display:block}
+  .docs-sidebar-toggle{display:block}
+  .content{padding:2rem 1.5rem}
+}
 
 /* ===== MOBILE NAV ===== */
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
@@ -109,6 +116,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
 }
 
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/api/">
 </head>
@@ -131,6 +139,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </nav>
 
+<button class="docs-sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">Docs Menu</button>
 <div class="docs-layout">
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -149,6 +158,12 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/studio/">Studio</a>
       <a href="/docs/forge/">Forge</a>
       <a href="/docs/exchange/">Exchange</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Features</div>
+      <a href="/docs/api/#guardrails-api">Guardrails</a>
+      <a href="/docs/api/#webhooks-api">Webhooks</a>
+      <a href="/docs/api/#user-spend-api">User Spend</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
@@ -396,14 +411,41 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/playground/share/{id}</td><td>Retrieve shared session</td></tr>
     </table>
 
-    <h2 id="webhooks-api">Webhooks (4 endpoints)</h2>
-    <p>Push notifications to external URLs on events like cost thresholds, safety blocks, and alert firings.</p>
+    <h2 id="webhooks-api">Webhooks (6 endpoints)</h2>
+    <p>Push notifications to external URLs on events like cost thresholds, safety blocks, provider health changes, and guardrail violations. Deliveries are logged and retried automatically.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks</td><td>List configured webhooks</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/webhooks</td><td>Create a webhook</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/webhooks/{id}</td><td>Delete a webhook</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/webhooks/test</td><td>Send a test webhook</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks/{id}/deliveries</td><td>Recent delivery log (status, latency, retries)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks/{id}/stats</td><td>Delivery statistics (success rate, avg latency)</td></tr>
+    </table>
+    <p style="margin-top:0.8rem">Supported event types: <code>webhook.test</code>, <code>alert.fired</code>, <code>cost.threshold</code>, <code>spend.cap_exceeded</code>, <code>provider.health_changed</code>, <code>guardrail.violation</code>, <code>trust.violation</code>. Use <code>*</code> to receive all events.</p>
+
+    <h2 id="guardrails-api">Guardrails (8 endpoints)</h2>
+    <p>Runtime-configurable content guardrail rules. Rules are regex-based, scoped per-project, and support block/redact/warn/log actions. Cached in memory with 60-second TTL.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails</td><td>List all guardrail rules (filter by ?project=)</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/guardrails</td><td>Create a guardrail rule</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails/{id}</td><td>Get a single rule</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/guardrails/{id}</td><td>Update a rule</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/guardrails/{id}</td><td>Delete a rule</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/guardrails/test</td><td>Dry-run text against rules (no provider call)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails/stats</td><td>Analytics counters (blocked, flagged, per-rule hits)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/guardrails/events</td><td>Recent violation events</td></tr>
+    </table>
+
+    <h2 id="user-spend-api">User Spend (4 endpoints)</h2>
+    <p>Per-user spend tracking and caps. The <code>/api/users/{id}/spend</code> endpoint reads from the fast in-memory counter; history reads from daily rollups in the database.</p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend</td><td>Current user spend (today, month, tokens)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend/history</td><td>Daily spend rollups (?days=30)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend/cap</td><td>Get user spend cap configuration</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/users/{id}/spend/cap</td><td>Set user daily/monthly spend caps</td></tr>
     </table>
 
     <h2 id="system-api">System (12 endpoints)</h2>
@@ -482,7 +524,7 @@ document.querySelectorAll('.content pre').forEach(pre => {
   btn.className = 'copy-btn';
   btn.textContent = 'Copy';
   btn.onclick = () => {
-    const text = pre.textContent.replace(/^Copy/, '').trim();
+    const text = pre.innerText.replace(/Copy$/, '').trim();
     navigator.clipboard.writeText(text).then(() => {
       btn.textContent = '\u2713 Copied';
       setTimeout(() => btn.textContent = 'Copy', 2000);
@@ -494,6 +536,7 @@ document.querySelectorAll('.content pre').forEach(pre => {
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();var s=document.querySelector('.sidebar');if(s&&s.classList.contains('open'))s.classList.remove('open');}});
 </script>
 
 </body>

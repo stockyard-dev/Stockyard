@@ -26,10 +26,19 @@
   --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
   --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
   --leather:#a0845c;--leather-light:#c4a87a;
-  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
   --gold:#d4a843;--green-light:#5ba86e;
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
+}
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;
+    --rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;
+    --leather:#7a6544;--leather-light:#8b7355;
+    --cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;
+    --gold:#b08a28;
+  }
 }
 .skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
@@ -285,7 +294,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="/playground" class="btn btn-secondary">Try the playground</a>
   </div>
 
-  <!-- Trust strip: let skeptics verify claims immediately -->
+  <!-- Trust strip -->
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
     <a href="https://github.com/stockyard-dev/stockyard" style="color:var(--cream-dim)">GitHub &rarr;</a>
     <a href="/benchmarks/" style="color:var(--cream-dim)">Benchmarks &rarr;</a>
@@ -401,7 +410,7 @@ function showConsole(name){
   document.querySelectorAll('.console-gallery img').forEach(i=>i.classList.add('hidden'));
   document.getElementById('cs-'+name).classList.remove('hidden');
   document.querySelectorAll('.console-tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelector('.console-tab[onclick*="\''+name+'\'"]').classList.add('active');
 }
 </script>
 
@@ -542,6 +551,7 @@ function showConsole(name){
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
 
 </body>

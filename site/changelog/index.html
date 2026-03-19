@@ -6,7 +6,7 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Changelog: Release Notes <meta property="og:title" content="Changelog — Stockyard"> Updates — Stockyard">
+<meta property="og:title" content="Changelog: Release Notes &amp; Updates — Stockyard">
 <meta property="og:description" content="Stockyard changelog. What's new, what's fixed, what's next.">
 <meta property="og:url" content="https://stockyard.dev/changelog/">
 <meta property="og:type" content="website">
@@ -92,6 +92,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   img{max-width:100%;height:auto}
 }
 
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/changelog/">
 </head>
@@ -116,6 +117,49 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <div class="content" id="main">
 <h1>Changelog</h1>
 <p class="sub">What's new in Stockyard. Follow <a href="https://github.com/stockyard-dev/stockyard">GitHub</a> for commit-level detail.</p>
+
+<div class="release">
+  <div class="release-header">
+    <span class="release-version">v1.4.0</span>
+    <span class="release-date">March 18, 2026</span>
+    <span class="release-tag tag-new">New</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Per-User Spend Tracking</div>
+    <div class="change-item">Per-user spend counters — track cost, tokens in, and tokens out per user alongside per-project. Works for both streaming and non-streaming requests.</div>
+    <div class="change-item">Per-user spend caps — set daily and monthly spend limits per user via <code>PUT /api/users/{id}/spend/cap</code>. Supports soft caps (alert only) and hard caps (block).</div>
+    <div class="change-item">User spend API — <code>GET /api/users/{id}/spend</code> (fast in-memory), <code>GET /api/users/{id}/spend/history</code> (daily rollups from DB).</div>
+    <div class="change-item">Usage metering — the <code>usage_metering</code> table is now populated with per-user and per-project dimensional data on every flush cycle.</div>
+    <div class="change-item">SSE events — <code>user_spend_update</code> broadcasts real-time user spend to the dashboard.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Guardrails CRUD</div>
+    <div class="change-item">Runtime-configurable guardrail rules — create, update, and delete regex-based rules via REST API. Rules are cached in memory with 60-second TTL.</div>
+    <div class="change-item">Per-project scoping — rules can target all projects (<code>*</code>) or a specific project, with priority ordering.</div>
+    <div class="change-item">Dry-run testing — <code>POST /api/guardrails/test</code> scans text against all applicable rules without sending to a provider.</div>
+    <div class="change-item">Analytics — <code>GET /api/guardrails/stats</code> for counters (blocked, flagged, redacted, per-rule hits), <code>GET /api/guardrails/events</code> for violation history.</div>
+    <div class="change-item">8 new endpoints: CRUD + test + stats + events for guardrail rules.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Webhook Delivery &amp; Retry</div>
+    <div class="change-item">Delivery logging — every webhook delivery attempt is recorded in <code>webhook_deliveries</code> with status code, latency, error, and attempt number.</div>
+    <div class="change-item">Automatic retry — failed deliveries retry up to 3 times with exponential backoff (2s, 8s, 32s).</div>
+    <div class="change-item">Delivery history API — <code>GET /api/webhooks/{id}/deliveries</code> and <code>GET /api/webhooks/{id}/stats</code> (success rate, avg latency).</div>
+    <div class="change-item">New event types — <code>provider.health_changed</code> (circuit breaker transitions), <code>spend.cap_exceeded</code>, <code>guardrail.violation</code>.</div>
+    <div class="change-item">SSE events — <code>webhook_delivery</code> broadcasts delivery status in real-time.</div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Reliability Fixes</div>
+    <div class="change-item">Fixed goroutine leak when streaming clients disconnect — provider goroutines now monitor <code>ctx.Done()</code> and stream channels are drained on write error.</div>
+    <div class="change-item">Fixed spend counter race condition at midnight — date comparison now uses <code>Date()</code> for correct year/month/day boundaries.</div>
+    <div class="change-item">Fixed shutdown ordering — HTTP server now drains before flusher stops, preventing lost spend data for in-flight requests.</div>
+    <div class="change-item">Added 10 MB request body size limit via <code>MaxBytesReader</code> to prevent OOM.</div>
+    <div class="change-item">Error responses sanitized — raw <code>err.Error()</code> no longer leaks SQLite errors, file paths, or provider details to clients.</div>
+    <div class="change-item">Improved cost estimation for cap checks — output estimate clamped to 256&ndash;4096 tokens instead of 2x input heuristic.</div>
+    <div class="change-item">Flusher retries failed DB writes up to 3 times with backoff. Token counts now passed to <code>UpsertSpendRollup</code> instead of zeros.</div>
+    <div class="change-item">Failover middleware skips streaming requests (handled by dedicated streaming failover path). Circuit breakers check context cancellation between attempts.</div>
+  </div>
+</div>
 
 <div class="release">
   <div class="release-header">
@@ -157,7 +201,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item"><a href="/docs/ops/">Operations docs</a> — doctor, webhooks, OTEL, status monitoring, config export, key rotation.</div>
     <div class="change-item">API docs expanded with Playground, Webhooks, and System endpoint tables.</div>
     <div class="change-item">Integration examples — Python, Node.js, curl, webhook setup.</div>
-    <div class="change-item">Sitemap expanded to 38 URLs. Endpoint count updated to 69.</div>
+    <div class="change-item">Sitemap expanded to 38 URLs. Endpoint count reconciled across all pages.</div>
   </div>
   <div class="change-group">
     <div class="change-group-label">Infrastructure</div>
@@ -170,14 +214,14 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-group-label">Fixes</div>
     <div class="change-item">Fixed playground share button — now calls backend API, loads shared sessions via <code>?share={id}</code>.</div>
     <div class="change-item">Fixed docs sidebar structure (malformed HTML from nav insertion).</div>
-    <div class="change-item">Fixed 404 page favicon paths. Standardized endpoint count to 69 across all pages.</div>
+    <div class="change-item">Fixed 404 page favicon paths. Standardized endpoint count across all pages.</div>
   </div>
 </div>
 
 <div class="release">
   <div class="release-header">
     <span class="release-version">v1.1.0</span>
-    <span class="release-date">February 27, 2026</span>
+    <span class="release-date">February 25, 2026</span>
     <span class="release-tag tag-major">Platform</span>
   </div>
   <div class="change-group">
@@ -200,7 +244,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <div class="change-group">
     <div class="change-group-label">Fixes</div>
     <div class="change-item">Fixed JavaScript SyntaxError on 4 pages (stray CSS in script blocks).</div>
-    <div class="change-item">Standardized module count to 70 across all pages.</div>
+    <div class="change-item">Standardized module count to 58 across all pages.</div>
     <div class="change-item">Removed dead Discord links. Unified footers across all page variants.</div>
     <div class="change-item">Fixed visible skip-link elements on 7 pages. Added missing logo SVGs and Guide nav links.</div>
   </div>
@@ -213,7 +257,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <div class="release">
   <div class="release-header">
     <span class="release-version">v1.0.0</span>
-    <span class="release-date">February 27, 2026</span>
+    <span class="release-date">February 20, 2026</span>
     <span class="release-tag tag-major">Launch</span>
   </div>
   <div class="change-group">
@@ -285,6 +329,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
 
 </body>
