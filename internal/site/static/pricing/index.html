@@ -435,9 +435,7 @@ async function checkout(product, tier, e) {
     }
   } catch (e) {
     console.error('Checkout error:', e);
-    btn.textContent = 'Error — try again';
-    btn.disabled = false;
-    setTimeout(() => { btn.textContent = originalText; }, 3000);
+    window.location.href = '/cloud/?plan=' + tier;
   }
 }
 </script>

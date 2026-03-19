@@ -106,7 +106,7 @@ Your App (OpenAI SDK)
 - **58 middleware modules**, each toggleable at runtime via `PUT /api/proxy/modules/{name}`.
 - **16 LLM providers**: OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Ollama, VLLM, AWS Bedrock, Azure OpenAI, Cohere, Together AI, Fireworks, Replicate, Perplexity, Hugging Face.
 - **AES-256-GCM encryption** for all provider keys at rest.
-- **400ns per-request overhead** across the full 58-module chain ([benchmarks](https://stockyard.dev/benchmarks)).
+- **400ns chain traversal overhead** across the full 58-module middleware chain ([benchmarks](https://stockyard.dev/benchmarks)). Total per-request overhead including module logic is <5ms.
 
 ## Use It With Any OpenAI SDK
 
