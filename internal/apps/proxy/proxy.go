@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/toggle"
 )
 
@@ -105,6 +106,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/proxy/routes", a.handleListRoutes)
 	mux.HandleFunc("GET /api/proxy/chain", a.handleChain)
 	mux.HandleFunc("GET /api/proxy/status", a.handleStatus)
+	mux.HandleFunc("GET /api/proxy/pricing", a.handlePricing)
+	mux.HandleFunc("POST /api/proxy/estimate", a.handleEstimate)
+	mux.HandleFunc("GET /api/proxy/recommendations", a.handleRecommendations)
 	log.Printf("[proxy] routes registered")
 }
 
@@ -187,15 +191,17 @@ func (a *App) handleGetModule(w http.ResponseWriter, r *http.Request) {
 func (a *App) handleUpdateModule(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
 	var req struct {
-		Enabled  *bool  `json:"enabled"`
-		Config   any    `json:"config"`
-		Priority *int   `json:"priority"`
+		Enabled  *bool `json:"enabled"`
+		Config   any   `json:"config"`
+		Priority *int  `json:"priority"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
 
 	if req.Enabled != nil {
 		enabled := 0
-		if *req.Enabled { enabled = 1 }
+		if *req.Enabled {
+			enabled = 1
+		}
 		a.conn.Exec("UPDATE proxy_modules SET enabled = ?, updated_at = ? WHERE name = ?", enabled, time.Now().Format(time.RFC3339), name)
 		// Toggle live middleware chain
 		if a.toggle != nil {
@@ -235,7 +241,9 @@ func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
 		// Toggle specific modules
 		for _, name := range req.Modules {
 			enabled := 0
-			if req.Enabled { enabled = 1 }
+			if req.Enabled {
+				enabled = 1
+			}
 			res, err := a.conn.Exec("UPDATE proxy_modules SET enabled = ?, updated_at = ? WHERE name = ?", enabled, now, name)
 			if err == nil {
 				n, _ := res.RowsAffected()
@@ -248,7 +256,9 @@ func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
 	} else if req.Category != "" {
 		// Toggle all modules in a category
 		enabled := 0
-		if req.Enabled { enabled = 1 }
+		if req.Enabled {
+			enabled = 1
+		}
 		res, err := a.conn.Exec("UPDATE proxy_modules SET enabled = ?, updated_at = ? WHERE category = ?", enabled, now, req.Category)
 		if err == nil {
 			affected, _ = res.RowsAffected()
@@ -512,13 +522,219 @@ func (a *App) handleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{
-		"app":              "proxy",
-		"status":           "running",
-		"total_modules":    moduleCount,
-		"enabled_modules":  enabledCount,
-		"live_chain":       chainCount,
-		"providers":        providerCount,
-		"routes":           routeCount,
+		"app":             "proxy",
+		"status":          "running",
+		"total_modules":   moduleCount,
+		"enabled_modules": enabledCount,
+		"live_chain":      chainCount,
+		"providers":       providerCount,
+		"routes":          routeCount,
+	})
+}
+
+// handlePricing returns the full pricing table for client-side cost estimation.
+func (a *App) handlePricing(w http.ResponseWriter, r *http.Request) {
+	table := provider.ListPricing()
+	type entry struct {
+		Model    string  `json:"model"`
+		Provider string  `json:"provider"`
+		Input    float64 `json:"input_per_m"`
+		Output   float64 `json:"output_per_m"`
+	}
+	var entries []entry
+	for model, p := range table {
+		entries = append(entries, entry{Model: model, Provider: p.Provider, Input: p.Input, Output: p.Output})
+	}
+	writeJSON(w, map[string]any{"pricing": entries, "count": len(entries)})
+}
+
+// handleEstimate estimates the cost of a request before sending it.
+func (a *App) handleEstimate(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Model     string `json:"model"`
+		InputText string `json:"input_text"`
+		MaxTokens int    `json:"max_tokens"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "invalid request"})
+		return
+	}
+	if req.Model == "" {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "model required"})
+		return
+	}
+
+	// Estimate tokens: ~1 token per 4 characters
+	estInputTokens := len(req.InputText) / 4
+	if estInputTokens < 1 {
+		estInputTokens = 1
+	}
+	estOutputTokens := req.MaxTokens
+	if estOutputTokens <= 0 {
+		estOutputTokens = 2048
+	}
+
+	pricing, hasPricing := provider.GetPricing(req.Model)
+	inputCost := provider.CalculateCost(req.Model, estInputTokens, 0)
+	outputCost := provider.CalculateCost(req.Model, 0, estOutputTokens)
+	totalCost := inputCost + outputCost
+
+	result := map[string]any{
+		"model":             req.Model,
+		"est_input_tokens":  estInputTokens,
+		"est_output_tokens": estOutputTokens,
+		"input_cost_usd":    inputCost,
+		"output_cost_usd":   outputCost,
+		"total_cost_usd":    totalCost,
+		"total_cost_cents":  int64(totalCost * 100),
+		"has_pricing":       hasPricing,
+	}
+	if hasPricing {
+		result["input_per_m"] = pricing.Input
+		result["output_per_m"] = pricing.Output
+		result["provider"] = pricing.Provider
+	}
+
+	writeJSON(w, result)
+}
+
+// handleRecommendations analyzes recent trace data and suggests module optimizations.
+func (a *App) handleRecommendations(w http.ResponseWriter, r *http.Request) {
+	type recommendation struct {
+		ID       string `json:"id"`
+		Title    string `json:"title"`
+		Reason   string `json:"reason"`
+		Module   string `json:"module"`
+		Priority string `json:"priority"` // high, medium, low
+	}
+	var recs []recommendation
+
+	// Count recent requests
+	var totalRequests int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_traces WHERE created_at >= datetime('now', '-7 days')").Scan(&totalRequests)
+
+	if totalRequests < 10 {
+		writeJSON(w, map[string]any{"recommendations": recs, "total_requests_analyzed": totalRequests, "message": "Need at least 10 requests in the last 7 days for recommendations"})
+		return
+	}
+
+	// 1. Check for duplicate prompts → recommend cache
+	var dupCount int
+	a.conn.QueryRow(`SELECT COUNT(*) FROM (
+		SELECT metadata_json, COUNT(*) as cnt FROM observe_traces
+		WHERE created_at >= datetime('now', '-7 days') AND status = 'ok'
+		GROUP BY metadata_json HAVING cnt > 3
+	)`).Scan(&dupCount)
+
+	var cacheEnabled int
+	a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = 'cache'").Scan(&cacheEnabled)
+
+	if dupCount > 0 && cacheEnabled != 1 {
+		recs = append(recs, recommendation{
+			ID:       "enable-cache",
+			Title:    "Enable Response Cache",
+			Reason:   fmt.Sprintf("Found %d repeated prompt patterns in the last 7 days. Caching could reduce costs and latency.", dupCount),
+			Module:   "cache",
+			Priority: "high",
+		})
+	}
+
+	// 2. Check for single provider usage → recommend failover
+	var providerCount int
+	a.conn.QueryRow(`SELECT COUNT(DISTINCT provider) FROM observe_traces WHERE created_at >= datetime('now', '-7 days') AND provider != ''`).Scan(&providerCount)
+
+	var failoverEnabled int
+	a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = 'failover'").Scan(&failoverEnabled)
+
+	if providerCount <= 1 && failoverEnabled != 1 {
+		recs = append(recs, recommendation{
+			ID:       "enable-failover",
+			Title:    "Configure Provider Failover",
+			Reason:   "All requests are going to a single provider. Adding failover ensures uptime if that provider has an outage.",
+			Module:   "failover",
+			Priority: "medium",
+		})
+	}
+
+	// 3. Check for high-cost requests → recommend cost caps
+	var highCostCount int
+	a.conn.QueryRow(`SELECT COUNT(*) FROM observe_traces WHERE created_at >= datetime('now', '-7 days') AND cost_usd > 0.10`).Scan(&highCostCount)
+
+	var capsEnabled int
+	a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = 'caps'").Scan(&capsEnabled)
+
+	if highCostCount > 5 && capsEnabled != 1 {
+		recs = append(recs, recommendation{
+			ID:       "enable-caps",
+			Title:    "Set Spend Caps",
+			Reason:   fmt.Sprintf("%d requests in the last week cost over $0.10 each. Spend caps prevent runaway costs.", highCostCount),
+			Module:   "caps",
+			Priority: "high",
+		})
+	}
+
+	// 4. Check for high token counts → recommend promptslim
+	var highTokenCount int
+	a.conn.QueryRow(`SELECT COUNT(*) FROM observe_traces WHERE created_at >= datetime('now', '-7 days') AND tokens_in > 4000`).Scan(&highTokenCount)
+
+	var promptslimEnabled int
+	a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = 'promptslim'").Scan(&promptslimEnabled)
+
+	if highTokenCount > 5 && promptslimEnabled != 1 {
+		recs = append(recs, recommendation{
+			ID:       "enable-promptslim",
+			Title:    "Enable Prompt Compression",
+			Reason:   fmt.Sprintf("%d requests used 4000+ input tokens. PromptSlim can reduce token usage by 20-40%%.", highTokenCount),
+			Module:   "promptslim",
+			Priority: "medium",
+		})
+	}
+
+	// 5. Check for expensive models on simple/short tasks → recommend tierdrop
+	var expensiveSimpleCount int
+	a.conn.QueryRow(`SELECT COUNT(*) FROM observe_traces
+		WHERE created_at >= datetime('now', '-7 days')
+		AND tokens_in < 500 AND tokens_out < 200
+		AND (model LIKE '%gpt-4o%' OR model LIKE '%claude-opus%' OR model LIKE '%o1%' OR model LIKE '%o3%')
+		AND model NOT LIKE '%mini%' AND model NOT LIKE '%nano%'`).Scan(&expensiveSimpleCount)
+
+	var tierdropEnabled int
+	a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = 'tierdrop'").Scan(&tierdropEnabled)
+
+	if expensiveSimpleCount > 10 && tierdropEnabled != 1 {
+		recs = append(recs, recommendation{
+			ID:       "enable-tierdrop",
+			Title:    "Auto-Downgrade Simple Requests",
+			Reason:   fmt.Sprintf("%d short requests used expensive models. TierDrop can route simple tasks to cheaper models automatically.", expensiveSimpleCount),
+			Module:   "tierdrop",
+			Priority: "medium",
+		})
+	}
+
+	// 6. Check error rate → recommend retrypilot
+	var errorCount int
+	a.conn.QueryRow(`SELECT COUNT(*) FROM observe_traces WHERE created_at >= datetime('now', '-7 days') AND status = 'error'`).Scan(&errorCount)
+
+	errorRate := float64(errorCount) / float64(totalRequests)
+	var retryEnabled int
+	a.conn.QueryRow("SELECT enabled FROM proxy_modules WHERE name = 'retrypilot'").Scan(&retryEnabled)
+
+	if errorRate > 0.05 && retryEnabled != 1 {
+		recs = append(recs, recommendation{
+			ID:       "enable-retrypilot",
+			Title:    "Enable Smart Retry",
+			Reason:   fmt.Sprintf("Error rate is %.0f%% (%d/%d requests). RetryPilot can automatically retry failed requests with backoff.", errorRate*100, errorCount, totalRequests),
+			Module:   "retrypilot",
+			Priority: "high",
+		})
+	}
+
+	writeJSON(w, map[string]any{
+		"recommendations":         recs,
+		"count":                   len(recs),
+		"total_requests_analyzed": totalRequests,
 	})
 }
 

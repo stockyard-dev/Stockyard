@@ -76,9 +76,10 @@ function OverviewView(){
 // ─── Proxy (Interactive toggles) ───────────────────────────────────
 function ProxyView(){
   const[tab,setTab]=useState('modules');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[filter,setFilter]=useState('');
-  const[health,setHealth]=useState(null);const[checking,setChecking]=useState(false);
+  const[health,setHealth]=useState(null);const[checking,setChecking]=useState(false);const[recs,setRecs]=useState(null);
   const load=async()=>{const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);setData({modules:m.modules||[],providers:p.providers||[],routes:r.routes||[]})};
-  useEffect(()=>{load()},[]);
+  const loadRecs=async()=>{const r=await api('/api/proxy/recommendations');setRecs(r)};
+  useEffect(()=>{load();loadRecs()},[]);
   const toggleModule=async(name,enabled)=>{const r=await api('/api/proxy/modules/'+name,{method:'PUT',body:JSON.stringify({enabled:!enabled})});if(r._error){setToast({msg:'Failed: '+name,type:'error'});return}setToast({msg:name+' '+(enabled?'disabled':'enabled'),type:'success'});load()};
   const bulkToggle=async(cat,enabled)=>{const body=cat==='all'?{modules:d('modules').map(m=>m.name),enabled}:{category:cat,enabled};const r=await api('/api/proxy/modules/bulk',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Bulk toggle failed',type:'error'});return}setToast({msg:(r.affected||0)+' modules '+(enabled?'enabled':'disabled'),type:'success'});load()};
   const checkAll=async()=>{setChecking(true);const r=await api('/api/proxy/providers/health');setHealth(r);setChecking(false);load()};
@@ -87,7 +88,7 @@ function ProxyView(){
   const statusColor=s=>s==='ok'?'var(--green)':s==='degraded'?'var(--gold)':s==='unconfigured'?'var(--cream-muted)':'var(--red)';
   return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers & routes.</p></div>
     <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
-    <${TabBar} tabs=${['modules','chain','providers','routes']} active=${tab} onChange=${setTab}/>
+    <${TabBar} tabs=${['modules','chain','providers','routes','recommendations']} active=${tab} onChange=${setTab}/>
     ${tab==='modules'?html`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/>
       <${Btn} small onClick=${()=>bulkToggle('all',false)} disabled=${!d('modules').some(m=>m.enabled)}>Disable All<//><${Btn} small onClick=${()=>bulkToggle('all',true)}>Enable All<//></div>
       <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 80px 80px 80px"><span>Module</span><span>Category</span><span>Chain</span><span>Status</span><span>Toggle</span></div>
@@ -118,7 +119,21 @@ function ProxyView(){
       </div>
       <div class="mono" style="font-size:0.72rem;color:var(--cream-muted);margin-bottom:16px">${health.healthy}/${health.total} healthy \u2022 checked ${new Date(health.checked_at).toLocaleTimeString()}</div>`}
       <${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant=${r.status==='active'||r.status==='ok'?'success':r.status==='degraded'?'warn':'muted'}/>`},{key:'latency',label:'Latency',width:'100px',mono:true,render:r=>r.latency_ms?r.latency_ms+'ms':'\u2014'},{key:'reqs',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.request_count||0)}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
-    html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`}
+    tab==='routes'?html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`:
+    html`<div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${recs?.count||0} recommendations based on ${fmt.num(recs?.total_requests_analyzed||0)} recent requests</span>
+        <${Btn} small onClick=${loadRecs}>Refresh<//></div>
+      ${recs?.message?html`<div class="empty-state" style="padding:32px">${recs.message}</div>`:
+        (recs?.recommendations||[]).length===0?html`<div class="empty-state" style="padding:32px">No recommendations — your setup looks good!</div>`:
+        html`<div style="display:flex;flex-direction:column;gap:12px">${(recs?.recommendations||[]).map(r=>html`<div key=${r.id} style="border:1px solid var(--bg3);padding:16px;background:var(--bg)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <${Badge} text=${r.priority} variant=${r.priority==='high'?'error':r.priority==='medium'?'warn':'muted'}/>
+            <span style="font-size:0.92rem;color:var(--cream);font-weight:600">${r.title}</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:10px">${r.reason}</div>
+          <${Btn} small variant="primary" onClick=${async()=>{await api('/api/proxy/modules/'+r.module,{method:'PUT',body:JSON.stringify({enabled:true})});setToast({msg:r.module+' enabled',type:'success'});load();loadRecs()}}>Enable ${r.module}<//></div>`)}</div>`}
+    </div>`}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 

@@ -104,80 +104,80 @@ type Features struct {
 	BillingMeter bool
 
 	// Phase 3 P3 expansion
-	ChainForge    bool
-	CronLLM       bool
-	WebhookRelay  bool
-	BillSync      bool
-	WhiteLabel    bool
-	TrainExport   bool
-	SynthGen      bool
-	DiffPrompt    bool
-	LLMBench      bool
-	MaskMode      bool
-	TokenMarket   bool
-	LLMSync       bool
-	ClusterMode   bool
-	EncryptVault  bool
-	MirrorTest    bool
+	ChainForge   bool
+	CronLLM      bool
+	WebhookRelay bool
+	BillSync     bool
+	WhiteLabel   bool
+	TrainExport  bool
+	SynthGen     bool
+	DiffPrompt   bool
+	LLMBench     bool
+	MaskMode     bool
+	TokenMarket  bool
+	LLMSync      bool
+	ClusterMode  bool
+	EncryptVault bool
+	MirrorTest   bool
 
 	// Phase 4 expansion
-	ExtractML      bool
-	TableForge     bool
-	ToolRouter     bool
-	ToolShield     bool
-	ToolMock       bool
-	AuthGate       bool
-	ScopeGuard     bool
-	VisionProxy    bool
-	AudioProxy     bool
-	DocParse       bool
-	FrameGrab      bool
-	SessionStore   bool
-	ConvoFork      bool
-	SlotFill       bool
-	SemanticCache  bool
-	PartialCache   bool
-	StreamCache    bool
-	PromptChain    bool
-	PromptFuzz     bool
-	PromptMarket   bool
-	CostPredict    bool
-	CostMap        bool
-	SpotPrice      bool
-	LoadForge      bool
-	SnapshotTest   bool
-	ChaosLLM       bool
-	DataMap        bool
-	ConsentGate    bool
-	RetentionWipe  bool
-	PolicyEngine   bool
-	StreamSplit    bool
-	StreamThrottle bool
+	ExtractML       bool
+	TableForge      bool
+	ToolRouter      bool
+	ToolShield      bool
+	ToolMock        bool
+	AuthGate        bool
+	ScopeGuard      bool
+	VisionProxy     bool
+	AudioProxy      bool
+	DocParse        bool
+	FrameGrab       bool
+	SessionStore    bool
+	ConvoFork       bool
+	SlotFill        bool
+	SemanticCache   bool
+	PartialCache    bool
+	StreamCache     bool
+	PromptChain     bool
+	PromptFuzz      bool
+	PromptMarket    bool
+	CostPredict     bool
+	CostMap         bool
+	SpotPrice       bool
+	LoadForge       bool
+	SnapshotTest    bool
+	ChaosLLM        bool
+	DataMap         bool
+	ConsentGate     bool
+	RetentionWipe   bool
+	PolicyEngine    bool
+	StreamSplit     bool
+	StreamThrottle  bool
 	StreamTransform bool
-	ModelAlias     bool
-	ParamNorm      bool
-	QuotaSync      bool
-	ErrorNorm      bool
-	CohortTrack    bool
-	PromptRank     bool
-	AnomalyRadar   bool
-	EnvSync        bool
-	ProxyLog       bool
-	CliDash        bool
-	EmbedRouter    bool
-	FineTuneTrack  bool
-	AgentReplay    bool
-	SummarizeGate  bool
-	CodeLang       bool
-	PersonaSwitch  bool
-	WarmPool       bool
-	EdgeCache      bool
-	QueuePriority  bool
-	GeoPrice       bool
-	TokenAuction   bool
-	CanaryDeploy   bool
-	PlaybackStudio bool
-	WebhookForge   bool
+	ModelAlias      bool
+	ParamNorm       bool
+	QuotaSync       bool
+	ErrorNorm       bool
+	CohortTrack     bool
+	PromptRank      bool
+	AnomalyRadar    bool
+	EnvSync         bool
+	ProxyLog        bool
+	CliDash         bool
+	EmbedRouter     bool
+	FineTuneTrack   bool
+	AgentReplay     bool
+	SummarizeGate   bool
+	CodeLang        bool
+	PersonaSwitch   bool
+	WarmPool        bool
+	EdgeCache       bool
+	QueuePriority   bool
+	GeoPrice        bool
+	TokenAuction    bool
+	CanaryDeploy    bool
+	PlaybackStudio  bool
+	WebhookForge    bool
 }
 
 // ProductConfig defines a product's identity and feature set.
@@ -427,7 +427,7 @@ func Boot(pc ProductConfig) {
 			// Record system boot event
 			go audit("system", "engine", "stockyard", "boot", map[string]any{
 				"apps":        len(pc.Apps),
-				"middlewares":  len(middlewares),
+				"middlewares": len(middlewares),
 				"port":        cfg.Port,
 			})
 			log.Printf("  Audit:     trust auditor wired to apps")
@@ -525,6 +525,7 @@ func Boot(pc ProductConfig) {
 	// Changelog — embedded entries served to console "What's New" panel
 	srv.Mux().HandleFunc("GET /api/changelog", func(w http.ResponseWriter, r *http.Request) {
 		entries := []map[string]string{
+			{"date": "2026-03-19", "title": "Week 4: Cost Estimator, CostWarn & Recommendations", "body": "Live cost estimation in playground, pre-request cost warning middleware, and smart module recommendations based on traffic patterns."},
 			{"date": "2026-03-19", "title": "Billing Phase 2", "body": "Per-customer metering, Stripe integration, invoice generation, and a full billing dashboard."},
 			{"date": "2026-03-18", "title": "Custom Response Headers", "body": "X-Stockyard-* headers on every proxied response: trace ID, cost, model, tokens, latency."},
 			{"date": "2026-03-17", "title": "Exchange Pack Marketplace", "body": "Install pre-built config packs: safety, cost control, provider quickstarts, and more."},
@@ -740,7 +741,7 @@ func makeSendHandler(providers map[string]provider.Provider, factory *auth.Provi
 // buildMiddlewares constructs the middleware chain based on product features.
 // Applied in order: outermost first → innermost last.
 // Chain reverses them, so the first middleware listed runs first.
-func buildMiddlewares(reg *toggle.Registry, 
+func buildMiddlewares(reg *toggle.Registry,
 	pc ProductConfig,
 	cfg *config.Config,
 	db *storage.DB,
@@ -895,6 +896,12 @@ func buildMiddlewares(reg *toggle.Registry,
 	// ResponseHeaders — add X-Stockyard-* metadata headers to every response
 	add("responseheaders", features.ResponseHeadersMiddleware())
 	log.Printf("responseheaders: custom response headers enabled")
+
+	// CostWarn — pre-request cost estimation with warn/block thresholds
+	if db != nil {
+		add("costwarn", features.CostWarnMiddleware(db.Conn()))
+		log.Printf("costwarn: pre-request cost warning enabled")
+	}
 
 	// BillingMeter — per-customer usage metering and plan limit enforcement
 	if pc.Features.BillingMeter && db != nil {
