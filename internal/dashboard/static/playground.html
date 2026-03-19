@@ -493,7 +493,7 @@ async function sendMessage() {
 
     const data = await resp.json();
     const assistantContent = data.choices?.[0]?.message?.content || '(empty response)';
-    addMessage('assistant', assistantContent);
+    const msgEl = addMessage('assistant', assistantContent);
 
     const latency = Math.round(performance.now() - start);
     state.messages.push({role: 'assistant', content: assistantContent});
