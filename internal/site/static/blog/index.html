@@ -6,7 +6,7 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Blog: LLM Infrastructure &amp; Proxy Engineering — Stockyard">
+<meta property="og:title" content="Blog: LLM Infrastructure <meta property="og:title" content="Blog — Stockyard"> Proxy Engineering — Stockyard">
 <meta property="og:description" content="Thoughts on LLM infrastructure, proxy architecture, and building developer tools.">
 <meta property="og:url" content="https://stockyard.dev/blog/">
 <meta property="og:type" content="website">
@@ -99,7 +99,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .code-block,pre{font-size:0.7rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
 }
 
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/blog/">
 </head>
@@ -125,6 +124,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <div class="blog-list" id="main">
   <h1>Blog</h1>
   <p class="subtitle">Building LLM infrastructure in the open. <a href="/blog/feed.xml" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);font-style:normal">RSS</a></p>
+    <div class="blog-entry">
+      <a href="/blog/why-go-sqlite/">
+        <div class="entry-title">Why One Binary: Building an LLM Gateway with Go and SQLite</div>
+        <div class="entry-meta"><time datetime="2026-03-20">March 20, 2026</time></div>
+        <div class="entry-desc">Why I chose Go over Python and SQLite over Postgres for an LLM proxy. The engineering tradeoffs behind shipping six apps as one static binary.</div>
+      </a>
+    </div>
     <div class="blog-entry">
       <a href="/blog/why-i-built-stockyard/">
         <div class="entry-title">Why I Built Stockyard</div>
@@ -157,7 +163,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
 
 </body>

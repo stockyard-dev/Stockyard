@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:title" content="Why One Binary: Building an LLM Gateway with Go and SQLite — Stockyard">
+<meta property="og:description" content="Why I chose Go over Python and SQLite over Postgres for an LLM proxy. The engineering tradeoffs behind shipping six apps as one static binary.">
+<meta property="og:url" content="https://stockyard.dev/blog/why-go-sqlite/">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Why One Binary — Stockyard</title>
+<link rel="alternate" type="application/rss+xml" title="Stockyard Blog" href="/blog/feed.xml">
+<meta name="description" content="Why I chose Go over Python and SQLite over Postgres for an LLM proxy. The engineering tradeoffs behind shipping six apps as one static binary.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.post-layout{max-width:700px;margin:0 auto;padding:4rem 2rem}
+.post-layout h1{font-size:2rem;line-height:1.3;margin-bottom:0.5rem}
+.post-meta{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);margin-bottom:3rem}
+.post-layout h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:2.5rem;margin-bottom:1rem}
+.post-layout p{color:var(--cream-dim);line-height:1.9;margin-bottom:1.2rem}
+.post-layout code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.post-layout pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+.post-layout pre .comment{color:#5a5040}
+.post-layout pre .cmd{color:var(--cream)}
+.post-layout ul,.post-layout ol{color:var(--cream-dim);margin:0 0 1.5rem 1.5rem;line-height:1.9}
+.post-layout li{margin-bottom:0.3rem}
+.post-layout blockquote{border-left:3px solid var(--rust);padding:0.5rem 1.2rem;margin:1.5rem 0;color:var(--cream-dim);font-style:italic}
+.post-layout strong{color:var(--cream)}
+.post-layout .sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3);font-style:italic}
+.back{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);display:block;margin-bottom:2rem}
+.back:hover{color:var(--rust-light)}
+.blog-list{max-width:700px;margin:0 auto;padding:4rem 2rem}
+.blog-list h1{font-size:2rem;margin-bottom:0.5rem}
+.blog-list .subtitle{color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.blog-entry{padding:1.5rem 0;border-bottom:1px solid var(--bg3)}
+.blog-entry:first-of-type{border-top:1px solid var(--bg3)}
+.blog-entry a{display:block}
+.blog-entry .entry-title{font-size:1.15rem;color:var(--cream);margin-bottom:0.3rem}
+.blog-entry .entry-meta{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-bottom:0.5rem}
+.blog-entry .entry-desc{font-size:0.9rem;color:var(--cream-dim)}
+.blog-entry:hover .entry-title{color:var(--rust-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.post-layout{padding:2rem 1.5rem}.blog-list{padding:2rem 1.5rem}}
+
+.more-posts{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.more-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.more-posts a{display:block;padding:0.5rem 0;color:var(--cream);text-decoration:none;font-size:0.9rem}
+.more-posts a:hover{color:var(--rust-light)}
+.more-posts .mp-date{color:var(--leather);font-family:var(--font-mono);font-size:0.7rem;margin-left:0.5rem}
+.related-reading{padding:2rem 0;margin-top:2rem;border-top:1px solid var(--bg3)}.related-reading .rl{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}.related-reading ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem}.related-reading li a{display:inline-block;padding:0.4rem 0.8rem;background:var(--bg2);border:1px solid var(--bg3);font-size:0.85rem;text-decoration:none;color:var(--cream);transition:border-color 0.2s}.related-reading li a:hover{border-color:var(--rust)}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
+
+/* ===== BLOG RESPONSIVE ===== */
+@media(max-width:600px){
+  .blog-hero,.page-hero{padding:4rem 1.2rem 2rem}
+  .blog-hero h1,.page-hero h1{font-size:1.6rem}
+  img{max-width:100%;height:auto}
+  .code-block,pre{font-size:0.7rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+}
+
+</style>
+<link rel="canonical" href="https://stockyard.dev/blog/why-go-sqlite/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why One Binary: Building an LLM Gateway with Go and SQLite",
+  "description": "I was building an app with the OpenAI API. Then I shipped it. Within the first week, three things went wrong.",
+  "url": "https://stockyard.dev/blog/why-go-sqlite/",
+  "datePublished": "2026-02-01",
+  "dateModified": "2026-02-01",
+  "wordCount": 496,
+  "author": {
+    "@type": "Person",
+    "name": "Michael"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Stockyard",
+    "url": "https://stockyard.dev",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://stockyard.dev/blog/why-go-sqlite/"
+  }
+}
+</script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a>
+    <a href="/blog/">Blog</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<div class="post-layout" id="main">
+
+    <a href="/blog/" class="back">&larr; All posts</a>
+    <h1>Why One Binary: Building an LLM Gateway with Go and SQLite</h1>
+    <div class="post-meta"><time datetime="2026-02-01">February 1, 2026</time> &middot; Michael</div>
+
+
+<div class="post-layout" id="main">
+
+    <a href="/blog/" class="back">&larr; All posts</a>
+    <h1>Why One Binary: Building an LLM Gateway with Go and SQLite</h1>
+    <div class="post-meta"><time datetime="2026-03-20">March 20, 2026</time> &middot; Michael</div>
+
+    <p>Stockyard is an LLM proxy with tracing, cost tracking, and audit logs. It ships as one Go binary with embedded SQLite. No Redis. No Postgres. No Docker compose. This post explains why.</p>
+
+    <h2>The problem I was solving</h2>
+
+    <p>Every LLM app I shipped needed the same infrastructure: a proxy to sit between my app and the LLM provider, request tracing so I could see what was happening, cost tracking so I didn&rsquo;t get surprised by bills, and audit logs for compliance.</p>
+
+    <p>The standard approach is to assemble this from parts. LiteLLM for routing. Langfuse or Helicone for observability. Your own Postgres for audit logs. Redis for caching. Docker Compose to glue it together. Each tool has its own config format, its own failure modes, its own upgrade cycle.</p>
+
+    <p>I wanted one thing I could install and run.</p>
+
+    <h2>Why Go over Python</h2>
+
+    <p>Most LLM tooling is written in Python. That makes sense &mdash; the ML ecosystem is Python-native, and most LLM SDKs are Python-first.</p>
+
+    <p>But a proxy is not an ML workload. It&rsquo;s a network service. It accepts HTTP requests, runs them through a chain of middleware, forwards them to an upstream provider, and pipes the response back. This is exactly what Go is designed for.</p>
+
+    <p>Specific advantages that mattered:</p>
+
+    <p><strong>Static binary.</strong> <code>CGO_ENABLED=0 go build</code> produces a ~15MB binary with zero runtime dependencies. No virtualenv, no pip, no system Python version conflicts. Copy the binary to a server and run it.</p>
+
+    <p><strong>Goroutine-per-request.</strong> Each proxied request gets its own goroutine. The 58-module middleware chain runs synchronously within that goroutine &mdash; no callback spaghetti, no async/await coloring. The runtime handles scheduling across cores.</p>
+
+    <p><strong>Predictable performance.</strong> The full 58-module middleware chain adds ~400ns of overhead per request (benchmarked with <code>go test -bench</code> on Xeon Platinum). That&rsquo;s noise compared to the 1&ndash;5 second LLM provider latency. No GC pauses that matter at this scale.</p>
+
+    <p><strong>Single-port serving.</strong> Go&rsquo;s <code>net/http</code> serves the proxy endpoint (<code>/v1/*</code>), the REST API (<code>/api/*</code>), the dashboard (<code>/ui</code>), and the marketing site (<code>/</code>) all on one port from one process. No nginx, no reverse proxy, no port mapping.</p>
+
+    <h2>Why SQLite over Postgres</h2>
+
+    <p>This is the decision people question most. &ldquo;SQLite can&rsquo;t handle production traffic.&rdquo;</p>
+
+    <p>That depends on what you&rsquo;re asking it to do. Stockyard uses SQLite for:</p>
+
+    <p><strong>Request traces.</strong> Every proxied request writes one row: model, provider, tokens, cost, latency, timestamp. This is append-heavy, single-writer workload &mdash; exactly what SQLite with WAL mode handles well.</p>
+
+    <p><strong>Audit ledger.</strong> Each audit event is one row with a SHA-256 hash of the previous event. Append-only. Sequential writes. SQLite handles this trivially.</p>
+
+    <p><strong>Configuration.</strong> Module settings, provider configs, prompt templates, workflow definitions. These are read-heavy, rarely-written. SQLite shines here.</p>
+
+    <p><strong>Cost tracking.</strong> Daily spend rollups per project. One upsert per request. WAL mode means readers never block.</p>
+
+    <p>What SQLite doesn&rsquo;t do well: high-concurrency writes from multiple processes, horizontal scaling across machines, replication. Stockyard doesn&rsquo;t need any of these. It&rsquo;s one process on one machine.</p>
+
+    <p>The operational benefit is enormous: no database server to run, no connection pooling to configure, no schema migrations to coordinate across services, no backup infrastructure. The entire database is one file. Back it up with <code>cp</code>.</p>
+
+    <h2>The middleware chain</h2>
+
+    <p>Stockyard has 58 middleware modules. Each one implements a simple interface: receive the request context, optionally modify it, call next. The chain runs synchronously &mdash; no event loops, no message queues.</p>
+
+    <p>Every module is toggleable at runtime via a PUT to <code>/api/proxy/modules/{name}</code>. This is stored in SQLite and checked on each request. The overhead of checking 58 module states is negligible (it&rsquo;s an in-memory map lookup with periodic SQLite refresh).</p>
+
+    <p>Some modules people ask about:</p>
+
+    <p><strong>Cache.</strong> Hash the (model + messages + temperature) tuple. If it&rsquo;s in SQLite, return it without hitting the provider. Simple but effective &mdash; most teams see 15&ndash;30% cache hit rates on real traffic.</p>
+
+    <p><strong>Cost cap.</strong> Each request estimates cost from the model&rsquo;s pricing table and running token count. If the daily/monthly cap is exceeded, the request is rejected before reaching the provider.</p>
+
+    <p><strong>Failover.</strong> If the primary provider returns a 5xx or times out, retry on the next provider in the chain. No code changes in the calling app.</p>
+
+    <p><strong>Prompt guard.</strong> Pattern-matching against known prompt injection patterns. Not bulletproof, but catches the obvious stuff before it reaches the LLM.</p>
+
+    <h2>The audit ledger</h2>
+
+    <p>This is the piece I&rsquo;m most proud of. Every request through Stockyard creates an audit event. Each event includes a SHA-256 hash of the previous event, forming a hash chain. Tampering with any event breaks the chain from that point forward.</p>
+
+    <p>Verification is one API call: <code>GET /api/trust/ledger/verify</code>. It walks the chain and confirms every hash matches. On the current production deployment, this verifies 1,085 events in milliseconds.</p>
+
+    <p>This isn&rsquo;t blockchain. There&rsquo;s no distributed consensus, no proof of work. It&rsquo;s a hash-linked list in SQLite. Simple, fast, and tamper-evident.</p>
+
+    <h2>What I&rsquo;d do differently</h2>
+
+    <p>If I were starting over:</p>
+
+    <p><strong>Fewer apps at launch.</strong> Stockyard ships with six apps (Proxy, Observe, Trust, Studio, Forge, Exchange). Proxy, Observe, and Trust are the core. Studio, Forge, and Exchange are useful but less battle-tested. I should have launched with three and expanded.</p>
+
+    <p><strong>Streaming from day one.</strong> SSE streaming through a reverse proxy has edge cases I underestimated. Non-streaming works perfectly; streaming needs more work on certain hosting platforms.</p>
+
+    <p><strong>Provider coverage.</strong> 16 providers is good but LiteLLM supports 100+. For a routing proxy, breadth matters. I prioritized depth (full middleware chain) over breadth (provider count). Whether that was right depends on the user.</p>
+
+    <h2>Try it</h2>
+
+    <pre style="background:var(--bg2);padding:1rem;font-family:var(--font-mono);font-size:0.85rem;border:1px solid var(--bg3)"><code>curl -fsSL stockyard.dev/install.sh | sh
+stockyard serve
+
+# Make a request
+curl localhost:4200/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'
+
+# Check what happened
+curl localhost:4200/api/observe/traces?limit=1
+curl localhost:4200/api/trust/ledger?limit=1</code></pre>
+
+    <p>MIT licensed. Source on <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>.</p>
+
+    <div class="more-posts">
+    <div class="mp-title">More posts</div>
+    <a href="/blog/why-i-built-stockyard/">Why I Built Stockyard<span class="mp-date">Feb 1</span></a>
+    <a href="/blog/architecture-decisions/">Architecture Decisions Behind Stockyard<span class="mp-date">Feb 10</span></a>
+    <a href="/blog/134-tools-one-binary/">Replacing 134 LLM Tools with One Binary<span class="mp-date">Feb 18</span></a>
+    </div>
+    <div class="sig">Stockyard. Where LLM traffic gets sorted.</div>
+
+</div>
+
+<div class="related-reading">
+  <div class="rl">Keep reading</div>
+  <ul>
+    <li><a href="/blog/architecture-decisions/">Architecture Decisions</a></li>
+    <li><a href="/blog/why-i-built-stockyard/">Why I Built Stockyard</a></li>
+    <li><a href="/observe/">Observe</a></li>
+    <li><a href="/trust/">Trust</a></li>
+    <li><a href="/benchmarks/">Benchmarks</a></li>
+  </ul>
+</div>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
+</footer>
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
+</script>
+
+</body>
+</html>
