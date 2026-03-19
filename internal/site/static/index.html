@@ -241,7 +241,7 @@ const Fragment=({children})=>children;
 function ObserveView(){
   const[tab,setTab]=useState('live');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[ts,setTs]=useState({});const[period,setPeriod]=useState('24h');
   const[liveEvents,setLiveEvents]=useState([]);const[sseStatus,setSseStatus]=useState('connecting');const[livePaused,setLivePaused]=useState(false);
-  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);
+  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);const[toast,setToast]=useState(null);
   const[showFavs,setShowFavs]=useState(false);
   const[heatData,setHeatData]=useState(null);const[heatRange,setHeatRange]=useState('24h');
   const[compareA,setCompareA]=useState(null);const[compareB,setCompareB]=useState(null);const[showCompare,setShowCompare]=useState(false);
@@ -336,7 +336,9 @@ function ObserveView(){
       {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.duration_ms||r.latency_ms)},{key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
       {key:'s',label:'',width:'50px',render:r=>html`<${Badge} text=${r.status==='ok'||r.status_code===200||!r.status_code?'ok':'err'} variant=${r.status==='ok'||r.status_code===200||!r.status_code?'success':'danger'}/>`}
     ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg=${showFavs?"No favorites yet \u2014 click the \u2605 on any trace.":"No traces yet \u2014 send requests to /v1/chat/completions."}/>`:
-    tab==='costs'?html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
+    tab==='costs'?html`<div style="display:flex;gap:8px;margin-bottom:16px">
+      <${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=30','_blank')}>Export 30-Day Report<//><${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=7','_blank')}>7-Day Report<//><${Btn} small variant="danger" onClick=${async()=>{const r=await api('/api/observe/auto-disable',{method:'POST'});if(r.count>0){setToast({msg:r.count+' broken provider(s) disabled: '+r.disabled.join(', '),type:'success'});reload()}else{setToast({msg:'All providers healthy — none disabled',type:'info'})}}}>Auto-Disable Broken Providers<//></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
       <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
         <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Provider</div>
         <${DonutChart} items=${(()=>{const byProv={};d('costs').forEach(c=>{const p=c.provider||'unknown';byProv[p]=(byProv[p]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byProv).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
@@ -384,6 +386,7 @@ function ObserveView(){
       ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
     </div><//>}`}
     ${showCompare&&compareA&&compareB&&html`<${TraceCompare} a=${compareA} b=${compareB} onClose=${()=>setShowCompare(false)}/>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}
 }
 
 // ─── Trust ─────────────────────────────────────────────────────────

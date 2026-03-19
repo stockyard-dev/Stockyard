@@ -16,8 +16,10 @@ type App struct {
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
-func (a *App) Name() string        { return "observe" }
-func (a *App) Description() string { return "Analytics, traces, alerts, anomaly detection, cost attribution" }
+func (a *App) Name() string { return "observe" }
+func (a *App) Description() string {
+	return "Analytics, traces, alerts, anomaly detection, cost attribution"
+}
 
 // SetBroadcaster connects to the event broadcaster for real-time dashboard updates.
 // Note: Trace persistence is handled by hooks.go recordObserveTrace, not here.
@@ -165,6 +167,13 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Heatmap
 	mux.HandleFunc("GET /api/observe/heatmap", a.handleHeatmap)
 
+	// Cost report (printable HTML)
+	mux.HandleFunc("GET /api/observe/cost-report", a.handleCostReport)
+
+	// Auto-disable broken providers
+	mux.HandleFunc("GET /api/observe/provider-health", a.handleProviderHealth)
+	mux.HandleFunc("POST /api/observe/auto-disable", a.handleAutoDisable)
+
 	// Live SSE status (how many dashboard clients connected, recent event count)
 	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
 
@@ -184,10 +193,10 @@ func (a *App) handleLiveStatus(w http.ResponseWriter, r *http.Request) {
 		Scan(&lastMinute)
 
 	writeJSON(w, map[string]any{
-		"recent_5m":        recentCount,
-		"recent_1m":        lastMinute,
-		"recent_cost_5m":   recentCost,
-		"sse_endpoint":     "/ui/events",
+		"recent_5m":      recentCount,
+		"recent_1m":      lastMinute,
+		"recent_cost_5m": recentCost,
+		"sse_endpoint":   "/ui/events",
 	})
 }
 
@@ -210,13 +219,13 @@ func (a *App) handleOverview(w http.ResponseWriter, r *http.Request) {
 		Scan(&todayReqs, &todayCost)
 
 	writeJSON(w, map[string]any{
-		"total_requests":  totalRequests,
-		"total_tokens_in": totalTokensIn,
+		"total_requests":   totalRequests,
+		"total_tokens_in":  totalTokensIn,
 		"total_tokens_out": totalTokensOut,
-		"total_cost_usd":  totalCost,
-		"total_traces":    traceCount,
-		"active_alerts":   alertCount,
-		"anomalies":       anomalyCount,
+		"total_cost_usd":   totalCost,
+		"total_traces":     traceCount,
+		"active_alerts":    alertCount,
+		"anomalies":        anomalyCount,
 		"today": map[string]any{
 			"requests": todayReqs,
 			"cost_usd": todayCost,
@@ -404,19 +413,19 @@ func (a *App) handleListFavorites(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleRecordTrace(w http.ResponseWriter, r *http.Request) {
 	var t struct {
-		ID        string `json:"id"`
-		RequestID string `json:"request_id"`
-		ParentID  string `json:"parent_id"`
-		Service   string `json:"service"`
-		Operation string `json:"operation"`
-		Provider  string `json:"provider"`
-		Model     string `json:"model"`
-		Status    string `json:"status"`
-		Duration  int64  `json:"duration_ms"`
-		TokensIn  int64  `json:"tokens_in"`
-		TokensOut int64  `json:"tokens_out"`
+		ID        string  `json:"id"`
+		RequestID string  `json:"request_id"`
+		ParentID  string  `json:"parent_id"`
+		Service   string  `json:"service"`
+		Operation string  `json:"operation"`
+		Provider  string  `json:"provider"`
+		Model     string  `json:"model"`
+		Status    string  `json:"status"`
+		Duration  int64   `json:"duration_ms"`
+		TokensIn  int64   `json:"tokens_in"`
+		TokensOut int64   `json:"tokens_out"`
 		CostUSD   float64 `json:"cost_usd"`
-		Metadata  any    `json:"metadata"`
+		Metadata  any     `json:"metadata"`
 	}
 	json.NewDecoder(r.Body).Decode(&t)
 	if t.ID == "" {
@@ -842,6 +851,219 @@ func (a *App) handleHeatmap(w http.ResponseWriter, r *http.Request) {
 		"max_count": maxCount,
 		"range":     rangeParam,
 	})
+}
+
+// handleProviderHealth analyzes recent error rates per provider from trace data.
+func (a *App) handleProviderHealth(w http.ResponseWriter, r *http.Request) {
+	rows, err := a.conn.Query(`SELECT provider,
+		COUNT(*) as total,
+		SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) as errors,
+		AVG(duration_ms) as avg_latency,
+		MAX(created_at) as last_seen
+		FROM observe_traces WHERE created_at >= datetime('now', '-1 hour') AND provider != ''
+		GROUP BY provider ORDER BY provider`)
+	if err != nil {
+		writeJSON(w, map[string]any{"providers": []any{}})
+		return
+	}
+	defer rows.Close()
+
+	type provHealth struct {
+		Provider   string  `json:"provider"`
+		Total      int     `json:"total"`
+		Errors     int     `json:"errors"`
+		ErrorRate  float64 `json:"error_rate"`
+		AvgLatency float64 `json:"avg_latency_ms"`
+		LastSeen   string  `json:"last_seen"`
+		Status     string  `json:"status"` // healthy, degraded, broken
+	}
+	var providers []provHealth
+	for rows.Next() {
+		var p provHealth
+		rows.Scan(&p.Provider, &p.Total, &p.Errors, &p.AvgLatency, &p.LastSeen)
+		if p.Total > 0 {
+			p.ErrorRate = float64(p.Errors) / float64(p.Total)
+		}
+		if p.ErrorRate > 0.5 {
+			p.Status = "broken"
+		} else if p.ErrorRate > 0.1 {
+			p.Status = "degraded"
+		} else {
+			p.Status = "healthy"
+		}
+		providers = append(providers, p)
+	}
+	writeJSON(w, map[string]any{"providers": providers, "count": len(providers)})
+}
+
+// handleAutoDisable checks providers with >50% error rate in the last hour
+// and disables them in proxy_providers table.
+func (a *App) handleAutoDisable(w http.ResponseWriter, r *http.Request) {
+	rows, err := a.conn.Query(`SELECT provider,
+		COUNT(*) as total,
+		SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) as errors
+		FROM observe_traces WHERE created_at >= datetime('now', '-1 hour') AND provider != ''
+		GROUP BY provider HAVING total >= 5`)
+	if err != nil {
+		writeJSON(w, map[string]any{"disabled": []string{}, "error": "query failed"})
+		return
+	}
+	defer rows.Close()
+
+	var disabled []string
+	for rows.Next() {
+		var prov string
+		var total, errors int
+		rows.Scan(&prov, &total, &errors)
+		errorRate := float64(errors) / float64(total)
+		if errorRate > 0.5 {
+			// Disable in proxy_providers
+			a.conn.Exec("UPDATE proxy_providers SET status = 'disabled', updated_at = datetime('now') WHERE name = ?", prov)
+			disabled = append(disabled, prov)
+			log.Printf("[auto-disable] provider %s disabled: %d/%d errors (%.0f%%)", prov, errors, total, errorRate*100)
+		}
+	}
+
+	writeJSON(w, map[string]any{
+		"disabled":   disabled,
+		"count":      len(disabled),
+		"checked_at": time.Now().Format(time.RFC3339),
+	})
+}
+
+// handleCostReport generates a printable HTML cost report.
+func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
+	days := r.URL.Query().Get("days")
+	if days == "" {
+		days = "30"
+	}
+
+	// Summary
+	var totalRequests int
+	var totalCost float64
+	var totalTokensIn, totalTokensOut int64
+	a.conn.QueryRow("SELECT COALESCE(COUNT(*),0), COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days')", days).Scan(&totalRequests, &totalCost, &totalTokensIn, &totalTokensOut)
+
+	// Per-provider breakdown
+	type provRow struct {
+		Provider  string
+		Requests  int
+		TokensIn  int64
+		TokensOut int64
+		Cost      float64
+	}
+	var providers []provRow
+	rows, _ := a.conn.Query("SELECT provider, COUNT(*), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days') AND provider != '' GROUP BY provider ORDER BY SUM(cost_usd) DESC", days)
+	if rows != nil {
+		defer rows.Close()
+		for rows.Next() {
+			var p provRow
+			rows.Scan(&p.Provider, &p.Requests, &p.TokensIn, &p.TokensOut, &p.Cost)
+			providers = append(providers, p)
+		}
+	}
+
+	// Per-model breakdown
+	type modelRow struct {
+		Model    string
+		Requests int
+		Cost     float64
+	}
+	var models []modelRow
+	rows2, _ := a.conn.Query("SELECT model, COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days') AND model != '' GROUP BY model ORDER BY SUM(cost_usd) DESC LIMIT 20", days)
+	if rows2 != nil {
+		defer rows2.Close()
+		for rows2.Next() {
+			var m modelRow
+			rows2.Scan(&m.Model, &m.Requests, &m.Cost)
+			models = append(models, m)
+		}
+	}
+
+	// Daily breakdown
+	type dayRow struct {
+		Date     string
+		Requests int
+		Cost     float64
+	}
+	var daily []dayRow
+	rows3, _ := a.conn.Query("SELECT date(created_at), COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days') GROUP BY date(created_at) ORDER BY date(created_at)", days)
+	if rows3 != nil {
+		defer rows3.Close()
+		for rows3.Next() {
+			var d dayRow
+			rows3.Scan(&d.Date, &d.Requests, &d.Cost)
+			daily = append(daily, d)
+		}
+	}
+
+	// Generate HTML
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprintf(w, `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Stockyard Cost Report</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;background:#fff;padding:40px;max-width:900px;margin:0 auto;font-size:13px}
+h1{font-size:24px;margin-bottom:4px}
+.sub{color:#666;font-size:14px;margin-bottom:24px}
+.summary{display:flex;gap:24px;margin-bottom:32px}
+.summary-card{flex:1;border:1px solid #ddd;padding:16px;text-align:center}
+.summary-val{font-size:28px;font-weight:700;color:#b84e20}
+.summary-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-top:4px}
+table{width:100%%;border-collapse:collapse;margin-bottom:24px}
+th{background:#f5f0e8;text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#666;border-bottom:2px solid #ddd}
+td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px}
+.mono{font-family:'Courier New',monospace;font-size:12px}
+.right{text-align:right}
+.section{margin-bottom:32px}
+.section h2{font-size:16px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #ddd}
+.footer{margin-top:40px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999;text-align:center}
+@media print{body{padding:20px}}
+</style></head><body>
+<h1>Stockyard Cost Report</h1>
+<div class="sub">%s-day report &mdash; Generated %s</div>
+<div class="summary">
+  <div class="summary-card"><div class="summary-val">$%.2f</div><div class="summary-label">Total Cost</div></div>
+  <div class="summary-card"><div class="summary-val">%s</div><div class="summary-label">Requests</div></div>
+  <div class="summary-card"><div class="summary-val">%s</div><div class="summary-label">Tokens In</div></div>
+  <div class="summary-card"><div class="summary-val">%s</div><div class="summary-label">Tokens Out</div></div>
+</div>`, days, time.Now().Format("Jan 2, 2006"), totalCost, fmtNum(totalRequests), fmtNum64(totalTokensIn), fmtNum64(totalTokensOut))
+
+	// Provider table
+	fmt.Fprintf(w, `<div class="section"><h2>By Provider</h2><table><tr><th>Provider</th><th class="right">Requests</th><th class="right">Tokens In</th><th class="right">Tokens Out</th><th class="right">Cost</th></tr>`)
+	for _, p := range providers {
+		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, p.Provider, fmtNum(p.Requests), fmtNum64(p.TokensIn), fmtNum64(p.TokensOut), p.Cost)
+	}
+	fmt.Fprintf(w, `</table></div>`)
+
+	// Model table
+	fmt.Fprintf(w, `<div class="section"><h2>By Model (Top 20)</h2><table><tr><th>Model</th><th class="right">Requests</th><th class="right">Cost</th></tr>`)
+	for _, m := range models {
+		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, m.Model, fmtNum(m.Requests), m.Cost)
+	}
+	fmt.Fprintf(w, `</table></div>`)
+
+	// Daily table
+	fmt.Fprintf(w, `<div class="section"><h2>Daily Breakdown</h2><table><tr><th>Date</th><th class="right">Requests</th><th class="right">Cost</th></tr>`)
+	for _, d := range daily {
+		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, d.Date, fmtNum(d.Requests), d.Cost)
+	}
+	fmt.Fprintf(w, `</table></div>`)
+
+	fmt.Fprintf(w, `<div class="footer">Stockyard &mdash; Self-hosted LLM Proxy &amp; Control Plane &mdash; stockyard.dev</div></body></html>`)
+}
+
+func fmtNum(n int) string {
+	if n >= 1000000 {
+		return fmt.Sprintf("%.1fM", float64(n)/1000000)
+	}
+	if n >= 1000 {
+		return fmt.Sprintf("%.1fK", float64(n)/1000)
+	}
+	return fmt.Sprintf("%d", n)
+}
+
+func fmtNum64(n int64) string {
+	return fmtNum(int(n))
 }
 
 func writeJSON(w http.ResponseWriter, v any) {
