@@ -178,7 +178,7 @@ Requires Go 1.22+. No other dependencies.
 
 ## Pricing
 
-Self-hosted Community tier is free with no feature restrictions (10K requests/month cap). Paid tiers start at $9.99/mo for unlimited requests.
+Self-hosted free tier includes 20 modules, 3 providers, and 1,000 requests/month. Individual ($9.99/mo) unlocks all 58 modules, all 16 providers, and 10,000 requests/month. Pro and above are unlimited.
 
 See [stockyard.dev/pricing](https://stockyard.dev/pricing) for details.
 

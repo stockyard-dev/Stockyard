@@ -305,7 +305,7 @@ Built an LLM infrastructure platform designed for self-hosting:
 - AES-256-GCM encryption for provider API keys at rest
 - Works with Ollama for fully local inference
 
-Self-hosted community tier is free forever with no artificial limits on features — just a 10K request/month cap.
+Self-hosted free tier includes 20 modules, 3 providers, and 1,000 requests/month. Paid tiers from $9.99/mo.
 
 stockyard.dev | GitHub: github.com/stockyard-dev/stockyard
 ```
