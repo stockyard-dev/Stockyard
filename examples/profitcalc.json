@@ -1,0 +1,33 @@
+[
+  {
+    "name": "AI Chatbot SaaS",
+    "tier": "pro",
+    "monthly_requests": 100000,
+    "avg_input_tokens": 800,
+    "avg_output_tokens": 500,
+    "model_mix": {
+      "gpt-4o": 0.40,
+      "claude-sonnet-4-5-20250929": 0.30,
+      "gpt-4o-mini": 0.20,
+      "gemini-2.0-flash": 0.10
+    },
+    "markup_pct": 25,
+    "cache_hit_rate": 0.15,
+    "infra_monthly_usd": 30
+  },
+  {
+    "name": "Internal Tool (Cost-Optimized)",
+    "tier": "individual",
+    "monthly_requests": 8000,
+    "avg_input_tokens": 600,
+    "avg_output_tokens": 400,
+    "model_mix": {
+      "gpt-4o-mini": 0.50,
+      "gemini-2.0-flash": 0.30,
+      "deepseek-chat": 0.20
+    },
+    "markup_pct": 0,
+    "cache_hit_rate": 0.25,
+    "infra_monthly_usd": 0
+  }
+]
