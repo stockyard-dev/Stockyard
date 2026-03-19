@@ -48,11 +48,12 @@ type Request struct {
 	Extra map[string]any `json:"-"`
 
 	// Routing metadata (not sent to provider).
-	Project  string `json:"-"`
-	UserID   string `json:"-"`
-	ClientIP string `json:"-"` // Client IP for IP-based access control
-	Schema   string `json:"-"` // X-Schema header value
-	Provider string `json:"-"` // X-Provider override
+	Project    string `json:"-"`
+	UserID     string `json:"-"`
+	CustomerID string `json:"-"` // X-Customer-ID header for billing attribution
+	ClientIP   string `json:"-"` // Client IP for IP-based access control
+	Schema     string `json:"-"` // X-Schema header value
+	Provider   string `json:"-"` // X-Provider override
 }
 
 // Choice represents a single completion choice in a response.

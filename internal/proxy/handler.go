@@ -43,6 +43,24 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		// Check for billing limit errors (429 for limit, 403 for model)
+		if isBillingError(err) {
+			status := http.StatusTooManyRequests
+			errType := "billing_limit_exceeded"
+			if strings.Contains(err.Error(), "not allowed") || strings.Contains(err.Error(), "blocked") {
+				status = http.StatusForbidden
+				errType = "billing_model_denied"
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(status)
+			json.NewEncoder(w).Encode(map[string]any{
+				"error": map[string]any{
+					"message": err.Error(),
+					"type":    errType,
+				},
+			})
+			return
+		}
 		writeError(w, classifyError(err), sanitizeError(err))
 		return
 	}
@@ -264,6 +282,7 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 		req.Project = "default"
 	}
 	req.UserID = r.Header.Get("X-User-Id")
+	req.CustomerID = r.Header.Get("X-Customer-ID")
 	req.Schema = r.Header.Get("X-Schema")
 	req.Provider = r.Header.Get("X-Provider")
 
@@ -327,6 +346,18 @@ func isCapError(err error) (interface{ Error() string }, bool) {
 
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && searchString(s, substr)
+}
+
+// isBillingError checks if an error originates from the billing meter middleware.
+func isBillingError(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "monthly request limit") ||
+		strings.Contains(msg, "monthly spend cap") ||
+		strings.Contains(msg, "not allowed by plan") ||
+		strings.Contains(msg, "blocked by plan")
 }
 
 func searchString(s, substr string) bool {

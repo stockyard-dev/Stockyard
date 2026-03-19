@@ -18,8 +18,9 @@ const APPS={
   studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts & experiments'},
   forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
   exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
+  billing:{id:'billing',name:'Bill',icon:'\u00A2',desc:'Usage metering'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){
@@ -691,7 +692,29 @@ function SettingsView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,settings:SettingsView};
+// ─── Bill (Coming Soon) ─────────────────────────────────────────────
+function BillingView(){
+  const[email,setEmail]=useState('');const[submitted,setSubmitted]=useState(false);const[toast,setToast]=useState(null);
+  const submit=async()=>{if(!email)return;const r=await api('/api/billing/waitlist',{method:'POST',body:JSON.stringify({email})});if(r.status==='subscribed'){setSubmitted(true);setToast({msg:'You\'ll be notified when Bill launches!',type:'success'})}else{setToast({msg:'Failed to subscribe',type:'error'})}};
+  const features=[
+    {title:'Per-Customer Metering',desc:'See exactly what each customer costs you. Attribute every token to the right account.',icon:'\u25CE'},
+    {title:'Plans & Limits',desc:'Set spending caps, rate limits, and model access per customer. Block or alert on overage.',icon:'\u2B21'},
+    {title:'Invoices & Stripe',desc:'Generate invoices automatically. Sync to Stripe with one click.',icon:'\u21C4'},
+  ];
+  return html`<div class="page-head"><div class="page-eyebrow">Bill</div><h2 style="font-size:1.5rem">Usage metering and billing for AI products</h2><p class="page-sub">Track per-customer LLM costs, enforce spending limits, and generate invoices. Coming soon.</p></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:2rem 0">${features.map(f=>html`<div key=${f.title} style="border:1px solid var(--bg3);padding:1.5rem;background:var(--bg)">
+      <div style="font-size:1.5rem;margin-bottom:0.5rem;color:var(--rust)">${f.icon}</div>
+      <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.5rem">${f.title}</div>
+      <div style="font-size:0.82rem;color:var(--cream-dim);line-height:1.5">${f.desc}</div>
+    </div>`)}</div>
+    <div style="border:1px solid var(--bg3);padding:1.5rem;background:var(--bg2);max-width:480px">
+      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem">Notify me when Bill launches</div>
+      ${submitted?html`<div style="color:var(--green);font-size:0.85rem">\u2713 You're on the list. We'll email you when it's ready.</div>`:html`<div style="display:flex;gap:8px"><input class="field-input" placeholder="you@company.com" value=${email} onInput=${e=>setEmail(e.target.value)} style="flex:1" onKeyDown=${e=>e.key==='Enter'&&submit()}/><${Btn} variant="primary" onClick=${submit} disabled=${!email}>Notify me<//></div>`}
+    </div>
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,settings:SettingsView};
 
 
 function Onboarding({onComplete}){
@@ -751,7 +774,7 @@ function App(){
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 6 apps \u00B7 62 endpoints</span></div>
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 76 endpoints</span></div>
   </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));
