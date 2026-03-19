@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -933,16 +934,19 @@ func (a *App) handleAutoDisable(w http.ResponseWriter, r *http.Request) {
 
 // handleCostReport generates a printable HTML cost report.
 func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
-	days := r.URL.Query().Get("days")
-	if days == "" {
-		days = "30"
+	daysInt := 30
+	if d := r.URL.Query().Get("days"); d != "" {
+		if n, err := strconv.Atoi(d); err == nil && n > 0 && n <= 365 {
+			daysInt = n
+		}
 	}
+	modifier := fmt.Sprintf("-%d days", daysInt)
 
 	// Summary
 	var totalRequests int
 	var totalCost float64
 	var totalTokensIn, totalTokensOut int64
-	a.conn.QueryRow("SELECT COALESCE(COUNT(*),0), COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days')", days).Scan(&totalRequests, &totalCost, &totalTokensIn, &totalTokensOut)
+	a.conn.QueryRow("SELECT COALESCE(COUNT(*),0), COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0) FROM observe_traces WHERE created_at >= datetime('now', ?)", modifier).Scan(&totalRequests, &totalCost, &totalTokensIn, &totalTokensOut)
 
 	// Per-provider breakdown
 	type provRow struct {
@@ -953,7 +957,7 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 		Cost      float64
 	}
 	var providers []provRow
-	rows, _ := a.conn.Query("SELECT provider, COUNT(*), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days') AND provider != '' GROUP BY provider ORDER BY SUM(cost_usd) DESC", days)
+	rows, _ := a.conn.Query("SELECT provider, COUNT(*), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', ?) AND provider != '' GROUP BY provider ORDER BY SUM(cost_usd) DESC", modifier)
 	if rows != nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -970,7 +974,7 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 		Cost     float64
 	}
 	var models []modelRow
-	rows2, _ := a.conn.Query("SELECT model, COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days') AND model != '' GROUP BY model ORDER BY SUM(cost_usd) DESC LIMIT 20", days)
+	rows2, _ := a.conn.Query("SELECT model, COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', ?) AND model != '' GROUP BY model ORDER BY SUM(cost_usd) DESC LIMIT 20", modifier)
 	if rows2 != nil {
 		defer rows2.Close()
 		for rows2.Next() {
@@ -987,7 +991,7 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 		Cost     float64
 	}
 	var daily []dayRow
-	rows3, _ := a.conn.Query("SELECT date(created_at), COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', '-'+?+' days') GROUP BY date(created_at) ORDER BY date(created_at)", days)
+	rows3, _ := a.conn.Query("SELECT date(created_at), COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= datetime('now', ?) GROUP BY date(created_at) ORDER BY date(created_at)", modifier)
 	if rows3 != nil {
 		defer rows3.Close()
 		for rows3.Next() {
@@ -1020,13 +1024,13 @@ td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px}
 @media print{body{padding:20px}}
 </style></head><body>
 <h1>Stockyard Cost Report</h1>
-<div class="sub">%s-day report &mdash; Generated %s</div>
+<div class="sub">%d-day report &mdash; Generated %s</div>
 <div class="summary">
   <div class="summary-card"><div class="summary-val">$%.2f</div><div class="summary-label">Total Cost</div></div>
   <div class="summary-card"><div class="summary-val">%s</div><div class="summary-label">Requests</div></div>
   <div class="summary-card"><div class="summary-val">%s</div><div class="summary-label">Tokens In</div></div>
   <div class="summary-card"><div class="summary-val">%s</div><div class="summary-label">Tokens Out</div></div>
-</div>`, days, time.Now().Format("Jan 2, 2006"), totalCost, fmtNum(totalRequests), fmtNum64(totalTokensIn), fmtNum64(totalTokensOut))
+</div>`, daysInt, time.Now().Format("Jan 2, 2006"), totalCost, fmtNum(totalRequests), fmtNum64(totalTokensIn), fmtNum64(totalTokensOut))
 
 	// Provider table
 	fmt.Fprintf(w, `<div class="section"><h2>By Provider</h2><table><tr><th>Provider</th><th class="right">Requests</th><th class="right">Tokens In</th><th class="right">Tokens Out</th><th class="right">Cost</th></tr>`)
