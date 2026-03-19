@@ -123,6 +123,12 @@ CREATE TABLE IF NOT EXISTS observe_safety_events (
 
 CREATE INDEX IF NOT EXISTS idx_safety_events_type ON observe_safety_events(event_type);
 CREATE INDEX IF NOT EXISTS idx_safety_events_created ON observe_safety_events(created_at);
+
+CREATE TABLE IF NOT EXISTS observe_trace_favorites (
+    trace_id TEXT PRIMARY KEY,
+    note TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
@@ -150,6 +156,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Safety events
 	mux.HandleFunc("GET /api/observe/safety", a.handleListSafetyEvents)
 	mux.HandleFunc("GET /api/observe/safety/summary", a.handleSafetySummary)
+
+	// Favorites
+	mux.HandleFunc("GET /api/observe/favorites", a.handleListFavorites)
+	mux.HandleFunc("POST /api/observe/traces/{id}/favorite", a.handleToggleFavorite)
 
 	// Live SSE status (how many dashboard clients connected, recent event count)
 	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
@@ -262,15 +272,32 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Filter demo vs real traces: ?source=real excludes demo data, ?source=demo shows only demo
-	query := "SELECT id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, created_at FROM observe_traces"
+	// ?favorites=true returns only favorited traces
+	favorites := r.URL.Query().Get("favorites") == "true"
+
+	query := `SELECT t.id, t.request_id, t.service, t.operation, t.provider, t.model, t.status,
+		t.duration_ms, t.tokens_in, t.tokens_out, t.cost_usd, t.created_at,
+		CASE WHEN f.trace_id IS NOT NULL THEN 1 ELSE 0 END as favorited
+		FROM observe_traces t LEFT JOIN observe_trace_favorites f ON f.trace_id = t.id`
+
 	source := r.URL.Query().Get("source")
+	var where []string
 	switch source {
 	case "real":
-		query += " WHERE id NOT LIKE 't-demo-%'"
+		where = append(where, "t.id NOT LIKE 't-demo-%'")
 	case "demo":
-		query += " WHERE id LIKE 't-demo-%'"
+		where = append(where, "t.id LIKE 't-demo-%'")
 	}
-	query += " ORDER BY created_at DESC LIMIT ?"
+	if favorites {
+		where = append(where, "f.trace_id IS NOT NULL")
+	}
+	if len(where) > 0 {
+		query += " WHERE " + where[0]
+		for _, w := range where[1:] {
+			query += " AND " + w
+		}
+	}
+	query += " ORDER BY t.created_at DESC LIMIT ?"
 
 	rows, err := a.conn.Query(query, limit)
 	if err != nil {
@@ -284,12 +311,13 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 		var id, reqID, svc, op, prov, model, status, created string
 		var dur, tokIn, tokOut int64
 		var cost float64
-		rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created)
+		var fav int
+		rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created, &fav)
 		traces = append(traces, map[string]any{
 			"id": id, "request_id": reqID, "service": svc, "operation": op,
 			"provider": prov, "model": model, "status": status,
 			"duration_ms": dur, "tokens_in": tokIn, "tokens_out": tokOut,
-			"cost_usd": cost, "created_at": created,
+			"cost_usd": cost, "created_at": created, "favorited": fav == 1,
 		})
 	}
 	writeJSON(w, map[string]any{"traces": traces, "count": len(traces)})
@@ -315,6 +343,59 @@ func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 		"duration_ms": dur, "tokens_in": tokIn, "tokens_out": tokOut,
 		"cost_usd": cost, "metadata": metadata, "created_at": created,
 	})
+}
+
+func (a *App) handleToggleFavorite(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var note string
+	var body struct {
+		Note string `json:"note"`
+	}
+	json.NewDecoder(r.Body).Decode(&body)
+	note = body.Note
+
+	// Check if already favorited
+	var exists int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_trace_favorites WHERE trace_id = ?", id).Scan(&exists)
+	if exists > 0 {
+		// Unfavorite
+		a.conn.Exec("DELETE FROM observe_trace_favorites WHERE trace_id = ?", id)
+		writeJSON(w, map[string]any{"trace_id": id, "favorited": false})
+		return
+	}
+	// Favorite
+	a.conn.Exec("INSERT INTO observe_trace_favorites (trace_id, note) VALUES (?,?)", id, note)
+	writeJSON(w, map[string]any{"trace_id": id, "favorited": true, "note": note})
+}
+
+func (a *App) handleListFavorites(w http.ResponseWriter, r *http.Request) {
+	rows, err := a.conn.Query(`SELECT t.id, t.request_id, t.service, t.operation, t.provider, t.model, t.status,
+		t.duration_ms, t.tokens_in, t.tokens_out, t.cost_usd, t.created_at, f.note
+		FROM observe_trace_favorites f JOIN observe_traces t ON t.id = f.trace_id
+		ORDER BY f.created_at DESC LIMIT 100`)
+	if err != nil {
+		writeJSON(w, map[string]any{"traces": []any{}, "count": 0})
+		return
+	}
+	defer rows.Close()
+
+	var traces []map[string]any
+	for rows.Next() {
+		var id, reqID, svc, op, prov, model, status, created, note string
+		var dur, tokIn, tokOut int64
+		var cost float64
+		rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created, &note)
+		traces = append(traces, map[string]any{
+			"id": id, "request_id": reqID, "service": svc, "operation": op,
+			"provider": prov, "model": model, "status": status,
+			"duration_ms": dur, "tokens_in": tokIn, "tokens_out": tokOut,
+			"cost_usd": cost, "created_at": created, "note": note, "favorited": true,
+		})
+	}
+	if traces == nil {
+		traces = []map[string]any{}
+	}
+	writeJSON(w, map[string]any{"traces": traces, "count": len(traces)})
 }
 
 func (a *App) handleRecordTrace(w http.ResponseWriter, r *http.Request) {
