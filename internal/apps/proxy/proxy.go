@@ -6,9 +6,11 @@ package proxy
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/toggle"
@@ -98,6 +100,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/proxy/modules/{name}", a.handleUpdateModule)
 	mux.HandleFunc("POST /api/proxy/modules/bulk", a.handleBulkToggle)
 	mux.HandleFunc("GET /api/proxy/providers", a.handleListProviders)
+	mux.HandleFunc("GET /api/proxy/providers/health", a.handleHealthCheckAll)
 	mux.HandleFunc("POST /api/proxy/providers/{name}/check", a.handleCheckProvider)
 	mux.HandleFunc("GET /api/proxy/routes", a.handleListRoutes)
 	mux.HandleFunc("GET /api/proxy/chain", a.handleChain)
@@ -380,6 +383,94 @@ func (a *App) handleCheckProvider(w http.ResponseWriter, r *http.Request) {
 
 	a.conn.Exec("UPDATE proxy_providers SET last_check = ?, status = ? WHERE name = ?", now, status, name)
 	writeJSON(w, map[string]string{"status": status, "provider": name, "checked_at": now})
+}
+
+// handleHealthCheckAll checks all configured providers concurrently and returns their status.
+func (a *App) handleHealthCheckAll(w http.ResponseWriter, r *http.Request) {
+	rows, err := a.conn.Query("SELECT name, base_url FROM proxy_providers ORDER BY name")
+	if err != nil {
+		writeJSON(w, map[string]any{"providers": []any{}, "error": "query failed"})
+		return
+	}
+	defer rows.Close()
+
+	type provInfo struct {
+		name    string
+		baseURL string
+	}
+	var providers []provInfo
+	for rows.Next() {
+		var p provInfo
+		rows.Scan(&p.name, &p.baseURL)
+		providers = append(providers, p)
+	}
+
+	type result struct {
+		Provider  string `json:"provider"`
+		Status    string `json:"status"`
+		LatencyMs int64  `json:"latency_ms"`
+		Error     string `json:"error,omitempty"`
+	}
+
+	results := make([]result, len(providers))
+	var wg sync.WaitGroup
+
+	for i, p := range providers {
+		wg.Add(1)
+		go func(idx int, prov provInfo) {
+			defer wg.Done()
+			res := result{Provider: prov.name}
+
+			if prov.baseURL == "" {
+				res.Status = "unconfigured"
+				results[idx] = res
+				return
+			}
+
+			start := time.Now()
+			client := &http.Client{Timeout: 5 * time.Second}
+			resp, err := client.Get(prov.baseURL)
+			latency := time.Since(start).Milliseconds()
+			res.LatencyMs = latency
+
+			if err != nil {
+				res.Status = "unreachable"
+				res.Error = fmt.Sprintf("%v", err)
+			} else {
+				resp.Body.Close()
+				if resp.StatusCode >= 500 {
+					res.Status = "degraded"
+					res.Error = fmt.Sprintf("HTTP %d", resp.StatusCode)
+				} else {
+					res.Status = "ok"
+				}
+			}
+
+			// Update provider status in DB
+			now := time.Now().Format(time.RFC3339)
+			a.conn.Exec("UPDATE proxy_providers SET last_check = ?, status = ?, latency_ms = ? WHERE name = ?",
+				now, res.Status, latency, prov.name)
+
+			results[idx] = res
+		}(i, p)
+	}
+
+	wg.Wait()
+
+	// Count stats
+	healthy := 0
+	for _, r := range results {
+		if r.Status == "ok" {
+			healthy++
+		}
+	}
+
+	writeJSON(w, map[string]any{
+		"providers":  results,
+		"total":      len(results),
+		"healthy":    healthy,
+		"checked_at": time.Now().Format(time.RFC3339),
+	})
 }
 
 func (a *App) handleListRoutes(w http.ResponseWriter, r *http.Request) {

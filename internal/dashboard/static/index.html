@@ -76,12 +76,15 @@ function OverviewView(){
 // ─── Proxy (Interactive toggles) ───────────────────────────────────
 function ProxyView(){
   const[tab,setTab]=useState('modules');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[filter,setFilter]=useState('');
+  const[health,setHealth]=useState(null);const[checking,setChecking]=useState(false);
   const load=async()=>{const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);setData({modules:m.modules||[],providers:p.providers||[],routes:r.routes||[]})};
   useEffect(()=>{load()},[]);
   const toggleModule=async(name,enabled)=>{const r=await api('/api/proxy/modules/'+name,{method:'PUT',body:JSON.stringify({enabled:!enabled})});if(r._error){setToast({msg:'Failed: '+name,type:'error'});return}setToast({msg:name+' '+(enabled?'disabled':'enabled'),type:'success'});load()};
   const bulkToggle=async(cat,enabled)=>{const body=cat==='all'?{modules:d('modules').map(m=>m.name),enabled}:{category:cat,enabled};const r=await api('/api/proxy/modules/bulk',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Bulk toggle failed',type:'error'});return}setToast({msg:(r.affected||0)+' modules '+(enabled?'enabled':'disabled'),type:'success'});load()};
+  const checkAll=async()=>{setChecking(true);const r=await api('/api/proxy/providers/health');setHealth(r);setChecking(false);load()};
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const filtered=d('modules').filter(m=>!filter||m.name.toLowerCase().includes(filter.toLowerCase())||(m.category||'').toLowerCase().includes(filter.toLowerCase()));
+  const statusColor=s=>s==='ok'?'var(--green)':s==='degraded'?'var(--gold)':s==='unconfigured'?'var(--cream-muted)':'var(--red)';
   return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers & routes.</p></div>
     <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
     <${TabBar} tabs=${['modules','chain','providers','routes']} active=${tab} onChange=${setTab}/>
@@ -100,7 +103,21 @@ function ProxyView(){
         <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
         <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
       </div>`)}</div></div>`:
-    tab==='providers'?html`<${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant="success"/>`}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
+    tab==='providers'?html`<div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${d('providers').length} providers configured</span>
+      <${Btn} variant="primary" small onClick=${checkAll} disabled=${checking}>${checking?'Checking...':'Check All Providers'}<//></div>
+      ${health&&html`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px">
+        ${(health.providers||[]).map(p=>html`<div key=${p.provider} style="border:1px solid var(--bg3);padding:16px;background:var(--bg)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="width:10px;height:10px;border-radius:50%;background:${statusColor(p.status)}"></span>
+            <span class="mono" style="font-size:0.85rem;color:var(--cream)">${p.provider}</span>
+          </div>
+          <div class="mono" style="font-size:0.75rem;color:var(--cream-dim)">${p.status}${p.latency_ms?' \u2022 '+p.latency_ms+'ms':''}</div>
+          ${p.error?html`<div style="font-size:0.72rem;color:var(--red);margin-top:4px;word-break:break-all">${p.error.substring(0,80)}</div>`:''}
+        </div>`)}
+      </div>
+      <div class="mono" style="font-size:0.72rem;color:var(--cream-muted);margin-bottom:16px">${health.healthy}/${health.total} healthy \u2022 checked ${new Date(health.checked_at).toLocaleTimeString()}</div>`}
+      <${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant=${r.status==='active'||r.status==='ok'?'success':r.status==='degraded'?'warn':'muted'}/>`},{key:'latency',label:'Latency',width:'100px',mono:true,render:r=>r.latency_ms?r.latency_ms+'ms':'\u2014'},{key:'reqs',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.request_count||0)}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
     html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
@@ -124,10 +141,34 @@ function MiniBar({items,width=260,height=120}){
 }
 
 // ─── Observe (with charts + trace detail) ──────────────────────────
+function DonutChart({items,size=160}){
+  if(!items||items.length===0)return html`<div class="empty-state" style="padding:16px;font-size:0.78rem">No data.</div>`;
+  const total=items.reduce((s,i)=>s+i.value,0);if(total<=0)return html`<div class="empty-state" style="padding:16px">$0.00</div>`;
+  const cx=size/2,cy=size/2,r=size/2-8;let angle=-Math.PI/2;
+  const COLS=['var(--rust-light)','var(--gold)','var(--green)','var(--leather-light)','var(--cream-muted)','var(--red)'];
+  // Group items <2% into "Other"
+  const threshold=total*0.02;const main=items.filter(i=>i.value>=threshold);const otherVal=items.filter(i=>i.value<threshold).reduce((s,i)=>s+i.value,0);
+  const display=[...main];if(otherVal>0)display.push({label:'Other',value:otherVal});
+  const paths=display.map((item,idx)=>{const pct=item.value/total;const sweep=pct*Math.PI*2;const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);angle+=sweep;const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);const large=sweep>Math.PI?1:0;const d=`M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`;return{d,color:COLS[idx%COLS.length],label:item.label,pct:Math.round(pct*100),value:item.value}});
+  return html`<div style="display:flex;gap:20px;align-items:center">
+    <svg width=${size} height=${size} style="display:block">${paths.map((p,i)=>html`<path key=${i} d=${p.d} fill=${p.color} opacity="0.85" stroke="var(--bg)" stroke-width="1.5"><title>${p.label}: ${fmt.usd(p.value)} (${p.pct}%)</title></path>`)}
+      <circle cx=${cx} cy=${cy} r=${r*0.55} fill="var(--bg)"/>
+      <text x=${cx} y=${cy-4} text-anchor="middle" fill="var(--cream)" font-size="14" font-family="var(--font-mono)" font-weight="600">${fmt.usd(total)}</text>
+      <text x=${cx} y=${cy+12} text-anchor="middle" fill="var(--cream-muted)" font-size="9" font-family="var(--font-mono)">total</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:6px">${paths.map((p,i)=>html`<div key=${i} style="display:flex;align-items:center;gap:8px;font-size:0.78rem">
+      <span style="width:8px;height:8px;border-radius:2px;background:${p.color};flex-shrink:0"></span>
+      <span class="mono" style="color:var(--cream);min-width:80px">${p.label}</span>
+      <span class="mono" style="color:var(--cream-dim)">${fmt.usd(p.value)}</span>
+      <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${p.pct}%</span>
+    </div>`)}</div>
+  </div>`;
+}
 function ObserveView(){
   const[tab,setTab]=useState('live');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[ts,setTs]=useState({});const[period,setPeriod]=useState('24h');
   const[liveEvents,setLiveEvents]=useState([]);const[sseStatus,setSseStatus]=useState('connecting');const[livePaused,setLivePaused]=useState(false);
   const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);
+  const[showFavs,setShowFavs]=useState(false);
   const liveRef=useRef([]);const maxLive=200;
 
   // SSE connection
@@ -153,8 +194,9 @@ function ObserveView(){
   useEffect(()=>{if(!livePaused)setLiveEvents([...liveRef.current])},[livePaused]);
 
   // Load persisted data
-  const reload=async()=>{const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?source=real'),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
-  useEffect(()=>{reload()},[]);
+  const toggleFav=async(id)=>{await api('/api/observe/traces/'+id+'/favorite',{method:'POST'});reload()};
+  const reload=async()=>{const src=showFavs?'favorites=true':'source=real';const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?'+src),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
+  useEffect(()=>{reload()},[showFavs]);
   useEffect(()=>{(async()=>{const r=await api('/api/observe/timeseries?period='+period);setTs(r||{})})()},[period]);
   // Auto-refresh persisted data every 15s when on live tab
   useEffect(()=>{if(tab==='live'){const t=setInterval(reload,15000);return()=>clearInterval(t)}},[tab]);
@@ -207,13 +249,25 @@ function ObserveView(){
         <div class="chart-card"><div class="chart-title">Cost by Provider (7d)</div><${MiniBar} items=${provs.map((p,i)=>({label:p.provider||'unknown',value:p.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(p.cost_usd)}))} width=${340} height=${140}/></div>
         <div class="chart-card"><div class="chart-title">Cost by Model (7d)</div><${MiniBar} items=${models.map((m,i)=>({label:(m.model||'unknown').split('/').pop().substring(0,16),value:m.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(m.cost_usd)}))} width=${340} height=${140}/></div>
       </div>`:
-    tab==='traces'?html`<div style="margin-bottom:8px"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button></div><${DataTable} columns=${[
+    tab==='traces'?html`<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button><button class="btn btn-sm ${showFavs?'primary':''}" onClick=${()=>setShowFavs(!showFavs)}>\u2605 ${showFavs?'Favorites':'All'}</button></div><${DataTable} columns=${[
+      {key:'fav',label:'\u2605',width:'36px',render:r=>html`<span onClick=${e=>{e.stopPropagation();toggleFav(r.id)}} style="cursor:pointer;font-size:1rem;color:${r.favorited?'var(--gold)':'var(--bg3)'}">${r.favorited?'\u2605':'\u2606'}</span>`},
       {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},{key:'provider',label:'Provider',width:'110px',mono:true},
       {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},{key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
       {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.duration_ms||r.latency_ms)},{key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
       {key:'s',label:'',width:'50px',render:r=>html`<${Badge} text=${r.status==='ok'||r.status_code===200||!r.status_code?'ok':'err'} variant=${r.status==='ok'||r.status_code===200||!r.status_code?'success':'danger'}/>`}
-    ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg="No traces yet \u2014 send requests to /v1/chat/completions."/>`:
-    tab==='costs'?html`<${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
+    ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg=${showFavs?"No favorites yet \u2014 click the \u2605 on any trace.":"No traces yet \u2014 send requests to /v1/chat/completions."}/>`:
+    tab==='costs'?html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
+      <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Provider</div>
+        <${DonutChart} items=${(()=>{const byProv={};d('costs').forEach(c=>{const p=c.provider||'unknown';byProv[p]=(byProv[p]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byProv).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
+        ${d('costs').length===1&&html`<div style="font-size:0.75rem;color:var(--cream-muted);margin-top:12px;font-style:italic">All traffic goes to ${d('costs')[0]?.provider}. Consider enabling failover.</div>`}
+      </div>
+      <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Model</div>
+        <${DonutChart} items=${(()=>{const byModel={};d('costs').forEach(c=>{const m=(c.model||'unknown').split('/').pop();byModel[m]=(byModel[m]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byModel).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
+      </div>
+    </div>
+    <${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost||r.cost_usd)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
     tab==='alerts'?html`<${DataTable} columns=${[{key:'name',label:'Alert',width:'1.5fr'},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'threshold',label:'Threshold',width:'110px',mono:true},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.last_fired?'fired':'active'} variant=${r.last_fired?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured."/>`:
     html`<div class="safety-dash">
       <div class="stats-row" style="margin-bottom:16px">
