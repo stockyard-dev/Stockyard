@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -47,7 +48,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		if isBillingError(err) {
 			status := http.StatusTooManyRequests
 			errType := "billing_limit_exceeded"
-			if strings.Contains(err.Error(), "not allowed") || strings.Contains(err.Error(), "blocked") {
+			if _, ok := features.IsBillingModelError(err); ok {
 				status = http.StatusForbidden
 				errType = "billing_model_denied"
 			}
@@ -367,12 +368,13 @@ func isBillingError(err error) bool {
 	if err == nil {
 		return false
 	}
-	msg := err.Error()
-	return strings.Contains(msg, "monthly request limit") ||
-		strings.Contains(msg, "monthly spend cap") ||
-		strings.Contains(msg, "rate limit exceeded") ||
-		strings.Contains(msg, "not allowed by plan") ||
-		strings.Contains(msg, "blocked by plan")
+	if _, ok := features.IsBillingLimitError(err); ok {
+		return true
+	}
+	if _, ok := features.IsBillingModelError(err); ok {
+		return true
+	}
+	return false
 }
 
 func searchString(s, substr string) bool {

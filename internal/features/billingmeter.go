@@ -104,13 +104,13 @@ func BillingMeterMiddleware(meter *BillingMeter) proxy.Middleware {
 				hasPlan = true
 			}
 
-			// Pre-request limit checks
+			// Pre-request limit checks (single row read from _total rollup)
 			if hasPlan {
 				monthPeriod := time.Now().UTC().Format("2006-01")
 				var totalReqs, totalCostCents int64
-				meter.conn.QueryRow(`SELECT COALESCE(SUM(requests),0), COALESCE(SUM(cost_cents),0)
-					FROM billing_rollups WHERE customer_id = ? AND period LIKE ?`,
-					customerID, monthPeriod+"%").Scan(&totalReqs, &totalCostCents)
+				meter.conn.QueryRow(`SELECT COALESCE(requests,0), COALESCE(cost_cents,0)
+					FROM billing_rollups WHERE customer_id = ? AND period = ? AND model = '_total'`,
+					customerID, monthPeriod).Scan(&totalReqs, &totalCostCents)
 
 				// Check requests limit
 				if limits.RequestsPerMonth > 0 && totalReqs >= int64(limits.RequestsPerMonth) {
@@ -381,6 +381,16 @@ func (m *BillingMeter) recordUsage(ctx context.Context, customerID string, req *
 				cost_cents = cost_cents + excluded.cost_cents`,
 			accountID, custID, period, model, inputTokens, outputTokens, costCents)
 	}
+
+	// Monthly _total rollup: aggregates all models for fast pre-request limit checks (single row read)
+	m.conn.Exec(`INSERT INTO billing_rollups (account_id, customer_id, period, model, requests, input_tokens, output_tokens, cost_cents)
+		VALUES (?,?,?,'_total',1,?,?,?)
+		ON CONFLICT(account_id, customer_id, period, model) DO UPDATE SET
+			requests = requests + 1,
+			input_tokens = input_tokens + excluded.input_tokens,
+			output_tokens = output_tokens + excluded.output_tokens,
+			cost_cents = cost_cents + excluded.cost_cents`,
+		accountID, custID, monthly, inputTokens, outputTokens, costCents)
 }
 
 // fireOverageAlert fires a webhook event when a customer hits a plan limit.
