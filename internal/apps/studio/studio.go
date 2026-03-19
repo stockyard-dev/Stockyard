@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+type diffLine struct {
+	Type string `json:"type"` // "same", "added", "removed"
+	Text string `json:"text"`
+	Line int    `json:"line"`
+}
+
 type App struct {
 	conn   *sql.DB
 	runner *Runner
@@ -23,8 +29,10 @@ func (a *App) SetProxyPort(port int) {
 	a.runner = NewRunner(a.conn, port)
 }
 
-func (a *App) Name() string        { return "studio" }
-func (a *App) Description() string { return "Prompt templates, experiments, benchmarks, snapshot tests" }
+func (a *App) Name() string { return "studio" }
+func (a *App) Description() string {
+	return "Prompt templates, experiments, benchmarks, snapshot tests"
+}
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn
@@ -112,6 +120,8 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/studio/templates", a.handleCreateTemplate)
 	mux.HandleFunc("POST /api/studio/templates/{slug}/versions", a.handleAddVersion)
 	mux.HandleFunc("GET /api/studio/templates/{slug}/versions", a.handleListVersions)
+	mux.HandleFunc("GET /api/studio/templates/{slug}/versions/{version}", a.handleGetVersion)
+	mux.HandleFunc("GET /api/studio/templates/{slug}/diff", a.handleDiffVersions)
 
 	// Experiments
 	mux.HandleFunc("GET /api/studio/experiments", a.handleListExperiments)
@@ -266,6 +276,127 @@ func (a *App) handleListVersions(w http.ResponseWriter, r *http.Request) {
 		versions = append(versions, map[string]any{"version": ver, "model": model, "author": author, "change_note": note, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"slug": slug, "versions": versions})
+}
+
+func (a *App) handleGetVersion(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	verStr := r.PathValue("version")
+	var id int
+	a.conn.QueryRow("SELECT id FROM studio_templates WHERE slug = ?", slug).Scan(&id)
+	var ver int
+	var content, model, author, note, created string
+	var varsJSON string
+	err := a.conn.QueryRow("SELECT version, content, variables_json, model, author, change_note, created_at FROM studio_template_versions WHERE template_id = ? AND version = ?", id, verStr).Scan(&ver, &content, &varsJSON, &model, &author, &note, &created)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "version not found"})
+		return
+	}
+	writeJSON(w, map[string]any{"slug": slug, "version": ver, "content": content, "variables_json": varsJSON, "model": model, "author": author, "change_note": note, "created_at": created})
+}
+
+func (a *App) handleDiffVersions(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	v1 := r.URL.Query().Get("v1")
+	v2 := r.URL.Query().Get("v2")
+	if v1 == "" || v2 == "" {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "v1 and v2 query params required"})
+		return
+	}
+	var id int
+	a.conn.QueryRow("SELECT id FROM studio_templates WHERE slug = ?", slug).Scan(&id)
+
+	var content1, content2, model1, model2, note1, note2, created1, created2 string
+	var ver1, ver2 int
+	err1 := a.conn.QueryRow("SELECT version, content, model, change_note, created_at FROM studio_template_versions WHERE template_id = ? AND version = ?", id, v1).Scan(&ver1, &content1, &model1, &note1, &created1)
+	err2 := a.conn.QueryRow("SELECT version, content, model, change_note, created_at FROM studio_template_versions WHERE template_id = ? AND version = ?", id, v2).Scan(&ver2, &content2, &model2, &note2, &created2)
+	if err1 != nil || err2 != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "one or both versions not found"})
+		return
+	}
+
+	// Compute line-level diff
+	lines1 := splitLines(content1)
+	lines2 := splitLines(content2)
+	var diff []diffLine
+
+	// Simple LCS-based diff
+	m, n := len(lines1), len(lines2)
+	// Build LCS table
+	lcs := make([][]int, m+1)
+	for i := range lcs {
+		lcs[i] = make([]int, n+1)
+	}
+	for i := 1; i <= m; i++ {
+		for j := 1; j <= n; j++ {
+			if lines1[i-1] == lines2[j-1] {
+				lcs[i][j] = lcs[i-1][j-1] + 1
+			} else if lcs[i-1][j] >= lcs[i][j-1] {
+				lcs[i][j] = lcs[i-1][j]
+			} else {
+				lcs[i][j] = lcs[i][j-1]
+			}
+		}
+	}
+	// Backtrack to produce diff
+	i, j := m, n
+	var stack []diffLine
+	for i > 0 || j > 0 {
+		if i > 0 && j > 0 && lines1[i-1] == lines2[j-1] {
+			stack = append(stack, diffLine{Type: "same", Text: lines1[i-1], Line: j})
+			i--
+			j--
+		} else if j > 0 && (i == 0 || lcs[i][j-1] >= lcs[i-1][j]) {
+			stack = append(stack, diffLine{Type: "added", Text: lines2[j-1], Line: j})
+			j--
+		} else {
+			stack = append(stack, diffLine{Type: "removed", Text: lines1[i-1], Line: i})
+			i--
+		}
+	}
+	// Reverse
+	for k := len(stack) - 1; k >= 0; k-- {
+		diff = append(diff, stack[k])
+	}
+
+	writeJSON(w, map[string]any{
+		"slug":          slug,
+		"v1":            map[string]any{"version": ver1, "model": model1, "change_note": note1, "created_at": created1},
+		"v2":            map[string]any{"version": ver2, "model": model2, "change_note": note2, "created_at": created2},
+		"diff":          diff,
+		"lines_added":   countType(diff, "added"),
+		"lines_removed": countType(diff, "removed"),
+	})
+}
+
+func splitLines(s string) []string {
+	if s == "" {
+		return nil
+	}
+	var lines []string
+	start := 0
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\n' {
+			lines = append(lines, s[start:i])
+			start = i + 1
+		}
+	}
+	if start < len(s) {
+		lines = append(lines, s[start:])
+	}
+	return lines
+}
+
+func countType(diff []diffLine, t string) int {
+	c := 0
+	for _, d := range diff {
+		if d.Type == t {
+			c++
+		}
+	}
+	return c
 }
 
 // --- Experiments ---
@@ -514,10 +645,10 @@ func (a *App) handleRunBenchmark(w http.ResponseWriter, r *http.Request) {
 		Name    string   `json:"name"`
 		Models  []string `json:"models"`
 		Prompts []struct {
-			Name   string `json:"name"`
-			Prompt string `json:"prompt"`
-			System string `json:"system"`
-			Eval   string `json:"eval"`
+			Name    string `json:"name"`
+			Prompt  string `json:"prompt"`
+			System  string `json:"system"`
+			Eval    string `json:"eval"`
 			EvalArg string `json:"eval_arg"`
 		} `json:"prompts"`
 		Runs   int    `json:"runs"`
