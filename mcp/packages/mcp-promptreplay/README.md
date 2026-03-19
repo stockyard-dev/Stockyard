@@ -68,7 +68,7 @@ Open `http://127.0.0.1:4600/ui` for the real-time PromptReplay dashboard.
 
 ## Part of Stockyard
 
-PromptReplay is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+PromptReplay is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

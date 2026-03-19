@@ -66,14 +66,12 @@ I wouldn't call Studio/Forge/Exchange production-ready for critical workflows ye
 
 ---
 
-## "BSL is not open source."
+## "What's the license?"
 
 **Answer:**
-Correct. Stockyard is source-available under BSL 1.1, not OSI-approved open source. The README and site say this explicitly.
+MIT. Full stop. Free to use, modify, and distribute. The LICENSE file is in the repo root.
 
-BSL means: source code is fully visible, you can run it freely for evaluation and non-production use, and production use has a usage grant (see LICENSE). The code converts to Apache 2.0 after the change date.
-
-I chose BSL because I'm a solo developer and need a sustainable business model. If the license is a dealbreaker for your use case, I understand — LiteLLM is Apache 2.0.
+The business model is the hosted/managed tiers, not licensing restrictions.
 
 ---
 
@@ -92,7 +90,7 @@ I should probably make this clearer on the benchmarks page.
 
 1. **Lead with agreement** — "You're right" or "Fair question" before explaining.
 2. **Concede real weaknesses** — 16 providers vs 100+, early-stage ecosystem, Studio/Forge are newer.
-3. **Never say "open source"** — say "source-available" or link the BSL license.
+3. **License is MIT** — mention it if asked. It removes a common objection.
 4. **Link to code** — specific file paths build credibility (`internal/features/compliancelog.go`).
 5. **Be brief** — 3-5 sentences max per reply. HN hates walls of text.
-6. **Don't argue** — if someone doesn't like BSL or prefers LiteLLM, say "makes sense for your use case" and move on.
+6. **Don't argue** — if someone prefers LiteLLM, say "makes sense for your use case" and move on.

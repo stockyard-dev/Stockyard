@@ -69,7 +69,7 @@ Open `http://127.0.0.1:5000/ui` for the real-time BatchQueue dashboard.
 
 ## Part of Stockyard
 
-BatchQueue is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+BatchQueue is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

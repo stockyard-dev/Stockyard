@@ -69,7 +69,7 @@ Open `http://127.0.0.1:5500/ui` for the real-time RetryPilot dashboard.
 
 ## Part of Stockyard
 
-RetryPilot is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+RetryPilot is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

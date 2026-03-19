@@ -82,7 +82,7 @@ Every LLM API call you make is unmonitored, uncached, and unprotected. Structure
 
 ## Part of Stockyard
 
-StructuredShield is one of 20 Stockyard products. Get the full suite at [stockyard.dev](https://stockyard.dev) — all 20 tools for \$19/mo (saves 89% vs buying individually).
+StructuredShield is part of [Stockyard](https://stockyard.dev). All modules included at [stockyard.dev](https://stockyard.dev).
 
 | Product | What it does |
 |---------|-------------|

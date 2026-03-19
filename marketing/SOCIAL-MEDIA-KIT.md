@@ -481,7 +481,7 @@ Submit to all 10 with this info:
 | GitHub | https://github.com/stockyard-dev/stockyard |
 | Description | Open-source LLM infrastructure platform. Six apps (proxy, observability, audit, prompts, workflows, marketplace) in a single Go binary with zero dependencies. |
 | Category | Developer Tools / AI / Infrastructure |
-| License | BSL 1.1 |
+| License | MIT |
 | Language | Go |
 
 **Directories:**

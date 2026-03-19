@@ -68,7 +68,7 @@ Open `http://127.0.0.1:4900/ui` for the real-time ModelSwitch dashboard.
 
 ## Part of Stockyard
 
-ModelSwitch is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+ModelSwitch is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

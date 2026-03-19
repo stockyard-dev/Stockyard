@@ -68,7 +68,7 @@ Open `http://127.0.0.1:4901/ui` for the real-time TokenTrim dashboard.
 
 ## Part of Stockyard
 
-TokenTrim is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+TokenTrim is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

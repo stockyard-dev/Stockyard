@@ -68,7 +68,7 @@ Open `http://127.0.0.1:5200/ui` for the real-time StreamSnap dashboard.
 
 ## Part of Stockyard
 
-StreamSnap is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+StreamSnap is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard
