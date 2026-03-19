@@ -221,10 +221,3 @@ func (mgr *GuardrailManager) Stats() map[string]any {
 func (mgr *GuardrailManager) Invalidate() {
 	mgr.reload()
 }
-
-func truncateMatch(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	return s[:maxLen] + "..."
-}
