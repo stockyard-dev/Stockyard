@@ -42,7 +42,7 @@ Technical details:
 - OpenAI-compatible API (change one URL in your app)
 - Embedded real-time dashboard
 
-CostCap is one of 20 tools in Stockyard, our LLM proxy suite. Free tier is 1,000 requests/day. Paid is $9.99/mo for one product or $29.99/mo for everything.
+CostCap is one of 58 modules in Stockyard, our LLM proxy suite. Free tier is 1,000 requests/day. Paid is Individual $9.99/mo, Pro $49/mo.
 
 What's the most you've accidentally spent on LLM APIs? I'd love to hear your horror stories.
 

@@ -70,7 +70,7 @@ Open `http://127.0.0.1:4000/ui` for the real-time Stockyard dashboard.
 
 ## Part of Stockyard
 
-Stockyard is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+Stockyard is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

@@ -68,7 +68,7 @@ Open `http://127.0.0.1:4410/ui` for the real-time UsagePulse dashboard.
 
 ## Part of Stockyard
 
-UsagePulse is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+UsagePulse is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard

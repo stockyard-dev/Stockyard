@@ -83,7 +83,7 @@ Every LLM API call you make is unmonitored, uncached, and unprotected. CostCap s
 
 ## Part of Stockyard
 
-CostCap is one of 20 Stockyard products. Get the full suite at [stockyard.dev](https://stockyard.dev) — all 20 tools for \$19/mo (saves 89% vs buying individually).
+CostCap is part of [Stockyard](https://stockyard.dev). All modules included at [stockyard.dev](https://stockyard.dev).
 
 | Product | What it does |
 |---------|-------------|

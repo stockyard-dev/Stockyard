@@ -69,7 +69,7 @@ Open `http://127.0.0.1:4801/ui` for the real-time PromptPad dashboard.
 
 ## Part of Stockyard
 
-PromptPad is one of 20 tools in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
+PromptPad is one of 58 modules in the [Stockyard](https://stockyard.dev) suite. Install the full suite:
 
 ```bash
 npx @stockyard/mcp-stockyard
