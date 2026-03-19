@@ -525,6 +525,7 @@ func Boot(pc ProductConfig) {
 	// Changelog — embedded entries served to console "What's New" panel
 	srv.Mux().HandleFunc("GET /api/changelog", func(w http.ResponseWriter, r *http.Request) {
 		entries := []map[string]string{
+			{"date": "2026-03-19", "title": "Week 6: Auto-Disable & Cost Reports", "body": "Auto-disable broken providers based on error rates, and exportable printable HTML cost reports with provider/model/daily breakdowns."},
 			{"date": "2026-03-19", "title": "Week 5: Prompt Diff & Dark Mode", "body": "Side-by-side prompt version diffs with LCS algorithm, and dark/light mode toggle with localStorage persistence."},
 			{"date": "2026-03-19", "title": "Week 4: Cost Estimator, CostWarn & Recommendations", "body": "Live cost estimation in playground, pre-request cost warning middleware, and smart module recommendations based on traffic patterns."},
 			{"date": "2026-03-19", "title": "Billing Phase 2", "body": "Per-customer metering, Stripe integration, invoice generation, and a full billing dashboard."},
