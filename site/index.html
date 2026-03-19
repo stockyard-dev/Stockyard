@@ -408,27 +408,28 @@ function showConsole(name){
 <section class="how">
   <div class="how-inner">
     <h2 class="section-label">How it works</h2>
-    <p style="color:var(--cream-dim);margin-bottom:0.5rem">One line change. That's it.</p>
+    <p style="color:var(--cream-dim);margin-bottom:0.5rem">Install. Run. Point your app at it.</p>
     <div class="code-block">
-<span class="comment"># Or use managed cloud at stockyard.dev/cloud</span>
+<span class="comment"># Install (~15MB binary)</span>
+<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
+
+<span class="comment"># Start</span>
+<span class="cmd">stockyard serve</span>
 
 <span class="comment"># Point your app at Stockyard</span>
-<span class="cmd">export OPENAI_BASE_URL=https://your-team.stockyard.dev/v1</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
 
-<span class="comment"># That's it. Every LLM call now flows through the platform.</span>
-<span class="comment"># Console, traces, cost caps, caching — all live at your-team.stockyard.dev</span>
+<span class="comment"># That's it. Every LLM call now flows through 58 modules.</span>
+<span class="comment"># Traces, cost caps, caching, audit — all at localhost:4200/ui</span>
     </div>
 
     <details style="margin-top:2rem;border:1px solid var(--bg3);padding:0">
       <summary style="padding:1rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">
-        <span>Prefer to self-host?</span>
-        <span style="font-size:0.65rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase">Advanced</span>
+        <span>Want managed cloud instead?</span>
       </summary>
       <div class="code-block" style="border:none;border-top:1px solid var(--bg3)">
-<span class="comment"># You'll need to manage your own server, SSL, backups, and updates</span>
-<span class="cmd">curl -sSL stockyard.dev/install.sh | sh</span>
-<span class="cmd">stockyard</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+<span class="comment"># Sign up at stockyard.dev/cloud — we handle hosting, SSL, and updates</span>
+<span class="cmd">export OPENAI_BASE_URL=https://your-team.stockyard.dev/v1</span>
       </div>
     </details>
 

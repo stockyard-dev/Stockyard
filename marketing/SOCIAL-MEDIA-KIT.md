@@ -27,7 +27,7 @@ Introducing Stockyard — six LLM infrastructure apps in one Go binary.
 
 Proxy. Observe. Trust. Studio. Forge. Exchange.
 
-Zero dependencies. curl -sSL stockyard.dev/install.sh | sh
+Zero dependencies. curl -fsSL stockyard.dev/install.sh | sh
 
 You're running in 30 seconds. 🧵
 ```
@@ -183,7 +183,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
 
   ### Get Started
   ```bash
-  curl -sSL stockyard.dev/install.sh | sh
+  curl -fsSL stockyard.dev/install.sh | sh
   stockyard serve
   ```
 
@@ -299,7 +299,7 @@ Built an LLM infrastructure platform designed for self-hosting:
 
 - Single Go binary (~15MB), zero external dependencies
 - Embedded SQLite — no Postgres, no Redis, no Docker required
-- curl -sSL stockyard.dev/install.sh | sh → running in 30 seconds
+- curl -fsSL stockyard.dev/install.sh | sh → running in 30 seconds
 - 6 integrated apps: proxy, observability, audit trails, prompt management, workflows, config marketplace
 - All 58 middleware modules and 16 provider integrations included in the free tier
 - AES-256-GCM encryption for provider API keys at rest

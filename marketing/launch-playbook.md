@@ -18,7 +18,7 @@ Introducing Stockyard — six LLM infrastructure apps in one Go binary.
 
 Proxy. Observe. Trust. Studio. Forge. Exchange.
 
-Zero dependencies. curl -sSL stockyard.dev/install.sh | sh
+Zero dependencies. curl -fsSL stockyard.dev/install.sh | sh
 
 You're running in 30 seconds. 🧵
 
@@ -79,7 +79,7 @@ Highlights:
 
 Apps: Proxy, Observe, Trust, Studio, Forge, Exchange
 
-Get started: curl -sSL stockyard.dev/install.sh | sh
+Get started: curl -fsSL stockyard.dev/install.sh | sh
 
 ALSO: Create a GitHub Discussion (Announcements category) with the same content. Pin it.
 ```
@@ -105,7 +105,7 @@ What you get:
 - Exchange: config pack marketplace
 
 Try the playground (no signup): stockyard.dev/playground
-Install it: curl -sSL stockyard.dev/install.sh | sh
+Install it: curl -fsSL stockyard.dev/install.sh | sh
 Pricing: stockyard.dev/pricing (free tier included)
 
 —Michael, Stockyard
