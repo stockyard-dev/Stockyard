@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -43,8 +44,35 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		// Check for billing limit errors (429 for limit, 403 for model)
+		if isBillingError(err) {
+			status := http.StatusTooManyRequests
+			errType := "billing_limit_exceeded"
+			if _, ok := features.IsBillingModelError(err); ok {
+				status = http.StatusForbidden
+				errType = "billing_model_denied"
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(status)
+			json.NewEncoder(w).Encode(map[string]any{
+				"error": map[string]any{
+					"message": err.Error(),
+					"type":    errType,
+				},
+			})
+			return
+		}
 		writeError(w, classifyError(err), sanitizeError(err))
 		return
+	}
+
+	// Set custom response headers from middleware metadata
+	if resp.Meta != nil {
+		for k, v := range resp.Meta {
+			w.Header().Set(k, v)
+		}
+		// Expose custom headers to browser JS via CORS
+		w.Header().Set("Access-Control-Expose-Headers", "X-Stockyard-Trace-Id, X-Stockyard-Cost, X-Stockyard-Model, X-Stockyard-Provider, X-Stockyard-Cached, X-Stockyard-Latency-Ms, X-Stockyard-Tokens-In, X-Stockyard-Tokens-Out, X-Stockyard-Cost-Cents")
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -264,8 +292,14 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 		req.Project = "default"
 	}
 	req.UserID = r.Header.Get("X-User-Id")
+	req.CustomerID = r.Header.Get("X-Customer-ID")
 	req.Schema = r.Header.Get("X-Schema")
 	req.Provider = r.Header.Get("X-Provider")
+
+	// Store auth header for JWT claim extraction by billing meter
+	if authHeader := r.Header.Get("Authorization"); authHeader != "" {
+		req.Extra["_auth_header"] = authHeader
+	}
 
 	// Extract client IP for IP-based access control
 	req.ClientIP = extractClientIP(r)
@@ -327,6 +361,20 @@ func isCapError(err error) (interface{ Error() string }, bool) {
 
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && searchString(s, substr)
+}
+
+// isBillingError checks if an error originates from the billing meter middleware.
+func isBillingError(err error) bool {
+	if err == nil {
+		return false
+	}
+	if _, ok := features.IsBillingLimitError(err); ok {
+		return true
+	}
+	if _, ok := features.IsBillingModelError(err); ok {
+		return true
+	}
+	return false
 }
 
 func searchString(s, substr string) bool {

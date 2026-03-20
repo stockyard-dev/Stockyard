@@ -18,8 +18,9 @@ const APPS={
   studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts & experiments'},
   forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
   exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
+  billing:{id:'billing',name:'Bill',icon:'\u00A2',desc:'Usage metering'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){
@@ -75,15 +76,19 @@ function OverviewView(){
 // ─── Proxy (Interactive toggles) ───────────────────────────────────
 function ProxyView(){
   const[tab,setTab]=useState('modules');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[filter,setFilter]=useState('');
+  const[health,setHealth]=useState(null);const[checking,setChecking]=useState(false);const[recs,setRecs]=useState(null);
   const load=async()=>{const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);setData({modules:m.modules||[],providers:p.providers||[],routes:r.routes||[]})};
-  useEffect(()=>{load()},[]);
+  const loadRecs=async()=>{const r=await api('/api/proxy/recommendations');setRecs(r)};
+  useEffect(()=>{load();loadRecs()},[]);
   const toggleModule=async(name,enabled)=>{const r=await api('/api/proxy/modules/'+name,{method:'PUT',body:JSON.stringify({enabled:!enabled})});if(r._error){setToast({msg:'Failed: '+name,type:'error'});return}setToast({msg:name+' '+(enabled?'disabled':'enabled'),type:'success'});load()};
   const bulkToggle=async(cat,enabled)=>{const body=cat==='all'?{modules:d('modules').map(m=>m.name),enabled}:{category:cat,enabled};const r=await api('/api/proxy/modules/bulk',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Bulk toggle failed',type:'error'});return}setToast({msg:(r.affected||0)+' modules '+(enabled?'enabled':'disabled'),type:'success'});load()};
+  const checkAll=async()=>{setChecking(true);const r=await api('/api/proxy/providers/health');setHealth(r);setChecking(false);load()};
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const filtered=d('modules').filter(m=>!filter||m.name.toLowerCase().includes(filter.toLowerCase())||(m.category||'').toLowerCase().includes(filter.toLowerCase()));
+  const statusColor=s=>s==='ok'?'var(--green)':s==='degraded'?'var(--gold)':s==='unconfigured'?'var(--cream-muted)':'var(--red)';
   return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers & routes.</p></div>
     <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
-    <${TabBar} tabs=${['modules','chain','providers','routes']} active=${tab} onChange=${setTab}/>
+    <${TabBar} tabs=${['modules','chain','providers','routes','recommendations']} active=${tab} onChange=${setTab}/>
     ${tab==='modules'?html`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/>
       <${Btn} small onClick=${()=>bulkToggle('all',false)} disabled=${!d('modules').some(m=>m.enabled)}>Disable All<//><${Btn} small onClick=${()=>bulkToggle('all',true)}>Enable All<//></div>
       <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 80px 80px 80px"><span>Module</span><span>Category</span><span>Chain</span><span>Status</span><span>Toggle</span></div>
@@ -99,8 +104,36 @@ function ProxyView(){
         <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
         <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
       </div>`)}</div></div>`:
-    tab==='providers'?html`<${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant="success"/>`}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
-    html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`}
+    tab==='providers'?html`<div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${d('providers').length} providers configured</span>
+      <${Btn} variant="primary" small onClick=${checkAll} disabled=${checking}>${checking?'Checking...':'Check All Providers'}<//></div>
+      ${health&&html`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px">
+        ${(health.providers||[]).map(p=>html`<div key=${p.provider} style="border:1px solid var(--bg3);padding:16px;background:var(--bg)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="width:10px;height:10px;border-radius:50%;background:${statusColor(p.status)}"></span>
+            <span class="mono" style="font-size:0.85rem;color:var(--cream)">${p.provider}</span>
+          </div>
+          <div class="mono" style="font-size:0.75rem;color:var(--cream-dim)">${p.status}${p.latency_ms?' \u2022 '+p.latency_ms+'ms':''}</div>
+          ${p.error?html`<div style="font-size:0.72rem;color:var(--red);margin-top:4px;word-break:break-all">${p.error.substring(0,80)}</div>`:''}
+        </div>`)}
+      </div>
+      <div class="mono" style="font-size:0.72rem;color:var(--cream-muted);margin-bottom:16px">${health.healthy}/${health.total} healthy \u2022 checked ${new Date(health.checked_at).toLocaleTimeString()}</div>`}
+      <${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant=${r.status==='active'||r.status==='ok'?'success':r.status==='degraded'?'warn':'muted'}/>`},{key:'latency',label:'Latency',width:'100px',mono:true,render:r=>r.latency_ms?r.latency_ms+'ms':'\u2014'},{key:'reqs',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.request_count||0)}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
+    tab==='routes'?html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`:
+    html`<div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${recs?.count||0} recommendations based on ${fmt.num(recs?.total_requests_analyzed||0)} recent requests</span>
+        <${Btn} small onClick=${loadRecs}>Refresh<//></div>
+      ${recs?.message?html`<div class="empty-state" style="padding:32px">${recs.message}</div>`:
+        (recs?.recommendations||[]).length===0?html`<div class="empty-state" style="padding:32px">No recommendations — your setup looks good!</div>`:
+        html`<div style="display:flex;flex-direction:column;gap:12px">${(recs?.recommendations||[]).map(r=>html`<div key=${r.id} style="border:1px solid var(--bg3);padding:16px;background:var(--bg)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <${Badge} text=${r.priority} variant=${r.priority==='high'?'error':r.priority==='medium'?'warn':'muted'}/>
+            <span style="font-size:0.92rem;color:var(--cream);font-weight:600">${r.title}</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:10px">${r.reason}</div>
+          <${Btn} small variant="primary" onClick=${async()=>{await api('/api/proxy/modules/'+r.module,{method:'PUT',body:JSON.stringify({enabled:true})});setToast({msg:r.module+' enabled',type:'success'});load();loadRecs()}}>Enable ${r.module}<//></div>`)}</div>`}
+    </div>`}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
@@ -123,10 +156,95 @@ function MiniBar({items,width=260,height=120}){
 }
 
 // ─── Observe (with charts + trace detail) ──────────────────────────
+function DonutChart({items,size=160}){
+  if(!items||items.length===0)return html`<div class="empty-state" style="padding:16px;font-size:0.78rem">No data.</div>`;
+  const total=items.reduce((s,i)=>s+i.value,0);if(total<=0)return html`<div class="empty-state" style="padding:16px">$0.00</div>`;
+  const cx=size/2,cy=size/2,r=size/2-8;let angle=-Math.PI/2;
+  const COLS=['var(--rust-light)','var(--gold)','var(--green)','var(--leather-light)','var(--cream-muted)','var(--red)'];
+  // Group items <2% into "Other"
+  const threshold=total*0.02;const main=items.filter(i=>i.value>=threshold);const otherVal=items.filter(i=>i.value<threshold).reduce((s,i)=>s+i.value,0);
+  const display=[...main];if(otherVal>0)display.push({label:'Other',value:otherVal});
+  const paths=display.map((item,idx)=>{const pct=item.value/total;const sweep=pct*Math.PI*2;const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);angle+=sweep;const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);const large=sweep>Math.PI?1:0;const d=`M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`;return{d,color:COLS[idx%COLS.length],label:item.label,pct:Math.round(pct*100),value:item.value}});
+  return html`<div style="display:flex;gap:20px;align-items:center">
+    <svg width=${size} height=${size} style="display:block">${paths.map((p,i)=>html`<path key=${i} d=${p.d} fill=${p.color} opacity="0.85" stroke="var(--bg)" stroke-width="1.5"><title>${p.label}: ${fmt.usd(p.value)} (${p.pct}%)</title></path>`)}
+      <circle cx=${cx} cy=${cy} r=${r*0.55} fill="var(--bg)"/>
+      <text x=${cx} y=${cy-4} text-anchor="middle" fill="var(--cream)" font-size="14" font-family="var(--font-mono)" font-weight="600">${fmt.usd(total)}</text>
+      <text x=${cx} y=${cy+12} text-anchor="middle" fill="var(--cream-muted)" font-size="9" font-family="var(--font-mono)">total</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:6px">${paths.map((p,i)=>html`<div key=${i} style="display:flex;align-items:center;gap:8px;font-size:0.78rem">
+      <span style="width:8px;height:8px;border-radius:2px;background:${p.color};flex-shrink:0"></span>
+      <span class="mono" style="color:var(--cream);min-width:80px">${p.label}</span>
+      <span class="mono" style="color:var(--cream-dim)">${fmt.usd(p.value)}</span>
+      <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${p.pct}%</span>
+    </div>`)}</div>
+  </div>`;
+}
+function LatencyHeatmap({data,range,onRangeChange}){
+  if(!data||!data.cells||data.cells.length===0)return html`<div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">${['24h','7d','30d'].map(r=>html`<button key=${r} class="btn btn-sm ${range===r?'primary':''}" onClick=${()=>onRangeChange(r)}>${r}</button>`)}</div>
+    <div class="empty-state" style="padding:32px">No latency data yet. Send requests to see the heatmap.</div></div>`;
+  const intervals=data.intervals||[];const buckets=data.buckets||[];const maxC=data.max_count||1;
+  const cellW=Math.max(20,Math.min(40,600/Math.max(intervals.length,1)));const cellH=28;const leftPad=80;const topPad=24;
+  // Build cell map
+  const cellMap={};(data.cells||[]).forEach(c=>{cellMap[c.interval+'|'+c.bucket]=c.count});
+  // Log scale color
+  const heatColor=(count)=>{if(count===0)return'var(--bg2)';const t=Math.log(count+1)/Math.log(maxC+1);const r=Math.round(60+t*136);const g=Math.round(40-t*20);const b=Math.round(20-t*10);return`rgb(${r},${g},${b})`};
+  return html`<div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">${['24h','7d','30d'].map(r=>html`<button key=${r} class="btn btn-sm ${range===r?'primary':''}" onClick=${()=>onRangeChange(r)}>${r}</button>`)}</div>
+    <div style="overflow-x:auto"><svg width=${leftPad+intervals.length*cellW+10} height=${topPad+buckets.length*cellH+10} style="display:block">
+      ${buckets.map((b,bi)=>html`<text key=${'l'+bi} x=${leftPad-6} y=${topPad+bi*cellH+cellH/2+4} text-anchor="end" fill="var(--cream-dim)" font-size="9" font-family="var(--font-mono)">${b}</text>`)}
+      ${intervals.map((iv,ii)=>{const label=range==='30d'?iv.slice(5):iv.slice(11,16);return ii%Math.max(1,Math.floor(intervals.length/12))===0?html`<text key=${'t'+ii} x=${leftPad+ii*cellW+cellW/2} y=${topPad-6} text-anchor="middle" fill="var(--cream-muted)" font-size="8" font-family="var(--font-mono)">${label}</text>`:null})}
+      ${intervals.map((iv,ii)=>buckets.map((b,bi)=>{const count=cellMap[iv+'|'+b]||0;return html`<rect key=${iv+b} x=${leftPad+ii*cellW} y=${topPad+bi*cellH} width=${cellW-1} height=${cellH-1} fill=${heatColor(count)} rx="2"><title>${iv}\n${b}: ${count} requests</title></rect>`}))}
+    </svg></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+      <span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">fewer</span>
+      ${[0,0.2,0.4,0.6,0.8,1].map(t=>html`<span key=${t} style="width:14px;height:14px;background:${t===0?'var(--bg2)':`rgb(${Math.round(60+t*136)},${Math.round(40-t*20)},${Math.round(20-t*10)})`};border-radius:2px;display:inline-block"></span>`)}
+      <span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">more</span>
+    </div>
+  </div>`;
+}
+function TraceCompare({a,b,onClose}){
+  const diff=(va,vb)=>va!==vb?'color:var(--rust-light);font-weight:600':'';
+  const costDiff=a.cost_usd&&b.cost_usd?((b.cost_usd-a.cost_usd)/Math.max(a.cost_usd,0.0001)*100).toFixed(0):null;
+  const latDiff=a.duration_ms&&b.duration_ms?((b.duration_ms-a.duration_ms)/Math.max(a.duration_ms,1)*100).toFixed(0):null;
+  const fields=[
+    ['Model',a.model,b.model],['Provider',a.provider,b.provider],
+    ['Tokens In',fmt.num(a.tokens_in),fmt.num(b.tokens_in)],['Tokens Out',fmt.num(a.tokens_out),fmt.num(b.tokens_out)],
+    ['Latency',fmt.ms(a.duration_ms),fmt.ms(b.duration_ms)],['Cost',fmt.usd(a.cost_usd),fmt.usd(b.cost_usd)],
+    ['Status',a.status,b.status],['Time',fmt.ago(a.created_at),fmt.ago(b.created_at)],
+  ];
+  return html`<${Modal} title="Trace Comparison" onClose=${onClose}>
+    <div style="display:grid;grid-template-columns:120px 1fr 1fr;gap:0;font-size:0.82rem">
+      <div style="padding:8px;font-weight:600;color:var(--cream-muted);border-bottom:1px solid var(--bg3)"></div>
+      <div style="padding:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--rust);border-bottom:1px solid var(--bg3)">Trace A</div>
+      <div style="padding:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--gold);border-bottom:1px solid var(--bg3)">Trace B</div>
+      ${fields.map(([label,va,vb])=>html`<${Fragment} key=${label}>
+        <div style="padding:8px;color:var(--cream-muted);border-bottom:1px solid var(--bg2)">${label}</div>
+        <div style="padding:8px;font-family:var(--font-mono);border-bottom:1px solid var(--bg2);${diff(va,vb)}">${va||'\u2014'}</div>
+        <div style="padding:8px;font-family:var(--font-mono);border-bottom:1px solid var(--bg2);${diff(va,vb)}">${vb||'\u2014'}</div>
+      <//>`)}
+    </div>
+    ${(costDiff||latDiff)&&html`<div style="margin-top:16px;padding:12px;border:1px solid var(--bg3);background:var(--bg)">
+      <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:8px">Delta</div>
+      <div style="display:flex;gap:24px;font-size:0.8rem">
+        ${costDiff&&html`<div><span style="color:var(--cream-dim)">Cost: </span><span class="mono" style="color:${costDiff>0?'var(--red)':'var(--green)'}">${costDiff>0?'+':''}${costDiff}%</span></div>`}
+        ${latDiff&&html`<div><span style="color:var(--cream-dim)">Latency: </span><span class="mono" style="color:${latDiff>0?'var(--red)':'var(--green)'}">${latDiff>0?'+':''}${latDiff}%</span></div>`}
+      </div>
+    </div>`}
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted)">A: ${a.id}</div>
+      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted)">B: ${b.id}</div>
+    </div>
+  <//>`;
+}
+const Fragment=({children})=>children;
 function ObserveView(){
   const[tab,setTab]=useState('live');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[ts,setTs]=useState({});const[period,setPeriod]=useState('24h');
   const[liveEvents,setLiveEvents]=useState([]);const[sseStatus,setSseStatus]=useState('connecting');const[livePaused,setLivePaused]=useState(false);
-  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);
+  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);const[toast,setToast]=useState(null);
+  const[showFavs,setShowFavs]=useState(false);
+  const[heatData,setHeatData]=useState(null);const[heatRange,setHeatRange]=useState('24h');
+  const[compareA,setCompareA]=useState(null);const[compareB,setCompareB]=useState(null);const[showCompare,setShowCompare]=useState(false);
   const liveRef=useRef([]);const maxLive=200;
 
   // SSE connection
@@ -152,9 +270,11 @@ function ObserveView(){
   useEffect(()=>{if(!livePaused)setLiveEvents([...liveRef.current])},[livePaused]);
 
   // Load persisted data
-  const reload=async()=>{const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?source=real'),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
-  useEffect(()=>{reload()},[]);
+  const toggleFav=async(id)=>{await api('/api/observe/traces/'+id+'/favorite',{method:'POST'});reload()};
+  const reload=async()=>{const src=showFavs?'favorites=true':'source=real';const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?'+src),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
+  useEffect(()=>{reload()},[showFavs]);
   useEffect(()=>{(async()=>{const r=await api('/api/observe/timeseries?period='+period);setTs(r||{})})()},[period]);
+  useEffect(()=>{(async()=>{const r=await api('/api/observe/heatmap?range='+heatRange);setHeatData(r||{})})()},[heatRange]);
   // Auto-refresh persisted data every 15s when on live tab
   useEffect(()=>{if(tab==='live'){const t=setInterval(reload,15000);return()=>clearInterval(t)}},[tab]);
 
@@ -171,7 +291,7 @@ function ObserveView(){
       <${Stat} label="Total Traces" value=${fmt.num(ov.total_traces||0)}/>
       <${Stat} label="Live Feed" value=${liveEvents.length} sub=${html`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${sseDot};display:inline-block;${sseStatus==='connected'?'animation:pulse 2s infinite':''}"></span>${sseStatus}</span>`}/>
     </div>
-    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','alerts','safety']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
+    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','heatmap','alerts','safety']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
     ${tab==='live'?html`
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
         <button class="btn btn-sm ${livePaused?'':'primary'}" onClick=${()=>setLivePaused(!livePaused)}>${livePaused?'\u25B6 Resume':'\u23F8 Pause'}</button>
@@ -206,13 +326,31 @@ function ObserveView(){
         <div class="chart-card"><div class="chart-title">Cost by Provider (7d)</div><${MiniBar} items=${provs.map((p,i)=>({label:p.provider||'unknown',value:p.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(p.cost_usd)}))} width=${340} height=${140}/></div>
         <div class="chart-card"><div class="chart-title">Cost by Model (7d)</div><${MiniBar} items=${models.map((m,i)=>({label:(m.model||'unknown').split('/').pop().substring(0,16),value:m.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(m.cost_usd)}))} width=${340} height=${140}/></div>
       </div>`:
-    tab==='traces'?html`<div style="margin-bottom:8px"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button></div><${DataTable} columns=${[
+    tab==='traces'?html`<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button><button class="btn btn-sm ${showFavs?'primary':''}" onClick=${()=>setShowFavs(!showFavs)}>\u2605 ${showFavs?'Favorites':'All'}</button>
+      ${compareA&&compareB?html`<${Btn} variant="primary" small onClick=${()=>setShowCompare(true)}>Compare 2 traces<//>`:compareA?html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Select 1 more trace to compare</span>`:html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Click \u2610 to compare traces</span>`}
+      ${(compareA||compareB)&&html`<button class="btn btn-sm" onClick=${()=>{setCompareA(null);setCompareB(null)}}>Clear</button>`}</div><${DataTable} columns=${[
+      {key:'cmp',label:'\u2610',width:'32px',render:r=>{const sel=compareA?.id===r.id||compareB?.id===r.id;return html`<span onClick=${e=>{e.stopPropagation();if(sel){if(compareA?.id===r.id)setCompareA(null);else setCompareB(null)}else if(!compareA)setCompareA(r);else if(!compareB)setCompareB(r)}} style="cursor:pointer;font-size:0.9rem;color:${sel?'var(--rust)':'var(--bg3)'}">${sel?'\u2611':'\u2610'}</span>`}},
+      {key:'fav',label:'\u2605',width:'36px',render:r=>html`<span onClick=${e=>{e.stopPropagation();toggleFav(r.id)}} style="cursor:pointer;font-size:1rem;color:${r.favorited?'var(--gold)':'var(--bg3)'}">${r.favorited?'\u2605':'\u2606'}</span>`},
       {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},{key:'provider',label:'Provider',width:'110px',mono:true},
       {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},{key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
       {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.duration_ms||r.latency_ms)},{key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
       {key:'s',label:'',width:'50px',render:r=>html`<${Badge} text=${r.status==='ok'||r.status_code===200||!r.status_code?'ok':'err'} variant=${r.status==='ok'||r.status_code===200||!r.status_code?'success':'danger'}/>`}
-    ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg="No traces yet \u2014 send requests to /v1/chat/completions."/>`:
-    tab==='costs'?html`<${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
+    ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg=${showFavs?"No favorites yet \u2014 click the \u2605 on any trace.":"No traces yet \u2014 send requests to /v1/chat/completions."}/>`:
+    tab==='costs'?html`<div style="display:flex;gap:8px;margin-bottom:16px">
+      <${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=30','_blank')}>Export 30-Day Report<//><${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=7','_blank')}>7-Day Report<//><${Btn} small variant="danger" onClick=${async()=>{const r=await api('/api/observe/auto-disable',{method:'POST'});if(r.count>0){setToast({msg:r.count+' broken provider(s) disabled: '+r.disabled.join(', '),type:'success'});reload()}else{setToast({msg:'All providers healthy — none disabled',type:'info'})}}}>Auto-Disable Broken Providers<//></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
+      <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Provider</div>
+        <${DonutChart} items=${(()=>{const byProv={};d('costs').forEach(c=>{const p=c.provider||'unknown';byProv[p]=(byProv[p]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byProv).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
+        ${d('costs').length===1&&html`<div style="font-size:0.75rem;color:var(--cream-muted);margin-top:12px;font-style:italic">All traffic goes to ${d('costs')[0]?.provider}. Consider enabling failover.</div>`}
+      </div>
+      <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Model</div>
+        <${DonutChart} items=${(()=>{const byModel={};d('costs').forEach(c=>{const m=(c.model||'unknown').split('/').pop();byModel[m]=(byModel[m]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byModel).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
+      </div>
+    </div>
+    <${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost||r.cost_usd)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
+    tab==='heatmap'?html`<${LatencyHeatmap} data=${heatData} range=${heatRange} onRangeChange=${setHeatRange}/>`:
     tab==='alerts'?html`<${DataTable} columns=${[{key:'name',label:'Alert',width:'1.5fr'},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'threshold',label:'Threshold',width:'110px',mono:true},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.last_fired?'fired':'active'} variant=${r.last_fired?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured."/>`:
     html`<div class="safety-dash">
       <div class="stats-row" style="margin-bottom:16px">
@@ -246,7 +384,9 @@ function ObserveView(){
       ${detail.user_id?html`<div class="td-row"><span class="td-label">User ID</span><span class="mono">#${detail.user_id}</span></div>`:''}
       ${detail.request_body?html`<div class="td-section"><div class="td-label">Request</div><pre class="td-pre">${typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body,null,2)}</pre></div>`:''}
       ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
-    </div><//>}`
+    </div><//>}`}
+    ${showCompare&&compareA&&compareB&&html`<${TraceCompare} a=${compareA} b=${compareB} onClose=${()=>setShowCompare(false)}/>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}
 }
 
 // ─── Trust ─────────────────────────────────────────────────────────
@@ -383,6 +523,11 @@ function StudioView(){
   const[prompt,setPrompt]=useState('');const[system,setSystem]=useState('');const[models,setModels]=useState(['gpt-4o-mini']);
   const[running,setRunning]=useState(false);const[pgResult,setPgResult]=useState(null);const[compareMode,setCompareMode]=useState(false);
   const[expResult,setExpResult]=useState(null);const[selExp,setSelExp]=useState(null);
+  // Version diff state
+  const[diffSlug,setDiffSlug]=useState(null);const[versions,setVersions]=useState([]);const[diffData,setDiffData]=useState(null);const[diffV1,setDiffV1]=useState('');const[diffV2,setDiffV2]=useState('');
+  const loadVersions=async(slug)=>{const r=await api('/api/studio/templates/'+slug+'/versions');setVersions(r.versions||[]);setDiffSlug(slug);setDiffData(null);setDiffV1('');setDiffV2('');if(r.versions&&r.versions.length>=2){setDiffV1(String(r.versions[r.versions.length-1].version));setDiffV2(String(r.versions[0].version))}};
+  const loadDiff=async()=>{if(!diffSlug||!diffV1||!diffV2)return;const r=await api('/api/studio/templates/'+diffSlug+'/diff?v1='+diffV1+'&v2='+diffV2);if(!r._error)setDiffData(r)};
+  useEffect(()=>{if(diffV1&&diffV2&&diffSlug)loadDiff()},[diffV1,diffV2]);
   const MODEL_LIST=['gpt-4o-mini','gpt-4o','gpt-4.1-mini','gpt-4.1','claude-sonnet-4-5-20250929','claude-haiku-4-5-20251001','gemini-2.5-flash','deepseek-chat','mistral-small-latest','llama-3.3-70b-versatile'];
   const load=async()=>{const[t,e,b]=await Promise.all([api('/api/studio/templates'),api('/api/studio/experiments'),api('/api/studio/benchmarks')]);setData({templates:t.templates||[],experiments:e.experiments||[],benchmarks:b.benchmarks||[]})};
   useEffect(()=>{load()},[]);
@@ -469,8 +614,36 @@ function StudioView(){
       <div class="pack-name">${t.name||t.slug}</div>
       <div class="pack-desc">${t.description||'\u2014'}</div>
       <div class="pack-meta"><span class="mono">${t.slug}</span>${t.model?html`<span class="mono">${t.model}</span>`:null}<span class="mono">v${t.current_version||1}</span></div>
-      <div style="margin-top:6px"><${Btn} small onClick=${e=>{e.stopPropagation();loadTemplate(t.slug)}}>Load in Playground<//></div>
-    </div>`)}</div>${d('templates').length===0?html`<div class="empty-state">No templates. Install the Dev Productivity pack to get starter templates.</div>`:''}`:
+      <div style="margin-top:6px;display:flex;gap:6px"><${Btn} small onClick=${e=>{e.stopPropagation();loadTemplate(t.slug)}}>Load in Playground<//><${Btn} small onClick=${e=>{e.stopPropagation();loadVersions(t.slug)}}>History<//></div>
+    </div>`)}</div>${d('templates').length===0?html`<div class="empty-state">No templates. Install the Dev Productivity pack to get starter templates.</div>`:''}
+    ${diffSlug&&html`<${Modal} title=${'Version History: '+diffSlug} onClose=${()=>setDiffSlug(null)}>
+      <div style="margin-bottom:12px">
+        <div class="section-title" style="margin-bottom:8px">${versions.length} version${versions.length!==1?'s':''}</div>
+        <div style="max-height:120px;overflow-y:auto;border:1px solid var(--bg3);margin-bottom:12px">
+          ${versions.map(v=>html`<div key=${v.version} style="display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--bg3);font-size:0.78rem">
+            <span class="mono" style="font-weight:600">v${v.version}</span>
+            <span style="color:var(--cream-dim)">${v.change_note||'\u2014'}</span>
+            <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${v.author||'\u2014'}</span>
+            <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${fmt.ago(v.created_at)}</span>
+          </div>`)}
+        </div>
+        ${versions.length>=2?html`<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+          <${Select} label="From" value=${diffV1} onChange=${setDiffV1} options=${versions.map(v=>({value:String(v.version),label:'v'+v.version}))}/>
+          <span style="color:var(--cream-muted);margin-top:18px">\u2192</span>
+          <${Select} label="To" value=${diffV2} onChange=${setDiffV2} options=${versions.map(v=>({value:String(v.version),label:'v'+v.version}))}/>
+        </div>`:html`<div style="color:var(--cream-muted);font-size:0.82rem">Need at least 2 versions to diff.</div>`}
+        ${diffData&&html`<div style="margin-bottom:8px;font-size:0.78rem;color:var(--cream-dim)">
+          <span style="color:var(--green)">+${diffData.lines_added} added</span> \u00B7 <span style="color:var(--red)">-${diffData.lines_removed} removed</span>
+          ${diffData.v1?.change_note?html` \u00B7 v${diffData.v1.version}: ${diffData.v1.change_note}`:''}
+          ${diffData.v2?.change_note?html` \u2192 v${diffData.v2.version}: ${diffData.v2.change_note}`:''}
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--bg3);max-height:300px;overflow-y:auto;font-family:var(--font-mono);font-size:0.75rem;line-height:1.6">
+          ${(diffData.diff||[]).map((d,i)=>html`<div key=${i} style="padding:1px 8px;background:${d.type==='added'?'rgba(90,154,74,0.12)':d.type==='removed'?'rgba(196,74,58,0.12)':'transparent'};color:${d.type==='added'?'var(--green)':d.type==='removed'?'var(--red)':'var(--cream-dim)'}">
+            <span style="display:inline-block;width:18px;color:var(--cream-muted)">${d.type==='added'?'+':d.type==='removed'?'-':' '}</span>${d.text||'\u00A0'}
+          </div>`)}
+        </div>`}
+      </div>
+    <//>`}`:
     tab==='experiments'?html`<${DataTable} columns=${[
       {key:'name',label:'Experiment',width:'1.5fr',mono:true},
       {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'draft'} variant=${r.status==='completed'?'success':r.status==='running'?'warn':'muted'}/>`},
@@ -691,7 +864,170 @@ function SettingsView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,settings:SettingsView};
+// ─── Bill ─────────────────────────────────────────────────────────
+function BillingView(){
+  const[tab,setTab]=useState('customers');
+  const tabs=[{id:'customers',label:'Customers'},{id:'plans',label:'Plans'},{id:'usage',label:'Usage'},{id:'invoices',label:'Invoices'},{id:'keys',label:'Keys'},{id:'stripe',label:'Stripe'}];
+  return html`<div class="page-head"><div class="page-eyebrow">Bill</div><h2 style="font-size:1.5rem">Per-Customer Usage Metering & Billing</h2><p class="page-sub">Track LLM costs per customer, enforce plan limits, generate invoices.</p></div>
+    <div style="display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3);padding-bottom:8px">${tabs.map(t=>html`<button key=${t.id} onClick=${()=>setTab(t.id)} style="padding:6px 14px;font-size:0.82rem;font-family:var(--font-mono);border:none;cursor:pointer;background:${tab===t.id?'var(--bg3)':'transparent'};color:${tab===t.id?'var(--cream)':'var(--cream-dim)'};border-radius:4px">${t.label}</button>`)}</div>
+    ${tab==='customers'&&html`<${BillCustomers}/>`}
+    ${tab==='plans'&&html`<${BillPlans}/>`}
+    ${tab==='usage'&&html`<${BillUsage}/>`}
+    ${tab==='invoices'&&html`<${BillInvoices}/>`}
+    ${tab==='keys'&&html`<${BillKeys}/>`}
+    ${tab==='stripe'&&html`<${BillStripe}/>`}`;
+}
+function BillCustomers(){
+  const[custs,setCusts]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[name,setName]=useState('');const[email,setEmail]=useState('');const[extID,setExtID]=useState('');
+  const load=async()=>{const r=await api('/api/billing/customers');if(Array.isArray(r))setCusts(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const r=await api('/api/billing/customers',{method:'POST',body:JSON.stringify({name,email,external_id:extID,account_id:'default'})});if(r.id){setShow(false);setName('');setEmail('');setExtID('');load();setToast({msg:'Customer created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const del=async(id)=>{if(!confirm('Delete customer '+id+'?'))return;await api('/api/billing/customers/'+id,{method:'DELETE'});load();setToast({msg:'Deleted',type:'success'})};
+  const cents=c=>(c/100).toFixed(2);
+  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${custs.length} customers</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Customer<//></div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+    <thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['Name','Email','External ID','Plan','This Month','Actions'].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${custs.map(c=>html`<tr key=${c.id} style="border-bottom:1px solid var(--bg2)">
+      <td style="padding:8px"><span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)">${c.name||'—'}</span><div style="font-size:0.72rem;color:var(--cream-dim);font-family:var(--font-mono)">${c.id}</div></td>
+      <td style="padding:8px;color:var(--cream-dim)">${c.email||'—'}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)">${c.external_id||'—'}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${c.current_plan||'none'}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">$${cents(c.period_cost_cents||0)}</td>
+      <td style="padding:8px"><${Btn} small onClick=${()=>del(c.id)}>\u2715<//></td>
+    </tr>`)}</tbody></table></div>
+    ${show&&html`<${Modal} title="New Customer" onClose=${()=>setShow(false)}>
+      <${Input} label="Name" value=${name} onChange=${setName} placeholder="Acme Corp"/>
+      <${Input} label="Email" value=${email} onChange=${setEmail} placeholder="billing@acme.com"/>
+      <${Input} label="External ID" value=${extID} onChange=${setExtID} placeholder="Optional (Stripe cus_...)"/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!name&&!email}>Create<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillPlans(){
+  const[plans,setPlans]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[pName,setPName]=useState('');const[rpm,setRpm]=useState('60');const[reqMonth,setReqMonth]=useState('10000');
+  const[capCents,setCapCents]=useState('5000');const[overage,setOverage]=useState('block');
+  const load=async()=>{const r=await api('/api/billing/plans');if(Array.isArray(r))setPlans(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const limits={requests_per_month:parseInt(reqMonth)||0,spend_cap_cents:parseInt(capCents)||0,rate_limit_rpm:parseInt(rpm)||0,overage};const r=await api('/api/billing/plans',{method:'POST',body:JSON.stringify({name:pName,limits,account_id:'default'})});if(r.id){setShow(false);setPName('');load();setToast({msg:'Plan created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${plans.length} plans</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Plan<//></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">${plans.map(p=>{
+      const l=typeof p.limits==='string'?JSON.parse(p.limits||'{}'):p.limits||{};
+      return html`<div key=${p.id} style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.75rem">${p.name}</div>
+        <div style="font-size:0.78rem;color:var(--cream-dim);line-height:1.8">
+          <div>\u25B8 ${l.requests_per_month||'\u221E'} req/month</div>
+          <div>\u25B8 $${((l.spend_cap_cents||0)/100).toFixed(0)} spend cap</div>
+          <div>\u25B8 ${l.rate_limit_rpm||'\u221E'} RPM</div>
+          <div>\u25B8 Overage: <span style="color:${l.overage==='block'?'var(--rust)':'var(--gold)'}">${l.overage||'allow'}</span></div>
+        </div>
+        <div style="margin-top:8px;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim)">${p.id}</div>
+      </div>`})}</div>
+    ${show&&html`<${Modal} title="New Plan" onClose=${()=>setShow(false)}>
+      <${Input} label="Plan Name" value=${pName} onChange=${setPName} placeholder="Starter"/>
+      <${Input} label="Requests / Month" value=${reqMonth} onChange=${setReqMonth} placeholder="10000"/>
+      <${Input} label="Spend Cap (cents)" value=${capCents} onChange=${setCapCents} placeholder="5000"/>
+      <${Input} label="RPM Limit" value=${rpm} onChange=${setRpm} placeholder="60"/>
+      <${Select} label="Overage Behavior" value=${overage} onChange=${setOverage} options=${[{value:'block',label:'Block'},{value:'alert',label:'Alert'},{value:'allow',label:'Allow'}]}/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!pName}>Create<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillUsage(){
+  const[summary,setSummary]=useState(null);const[byModel,setByModel]=useState([]);const[byCust,setByCust]=useState([]);
+  const load=async()=>{const[s,m,c]=await Promise.all([api('/api/billing/usage/summary'),api('/api/billing/usage/by-model'),api('/api/billing/usage/by-customer')]);setSummary(s);if(Array.isArray(m))setByModel(m);if(Array.isArray(c))setByCust(c)};
+  useEffect(()=>{load()},[]);
+  const cents=c=>(c/100).toFixed(2);
+  const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
+  return html`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem">
+    <${Stat} label="Total Requests" value=${fmtN(summary?.total_requests||0)}/>
+    <${Stat} label="Total Cost" value=${'$'+cents(summary?.total_cost_cents||0)} accent/>
+    <${Stat} label="Input Tokens" value=${fmtN(summary?.total_input_tokens||0)}/>
+    <${Stat} label="Output Tokens" value=${fmtN(summary?.total_output_tokens||0)}/>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.75rem">By Model</div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.78rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim)">${['Model','Requests','Cost'].map(h=>html`<th style="padding:6px;text-align:left;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${byModel.map(m=>html`<tr key=${m.model} style="border-bottom:1px solid var(--bg2)"><td style="padding:6px;font-family:var(--font-mono)">${m.model}</td><td style="padding:6px">${fmtN(m.requests)}</td><td style="padding:6px">$${cents(m.cost_cents)}</td></tr>`)}</tbody></table></div>
+    <div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.75rem">By Customer</div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.78rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim)">${['Customer','Requests','Cost'].map(h=>html`<th style="padding:6px;text-align:left;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${byCust.map(c=>html`<tr key=${c.customer_id} style="border-bottom:1px solid var(--bg2)"><td style="padding:6px;font-family:var(--font-mono)">${c.customer_id||'unattributed'}</td><td style="padding:6px">${fmtN(c.requests)}</td><td style="padding:6px">$${cents(c.cost_cents)}</td></tr>`)}</tbody></table></div>
+  </div>`;
+}
+function BillInvoices(){
+  const[invoices,setInvoices]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[custID,setCustID]=useState('');const[period,setPeriod]=useState(new Date().toISOString().slice(0,7));
+  const load=async()=>{const r=await api('/api/billing/invoices');if(Array.isArray(r))setInvoices(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const r=await api('/api/billing/invoices',{method:'POST',body:JSON.stringify({customer_id:custID,period})});if(r.id){setShow(false);load();setToast({msg:'Invoice '+r.id+' created — $'+(r.total_cents/100).toFixed(2),type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const cents=c=>(c/100).toFixed(2);
+  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${invoices.length} invoices</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Invoice<//></div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['Invoice','Customer','Period','Amount','Status',''].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${invoices.map(inv=>html`<tr key=${inv.id} style="border-bottom:1px solid var(--bg2)">
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${inv.id}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${inv.customer_id}</td>
+      <td style="padding:8px">${inv.period}</td>
+      <td style="padding:8px;font-family:var(--font-mono)">$${cents(inv.total_cents)}</td>
+      <td style="padding:8px"><span style="padding:2px 8px;border-radius:3px;font-size:0.72rem;font-weight:600;background:${inv.status==='paid'?'#d4edda':inv.status==='sent'?'#cce5ff':'#fff3cd'};color:${inv.status==='paid'?'#155724':inv.status==='sent'?'#004085':'#856404'}">${inv.status}</span></td>
+      <td style="padding:8px"><a href=${'/api/billing/invoices/'+inv.id+'/html'} target="_blank" style="color:var(--rust);font-size:0.78rem;text-decoration:none">View \u2197</a></td>
+    </tr>`)}</tbody></table>
+    ${show&&html`<${Modal} title="Generate Invoice" onClose=${()=>setShow(false)}>
+      <${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/>
+      <${Input} label="Period" value=${period} onChange=${setPeriod} placeholder="2026-03"/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!custID||!period}>Generate<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillKeys(){
+  const[keys,setKeys]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
+  const[userID,setUserID]=useState('');const[custID,setCustID]=useState('');
+  const load=async()=>{const r=await api('/api/billing/customer-keys');if(Array.isArray(r))setKeys(r)};
+  useEffect(()=>{load()},[]);
+  const create=async()=>{const r=await api('/api/billing/customer-keys',{method:'POST',body:JSON.stringify({user_id:userID,customer_id:custID})});if(r.status==='created'){setShow(false);setUserID('');setCustID('');load();setToast({msg:'Key mapping created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const del=async(uid)=>{await api('/api/billing/customer-keys/'+uid,{method:'DELETE'});load();setToast({msg:'Deleted',type:'success'})};
+  return html`<div style="margin-bottom:1rem"><div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:1rem">Map API key users to billing customers. When a request arrives with a user ID, billing automatically attributes usage to the linked customer.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${keys.length} mappings</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Mapping<//></div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['User ID','Customer ID','Customer Name','Created',''].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
+    <tbody>${keys.map(k=>html`<tr key=${k.user_id} style="border-bottom:1px solid var(--bg2)">
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${k.user_id}</td>
+      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${k.customer_id}</td>
+      <td style="padding:8px">${k.customer_name||'—'}</td>
+      <td style="padding:8px;font-size:0.78rem;color:var(--cream-dim)">${k.created_at}</td>
+      <td style="padding:8px"><${Btn} small onClick=${()=>del(k.user_id)}>\u2715<//></td>
+    </tr>`)}</tbody></table>
+    ${show&&html`<${Modal} title="New Key Mapping" onClose=${()=>setShow(false)}>
+      <${Input} label="User ID" value=${userID} onChange=${setUserID} placeholder="User ID from API key" mono/>
+      <${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!userID||!custID}>Create<//></div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+function BillStripe(){
+  const[status,setStatus]=useState(null);const[toast,setToast]=useState(null);const[custID,setCustID]=useState('');const[syncing,setSyncing]=useState(false);
+  const load=async()=>{const r=await api('/api/billing/stripe/status');setStatus(r)};
+  useEffect(()=>{load()},[]);
+  const sync=async()=>{if(!custID)return;setSyncing(true);const r=await api('/api/billing/stripe/sync-customer',{method:'POST',body:JSON.stringify({customer_id:custID})});setSyncing(false);if(r.stripe_id){setToast({msg:r.action+': '+r.stripe_id,type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  return html`<div style="margin-bottom:1.5rem">
+    <div style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg);margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem">
+        <span style="width:8px;height:8px;border-radius:50%;background:${status?.enabled?'var(--green)':'var(--cream-dim)'}"></span>
+        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)">Stripe ${status?.enabled?'Connected':'Not Configured'}</span>
+      </div>
+      ${!status?.enabled&&html`<div style="font-size:0.82rem;color:var(--cream-dim);line-height:1.5">Set the <code style="background:var(--bg2);padding:2px 6px;border-radius:3px">STRIPE_SECRET_KEY</code> environment variable to enable Stripe integration. Supports customer sync, invoice creation, and payment webhooks.</div>`}
+    </div>
+    ${status?.enabled&&html`<div style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg)">
+      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:1rem">Sync Customer to Stripe</div>
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <div style="flex:1"><${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/></div>
+        <${Btn} variant="primary" onClick=${sync} disabled=${!custID||syncing}>${syncing?'Syncing...':'Sync'}<//>
+      </div>
+    </div>`}
+  </div>
+  ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,settings:SettingsView};
 
 
 function Onboarding({onComplete}){
@@ -736,9 +1072,84 @@ function AuthGate({onAuth}){
   </div></div>`;
 }
 
+// ─── Changelog Panel ──────────────────────────────────────────────
+function ChangelogPanel({onClose}){
+  const[entries,setEntries]=useState([]);
+  useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=5');if(Array.isArray(r))setEntries(r)})()},[]);
+  useEffect(()=>{localStorage.setItem('sy_changelog_seen',Date.now().toString())},[]);
+  return html`<div style="position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--bg2);border-left:1px solid var(--bg3);z-index:1000;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,0.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--bg3)">
+      <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)">What's New</span>
+      <button onClick=${onClose} style="border:none;background:none;color:var(--cream-dim);cursor:pointer;font-size:1rem">\u2715</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px">
+      ${entries.map(e=>html`<div key=${e.date} style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--bg3)">
+        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust);margin-bottom:4px">${e.date}</div>
+        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:6px">${e.title}</div>
+        <div style="font-size:0.8rem;color:var(--cream-dim);line-height:1.5">${e.body}</div>
+      </div>`)}
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid var(--bg3);text-align:center">
+      <a href="https://stockyard.dev/changelog" target="_blank" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);text-decoration:none">View full changelog \u2197</a>
+    </div>
+  </div>`;
+}
+
+// ─── Keyboard Shortcuts ───────────────────────────────────────────
+function ShortcutsModal({onClose}){
+  const shortcuts=[
+    ['g then o','Go to Overview'],['g then p','Go to Proxy'],['g then b','Go to Observe'],
+    ['g then t','Go to Trust'],['g then s','Go to Studio'],['g then f','Go to Forge'],
+    ['g then e','Go to Exchange'],['g then i','Go to Bill'],
+    ['r','Refresh current view'],['?','Show shortcuts'],['Esc','Close modal/panel'],
+  ];
+  return html`<${Modal} title="Keyboard Shortcuts" onClose=${onClose}>
+    <table style="width:100%;font-size:0.82rem;border-collapse:collapse">
+      ${shortcuts.map(([key,desc])=>html`<tr key=${key} style="border-bottom:1px solid var(--bg3)">
+        <td style="padding:8px 12px;width:140px"><kbd style="font-family:var(--font-mono);font-size:0.78rem;background:var(--bg3);padding:2px 8px;border-radius:3px;color:var(--cream)">${key}</kbd></td>
+        <td style="padding:8px 12px;color:var(--cream-dim)">${desc}</td>
+      </tr>`)}
+    </table>
+  <//>`;
+}
+
+function useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts){
+  const pending=useRef(null);
+  useEffect(()=>{
+    const navMap={o:'overview',p:'proxy',b:'observe',t:'trust',s:'studio',f:'forge',e:'exchange',i:'billing'};
+    const handler=(e)=>{
+      const tag=e.target.tagName;
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||e.target.isContentEditable)return;
+      if(e.key==='Escape'){setShowChangelog(false);setShowShortcuts(false);return}
+      if(e.key==='?'&&!e.shiftKey){e.preventDefault();setShowShortcuts(s=>!s);return}
+      if(e.key==='r'&&!e.ctrlKey&&!e.metaKey){window.dispatchEvent(new CustomEvent('sy-refresh'));return}
+      if(pending.current){
+        clearTimeout(pending.current.timer);
+        const dest=navMap[e.key];
+        if(dest)setActive(dest);
+        pending.current=null;return;
+      }
+      if(e.key==='g'){
+        const timer=setTimeout(()=>{pending.current=null},1000);
+        pending.current={timer};
+      }
+    };
+    document.addEventListener('keydown',handler);
+    return()=>document.removeEventListener('keydown',handler);
+  },[]);
+}
+
 function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);const View=VIEWS[active]||OverviewView;
+  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
+  const[showChangelog,setShowChangelog]=useState(false);const[showShortcuts,setShowShortcuts]=useState(false);
+  const[hasNew,setHasNew]=useState(false);
+  const[theme,setThemeState]=useState(()=>localStorage.getItem('sy_theme')||'dark');
+  const setTheme=(t)=>{setThemeState(t);localStorage.setItem('sy_theme',t);document.documentElement.setAttribute('data-theme',t)};
+  useEffect(()=>{document.documentElement.setAttribute('data-theme',theme)},[]);
+  const View=VIEWS[active]||OverviewView;
+  useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts);
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
+  useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=1');if(Array.isArray(r)&&r.length>0){const lastSeen=parseInt(localStorage.getItem('sy_changelog_seen')||'0');const entryDate=new Date(r[0].date).getTime();if(entryDate>lastSeen)setHasNew(true)}})()},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
   if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
@@ -747,17 +1158,23 @@ function App(){
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
+    <button class="nav-item" onClick=${()=>{setShowChangelog(s=>!s);setHasNew(false)}} title="What's New"><span class="nav-icon" style="position:relative">\u2605${hasNew&&html`<span style="position:absolute;top:-2px;right:-4px;width:6px;height:6px;background:var(--rust);border-radius:50%"></span>`}</span><span class="nav-label">What's New</span></button>
+    <button class="nav-item" onClick=${()=>setTheme(theme==='dark'?'light':'dark')} title=${theme==='dark'?'Switch to light mode':'Switch to dark mode'}><span class="nav-icon">${theme==='dark'?'\u263E':'\u2600'}</span><span class="nav-label">${theme==='dark'?'Light Mode':'Dark Mode'}</span></button>
     <button class="nav-item ${active==='settings'?'active':''}" onClick=${()=>setActive('settings')}><span class="nav-icon">\u2699</span><span class="nav-label">Settings</span></button>
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 6 apps \u00B7 62 endpoints</span></div>
-  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 88 endpoints</span><div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-top:2px">Press ? for shortcuts</div></div>
+  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main>
+    ${showChangelog&&html`<${ChangelogPanel} onClose=${()=>setShowChangelog(false)}/>`}
+    ${showShortcuts&&html`<${ShortcutsModal} onClose=${()=>setShowShortcuts(false)}/>`}
+  </div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));
 </script>
 <style>
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5a9a4a;--green-s:rgba(90,154,74,0.15);--red:#c44a3a;--red-s:rgba(196,74,58,0.15);--amber:#d4a843;--amber-s:rgba(212,168,67,0.15);--muted-s:rgba(160,132,92,0.1);--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace;--nav-w:220px}
+:root,html[data-theme="dark"]{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5a9a4a;--green-s:rgba(90,154,74,0.15);--red:#c44a3a;--red-s:rgba(196,74,58,0.15);--amber:#d4a843;--amber-s:rgba(212,168,67,0.15);--muted-s:rgba(160,132,92,0.1);--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace;--nav-w:220px}
+html[data-theme="light"]{--bg:#f5f0e8;--bg2:#ede6da;--bg3:#ddd5c7;--rust:#b84e20;--rust-light:#d4622e;--rust-dark:#8b3d1a;--leather:#7a6545;--leather-light:#5c4a30;--cream:#1a1410;--cream-dim:#3d342a;--cream-muted:#8a7e70;--gold:#a07820;--green:#3a7a30;--green-s:rgba(58,122,48,0.12);--red:#b33a2a;--red-s:rgba(179,58,42,0.12);--amber:#a07820;--amber-s:rgba(160,120,32,0.12);--muted-s:rgba(120,100,70,0.08)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px}body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.6;-webkit-font-smoothing:antialiased}.mono{font-family:var(--font-mono)}code{font-family:var(--font-mono);font-size:0.85em}
 .shell{display:flex;height:100vh;overflow:hidden}
 .nav{width:var(--nav-w);min-width:var(--nav-w);background:var(--bg2);border-right:1px solid var(--bg3);display:flex;flex-direction:column;padding:20px 12px;gap:2px;overflow-y:auto}

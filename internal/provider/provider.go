@@ -48,11 +48,12 @@ type Request struct {
 	Extra map[string]any `json:"-"`
 
 	// Routing metadata (not sent to provider).
-	Project  string `json:"-"`
-	UserID   string `json:"-"`
-	ClientIP string `json:"-"` // Client IP for IP-based access control
-	Schema   string `json:"-"` // X-Schema header value
-	Provider string `json:"-"` // X-Provider override
+	Project    string `json:"-"`
+	UserID     string `json:"-"`
+	CustomerID string `json:"-"` // X-Customer-ID header for billing attribution
+	ClientIP   string `json:"-"` // Client IP for IP-based access control
+	Schema     string `json:"-"` // X-Schema header value
+	Provider   string `json:"-"` // X-Provider override
 }
 
 // Choice represents a single completion choice in a response.
@@ -81,6 +82,10 @@ type Response struct {
 	Provider string        `json:"-"`
 	Latency  time.Duration `json:"-"`
 	CacheHit bool          `json:"-"`
+
+	// Meta holds key-value pairs that the HTTP handler will set as response headers.
+	// Populated by the responseheaders middleware.
+	Meta map[string]string `json:"-"`
 }
 
 // StreamChunk represents a single chunk in a streaming response.
