@@ -19,8 +19,9 @@ const APPS={
   forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
   exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
   billing:{id:'billing',name:'Bill',icon:'\u00A2',desc:'Usage metering'},
+  team:{id:'team',name:'Team',icon:'\u2693',desc:'Members & RBAC'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){
@@ -65,12 +66,19 @@ function UpgradeBanner(){
 
 // ─── Overview ──────────────────────────────────────────────────────
 function OverviewView(){
-  const[apps,setApps]=useState(null);const[users,setUsers]=useState([]);const[mods,setMods]=useState(0);
-  useEffect(()=>{(async()=>{const a=await api('/api/apps');setApps(a.apps||[]);const u=await api('/api/auth/users');setUsers(u.users||[]);const m=await api('/api/proxy/modules');setMods(m.count||0)})()},[]);
+  const[apps,setApps]=useState(null);const[users,setUsers]=useState([]);const[mods,setMods]=useState(0);const[integ,setInteg]=useState([]);
+  useEffect(()=>{(async()=>{const a=await api('/api/apps');setApps(a.apps||[]);const u=await api('/api/auth/users');setUsers(u.users||[]);const m=await api('/api/proxy/modules');setMods(m.count||0);const i=await api('/api/integrations/status');if(Array.isArray(i))setInteg(i)})()},[]);
   if(!apps)return html`<div class="loading">Loading\u2026</div>`;
   return html`<div class="page-head"><div class="page-eyebrow">Console</div><h2>System Overview</h2><p class="page-sub">All 6 apps running on a single binary.</p></div>
     <div class="stats-row"><${Stat} label="Apps" value=${apps.length} accent/><${Stat} label="Users" value=${users.length}/><${Stat} label="Modules" value=${mods}/><${Stat} label="Status" value="Operational" accent/></div>
-    <div class="app-grid">${apps.map(a=>{const cfg=APPS[a.name];return html`<div key=${a.name} class="app-card"><div class="app-card-head"><span class="app-card-icon">${cfg?.icon||'\u25C6'}</span><span class="app-card-name">${a.name}</span><${Badge} text="live" variant="success"/></div><div class="app-card-desc">${a.description}</div><code class="app-card-api">${a.api}</code></div>`})}</div>`;
+    <div class="app-grid">${apps.map(a=>{const cfg=APPS[a.name];return html`<div key=${a.name} class="app-card"><div class="app-card-head"><span class="app-card-icon">${cfg?.icon||'\u25C6'}</span><span class="app-card-name">${a.name}</span><${Badge} text="live" variant="success"/></div><div class="app-card-desc">${a.description}</div><code class="app-card-api">${a.api}</code></div>`})}</div>
+    ${integ.length>0&&html`<div style="margin-top:2rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Integrations</div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">${integ.map(s=>html`<div key=${s.service} style="padding:0.8rem 1.2rem;border:1px solid var(--bg3);background:var(--bg2);display:flex;align-items:center;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${s.connected?'var(--green-light)':'var(--cream-muted)'}"></div>
+        <span style="font-family:var(--font-mono);font-size:0.82rem;text-transform:capitalize">${s.service}</span>
+        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)">${s.connected?'Connected':'Disconnected'}</span>
+      </div>`)}</div>
+    </div>`}`;
 }
 
 // ─── Proxy (Interactive toggles) ───────────────────────────────────
@@ -1027,7 +1035,67 @@ function BillStripe(){
   ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,settings:SettingsView};
+function TeamView(){
+  const[members,setMembers]=useState([]);const[spend,setSpend]=useState([]);const[toast,setToast]=useState(null);
+  const[tab,setTab]=useState('members');const[show,setShow]=useState(false);
+  const[email,setEmail]=useState('');const[name,setName]=useState('');const[role,setRole]=useState('viewer');
+
+  const loadMembers=async()=>{const r=await api('/api/team/members');if(Array.isArray(r))setMembers(r)};
+  const loadSpend=async()=>{const r=await api('/api/team/spend');if(r.members)setSpend(r.members)};
+  useEffect(()=>{loadMembers();loadSpend()},[]);
+
+  const invite=async()=>{const r=await api('/api/team/members',{method:'POST',body:JSON.stringify({email,name,role})});if(r.id){setShow(false);setEmail('');setName('');setRole('viewer');loadMembers();setToast({msg:'Invite sent to '+email,type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
+  const remove=async(id)=>{if(!confirm('Remove this team member?'))return;await api('/api/team/members/'+id,{method:'DELETE'});loadMembers();setToast({msg:'Member removed',type:'success'})};
+  const changeRole=async(id,newRole)=>{await api('/api/team/members/'+id,{method:'PUT',body:JSON.stringify({role:newRole})});loadMembers();setToast({msg:'Role updated',type:'success'})};
+
+  const tabs=[{id:'members',label:'Members'},{id:'spend',label:'Spend'}];
+  return html`<div class="page-head"><div class="page-eyebrow">Team</div><h2 style="font-size:1.5rem">Team Members & RBAC</h2><p class="page-sub">Manage team members, roles, and per-member spend tracking.</p></div>
+    <div style="display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3);padding-bottom:8px">${tabs.map(t=>html`<button key=${t.id} onClick=${()=>setTab(t.id)} style="padding:6px 14px;font-size:0.82rem;font-family:var(--font-mono);border:none;cursor:pointer;background:${tab===t.id?'var(--bg3)':'transparent'};color:${tab===t.id?'var(--cream)':'var(--cream-dim)'};border-radius:4px">${t.label}</button>`)}</div>
+    ${tab==='members'&&html`<div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div style="font-size:0.82rem;color:var(--cream-dim)">${members.length} member${members.length!==1?'s':''}</div>
+        <${Button} onClick=${()=>setShow(true)}>Invite Member<//>
+      </div>
+      ${show&&html`<div style="padding:1rem;border:1px solid var(--bg3);margin-bottom:1rem;background:var(--bg2)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <${Input} label="Email" value=${email} onChange=${setEmail} placeholder="dev@company.com"/>
+          <${Input} label="Name" value=${name} onChange=${setName} placeholder="Jane Smith"/>
+        </div>
+        <div style="margin-bottom:8px">
+          <${Select} label="Role" value=${role} onChange=${setRole} options=${[{v:'admin',l:'Admin'},{v:'developer',l:'Developer'},{v:'viewer',l:'Viewer'},{v:'auditor',l:'Auditor'}]}/>
+        </div>
+        <div style="display:flex;gap:8px"><${Button} onClick=${invite}>Send Invite<//><button onClick=${()=>setShow(false)} style="padding:6px 12px;font-family:var(--font-mono);font-size:0.78rem;border:1px solid var(--bg3);background:transparent;color:var(--cream-dim);cursor:pointer">Cancel</button></div>
+      </div>`}
+      <table style="width:100%;font-family:var(--font-mono);font-size:0.78rem;border-collapse:collapse">
+        <tr style="border-bottom:1px solid var(--bg3)"><th style="text-align:left;padding:8px;color:var(--cream-dim)">Email</th><th style="text-align:left;padding:8px;color:var(--cream-dim)">Name</th><th style="text-align:left;padding:8px;color:var(--cream-dim)">Role</th><th style="text-align:left;padding:8px;color:var(--cream-dim)">Status</th><th style="padding:8px"></th></tr>
+        ${members.map(m=>html`<tr key=${m.id} style="border-bottom:1px solid var(--bg3)">
+          <td style="padding:8px">${m.email}</td>
+          <td style="padding:8px">${m.name||'—'}</td>
+          <td style="padding:8px"><select value=${m.role} onChange=${e=>changeRole(m.id,e.target.value)} style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);padding:2px 6px;font-family:var(--font-mono);font-size:0.75rem">
+            <option value="admin">admin</option><option value="developer">developer</option><option value="viewer">viewer</option><option value="auditor">auditor</option>
+          </select></td>
+          <td style="padding:8px"><${Badge} type=${m.invite_accepted?'success':'default'}>${m.invite_accepted?'Active':'Pending'}<//></td>
+          <td style="padding:8px"><button onClick=${()=>remove(m.id)} style="background:none;border:none;color:var(--rust);cursor:pointer;font-size:0.75rem;font-family:var(--font-mono)">Remove</button></td>
+        </tr>`)}
+      </table>
+    </div>`}
+    ${tab==='spend'&&html`<div>
+      <div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:1rem">Per-member spend for the current month</div>
+      <table style="width:100%;font-family:var(--font-mono);font-size:0.78rem;border-collapse:collapse">
+        <tr style="border-bottom:1px solid var(--bg3)"><th style="text-align:left;padding:8px;color:var(--cream-dim)">User</th><th style="text-align:right;padding:8px;color:var(--cream-dim)">Requests</th><th style="text-align:right;padding:8px;color:var(--cream-dim)">Cost</th><th style="text-align:right;padding:8px;color:var(--cream-dim)">Tokens</th></tr>
+        ${spend.map(s=>html`<tr key=${s.user_id} style="border-bottom:1px solid var(--bg3)">
+          <td style="padding:8px">${s.user_id}</td>
+          <td style="padding:8px;text-align:right">${s.request_count}</td>
+          <td style="padding:8px;text-align:right">$${(s.cost_cents/100).toFixed(2)}</td>
+          <td style="padding:8px;text-align:right">${(s.input_tokens+s.output_tokens).toLocaleString()}</td>
+        </tr>`)}
+        ${spend.length===0&&html`<tr><td colspan="4" style="padding:1rem;text-align:center;color:var(--cream-muted)">No spend data for this month yet.</td></tr>`}
+      </table>
+    </div>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,team:TeamView,settings:SettingsView};
 
 
 function Onboarding({onComplete}){

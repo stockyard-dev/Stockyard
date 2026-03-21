@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Trace Protocol — Stockyard</title>
+<meta name="description" content="Open trace protocol for LLM observability. Standard JSON schema for recording and sharing LLM request traces.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:800px;margin:0 auto;padding:4rem 2rem}
+h1{font-size:2rem;margin-bottom:0.5rem}
+.sub{color:var(--cream-dim);margin-bottom:2rem}
+h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin:2rem 0 1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+p{color:var(--cream-dim);margin-bottom:1rem}
+code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:1px 4px;color:var(--leather-light)}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.6;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.78rem;margin:1rem 0}
+th{text-align:left;padding:6px;border-bottom:2px solid var(--bg3);color:var(--leather-light);font-size:0.65rem;text-transform:uppercase;letter-spacing:1px}
+td{padding:6px;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/docs/">Docs</a><a href="/community/">Community</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+</nav>
+<div class="content">
+<h1>Stockyard Trace Protocol v1</h1>
+<p class="sub">An open standard for recording LLM request traces. Adopt it for interoperable observability.</p>
+
+<h2>Required Fields</h2>
+<table><tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td>id</td><td>string</td><td>Unique trace identifier</td></tr>
+<tr><td>service</td><td>string</td><td>Service name (default: "proxy")</td></tr>
+<tr><td>operation</td><td>string</td><td>Operation type (chat_completion, embedding)</td></tr>
+<tr><td>status</td><td>string</td><td>"ok" or "error"</td></tr>
+<tr><td>created_at</td><td>string</td><td>RFC 3339 timestamp</td></tr>
+</table>
+
+<h2>Optional Fields</h2>
+<table><tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td>provider</td><td>string</td><td>LLM provider (openai, anthropic, etc.)</td></tr>
+<tr><td>model</td><td>string</td><td>Model identifier</td></tr>
+<tr><td>duration_ms</td><td>integer</td><td>Request duration</td></tr>
+<tr><td>tokens_in</td><td>integer</td><td>Input token count</td></tr>
+<tr><td>tokens_out</td><td>integer</td><td>Output token count</td></tr>
+<tr><td>cost_usd</td><td>number</td><td>Estimated cost</td></tr>
+<tr><td>metadata_json</td><td>object</td><td>Extension metadata</td></tr>
+</table>
+
+<h2>Example Trace</h2>
+<pre>{
+  "id": "tr_abc123def456",
+  "service": "proxy",
+  "operation": "chat_completion",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "status": "ok",
+  "duration_ms": 432,
+  "tokens_in": 150,
+  "tokens_out": 523,
+  "cost_usd": 0.0089,
+  "metadata_json": {
+    "_cache_hit": false,
+    "_smart_route_rule": "short-to-mini"
+  },
+  "created_at": "2026-03-21T14:23:01Z"
+}</pre>
+
+<h2>JSON Schema</h2>
+<p>Download the formal schema: <a href="https://github.com/stockyard-dev/stockyard/blob/main/docs/protocol/trace-v1.schema.json">trace-v1.schema.json</a></p>
+
+<h2>Adopt the Protocol</h2>
+<p>If you build LLM tooling, adopt the Stockyard Trace Protocol for interoperable observability. The schema is permissively licensed and designed for extension via the <code>metadata_json</code> field.</p>
+</div>
+<footer>Stockyard Trace Protocol &mdash; stockyard.dev</footer>
+</body>
+</html>

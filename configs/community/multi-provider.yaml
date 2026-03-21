@@ -1,0 +1,21 @@
+name: Multi-Provider Failover
+slug: multi-provider
+author: Community
+description: "Failover across OpenAI, Anthropic, and Google with health-based routing"
+tags: [routing, reliability, community]
+
+modules:
+  - name: failover
+    enabled: true
+  - name: modelswitch
+    enabled: true
+  - name: alertpulse
+    enabled: true
+
+alerts:
+  - name: provider-down
+    metric: error_rate
+    condition: gt
+    threshold: 0.5
+    window: 5m
+    description: Alert when any provider has >50% error rate

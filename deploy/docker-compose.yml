@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  stockyard:
+    image: stockyard:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "${STOCKYARD_PORT:-4200}:4200"
+    environment:
+      - PORT=4200
+      - DATA_DIR=/data
+      - STOCKYARD_ADMIN_KEY=${STOCKYARD_ADMIN_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FORMAT=${LOG_FORMAT:-text}
+    volumes:
+      - stockyard-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4200/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Grafana dashboard for Stockyard metrics.
+  # Uncomment to enable.
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - "${GRAFANA_PORT:-3000}:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-stockyard}
+  #     - GF_AUTH_ANONYMOUS_ENABLED=true
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #   depends_on:
+  #     - stockyard
+  #   restart: unless-stopped
+
+volumes:
+  stockyard-data:
+    driver: local
+  # grafana-data:
+  #   driver: local

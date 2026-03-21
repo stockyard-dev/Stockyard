@@ -175,6 +175,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/observe/provider-health", a.handleProviderHealth)
 	mux.HandleFunc("POST /api/observe/auto-disable", a.handleAutoDisable)
 
+	// Model drift detection
+	mux.HandleFunc("GET /api/observe/drift", a.handleDrift)
+
 	// Live SSE status (how many dashboard clients connected, recent event count)
 	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
 
@@ -1068,6 +1071,133 @@ func fmtNum(n int) string {
 
 func fmtNum64(n int64) string {
 	return fmtNum(int(n))
+}
+
+// handleDrift compares this week's metrics to last week's per model.
+func (a *App) handleDrift(w http.ResponseWriter, r *http.Request) {
+	type weekMetrics struct {
+		Model      string  `json:"model"`
+		AvgLength  float64 `json:"avg_response_length"`
+		AvgLatency float64 `json:"avg_latency_ms"`
+		AvgCost    float64 `json:"avg_cost_usd"`
+		ErrorRate  float64 `json:"error_rate"`
+		Count      int     `json:"request_count"`
+	}
+
+	queryWeek := func(start, end string) []weekMetrics {
+		rows, err := a.conn.Query(`
+			SELECT model,
+				AVG(tokens_out) as avg_length,
+				AVG(duration_ms) as avg_latency,
+				AVG(cost_usd) as avg_cost,
+				CAST(SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) AS REAL) / MAX(COUNT(*), 1) as error_rate,
+				COUNT(*) as count
+			FROM observe_traces
+			WHERE created_at >= ? AND created_at < ? AND model != ''
+			GROUP BY model
+			HAVING count >= 5
+		`, start, end)
+		if err != nil {
+			return nil
+		}
+		defer rows.Close()
+		var metrics []weekMetrics
+		for rows.Next() {
+			var m weekMetrics
+			rows.Scan(&m.Model, &m.AvgLength, &m.AvgLatency, &m.AvgCost, &m.ErrorRate, &m.Count)
+			metrics = append(metrics, m)
+		}
+		return metrics
+	}
+
+	now := time.Now().UTC()
+	thisWeekStart := now.AddDate(0, 0, -7).Format("2006-01-02")
+	lastWeekStart := now.AddDate(0, 0, -14).Format("2006-01-02")
+	thisWeekEnd := now.Format("2006-01-02")
+
+	thisWeek := queryWeek(thisWeekStart, thisWeekEnd)
+	lastWeek := queryWeek(lastWeekStart, thisWeekStart)
+
+	// Build lookup for last week.
+	lastWeekMap := make(map[string]weekMetrics)
+	for _, m := range lastWeek {
+		lastWeekMap[m.Model] = m
+	}
+
+	type driftResult struct {
+		Model          string  `json:"model"`
+		LengthChange   float64 `json:"avg_length_change_pct"`
+		LatencyChange  float64 `json:"avg_latency_change_pct"`
+		CostChange     float64 `json:"avg_cost_change_pct"`
+		ErrorChange    float64 `json:"error_rate_change_pct"`
+		DriftDetected  bool    `json:"drift_detected"`
+		DriftFields    []string `json:"drift_fields,omitempty"`
+		ThisWeekCount  int     `json:"this_week_requests"`
+		LastWeekCount  int     `json:"last_week_requests"`
+	}
+
+	var results []driftResult
+	for _, tw := range thisWeek {
+		lw, ok := lastWeekMap[tw.Model]
+		if !ok {
+			continue
+		}
+
+		dr := driftResult{
+			Model:         tw.Model,
+			ThisWeekCount: tw.Count,
+			LastWeekCount: lw.Count,
+		}
+
+		dr.LengthChange = pctChange(lw.AvgLength, tw.AvgLength)
+		dr.LatencyChange = pctChange(lw.AvgLatency, tw.AvgLatency)
+		dr.CostChange = pctChange(lw.AvgCost, tw.AvgCost)
+		dr.ErrorChange = pctChange(lw.ErrorRate, tw.ErrorRate)
+
+		if abs(dr.LengthChange) > 20 {
+			dr.DriftDetected = true
+			dr.DriftFields = append(dr.DriftFields, "avg_response_length")
+		}
+		if abs(dr.LatencyChange) > 20 {
+			dr.DriftDetected = true
+			dr.DriftFields = append(dr.DriftFields, "avg_latency")
+		}
+		if abs(dr.CostChange) > 20 {
+			dr.DriftDetected = true
+			dr.DriftFields = append(dr.DriftFields, "avg_cost")
+		}
+		if abs(dr.ErrorChange) > 20 {
+			dr.DriftDetected = true
+			dr.DriftFields = append(dr.DriftFields, "error_rate")
+		}
+
+		results = append(results, dr)
+	}
+
+	if results == nil {
+		results = []driftResult{}
+	}
+	writeJSON(w, map[string]any{
+		"drift":  results,
+		"period": "week_over_week",
+	})
+}
+
+func pctChange(old, new_ float64) float64 {
+	if old == 0 {
+		if new_ == 0 {
+			return 0
+		}
+		return 100
+	}
+	return (new_ - old) / old * 100
+}
+
+func abs(x float64) float64 {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
 
 func writeJSON(w http.ResponseWriter, v any) {

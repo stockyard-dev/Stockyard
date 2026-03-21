@@ -1,0 +1,56 @@
+# HIPAA Compliance Preset for Stockyard
+# Configures firewall, trust, and audit policies for healthcare data protection.
+name: HIPAA Compliance
+slug: compliance-hipaa
+author: Stockyard
+description: "HIPAA-aligned configuration: PII redaction, PHI protection, access logging, encryption verification"
+tags: [compliance, hipaa, healthcare, security]
+
+modules:
+  - name: promptguard
+    enabled: true
+    config:
+      sensitivity: high
+      redact_pii: true
+  - name: secretscan
+    enabled: true
+  - name: firewall
+    enabled: true
+    config:
+      block_threshold: 70
+      warn_threshold: 30
+  - name: compliancelog
+    enabled: true
+  - name: tenantwall
+    enabled: true
+
+policies:
+  - name: hipaa-phi-block
+    type: response
+    action: block
+    rule: '{"check":"pii","categories":["ssn","phone","email","medical_record"]}'
+    description: Block responses containing PHI patterns
+  - name: hipaa-audit-all
+    type: request
+    action: log
+    rule: '{"log_all_requests":true,"include_metadata":true}'
+    description: Log all requests for HIPAA audit trail
+  - name: hipaa-minimum-necessary
+    type: request
+    action: warn
+    rule: '{"max_prompt_length":4000}'
+    description: Warn on excessively long prompts (minimum necessary standard)
+
+alerts:
+  - name: hipaa-phi-leak
+    metric: firewall_response_blocks
+    condition: gt
+    threshold: 0
+    window: 5m
+    description: Alert on any PHI detected in responses
+  - name: hipaa-access-anomaly
+    metric: unique_users
+    condition: gt
+    threshold: 50
+    window: 1h
+    description: Alert on unusual access patterns

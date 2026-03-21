@@ -1,0 +1,57 @@
+# SOX Compliance Preset for Stockyard
+# Configures audit trail, access controls, and financial data protection.
+name: SOX Compliance
+slug: compliance-sox
+author: Stockyard
+description: "SOX-aligned configuration: complete audit trail, access controls, financial data protection, change management"
+tags: [compliance, sox, financial, audit]
+
+modules:
+  - name: compliancelog
+    enabled: true
+  - name: firewall
+    enabled: true
+    config:
+      block_threshold: 75
+      warn_threshold: 35
+  - name: secretscan
+    enabled: true
+  - name: promptguard
+    enabled: true
+    config:
+      sensitivity: high
+  - name: tenantwall
+    enabled: true
+  - name: tracelink
+    enabled: true
+
+policies:
+  - name: sox-audit-trail
+    type: request
+    action: log
+    rule: '{"log_all_requests":true,"log_user_id":true,"log_timestamp":true}'
+    description: Complete audit trail for all LLM interactions
+  - name: sox-financial-data
+    type: response
+    action: block
+    rule: '{"check":"pii","categories":["ssn","credit_card","bank_account","routing_number"]}'
+    description: Block responses containing financial PII
+  - name: sox-change-control
+    type: request
+    action: log
+    rule: '{"log_config_changes":true}'
+    description: Log all configuration changes for change management
+
+alerts:
+  - name: sox-unauthorized-access
+    metric: auth_failures
+    condition: gt
+    threshold: 5
+    window: 15m
+    description: Alert on repeated authentication failures
+  - name: sox-data-leak
+    metric: firewall_response_blocks
+    condition: gt
+    threshold: 0
+    window: 5m
+    description: Alert on financial data leak attempts

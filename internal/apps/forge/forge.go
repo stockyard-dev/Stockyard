@@ -44,6 +44,7 @@ func (a *App) Migrate(conn *sql.DB) error {
 	}
 	// Schema evolution: add columns that may not exist in older DBs
 	conn.Exec("ALTER TABLE forge_runs ADD COLUMN workflow_slug TEXT DEFAULT ''")
+	migrateAgent(conn)
 	log.Printf("[forge] migrations applied")
 	return nil
 }
@@ -181,6 +182,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Status
 	mux.HandleFunc("GET /api/forge/status", a.handleStatus)
+
+	// Agent runtime
+	registerAgentRoutes(mux, a.conn, a.audit)
 
 	log.Printf("[forge] routes registered")
 }

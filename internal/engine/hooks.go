@@ -159,6 +159,7 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"regionroute", "routing", pc.Features.RegionRoute, 12},
 		{"localsync", "routing", pc.Features.LocalSync, 13},
 		{"abrouter", "routing", pc.Features.ABRouter, 14},
+		{"smartroute", "routing", true, 15},
 		// Caching
 		{"cache", "caching", pc.Features.Cache, 20},
 		{"embedcache", "caching", pc.Features.EmbedCache, 21},
@@ -183,12 +184,14 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"tokentrim", "transform", pc.Features.TokenTrim, 61},
 		{"contextpack", "transform", pc.Features.ContextPack, 62},
 		{"chatmem", "transform", pc.Features.ChatMem, 63},
+		{"memoryinject", "transform", true, 64},
 		{"langbridge", "transform", pc.Features.LangBridge, 64},
 		{"voicebridge", "transform", pc.Features.VoiceBridge, 65},
 		// Validate
 		{"evalgate", "validate", pc.Features.EvalGate, 70},
 		{"codefence", "validate", pc.Features.CodeFence, 71},
 		// Safety
+		{"firewall", "safety", true, 79},
 		{"promptguard", "safety", pc.Features.PromptGuard, 80},
 		{"secretscan", "safety", pc.Features.SecretScan, 81},
 		{"toxicfilter", "safety", pc.Features.ToxicFilter, 82},
@@ -579,7 +582,42 @@ func seedExchangePacks(conn *sql.DB) {
 			id, "1.0.0", p.content)
 	}
 
-	log.Printf("[exchange] seeded exchange packs (%d extra)", len(extraPacks))
+	// Compliance packs
+	compliancePacks := []pack{
+		{
+			slug: "compliance-hipaa", name: "HIPAA Compliance", author: "Stockyard",
+			desc: "HIPAA-aligned: PII redaction, PHI protection, access logging, encryption verification",
+			tags: `["compliance","hipaa","healthcare","security"]`,
+			content: `{"modules":[{"name":"promptguard","enabled":true,"config":{"sensitivity":"high","redact_pii":true}},{"name":"secretscan","enabled":true},{"name":"firewall","enabled":true,"config":{"block_threshold":70}},{"name":"compliancelog","enabled":true},{"name":"tenantwall","enabled":true}],"policies":[{"name":"hipaa-phi-block","type":"response","action":"block","rule":"{\"check\":\"pii\",\"categories\":[\"ssn\",\"phone\",\"email\"]}"}]}`,
+		},
+		{
+			slug: "compliance-sox", name: "SOX Compliance", author: "Stockyard",
+			desc: "SOX-aligned: complete audit trail, access controls, financial data protection",
+			tags: `["compliance","sox","financial","audit"]`,
+			content: `{"modules":[{"name":"compliancelog","enabled":true},{"name":"firewall","enabled":true,"config":{"block_threshold":75}},{"name":"secretscan","enabled":true},{"name":"tracelink","enabled":true}],"policies":[{"name":"sox-audit-trail","type":"request","action":"log","rule":"{\"log_all_requests\":true}"},{"name":"sox-financial-data","type":"response","action":"block","rule":"{\"check\":\"pii\",\"categories\":[\"ssn\",\"credit_card\"]}"}]}`,
+		},
+		{
+			slug: "compliance-gdpr", name: "GDPR Compliance", author: "Stockyard",
+			desc: "GDPR-aligned: PII redaction, consent tracking, data retention, right to deletion",
+			tags: `["compliance","gdpr","privacy","eu"]`,
+			content: `{"modules":[{"name":"promptguard","enabled":true,"config":{"sensitivity":"high","redact_pii":true}},{"name":"firewall","enabled":true,"config":{"block_threshold":70}},{"name":"consentgate","enabled":true},{"name":"retentionwipe","enabled":true,"config":{"retention_days":90}}],"policies":[{"name":"gdpr-pii-redaction","type":"request","action":"redact","rule":"{\"redact_pii\":true}"},{"name":"gdpr-data-retention","type":"system","action":"enforce","rule":"{\"max_retention_days\":90}"}]}`,
+		},
+		{
+			slug: "compliance-euai", name: "EU AI Act Compliance", author: "Stockyard",
+			desc: "EU AI Act-aligned: AI transparency logging, human oversight, decision audit trail",
+			tags: `["compliance","eu-ai-act","transparency","governance"]`,
+			content: `{"modules":[{"name":"compliancelog","enabled":true},{"name":"firewall","enabled":true,"config":{"block_threshold":70}},{"name":"tracelink","enabled":true},{"name":"approvalgate","enabled":true},{"name":"llmtap","enabled":true}],"policies":[{"name":"euai-transparency","type":"request","action":"log","rule":"{\"log_model_used\":true,\"log_provider\":true}"},{"name":"euai-human-oversight","type":"system","action":"enforce","rule":"{\"require_approval_for_high_risk\":true}"}]}`,
+		},
+	}
+	for _, p := range compliancePacks {
+		id := "pk_" + p.slug
+		conn.Exec(`INSERT OR IGNORE INTO exchange_packs (id, slug, name, description, author, tags_json, install_count, created_at) VALUES (?,?,?,?,?,?,0,datetime('now'))`,
+			id, p.slug, p.name, p.desc, p.author, p.tags)
+		conn.Exec(`INSERT OR REPLACE INTO exchange_pack_versions (pack_id, version, content_json) VALUES (?,?,?)`,
+			id, "1.0.0", p.content)
+	}
+
+	log.Printf("[exchange] seeded exchange packs (%d extra, %d compliance)", len(extraPacks), len(compliancePacks))
 }
 
 // seedForgeData populates the Forge tool registry and additional demo workflows.

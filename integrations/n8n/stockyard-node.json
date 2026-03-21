@@ -1,0 +1,80 @@
+{
+  "name": "Stockyard",
+  "description": "Interact with Stockyard LLM proxy — send prompts, list traces, check costs, toggle modules",
+  "icon": "file:stockyard.svg",
+  "group": ["transform"],
+  "version": 1,
+  "defaults": {
+    "name": "Stockyard"
+  },
+  "credentials": [
+    {
+      "name": "stockyardApi",
+      "required": true,
+      "displayOptions": {}
+    }
+  ],
+  "properties": [
+    {
+      "displayName": "Action",
+      "name": "action",
+      "type": "options",
+      "options": [
+        { "name": "Send Prompt", "value": "sendPrompt", "description": "Send a chat completion through the proxy" },
+        { "name": "List Traces", "value": "listTraces", "description": "Get recent request traces" },
+        { "name": "Check Costs", "value": "checkCosts", "description": "Get cost breakdown for a period" },
+        { "name": "Toggle Module", "value": "toggleModule", "description": "Enable or disable a proxy module" },
+        { "name": "Provider Health", "value": "providerHealth", "description": "Check provider health status" }
+      ],
+      "default": "sendPrompt"
+    },
+    {
+      "displayName": "Model",
+      "name": "model",
+      "type": "string",
+      "default": "gpt-4o",
+      "displayOptions": { "show": { "action": ["sendPrompt"] } }
+    },
+    {
+      "displayName": "Message",
+      "name": "message",
+      "type": "string",
+      "default": "",
+      "typeOptions": { "rows": 4 },
+      "displayOptions": { "show": { "action": ["sendPrompt"] } }
+    },
+    {
+      "displayName": "Module Name",
+      "name": "moduleName",
+      "type": "string",
+      "default": "",
+      "displayOptions": { "show": { "action": ["toggleModule"] } }
+    },
+    {
+      "displayName": "Enabled",
+      "name": "enabled",
+      "type": "boolean",
+      "default": true,
+      "displayOptions": { "show": { "action": ["toggleModule"] } }
+    },
+    {
+      "displayName": "Period",
+      "name": "period",
+      "type": "options",
+      "options": [
+        { "name": "Today", "value": "today" },
+        { "name": "This Week", "value": "week" },
+        { "name": "This Month", "value": "month" }
+      ],
+      "default": "today",
+      "displayOptions": { "show": { "action": ["checkCosts"] } }
+    },
+    {
+      "displayName": "Limit",
+      "name": "limit",
+      "type": "number",
+      "default": 20,
+      "displayOptions": { "show": { "action": ["listTraces"] } }
+    }
+  ]
+}

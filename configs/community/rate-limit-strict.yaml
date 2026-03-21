@@ -1,0 +1,18 @@
+name: Strict Rate Limiting
+slug: rate-limit-strict
+author: Community
+description: "Aggressive rate limiting for public-facing APIs: 10 RPM per user, 100 RPM global"
+tags: [cost, rate-limiting, community]
+
+modules:
+  - name: rateshield
+    enabled: true
+    config:
+      per_user_rpm: 10
+      global_rpm: 100
+      burst_allowance: 2
+  - name: costcap
+    enabled: true
+    config:
+      daily_cap_usd: 50
+      monthly_cap_usd: 500

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Live Model Benchmarks — Stockyard</title>
+<meta name="description" content="Real-time LLM model benchmarks from live traffic. Latency, reliability, cost efficiency.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--red:#c44d2c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:1000px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:2rem;margin-bottom:0.3rem}
+.sub{color:var(--cream-dim);font-size:0.9rem;margin-bottom:2rem}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.78rem}
+th{padding:8px;text-align:left;border-bottom:2px solid var(--bg3);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+th:nth-child(n+3){text-align:right}
+td{padding:8px;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+td:nth-child(n+3){text-align:right}
+tr:hover{background:var(--bg2)}
+.rank{font-weight:600;color:var(--rust-light);width:30px}
+.score{font-weight:600}
+.good{color:var(--green-light)}.ok{color:var(--gold)}.bad{color:var(--red)}
+.bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-right:4px}
+.updated{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:1.5rem;text-align:center}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/cost-index/">Cost Index</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+</nav>
+<div class="content">
+<h1>Live Model Benchmarks</h1>
+<p class="sub">Ranked by composite score (latency + reliability + cost efficiency). Models with 100+ requests in the last 7 days. Auto-refreshes every 5 minutes.</p>
+<table>
+<thead><tr><th>#</th><th>Model</th><th>Score</th><th>Avg Latency</th><th>Error Rate</th><th>Avg Cost</th><th>Requests</th></tr></thead>
+<tbody id="bench-table"><tr><td colspan="7" style="text-align:center;padding:2rem">Loading...</td></tr></tbody>
+</table>
+<p class="updated">Data: <code>GET /api/benchmarks/live</code> &middot; Updated: <span id="last-update">—</span></p>
+</div>
+<footer>Stockyard Live Benchmarks &mdash; stockyard.dev</footer>
+<script>
+async function load(){
+  try{
+    var r=await fetch('/api/benchmarks/live');var d=await r.json();
+    var models=d.models||[];
+    var html='';
+    models.forEach(function(m){
+      var scoreClass=m.composite_score>=70?'good':m.composite_score>=50?'ok':'bad';
+      var errClass=m.error_rate<0.01?'good':m.error_rate<0.05?'ok':'bad';
+      var barW=Math.min(m.composite_score,100);
+      html+='<tr><td class="rank">#'+m.rank+'</td><td>'+m.model+'</td>';
+      html+='<td class="score '+scoreClass+'"><span class="bar" style="width:'+barW+'px;background:var(--'+scoreClass+')"></span>'+m.composite_score.toFixed(1)+'</td>';
+      html+='<td>'+m.avg_latency_ms.toFixed(0)+' ms</td>';
+      html+='<td class="'+errClass+'">'+(m.error_rate*100).toFixed(1)+'%</td>';
+      html+='<td>$'+m.avg_cost_usd.toFixed(4)+'</td>';
+      html+='<td>'+m.requests.toLocaleString()+'</td></tr>';
+    });
+    document.getElementById('bench-table').innerHTML=html||'<tr><td colspan="7" style="text-align:center">No models with 100+ requests in the last 7 days.</td></tr>';
+    document.getElementById('last-update').textContent=new Date().toLocaleTimeString();
+  }catch(e){document.getElementById('bench-table').innerHTML='<tr><td colspan="7">Failed to load</td></tr>'}
+}
+load();setInterval(load,300000);
+</script>
+</body>
+</html>

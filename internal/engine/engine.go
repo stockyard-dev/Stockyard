@@ -23,7 +23,10 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
 	"github.com/stockyard-dev/stockyard/internal/features"
+	"github.com/stockyard-dev/stockyard/internal/integrations"
 	"github.com/stockyard-dev/stockyard/internal/license"
+	"github.com/stockyard-dev/stockyard/internal/mesh"
+	"github.com/stockyard-dev/stockyard/internal/mcp"
 	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
@@ -357,6 +360,43 @@ func Boot(pc ProductConfig) {
 	webhookMgr.SetBroadcaster(broadcaster)
 	RegisterWebhookRoutes(srv.Mux(), webhookMgr)
 
+	// Integrations (Slack, Discord, PagerDuty) + webhook templates
+	integrations.MigrateAndSeed(db.Conn())
+	integrationMgr := integrations.NewManager(db.Conn())
+	integrationMgr.Register(srv.Mux())
+	integrations.TemplateRoutes(srv.Mux(), db.Conn())
+
+	// Prompt firewall detection engine
+	firewall := features.NewFirewall(db.Conn())
+	features.RegisterFirewallAPI(srv.Mux(), db.Conn(), firewall)
+	features.InitScorecardSchema(db.Conn())
+	features.RegisterScorecardAPI(srv.Mux(), db.Conn(), firewall)
+	features.StartScorecardSchedule(db.Conn(), firewall)
+
+	// Smart routing rules API
+	smartRouter := features.NewSmartRouter(db.Conn())
+	features.RegisterSmartRouteAPI(srv.Mux(), db.Conn(), smartRouter)
+
+	// Cache v2 analytics + warming API
+	cacheV2 := features.NewCacheV2(0.95, 10000, 1*time.Hour)
+	features.RegisterCacheV2API(srv.Mux(), db.Conn(), cacheV2, cfg.Port)
+
+	// Predictive scaling + cost anomaly detection
+	features.RegisterPredictiveRoutes(srv.Mux(), db.Conn())
+
+	// Multi-region proxy mesh
+	meshMgr := mesh.NewManager(db.Conn())
+	meshMgr.Register(srv.Mux())
+
+	// Cost index + live benchmarks + provider analytics
+	RegisterCostIndexRoutes(srv.Mux(), db.Conn())
+	RegisterBenchmarkRoutes(srv.Mux(), db.Conn())
+	RegisterProviderAnalyticsRoutes(srv.Mux(), db.Conn())
+
+	// MCP server (SSE transport for MCP-compatible editors)
+	mcpServer := mcp.NewServer(handler)
+	mcpServer.Register(srv.Mux())
+
 	// Status collector (real-time metrics for /api/status)
 	statusCollector := NewStatusCollector()
 	RegisterStatusRoutes(srv.Mux(), statusCollector, db.Conn(), pc.Version)
@@ -458,8 +498,10 @@ func Boot(pc ProductConfig) {
 				Timestamp: time.Now(),
 				Data:      data,
 			})
+			// Also dispatch to Slack, Discord, PagerDuty integrations
+			integrationMgr.DispatchEvent(eventType, data)
 		})
-		log.Printf("  Webhooks:  firer wired to middlewares")
+		log.Printf("  Webhooks:  firer wired to middlewares + integrations")
 
 		// Mount all app routes on the shared mux
 		registry.RegisterAllRoutes(srv.Mux())
@@ -573,6 +615,23 @@ func Boot(pc ProductConfig) {
 	mailer := apiserver.NewMailer()
 	nurture := apiserver.NewNurtureRunner(db.Conn(), mailer)
 	nurture.Start()
+
+	// Wire mailer to apps that need it (e.g., team invites)
+	if len(pc.Apps) > 0 {
+		type mailerSetter interface {
+			SetMailer(interface{ Send(to, subject, body string) error })
+		}
+		for _, app := range pc.Apps {
+			if setter, ok := app.(mailerSetter); ok {
+				setter.SetMailer(mailer)
+			}
+		}
+	}
+
+	// Scheduled reports (weekly cost reports to team members)
+	scheduler := NewScheduler(db.Conn(), mailer)
+	scheduler.Start()
+	RegisterSchedulerRoutes(srv.Mux(), scheduler)
 
 	// adminKeyOK validates the admin bearer token using constant-time comparison.
 	// Returns false if STOCKYARD_ADMIN_KEY is unset (prevents empty-key bypass).

@@ -146,12 +146,158 @@ func (c *Client) ImportConfig(config map[string]any) (map[string]any, error) {
 	return c.do("POST", "/api/config/import", config)
 }
 
+// --- Provider resources ---
+
+// GetProvider returns a configured LLM provider.
+func (c *Client) GetProvider(name string) (map[string]any, error) {
+	result, err := c.do("GET", "/api/proxy/providers", nil)
+	if err != nil {
+		return nil, err
+	}
+	for _, p := range result["providers"].([]any) {
+		prov := p.(map[string]any)
+		if prov["name"] == name {
+			return prov, nil
+		}
+	}
+	return nil, fmt.Errorf("provider %q not found", name)
+}
+
+// --- Routing rule resources ---
+
+// CreateRoutingRule creates a smart routing rule.
+func (c *Client) CreateRoutingRule(name string, priority int, condition, action any) (map[string]any, error) {
+	return c.do("POST", "/api/proxy/routing/rules", map[string]any{
+		"name": name, "priority": priority, "condition": condition, "action": action,
+	})
+}
+
+// GetRoutingRules lists all routing rules.
+func (c *Client) GetRoutingRules() ([]any, error) {
+	result, err := c.do("GET", "/api/proxy/routing/rules", nil)
+	if err != nil {
+		return nil, err
+	}
+	rules, _ := result["rules"].([]any)
+	return rules, nil
+}
+
+// UpdateRoutingRule updates a routing rule.
+func (c *Client) UpdateRoutingRule(id string, updates map[string]any) error {
+	_, err := c.do("PUT", "/api/proxy/routing/rules/"+id, updates)
+	return err
+}
+
+// DeleteRoutingRule deletes a routing rule.
+func (c *Client) DeleteRoutingRule(id string) error {
+	_, err := c.do("DELETE", "/api/proxy/routing/rules/"+id, nil)
+	return err
+}
+
+// --- Alert resources ---
+
+// CreateAlert creates an observe alert rule.
+func (c *Client) CreateAlert(name, metric, condition string, threshold float64) (map[string]any, error) {
+	return c.do("POST", "/api/observe/alerts", map[string]any{
+		"name": name, "metric": metric, "condition": condition, "threshold": threshold,
+	})
+}
+
+// GetAlerts lists all alert rules.
+func (c *Client) GetAlerts() ([]any, error) {
+	result, err := c.do("GET", "/api/observe/alerts", nil)
+	if err != nil {
+		return nil, err
+	}
+	alerts, _ := result["alerts"].([]any)
+	return alerts, nil
+}
+
+// DeleteAlert deletes an alert rule.
+func (c *Client) DeleteAlert(id string) error {
+	_, err := c.do("DELETE", "/api/observe/alerts/"+id, nil)
+	return err
+}
+
+// --- Team member resources ---
+
+// InviteTeamMember sends a team invite.
+func (c *Client) InviteTeamMember(email, name, role string) (map[string]any, error) {
+	return c.do("POST", "/api/team/members", map[string]string{
+		"email": email, "name": name, "role": role,
+	})
+}
+
+// GetTeamMembers lists all team members.
+func (c *Client) GetTeamMembers() ([]any, error) {
+	result, err := c.do("GET", "/api/team/members", nil)
+	if err != nil {
+		return nil, err
+	}
+	// The team endpoint returns an array directly.
+	return nil, fmt.Errorf("parse members: %v", result)
+}
+
+// UpdateTeamMember updates a member's role.
+func (c *Client) UpdateTeamMember(id, role string) error {
+	_, err := c.do("PUT", "/api/team/members/"+id, map[string]string{"role": role})
+	return err
+}
+
+// DeleteTeamMember removes a team member.
+func (c *Client) DeleteTeamMember(id string) error {
+	_, err := c.do("DELETE", "/api/team/members/"+id, nil)
+	return err
+}
+
+// --- Data sources ---
+
+// ListModules returns all proxy modules.
+func (c *Client) ListModules() ([]any, error) {
+	result, err := c.do("GET", "/api/proxy/modules", nil)
+	if err != nil {
+		return nil, err
+	}
+	modules, _ := result["modules"].([]any)
+	return modules, nil
+}
+
+// ListProviders returns all configured providers.
+func (c *Client) ListProviders() ([]any, error) {
+	result, err := c.do("GET", "/api/proxy/providers", nil)
+	if err != nil {
+		return nil, err
+	}
+	providers, _ := result["providers"].([]any)
+	return providers, nil
+}
+
+// ListTraces returns recent traces.
+func (c *Client) ListTraces(limit int) ([]any, error) {
+	result, err := c.do("GET", fmt.Sprintf("/api/observe/traces?limit=%d", limit), nil)
+	if err != nil {
+		return nil, err
+	}
+	traces, _ := result["traces"].([]any)
+	return traces, nil
+}
+
 func main() {
 	// This would normally call terraform-plugin-sdk/v2.
 	// Stub for now — full implementation requires the Terraform SDK.
-	fmt.Println("stockyard terraform provider — use with: terraform init")
-	fmt.Println("Resources: stockyard_module, stockyard_webhook, stockyard_trust_policy")
-	fmt.Println("Data sources: stockyard_status, stockyard_config")
+	fmt.Println("stockyard terraform provider v1.0")
+	fmt.Println()
+	fmt.Println("Resources:")
+	fmt.Println("  stockyard_module        — manage proxy middleware modules")
+	fmt.Println("  stockyard_provider      — manage LLM provider configs")
+	fmt.Println("  stockyard_routing_rule  — manage smart routing rules")
+	fmt.Println("  stockyard_alert         — manage observe alert rules")
+	fmt.Println("  stockyard_team_member   — manage team member invites")
+	fmt.Println()
+	fmt.Println("Data sources:")
+	fmt.Println("  stockyard_modules       — list all modules")
+	fmt.Println("  stockyard_providers     — list all providers")
+	fmt.Println("  stockyard_traces        — query recent traces")
 	fmt.Println()
 	fmt.Println("See https://stockyard.dev/docs/ for configuration reference.")
 }

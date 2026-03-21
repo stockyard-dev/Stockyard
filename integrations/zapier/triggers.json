@@ -1,0 +1,60 @@
+{
+  "triggers": [
+    {
+      "key": "new_trace",
+      "noun": "Trace",
+      "display": {
+        "label": "New Trace",
+        "description": "Triggers when a new LLM request is traced."
+      },
+      "operation": {
+        "type": "polling",
+        "perform": {
+          "url": "{{bundle.authData.base_url}}/api/observe/traces?limit=10",
+          "method": "GET",
+          "headers": {
+            "X-Admin-Key": "{{bundle.authData.admin_key}}"
+          }
+        }
+      }
+    },
+    {
+      "key": "cost_alert",
+      "noun": "Cost Alert",
+      "display": {
+        "label": "Cost Alert Fired",
+        "description": "Triggers when a cost threshold is exceeded."
+      },
+      "operation": {
+        "type": "hook",
+        "performSubscribe": {
+          "url": "{{bundle.authData.base_url}}/api/webhooks",
+          "method": "POST",
+          "body": {
+            "url": "{{bundle.targetUrl}}",
+            "events": "cost.threshold"
+          }
+        }
+      }
+    },
+    {
+      "key": "guardrail_violation",
+      "noun": "Guardrail Violation",
+      "display": {
+        "label": "Guardrail Violation",
+        "description": "Triggers when a guardrail rule is violated."
+      },
+      "operation": {
+        "type": "hook",
+        "performSubscribe": {
+          "url": "{{bundle.authData.base_url}}/api/webhooks",
+          "method": "POST",
+          "body": {
+            "url": "{{bundle.targetUrl}}",
+            "events": "guardrail.violation"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -14,9 +14,11 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/apps/exchange"
 	"github.com/stockyard-dev/stockyard/internal/apps/forge"
 	"github.com/stockyard-dev/stockyard/internal/apps/marketing"
+	"github.com/stockyard-dev/stockyard/internal/apps/memory"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	proxyapp "github.com/stockyard-dev/stockyard/internal/apps/proxy"
 	"github.com/stockyard-dev/stockyard/internal/apps/studio"
+	"github.com/stockyard-dev/stockyard/internal/apps/team"
 	"github.com/stockyard-dev/stockyard/internal/apps/trust"
 	"github.com/stockyard-dev/stockyard/internal/engine"
 	"github.com/stockyard-dev/stockyard/internal/platform"
@@ -42,6 +44,8 @@ func main() {
 			forge.New(nil),
 			exchange.New(nil),
 			billing.New(nil),
+			team.New(nil),
+			memory.New(nil),
 			marketing.New(nil),
 		},
 		Features: engine.Features{

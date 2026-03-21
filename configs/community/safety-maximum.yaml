@@ -1,0 +1,25 @@
+name: Maximum Safety
+slug: safety-maximum
+author: Community
+description: "All safety modules enabled with strictest settings: firewall, guardrails, PII redaction, toxic filter"
+tags: [safety, compliance, community]
+
+modules:
+  - name: firewall
+    enabled: true
+    config:
+      block_threshold: 60
+      warn_threshold: 20
+  - name: promptguard
+    enabled: true
+    config:
+      sensitivity: high
+      redact_pii: true
+  - name: toxicfilter
+    enabled: true
+  - name: secretscan
+    enabled: true
+  - name: hallucicheck
+    enabled: true
+  - name: agentguard
+    enabled: true
