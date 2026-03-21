@@ -354,10 +354,17 @@ func (m *BillingMeter) recordUsage(ctx context.Context, customerID string, req *
 	now := time.Now().UTC().Format(time.RFC3339)
 	usageID := billingGenID("bu_")
 
+	tagsJSON := "{}"
+	if len(req.Tags) > 0 {
+		if b, err := json.Marshal(req.Tags); err == nil {
+			tagsJSON = string(b)
+		}
+	}
+
 	// Write billing_usage record
-	_, err := m.conn.Exec(`INSERT INTO billing_usage (id, account_id, customer_id, trace_id, model, provider, input_tokens, output_tokens, cost_cents, cached, created_at)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
-		usageID, accountID, customerID, traceID, model, prov, inputTokens, outputTokens, costCents, cached, now)
+	_, err := m.conn.Exec(`INSERT INTO billing_usage (id, account_id, customer_id, trace_id, model, provider, input_tokens, output_tokens, cost_cents, cached, created_at, tags)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+		usageID, accountID, customerID, traceID, model, prov, inputTokens, outputTokens, costCents, cached, now, tagsJSON)
 	if err != nil {
 		log.Printf("[billingmeter] usage write error: %v", err)
 		return

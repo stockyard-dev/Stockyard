@@ -301,6 +301,30 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 		req.Extra["_auth_header"] = authHeader
 	}
 
+	// Parse cost attribution tags from X-Stockyard-Tags header
+	if tagsHeader := r.Header.Get("X-Stockyard-Tags"); tagsHeader != "" {
+		tags := make(map[string]string)
+		for _, pair := range strings.Split(tagsHeader, ",") {
+			parts := strings.SplitN(strings.TrimSpace(pair), "=", 2)
+			if len(parts) == 2 {
+				key := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				if isValidTagKey(key) && isValidTagValue(val) {
+					tags[key] = val
+				}
+			}
+			if len(tags) >= 10 {
+				break
+			}
+		}
+		req.Tags = tags
+	}
+
+	// Track SDK source for observability
+	if src := r.Header.Get("X-Stockyard-Source"); src != "" {
+		req.Extra["_source"] = src
+	}
+
 	// Extract client IP for IP-based access control
 	req.ClientIP = extractClientIP(r)
 
@@ -312,6 +336,30 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 	}
 
 	return &req, body, nil
+}
+
+func isValidTagKey(k string) bool {
+	if len(k) == 0 || len(k) > 50 {
+		return false
+	}
+	for _, c := range k {
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-') {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidTagValue(v string) bool {
+	if len(v) == 0 || len(v) > 100 {
+		return false
+	}
+	for _, c := range v {
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.' || c == ' ') {
+			return false
+		}
+	}
+	return true
 }
 
 // writeError writes a JSON error response.
