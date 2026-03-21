@@ -149,10 +149,52 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="detail-panel" id="detail"><h3 id="detail-title">Module</h3><p id="detail-desc">Click any module to see what it does.</p></div>
 </div>
 <div class="section-note">
-  <h2>How it works</h2>
+  <h2>How the Proxy Works</h2>
   <p>Every request enters through the standard OpenAI-compatible <code>/v1/chat/completions</code> endpoint. It flows through the middleware chain in order: routing decides which provider handles it, safety modules check for harmful content, cost modules enforce spending limits, the cache checks for a hit, transforms optimize the prompt, validators ensure output quality, and observe modules record everything. After the response, hooks write traces to <a href="/observe/">Observe</a> and audit entries to <a href="/trust/">Trust</a> automatically.</p>
-  <p>After the middleware chain, the request hits the selected provider. On the way back, the response flows through the chain in reverse. Observe automatically writes a trace record and Trust writes a hash-chained audit entry &mdash; no configuration needed.</p>
   <p>Every module is wrapped with <code>toggle.Wrap</code>. Disabled modules are bypassed with zero overhead. Toggle any module on or off at runtime via the API or the console &mdash; no restart required.</p>
+
+  <h2 style="margin-top:3rem">The Full Platform</h2>
+  <p>The proxy is the foundation. On top of it, Stockyard runs an entire AI economy:</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1.5rem 0">
+    <div style="border:1px solid var(--bg3);padding:1.2rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Core Infrastructure</div>
+      <p style="font-size:0.85rem;margin:0"><a href="/products/">Proxy</a> (58 modules) &rarr; <a href="/observe/">Observe</a> (traces) &rarr; <a href="/trust/">Trust</a> (audit)</p>
+    </div>
+    <div style="border:1px solid var(--bg3);padding:1.2rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Creation Tools</div>
+      <p style="font-size:0.85rem;margin:0"><a href="/studio/">Studio</a> &rarr; <a href="/forge/">Forge</a> &rarr; <a href="/appbuilder/">App Builder</a> &rarr; <a href="/copilot/">Copilot</a></p>
+    </div>
+    <div style="border:1px solid var(--bg3);padding:1.2rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">The Economy</div>
+      <p style="font-size:0.85rem;margin:0"><a href="/exchange/">Exchange</a> &rarr; <a href="/knowledge/">Knowledge</a> &rarr; <a href="/node/">Mesh</a> &rarr; <a href="/reputation/">Reputation</a></p>
+    </div>
+    <div style="border:1px solid var(--bg3);padding:1.2rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Operations</div>
+      <p style="font-size:0.85rem;margin:0"><a href="/billing/">Billing</a> &rarr; <a href="/fabric/">Fabric</a> &rarr; <a href="/recall/">Recall</a> &rarr; <a href="/memory/">Memory</a></p>
+    </div>
+    <div style="border:1px solid var(--bg3);padding:1.2rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:#5ba86e;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Governance</div>
+      <p style="font-size:0.85rem;margin:0"><a href="/team/">Team</a> &rarr; <a href="/governance/">Governance</a> &rarr; Connect &rarr; <a href="/protocol/">Protocol</a></p>
+    </div>
+    <div style="border:1px solid var(--bg3);padding:1.2rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Intelligence</div>
+      <p style="font-size:0.85rem;margin:0">Cortex &rarr; Pulse &rarr; Dreams &rarr; Genome &rarr; Resonance</p>
+    </div>
+  </div>
+
+  <h2 style="margin-top:3rem">The Stack</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;font-family:var(--font-mono);font-size:0.8rem;max-width:500px">
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Language</div><div style="padding:0.5rem;border:1px solid var(--bg3)">Go 1.22</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Database</div><div style="padding:0.5rem;border:1px solid var(--bg3)">SQLite (WAL, embedded)</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Binary</div><div style="padding:0.5rem;border:1px solid var(--bg3)">~25MB, static</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Dependencies</div><div style="padding:0.5rem;border:1px solid var(--bg3)">Zero</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Tables</div><div style="padding:0.5rem;border:1px solid var(--bg3)">106+</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">API endpoints</div><div style="padding:0.5rem;border:1px solid var(--bg3)">350+</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Chain traversal</div><div style="padding:0.5rem;border:1px solid var(--bg3)">400ns (58 modules)</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Encryption</div><div style="padding:0.5rem;border:1px solid var(--bg3)">AES-256-GCM at rest</div>
+  </div>
+
+  <p style="margin-top:2rem"><a href="/docs/" style="font-family:var(--font-mono);font-size:0.85rem">Docs &rarr;</a> &nbsp;&middot;&nbsp; <a href="/for/developers/" style="font-family:var(--font-mono);font-size:0.85rem">For developers &rarr;</a> &nbsp;&middot;&nbsp; <a href="/protocol/" style="font-family:var(--font-mono);font-size:0.85rem">Protocol &rarr;</a></p>
 </div>
 <footer>
   <p class="sig">Stockyard.</p>
