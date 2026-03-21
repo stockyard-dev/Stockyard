@@ -385,44 +385,49 @@ Console: http://localhost:4200/ui</span>
         <span class="app-tagline">Usage metering, per-customer billing, and Stripe integration for AI products.</span>
         <span class="app-features">Per-customer metering &bull; Plans &amp; limits &bull; Spend caps &bull; Model access control &bull; Stripe sync</span>
       </div>
-      <div class="app-card" style="border-color:var(--rust)"><a href="/recall/">
-        <span class="app-num">App 08 &mdash; <span style="color:var(--rust-light);font-size:0.65rem;background:var(--rust);color:var(--cream);padding:2px 8px;border-radius:8px;margin-left:0.5rem">New</span></span>
-        <h3 class="app-name">Recall</h3>
-        <span class="app-tagline">AI incident response. Find every affected response, notify customers, resolve fast.</span>
-        <span class="app-features">Full-text search &bull; Regex matching &bull; Date filtering &bull; One-click notify &bull; Trace-level tracking</span>
-      </a></div>
+      <div class="app-card">
+        <div class="app-icon">&#9873;</div>
+        <div class="app-badge" style="background:var(--rust);color:var(--cream);font-size:.65rem;padding:2px 8px;border-radius:8px;margin-left:.5rem">New</div>
+        <h3>Recall</h3>
+        <p>AI incident response. Find every affected response, notify customers, resolve fast.</p>
+        <ul>
+          <li>Full-text response search</li>
+          <li>Pattern matching &amp; date filtering</li>
+          <li>One-click notifications</li>
+        </ul>
+        <a href="/recall/">Learn more &rarr;</a>
+      </div>
     </div>
   </div>
 </section>
 
-<section style="padding:5rem 2rem;text-align:center">
-  <h2 class="section-label">Zero Config</h2>
-  <p style="font-size:1.8rem;margin-bottom:1rem">Works with every SDK</p>
-  <p style="color:var(--cream-dim);max-width:500px;margin:0 auto 3rem;font-style:italic">One import change. Zero config. All traffic routes through Stockyard.</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;max-width:860px;margin:0 auto">
-    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left;border:1px solid var(--bg3)">
+<section class="sdk-section" style="padding:5rem 2rem;text-align:center">
+  <div class="section-label">Zero Config</div>
+  <h2 style="font-size:2rem;margin-bottom:1rem">Works with every SDK</h2>
+  <p style="color:var(--cream-dim);max-width:500px;margin:0 auto 3rem">One import change. Zero config. All traffic routes through Stockyard automatically.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:900px;margin:0 auto">
+    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
       <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Python</div>
-      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap;margin:0">pip install stockyard-openai
+      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap">pip install stockyard-openai
 
 from stockyard_openai import OpenAI
 client = OpenAI(api_key="sk-...")</pre>
     </div>
-    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left;border:1px solid var(--bg3)">
+    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
       <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Node</div>
-      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap;margin:0">npm install @stockyard/openai
+      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap">npm install @stockyard/openai
 
 import OpenAI from '@stockyard/openai';
 const client = new OpenAI();</pre>
     </div>
-    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left;border:1px solid var(--bg3)">
+    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
       <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Go</div>
-      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap;margin:0">go get github.com/stockyard-dev/stockyard-openai-go
+      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap">go get github.com/stockyard-dev/stockyard-openai-go
 
 config.BaseURL = stockyard.BaseURL()
-client := openai.NewClientWithConfig(config)</pre>
+config.HTTPClient = &amp;http.Client{Transport: stockyard.Transport()}</pre>
     </div>
   </div>
-  <p style="margin-top:2rem"><a href="/docs/sdks/" style="font-family:var(--font-mono);font-size:.85rem">Read the SDK docs &rarr;</a></p>
 </section>
 
 <section class="console-preview">
