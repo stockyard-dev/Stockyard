@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>About | Stockyard</title>
+<meta name="description" content="The story behind Stockyard. One developer, one binary, one vision for the AI economy.">
+<meta property="og:title" content="About Stockyard">
+<meta property="og:description" content="The story behind Stockyard. One developer, one binary, one vision for the AI economy.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+@media(prefers-color-scheme:light){
+  :root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:680px;margin:0 auto;padding:6rem 2rem 4rem}
+.content h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:2rem;line-height:1.2}
+.content h1 .accent{color:var(--rust-light)}
+.content p{color:var(--cream-dim);margin-bottom:1.5rem;font-size:1.05rem;line-height:1.9}
+.content p strong{color:var(--cream)}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin:3rem 0 1.5rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:2rem 0}
+.stat{padding:1rem;border:1px solid var(--bg3);text-align:center}
+.stat-num{font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--cream);display:block}
+.stat-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:0.3rem;display:block}
+.nav-toggle{display:none}
+@media(max-width:768px){.nav-links{display:none}.content{padding:4rem 1.5rem 3rem}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Platform</a>
+    <a href="/appbuilder/">Build</a>
+    <a href="/node/">Network</a>
+    <a href="/governance/">Enterprise</a>
+    <a href="/docs/">Developers</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/playground/">Playground</a>
+  </div>
+</nav>
+
+<div class="content">
+  <h1>One developer. One binary. <span class="accent">One vision.</span></h1>
+
+  <p>Stockyard started with a simple frustration: every AI project needed the same infrastructure &mdash; a proxy, a logger, a cost tracker, safety filters, an audit trail &mdash; and every team built it from scratch. Six tools, six bills, six points of failure.</p>
+
+  <p>So I put all of it in one Go binary. No Redis. No Postgres. No Docker compose. Just <strong>curl | sh</strong> and you're running.</p>
+
+  <p>That was the LLM proxy. But the proxy was just the door.</p>
+
+  <p>Behind it, I saw something bigger: an economy. A platform where <strong>anyone can build AI apps without code</strong> and publish them to a marketplace. Where <strong>GPU owners earn money from idle hardware</strong> by contributing compute to a distributed mesh. Where <strong>domain experts monetize their knowledge</strong> through a knowledge base marketplace with automatic royalties.</p>
+
+  <p>Today Stockyard is 16 integrated apps, 58 middleware modules, 350+ API endpoints, a declarative deployment engine, a natural language control interface, an AI incident response system, a distributed compute network, a knowledge marketplace, a financial layer, a governance framework, and an open protocol specification.</p>
+
+  <p>All in a single binary. All with zero external dependencies. All open source.</p>
+
+  <div class="section-label">By the numbers</div>
+  <div class="stats">
+    <div class="stat"><span class="stat-num">67K+</span><span class="stat-label">Lines of Go</span></div>
+    <div class="stat"><span class="stat-num">431</span><span class="stat-label">Source Files</span></div>
+    <div class="stat"><span class="stat-num">106</span><span class="stat-label">Database Tables</span></div>
+    <div class="stat"><span class="stat-num">350+</span><span class="stat-label">API Endpoints</span></div>
+    <div class="stat"><span class="stat-num">58</span><span class="stat-label">Middleware Modules</span></div>
+    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Integrated Apps</span></div>
+    <div class="stat"><span class="stat-num">25MB</span><span class="stat-label">Binary Size</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
+  </div>
+
+  <div class="section-label">The mission</div>
+  <p>Make AI infrastructure accessible to everyone. Not just developers at well-funded companies. Everyone. The startup founder who needs to ship an AI feature today. The GPU owner who wants to earn from idle hardware. The retired doctor whose medical expertise could save lives if it were accessible to AI systems. The non-technical entrepreneur who has a great idea for an AI application but can't code.</p>
+
+  <p>The AI economy shouldn't require a DevOps team, a cloud budget, and six months of infrastructure work. It should require one binary and 30 seconds.</p>
+
+  <div class="section-label">Open source</div>
+  <p>Stockyard is MIT licensed and fully open source. The entire codebase is at <a href="https://github.com/stockyard-dev/Stockyard">github.com/stockyard-dev/Stockyard</a>. Read every line. Audit every decision. Fork it, extend it, contribute to it. The platform belongs to the community that uses it.</p>
+
+  <div class="section-label">Built in the open</div>
+  <p>Every commit is public. Every decision is documented. The <a href="/blog/">blog</a> explains the engineering tradeoffs. The <a href="/changelog/">changelog</a> tracks every ship. The <a href="/protocol/">protocol specification</a> is published for anyone to adopt. Transparency isn't a marketing strategy. It's how trust is built.</p>
+
+  <p style="margin-top:3rem;font-family:var(--font-mono);font-size:0.85rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a> &middot; <a href="/protocol/">Protocol</a></p>
+</div>
+
+<footer>
+  <p style="font-family:var(--font-serif);color:var(--leather-light);font-style:italic;text-align:center;padding:2rem;border-top:1px solid var(--bg3)">Stockyard.</p>
+  <p style="text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);padding:0 2rem 2rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/docs/">Developers</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+</footer>
+</body>
+</html>
