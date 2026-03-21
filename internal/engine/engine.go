@@ -1133,7 +1133,7 @@ func Boot(pc ProductConfig) {
 	})
 
 	// --- Webhook Debugger ---
-	srv.Mux().HandleFunc("GET /api/webhooks/deliveries", func(w http.ResponseWriter, r *http.Request) {
+	srv.Mux().HandleFunc("GET /api/webhook-debugger/deliveries", func(w http.ResponseWriter, r *http.Request) {
 		limit := 50
 		rows, err := db.Conn().Query(`SELECT id, event_type, url, response_status, latency_ms, retry_count, status, created_at 
 			FROM webhook_deliveries ORDER BY created_at DESC LIMIT ?`, limit)
@@ -1160,7 +1160,7 @@ func Boot(pc ProductConfig) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"deliveries": deliveries, "count": len(deliveries)})
 	})
-	srv.Mux().HandleFunc("GET /api/webhooks/deliveries/{id}", func(w http.ResponseWriter, r *http.Request) {
+	srv.Mux().HandleFunc("GET /api/webhook-debugger/deliveries/{id}", func(w http.ResponseWriter, r *http.Request) {
 		deliveryID := r.PathValue("id")
 		var id, eventType, url, reqBody, respBody, status, createdAt string
 		var respStatus, latencyMs, retryCount int
@@ -1180,7 +1180,7 @@ func Boot(pc ProductConfig) {
 			"retry_count": retryCount, "status": status, "created_at": createdAt,
 		})
 	})
-	srv.Mux().HandleFunc("POST /api/webhooks/deliveries/{id}/replay", func(w http.ResponseWriter, r *http.Request) {
+	srv.Mux().HandleFunc("POST /api/webhook-debugger/deliveries/{id}/replay", func(w http.ResponseWriter, r *http.Request) {
 		deliveryID := r.PathValue("id")
 		var url, reqBody string
 		err := db.Conn().QueryRow("SELECT url, COALESCE(request_body,'') FROM webhook_deliveries WHERE id = ?", deliveryID).Scan(&url, &reqBody)
