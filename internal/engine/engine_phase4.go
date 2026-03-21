@@ -297,5 +297,24 @@ func buildPhase4Middlewares(
 		log.Printf("autotag: enabled")
 	}
 
+	// Magnum Opus middleware
+	if pc.Features.Ghost {
+		mw = append(mw, toggle.Wrap("ghost", reg, features.GhostMiddleware(db.Conn())))
+		reg.Set("ghost", false) // disabled by default — enable via API
+		log.Printf("ghost: registered (disabled by default)")
+	}
+	if pc.Features.PromptCompress {
+		mw = append(mw, toggle.Wrap("promptcompress", reg, features.PromptCompressMiddleware()))
+		log.Printf("promptcompress: enabled")
+	}
+	if pc.Features.Honeypot {
+		mw = append(mw, toggle.Wrap("honeypot", reg, features.HoneypotMiddleware(db.Conn())))
+		log.Printf("honeypot: enabled")
+	}
+	if pc.Features.MeshRoute {
+		mw = append(mw, toggle.Wrap("meshroute", reg, features.MeshRouteMiddleware(db.Conn())))
+		log.Printf("meshroute: enabled")
+	}
+
 	return mw
 }

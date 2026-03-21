@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Join the Stockyard Mesh Network | Stockyard</title>
+<meta name="description" content="Earn by running inference on the Stockyard Mesh Network. Set up a node, contribute compute, and get paid.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;
+    --rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;
+    --leather:#7a6544;--leather-light:#8b7355;
+    --cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;
+    --gold:#b08a28;
+  }
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+.hero{max-width:900px;margin:0 auto;padding:8rem 2rem 5rem;text-align:center}
+.hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;margin-bottom:1.5rem;color:var(--cream)}
+.hero h1 .accent{color:var(--rust-light)}
+.hero-sub{font-size:1.15rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto 3rem}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.content-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.content-section.alt{background:var(--bg2);max-width:100%;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.content-section.alt .inner{max-width:700px;margin:0 auto}
+.content-section p{font-size:1.05rem;color:var(--cream-dim);line-height:1.9;margin-bottom:1.5rem}
+.content-section h2{font-size:1.5rem;color:var(--cream);margin-bottom:1rem}
+.content-section h3{font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.8rem;margin-top:2rem}
+.content-section ul{margin:0 0 1.5rem 1.5rem;color:var(--cream-dim);font-size:0.95rem}
+.content-section ul li{margin-bottom:0.5rem}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin:1.5rem 0}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+.earnings-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.85rem}
+.earnings-table th,.earnings-table td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.earnings-table th{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.earnings-table td{color:var(--cream-dim)}
+.earnings-table .highlight{color:var(--gold);font-weight:700}
+.step-row{display:flex;gap:1.5rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--bg3)}
+.step-num{font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--rust-light);min-width:40px}
+.step-content{flex:1}
+.step-title{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.3rem}
+.step-desc{font-size:0.85rem;color:var(--cream-dim)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:600px){
+  .hero{padding:5rem 1.5rem 3rem}
+  .code-block{font-size:0.7rem;padding:0.8rem}
+  .step-row{flex-direction:column;gap:0.5rem}
+  .earnings-table{font-size:0.75rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="hero-eyebrow">Mesh Network</div>
+  <h1>Join the Stockyard <span class="accent">Mesh Network</span></h1>
+  <p class="hero-sub">Contribute compute, run inference, and earn. Your hardware becomes part of a decentralized AI infrastructure.</p>
+</section>
+
+<section class="content-section">
+  <p class="section-label">Why Run a Node</p>
+  <h2>Earn by Running Inference</h2>
+  <p>The Stockyard Mesh Network connects distributed compute providers with AI workloads. Run a node on your hardware and earn for every inference request you serve.</p>
+  <ul>
+    <li><strong>Passive income:</strong> Earn tokens for every request routed through your node</li>
+    <li><strong>Flexible commitment:</strong> Run when you want, pause when you need to</li>
+    <li><strong>Any hardware:</strong> GPUs, CPUs, or specialized accelerators</li>
+    <li><strong>Automatic matching:</strong> Workloads are routed to the best-fit node</li>
+  </ul>
+</section>
+
+<section class="content-section alt">
+  <div class="inner">
+    <p class="section-label gold">Setup</p>
+    <h2>Node Setup Guide</h2>
+
+    <div class="step-row">
+      <span class="step-num">01</span>
+      <div class="step-content">
+        <div class="step-title">Install the Stockyard CLI</div>
+        <div class="step-desc">One command to get started on Linux, macOS, or Windows.</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">02</span>
+      <div class="step-content">
+        <div class="step-title">Register Your Node</div>
+        <div class="step-desc">Create a node identity and link it to your Stockyard account.</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">03</span>
+      <div class="step-content">
+        <div class="step-title">Configure Models</div>
+        <div class="step-desc">Choose which models to serve based on your hardware capabilities.</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">04</span>
+      <div class="step-content">
+        <div class="step-title">Start Earning</div>
+        <div class="step-desc">Launch your node and begin serving inference requests.</div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="comment"># Install</span>
+<span class="cmd">curl -sSL https://stockyard.dev/install.sh | sh</span>
+
+<span class="comment"># Register node</span>
+<span class="cmd">stockyard node register --name my-gpu-node</span>
+
+<span class="comment"># Configure and start</span>
+<span class="cmd">stockyard node start --model llama-3-70b --gpus 2</span></div>
+  </div>
+</section>
+
+<section class="content-section">
+  <p class="section-label leather">Earnings</p>
+  <h2>Earnings Calculator</h2>
+  <p>Estimated monthly earnings based on hardware type and availability. Actual earnings depend on network demand and uptime.</p>
+
+  <table class="earnings-table">
+    <thead>
+      <tr>
+        <th>Hardware</th>
+        <th>Model</th>
+        <th>Uptime</th>
+        <th>Est. Monthly</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1x RTX 4090</td>
+        <td>Llama 3 8B</td>
+        <td>95%</td>
+        <td class="highlight">$180 &ndash; $320</td>
+      </tr>
+      <tr>
+        <td>2x A100 80GB</td>
+        <td>Llama 3 70B</td>
+        <td>95%</td>
+        <td class="highlight">$650 &ndash; $1,100</td>
+      </tr>
+      <tr>
+        <td>4x H100</td>
+        <td>Mixtral 8x22B</td>
+        <td>99%</td>
+        <td class="highlight">$2,400 &ndash; $4,200</td>
+      </tr>
+      <tr>
+        <td>CPU (16 cores)</td>
+        <td>Llama 3 8B (GGUF)</td>
+        <td>90%</td>
+        <td class="highlight">$40 &ndash; $80</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">&copy; 2026 Stockyard &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+
+</body>
+</html>

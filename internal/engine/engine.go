@@ -25,6 +25,10 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/integrations"
 	"github.com/stockyard-dev/stockyard/internal/license"
+	"github.com/stockyard-dev/stockyard/internal/apps/billing"
+	"github.com/stockyard-dev/stockyard/internal/connect"
+	"github.com/stockyard-dev/stockyard/internal/cortex"
+	"github.com/stockyard-dev/stockyard/internal/fabric"
 	"github.com/stockyard-dev/stockyard/internal/mesh"
 	"github.com/stockyard-dev/stockyard/internal/mcp"
 	"github.com/stockyard-dev/stockyard/internal/platform"
@@ -185,6 +189,12 @@ type Features struct {
 	// Top 5 features
 	Consensus bool
 	AutoTag   bool
+
+	// Magnum Opus features
+	Ghost          bool
+	PromptCompress bool
+	Honeypot       bool
+	MeshRoute      bool
 }
 
 // ProductConfig defines a product's identity and feature set.
@@ -392,9 +402,26 @@ func Boot(pc ProductConfig) {
 	// Predictive scaling + cost anomaly detection
 	features.RegisterPredictiveRoutes(srv.Mux(), db.Conn())
 
+	// Fabric declarative deployment engine
+	fabricEngine := fabric.NewEngine(db.Conn())
+	fabricEngine.Register(srv.Mux())
+	fabricEngine.StartHealingLoop()
+
 	// Multi-region proxy mesh
 	meshMgr := mesh.NewManager(db.Conn())
 	meshMgr.Register(srv.Mux())
+
+	// Cortex platform intelligence
+	cortexSvc := cortex.NewCortex(db.Conn())
+	cortexSvc.Register(srv.Mux())
+
+	// Connect (OAuth, Vault, Labs, Security, SLA, Adapt)
+	connectSvc := connect.NewConnectService(db.Conn())
+	connectSvc.Register(srv.Mux())
+
+	// Finance routes (capital advances, insurance)
+	billing.MigrateFinance(db.Conn())
+	billing.RegisterFinanceRoutes(srv.Mux(), db.Conn())
 
 	// Cost index + live benchmarks + provider analytics
 	RegisterCostIndexRoutes(srv.Mux(), db.Conn())
@@ -497,6 +524,11 @@ func Boot(pc ProductConfig) {
 			}
 		}
 
+		// Wire trust auditor to Fabric engine
+		if audit != nil {
+			fabricEngine.SetAuditor(audit)
+		}
+
 		// Wire trust auditor to features so trust_enforce uses serialized hash chain
 		if audit != nil {
 			features.SetAuditFunc(audit)
@@ -579,6 +611,7 @@ func Boot(pc ProductConfig) {
 	// Changelog — embedded entries served to console "What's New" panel
 	srv.Mux().HandleFunc("GET /api/changelog", func(w http.ResponseWriter, r *http.Request) {
 		entries := []map[string]string{
+			{"date": "2026-03-21", "title": "Magnum Opus: Complete AI Economy Platform", "body": "Fabric declarative deployments, Copilot NL control, App Builder + Store, Knowledge Marketplace, Mesh Network, Reputation + Certification, Financial Layer, Governance Framework, Cortex Intelligence, 30+ new middleware modules, CLI enhancements, and Protocol Specification."},
 			{"date": "2026-03-19", "title": "Week 6: Auto-Disable & Cost Reports", "body": "Auto-disable broken providers based on error rates, and exportable printable HTML cost reports with provider/model/daily breakdowns."},
 			{"date": "2026-03-19", "title": "Week 5: Prompt Diff & Dark Mode", "body": "Side-by-side prompt version diffs with LCS algorithm, and dark/light mode toggle with localStorage persistence."},
 			{"date": "2026-03-19", "title": "Week 4: Cost Estimator, CostWarn & Recommendations", "body": "Live cost estimation in playground, pre-request cost warning middleware, and smart module recommendations based on traffic patterns."},
@@ -607,6 +640,135 @@ func Boot(pc ProductConfig) {
 	// OpenAPI spec
 	srv.Mux().HandleFunc("GET /api/openapi.json", apiserver.HandleOpenAPI)
 	log.Printf("  OpenAPI:   http://localhost:%d/api/openapi.json", cfg.Port)
+
+	// Platform search (unified search across traces, apps, KBs)
+	srv.Mux().HandleFunc("GET /api/search", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query().Get("q")
+		if q == "" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"results": []any{}, "query": ""})
+			return
+		}
+		var results []map[string]any
+		// Search traces
+		rows, err := db.Conn().Query("SELECT id, model, status, created_at FROM observe_traces WHERE model LIKE ? OR status LIKE ? ORDER BY created_at DESC LIMIT 10",
+			"%"+q+"%", "%"+q+"%")
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var id, model, status, createdAt string
+				rows.Scan(&id, &model, &status, &createdAt)
+				results = append(results, map[string]any{"type": "trace", "id": id, "title": model, "status": status, "created_at": createdAt})
+			}
+		}
+		// Search apps
+		rows2, err := db.Conn().Query("SELECT id, title, category, status FROM published_apps WHERE title LIKE ? OR description LIKE ? LIMIT 10",
+			"%"+q+"%", "%"+q+"%")
+		if err == nil {
+			defer rows2.Close()
+			for rows2.Next() {
+				var id, title, cat, status string
+				rows2.Scan(&id, &title, &cat, &status)
+				results = append(results, map[string]any{"type": "app", "id": id, "title": title, "category": cat, "status": status})
+			}
+		}
+		if results == nil {
+			results = []map[string]any{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"results": results, "count": len(results), "query": q})
+	})
+
+	// Snapshots (config backup/restore)
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS snapshots (
+		id TEXT PRIMARY KEY, name TEXT, data TEXT, created_at TEXT
+	)`)
+	srv.Mux().HandleFunc("POST /api/snapshots", func(w http.ResponseWriter, r *http.Request) {
+		// Export current config as snapshot
+		var modules, providers int
+		db.Conn().QueryRow("SELECT COUNT(*) FROM proxy_modules").Scan(&modules)
+		db.Conn().QueryRow("SELECT COUNT(*) FROM proxy_providers").Scan(&providers)
+		snap := map[string]any{"modules": modules, "providers": providers, "timestamp": time.Now().Format(time.RFC3339)}
+		snapJSON, _ := json.Marshal(snap)
+		id := fmt.Sprintf("snap_%d", time.Now().UnixNano())
+		db.Conn().Exec("INSERT INTO snapshots (id, name, data, created_at) VALUES (?, 'auto', ?, ?)",
+			id, string(snapJSON), time.Now().Format(time.RFC3339))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"id": id, "status": "created"})
+	})
+	srv.Mux().HandleFunc("GET /api/snapshots", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.Conn().Query("SELECT id, name, created_at FROM snapshots ORDER BY created_at DESC LIMIT 30")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"snapshots": []any{}})
+			return
+		}
+		defer rows.Close()
+		var snaps []map[string]string
+		for rows.Next() {
+			var id, name, createdAt string
+			rows.Scan(&id, &name, &createdAt)
+			snaps = append(snaps, map[string]string{"id": id, "name": name, "created_at": createdAt})
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"snapshots": snaps})
+	})
+
+	// Event rules engine
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS event_rules (
+		id TEXT PRIMARY KEY, trigger TEXT, condition TEXT, action TEXT, enabled INTEGER DEFAULT 1, created_at TEXT
+	)`)
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS event_log (
+		id TEXT PRIMARY KEY, rule_id TEXT, trigger TEXT, action TEXT, created_at TEXT
+	)`)
+	srv.Mux().HandleFunc("GET /api/events/rules", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.Conn().Query("SELECT id, trigger, condition, action, enabled, created_at FROM event_rules ORDER BY created_at DESC")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"rules": []any{}})
+			return
+		}
+		defer rows.Close()
+		var rules []map[string]any
+		for rows.Next() {
+			var id, trigger, cond, action, createdAt string
+			var enabled int
+			rows.Scan(&id, &trigger, &cond, &action, &enabled, &createdAt)
+			rules = append(rules, map[string]any{"id": id, "trigger": trigger, "condition": cond, "action": action, "enabled": enabled == 1, "created_at": createdAt})
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"rules": rules})
+	})
+	srv.Mux().HandleFunc("POST /api/events/rules", func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Trigger   string `json:"trigger"`
+			Condition string `json:"condition"`
+			Action    string `json:"action"`
+		}
+		json.NewDecoder(r.Body).Decode(&req)
+		id := fmt.Sprintf("er_%d", time.Now().UnixNano())
+		db.Conn().Exec("INSERT INTO event_rules (id, trigger, condition, action, created_at) VALUES (?, ?, ?, ?, ?)",
+			id, req.Trigger, req.Condition, req.Action, time.Now().Format(time.RFC3339))
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"id": id, "status": "created"})
+	})
+	srv.Mux().HandleFunc("GET /api/events/log", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.Conn().Query("SELECT id, rule_id, trigger, action, created_at FROM event_log ORDER BY created_at DESC LIMIT 50")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"events": []any{}})
+			return
+		}
+		defer rows.Close()
+		var events []map[string]string
+		for rows.Next() {
+			var id, ruleID, trigger, action, createdAt string
+			rows.Scan(&id, &ruleID, &trigger, &action, &createdAt)
+			events = append(events, map[string]string{"id": id, "rule_id": ruleID, "trigger": trigger, "action": action, "created_at": createdAt})
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"events": events})
+	})
 
 	// Seed demo data if database is empty (populates traces, costs, experiments)
 	db.SeedDemoData(pc.Product)
