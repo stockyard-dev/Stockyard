@@ -20,8 +20,9 @@ const APPS={
   exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
   billing:{id:'billing',name:'Bill',icon:'\u00A2',desc:'Usage metering'},
   team:{id:'team',name:'Team',icon:'\u2693',desc:'Members & RBAC'},
+  memory:{id:'memory',name:'Memory',icon:'\u29BE',desc:'Per-user memory'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team','memory'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){
@@ -1095,7 +1096,25 @@ function TeamView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,team:TeamView,settings:SettingsView};
+function MemoryView(){
+  const[userId,setUserId]=useState('');const[memories,setMemories]=useState([]);const[toast,setToast]=useState(null);
+  const load=async()=>{if(!userId.trim())return;const r=await api('/api/memory/'+encodeURIComponent(userId.trim()));setMemories(r.memories||r||[])};
+  return html`<div class="page-head"><div class="page-eyebrow">Memory</div><h2>Per-User Memory</h2><p class="page-sub">Store, retrieve, and summarize conversation memory per user.</p></div>
+    <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:16px">
+      <div style="flex:1"><${Input} label="User ID" value=${userId} onChange=${setUserId} placeholder="user_123" mono/></div>
+      <${Btn} variant="primary" onClick=${load} disabled=${!userId.trim()}>Load Memories<//>
+      <${Btn} onClick=${async()=>{if(!userId.trim())return;const r=await api('/api/memory/'+encodeURIComponent(userId.trim())+'/summarize',{method:'POST'});if(!r._error){setToast({msg:'Summarized',type:'success'});load()}else{setToast({msg:r.error||'Failed',type:'error'})}}} disabled=${!userId.trim()}>Summarize<//>
+    </div>
+    ${Array.isArray(memories)&&memories.length>0?html`<${DataTable} columns=${[
+      {key:'content',label:'Content',width:'2fr',render:r=>html`<span style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${r.content||r.text||'\u2014'}</span>`},
+      {key:'type',label:'Type',width:'100px',mono:true,render:r=>r.type||r.memory_type||'memory'},
+      {key:'ts',label:'Created',width:'120px',render:r=>r.created_at||'\u2014'},
+      {key:'a',label:'',width:'70px',render:r=>html`<${Btn} small variant="danger" onClick=${async()=>{await api('/api/memory/'+encodeURIComponent(userId)+'/'+r.id,{method:'DELETE'});setToast({msg:'Deleted',type:'success'});load()}}>\u2715<//>`}
+    ]} rows=${memories} emptyMsg="No memories."/>`:html`<div class="empty-state">Enter a user ID and click Load to view their memories.</div>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,team:TeamView,memory:MemoryView,settings:SettingsView};
 
 
 function Onboarding({onComplete}){
