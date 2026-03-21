@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:title" content="SDK Wrappers — Stockyard">
+<meta property="og:description" content="Drop-in OpenAI SDK replacements for Python, Node, and Go. One import change, zero config.">
+<meta property="og:url" content="https://stockyard.dev/docs/sdks/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>SDK Wrappers — Zero-Config Integration — Stockyard</title>
+<meta name="description" content="Drop-in OpenAI SDK replacements for Python, Node, and Go. One import change, zero config, all traffic routes through Stockyard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:800px;margin:0 auto;padding:4rem 2rem}
+h1{font-size:2.2rem;margin-bottom:1rem}
+h1 .accent{color:var(--rust-light)}
+.subtitle{font-size:1.1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+h2{font-size:1.5rem;margin:3rem 0 1rem;color:var(--cream)}
+h3{font-size:1.1rem;margin:2rem 0 0.75rem;color:var(--leather-light);font-family:var(--font-mono)}
+p{margin-bottom:1rem;color:var(--cream-dim)}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);border-radius:6px;padding:1.25rem;font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);overflow-x:auto;margin:1rem 0 2rem;white-space:pre;line-height:1.6}
+.code-block .comment{color:var(--cream-muted)}
+.code-block .kw{color:var(--rust-light)}
+.code-block .str{color:var(--green-light)}
+.sdk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin:2rem 0}
+.sdk-card{background:var(--bg2);border:1px solid var(--bg3);border-radius:8px;padding:1.5rem}
+.sdk-card h3{margin-top:0;font-size:1rem}
+.env-table{width:100%;border-collapse:collapse;margin:1rem 0 2rem;font-size:0.9rem}
+.env-table th,.env-table td{text-align:left;padding:0.75rem 1rem;border-bottom:1px solid var(--bg3)}
+.env-table th{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);text-transform:uppercase;letter-spacing:1px}
+.env-table td{color:var(--cream-dim)}.env-table code{font-family:var(--font-mono);color:var(--cream);font-size:0.85rem}
+.faq{margin:2rem 0}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.25rem 0}
+.faq-q{font-weight:700;color:var(--cream);margin-bottom:0.5rem}
+.faq-a{color:var(--cream-dim);font-size:0.95rem}
+.footer{text-align:center;padding:4rem 2rem 2rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3);margin-top:4rem}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link" style="position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem">Skip to content</a>
+<nav class="nav">
+  <a href="/" class="nav-brand">&#9646; STOCKYARD</a>
+  <div class="nav-links">
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/guide/">Guide</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<main id="main" class="content">
+<h1>SDK Wrappers &mdash; <span class="accent">30 Seconds to Start</span></h1>
+<div class="subtitle">One import change. Zero config. All traffic routes through Stockyard automatically.</div>
+
+<h2>Installation</h2>
+<div class="sdk-grid">
+  <div class="sdk-card">
+    <h3>Python</h3>
+    <div class="code-block">pip install stockyard-openai</div>
+  </div>
+  <div class="sdk-card">
+    <h3>Node / TypeScript</h3>
+    <div class="code-block">npm install @stockyard/openai</div>
+  </div>
+  <div class="sdk-card">
+    <h3>Go</h3>
+    <div class="code-block">go get github.com/stockyard-dev/stockyard-openai-go</div>
+  </div>
+</div>
+
+<h2>Usage &mdash; Before &amp; After</h2>
+
+<h3>Python</h3>
+<div class="code-block"><span class="comment"># Before</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="comment"># After &mdash; one line change</span>
+<span class="kw">from</span> stockyard_openai <span class="kw">import</span> OpenAI
+
+<span class="comment"># Everything else stays the same</span>
+client = OpenAI(api_key=<span class="str">"sk-..."</span>)
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]
+)</div>
+
+<h3>Node / TypeScript</h3>
+<div class="code-block"><span class="comment">// Before</span>
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'openai'</span>;
+
+<span class="comment">// After &mdash; one line change</span>
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'@stockyard/openai'</span>;
+
+<span class="comment">// Everything else stays the same</span>
+<span class="kw">const</span> client = <span class="kw">new</span> OpenAI({ apiKey: <span class="str">'sk-...'</span> });
+<span class="kw">const</span> response = <span class="kw">await</span> client.chat.completions.create({
+  model: <span class="str">'gpt-4o'</span>,
+  messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Hello'</span> }],
+});</div>
+
+<h3>Go</h3>
+<div class="code-block"><span class="kw">import</span> stockyard <span class="str">"github.com/stockyard-dev/stockyard-openai-go"</span>
+
+config := openai.DefaultConfig(os.Getenv(<span class="str">"OPENAI_API_KEY"</span>))
+config.BaseURL = stockyard.BaseURL()
+config.HTTPClient = &amp;http.Client{Transport: stockyard.Transport()}
+client := openai.NewClientWithConfig(config)</div>
+
+<h2>Environment Variables</h2>
+<table class="env-table">
+  <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>STOCKYARD_URL</code></td><td><code>http://localhost:4200</code></td><td>Your Stockyard proxy URL</td></tr>
+    <tr><td><code>STOCKYARD_ENABLED</code></td><td><code>true</code></td><td>Set to <code>false</code> to bypass Stockyard and connect directly</td></tr>
+  </tbody>
+</table>
+
+<h2>How It Works</h2>
+<p>Each SDK wrapper subclasses (or wraps) the official OpenAI client and redirects the <code>base_url</code> to your Stockyard instance. Every request flows through Stockyard's middleware chain &mdash; caching, rate limiting, cost tracking, guardrails, audit logging &mdash; before reaching the LLM provider.</p>
+<p>The wrappers add an <code>X-Stockyard-Source</code> header so you can filter traces by SDK in the Observe console.</p>
+
+<h2>FAQ</h2>
+<div class="faq">
+  <div class="faq-item">
+    <div class="faq-q">Does this add latency?</div>
+    <div class="faq-a">Minimal. Stockyard runs locally (or nearby) and adds &lt;5ms to each request. Caching can actually reduce latency significantly for repeated queries.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">What if Stockyard is down?</div>
+    <div class="faq-a">Set <code>STOCKYARD_ENABLED=false</code> to bypass. Or configure failover in Stockyard to automatically retry with a backup provider.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Can I use this with Azure OpenAI?</div>
+    <div class="faq-a">Yes. Configure your Azure endpoint as a provider in Stockyard, then the SDK wrapper routes through it seamlessly.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Can I add cost attribution tags?</div>
+    <div class="faq-a">Yes. Pass <code>X-Stockyard-Tags</code> as a default header: <code>OpenAI(default_headers={"X-Stockyard-Tags": "team=backend,feature=search"})</code></div>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer">
+  <div>Stockyard &mdash; Where LLM traffic gets sorted.</div>
+  <div style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/guide/">Guide</a> &middot; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+</footer>
+</body>
+</html>

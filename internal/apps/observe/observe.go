@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -181,6 +182,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Live SSE status (how many dashboard clients connected, recent event count)
 	mux.HandleFunc("GET /api/observe/live", a.handleLiveStatus)
 
+	// Cost attribution tags
+	mux.HandleFunc("GET /api/observe/costs/by-tag", a.handleCostsByTag)
+	mux.HandleFunc("GET /api/observe/costs/tags", a.handleListTags)
+
 	log.Printf("[observe] routes registered")
 }
 
@@ -299,6 +304,7 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 
 	source := r.URL.Query().Get("source")
 	var where []string
+	var args []any
 	switch source {
 	case "real":
 		where = append(where, "t.id NOT LIKE 't-demo-%'")
@@ -308,6 +314,16 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 	if favorites {
 		where = append(where, "f.trace_id IS NOT NULL")
 	}
+	if tagFilter := r.URL.Query().Get("tag"); tagFilter != "" {
+		if parts := splitTagFilter(tagFilter); len(parts) == 2 {
+			where = append(where, "json_extract(t.tags, '$.' || ?) = ?")
+			args = append(args, parts[0], parts[1])
+		}
+	}
+	if sdkSource := r.URL.Query().Get("sdk_source"); sdkSource != "" {
+		where = append(where, "t.source = ?")
+		args = append(args, sdkSource)
+	}
 	if len(where) > 0 {
 		query += " WHERE " + where[0]
 		for _, w := range where[1:] {
@@ -315,8 +331,9 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	query += " ORDER BY t.created_at DESC LIMIT ?"
+	args = append(args, limit)
 
-	rows, err := a.conn.Query(query, limit)
+	rows, err := a.conn.Query(query, args...)
 	if err != nil {
 		writeJSON(w, map[string]any{"traces": []any{}})
 		return
@@ -340,13 +357,27 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, map[string]any{"traces": traces, "count": len(traces)})
 }
 
+func splitTagFilter(s string) []string {
+	for i, c := range s {
+		if c == ':' {
+			return []string{s[:i], s[i+1:]}
+		}
+	}
+	return nil
+}
+
 func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var reqID, svc, op, prov, model, status, meta, created string
 	var dur, tokIn, tokOut int64
 	var cost float64
-	err := a.conn.QueryRow("SELECT request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at FROM observe_traces WHERE id = ?", id).
-		Scan(&reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &meta, &created)
+	var respBody, tagsJSON, traceSource sql.NullString
+	err := a.conn.QueryRow(`SELECT request_id, service, operation, provider, model, status,
+		duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at,
+		COALESCE(response_body, ''), COALESCE(tags, '{}'), COALESCE(source, '')
+		FROM observe_traces WHERE id = ?`, id).
+		Scan(&reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &meta, &created,
+			&respBody, &tagsJSON, &traceSource)
 	if err != nil {
 		w.WriteHeader(404)
 		writeJSON(w, map[string]string{"error": "trace not found"})
@@ -359,6 +390,7 @@ func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 		"provider": prov, "model": model, "status": status,
 		"duration_ms": dur, "tokens_in": tokIn, "tokens_out": tokOut,
 		"cost_usd": cost, "metadata": metadata, "created_at": created,
+		"response_body": respBody.String, "tags": tagsJSON.String, "source": traceSource.String,
 	})
 }
 
@@ -1207,4 +1239,123 @@ func writeJSON(w http.ResponseWriter, v any) {
 
 func genID(prefix string) string {
 	return prefix + time.Now().Format("20060102150405.000")[0:18]
+}
+
+func (a *App) handleCostsByTag(w http.ResponseWriter, r *http.Request) {
+	tagKey := r.URL.Query().Get("tag")
+	if tagKey == "" {
+		http.Error(w, `{"error":"tag parameter required"}`, http.StatusBadRequest)
+		return
+	}
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		period = time.Now().UTC().Format("2006-01")
+	}
+
+	rows, err := a.conn.Query(`SELECT tags, cost_usd FROM observe_traces
+		WHERE tags != '{}' AND tags != '' AND created_at >= ? AND created_at < ?`,
+		period+"-01T00:00:00Z", period+"-31T23:59:59Z")
+	if err != nil {
+		http.Error(w, `{"error":"query failed"}`, http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type bucketData struct {
+		Requests int     `json:"requests"`
+		CostUSD  float64 `json:"cost_usd"`
+	}
+	buckets := make(map[string]*bucketData)
+	totalCost := 0.0
+
+	for rows.Next() {
+		var tagsJSON string
+		var costUSD float64
+		if err := rows.Scan(&tagsJSON, &costUSD); err != nil {
+			continue
+		}
+		var tags map[string]string
+		if err := json.Unmarshal([]byte(tagsJSON), &tags); err != nil {
+			continue
+		}
+		val, ok := tags[tagKey]
+		if !ok {
+			continue
+		}
+		b, exists := buckets[val]
+		if !exists {
+			b = &bucketData{}
+			buckets[val] = b
+		}
+		b.Requests++
+		b.CostUSD += costUSD
+		totalCost += costUSD
+	}
+
+	type breakdownEntry struct {
+		Value    string  `json:"value"`
+		Requests int     `json:"requests"`
+		CostUSD  float64 `json:"cost_usd"`
+		Pct      float64 `json:"pct"`
+	}
+	var breakdown []breakdownEntry
+	for val, b := range buckets {
+		pct := 0.0
+		if totalCost > 0 {
+			pct = (b.CostUSD / totalCost) * 100
+		}
+		breakdown = append(breakdown, breakdownEntry{
+			Value:    val,
+			Requests: b.Requests,
+			CostUSD:  b.CostUSD,
+			Pct:      math.Round(pct*10) / 10,
+		})
+	}
+
+	writeJSON(w, map[string]any{"tag": tagKey, "period": period, "breakdown": breakdown})
+}
+
+func (a *App) handleListTags(w http.ResponseWriter, r *http.Request) {
+	cutoff := time.Now().UTC().AddDate(0, 0, -30).Format(time.RFC3339)
+
+	rows, err := a.conn.Query(`SELECT tags FROM observe_traces
+		WHERE tags != '{}' AND tags != '' AND created_at >= ?`, cutoff)
+	if err != nil {
+		http.Error(w, `{"error":"query failed"}`, http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type tagInfo struct {
+		Key          string `json:"key"`
+		UniqueValues int    `json:"unique_values"`
+		Requests     int    `json:"requests"`
+	}
+	keyValues := make(map[string]map[string]bool)
+	keyCounts := make(map[string]int)
+
+	for rows.Next() {
+		var tagsJSON string
+		if err := rows.Scan(&tagsJSON); err != nil {
+			continue
+		}
+		var tags map[string]string
+		if err := json.Unmarshal([]byte(tagsJSON), &tags); err != nil {
+			continue
+		}
+		for k, v := range tags {
+			keyCounts[k]++
+			if keyValues[k] == nil {
+				keyValues[k] = make(map[string]bool)
+			}
+			keyValues[k][v] = true
+		}
+	}
+
+	var tagList []tagInfo
+	for k, vals := range keyValues {
+		tagList = append(tagList, tagInfo{Key: k, UniqueValues: len(vals), Requests: keyCounts[k]})
+	}
+
+	writeJSON(w, map[string]any{"tags": tagList})
 }

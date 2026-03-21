@@ -7,6 +7,7 @@ func (db *DB) migrate() error {
 		migrationV2,
 		migrationV3,
 		migrationV4,
+		migrationV5,
 	}
 
 	// Create migrations tracking table
@@ -243,4 +244,80 @@ CREATE TABLE IF NOT EXISTS webhook_deliveries (
 );
 CREATE INDEX IF NOT EXISTS idx_webhook_del_webhook ON webhook_deliveries(webhook_id);
 CREATE INDEX IF NOT EXISTS idx_webhook_del_created ON webhook_deliveries(created_at);
+`
+
+const migrationV5 = `
+-- Recall: incident response for LLM outputs
+CREATE TABLE IF NOT EXISTS recall_incidents (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    severity TEXT NOT NULL DEFAULT 'medium',
+    status TEXT NOT NULL DEFAULT 'open',
+    search_query TEXT NOT NULL,
+    search_type TEXT NOT NULL DEFAULT 'contains',
+    affected_count INTEGER DEFAULT 0,
+    date_range_start TEXT DEFAULT '',
+    date_range_end TEXT DEFAULT '',
+    model_filter TEXT DEFAULT '',
+    created_by TEXT DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    resolved_at TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS recall_affected_traces (
+    incident_id TEXT NOT NULL,
+    trace_id TEXT NOT NULL,
+    response_snippet TEXT DEFAULT '',
+    notified INTEGER DEFAULT 0,
+    acknowledged INTEGER DEFAULT 0,
+    PRIMARY KEY(incident_id, trace_id)
+);
+CREATE INDEX IF NOT EXISTS idx_recall_affected_trace ON recall_affected_traces(trace_id);
+CREATE INDEX IF NOT EXISTS idx_recall_affected_incident ON recall_affected_traces(incident_id);
+
+CREATE TABLE IF NOT EXISTS recall_notifications (
+    id TEXT PRIMARY KEY,
+    incident_id TEXT NOT NULL,
+    channel TEXT NOT NULL,
+    recipient TEXT DEFAULT '',
+    status TEXT DEFAULT 'pending',
+    created_at TEXT NOT NULL,
+    sent_at TEXT DEFAULT ''
+);
+
+-- Copilot: AI chat sessions
+CREATE TABLE IF NOT EXISTS copilot_sessions (
+    id TEXT PRIMARY KEY,
+    messages TEXT NOT NULL DEFAULT '[]',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+-- Consensus: multi-model agreement verification
+CREATE TABLE IF NOT EXISTS consensus_configs (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    models TEXT NOT NULL DEFAULT '[]',
+    agreement_threshold REAL DEFAULT 0.8,
+    min_agree INTEGER DEFAULT 2,
+    on_disagree TEXT DEFAULT 'escalate',
+    enabled INTEGER DEFAULT 1,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS consensus_results (
+    id TEXT PRIMARY KEY,
+    trace_id TEXT NOT NULL,
+    config_id TEXT DEFAULT '',
+    models_queried TEXT NOT NULL DEFAULT '[]',
+    responses TEXT NOT NULL DEFAULT '[]',
+    similarity_matrix TEXT DEFAULT '{}',
+    consensus_reached INTEGER NOT NULL DEFAULT 0,
+    final_model TEXT DEFAULT '',
+    escalated INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_consensus_trace ON consensus_results(trace_id);
 `

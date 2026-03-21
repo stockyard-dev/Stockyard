@@ -289,3 +289,82 @@ func daysInMonthOf(t time.Time) int {
 	y, m, _ := t.Date()
 	return time.Date(y, m+1, 0, 0, 0, 0, 0, t.Location()).Day()
 }
+
+func (a *App) handleUsageByTag(w http.ResponseWriter, r *http.Request) {
+	tagKey := r.URL.Query().Get("tag")
+	if tagKey == "" {
+		http.Error(w, `{"error":"tag parameter required"}`, http.StatusBadRequest)
+		return
+	}
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		period = time.Now().UTC().Format("2006-01")
+	}
+
+	rows, err := a.conn.Query(`SELECT tags, cost_cents, input_tokens, output_tokens FROM billing_usage
+		WHERE tags != '{}' AND tags != '' AND created_at >= ? AND created_at < ?`,
+		period+"-01T00:00:00Z", period+"-31T23:59:59Z")
+	if err != nil {
+		http.Error(w, `{"error":"query failed"}`, http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type bucket struct {
+		Requests     int   `json:"requests"`
+		CostCents    int64 `json:"cost_cents"`
+		InputTokens  int64 `json:"input_tokens"`
+		OutputTokens int64 `json:"output_tokens"`
+	}
+	buckets := make(map[string]*bucket)
+	var totalCents int64
+
+	for rows.Next() {
+		var tagsJSON string
+		var costCents, tokIn, tokOut int64
+		if err := rows.Scan(&tagsJSON, &costCents, &tokIn, &tokOut); err != nil {
+			continue
+		}
+		var tags map[string]string
+		if err := json.Unmarshal([]byte(tagsJSON), &tags); err != nil {
+			continue
+		}
+		val, ok := tags[tagKey]
+		if !ok {
+			continue
+		}
+		b, exists := buckets[val]
+		if !exists {
+			b = &bucket{}
+			buckets[val] = b
+		}
+		b.Requests++
+		b.CostCents += costCents
+		b.InputTokens += tokIn
+		b.OutputTokens += tokOut
+		totalCents += costCents
+	}
+
+	type entry struct {
+		Value        string  `json:"value"`
+		Requests     int     `json:"requests"`
+		CostCents    int64   `json:"cost_cents"`
+		InputTokens  int64   `json:"input_tokens"`
+		OutputTokens int64   `json:"output_tokens"`
+		Pct          float64 `json:"pct"`
+	}
+	var breakdown []entry
+	for val, b := range buckets {
+		pct := 0.0
+		if totalCents > 0 {
+			pct = float64(b.CostCents) / float64(totalCents) * 100
+		}
+		breakdown = append(breakdown, entry{
+			Value: val, Requests: b.Requests, CostCents: b.CostCents,
+			InputTokens: b.InputTokens, OutputTokens: b.OutputTokens,
+			Pct: math.Round(pct*10) / 10,
+		})
+	}
+
+	writeJSON(w, map[string]any{"tag": tagKey, "period": period, "breakdown": breakdown})
+}

@@ -63,6 +63,9 @@ func Register(mux *http.ServeMux) {
 		"/docs/cookbook/",
 		"/community/",
 		"/protocol/",
+		"/recall/",
+		"/docs/consensus/",
+		"/docs/sdks/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -63,7 +64,15 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 				slog.Info("proxy request", logFields...)
 			}
 
-			go recordObserveTrace(conn, traceID, req, resp, err, duration)
+			var respBody string
+		if resp != nil && len(resp.Choices) > 0 {
+			respBody = resp.Choices[0].Message.Content
+			if len(respBody) > 10240 {
+				respBody = respBody[:10240]
+			}
+		}
+		source, _ := req.Extra["_source"].(string)
+		go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source)
 			// Trust ledger recording is handled by Trust app's broadcaster listener
 			// (mutex-protected hash chain via RecordEvent)
 
@@ -89,7 +98,7 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 }
 
 // recordObserveTrace writes a trace + daily cost rollup to Observe tables.
-func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, resp *provider.Response, reqErr error, dur time.Duration) {
+func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, resp *provider.Response, reqErr error, dur time.Duration, responseBody string, tags map[string]string, source string) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("[observe-hook] panic: %v", r)
@@ -121,12 +130,19 @@ func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, res
 		costUSD = float64(tokIn)/1000*0.002 + float64(tokOut)/1000*0.006
 	}
 
+	tagsJSON := "{}"
+	if len(tags) > 0 {
+		if b, err := json.Marshal(tags); err == nil {
+			tagsJSON = string(b)
+		}
+	}
+
 	now := time.Now().UTC().Format(time.RFC3339)
-	_, err := conn.Exec(`INSERT INTO observe_traces 
-		(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at) 
-		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+	_, err := conn.Exec(`INSERT INTO observe_traces
+		(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		traceID, traceID, "proxy", "chat.completion", prov, model, status,
-		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now)
+		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now, responseBody, tagsJSON, source)
 	if err != nil {
 		// Table might not exist if apps aren't registered — silent skip
 		return
@@ -201,6 +217,8 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"agentguard", "safety", pc.Features.AgentGuard, 86},
 		{"maskmode", "safety", pc.Features.MaskMode, 87},
 		{"trust_enforce", "safety", true, 88},
+		{"consensus", "safety", pc.Features.Consensus, 89},
+		{"autotag", "observe", pc.Features.AutoTag, 38},
 		// Shims
 		{"anthrofit", "shims", pc.Features.AnthroFit, 90},
 		{"geminishim", "shims", pc.Features.GeminiShim, 91},

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
@@ -60,6 +61,15 @@ func ResponseHeadersMiddleware() proxy.Middleware {
 			// Trace ID from context (if available)
 			if tid, ok := ctx.Value(billingTraceKey{}).(string); ok && tid != "" {
 				resp.Meta["X-Stockyard-Trace-Id"] = tid
+			}
+
+			// Echo cost attribution tags back to caller
+			if len(req.Tags) > 0 {
+				var parts []string
+				for k, v := range req.Tags {
+					parts = append(parts, k+"="+v)
+				}
+				resp.Meta["X-Stockyard-Tags"] = strings.Join(parts, ",")
 			}
 
 			return resp, nil

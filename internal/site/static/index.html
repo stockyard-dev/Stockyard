@@ -1,1259 +1,600 @@
 <!DOCTYPE html>
-<html lang="en" data-product="__PRODUCT__">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>__PRODUCT_NAME__ Console</title>
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Stockyard — Where LLM traffic gets sorted</title>
+<meta name="description" content="Open-source LLM proxy and control plane. 58 middleware modules, 16 providers, embedded SQLite. One Go binary.">
+<meta property="og:title" content="Stockyard — Where LLM traffic gets sorted">
+<meta property="og:description" content="Open-source LLM proxy and control plane. One Go binary, embedded SQLite, zero dependencies.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script type="module">
-import{h,render}from'https://esm.sh/preact@10.19.3';import{useState,useEffect,useCallback,useRef}from'https://esm.sh/preact@10.19.3/hooks';import htm from'https://esm.sh/htm@3.1.1';
-const html=htm.bind(h);
-
-const APPS={
-  overview:{id:'overview',name:'Overview',icon:'\u25A3',desc:'System status'},
-  proxy:{id:'proxy',name:'Proxy',icon:'\u25C8',desc:'Middleware & providers'},
-  observe:{id:'observe',name:'Observe',icon:'\u25CE',desc:'Traces & costs'},
-  trust:{id:'trust',name:'Trust',icon:'\u2B21',desc:'Policies & audit'},
-  studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts & experiments'},
-  forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
-  exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
-  billing:{id:'billing',name:'Bill',icon:'\u00A2',desc:'Usage metering'},
-};
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing'];
-let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
-function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
-async function api(path,opts={}){
-  const headers=opts.headers||{};
-  if(_adminKey)headers['X-Admin-Key']=_adminKey;
-  if(opts.body&&typeof opts.body==='string')headers['Content-Type']='application/json';
-  try{const r=await fetch(path,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
-}
-const fmt={
-  usd:v=>v==null?'\u2014':v<0.01&&v>0?'$'+v.toFixed(4):'$'+v.toFixed(2),
-  num:v=>v==null?'\u2014':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(1)+'K':String(v),
-  ms:v=>v==null?'\u2014':v>=1000?(v/1000).toFixed(1)+'s':Math.round(v)+'ms',
-  ago:ts=>{if(!ts)return'\u2014';const s=Math.floor((Date.now()-new Date(ts))/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'},
-  trunc:(s,n=60)=>s&&s.length>n?s.substring(0,n)+'\u2026':s||'\u2014',
-  hash:s=>s?s.substring(0,12)+'\u2026':'\u2014',
-};
-
-// ─── Shared Components ─────────────────────────────────────────────
-function Stat({label,value,sub,accent}){return html`<div class="stat"><div class="stat-label">${label}</div><div class="stat-value ${accent?'accent':''}">${value}</div>${sub&&html`<div class="stat-sub">${sub}</div>`}</div>`}
-function Badge({text,variant}){return html`<span class="badge ${variant||''}">${text}</span>`}
-function TabBar({tabs,active,onChange}){return html`<div class="tab-bar">${tabs.map(t=>html`<button key=${t} class="tab ${active===t?'active':''}" onClick=${()=>onChange(t)}>${t}</button>`)}</div>`}
-function Toast({msg,type,onDone}){useEffect(()=>{const t=setTimeout(onDone,3000);return()=>clearTimeout(t)},[]);return html`<div class="toast toast-${type||'info'}">${msg}</div>`}
-function Btn({children,onClick,variant,disabled,small}){return html`<button class="btn ${variant||''} ${small?'btn-sm':''}" onClick=${onClick} disabled=${disabled}>${children}</button>`}
-function Input({label,value,onChange,type,placeholder,mono}){return html`<div class="field">${label&&html`<label class="field-label">${label}</label>`}<input type=${type||'text'} value=${value} onInput=${e=>onChange(e.target.value)} class="field-input ${mono?'mono':''}" placeholder=${placeholder||''}/></div>`}
-function Select({label,value,onChange,options}){return html`<div class="field">${label&&html`<label class="field-label">${label}</label>`}<select class="field-input" value=${value} onChange=${e=>onChange(e.target.value)}>${options.map(o=>html`<option key=${o.value||o} value=${o.value||o}>${o.label||o}</option>`)}</select></div>`}
-function Modal({title,onClose,children}){return html`<div class="modal-overlay" onClick=${e=>{if(e.target===e.currentTarget)onClose()}}><div class="modal"><div class="modal-head"><span class="modal-title">${title}</span><button class="modal-close" onClick=${onClose}>\u2715</button></div><div class="modal-body">${children}</div></div></div>`}
-function DataTable({columns,rows,emptyMsg,onRowClick}){
-  if(!rows||rows.length===0)return html`<div class="empty-state">${emptyMsg||'No data yet.'}</div>`;
-  const gc=columns.map(c=>c.width||'1fr').join(' ');
-  return html`<div class="data-table"><div class="dt-head" style="grid-template-columns:${gc}">${columns.map(c=>html`<span key=${c.key}>${c.label}</span>`)}</div><div class="dt-body">${rows.map((row,i)=>html`<div key=${row.id||i} class="dt-row ${onRowClick?'dt-clickable':''}" style="grid-template-columns:${gc}" onClick=${()=>onRowClick&&onRowClick(row)}>${columns.map(c=>html`<span key=${c.key} class="${c.mono?'mono':''} ${c.accent?'dt-accent':''}">${c.render?c.render(row):row[c.key]||'\u2014'}</span>`)}</div>`)}</div></div>`;
-}
-
-function UpgradeBanner(){
-  const[triggers,setTriggers]=useState([]);const[dismissed,setDismissed]=useState(()=>JSON.parse(sessionStorage.getItem('sy_dismissed_triggers')||'[]'));const[idx,setIdx]=useState(0);
-  useEffect(()=>{(async()=>{const r=await api('/api/upgrade-prompts');if(r.triggers)setTriggers(r.triggers)})()},[]);
-  const visible=triggers.filter(t=>!dismissed.includes(t.id));
-  if(visible.length===0)return null;
-  const t=visible[idx%visible.length]||visible[0];
-  const dismiss=()=>{const d=[...dismissed,t.id];setDismissed(d);sessionStorage.setItem('sy_dismissed_triggers',JSON.stringify(d))};
-  return html`<div class="upgrade-banner"><div class="upgrade-banner-inner"><span class="upgrade-badge">\u2191 Upgrade</span><strong>${t.title}</strong><span class="upgrade-msg">${t.message}</span><a href=${t.cta_link} class="upgrade-cta">${t.cta}</a><button class="upgrade-dismiss" onClick=${dismiss}>\u2715</button>${visible.length>1&&html`<button class="upgrade-next" onClick=${()=>setIdx(i=>i+1)}>\u203A</button>`}</div></div>`;
-}
-
-// ─── Overview ──────────────────────────────────────────────────────
-function OverviewView(){
-  const[apps,setApps]=useState(null);const[users,setUsers]=useState([]);const[mods,setMods]=useState(0);
-  useEffect(()=>{(async()=>{const a=await api('/api/apps');setApps(a.apps||[]);const u=await api('/api/auth/users');setUsers(u.users||[]);const m=await api('/api/proxy/modules');setMods(m.count||0)})()},[]);
-  if(!apps)return html`<div class="loading">Loading\u2026</div>`;
-  return html`<div class="page-head"><div class="page-eyebrow">Console</div><h2>System Overview</h2><p class="page-sub">All 6 apps running on a single binary.</p></div>
-    <div class="stats-row"><${Stat} label="Apps" value=${apps.length} accent/><${Stat} label="Users" value=${users.length}/><${Stat} label="Modules" value=${mods}/><${Stat} label="Status" value="Operational" accent/></div>
-    <div class="app-grid">${apps.map(a=>{const cfg=APPS[a.name];return html`<div key=${a.name} class="app-card"><div class="app-card-head"><span class="app-card-icon">${cfg?.icon||'\u25C6'}</span><span class="app-card-name">${a.name}</span><${Badge} text="live" variant="success"/></div><div class="app-card-desc">${a.description}</div><code class="app-card-api">${a.api}</code></div>`})}</div>`;
-}
-
-// ─── Proxy (Interactive toggles) ───────────────────────────────────
-function ProxyView(){
-  const[tab,setTab]=useState('modules');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[filter,setFilter]=useState('');
-  const[health,setHealth]=useState(null);const[checking,setChecking]=useState(false);const[recs,setRecs]=useState(null);
-  const load=async()=>{const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);setData({modules:m.modules||[],providers:p.providers||[],routes:r.routes||[]})};
-  const loadRecs=async()=>{const r=await api('/api/proxy/recommendations');setRecs(r)};
-  useEffect(()=>{load();loadRecs()},[]);
-  const toggleModule=async(name,enabled)=>{const r=await api('/api/proxy/modules/'+name,{method:'PUT',body:JSON.stringify({enabled:!enabled})});if(r._error){setToast({msg:'Failed: '+name,type:'error'});return}setToast({msg:name+' '+(enabled?'disabled':'enabled'),type:'success'});load()};
-  const bulkToggle=async(cat,enabled)=>{const body=cat==='all'?{modules:d('modules').map(m=>m.name),enabled}:{category:cat,enabled};const r=await api('/api/proxy/modules/bulk',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Bulk toggle failed',type:'error'});return}setToast({msg:(r.affected||0)+' modules '+(enabled?'enabled':'disabled'),type:'success'});load()};
-  const checkAll=async()=>{setChecking(true);const r=await api('/api/proxy/providers/health');setHealth(r);setChecking(false);load()};
-  const d=k=>Array.isArray(data[k])?data[k]:[];
-  const filtered=d('modules').filter(m=>!filter||m.name.toLowerCase().includes(filter.toLowerCase())||(m.category||'').toLowerCase().includes(filter.toLowerCase()));
-  const statusColor=s=>s==='ok'?'var(--green)':s==='degraded'?'var(--gold)':s==='unconfigured'?'var(--cream-muted)':'var(--red)';
-  return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers & routes.</p></div>
-    <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
-    <${TabBar} tabs=${['modules','chain','providers','routes','recommendations']} active=${tab} onChange=${setTab}/>
-    ${tab==='modules'?html`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/>
-      <${Btn} small onClick=${()=>bulkToggle('all',false)} disabled=${!d('modules').some(m=>m.enabled)}>Disable All<//><${Btn} small onClick=${()=>bulkToggle('all',true)}>Enable All<//></div>
-      <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 80px 80px 80px"><span>Module</span><span>Category</span><span>Chain</span><span>Status</span><span>Toggle</span></div>
-      <div class="dt-body">${filtered.map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 80px 80px 80px">
-        <span class="mono">${m.name}</span><span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
-        <span>${m.in_chain?html`<${Badge} text="live" variant="success"/>`:html`<${Badge} text="db" variant="muted"/>`}</span>
-        <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
-        <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
-      </div>`)}</div></div>`:
-    tab==='chain'?html`<div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 100px 80px"><span>Middleware</span><span>Category</span><span>Status</span><span>Toggle</span></div>
-      <div class="dt-body">${d('modules').filter(m=>m.in_chain).map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 100px 80px">
-        <span class="mono">${m.name}</span><span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
-        <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
-        <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
-      </div>`)}</div></div>`:
-    tab==='providers'?html`<div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
-      <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${d('providers').length} providers configured</span>
-      <${Btn} variant="primary" small onClick=${checkAll} disabled=${checking}>${checking?'Checking...':'Check All Providers'}<//></div>
-      ${health&&html`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px">
-        ${(health.providers||[]).map(p=>html`<div key=${p.provider} style="border:1px solid var(--bg3);padding:16px;background:var(--bg)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="width:10px;height:10px;border-radius:50%;background:${statusColor(p.status)}"></span>
-            <span class="mono" style="font-size:0.85rem;color:var(--cream)">${p.provider}</span>
-          </div>
-          <div class="mono" style="font-size:0.75rem;color:var(--cream-dim)">${p.status}${p.latency_ms?' \u2022 '+p.latency_ms+'ms':''}</div>
-          ${p.error?html`<div style="font-size:0.72rem;color:var(--red);margin-top:4px;word-break:break-all">${p.error.substring(0,80)}</div>`:''}
-        </div>`)}
-      </div>
-      <div class="mono" style="font-size:0.72rem;color:var(--cream-muted);margin-bottom:16px">${health.healthy}/${health.total} healthy \u2022 checked ${new Date(health.checked_at).toLocaleTimeString()}</div>`}
-      <${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant=${r.status==='active'||r.status==='ok'?'success':r.status==='degraded'?'warn':'muted'}/>`},{key:'latency',label:'Latency',width:'100px',mono:true,render:r=>r.latency_ms?r.latency_ms+'ms':'\u2014'},{key:'reqs',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.request_count||0)}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
-    tab==='routes'?html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`:
-    html`<div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${recs?.count||0} recommendations based on ${fmt.num(recs?.total_requests_analyzed||0)} recent requests</span>
-        <${Btn} small onClick=${loadRecs}>Refresh<//></div>
-      ${recs?.message?html`<div class="empty-state" style="padding:32px">${recs.message}</div>`:
-        (recs?.recommendations||[]).length===0?html`<div class="empty-state" style="padding:32px">No recommendations — your setup looks good!</div>`:
-        html`<div style="display:flex;flex-direction:column;gap:12px">${(recs?.recommendations||[]).map(r=>html`<div key=${r.id} style="border:1px solid var(--bg3);padding:16px;background:var(--bg)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <${Badge} text=${r.priority} variant=${r.priority==='high'?'error':r.priority==='medium'?'warn':'muted'}/>
-            <span style="font-size:0.92rem;color:var(--cream);font-weight:600">${r.title}</span>
-          </div>
-          <div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:10px">${r.reason}</div>
-          <${Btn} small variant="primary" onClick=${async()=>{await api('/api/proxy/modules/'+r.module,{method:'PUT',body:JSON.stringify({enabled:true})});setToast({msg:r.module+' enabled',type:'success'});load();loadRecs()}}>Enable ${r.module}<//></div>`)}</div>`}
-    </div>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-
-// ─── Chart Components ──────────────────────────────────────────────
-function Sparkline({data,width=200,height=40,color='var(--rust-light)',fill=true}){
-  if(!data||data.length<2)return html`<svg width=${width} height=${height}><text x=${width/2} y=${height/2+4} text-anchor="middle" fill="var(--cream-muted)" font-size="10" font-family="var(--font-mono)">No data</text></svg>`;
-  const max=Math.max(...data,0.001);const min=Math.min(...data,0);const range=max-min||1;
-  const pts=data.map((v,i)=>[i/(data.length-1)*width,(1-(v-min)/range)*(height-4)+2]);
-  const line=pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
-  const area=line+' L'+width+','+height+' L0,'+height+' Z';
-  return html`<svg width=${width} height=${height} style="display:block">${fill&&html`<path d=${area} fill=${color} opacity="0.1"/>`}<path d=${line} fill="none" stroke=${color} stroke-width="1.5"/><circle cx=${pts[pts.length-1][0]} cy=${pts[pts.length-1][1]} r="2.5" fill=${color}/></svg>`;
-}
-function MiniBar({items,width=260,height=120}){
-  if(!items||items.length===0)return html`<div class="empty-state" style="padding:16px;font-size:0.78rem">No data.</div>`;
-  const max=Math.max(...items.map(i=>i.value),0.001);const barH=Math.min(18,Math.floor((height-8)/items.length)-4);
-  return html`<svg width=${width} height=${items.length*(barH+6)+4} style="display:block">${items.map((item,i)=>{
-    const w=Math.max(2,(item.value/max)*(width-90));const y=i*(barH+6)+2;
-    return html`<g key=${i}><rect x="80" y=${y} width=${w} height=${barH} fill=${item.color||'var(--rust)'} rx="2" opacity="0.8"/><text x="76" y=${y+barH/2+4} text-anchor="end" fill="var(--cream-dim)" font-size="10" font-family="var(--font-mono)">${item.label}</text><text x=${82+w} y=${y+barH/2+4} fill="var(--cream-muted)" font-size="9" font-family="var(--font-mono)">${item.display||item.value.toFixed(2)}</text></g>`;
-  })}</svg>`;
-}
-
-// ─── Observe (with charts + trace detail) ──────────────────────────
-function DonutChart({items,size=160}){
-  if(!items||items.length===0)return html`<div class="empty-state" style="padding:16px;font-size:0.78rem">No data.</div>`;
-  const total=items.reduce((s,i)=>s+i.value,0);if(total<=0)return html`<div class="empty-state" style="padding:16px">$0.00</div>`;
-  const cx=size/2,cy=size/2,r=size/2-8;let angle=-Math.PI/2;
-  const COLS=['var(--rust-light)','var(--gold)','var(--green)','var(--leather-light)','var(--cream-muted)','var(--red)'];
-  // Group items <2% into "Other"
-  const threshold=total*0.02;const main=items.filter(i=>i.value>=threshold);const otherVal=items.filter(i=>i.value<threshold).reduce((s,i)=>s+i.value,0);
-  const display=[...main];if(otherVal>0)display.push({label:'Other',value:otherVal});
-  const paths=display.map((item,idx)=>{const pct=item.value/total;const sweep=pct*Math.PI*2;const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);angle+=sweep;const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);const large=sweep>Math.PI?1:0;const d=`M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`;return{d,color:COLS[idx%COLS.length],label:item.label,pct:Math.round(pct*100),value:item.value}});
-  return html`<div style="display:flex;gap:20px;align-items:center">
-    <svg width=${size} height=${size} style="display:block">${paths.map((p,i)=>html`<path key=${i} d=${p.d} fill=${p.color} opacity="0.85" stroke="var(--bg)" stroke-width="1.5"><title>${p.label}: ${fmt.usd(p.value)} (${p.pct}%)</title></path>`)}
-      <circle cx=${cx} cy=${cy} r=${r*0.55} fill="var(--bg)"/>
-      <text x=${cx} y=${cy-4} text-anchor="middle" fill="var(--cream)" font-size="14" font-family="var(--font-mono)" font-weight="600">${fmt.usd(total)}</text>
-      <text x=${cx} y=${cy+12} text-anchor="middle" fill="var(--cream-muted)" font-size="9" font-family="var(--font-mono)">total</text>
-    </svg>
-    <div style="display:flex;flex-direction:column;gap:6px">${paths.map((p,i)=>html`<div key=${i} style="display:flex;align-items:center;gap:8px;font-size:0.78rem">
-      <span style="width:8px;height:8px;border-radius:2px;background:${p.color};flex-shrink:0"></span>
-      <span class="mono" style="color:var(--cream);min-width:80px">${p.label}</span>
-      <span class="mono" style="color:var(--cream-dim)">${fmt.usd(p.value)}</span>
-      <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${p.pct}%</span>
-    </div>`)}</div>
-  </div>`;
-}
-function LatencyHeatmap({data,range,onRangeChange}){
-  if(!data||!data.cells||data.cells.length===0)return html`<div>
-    <div style="display:flex;gap:8px;margin-bottom:16px">${['24h','7d','30d'].map(r=>html`<button key=${r} class="btn btn-sm ${range===r?'primary':''}" onClick=${()=>onRangeChange(r)}>${r}</button>`)}</div>
-    <div class="empty-state" style="padding:32px">No latency data yet. Send requests to see the heatmap.</div></div>`;
-  const intervals=data.intervals||[];const buckets=data.buckets||[];const maxC=data.max_count||1;
-  const cellW=Math.max(20,Math.min(40,600/Math.max(intervals.length,1)));const cellH=28;const leftPad=80;const topPad=24;
-  // Build cell map
-  const cellMap={};(data.cells||[]).forEach(c=>{cellMap[c.interval+'|'+c.bucket]=c.count});
-  // Log scale color
-  const heatColor=(count)=>{if(count===0)return'var(--bg2)';const t=Math.log(count+1)/Math.log(maxC+1);const r=Math.round(60+t*136);const g=Math.round(40-t*20);const b=Math.round(20-t*10);return`rgb(${r},${g},${b})`};
-  return html`<div>
-    <div style="display:flex;gap:8px;margin-bottom:16px">${['24h','7d','30d'].map(r=>html`<button key=${r} class="btn btn-sm ${range===r?'primary':''}" onClick=${()=>onRangeChange(r)}>${r}</button>`)}</div>
-    <div style="overflow-x:auto"><svg width=${leftPad+intervals.length*cellW+10} height=${topPad+buckets.length*cellH+10} style="display:block">
-      ${buckets.map((b,bi)=>html`<text key=${'l'+bi} x=${leftPad-6} y=${topPad+bi*cellH+cellH/2+4} text-anchor="end" fill="var(--cream-dim)" font-size="9" font-family="var(--font-mono)">${b}</text>`)}
-      ${intervals.map((iv,ii)=>{const label=range==='30d'?iv.slice(5):iv.slice(11,16);return ii%Math.max(1,Math.floor(intervals.length/12))===0?html`<text key=${'t'+ii} x=${leftPad+ii*cellW+cellW/2} y=${topPad-6} text-anchor="middle" fill="var(--cream-muted)" font-size="8" font-family="var(--font-mono)">${label}</text>`:null})}
-      ${intervals.map((iv,ii)=>buckets.map((b,bi)=>{const count=cellMap[iv+'|'+b]||0;return html`<rect key=${iv+b} x=${leftPad+ii*cellW} y=${topPad+bi*cellH} width=${cellW-1} height=${cellH-1} fill=${heatColor(count)} rx="2"><title>${iv}\n${b}: ${count} requests</title></rect>`}))}
-    </svg></div>
-    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-      <span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">fewer</span>
-      ${[0,0.2,0.4,0.6,0.8,1].map(t=>html`<span key=${t} style="width:14px;height:14px;background:${t===0?'var(--bg2)':`rgb(${Math.round(60+t*136)},${Math.round(40-t*20)},${Math.round(20-t*10)})`};border-radius:2px;display:inline-block"></span>`)}
-      <span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">more</span>
-    </div>
-  </div>`;
-}
-function TraceCompare({a,b,onClose}){
-  const diff=(va,vb)=>va!==vb?'color:var(--rust-light);font-weight:600':'';
-  const costDiff=a.cost_usd&&b.cost_usd?((b.cost_usd-a.cost_usd)/Math.max(a.cost_usd,0.0001)*100).toFixed(0):null;
-  const latDiff=a.duration_ms&&b.duration_ms?((b.duration_ms-a.duration_ms)/Math.max(a.duration_ms,1)*100).toFixed(0):null;
-  const fields=[
-    ['Model',a.model,b.model],['Provider',a.provider,b.provider],
-    ['Tokens In',fmt.num(a.tokens_in),fmt.num(b.tokens_in)],['Tokens Out',fmt.num(a.tokens_out),fmt.num(b.tokens_out)],
-    ['Latency',fmt.ms(a.duration_ms),fmt.ms(b.duration_ms)],['Cost',fmt.usd(a.cost_usd),fmt.usd(b.cost_usd)],
-    ['Status',a.status,b.status],['Time',fmt.ago(a.created_at),fmt.ago(b.created_at)],
-  ];
-  return html`<${Modal} title="Trace Comparison" onClose=${onClose}>
-    <div style="display:grid;grid-template-columns:120px 1fr 1fr;gap:0;font-size:0.82rem">
-      <div style="padding:8px;font-weight:600;color:var(--cream-muted);border-bottom:1px solid var(--bg3)"></div>
-      <div style="padding:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--rust);border-bottom:1px solid var(--bg3)">Trace A</div>
-      <div style="padding:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--gold);border-bottom:1px solid var(--bg3)">Trace B</div>
-      ${fields.map(([label,va,vb])=>html`<${Fragment} key=${label}>
-        <div style="padding:8px;color:var(--cream-muted);border-bottom:1px solid var(--bg2)">${label}</div>
-        <div style="padding:8px;font-family:var(--font-mono);border-bottom:1px solid var(--bg2);${diff(va,vb)}">${va||'\u2014'}</div>
-        <div style="padding:8px;font-family:var(--font-mono);border-bottom:1px solid var(--bg2);${diff(va,vb)}">${vb||'\u2014'}</div>
-      <//>`)}
-    </div>
-    ${(costDiff||latDiff)&&html`<div style="margin-top:16px;padding:12px;border:1px solid var(--bg3);background:var(--bg)">
-      <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:8px">Delta</div>
-      <div style="display:flex;gap:24px;font-size:0.8rem">
-        ${costDiff&&html`<div><span style="color:var(--cream-dim)">Cost: </span><span class="mono" style="color:${costDiff>0?'var(--red)':'var(--green)'}">${costDiff>0?'+':''}${costDiff}%</span></div>`}
-        ${latDiff&&html`<div><span style="color:var(--cream-dim)">Latency: </span><span class="mono" style="color:${latDiff>0?'var(--red)':'var(--green)'}">${latDiff>0?'+':''}${latDiff}%</span></div>`}
-      </div>
-    </div>`}
-    <div style="margin-top:12px;display:flex;gap:8px">
-      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted)">A: ${a.id}</div>
-      <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted)">B: ${b.id}</div>
-    </div>
-  <//>`;
-}
-const Fragment=({children})=>children;
-function ObserveView(){
-  const[tab,setTab]=useState('live');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[ts,setTs]=useState({});const[period,setPeriod]=useState('24h');
-  const[liveEvents,setLiveEvents]=useState([]);const[sseStatus,setSseStatus]=useState('connecting');const[livePaused,setLivePaused]=useState(false);
-  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);const[toast,setToast]=useState(null);
-  const[showFavs,setShowFavs]=useState(false);
-  const[heatData,setHeatData]=useState(null);const[heatRange,setHeatRange]=useState('24h');
-  const[compareA,setCompareA]=useState(null);const[compareB,setCompareB]=useState(null);const[showCompare,setShowCompare]=useState(false);
-  const liveRef=useRef([]);const maxLive=200;
-
-  // SSE connection
-  useEffect(()=>{
-    const es=new EventSource('/ui/events');
-    es.onopen=()=>setSseStatus('connected');
-    es.onerror=()=>setSseStatus('disconnected');
-    es.onmessage=(e)=>{
-      try{
-        const evt=JSON.parse(e.data);
-        if(evt.type==='connected'){setSseStatus('connected');return}
-        if(evt.type==='request_logged'||evt.type==='spend_update'){
-          evt._ts=new Date().toISOString();evt._id=Math.random().toString(36).slice(2,10);
-          liveRef.current=[evt,...liveRef.current].slice(0,maxLive);
-          if(!livePaused)setLiveEvents([...liveRef.current]);
-        }
-      }catch(err){}
-    };
-    return()=>es.close();
-  },[]);
-
-  // Refresh live events display when unpaused
-  useEffect(()=>{if(!livePaused)setLiveEvents([...liveRef.current])},[livePaused]);
-
-  // Load persisted data
-  const toggleFav=async(id)=>{await api('/api/observe/traces/'+id+'/favorite',{method:'POST'});reload()};
-  const reload=async()=>{const src=showFavs?'favorites=true':'source=real';const[ov,t,c,al,an]=await Promise.all([api('/api/observe/overview'),api('/api/observe/traces?'+src),api('/api/observe/costs'),api('/api/observe/alerts'),api('/api/observe/anomalies')]);setData({overview:ov||{},traces:t.traces||[],costs:c.costs||c.providers||[],alerts:al.rules||al.alerts||[],anomalies:an.anomalies||[]});const[ss,se]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=50')]);setSafety(ss||{});setSafetyEvents(se.events||[])};
-  useEffect(()=>{reload()},[showFavs]);
-  useEffect(()=>{(async()=>{const r=await api('/api/observe/timeseries?period='+period);setTs(r||{})})()},[period]);
-  useEffect(()=>{(async()=>{const r=await api('/api/observe/heatmap?range='+heatRange);setHeatData(r||{})})()},[heatRange]);
-  // Auto-refresh persisted data every 15s when on live tab
-  useEffect(()=>{if(tab==='live'){const t=setInterval(reload,15000);return()=>clearInterval(t)}},[tab]);
-
-  const d=k=>Array.isArray(data[k])?data[k]:[];
-  const ov=data.overview||{};const today=ov.today||{};
-  const buckets=ts.buckets||[];const provs=ts.providers||[];const models=ts.models||[];
-  const PCOLORS=['var(--rust-light)','var(--gold)','var(--green)','var(--leather-light)','var(--cream-muted)'];
-  const sseDot=sseStatus==='connected'?'var(--green)':sseStatus==='connecting'?'var(--gold)':'var(--red)';
-
-  return html`<div class="page-head"><div class="page-eyebrow">Observe</div><h2>Analytics & Traces</h2><p class="page-sub">Real-time streaming, cost attribution, alerts & anomaly detection.</p></div>
-    <div class="stats-row">
-      <${Stat} label="Today\u2019s Requests" value=${fmt.num(today.requests||0)} accent/>
-      <${Stat} label="Today\u2019s Cost" value=${fmt.usd(today.cost_usd||0)}/>
-      <${Stat} label="Total Traces" value=${fmt.num(ov.total_traces||0)}/>
-      <${Stat} label="Live Feed" value=${liveEvents.length} sub=${html`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${sseDot};display:inline-block;${sseStatus==='connected'?'animation:pulse 2s infinite':''}"></span>${sseStatus}</span>`}/>
-    </div>
-    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','heatmap','alerts','safety']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
-    ${tab==='live'?html`
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <button class="btn btn-sm ${livePaused?'':'primary'}" onClick=${()=>setLivePaused(!livePaused)}>${livePaused?'\u25B6 Resume':'\u23F8 Pause'}</button>
-        <button class="btn btn-sm" onClick=${()=>{liveRef.current=[];setLiveEvents([])}}>Clear</button>
-        <span class="mono" style="font-size:0.75rem;color:var(--cream-muted)">${liveEvents.length} events${livePaused?' (paused)':''}</span>
-      </div>
-      ${liveEvents.length===0?html`<div class="empty-state">
-        <div style="font-size:1.5rem;margin-bottom:8px">\u{1F4E1}</div>
-        <div>Waiting for live events\u2026</div>
-        <div style="font-size:0.8rem;color:var(--cream-muted);margin-top:4px">Send requests to <span class="mono">/v1/chat/completions</span> to see them stream here in real-time.</div>
-      </div>`:html`<div class="live-feed">${liveEvents.map(evt=>html`<div key=${evt._id} class="live-event ${evt.type==='spend_update'?'live-spend':'live-trace'}">
-        <div class="live-event-head">
-          <span style="width:6px;height:6px;border-radius:50%;background:${evt.type==='request_logged'?'var(--green)':'var(--gold)'};display:inline-block"></span>
-          <span class="mono" style="font-size:0.78rem;color:var(--cream)">${evt.type==='request_logged'?'request':'spend'}</span>
-          ${evt.model?html`<span class="mono" style="font-size:0.78rem">${evt.model}</span>`:''}
-          ${evt.tokens?html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${fmt.num(evt.tokens)} tok</span>`:''}
-          ${evt.cost?html`<span class="mono" style="font-size:0.72rem;color:var(--gold)">${fmt.usd(evt.cost)}</span>`:''}
-          ${evt.latency?html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${fmt.ms(evt.latency)}</span>`:''}
-          ${evt.cache_hit?html`<${Badge} text="cache" variant="success"/>`:''} 
-          <span class="mono" style="font-size:0.68rem;color:var(--cream-muted);margin-left:auto">${evt._ts?new Date(evt._ts).toLocaleTimeString():''}</span>
-        </div>
-        ${evt.type==='spend_update'?html`<div style="font-size:0.75rem;color:var(--cream-muted);padding:2px 0 0 16px">project: ${evt.project||'\u2014'} \u2022 today: ${fmt.usd(evt.today||0)} \u2022 month: ${fmt.usd(evt.month||0)}</div>`:''}
-      </div>`)}</div>`}`:
-    tab==='dashboard'?html`<div class="chart-period"><span class="chart-period-label">Period:</span>${['24h','7d','30d'].map(p=>html`<button key=${p} class="btn btn-sm ${period===p?'primary':''}" onClick=${()=>setPeriod(p)}>${p}</button>`)}</div>
-      <div class="chart-grid">
-        <div class="chart-card"><div class="chart-title">Requests</div><${Sparkline} data=${buckets.map(b=>b.requests)} width=${280} height=${50}/></div>
-        <div class="chart-card"><div class="chart-title">Cost (USD)</div><${Sparkline} data=${buckets.map(b=>b.cost_usd)} width=${280} height=${50} color="var(--gold)"/></div>
-        <div class="chart-card"><div class="chart-title">Avg Latency (ms)</div><${Sparkline} data=${buckets.map(b=>b.avg_latency_ms)} width=${280} height=${50} color="var(--leather-light)"/></div>
-        <div class="chart-card"><div class="chart-title">Errors</div><${Sparkline} data=${buckets.map(b=>b.errors)} width=${280} height=${50} color="var(--red)"/></div>
-      </div>
-      <div class="chart-grid" style="grid-template-columns:1fr 1fr">
-        <div class="chart-card"><div class="chart-title">Cost by Provider (7d)</div><${MiniBar} items=${provs.map((p,i)=>({label:p.provider||'unknown',value:p.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(p.cost_usd)}))} width=${340} height=${140}/></div>
-        <div class="chart-card"><div class="chart-title">Cost by Model (7d)</div><${MiniBar} items=${models.map((m,i)=>({label:(m.model||'unknown').split('/').pop().substring(0,16),value:m.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(m.cost_usd)}))} width=${340} height=${140}/></div>
-      </div>`:
-    tab==='traces'?html`<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button><button class="btn btn-sm ${showFavs?'primary':''}" onClick=${()=>setShowFavs(!showFavs)}>\u2605 ${showFavs?'Favorites':'All'}</button>
-      ${compareA&&compareB?html`<${Btn} variant="primary" small onClick=${()=>setShowCompare(true)}>Compare 2 traces<//>`:compareA?html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Select 1 more trace to compare</span>`:html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Click \u2610 to compare traces</span>`}
-      ${(compareA||compareB)&&html`<button class="btn btn-sm" onClick=${()=>{setCompareA(null);setCompareB(null)}}>Clear</button>`}</div><${DataTable} columns=${[
-      {key:'cmp',label:'\u2610',width:'32px',render:r=>{const sel=compareA?.id===r.id||compareB?.id===r.id;return html`<span onClick=${e=>{e.stopPropagation();if(sel){if(compareA?.id===r.id)setCompareA(null);else setCompareB(null)}else if(!compareA)setCompareA(r);else if(!compareB)setCompareB(r)}} style="cursor:pointer;font-size:0.9rem;color:${sel?'var(--rust)':'var(--bg3)'}">${sel?'\u2611':'\u2610'}</span>`}},
-      {key:'fav',label:'\u2605',width:'36px',render:r=>html`<span onClick=${e=>{e.stopPropagation();toggleFav(r.id)}} style="cursor:pointer;font-size:1rem;color:${r.favorited?'var(--gold)':'var(--bg3)'}">${r.favorited?'\u2605':'\u2606'}</span>`},
-      {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},{key:'provider',label:'Provider',width:'110px',mono:true},
-      {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},{key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
-      {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.duration_ms||r.latency_ms)},{key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
-      {key:'s',label:'',width:'50px',render:r=>html`<${Badge} text=${r.status==='ok'||r.status_code===200||!r.status_code?'ok':'err'} variant=${r.status==='ok'||r.status_code===200||!r.status_code?'success':'danger'}/>`}
-    ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg=${showFavs?"No favorites yet \u2014 click the \u2605 on any trace.":"No traces yet \u2014 send requests to /v1/chat/completions."}/>`:
-    tab==='costs'?html`<div style="display:flex;gap:8px;margin-bottom:16px">
-      <${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=30','_blank')}>Export 30-Day Report<//><${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=7','_blank')}>7-Day Report<//><${Btn} small variant="danger" onClick=${async()=>{const r=await api('/api/observe/auto-disable',{method:'POST'});if(r.count>0){setToast({msg:r.count+' broken provider(s) disabled: '+r.disabled.join(', '),type:'success'});reload()}else{setToast({msg:'All providers healthy — none disabled',type:'info'})}}}>Auto-Disable Broken Providers<//></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
-      <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
-        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Provider</div>
-        <${DonutChart} items=${(()=>{const byProv={};d('costs').forEach(c=>{const p=c.provider||'unknown';byProv[p]=(byProv[p]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byProv).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
-        ${d('costs').length===1&&html`<div style="font-size:0.75rem;color:var(--cream-muted);margin-top:12px;font-style:italic">All traffic goes to ${d('costs')[0]?.provider}. Consider enabling failover.</div>`}
-      </div>
-      <div style="border:1px solid var(--bg3);padding:20px;background:var(--bg)">
-        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:16px">Spend by Model</div>
-        <${DonutChart} items=${(()=>{const byModel={};d('costs').forEach(c=>{const m=(c.model||'unknown').split('/').pop();byModel[m]=(byModel[m]||0)+(c.cost||c.total_cost||c.cost_usd||0)});return Object.entries(byModel).map(([k,v])=>({label:k,value:v})).sort((a,b)=>b.value-a.value)})()}/>
-      </div>
-    </div>
-    <${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'model',label:'Model',width:'1fr',mono:true},{key:'reqs',label:'Requests',width:'110px',mono:true,render:r=>fmt.num(r.requests||r.count)},{key:'cost',label:'Cost',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost||r.total_cost||r.cost_usd)}]} rows=${d('costs')} emptyMsg="No cost data yet."/>`:
-    tab==='heatmap'?html`<${LatencyHeatmap} data=${heatData} range=${heatRange} onRangeChange=${setHeatRange}/>`:
-    tab==='alerts'?html`<${DataTable} columns=${[{key:'name',label:'Alert',width:'1.5fr'},{key:'metric',label:'Metric',width:'1fr',mono:true},{key:'threshold',label:'Threshold',width:'110px',mono:true},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.last_fired?'fired':'active'} variant=${r.last_fired?'danger':'success'}/>`}]} rows=${d('alerts')} emptyMsg="No alerts configured."/>`:
-    html`<div class="safety-dash">
-      <div class="stats-row" style="margin-bottom:16px">
-        <${Stat} label="Safety Score" value=${(safety?.safety_score??100)+'/100'} accent=${(safety?.safety_score??100)>=80} sub=${(safety?.safety_score??100)>=80?'healthy':'needs attention'}/>
-        <${Stat} label="Events Today" value=${safety?.today?.total||0} sub=${'blocked: '+(safety?.today?.blocked||0)+' \u2022 redacted: '+(safety?.today?.redacted||0)}/>
-        <${Stat} label="Active Shields" value=${(safety?.active_modules||0)+(safety?.active_policies||0)} sub=${(safety?.active_modules||0)+' modules \u2022 '+(safety?.active_policies||0)+' policies'}/>
-        <${Stat} label="All Time" value=${safety?.total_events||0} sub=${'crit: '+(safety?.severity?.critical||0)+' \u2022 high: '+(safety?.severity?.high||0)+' \u2022 med: '+(safety?.severity?.medium||0)}/>
-      </div>
-      <div class="section-title" style="margin-bottom:8px">Active Safety Middleware</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-        ${['promptguard','secretscan','toxicfilter','trust_enforce','ipfence','ratelimit','agentguard','codefence','hallucicheck','guardrail','agegate','scopeguard','maskmode'].map(m=>html`<span key=${m} class="badge success" style="padding:3px 8px">${m}</span>`)}
-      </div>
-      <div class="section-title" style="margin-bottom:8px">Safety Event Log</div>
-      <${DataTable} columns=${[
-        {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.created_at)},
-        {key:'type',label:'Event',width:'140px',mono:true,render:r=>html`<span style="color:${r.severity==='critical'?'var(--red)':r.severity==='high'?'var(--rust-light)':'var(--cream-muted)'}">${r.event_type}</span>`},
-        {key:'sev',label:'Severity',width:'90px',render:r=>html`<${Badge} text=${r.severity} variant=${r.severity==='critical'||r.severity==='high'?'danger':r.severity==='medium'?'warn':'muted'}/>`},
-        {key:'action',label:'Action',width:'90px',render:r=>html`<${Badge} text=${r.action_taken||'log'} variant=${r.action_taken==='block'?'danger':r.action_taken==='redact'?'warn':'muted'}/>`},
-        {key:'cat',label:'Category',width:'110px',mono:true,render:r=>r.category||'\u2014'},
-        {key:'model',label:'Model',width:'1fr',mono:true,render:r=>r.model||'\u2014'}
-      ]} rows=${safetyEvents} emptyMsg="No safety events \u2014 events appear when safety middlewares detect PII, injections, secrets, or toxic content."/>
-    </div>`}
-    ${detail&&html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
-      <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
-      <div class="td-row"><span class="td-label">Provider</span><span class="mono">${detail.provider||'\u2014'}</span></div>
-      <div class="td-row"><span class="td-label">Tokens</span><span class="mono">${(detail.tokens_in||0)+' in / '+(detail.tokens_out||0)+' out'}</span></div>
-      <div class="td-row"><span class="td-label">Latency</span><span class="mono">${fmt.ms(detail.duration_ms||detail.latency_ms)}</span></div>
-      <div class="td-row"><span class="td-label">Cost</span><span class="mono" style="color:var(--gold)">${fmt.usd(detail.cost_usd)}</span></div>
-      <div class="td-row"><span class="td-label">Status</span><span class="mono">${detail.status||detail.status_code||200}</span></div>
-      <div class="td-row"><span class="td-label">Time</span><span class="mono">${detail.timestamp||detail.created_at||'\u2014'}</span></div>
-      ${detail.user_id?html`<div class="td-row"><span class="td-label">User ID</span><span class="mono">#${detail.user_id}</span></div>`:''}
-      ${detail.request_body?html`<div class="td-section"><div class="td-label">Request</div><pre class="td-pre">${typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body,null,2)}</pre></div>`:''}
-      ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
-    </div><//>}`}
-    ${showCompare&&compareA&&compareB&&html`<${TraceCompare} a=${compareA} b=${compareB} onClose=${()=>setShowCompare(false)}/>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}
-}
-
-// ─── Trust ─────────────────────────────────────────────────────────
-function TrustView(){
-  const[tab,setTab]=useState('safety');const[data,setData]=useState({});const[detail,setDetail]=useState(null);const[chainStatus,setChainStatus]=useState(null);const[verifying,setVerifying]=useState(false);
-  const[evtFilter,setEvtFilter]=useState('all');const[autoRefresh,setAutoRefresh]=useState(false);const[showEvidenceForm,setShowEvidenceForm]=useState(false);
-  const[safety,setSafety]=useState(null);const[safetyEvents,setSafetyEvents]=useState([]);
-  const reload=async()=>{const[l,p,e,fb,st]=await Promise.all([api('/api/trust/ledger?limit=200'),api('/api/trust/policies'),api('/api/trust/evidence'),api('/api/trust/feedback'),api('/api/trust/status')]);setData({ledger:l.events||l.entries||[],policies:p.policies||[],evidence:e.packs||[],feedback:fb.feedback||[],status:st||{}})};
-  const loadSafety=async()=>{const[s,e]=await Promise.all([api('/api/observe/safety/summary'),api('/api/observe/safety?limit=100')]);setSafety(s);setSafetyEvents(e.events||[])};
-  useEffect(()=>{reload();loadSafety()},[]);
-  useEffect(()=>{if(autoRefresh){const t=setInterval(()=>{reload();loadSafety()},5000);return()=>clearInterval(t)}},[autoRefresh]);
-  const verifyChain=async()=>{setVerifying(true);const r=await api('/api/trust/ledger/verify');setChainStatus(r);setVerifying(false)};
-  const createEvidence=async(name,from,to)=>{const r=await api('/api/trust/evidence',{method:'POST',body:JSON.stringify({name,date_from:from,date_to:to})});if(!r._error){setShowEvidenceForm(false);reload()}};
-  const d=k=>Array.isArray(data[k])?data[k]:[];
-  const st=data.status||{};const sf=safety||{};
-  const EVENT_COLORS={'proxy_request':'var(--green)','spend_update':'var(--gold)','policy_violation':'var(--red)','admin_action':'var(--leather-light)','feedback':'var(--cream-muted)','system':'var(--rust-light)','forge_event':'var(--amber)','exchange_event':'var(--green)'};
-  const evtTypes=[...new Set(d('ledger').map(e=>e.event_type))].sort();
-  const filtered=evtFilter==='all'?d('ledger'):d('ledger').filter(e=>e.event_type===evtFilter);
-  const typeCounts={};d('ledger').forEach(e=>{typeCounts[e.event_type]=(typeCounts[e.event_type]||0)+1});
-  const scoreColor=s=>s>=80?'var(--green)':s>=50?'var(--gold)':'var(--red)';
-  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Safety & Compliance</h2><p class="page-sub">Safety scorecard, audit ledger, policies, evidence packs.</p></div>
-    <div class="stats-row">
-      <${Stat} label="Safety Score" value=${(sf.safety_score!=null?sf.safety_score+'%':'--')} accent sub=${'24h window'}/>
-      <${Stat} label="Safety Events" value=${fmt.num(sf.total_events||0)} sub=${(sf.today?.blocked||0)+' blocked today'}/>
-      <${Stat} label="Ledger Events" value=${fmt.num(st.ledger_events||d('ledger').length)} sub=${evtTypes.length+' types'}/>
-      <${Stat} label="Chain" value=${chainStatus?chainStatus.valid?'\u2713 Valid':'\u2717 Broken':'Unverified'} sub=${chainStatus?chainStatus.events_checked+' checked':html`<button class="btn btn-sm" style="font-size:0.65rem;padding:2px 6px" onClick=${verifyChain}>${verifying?'Verifying\u2026':'Verify'}</button>`}/>
-    </div>
-    <${TabBar} tabs=${['safety','ledger','policies','evidence','feedback']} active=${tab} onChange=${setTab}/>
-    ${tab==='safety'?html`<div class="safety-dash">
-      <div class="safety-score-card">
-        <div class="safety-score-ring" style="--score-color:${scoreColor(sf.safety_score||100)}">
-          <div class="safety-score-num" style="color:${scoreColor(sf.safety_score||100)}">${sf.safety_score!=null?sf.safety_score:100}</div>
-          <div style="font-size:0.72rem;color:var(--cream-muted)">Safety Score</div>
-        </div>
-        <div class="safety-score-detail">
-          <div class="section-title" style="margin-bottom:8px">Active Defenses</div>
-          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-            <div class="safety-metric"><span class="safety-metric-val">${sf.active_modules||0}</span><span class="safety-metric-label">Safety Modules</span></div>
-            <div class="safety-metric"><span class="safety-metric-val">${sf.active_policies||0}</span><span class="safety-metric-label">Trust Policies</span></div>
-          </div>
-          <div class="section-title" style="margin-bottom:8px">Today</div>
-          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-            <div class="safety-metric"><span class="safety-metric-val">${sf.today?.total||0}</span><span class="safety-metric-label">Events</span></div>
-            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--red)">${sf.today?.blocked||0}</span><span class="safety-metric-label">Blocked</span></div>
-            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--gold)">${sf.today?.redacted||0}</span><span class="safety-metric-label">Redacted</span></div>
-          </div>
-          <div class="section-title" style="margin-bottom:8px">Severity Breakdown</div>
-          <div style="display:flex;gap:16px;flex-wrap:wrap">
-            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--red)">${sf.severity?.critical||0}</span><span class="safety-metric-label">Critical</span></div>
-            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--rust-light)">${sf.severity?.high||0}</span><span class="safety-metric-label">High</span></div>
-            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--gold)">${sf.severity?.medium||0}</span><span class="safety-metric-label">Medium</span></div>
-            <div class="safety-metric"><span class="safety-metric-val" style="color:var(--cream-muted)">${sf.severity?.low||0}</span><span class="safety-metric-label">Low</span></div>
-          </div>
-        </div>
-      </div>
-      ${sf.by_type&&sf.by_type.length>0?html`<div style="margin-top:12px">
-        <div class="section-title" style="margin-bottom:6px">Event Breakdown</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">${sf.by_type.map(t=>html`<div key=${t.event_type+t.severity} class="safety-type-pill">
-          <span class="mono">${t.event_type}</span>
-          <${Badge} text=${t.severity} variant=${t.severity==='critical'||t.severity==='high'?'danger':t.severity==='medium'?'warn':'muted'}/>
-          <span class="mono" style="font-size:0.72rem">${t.action_taken}: ${t.count}</span>
-        </div>`)}</div>
-      </div>`:null}
-      <div style="margin-top:14px">
-        <div class="section-title" style="margin-bottom:6px">Recent Safety Events</div>
-        <${DataTable} columns=${[
-          {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.created_at)},
-          {key:'type',label:'Event',width:'140px',mono:true,render:r=>html`<span style="color:${r.severity==='critical'?'var(--red)':r.severity==='high'?'var(--rust-light)':'var(--cream-muted)'}">${r.event_type}</span>`},
-          {key:'sev',label:'Severity',width:'80px',render:r=>html`<${Badge} text=${r.severity} variant=${r.severity==='critical'||r.severity==='high'?'danger':r.severity==='medium'?'warn':'muted'}/>`},
-          {key:'action',label:'Action',width:'80px',render:r=>html`<${Badge} text=${r.action_taken||'log'} variant=${r.action_taken==='block'?'danger':r.action_taken==='redact'?'warn':'muted'}/>`},
-          {key:'cat',label:'Category',width:'100px',mono:true},
-          {key:'model',label:'Model',width:'1fr',mono:true,render:r=>r.model||'\u2014'}
-        ]} rows=${safetyEvents} emptyMsg="No safety events \u2014 events appear when PromptGuard, SecretScan, ToxicFilter or TrustEnforce fire."/>
-      </div>
-      <div style="margin-top:14px;padding:12px;background:var(--bg);border:1px solid var(--bg3);font-size:0.78rem;color:var(--cream-dim)">
-        <div class="section-title" style="margin-bottom:6px">Safety Middleware Pipeline</div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-          ${['ipfence','ratelimit','promptguard','secretscan','tokentrim','toxicfilter','trust_enforce','compliancelog'].map((m,i)=>html`<span key=${m} class="safety-pipe-step">${m}</span>${i<7?html`<span style="color:var(--cream-muted)">\u2192</span>`:null}`)}
-        </div>
-        <div style="margin-top:6px;font-size:0.72rem;color:var(--cream-muted)">PII redaction \u2192 injection detection \u2192 secret scanning \u2192 toxicity filtering \u2192 policy enforcement \u2192 compliance logging</div>
-      </div>
-    </div>`:
-    tab==='ledger'?html`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-      <button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button>
-      <button class="btn btn-sm ${autoRefresh?'primary':''}" onClick=${()=>setAutoRefresh(!autoRefresh)}>${autoRefresh?'\u23F8 Auto':'Auto \u25B6'}</button>
-      <button class="btn btn-sm ${chainStatus?.valid?'primary':''}" onClick=${verifyChain}>${verifying?'Verifying\u2026':chainStatus?chainStatus.valid?'\u2713 Chain Valid':'\u2717 Broken #'+chainStatus.broken_at_id:'Verify Chain'}</button>
-      <span style="border-left:1px solid var(--bg3);height:20px"></span>
-      <select style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);font-size:0.75rem;font-family:var(--font-mono);padding:3px 6px" onChange=${e=>setEvtFilter(e.target.value)} value=${evtFilter}>
-        <option value="all">All types (${d('ledger').length})</option>
-        ${evtTypes.map(t=>html`<option key=${t} value=${t}>${t} (${typeCounts[t]||0})</option>`)}
-      </select>
-      ${autoRefresh?html`<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:var(--cream-muted)"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite"></span>live</span>`:''}
-    </div>
-    <${DataTable} columns=${[
-      {key:'ts',label:'Time',width:'110px',render:r=>fmt.ago(r.created_at)},
-      {key:'type',label:'Type',width:'130px',render:r=>html`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${EVENT_COLORS[r.event_type]||'var(--cream-muted)'};display:inline-block"></span><span class="mono" style="font-size:0.78rem">${r.event_type}</span></span>`},
-      {key:'action',label:'Action',width:'1fr',mono:true},
-      {key:'actor',label:'Actor',width:'100px',mono:true},
-      {key:'resource',label:'Resource',width:'1fr',mono:true,render:r=>html`<span style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${r.resource||'\u2014'}</span>`},
-      {key:'hash',label:'Hash',width:'120px',mono:true,render:r=>fmt.hash(r.hash)}
-    ]} rows=${filtered} onRowClick=${r=>setDetail(r)} emptyMsg="No audit events yet \u2014 ledger auto-records proxy requests, policy changes & admin actions."/>`:
-    tab==='policies'?html`<${DataTable} columns=${[{key:'name',label:'Policy',width:'1.5fr'},{key:'type',label:'Type',width:'1fr',mono:true},{key:'config',label:'Config',width:'1.5fr',mono:true,render:r=>JSON.stringify(r.config||{}).substring(0,60)},{key:'enabled',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.enabled!==false?'active':'off'} variant=${r.enabled!==false?'success':'muted'}/>`}]} rows=${d('policies')} emptyMsg="No policies."/>`:
-    tab==='evidence'?html`<div style="margin-bottom:10px">
-      <button class="btn btn-sm primary" onClick=${()=>setShowEvidenceForm(!showEvidenceForm)}>${showEvidenceForm?'Cancel':'+ Create Evidence Pack'}</button>
-    </div>
-    ${showEvidenceForm?html`<${EvidenceForm} onCreate=${createEvidence}/>`:''} 
-    <${DataTable} columns=${[{key:'name',label:'Pack',width:'1.5fr'},{key:'event_count',label:'Events',width:'90px',mono:true},{key:'range',label:'Range',width:'1.5fr',mono:true,render:r=>(r.date_from||'?')+' \u2192 '+(r.date_to||'?')},{key:'hash',label:'Hash',width:'120px',mono:true,render:r=>fmt.hash(r.hash)},{key:'status',label:'',width:'80px',render:r=>html`<${Badge} text=${r.status||'ok'} variant="success"/>`},{key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)}]} rows=${d('evidence')} emptyMsg="No evidence packs \u2014 create one to snapshot the audit ledger."/>`:
-    html`<${DataTable} columns=${[{key:'ts',label:'Time',width:'110px',render:r=>fmt.ago(r.created_at)},{key:'request_id',label:'Request',width:'1fr',mono:true},{key:'rating',label:'Rating',width:'80px',render:r=>'\u2605'.repeat(r.rating||0)+'\u2606'.repeat(5-(r.rating||0))},{key:'comment',label:'Comment',width:'2fr',render:r=>html`<span style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${r.comment||'\u2014'}</span>`},{key:'email',label:'User',width:'1fr',mono:true,render:r=>r.user_email||'\u2014'}]} rows=${d('feedback')} emptyMsg="No feedback submitted."/>`}
-    ${detail&&html`<${Modal} title="Ledger Entry #${detail.id}" onClose=${()=>setDetail(null)}><div class="trace-detail">
-      <div class="td-row"><span class="td-label">Type</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${EVENT_COLORS[detail.event_type]||'var(--cream-muted)'}"></span><span class="mono">${detail.event_type}</span></span></div>
-      <div class="td-row"><span class="td-label">Action</span><span class="mono">${detail.action}</span></div>
-      <div class="td-row"><span class="td-label">Actor</span><span class="mono">${detail.actor||'\u2014'}</span></div>
-      <div class="td-row"><span class="td-label">Resource</span><span class="mono">${detail.resource||'\u2014'}</span></div>
-      <div class="td-row"><span class="td-label">Time</span><span class="mono">${detail.created_at}</span></div>
-      <div class="td-row"><span class="td-label">Hash</span><span class="mono" style="font-size:0.7rem;word-break:break-all">${detail.hash}</span></div>
-      <div class="td-row"><span class="td-label">Prev Hash</span><span class="mono" style="font-size:0.7rem;word-break:break-all">${detail.prev_hash||'(genesis)'}</span></div>
-      ${detail.detail?html`<div class="td-section"><div class="td-label">Detail</div><pre class="td-pre">${typeof detail.detail==='string'?detail.detail:JSON.stringify(detail.detail,null,2)}</pre></div>`:''}
-    </div><//>}`
-}
-function EvidenceForm({onCreate}){
-  const[name,setName]=useState('');const today=new Date().toISOString().split('T')[0];const[from,setFrom]=useState(today);const[to,setTo]=useState(today+'T23:59:59Z');
-  return html`<div style="background:var(--bg);border:1px solid var(--bg3);padding:12px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
-    <div><label style="font-size:0.7rem;color:var(--cream-muted);display:block;margin-bottom:2px">Name</label><input value=${name} onInput=${e=>setName(e.target.value)} placeholder="Q1 Compliance Export" style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);padding:4px 8px;font-size:0.8rem;width:200px"/></div>
-    <div><label style="font-size:0.7rem;color:var(--cream-muted);display:block;margin-bottom:2px">From</label><input type="date" value=${from} onInput=${e=>setFrom(e.target.value)} style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);padding:4px 8px;font-size:0.8rem"/></div>
-    <div><label style="font-size:0.7rem;color:var(--cream-muted);display:block;margin-bottom:2px">To</label><input type="date" value=${to.split('T')[0]} onInput=${e=>setTo(e.target.value+'T23:59:59Z')} style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);padding:4px 8px;font-size:0.8rem"/></div>
-    <button class="btn btn-sm primary" disabled=${!name} onClick=${()=>onCreate(name,from,to)}>Generate</button>
-  </div>`
-}
-
-// ─── Studio ────────────────────────────────────────────────────────
-function StudioView(){
-  const[tab,setTab]=useState('playground');const[data,setData]=useState({});const[toast,setToast]=useState(null);
-  // Playground state
-  const[prompt,setPrompt]=useState('');const[system,setSystem]=useState('');const[models,setModels]=useState(['gpt-4o-mini']);
-  const[running,setRunning]=useState(false);const[pgResult,setPgResult]=useState(null);const[compareMode,setCompareMode]=useState(false);
-  const[expResult,setExpResult]=useState(null);const[selExp,setSelExp]=useState(null);
-  // Version diff state
-  const[diffSlug,setDiffSlug]=useState(null);const[versions,setVersions]=useState([]);const[diffData,setDiffData]=useState(null);const[diffV1,setDiffV1]=useState('');const[diffV2,setDiffV2]=useState('');
-  const loadVersions=async(slug)=>{const r=await api('/api/studio/templates/'+slug+'/versions');setVersions(r.versions||[]);setDiffSlug(slug);setDiffData(null);setDiffV1('');setDiffV2('');if(r.versions&&r.versions.length>=2){setDiffV1(String(r.versions[r.versions.length-1].version));setDiffV2(String(r.versions[0].version))}};
-  const loadDiff=async()=>{if(!diffSlug||!diffV1||!diffV2)return;const r=await api('/api/studio/templates/'+diffSlug+'/diff?v1='+diffV1+'&v2='+diffV2);if(!r._error)setDiffData(r)};
-  useEffect(()=>{if(diffV1&&diffV2&&diffSlug)loadDiff()},[diffV1,diffV2]);
-  const MODEL_LIST=['gpt-4o-mini','gpt-4o','gpt-4.1-mini','gpt-4.1','claude-sonnet-4-5-20250929','claude-haiku-4-5-20251001','gemini-2.5-flash','deepseek-chat','mistral-small-latest','llama-3.3-70b-versatile'];
-  const load=async()=>{const[t,e,b]=await Promise.all([api('/api/studio/templates'),api('/api/studio/experiments'),api('/api/studio/benchmarks')]);setData({templates:t.templates||[],experiments:e.experiments||[],benchmarks:b.benchmarks||[]})};
-  useEffect(()=>{load()},[]);
-  const d=k=>Array.isArray(data[k])?data[k]:[];
-  const runPlayground=async()=>{
-    if(!prompt.trim())return;setRunning(true);setPgResult(null);setExpResult(null);
-    if(compareMode&&models.length>=2){
-      const r=await api('/api/studio/experiments/run',{method:'POST',body:JSON.stringify({name:'playground-'+Date.now(),prompt,system,models,runs:1,eval:'length'})});
-      setRunning(false);if(r._error||r.error){setToast({msg:r.error||r._error,type:'error'});return}setExpResult(r);load();
-    }else{
-      const r=await api('/api/studio/playground',{method:'POST',body:JSON.stringify({prompt,system,model:models[0]})});
-      setRunning(false);if(r._error){setToast({msg:r.error||r._error,type:'error'});return}setPgResult(r);
-    }
-  };
-  const loadTemplate=async(slug)=>{const t=await api('/api/studio/templates/'+slug);if(!t._error){setPrompt(t.content||'');if(t.model)setModels([t.model]);setSystem('');setTab('playground');setToast({msg:'Loaded: '+t.name,type:'success'})}};
-  const toggleModel=(m)=>{if(models.includes(m)){if(models.length>1)setModels(models.filter(x=>x!==m))}else{setModels([...models,m])}};
-  const viewExp=async(id)=>{const r=await api('/api/studio/experiments/'+id);if(!r._error)setSelExp(r)};
-  return html`<div class="page-head"><div class="page-eyebrow">Studio</div><h2>Prompt Playground</h2><p class="page-sub">Test prompts, compare models side-by-side, run experiments.</p></div>
-    <div class="stats-row"><${Stat} label="Templates" value=${d('templates').length} accent/><${Stat} label="Experiments" value=${d('experiments').length}/><${Stat} label="Benchmarks" value=${d('benchmarks').length}/></div>
-    <${TabBar} tabs=${['playground','templates','experiments','benchmarks']} active=${tab} onChange=${setTab}/>
-    ${tab==='playground'?html`<div class="pg-layout">
-      <div class="pg-input">
-        <div class="section-title" style="margin-bottom:6px">System Message <span style="color:var(--cream-muted);font-weight:400;font-size:0.72rem">(optional)</span></div>
-        <textarea class="field-input mono" rows="2" placeholder="You are a helpful assistant..." value=${system} onInput=${e=>setSystem(e.target.value)} style="resize:vertical;font-size:0.78rem;margin-bottom:10px"/>
-        <div class="section-title" style="margin-bottom:6px">Prompt</div>
-        <textarea class="field-input mono" rows="5" placeholder="Type your prompt here..." value=${prompt} onInput=${e=>setPrompt(e.target.value)} style="resize:vertical;font-size:0.78rem;margin-bottom:10px"/>
-        <div class="section-title" style="margin-bottom:6px;display:flex;align-items:center;gap:8px">
-          Models
-          <label style="font-size:0.72rem;color:var(--cream-muted);display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:400">
-            <input type="checkbox" checked=${compareMode} onChange=${e=>setCompareMode(e.target.checked)} style="accent-color:var(--rust-light)"/>
-            Compare mode
-          </label>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-          ${MODEL_LIST.map(m=>html`<button key=${m} class="btn btn-sm ${models.includes(m)?'primary':''}" 
-            onClick=${()=>compareMode?toggleModel(m):setModels([m])}
-            style="font-size:0.72rem;font-family:var(--font-mono);padding:3px 8px;${models.includes(m)?'':'opacity:0.6'}">${m}</button>`)}
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <${Btn} variant="primary" onClick=${runPlayground} disabled=${running||!prompt.trim()}>${running?(compareMode?'Comparing\u2026':'Running\u2026'):(compareMode?'Compare '+models.length+' Models':'Run')}<//>
-          ${models.length<2&&compareMode?html`<span style="font-size:0.72rem;color:var(--cream-muted)">Select 2+ models to compare</span>`:''}
-        </div>
-      </div>
-      <div class="pg-output">
-        ${pgResult?html`<div class="pg-result-card">
-          <div class="pg-result-head">
-            <span class="mono" style="font-weight:600">${pgResult.model}</span>
-            <span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${fmt.ms(pgResult.latency_ms)}</span>
-            <span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${pgResult.tokens_in||0}\u2192${pgResult.tokens_out||0} tok</span>
-            <span class="mono" style="font-size:0.72rem;color:var(--green)">$${(pgResult.cost_usd||0).toFixed(4)}</span>
-          </div>
-          ${pgResult.error?html`<div style="color:var(--red);font-size:0.82rem;padding:8px">${pgResult.error}</div>`
-           :html`<div class="pg-result-body">${pgResult.content||'(empty response)'}</div>`}
-        </div>`:
-        expResult?html`<div class="pg-compare">
-          ${(expResult.variants||[]).map(v=>html`<div key=${v.model} class="pg-result-card ${v.model===expResult.winner?'pg-winner':''}">
-            <div class="pg-result-head">
-              <span class="mono" style="font-weight:600">${v.model}</span>
-              ${v.model===expResult.winner?html`<${Badge} text="winner" variant="success"/>`:null}
-            </div>
-            <div style="display:flex;gap:12px;padding:6px 10px;font-size:0.72rem;font-family:var(--font-mono);color:var(--cream-muted);border-bottom:1px solid var(--bg3)">
-              <span>${fmt.ms(v.avg_latency_ms)}</span>
-              <span>${v.avg_tokens_in||0}\u2192${v.avg_tokens_out||0} tok</span>
-              <span style="color:var(--green)">$${(v.avg_cost_usd||0).toFixed(4)}</span>
-              ${v.errors>0?html`<span style="color:var(--red)">${v.errors} errors</span>`:null}
-            </div>
-            ${v.runs&&v.runs[0]?html`<div class="pg-result-body">${v.runs[0].error?html`<span style="color:var(--red)">${v.runs[0].error}</span>`:v.runs[0].content||'(empty)'}</div>`:null}
-          </div>`)}
-          <div style="padding:8px;font-size:0.78rem;color:var(--cream-muted);text-align:center">
-            Winner: <span class="mono" style="color:var(--green)">${expResult.winner||'none'}</span> by ${expResult.win_reason||'eval'} \u2014
-            Total: $${(expResult.total_cost_usd||0).toFixed(4)} in ${fmt.ms(expResult.duration_ms)}
-            ${expResult.experiment_id?html` \u2014 <span class="mono">exp #${expResult.experiment_id}</span>`:''}
-          </div>
-        </div>`:
-        html`<div style="color:var(--cream-muted);text-align:center;padding:40px;font-size:0.85rem">
-          <div style="font-size:1.5rem;margin-bottom:10px">\u26A1</div>
-          <div>Type a prompt and hit Run to test it through the proxy.</div>
-          <div style="margin-top:6px;font-size:0.78rem">Enable <strong>Compare mode</strong> to test multiple models side-by-side.</div>
-          <div style="margin-top:6px;font-size:0.72rem;color:var(--cream-muted)">Requires API keys configured (OPENAI_API_KEY, etc.)</div>
-        </div>`}
-      </div>
-    </div>`:
-    tab==='templates'?html`<div class="pack-grid">${d('templates').map(t=>html`<div key=${t.slug} class="pack-card" style="cursor:pointer" onClick=${()=>loadTemplate(t.slug)}>
-      <div class="pack-name">${t.name||t.slug}</div>
-      <div class="pack-desc">${t.description||'\u2014'}</div>
-      <div class="pack-meta"><span class="mono">${t.slug}</span>${t.model?html`<span class="mono">${t.model}</span>`:null}<span class="mono">v${t.current_version||1}</span></div>
-      <div style="margin-top:6px;display:flex;gap:6px"><${Btn} small onClick=${e=>{e.stopPropagation();loadTemplate(t.slug)}}>Load in Playground<//><${Btn} small onClick=${e=>{e.stopPropagation();loadVersions(t.slug)}}>History<//></div>
-    </div>`)}</div>${d('templates').length===0?html`<div class="empty-state">No templates. Install the Dev Productivity pack to get starter templates.</div>`:''}
-    ${diffSlug&&html`<${Modal} title=${'Version History: '+diffSlug} onClose=${()=>setDiffSlug(null)}>
-      <div style="margin-bottom:12px">
-        <div class="section-title" style="margin-bottom:8px">${versions.length} version${versions.length!==1?'s':''}</div>
-        <div style="max-height:120px;overflow-y:auto;border:1px solid var(--bg3);margin-bottom:12px">
-          ${versions.map(v=>html`<div key=${v.version} style="display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--bg3);font-size:0.78rem">
-            <span class="mono" style="font-weight:600">v${v.version}</span>
-            <span style="color:var(--cream-dim)">${v.change_note||'\u2014'}</span>
-            <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${v.author||'\u2014'}</span>
-            <span class="mono" style="color:var(--cream-muted);font-size:0.7rem">${fmt.ago(v.created_at)}</span>
-          </div>`)}
-        </div>
-        ${versions.length>=2?html`<div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-          <${Select} label="From" value=${diffV1} onChange=${setDiffV1} options=${versions.map(v=>({value:String(v.version),label:'v'+v.version}))}/>
-          <span style="color:var(--cream-muted);margin-top:18px">\u2192</span>
-          <${Select} label="To" value=${diffV2} onChange=${setDiffV2} options=${versions.map(v=>({value:String(v.version),label:'v'+v.version}))}/>
-        </div>`:html`<div style="color:var(--cream-muted);font-size:0.82rem">Need at least 2 versions to diff.</div>`}
-        ${diffData&&html`<div style="margin-bottom:8px;font-size:0.78rem;color:var(--cream-dim)">
-          <span style="color:var(--green)">+${diffData.lines_added} added</span> \u00B7 <span style="color:var(--red)">-${diffData.lines_removed} removed</span>
-          ${diffData.v1?.change_note?html` \u00B7 v${diffData.v1.version}: ${diffData.v1.change_note}`:''}
-          ${diffData.v2?.change_note?html` \u2192 v${diffData.v2.version}: ${diffData.v2.change_note}`:''}
-        </div>
-        <div style="background:var(--bg);border:1px solid var(--bg3);max-height:300px;overflow-y:auto;font-family:var(--font-mono);font-size:0.75rem;line-height:1.6">
-          ${(diffData.diff||[]).map((d,i)=>html`<div key=${i} style="padding:1px 8px;background:${d.type==='added'?'rgba(90,154,74,0.12)':d.type==='removed'?'rgba(196,74,58,0.12)':'transparent'};color:${d.type==='added'?'var(--green)':d.type==='removed'?'var(--red)':'var(--cream-dim)'}">
-            <span style="display:inline-block;width:18px;color:var(--cream-muted)">${d.type==='added'?'+':d.type==='removed'?'-':' '}</span>${d.text||'\u00A0'}
-          </div>`)}
-        </div>`}
-      </div>
-    <//>`}`:
-    tab==='experiments'?html`<${DataTable} columns=${[
-      {key:'name',label:'Experiment',width:'1.5fr',mono:true},
-      {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'draft'} variant=${r.status==='completed'?'success':r.status==='running'?'warn':'muted'}/>`},
-      {key:'type',label:'Type',width:'100px',mono:true},
-      {key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)}
-    ]} rows=${d('experiments')} onRowClick=${r=>viewExp(r.id)} emptyMsg="No experiments yet \u2014 run a comparison in the playground."/>`:
-    html`<${DataTable} columns=${[{key:'name',label:'Benchmark',width:'1.5fr'},{key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'pending'} variant=${r.status==='completed'?'success':'muted'}/>`},{key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)}]} rows=${d('benchmarks')} emptyMsg="No benchmarks."/>`}
-    ${selExp&&html`<${Modal} title=${'Experiment: '+(selExp.name||'#'+selExp.id)} onClose=${()=>setSelExp(null)}>
-      <div class="trace-detail">
-        <div class="td-row"><span class="td-label">Status</span><${Badge} text=${selExp.status} variant=${selExp.status==='completed'?'success':'muted'}/></div>
-        <div class="td-row"><span class="td-label">Type</span><span class="mono">${selExp.type}</span></div>
-        ${selExp.config?.prompt?html`<div class="td-section"><div class="td-label">Prompt</div><pre class="td-pre">${selExp.config.prompt}</pre></div>`:''}
-        ${selExp.results?.variants?html`<div class="td-section"><div class="td-label">Results</div>
-          ${selExp.results.variants.map(v=>html`<div key=${v.model} style="padding:6px 0;border-bottom:1px solid var(--bg2)">
-            <div style="display:flex;gap:8px;align-items:center">
-              <span class="mono" style="font-weight:600">${v.model}</span>
-              ${v.model===selExp.results?.winner?html`<${Badge} text="winner" variant="success"/>`:null}
-              <span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${fmt.ms(v.avg_latency_ms)} \u2014 $${(v.avg_cost_usd||0).toFixed(4)}</span>
-            </div>
-            ${v.runs&&v.runs[0]?html`<pre class="td-pre" style="max-height:100px;margin-top:4px">${fmt.trunc(v.runs[0].content||v.runs[0].error||'',300)}</pre>`:null}
-          </div>`)}
-        </div>`:''}
-      </div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`
-}
-
-// ─── Forge ─────────────────────────────────────────────────────────
-function ForgeView(){
-  const[tab,setTab]=useState('workflows');const[data,setData]=useState({});const[toast,setToast]=useState(null);
-  const[selWf,setSelWf]=useState(null);const[selRun,setSelRun]=useState(null);const[runInput,setRunInput]=useState('');const[running,setRunning]=useState(null);
-  const load=async()=>{const[w,r,t]=await Promise.all([api('/api/forge/workflows'),api('/api/forge/runs'),api('/api/forge/tools')]);setData({workflows:w.workflows||[],runs:r.runs||[],tools:t.tools||[]})};
-  useEffect(()=>{load()},[]);
-  const viewWorkflow=async slug=>{const r=await api('/api/forge/workflows/'+slug);if(!r._error)setSelWf(r)};
-  const runWorkflow=async slug=>{setRunning(slug);const inp=runInput||'Hello, test this workflow';const r=await api('/api/forge/workflows/'+slug+'/run',{method:'POST',body:JSON.stringify({input:inp})});setRunning(null);if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setToast({msg:'Run started: '+r.run_id,type:'success'});setRunInput('');setSelWf(null);setTimeout(load,2000);setTimeout(load,5000)};
-  const viewRun=async id=>{const[r,s]=await Promise.all([api('/api/forge/runs/'+id),api('/api/forge/runs/'+id+'/steps')]);if(!r._error){r._stepLogs=s.steps||[];setSelRun(r)}};
-  const refreshRun=async()=>{if(!selRun)return;const[r,s]=await Promise.all([api('/api/forge/runs/'+selRun.id),api('/api/forge/runs/'+selRun.id+'/steps')]);if(!r._error){r._stepLogs=s.steps||[];setSelRun(r)}};
-  useEffect(()=>{if(selRun&&(selRun.status==='running'||selRun.status==='pending')){const t=setInterval(()=>{refreshRun();load()},2000);return()=>clearInterval(t)}},[selRun?.id,selRun?.status]);
-  const d=k=>Array.isArray(data[k])?data[k]:[];
-  const STEP_COLORS={'llm':'var(--rust-light)','transform':'var(--gold)','tool':'var(--green)','http':'var(--leather-light)','gate':'var(--amber)'};
-  return html`<div class="page-head"><div class="page-eyebrow">Forge</div><h2>Workflow Engine</h2><p class="page-sub">DAG workflows, tools & runs. 5 step types: LLM, transform, tool, HTTP, gate.</p></div>
-    <div class="stats-row"><${Stat} label="Workflows" value=${d('workflows').length} accent/><${Stat} label="Runs" value=${d('runs').length} sub=${d('runs').filter(r=>r.status==='success').length+' succeeded'}/><${Stat} label="Tools" value=${d('tools').length}/></div>
-    <${TabBar} tabs=${['workflows','runs','tools']} active=${tab} onChange=${setTab}/>
-    ${tab==='workflows'?html`<div class="wf-grid">${d('workflows').map(w=>html`<div key=${w.slug} class="wf-card" onClick=${()=>viewWorkflow(w.slug)}>
-      <div class="wf-card-head"><span class="wf-card-name">${w.name}</span><${Badge} text=${w.enabled!==false?'active':'off'} variant=${w.enabled!==false?'success':'muted'}/></div>
-      <div class="wf-card-desc">${w.description||'\u2014'}</div>
-      <div class="wf-card-meta"><span class="mono">${w.slug}</span><span class="mono">${w.step_count||0} steps</span><span class="mono">${w.trigger_type||'manual'}</span></div>
-    </div>`)}</div>${d('workflows').length===0&&html`<div class="empty-state">No workflows. Install the Eval Suite pack or create one via API.</div>`}`:
-    tab==='runs'?html`<${DataTable} columns=${[
-      {key:'id',label:'Run',width:'140px',mono:true,render:r=>fmt.trunc(r.id,18)},
-      {key:'wf',label:'Workflow',width:'120px',mono:true,render:r=>r.workflow_slug||'#'+r.workflow_id},
-      {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'pending'} variant=${r.status==='success'?'success':r.status==='running'?'warn':r.status==='failed'?'danger':'muted'}/>`},
-      {key:'progress',label:'Progress',width:'80px',mono:true,render:r=>(r.steps_completed||0)+'/'+(r.steps_total||0)},
-      {key:'ts',label:'Started',width:'100px',render:r=>fmt.ago(r.started_at||r.created_at)},
-      {key:'done',label:'Duration',width:'100px',mono:true,render:r=>{if(!r.completed_at||!r.started_at)return r.status==='running'?'running\u2026':'\u2014';const ms=new Date(r.completed_at)-new Date(r.started_at);return fmt.ms(ms)}}
-    ]} rows=${d('runs')} onRowClick=${r=>viewRun(r.id)} emptyMsg="No runs yet \u2014 run a workflow to see results here."/>`:
-    html`<${DataTable} columns=${[
-      {key:'name',label:'Tool',width:'1.2fr',mono:true},
-      {key:'type',label:'Type',width:'100px',render:r=>html`<${Badge} text=${r.type||'function'} variant=${r.type==='builtin'?'success':'muted'}/>`},
-      {key:'desc',label:'Description',width:'2fr',render:r=>r.description||'\u2014'},
-      {key:'enabled',label:'Status',width:'80px',render:r=>html`<${Badge} text=${r.enabled?'on':'off'} variant=${r.enabled?'success':'muted'}/>`}
-    ]} rows=${d('tools')} emptyMsg="No tools. Tools will be seeded on next deploy."/>`}
-    ${selWf&&html`<${Modal} title=${selWf.name||selWf.slug} onClose=${()=>setSelWf(null)}>
-      <div class="wf-detail">
-        <div style="font-size:0.85rem;color:var(--cream-dim);font-style:italic;margin-bottom:16px">${selWf.description||''}</div>
-        <div class="section-title">Steps (${(selWf.steps||[]).length})</div>
-        <div class="wf-steps">${(selWf.steps||[]).map((s,i)=>html`<div key=${s.id||i} class="wf-step">
-          <div class="wf-step-head">
-            <span class="wf-step-badge" style="background:${STEP_COLORS[s.type]||'var(--cream-muted)'}20;color:${STEP_COLORS[s.type]||'var(--cream-muted)'}">${s.type||'llm'}</span>
-            <span class="wf-step-id">${s.id}</span>
-            ${s.depends_on&&s.depends_on.length>0?html`<span class="wf-step-deps">\u2190 ${s.depends_on.join(', ')}</span>`:''}
-          </div>
-          ${s.config?.model?html`<div class="wf-step-field"><span class="wf-step-label">model</span><span class="mono">${s.config.model}</span></div>`:''}
-          ${s.config?.expression?html`<div class="wf-step-field"><span class="wf-step-label">expr</span><span class="mono">${s.config.expression}</span></div>`:''}
-          ${s.config?.tool_name?html`<div class="wf-step-field"><span class="wf-step-label">tool</span><span class="mono">${s.config.tool_name}</span></div>`:''}
-          ${s.config?.condition?html`<div class="wf-step-field"><span class="wf-step-label">gate</span><span class="mono">${s.config.condition} ${s.config.threshold||''}</span></div>`:''}
-          ${s.config?.prompt?html`<div class="wf-step-prompt">${fmt.trunc(s.config.prompt,120)}</div>`:''}
-        </div>`)}</div>
-        <div class="section-title" style="margin-top:20px">Run Workflow</div>
-        <textarea class="field-input mono" rows="3" placeholder='Enter input (e.g. "What is quantum computing?")' value=${runInput} onInput=${e=>setRunInput(e.target.value)} style="resize:vertical;margin-bottom:12px;font-size:0.78rem"/>
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <${Btn} onClick=${()=>setSelWf(null)}>Close<//>
-          <${Btn} variant="primary" onClick=${()=>runWorkflow(selWf.slug)} disabled=${running===selWf.slug}>${running===selWf.slug?'Starting\u2026':'Run Workflow'}<//>
-        </div>
-      </div>
-    <//>`}
-    ${selRun&&html`<${Modal} title=${'Run: '+fmt.trunc(selRun.id,20)} onClose=${()=>setSelRun(null)}>
-      <div class="wf-detail">
-        <div class="td-row"><span class="td-label">Status</span><span><${Badge} text=${selRun.status} variant=${selRun.status==='success'?'success':selRun.status==='failed'?'danger':'warn'}/>${(selRun.status==='running'||selRun.status==='pending')?html` <${Btn} small onClick=${refreshRun}>\u21BB Refresh<//>`:''}</span></div>
-        <div class="td-row"><span class="td-label">Workflow</span><span class="mono">${selRun.workflow_slug||'#'+selRun.workflow_id}</span></div>
-        <div class="td-row"><span class="td-label">Progress</span><span class="mono">${selRun.steps_completed||0} / ${selRun.steps_total||0}</span></div>
-        ${selRun.error?html`<div class="td-row"><span class="td-label">Error</span><span style="color:var(--red);font-size:0.82rem">${selRun.error}</span></div>`:''}
-        ${selRun.input?html`<div class="td-section"><div class="td-label">Input</div><pre class="td-pre">${typeof selRun.input==='string'?selRun.input:JSON.stringify(selRun.input,null,2)}</pre></div>`:''}
-        ${(selRun._stepLogs&&selRun._stepLogs.length>0)?html`<div class="td-section"><div class="td-label">Step Execution Log</div>
-          ${selRun._stepLogs.map((s,i)=>html`<div key=${s.step_id||i} class="run-step-result">
-            <div class="run-step-head">
-              <span class="wf-step-badge" style="background:${STEP_COLORS[s.step_type]||'var(--cream-muted)'}20;color:${STEP_COLORS[s.step_type]||'var(--cream-muted)'}">${s.step_type||'llm'}</span>
-              <span class="mono">${s.step_id}</span>
-              <${Badge} text=${s.status||'?'} variant=${s.status==='success'?'success':s.status==='running'?'warn':s.status==='skipped'?'muted':'danger'}/>
-              ${s.latency_ms?html`<span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">${fmt.ms(s.latency_ms)}</span>`:''}
-            </div>
-            ${s.tokens_in||s.tokens_out?html`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin:4px 0">${s.tokens_in||0} in / ${s.tokens_out||0} out</div>`:''}
-            ${s.output?html`<pre class="td-pre" style="max-height:120px">${fmt.trunc(s.output,500)}</pre>`:''}
-            ${s.error?html`<div style="color:var(--red);font-size:0.78rem;margin-top:4px">${s.error}</div>`:''}
-          </div>`)}
-        </div>`:selRun.output?html`<div class="td-section"><div class="td-label">Step Results</div>
-          ${typeof selRun.output==='object'&&selRun.output!==null?Object.entries(selRun.output).map(([k,v])=>html`<div key=${k} class="run-step-result">
-            <div class="run-step-head"><span class="mono">${k}</span><${Badge} text=${v.status||'?'} variant=${v.status==='success'?'success':'danger'}/>${v.latency_ms?html`<span class="mono" style="font-size:0.7rem;color:var(--cream-muted)">${fmt.ms(v.latency_ms)}</span>`:''}</div>
-            ${v.tokens_in||v.tokens_out?html`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin:4px 0">${v.tokens_in||0} in / ${v.tokens_out||0} out</div>`:''}
-            ${v.output?html`<pre class="td-pre" style="max-height:120px">${fmt.trunc(v.output,500)}</pre>`:''}
-            ${v.error?html`<div style="color:var(--red);font-size:0.78rem;margin-top:4px">${v.error}</div>`:''}
-          </div>`):html`<pre class="td-pre">${JSON.stringify(selRun.output,null,2)}</pre>`}
-        </div>`:''}
-      </div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-
-// ─── Exchange (with install/uninstall) ─────────────────────────────
-function ExchangeView(){
-  const[tab,setTab]=useState('packs');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[installing,setInstalling]=useState(null);
-  const[preview,setPreview]=useState(null);const[installResult,setInstallResult]=useState(null);
-  const load=async()=>{const[p,i,st]=await Promise.all([api('/api/exchange/packs'),api('/api/exchange/installed'),api('/api/exchange/status')]);setData({packs:p.packs||[],installed:i.installed||[],status:st||{}})};
-  useEffect(()=>{load()},[]);
-  const previewPack=async(slug)=>{setPreview(null);const r=await api('/api/exchange/packs/'+slug+'/preview');setPreview(r)};
-  const installPack=async(slug)=>{setInstalling(slug);setInstallResult(null);const r=await api('/api/exchange/packs/'+slug+'/install',{method:'POST'});setInstalling(null);if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setInstallResult(r);setToast({msg:slug+' installed!',type:'success'});load()};
-  const uninstall=async(id)=>{await api('/api/exchange/installed/'+id,{method:'DELETE'});setToast({msg:'Uninstalled',type:'success'});load()};
-  const d=k=>Array.isArray(data[k])?data[k]:[];
-  const installedSlugs=new Set(d('installed').map(i=>i.pack_slug));
-  const st=data.status||{};
-  const SECTION_ICONS={providers:'\uD83D\uDD0C',routes:'\u2194\uFE0F',modules:'\u2699\uFE0F',workflows:'\u26A1',tools:'\uD83D\uDD27',templates:'\uD83D\uDCDD',policies:'\uD83D\uDEE1\uFE0F',alerts:'\uD83D\uDD14'};
-  return html`<div class="page-head"><div class="page-eyebrow">Exchange</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs to configure middleware, providers, policies, and more in one click.</p></div>
-    <div class="stats-row"><${Stat} label="Available" value=${d('packs').length} accent/><${Stat} label="Installed" value=${d('installed').length}/><${Stat} label="Environments" value=${st.environments||0}/></div>
-    <${TabBar} tabs=${['packs','installed']} active=${tab} onChange=${setTab}/>
-    ${tab==='packs'?html`<div class="pack-grid">${d('packs').map(p=>{
-      const isInstalled=installedSlugs.has(p.slug);
-      return html`<div key=${p.slug} class="pack-card ${isInstalled?'pack-installed':''}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div class="pack-name">${p.name||p.slug}</div>
-        ${isInstalled?html`<${Badge} text="installed" variant="success"/>`:null}
-      </div>
-      <div class="pack-desc">${p.description||'\u2014'}</div>
-      <div class="pack-meta"><span class="mono" style="font-size:0.72rem">v${p.current_version||'1.0.0'}</span><span style="color:var(--cream-muted);font-size:0.72rem">${p.author||'unknown'}</span><span style="color:var(--cream-muted);font-size:0.72rem">${p.installs||0} installs</span></div>
-      <div class="pack-actions" style="display:flex;gap:6px;margin-top:8px">
-        <${Btn} small onClick=${()=>previewPack(p.slug)}>Preview<//> 
-        ${isInstalled?null:html`<${Btn} small variant="primary" onClick=${()=>installPack(p.slug)} disabled=${installing===p.slug}>${installing===p.slug?'Installing\u2026':'Install'}<//>`}
-      </div>
-    </div>`})}</div>`:
-    html`<${DataTable} columns=${[
-      {key:'pack_slug',label:'Pack',width:'1fr',mono:true},
-      {key:'version',label:'Version',width:'90px',mono:true},
-      {key:'ts',label:'Installed',width:'130px',render:r=>fmt.ago(r.installed_at||r.created_at)},
-      {key:'a',label:'',width:'100px',render:r=>html`<${Btn} small variant="danger" onClick=${()=>uninstall(r.id)}>Uninstall<//>`}
-    ]} rows=${d('installed')} emptyMsg="No packs installed."/>`}
-    ${preview&&html`<${Modal} title=${'Pack: '+preview.slug} onClose=${()=>setPreview(null)}>
-      <div style="font-size:0.82rem">
-        <div style="margin-bottom:10px;color:var(--cream-muted)">v${preview.version} \u2014 Installing will apply:</div>
-        ${(preview.changes||[]).map(c=>html`<div key=${c.section} style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--bg2)">
-          <span>${SECTION_ICONS[c.section]||'\u2022'}</span>
-          <span style="flex:1">${c.section}</span>
-          <span class="mono" style="color:var(--green)">${c.count} item${c.count!==1?'s':''}</span>
-        </div>`)}
-        ${(preview.modules||[]).length>0?html`<div style="margin-top:10px">
-          <div style="font-size:0.75rem;color:var(--cream-muted);margin-bottom:4px">Module changes:</div>
-          ${preview.modules.map(m=>html`<div key=${m.name} style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:0.78rem">
-            <span class="mono">${m.name}</span>
-            <span style="margin-left:auto">${m.action==='unchanged'?html`<${Badge} text="no change" variant="muted"/>`:m.action==='update'?html`<${Badge} text=${'→ '+(m.enabled?'on':'off')} variant="warning"/>`:html`<${Badge} text="new" variant="success"/>`}</span>
-          </div>`)}
-        </div>`:''}
-        <div style="margin-top:12px;display:flex;gap:8px">
-          ${!installedSlugs.has(preview.slug)?html`<${Btn} small variant="primary" onClick=${()=>{setPreview(null);installPack(preview.slug)}}>Install Now<//>`:null}
-          <${Btn} small onClick=${()=>setPreview(null)}>Close<//>
-        </div>
-      </div>
-    <//>`}
-    ${installResult&&html`<${Modal} title="Install Complete" onClose=${()=>setInstallResult(null)}>
-      <div style="font-size:0.82rem">
-        <div style="margin-bottom:8px"><${Badge} text=${installResult.slug+'@'+installResult.version} variant="success"/></div>
-        ${Object.entries(installResult.applied||{}).map(([k,v])=>html`<div key=${k} style="padding:3px 0"><span style="color:var(--green)">\u2713</span> ${k}: <span class="mono">${v}</span> applied</div>`)}
-        ${Object.entries(installResult.skipped||{}).map(([k,v])=>html`<div key=${k} style="padding:3px 0"><span style="color:var(--cream-muted)">\u2013</span> ${k}: <span class="mono">${v}</span> skipped (already exist)</div>`)}
-        ${Object.entries(installResult.errors||{}).map(([k,errs])=>errs.map(e=>html`<div key=${k+e} style="padding:3px 0;color:var(--red)">\u2717 ${k}: ${e}</div>`))}
-        <div style="margin-top:10px"><${Btn} small onClick=${()=>setInstallResult(null)}>Done<//></div>
-      </div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`
-}
-
-// ─── Settings (Users, API Keys, Provider Keys) ─────────────────────
-function SettingsView(){
-  const[users,setUsers]=useState([]);const[sel,setSel]=useState(null);const[keys,setKeys]=useState([]);const[provs,setProvs]=useState([]);
-  const[toast,setToast]=useState(null);const[showNew,setShowNew]=useState(false);const[newEmail,setNewEmail]=useState('');const[newName,setNewName]=useState('');
-  const[newKey,setNewKey]=useState(null);const[showProv,setShowProv]=useState(false);const[pn,setPn]=useState('openai');const[pk,setPk]=useState('');const[pu,setPu]=useState('');
-  const loadUsers=async()=>{const r=await api('/api/auth/users');setUsers(r.users||[])};
-  useEffect(()=>{loadUsers()},[]);
-  const selectUser=async u=>{setSel(u);const[k,p]=await Promise.all([api('/api/auth/users/'+u.id+'/keys'),api('/api/auth/users/'+u.id+'/providers')]);setKeys(k.keys||[]);setProvs(p.providers||[])};
-  const createUser=async()=>{const r=await api('/api/auth/users',{method:'POST',body:JSON.stringify({email:newEmail,name:newName})});if(r._error){setToast({msg:'Error: '+(r.error||r._error),type:'error'});return}setNewKey(r.api_key);setShowNew(false);setNewEmail('');setNewName('');setToast({msg:'User created!',type:'success'});loadUsers()};
-  const genKey=async()=>{if(!sel)return;const r=await api('/api/auth/users/'+sel.id+'/keys',{method:'POST',body:JSON.stringify({name:'key-'+(keys.length+1)})});if(r._error){setToast({msg:'Error',type:'error'});return}setNewKey(r);setToast({msg:'Key created!',type:'success'});selectUser(sel)};
-  const revoke=async kid=>{if(!sel)return;await api('/api/auth/users/'+sel.id+'/keys/'+kid,{method:'DELETE'});setToast({msg:'Revoked',type:'success'});selectUser(sel)};
-  const addProv=async()=>{if(!sel||!pk)return;await api('/api/auth/users/'+sel.id+'/providers/'+pn,{method:'PUT',body:JSON.stringify({api_key:pk,base_url:pu})});setToast({msg:pn+' saved',type:'success'});setShowProv(false);setPk('');setPu('');selectUser(sel)};
-  const delProv=async p=>{if(!sel)return;await api('/api/auth/users/'+sel.id+'/providers/'+p,{method:'DELETE'});setToast({msg:'Deleted',type:'success'});selectUser(sel)};
-  return html`<div class="page-head"><div class="page-eyebrow">Settings</div><h2>Users & Configuration</h2><p class="page-sub">Manage users, API keys & provider credentials.</p></div>
-    <div class="stats-row"><${Stat} label="Users" value=${users.length} accent/><${Stat} label="Selected" value=${sel?sel.email:'None'}/></div>
-    <div class="settings-layout">
-      <div class="settings-sidebar"><div class="settings-sidebar-head"><span>Users</span><${Btn} small variant="primary" onClick=${()=>setShowNew(true)}>+ New<//></div>
-        <div class="user-list">${users.map(u=>html`<div key=${u.id} class="user-item ${sel?.id===u.id?'active':''}" onClick=${()=>selectUser(u)}><div class="user-email">${u.email}</div><div class="user-meta">${u.tier} \u00B7 ${fmt.ago(u.created_at)}</div></div>`)}
-        ${users.length===0&&html`<div class="empty-state" style="padding:24px;font-size:0.8rem">No users.</div>`}</div></div>
-      <div class="settings-main">
-        ${!sel?html`<div class="empty-state">Select a user to manage keys and providers.</div>`:html`
-          <div class="section-head"><h3>${sel.name||sel.email}</h3><${Badge} text=${sel.tier} variant=${sel.tier==='free'?'muted':'success'}/></div>
-          <div class="section-title">API Keys <${Btn} small onClick=${genKey}>+ Generate<//></div>
-          ${newKey&&html`<div class="key-alert"><div class="key-alert-title">New API Key (copy now \u2014 shown once)</div><code class="key-alert-value">${newKey.key||newKey}</code><${Btn} small onClick=${()=>{navigator.clipboard.writeText(newKey.key||newKey);setToast({msg:'Copied!',type:'success'})}}>Copy<//></div>`}
-          <${DataTable} columns=${[{key:'name',label:'Name',width:'1fr',mono:true},{key:'key_prefix',label:'Key',width:'1.5fr',mono:true},{key:'last_used',label:'Last Used',width:'100px',render:r=>fmt.ago(r.last_used)},{key:'a',label:'',width:'80px',render:r=>html`<${Btn} small variant="danger" onClick=${()=>revoke(r.id)}>Revoke<//>`}]} rows=${keys} emptyMsg="No API keys."/>
-          <div class="section-title" style="margin-top:24px">Provider Keys <${Btn} small onClick=${()=>setShowProv(true)}>+ Add<//></div>
-          <${DataTable} columns=${[{key:'provider',label:'Provider',width:'1fr',mono:true},{key:'base_url',label:'Base URL',width:'1.5fr',mono:true,render:r=>r.base_url||'default'},{key:'ts',label:'Added',width:'100px',render:r=>fmt.ago(r.created_at)},{key:'a',label:'',width:'80px',render:r=>html`<${Btn} small variant="danger" onClick=${()=>delProv(r.provider)}>Delete<//>`}]} rows=${provs} emptyMsg="No provider keys."/>`}
-      </div></div>
-    ${showNew&&html`<${Modal} title="Create User" onClose=${()=>setShowNew(false)}><${Input} label="Email" value=${newEmail} onChange=${setNewEmail} placeholder="user@example.com"/><${Input} label="Name" value=${newName} onChange=${setNewName} placeholder="Optional"/><div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShowNew(false)}>Cancel<//><${Btn} variant="primary" onClick=${createUser} disabled=${!newEmail}>Create User<//></div><//>`}
-    ${showProv&&html`<${Modal} title="Add Provider Key" onClose=${()=>setShowProv(false)}><${Select} label="Provider" value=${pn} onChange=${setPn} options=${[{value:'openai',label:'OpenAI'},{value:'anthropic',label:'Anthropic'},{value:'gemini',label:'Google Gemini'},{value:'groq',label:'Groq'},{value:'together',label:'Together'},{value:'mistral',label:'Mistral'}]}/><${Input} label="API Key" value=${pk} onChange=${setPk} type="password" placeholder="sk-..." mono/><div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShowProv(false)}>Cancel<//><${Btn} variant="primary" onClick=${addProv} disabled=${!pk}>Save<//></div><//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-
-// ─── Bill ─────────────────────────────────────────────────────────
-function BillingView(){
-  const[tab,setTab]=useState('customers');
-  const tabs=[{id:'customers',label:'Customers'},{id:'plans',label:'Plans'},{id:'usage',label:'Usage'},{id:'invoices',label:'Invoices'},{id:'keys',label:'Keys'},{id:'stripe',label:'Stripe'}];
-  return html`<div class="page-head"><div class="page-eyebrow">Bill</div><h2 style="font-size:1.5rem">Per-Customer Usage Metering & Billing</h2><p class="page-sub">Track LLM costs per customer, enforce plan limits, generate invoices.</p></div>
-    <div style="display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3);padding-bottom:8px">${tabs.map(t=>html`<button key=${t.id} onClick=${()=>setTab(t.id)} style="padding:6px 14px;font-size:0.82rem;font-family:var(--font-mono);border:none;cursor:pointer;background:${tab===t.id?'var(--bg3)':'transparent'};color:${tab===t.id?'var(--cream)':'var(--cream-dim)'};border-radius:4px">${t.label}</button>`)}</div>
-    ${tab==='customers'&&html`<${BillCustomers}/>`}
-    ${tab==='plans'&&html`<${BillPlans}/>`}
-    ${tab==='usage'&&html`<${BillUsage}/>`}
-    ${tab==='invoices'&&html`<${BillInvoices}/>`}
-    ${tab==='keys'&&html`<${BillKeys}/>`}
-    ${tab==='stripe'&&html`<${BillStripe}/>`}`;
-}
-function BillCustomers(){
-  const[custs,setCusts]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
-  const[name,setName]=useState('');const[email,setEmail]=useState('');const[extID,setExtID]=useState('');
-  const load=async()=>{const r=await api('/api/billing/customers');if(Array.isArray(r))setCusts(r)};
-  useEffect(()=>{load()},[]);
-  const create=async()=>{const r=await api('/api/billing/customers',{method:'POST',body:JSON.stringify({name,email,external_id:extID,account_id:'default'})});if(r.id){setShow(false);setName('');setEmail('');setExtID('');load();setToast({msg:'Customer created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
-  const del=async(id)=>{if(!confirm('Delete customer '+id+'?'))return;await api('/api/billing/customers/'+id,{method:'DELETE'});load();setToast({msg:'Deleted',type:'success'})};
-  const cents=c=>(c/100).toFixed(2);
-  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${custs.length} customers</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Customer<//></div>
-    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.82rem">
-    <thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['Name','Email','External ID','Plan','This Month','Actions'].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
-    <tbody>${custs.map(c=>html`<tr key=${c.id} style="border-bottom:1px solid var(--bg2)">
-      <td style="padding:8px"><span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)">${c.name||'—'}</span><div style="font-size:0.72rem;color:var(--cream-dim);font-family:var(--font-mono)">${c.id}</div></td>
-      <td style="padding:8px;color:var(--cream-dim)">${c.email||'—'}</td>
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)">${c.external_id||'—'}</td>
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${c.current_plan||'none'}</td>
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">$${cents(c.period_cost_cents||0)}</td>
-      <td style="padding:8px"><${Btn} small onClick=${()=>del(c.id)}>\u2715<//></td>
-    </tr>`)}</tbody></table></div>
-    ${show&&html`<${Modal} title="New Customer" onClose=${()=>setShow(false)}>
-      <${Input} label="Name" value=${name} onChange=${setName} placeholder="Acme Corp"/>
-      <${Input} label="Email" value=${email} onChange=${setEmail} placeholder="billing@acme.com"/>
-      <${Input} label="External ID" value=${extID} onChange=${setExtID} placeholder="Optional (Stripe cus_...)"/>
-      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!name&&!email}>Create<//></div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-function BillPlans(){
-  const[plans,setPlans]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
-  const[pName,setPName]=useState('');const[rpm,setRpm]=useState('60');const[reqMonth,setReqMonth]=useState('10000');
-  const[capCents,setCapCents]=useState('5000');const[overage,setOverage]=useState('block');
-  const load=async()=>{const r=await api('/api/billing/plans');if(Array.isArray(r))setPlans(r)};
-  useEffect(()=>{load()},[]);
-  const create=async()=>{const limits={requests_per_month:parseInt(reqMonth)||0,spend_cap_cents:parseInt(capCents)||0,rate_limit_rpm:parseInt(rpm)||0,overage};const r=await api('/api/billing/plans',{method:'POST',body:JSON.stringify({name:pName,limits,account_id:'default'})});if(r.id){setShow(false);setPName('');load();setToast({msg:'Plan created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
-  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${plans.length} plans</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Plan<//></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">${plans.map(p=>{
-      const l=typeof p.limits==='string'?JSON.parse(p.limits||'{}'):p.limits||{};
-      return html`<div key=${p.id} style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg)">
-        <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.75rem">${p.name}</div>
-        <div style="font-size:0.78rem;color:var(--cream-dim);line-height:1.8">
-          <div>\u25B8 ${l.requests_per_month||'\u221E'} req/month</div>
-          <div>\u25B8 $${((l.spend_cap_cents||0)/100).toFixed(0)} spend cap</div>
-          <div>\u25B8 ${l.rate_limit_rpm||'\u221E'} RPM</div>
-          <div>\u25B8 Overage: <span style="color:${l.overage==='block'?'var(--rust)':'var(--gold)'}">${l.overage||'allow'}</span></div>
-        </div>
-        <div style="margin-top:8px;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim)">${p.id}</div>
-      </div>`})}</div>
-    ${show&&html`<${Modal} title="New Plan" onClose=${()=>setShow(false)}>
-      <${Input} label="Plan Name" value=${pName} onChange=${setPName} placeholder="Starter"/>
-      <${Input} label="Requests / Month" value=${reqMonth} onChange=${setReqMonth} placeholder="10000"/>
-      <${Input} label="Spend Cap (cents)" value=${capCents} onChange=${setCapCents} placeholder="5000"/>
-      <${Input} label="RPM Limit" value=${rpm} onChange=${setRpm} placeholder="60"/>
-      <${Select} label="Overage Behavior" value=${overage} onChange=${setOverage} options=${[{value:'block',label:'Block'},{value:'alert',label:'Alert'},{value:'allow',label:'Allow'}]}/>
-      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!pName}>Create<//></div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-function BillUsage(){
-  const[summary,setSummary]=useState(null);const[byModel,setByModel]=useState([]);const[byCust,setByCust]=useState([]);
-  const load=async()=>{const[s,m,c]=await Promise.all([api('/api/billing/usage/summary'),api('/api/billing/usage/by-model'),api('/api/billing/usage/by-customer')]);setSummary(s);if(Array.isArray(m))setByModel(m);if(Array.isArray(c))setByCust(c)};
-  useEffect(()=>{load()},[]);
-  const cents=c=>(c/100).toFixed(2);
-  const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
-  return html`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem">
-    <${Stat} label="Total Requests" value=${fmtN(summary?.total_requests||0)}/>
-    <${Stat} label="Total Cost" value=${'$'+cents(summary?.total_cost_cents||0)} accent/>
-    <${Stat} label="Input Tokens" value=${fmtN(summary?.total_input_tokens||0)}/>
-    <${Stat} label="Output Tokens" value=${fmtN(summary?.total_output_tokens||0)}/>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-    <div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.75rem">By Model</div>
-    <table style="width:100%;border-collapse:collapse;font-size:0.78rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim)">${['Model','Requests','Cost'].map(h=>html`<th style="padding:6px;text-align:left;font-weight:500">${h}</th>`)}</tr></thead>
-    <tbody>${byModel.map(m=>html`<tr key=${m.model} style="border-bottom:1px solid var(--bg2)"><td style="padding:6px;font-family:var(--font-mono)">${m.model}</td><td style="padding:6px">${fmtN(m.requests)}</td><td style="padding:6px">$${cents(m.cost_cents)}</td></tr>`)}</tbody></table></div>
-    <div><div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.75rem">By Customer</div>
-    <table style="width:100%;border-collapse:collapse;font-size:0.78rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim)">${['Customer','Requests','Cost'].map(h=>html`<th style="padding:6px;text-align:left;font-weight:500">${h}</th>`)}</tr></thead>
-    <tbody>${byCust.map(c=>html`<tr key=${c.customer_id} style="border-bottom:1px solid var(--bg2)"><td style="padding:6px;font-family:var(--font-mono)">${c.customer_id||'unattributed'}</td><td style="padding:6px">${fmtN(c.requests)}</td><td style="padding:6px">$${cents(c.cost_cents)}</td></tr>`)}</tbody></table></div>
-  </div>`;
-}
-function BillInvoices(){
-  const[invoices,setInvoices]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
-  const[custID,setCustID]=useState('');const[period,setPeriod]=useState(new Date().toISOString().slice(0,7));
-  const load=async()=>{const r=await api('/api/billing/invoices');if(Array.isArray(r))setInvoices(r)};
-  useEffect(()=>{load()},[]);
-  const create=async()=>{const r=await api('/api/billing/invoices',{method:'POST',body:JSON.stringify({customer_id:custID,period})});if(r.id){setShow(false);load();setToast({msg:'Invoice '+r.id+' created — $'+(r.total_cents/100).toFixed(2),type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
-  const cents=c=>(c/100).toFixed(2);
-  return html`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${invoices.length} invoices</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Invoice<//></div>
-    <table style="width:100%;border-collapse:collapse;font-size:0.82rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['Invoice','Customer','Period','Amount','Status',''].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
-    <tbody>${invoices.map(inv=>html`<tr key=${inv.id} style="border-bottom:1px solid var(--bg2)">
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${inv.id}</td>
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${inv.customer_id}</td>
-      <td style="padding:8px">${inv.period}</td>
-      <td style="padding:8px;font-family:var(--font-mono)">$${cents(inv.total_cents)}</td>
-      <td style="padding:8px"><span style="padding:2px 8px;border-radius:3px;font-size:0.72rem;font-weight:600;background:${inv.status==='paid'?'#d4edda':inv.status==='sent'?'#cce5ff':'#fff3cd'};color:${inv.status==='paid'?'#155724':inv.status==='sent'?'#004085':'#856404'}">${inv.status}</span></td>
-      <td style="padding:8px"><a href=${'/api/billing/invoices/'+inv.id+'/html'} target="_blank" style="color:var(--rust);font-size:0.78rem;text-decoration:none">View \u2197</a></td>
-    </tr>`)}</tbody></table>
-    ${show&&html`<${Modal} title="Generate Invoice" onClose=${()=>setShow(false)}>
-      <${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/>
-      <${Input} label="Period" value=${period} onChange=${setPeriod} placeholder="2026-03"/>
-      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!custID||!period}>Generate<//></div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-function BillKeys(){
-  const[keys,setKeys]=useState([]);const[toast,setToast]=useState(null);const[show,setShow]=useState(false);
-  const[userID,setUserID]=useState('');const[custID,setCustID]=useState('');
-  const load=async()=>{const r=await api('/api/billing/customer-keys');if(Array.isArray(r))setKeys(r)};
-  useEffect(()=>{load()},[]);
-  const create=async()=>{const r=await api('/api/billing/customer-keys',{method:'POST',body:JSON.stringify({user_id:userID,customer_id:custID})});if(r.status==='created'){setShow(false);setUserID('');setCustID('');load();setToast({msg:'Key mapping created',type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
-  const del=async(uid)=>{await api('/api/billing/customer-keys/'+uid,{method:'DELETE'});load();setToast({msg:'Deleted',type:'success'})};
-  return html`<div style="margin-bottom:1rem"><div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:1rem">Map API key users to billing customers. When a request arrives with a user ID, billing automatically attributes usage to the linked customer.</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim)">${keys.length} mappings</span><${Btn} variant="primary" small onClick=${()=>setShow(true)}>+ Mapping<//></div></div>
-    <table style="width:100%;border-collapse:collapse;font-size:0.82rem"><thead><tr style="border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:left">${['User ID','Customer ID','Customer Name','Created',''].map(h=>html`<th style="padding:8px;font-weight:500">${h}</th>`)}</tr></thead>
-    <tbody>${keys.map(k=>html`<tr key=${k.user_id} style="border-bottom:1px solid var(--bg2)">
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${k.user_id}</td>
-      <td style="padding:8px;font-family:var(--font-mono);font-size:0.78rem">${k.customer_id}</td>
-      <td style="padding:8px">${k.customer_name||'—'}</td>
-      <td style="padding:8px;font-size:0.78rem;color:var(--cream-dim)">${k.created_at}</td>
-      <td style="padding:8px"><${Btn} small onClick=${()=>del(k.user_id)}>\u2715<//></td>
-    </tr>`)}</tbody></table>
-    ${show&&html`<${Modal} title="New Key Mapping" onClose=${()=>setShow(false)}>
-      <${Input} label="User ID" value=${userID} onChange=${setUserID} placeholder="User ID from API key" mono/>
-      <${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/>
-      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShow(false)}>Cancel<//><${Btn} variant="primary" onClick=${create} disabled=${!userID||!custID}>Create<//></div>
-    <//>`}
-    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-function BillStripe(){
-  const[status,setStatus]=useState(null);const[toast,setToast]=useState(null);const[custID,setCustID]=useState('');const[syncing,setSyncing]=useState(false);
-  const load=async()=>{const r=await api('/api/billing/stripe/status');setStatus(r)};
-  useEffect(()=>{load()},[]);
-  const sync=async()=>{if(!custID)return;setSyncing(true);const r=await api('/api/billing/stripe/sync-customer',{method:'POST',body:JSON.stringify({customer_id:custID})});setSyncing(false);if(r.stripe_id){setToast({msg:r.action+': '+r.stripe_id,type:'success'})}else{setToast({msg:r.error||'Failed',type:'error'})}};
-  return html`<div style="margin-bottom:1.5rem">
-    <div style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg);margin-bottom:1rem">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem">
-        <span style="width:8px;height:8px;border-radius:50%;background:${status?.enabled?'var(--green)':'var(--cream-dim)'}"></span>
-        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)">Stripe ${status?.enabled?'Connected':'Not Configured'}</span>
-      </div>
-      ${!status?.enabled&&html`<div style="font-size:0.82rem;color:var(--cream-dim);line-height:1.5">Set the <code style="background:var(--bg2);padding:2px 6px;border-radius:3px">STRIPE_SECRET_KEY</code> environment variable to enable Stripe integration. Supports customer sync, invoice creation, and payment webhooks.</div>`}
-    </div>
-    ${status?.enabled&&html`<div style="border:1px solid var(--bg3);padding:1.25rem;background:var(--bg)">
-      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:1rem">Sync Customer to Stripe</div>
-      <div style="display:flex;gap:8px;align-items:flex-end">
-        <div style="flex:1"><${Input} label="Customer ID" value=${custID} onChange=${setCustID} placeholder="bc_..." mono/></div>
-        <${Btn} variant="primary" onClick=${sync} disabled=${!custID||syncing}>${syncing?'Syncing...':'Sync'}<//>
-      </div>
-    </div>`}
-  </div>
-  ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
-}
-
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,settings:SettingsView};
-
-
-function Onboarding({onComplete}){
-  const[step,setStep]=useState(0);const[email,setEmail]=useState('');const[name,setName]=useState('');const[prov,setProv]=useState('openai');const[pk,setPk]=useState('');
-  const[result,setResult]=useState(null);const[err,setErr]=useState('');const[loading,setLoading]=useState(false);
-  const createUser=async()=>{setLoading(true);setErr('');const r=await api('/api/auth/users',{method:'POST',body:JSON.stringify({email,name})});setLoading(false);if(r._error||r.error){setErr(r.error||'Failed');return}setResult(r);setStep(1)};
-  const addProvider=async()=>{if(!result?.user)return;setLoading(true);setErr('');const r=await api('/api/auth/users/'+result.user.id+'/providers/'+prov,{method:'PUT',body:JSON.stringify({api_key:pk})});setLoading(false);if(r._error||r.error){setErr(r.error||'Failed');return}setStep(2)};
-  const finish=()=>{sessionStorage.setItem('sy_onboarded','1');onComplete()};
-  const STEPS=[{n:'Create User',d:'Set up the first user account.'},{n:'Add Provider',d:'Connect your LLM provider API key.'},{n:'Ready',d:'Your proxy is configured.'}];
-  return html`<div class="onboard-overlay"><div class="onboard-box">
-    <div class="onboard-header"><div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:8px">Welcome to Stockyard</div>
-    <h2 style="font-size:1.4rem;margin-bottom:4px">Quick Setup</h2><p style="color:var(--cream-dim);font-style:italic;font-size:0.9rem">Get proxying in 2 minutes.</p></div>
-    <div class="onboard-steps">${STEPS.map((s,i)=>html`<div key=${i} class="onboard-step ${i===step?'active':i<step?'done':''}"><span class="onboard-step-num">${i<step?'\u2713':i+1}</span><span>${s.n}</span></div>`)}</div>
-    <div class="onboard-content">
-    ${step===0?html`<${Input} label="Email" value=${email} onChange=${setEmail} placeholder="you@company.com"/>
-      <${Input} label="Name (optional)" value=${name} onChange=${setName} placeholder="Your name"/>
-      ${err&&html`<div style="color:var(--red);font-size:0.8rem;margin-bottom:8px">${err}</div>`}
-      <${Btn} variant="primary" onClick=${createUser} disabled=${!email||loading}>${loading?'Creating...':'Create User & API Key'}<//>
-      ${result&&html`<div class="key-alert" style="margin-top:12px"><div class="key-alert-title">Your API Key (copy now)</div><code class="key-alert-value">${result.api_key?.key}</code></div>`}`:
-    step===1?html`<${Select} label="Provider" value=${prov} onChange=${setProv} options=${[{value:'openai',label:'OpenAI'},{value:'anthropic',label:'Anthropic'},{value:'gemini',label:'Google Gemini'},{value:'groq',label:'Groq'}]}/>
-      <${Input} label="API Key" value=${pk} onChange=${setPk} type="password" placeholder="sk-..." mono/>
-      ${err&&html`<div style="color:var(--red);font-size:0.8rem;margin-bottom:8px">${err}</div>`}
-      <div style="display:flex;gap:8px"><${Btn} variant="primary" onClick=${addProvider} disabled=${!pk||loading}>${loading?'Saving...':'Save Provider Key'}<//><${Btn} onClick=${()=>setStep(2)}>Skip for now<//></div>`:
-    html`<div style="text-align:center;padding:24px 0">
-      <div style="font-size:2rem;margin-bottom:12px">\u2713</div>
-      <p style="font-size:1rem;margin-bottom:8px">You\u2019re all set!</p>
-      <p style="color:var(--cream-dim);font-size:0.85rem;margin-bottom:20px">Your proxy is ready at <code>/v1/chat/completions</code></p>
-      <pre style="background:var(--bg);border:1px solid var(--bg3);padding:12px;font-family:var(--font-mono);font-size:0.75rem;text-align:left;color:var(--cream-dim);margin-bottom:20px">curl https://YOUR_HOST/v1/chat/completions \\\n  -H "Authorization: Bearer ${result?.api_key?.key||'sk-sy-...'}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"model":"gpt-4","messages":[{"role":"user","content":"Hello"}]}'</pre>
-      <${Btn} variant="primary" onClick=${finish}>Open Console<//></div>`}
-    </div></div></div>`;
-}
-
-function AuthGate({onAuth}){
-  const[key,setKey]=useState('');const[err,setErr]=useState('');
-  const tryAuth=async()=>{setAdminKey(key);const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setErr('Invalid key');setAdminKey('');return}onAuth()};
-  return html`<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)"><div style="width:380px;padding:2rem;border:1px solid var(--bg3);background:var(--bg2)">
-    <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem;text-align:center">Stockyard Console</div>
-    <div style="margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light);margin-bottom:0.4rem">Admin Key</div>
-    <input type="password" value=${key} onInput=${e=>setKey(e.target.value)} onKeyDown=${e=>e.key==='Enter'&&tryAuth()} style="width:100%;padding:0.6rem 0.8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none" placeholder="sy_admin_..."/></div>
-    ${err&&html`<div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red);margin-bottom:0.8rem">${err}</div>`}
-    <button onClick=${tryAuth} style="width:100%;padding:0.7rem;background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-family:var(--font-mono);font-size:0.85rem;cursor:pointer">Authenticate</button>
-  </div></div>`;
-}
-
-// ─── Changelog Panel ──────────────────────────────────────────────
-function ChangelogPanel({onClose}){
-  const[entries,setEntries]=useState([]);
-  useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=5');if(Array.isArray(r))setEntries(r)})()},[]);
-  useEffect(()=>{localStorage.setItem('sy_changelog_seen',Date.now().toString())},[]);
-  return html`<div style="position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--bg2);border-left:1px solid var(--bg3);z-index:1000;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,0.3)">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--bg3)">
-      <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream)">What's New</span>
-      <button onClick=${onClose} style="border:none;background:none;color:var(--cream-dim);cursor:pointer;font-size:1rem">\u2715</button>
-    </div>
-    <div style="flex:1;overflow-y:auto;padding:16px">
-      ${entries.map(e=>html`<div key=${e.date} style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--bg3)">
-        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust);margin-bottom:4px">${e.date}</div>
-        <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);margin-bottom:6px">${e.title}</div>
-        <div style="font-size:0.8rem;color:var(--cream-dim);line-height:1.5">${e.body}</div>
-      </div>`)}
-    </div>
-    <div style="padding:12px 16px;border-top:1px solid var(--bg3);text-align:center">
-      <a href="https://stockyard.dev/changelog" target="_blank" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);text-decoration:none">View full changelog \u2197</a>
-    </div>
-  </div>`;
-}
-
-// ─── Keyboard Shortcuts ───────────────────────────────────────────
-function ShortcutsModal({onClose}){
-  const shortcuts=[
-    ['g then o','Go to Overview'],['g then p','Go to Proxy'],['g then b','Go to Observe'],
-    ['g then t','Go to Trust'],['g then s','Go to Studio'],['g then f','Go to Forge'],
-    ['g then e','Go to Exchange'],['g then i','Go to Bill'],
-    ['r','Refresh current view'],['?','Show shortcuts'],['Esc','Close modal/panel'],
-  ];
-  return html`<${Modal} title="Keyboard Shortcuts" onClose=${onClose}>
-    <table style="width:100%;font-size:0.82rem;border-collapse:collapse">
-      ${shortcuts.map(([key,desc])=>html`<tr key=${key} style="border-bottom:1px solid var(--bg3)">
-        <td style="padding:8px 12px;width:140px"><kbd style="font-family:var(--font-mono);font-size:0.78rem;background:var(--bg3);padding:2px 8px;border-radius:3px;color:var(--cream)">${key}</kbd></td>
-        <td style="padding:8px 12px;color:var(--cream-dim)">${desc}</td>
-      </tr>`)}
-    </table>
-  <//>`;
-}
-
-function useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts){
-  const pending=useRef(null);
-  useEffect(()=>{
-    const navMap={o:'overview',p:'proxy',b:'observe',t:'trust',s:'studio',f:'forge',e:'exchange',i:'billing'};
-    const handler=(e)=>{
-      const tag=e.target.tagName;
-      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||e.target.isContentEditable)return;
-      if(e.key==='Escape'){setShowChangelog(false);setShowShortcuts(false);return}
-      if(e.key==='?'&&!e.shiftKey){e.preventDefault();setShowShortcuts(s=>!s);return}
-      if(e.key==='r'&&!e.ctrlKey&&!e.metaKey){window.dispatchEvent(new CustomEvent('sy-refresh'));return}
-      if(pending.current){
-        clearTimeout(pending.current.timer);
-        const dest=navMap[e.key];
-        if(dest)setActive(dest);
-        pending.current=null;return;
-      }
-      if(e.key==='g'){
-        const timer=setTimeout(()=>{pending.current=null},1000);
-        pending.current={timer};
-      }
-    };
-    document.addEventListener('keydown',handler);
-    return()=>document.removeEventListener('keydown',handler);
-  },[]);
-}
-
-function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
-  const[showChangelog,setShowChangelog]=useState(false);const[showShortcuts,setShowShortcuts]=useState(false);
-  const[hasNew,setHasNew]=useState(false);
-  const[theme,setThemeState]=useState(()=>localStorage.getItem('sy_theme')||'dark');
-  const setTheme=(t)=>{setThemeState(t);localStorage.setItem('sy_theme',t);document.documentElement.setAttribute('data-theme',t)};
-  useEffect(()=>{document.documentElement.setAttribute('data-theme',theme)},[]);
-  const View=VIEWS[active]||OverviewView;
-  useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts);
-  useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
-  useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=1');if(Array.isArray(r)&&r.length>0){const lastSeen=parseInt(localStorage.getItem('sy_changelog_seen')||'0');const entryDate=new Date(r[0].date).getTime();if(entryDate>lastSeen)setHasNew(true)}})()},[]);
-  if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
-  const logout=()=>{setAdminKey('');setAuthed(false)};
-  if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
-  return html`<div class="shell"><nav class="nav">
-    <div class="nav-brand" onClick=${()=>setActive('overview')}><span class="nav-brand-text">Stockyard</span></div>
-    <div class="nav-divider"></div><div class="nav-section">Apps</div>
-    ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
-    <div class="nav-spacer"></div><div class="nav-divider"></div>
-    <button class="nav-item" onClick=${()=>{setShowChangelog(s=>!s);setHasNew(false)}} title="What's New"><span class="nav-icon" style="position:relative">\u2605${hasNew&&html`<span style="position:absolute;top:-2px;right:-4px;width:6px;height:6px;background:var(--rust);border-radius:50%"></span>`}</span><span class="nav-label">What's New</span></button>
-    <button class="nav-item" onClick=${()=>setTheme(theme==='dark'?'light':'dark')} title=${theme==='dark'?'Switch to light mode':'Switch to dark mode'}><span class="nav-icon">${theme==='dark'?'\u263E':'\u2600'}</span><span class="nav-label">${theme==='dark'?'Light Mode':'Dark Mode'}</span></button>
-    <button class="nav-item ${active==='settings'?'active':''}" onClick=${()=>setActive('settings')}><span class="nav-icon">\u2699</span><span class="nav-label">Settings</span></button>
-    <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
-    <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
-    <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 88 endpoints</span><div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-top:2px">Press ? for shortcuts</div></div>
-  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main>
-    ${showChangelog&&html`<${ChangelogPanel} onClose=${()=>setShowChangelog(false)}/>`}
-    ${showShortcuts&&html`<${ShortcutsModal} onClose=${()=>setShowShortcuts(false)}/>`}
-  </div>`;
-}
-render(html`<${App}/>`,document.getElementById('root'));
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root,html[data-theme="dark"]{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5a9a4a;--green-s:rgba(90,154,74,0.15);--red:#c44a3a;--red-s:rgba(196,74,58,0.15);--amber:#d4a843;--amber-s:rgba(212,168,67,0.15);--muted-s:rgba(160,132,92,0.1);--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace;--nav-w:220px}
-html[data-theme="light"]{--bg:#f5f0e8;--bg2:#ede6da;--bg3:#ddd5c7;--rust:#b84e20;--rust-light:#d4622e;--rust-dark:#8b3d1a;--leather:#7a6545;--leather-light:#5c4a30;--cream:#1a1410;--cream-dim:#3d342a;--cream-muted:#8a7e70;--gold:#a07820;--green:#3a7a30;--green-s:rgba(58,122,48,0.12);--red:#b33a2a;--red-s:rgba(179,58,42,0.12);--amber:#a07820;--amber-s:rgba(160,120,32,0.12);--muted-s:rgba(120,100,70,0.08)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px}body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.6;-webkit-font-smoothing:antialiased}.mono{font-family:var(--font-mono)}code{font-family:var(--font-mono);font-size:0.85em}
-.shell{display:flex;height:100vh;overflow:hidden}
-.nav{width:var(--nav-w);min-width:var(--nav-w);background:var(--bg2);border-right:1px solid var(--bg3);display:flex;flex-direction:column;padding:20px 12px;gap:2px;overflow-y:auto}
-.nav-brand{padding:4px 10px 16px;cursor:pointer}.nav-brand-text{font-family:var(--font-mono);font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light)}
-.nav-divider{height:1px;background:var(--bg3);margin:4px 0}.nav-section{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--cream-muted);padding:14px 10px 6px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;color:var(--cream-dim);font-family:var(--font-mono);font-size:0.8rem;cursor:pointer;transition:all 0.15s;border:none;background:none;text-decoration:none;width:100%;text-align:left;position:relative}
-.nav-item:hover{color:var(--cream);background:var(--bg3)}.nav-item.active{color:var(--rust-light);background:rgba(196,93,44,0.08)}.nav-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:2px;background:var(--rust)}
-.nav-icon{width:16px;text-align:center;font-size:0.9rem;flex-shrink:0}.nav-label{letter-spacing:0.5px}.nav-spacer{flex:1}
-.nav-footer{padding:12px 10px 0;border-top:1px solid var(--bg3);margin-top:8px}.nav-version{font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)}
-.content{flex:1;overflow-y:auto;padding:32px 40px;display:flex;flex-direction:column;gap:24px}
-.page-head{margin-bottom:4px}.page-eyebrow{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--rust);margin-bottom:8px}.page-eyebrow::before{content:'';display:inline-block;width:24px;height:1px;background:var(--rust);margin-right:10px;vertical-align:middle}
-.page-head h2{font-size:1.7rem;font-weight:700;line-height:1.2;margin-bottom:6px}.page-sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic}
-.stats-row{display:flex;gap:12px}.stat{flex:1;background:var(--bg2);border:1px solid var(--bg3);padding:18px 20px;transition:border-color 0.15s}.stat:hover{border-color:var(--leather)}
-.stat-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:6px}
-.stat-value{font-family:var(--font-mono);font-size:1.8rem;font-weight:600;letter-spacing:-0.02em;color:var(--cream);line-height:1.1}.stat-value.accent{color:var(--rust-light)}.stat-sub{font-size:0.78rem;color:var(--cream-muted);margin-top:4px;font-style:italic}
-.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--bg3)}.tab{padding:8px 18px;border:none;background:transparent;color:var(--cream-dim);font-family:var(--font-mono);font-size:0.78rem;cursor:pointer;transition:all 0.15s;text-transform:capitalize;border-bottom:2px solid transparent;margin-bottom:-1px}.tab:hover{color:var(--cream)}.tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
-.data-table{background:var(--bg2);border:1px solid var(--bg3);overflow:hidden}.dt-head{display:grid;padding:10px 20px;font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);border-bottom:1px solid var(--bg3);background:var(--bg)}
-.dt-body{max-height:480px;overflow-y:auto}.dt-row{display:grid;padding:10px 20px;font-size:0.85rem;align-items:center;border-bottom:1px solid var(--bg3);transition:background 0.1s;cursor:default}.dt-row:last-child{border-bottom:none}.dt-row:hover{background:rgba(46,38,30,0.5)}
-.dt-row.dt-clickable{cursor:pointer}.dt-row.dt-clickable:hover{background:rgba(196,93,44,0.06)}.dt-row .mono{font-family:var(--font-mono);font-size:0.78rem}.dt-accent{color:var(--gold)!important;font-weight:600}
-.badge{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}
-.badge.success{background:var(--green-s);color:var(--green)}.badge.warn{background:var(--amber-s);color:var(--amber)}.badge.danger{background:var(--red-s);color:var(--red)}.badge.muted{background:var(--muted-s);color:var(--cream-muted)}.badge:not(.success):not(.warn):not(.danger):not(.muted){background:rgba(196,93,44,0.12);color:var(--rust-light)}
-.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.app-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;transition:all 0.15s}.app-card:hover{border-color:var(--leather)}
-.app-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}.app-card-icon{font-size:1rem;width:18px;text-align:center;color:var(--leather-light)}.app-card-name{font-family:var(--font-mono);font-weight:600;font-size:0.85rem;letter-spacing:1px;text-transform:capitalize;color:var(--cream)}
-.app-card-desc{font-size:0.82rem;color:var(--cream-dim);margin-bottom:10px;font-style:italic}.app-card-api{font-size:0.72rem;color:var(--cream-muted)}
-.empty-state{background:var(--bg2);border:1px solid var(--bg3);padding:48px 24px;text-align:center;color:var(--cream-dim);font-size:0.9rem;font-style:italic}.loading{padding:48px;text-align:center;color:var(--cream-dim);font-size:0.9rem;font-style:italic}
-.toggle-btn{width:40px;height:22px;border-radius:11px;border:none;background:var(--bg3);cursor:pointer;position:relative;transition:background 0.2s;padding:0}.toggle-btn.on{background:var(--green)}.toggle-knob{display:block;width:16px;height:16px;border-radius:8px;background:var(--cream);position:absolute;top:3px;left:3px;transition:transform 0.2s}.toggle-btn.on .toggle-knob{transform:translateX(18px)}
-.btn{padding:6px 14px;border:1px solid var(--bg3);background:var(--bg2);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.78rem;cursor:pointer;transition:all 0.15s;letter-spacing:0.5px}.btn:hover{color:var(--cream);border-color:var(--leather)}.btn:disabled{opacity:0.5;cursor:not-allowed}.btn.primary{background:var(--rust);color:var(--cream);border-color:var(--rust)}.btn.primary:hover{background:var(--rust-light)}.btn.danger{color:var(--red);border-color:rgba(196,74,58,0.3)}.btn.danger:hover{background:var(--red-s);border-color:var(--red)}.btn-sm{padding:3px 10px;font-size:0.7rem}
-.field{margin-bottom:12px}.field-label{display:block;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}.field-input{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-serif);font-size:0.85rem;outline:none;transition:border-color 0.15s}.field-input:focus{border-color:var(--rust)}.field-input.mono{font-family:var(--font-mono)}select.field-input{appearance:auto;cursor:pointer}
-.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;font-family:var(--font-mono);font-size:0.8rem;z-index:10000;animation:slideIn 0.2s ease-out;border:1px solid}.toast-success{background:rgba(90,154,74,0.15);color:var(--green);border-color:rgba(90,154,74,0.3)}.toast-error{background:rgba(196,74,58,0.15);color:var(--red);border-color:rgba(196,74,58,0.3)}.toast-info{background:rgba(160,132,92,0.15);color:var(--leather-light);border-color:rgba(160,132,92,0.3)}@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9000}.modal{background:var(--bg2);border:1px solid var(--bg3);width:460px;max-width:90vw;max-height:85vh;overflow-y:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bg3)}.modal-title{font-family:var(--font-mono);font-size:0.85rem;letter-spacing:1px;color:var(--cream)}.modal-close{background:none;border:none;color:var(--cream-muted);font-size:1.2rem;cursor:pointer;padding:4px 8px}.modal-close:hover{color:var(--cream)}.modal-body{padding:20px}
-.trace-detail{display:flex;flex-direction:column;gap:8px}.td-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bg3)}.td-label{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--cream-muted)}.td-section{margin-top:12px}.td-pre{background:var(--bg);border:1px solid var(--bg3);padding:12px;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);overflow-x:auto;max-height:200px;overflow-y:auto;margin-top:4px;white-space:pre-wrap;word-break:break-all}
-.pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.pack-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;display:flex;flex-direction:column;gap:8px;transition:border-color 0.15s}.pack-card:hover{border-color:var(--leather)}.pack-card.pack-installed{border-color:var(--green);opacity:0.85}.pack-name{font-family:var(--font-mono);font-weight:600;font-size:0.9rem;color:var(--cream)}.pack-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;flex:1}.pack-meta{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted);display:flex;gap:12px}.pack-actions{margin-top:4px}
-.pg-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:400px}@media(max-width:900px){.pg-layout{grid-template-columns:1fr}}.pg-input{display:flex;flex-direction:column}.pg-output{display:flex;flex-direction:column;gap:10px}.pg-compare{display:flex;flex-direction:column;gap:10px}.pg-result-card{background:var(--bg2);border:1px solid var(--bg3);overflow:hidden}.pg-result-card.pg-winner{border-color:var(--green)}.pg-result-head{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-bottom:1px solid var(--bg3);flex-wrap:wrap}.pg-result-body{padding:10px;font-size:0.82rem;line-height:1.5;white-space:pre-wrap;max-height:400px;overflow-y:auto;color:var(--cream-dim)}
-.safety-dash{display:flex;flex-direction:column;gap:8px}.safety-score-card{display:flex;gap:20px;background:var(--bg);border:1px solid var(--bg3);padding:16px;align-items:flex-start;flex-wrap:wrap}.safety-score-ring{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:100px;padding:12px}.safety-score-num{font-family:var(--font-mono);font-size:2.4rem;font-weight:700;line-height:1}.safety-score-detail{flex:1;min-width:200px}.safety-metric{display:flex;flex-direction:column;gap:2px}.safety-metric-val{font-family:var(--font-mono);font-size:1.1rem;font-weight:600;color:var(--cream)}.safety-metric-label{font-size:0.68rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}.safety-type-pill{display:inline-flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--bg3);padding:4px 8px;font-size:0.72rem}.safety-pipe-step{font-family:var(--font-mono);font-size:0.72rem;padding:3px 8px;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim)}
-.settings-layout{display:flex;gap:20px;min-height:400px}.settings-sidebar{width:260px;min-width:260px;background:var(--bg2);border:1px solid var(--bg3)}.settings-sidebar-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)}.settings-main{flex:1;min-width:0}
-.user-list{overflow-y:auto;max-height:500px}.user-item{padding:10px 16px;border-bottom:1px solid var(--bg3);cursor:pointer;transition:background 0.1s}.user-item:hover{background:var(--bg3)}.user-item.active{background:rgba(196,93,44,0.08);border-left:2px solid var(--rust)}.user-email{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}.user-meta{font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:2px}
-.section-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}.section-head h3{font-size:1.1rem;font-weight:700}.section-title{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:8px;display:flex;align-items:center;gap:12px}
-.key-alert{background:rgba(196,93,44,0.08);border:1px solid var(--rust);padding:12px 16px;margin-bottom:12px}.key-alert-title{font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}.key-alert-value{display:block;font-size:0.82rem;color:var(--cream);margin-bottom:8px;word-break:break-all}
-.accent{color:var(--gold)}
-.wf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.wf-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;cursor:pointer;transition:all 0.15s}.wf-card:hover{border-color:var(--rust);background:rgba(196,93,44,0.04)}
-.wf-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.wf-card-name{font-family:var(--font-mono);font-weight:600;font-size:0.9rem;color:var(--cream)}
-.wf-card-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:10px;min-height:2.4em}.wf-card-meta{display:flex;gap:12px;font-size:0.72rem;color:var(--cream-muted)}
-.wf-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.wf-step{background:var(--bg);border:1px solid var(--bg3);padding:12px;transition:border-color 0.15s}.wf-step:hover{border-color:var(--leather)}
-.wf-step-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.wf-step-badge{font-family:var(--font-mono);font-size:0.65rem;padding:2px 8px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
-.wf-step-id{font-family:var(--font-mono);font-size:0.8rem;font-weight:600;color:var(--cream)}
-.wf-step-deps{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-left:auto}
-.wf-step-field{display:flex;gap:8px;font-size:0.78rem;margin-bottom:2px}.wf-step-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--cream-muted);min-width:48px}
-.wf-step-prompt{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:6px;padding:8px;background:var(--bg2);border-left:2px solid var(--bg3);white-space:pre-wrap;word-break:break-word;max-height:80px;overflow:hidden}
-.run-step-result{background:var(--bg);border:1px solid var(--bg3);padding:12px;margin-bottom:8px}
-.run-step-head{display:flex;align-items:center;gap:8px}
-.chart-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.chart-card{background:var(--bg2);border:1px solid var(--bg3);padding:16px;transition:border-color 0.15s}.chart-card:hover{border-color:var(--leather)}.chart-title{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:10px}
-.chart-period{display:flex;align-items:center;gap:8px;margin-bottom:4px}.chart-period-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)}
-.onboard-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:10000}.onboard-box{background:var(--bg2);border:1px solid var(--bg3);width:520px;max-width:90vw;padding:32px}
-.onboard-header{text-align:center;margin-bottom:24px}.onboard-steps{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid var(--bg3);padding-bottom:16px}
-.onboard-step{flex:1;display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);padding:8px}.onboard-step.active{color:var(--rust-light)}.onboard-step.done{color:var(--green)}
-.onboard-step-num{width:22px;height:22px;border-radius:11px;border:1px solid var(--bg3);display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0}.onboard-step.active .onboard-step-num{border-color:var(--rust);color:var(--rust-light)}.onboard-step.done .onboard-step-num{border-color:var(--green);color:var(--green);background:rgba(90,154,74,0.1)}
-.onboard-content{min-height:180px}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;
+    --rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;
+    --leather:#7a6544;--leather-light:#8b7355;
+    --cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;
+    --gold:#b08a28;
+  }
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
 
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg3)}::-webkit-scrollbar-thumb:hover{background:var(--leather)}
-@media(max-width:900px){.nav{display:none}.stats-row{flex-wrap:wrap}.stats-row .stat{min-width:45%}.app-grid{grid-template-columns:1fr}.content{padding:24px 16px}.settings-layout{flex-direction:column}.settings-sidebar{width:100%;min-width:0}}
-.live-feed{display:flex;flex-direction:column;gap:4px;max-height:calc(100vh - 320px);overflow-y:auto}
-.live-event{background:var(--bg);border:1px solid var(--bg3);padding:8px 12px;transition:border-color 0.2s;animation:fadeIn 0.3s ease-out}
-.live-event:first-child{border-color:var(--leather-light)}
-.live-event-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.live-trace{border-left:3px solid var(--green)}.live-spend{border-left:3px solid var(--gold)}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.upgrade-banner{background:linear-gradient(135deg,#2a1f14,#1e1810);border:1px solid var(--rust-dark,#8b3d1a);border-left:3px solid var(--gold,#d4a843);margin:0 0 16px;animation:fadeIn 0.3s}
-.upgrade-banner-inner{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap;font-size:0.8rem}
-.upgrade-badge{font-family:var(--font-mono);font-size:0.6rem;background:var(--gold,#d4a843);color:var(--bg,#1a1410);padding:2px 6px;letter-spacing:1px;text-transform:uppercase;font-weight:600;flex-shrink:0}
-.upgrade-banner strong{color:var(--cream,#f0e6d3);flex-shrink:0}
-.upgrade-msg{color:var(--cream-dim,#bfb5a3);flex:1;min-width:200px}
-.upgrade-cta{font-family:var(--font-mono);font-size:0.75rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);padding:5px 12px;text-decoration:none;flex-shrink:0;transition:background 0.2s}
-.upgrade-cta:hover{background:var(--rust-light,#e8753a)}
-.upgrade-dismiss,.upgrade-next{background:none;border:none;color:var(--cream-dim,#bfb5a3);cursor:pointer;font-size:0.9rem;padding:2px 6px;opacity:0.6}
-.upgrade-dismiss:hover,.upgrade-next:hover{opacity:1;color:var(--cream,#f0e6d3)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.hero{max-width:900px;margin:0 auto;padding:8rem 2rem 5rem;text-align:center}
+.hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;margin-bottom:1.5rem;color:var(--cream)}
+.hero h1 .accent{color:var(--rust-light)}
+.hero-sub{font-size:1.15rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto 3rem}
+.hero-stats{display:flex;gap:3rem;justify-content:center;margin-bottom:3rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--cream);display:block}
+.stat-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)}
+
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.install-cmd{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);background:var(--bg2);padding:0.5rem 1.5rem;display:inline-block;border:1px solid var(--bg3)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+
+.problem{background:var(--bg2);padding:5rem 2rem;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.problem-inner{max-width:700px;margin:0 auto}
+.problem-text{font-size:1.1rem;color:var(--cream-dim);line-height:1.9}
+.solution{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.solution-text{font-size:1.05rem;color:var(--cream);line-height:1.9}
+
+.apps{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.apps-inner{max-width:960px;margin:0 auto}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:2rem}
+.app-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.2s}
+.app-card:hover{border-color:var(--rust)}
+.app-card a{text-decoration:none;display:block}
+.app-num{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;color:var(--leather);text-transform:uppercase;display:block;margin-bottom:0.4rem}
+.app-name{font-family:var(--font-mono);font-size:1rem;letter-spacing:1px;color:var(--cream);margin-bottom:0.5rem;display:block}
+.app-tagline{font-size:0.85rem;color:var(--cream-dim);font-style:italic;display:block;margin-bottom:0.6rem}
+.app-features{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light);line-height:1.7}
+
+.how{padding:5rem 2rem}
+.how-inner{max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+
+.modules{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.modules-inner{max-width:700px;margin:0 auto}
+.module-row{display:flex;justify-content:space-between;align-items:center;padding:0.7rem 0;border-bottom:1px solid var(--bg3)}
+.module-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
+.module-cat{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase}
+
+.compare{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.compare-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.85rem}
+.compare-table th,.compare-table td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.compare-table th{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.compare-table .us{color:var(--cream);font-weight:700}
+.compare-table .them{color:var(--cream-dim)}
+
+.pricing-teaser{padding:5rem 2rem;text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.tier-row{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:1100px;margin-left:auto;margin-right:auto}
+.tier{flex:1;min-width:180px;max-width:220px;padding:1.5rem 1.2rem;border:1px solid var(--bg3);text-align:center}
+.tier-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
+.tier-price{font-size:2.5rem;font-weight:700;color:var(--cream)}
+.tier-price.has-dollar::before{content:'$';font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
+.tier-period{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem}
+.tier-desc{font-size:0.8rem;color:var(--cream-dim);font-style:italic;margin-top:0.8rem}
+.tier-highlight{border-color:var(--rust)}
+
+.footer-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.footer-cta h2{font-size:2rem;margin-bottom:1rem}
+.footer-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+@media(max-width:600px){
+  .hero{padding:5rem 1.5rem 3rem}
+  .hero-stats{gap:1.5rem}
+  .app-grid{grid-template-columns:1fr}
+  .cta-group{flex-direction:column;align-items:center}
+  .compare-table{font-size:0.75rem}
+  .tier-row{flex-direction:column;align-items:center}
+}
+.console-preview{padding:4rem 2rem;max-width:1200px;margin:0 auto;text-align:center}
+.console-preview .section-label{margin-bottom:0.5rem}
+.console-preview p{color:var(--cream-dim);font-size:0.95rem;margin-bottom:2rem}
+.console-tabs{display:flex;justify-content:center;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3)}
+.console-tab{padding:0.5rem 1.2rem;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--cream-dim);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;text-transform:capitalize;transition:all 0.15s}
+.console-tab:hover{color:var(--cream)}.console-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.console-gallery{position:relative;border:1px solid var(--bg3);background:var(--bg2);overflow:hidden;border-radius:0}
+.console-gallery img{width:100%;display:block;transition:opacity 0.3s}
+.console-gallery img.hidden{display:none}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:nowrap;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:none;white-space:nowrap;text-align:center}
+}
+
 </style>
+<link rel="canonical" href="https://stockyard.dev/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Stockyard",
+      "url": "https://stockyard.dev",
+      "logo": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png",
+      "description": "Open-source LLM proxy suite. Six apps, 58 middleware modules, one binary.",
+      "sameAs": [
+        "https://github.com/stockyard-dev/stockyard"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Stockyard",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Linux, macOS, Windows",
+      "description": "Open-source LLM gateway and AI proxy platform that replaces 134+ middleware tools with a single binary. Proxy, observability, audit, prompt management, workflows, and a config marketplace.",
+      "url": "https://stockyard.dev",
+      "downloadUrl": "https://stockyard.dev/docs/quickstart/",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Community",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "Self-hosted, free forever"
+        },
+        {
+          "@type": "Offer",
+          "name": "Individual",
+          "price": "9.99",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "Self-hosted, all modules"
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro",
+          "price": "49",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "Cloud managed, zero ops"
+        },
+        {
+          "@type": "Offer",
+          "name": "Team",
+          "price": "149",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "5 seats, shared dashboard"
+        },
+        {
+          "@type": "Offer",
+          "name": "Enterprise",
+          "price": "499",
+          "priceCurrency": "USD",
+          "billingIncrement": "Monthly",
+          "description": "Unlimited seats, SSO, SLA"
+        }
+      ],
+      "featureList": [
+        "58 middleware modules",
+        "16 LLM providers",
+        "Cost tracking and anomaly detection",
+        "Hash-chained audit ledger",
+        "Prompt versioning and A/B testing",
+        "DAG workflow engine",
+        "Config marketplace"
+      ]
+    }
+  ]
+}
+</script>
 </head>
-<body><div id="root"></div></body>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a>
+    <a href="/blog/">Blog</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="hero" id="main">
+  <div class="hero-eyebrow">Self-hosted LLM control plane</div>
+  <h1>One binary. <span class="accent">Every request traced.</span></h1>
+  <p class="hero-sub">Point your OPENAI_BASE_URL at Stockyard and get cost tracking, caching, safety filters, rate limiting, audit trails, and observability &mdash; without adding dependencies to your stack.</p>
+
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">58</span><span class="stat-label">Modules</span></div>
+    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
+    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Chain Overhead</span></div>
+    <div class="stat"><span class="stat-num">~15MB</span><span class="stat-label">Binary</span></div>
+  </div>
+
+  <div class="cta-group">
+    <a href="/guide/" class="btn btn-primary">Install in 30 seconds</a>
+    <a href="/playground" class="btn btn-secondary">Try the playground</a>
+  </div>
+
+  <!-- Trust strip -->
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
+    <a href="https://github.com/stockyard-dev/stockyard" style="color:var(--cream-dim)">GitHub &rarr;</a>
+    <a href="/benchmarks/" style="color:var(--cream-dim)">Benchmarks &rarr;</a>
+    <a href="/api/openapi.json" style="color:var(--cream-dim)">OpenAPI spec &rarr;</a>
+    <a href="/changelog/" style="color:var(--cream-dim)">Changelog &rarr;</a>
+    <a href="/docs/auth/" style="color:var(--cream-dim)">Security &rarr;</a>
+  </div>
+</section>
+
+<section class="problem">
+  <div class="problem-inner">
+    <h2 class="section-label">The problem</h2>
+    <p class="problem-text">
+      You shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, workflow orchestration, and a way to share configs across environments. You're not going to set up six different tools with Redis and Postgres just to stop surprise bills.
+    </p>
+  </div>
+</section>
+
+<section class="solution">
+  <h2 class="section-label gold">See it work</h2>
+  <div style="max-width:700px;margin:0 auto">
+    <pre style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);line-height:1.7;overflow-x:auto"><span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl -fsSL stockyard.dev/install.sh | sh</span>
+<span style="color:var(--green-light)">✓ Stockyard installed (~15MB)</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">stockyard serve</span>
+<span style="color:var(--green-light)">Proxy:   http://localhost:4200/v1   ✓ 58 modules active
+Console: http://localhost:4200/ui</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/v1/chat/completions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
+<span style="color:var(--green-light)">{"choices":[{"message":{"content":"Hello! How can I help?"}}], ...}</span>
+
+<span style="color:var(--leather)"># That request just hit 58 modules. Check what happened:</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/observe/traces?limit=1</span>
+<span style="color:var(--gold)">→ model: gpt-4o-mini | cost: $0.00014 | latency: 1,204ms | cached: false</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/trust/ledger?limit=1</span>
+<span style="color:var(--gold)">→ hash: 6b69ef01... | prev: 0378b55a... | chain: intact</span></pre>
+    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">One binary. No Redis. No Postgres. No Docker. Open <a href="/playground" style="color:var(--rust-light)">the playground</a> to try without installing.</p>
+  </div>
+</section>
+
+<section class="apps" id="apps">
+  <div class="apps-inner">
+    <h2 class="section-label leather">The platform</h2>
+    <div class="app-grid">
+      <div class="app-card"><a href="/products/">
+        <span class="app-num">App 01</span>
+        <h3 class="app-name">Proxy</h3>
+        <span class="app-tagline">The LLM gateway layer. 58 middleware modules, runtime toggles.</span>
+        <span class="app-features">Caching &bull; Rate limiting &bull; Cost caps &bull; Failover &bull; PII redaction &bull; Content filter &bull; Retry &bull; Load balancing &bull; Circuit breakers</span>
+      </a></div>
+      <div class="app-card"><a href="/observe/">
+        <span class="app-num">App 02</span>
+        <h3 class="app-name">Observe</h3>
+        <span class="app-tagline">Request tracing, cost dashboards, and alerts.</span>
+        <span class="app-features">Request tracing &bull; Cost rollups &bull; Latency tracking &bull; Alert rules &bull; Anomaly detection &bull; Daily dashboards</span>
+      </a></div>
+      <div class="app-card"><a href="/trust/">
+        <span class="app-num">App 03</span>
+        <h3 class="app-name">Trust</h3>
+        <span class="app-tagline">Append-only audit ledger. Hash-chained. Tamper-evident.</span>
+        <span class="app-features">Audit trails &bull; Evidence packs &bull; Policy engine &bull; Feedback capture &bull; AES-256 encryption at rest &bull; Replay</span>
+      </a></div>
+      <div class="app-card"><a href="/studio/">
+        <span class="app-num">App 04</span>
+        <h3 class="app-name">Studio</h3>
+        <span class="app-tagline">Prompt engineering, versioned. Experiment, benchmark, snapshot.</span>
+        <span class="app-features">Prompt templates &bull; A/B experiments &bull; Benchmarks &bull; Snapshot comparison &bull; Version history</span>
+      </a></div>
+      <div class="app-card"><a href="/forge/">
+        <span class="app-num">App 05</span>
+        <h3 class="app-name">Forge</h3>
+        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
+        <span class="app-features">Topological execution &bull; Template variables &bull; Transform steps &bull; Tool integration &bull; Batch processing</span>
+      </a></div>
+      <div class="app-card"><a href="/exchange/">
+        <span class="app-num">App 06</span>
+        <h3 class="app-name">Exchange</h3>
+        <span class="app-tagline">Config packs. Install a stack in one click.</span>
+        <span class="app-features">Starter packs &bull; One-click install &bull; Clean uninstall &bull; Environment sync &bull; Version control</span>
+      </a></div>
+      <div class="app-card" style="border-color:var(--bg3);opacity:0.85">
+        <span class="app-num">App 07 &mdash; <span style="color:var(--gold)">Coming Soon</span></span>
+        <h3 class="app-name">Bill</h3>
+        <span class="app-tagline">Usage metering, per-customer billing, and Stripe integration for AI products.</span>
+        <span class="app-features">Per-customer metering &bull; Plans &amp; limits &bull; Spend caps &bull; Model access control &bull; Stripe sync</span>
+      </div>
+      <div class="app-card" style="border-color:var(--rust)"><a href="/recall/">
+        <span class="app-num">App 08 &mdash; <span style="color:var(--rust-light);font-size:0.65rem;background:var(--rust);color:var(--cream);padding:2px 8px;border-radius:8px;margin-left:0.5rem">New</span></span>
+        <h3 class="app-name">Recall</h3>
+        <span class="app-tagline">AI incident response. Find every affected response, notify customers, resolve fast.</span>
+        <span class="app-features">Full-text search &bull; Regex matching &bull; Date filtering &bull; One-click notify &bull; Trace-level tracking</span>
+      </a></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:5rem 2rem;text-align:center">
+  <h2 class="section-label">Zero Config</h2>
+  <p style="font-size:1.8rem;margin-bottom:1rem">Works with every SDK</p>
+  <p style="color:var(--cream-dim);max-width:500px;margin:0 auto 3rem;font-style:italic">One import change. Zero config. All traffic routes through Stockyard.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;max-width:860px;margin:0 auto">
+    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Python</div>
+      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap;margin:0">pip install stockyard-openai
+
+from stockyard_openai import OpenAI
+client = OpenAI(api_key="sk-...")</pre>
+    </div>
+    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Node</div>
+      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap;margin:0">npm install @stockyard/openai
+
+import OpenAI from '@stockyard/openai';
+const client = new OpenAI();</pre>
+    </div>
+    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Go</div>
+      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap;margin:0">go get github.com/stockyard-dev/stockyard-openai-go
+
+config.BaseURL = stockyard.BaseURL()
+client := openai.NewClientWithConfig(config)</pre>
+    </div>
+  </div>
+  <p style="margin-top:2rem"><a href="/docs/sdks/" style="font-family:var(--font-mono);font-size:.85rem">Read the SDK docs &rarr;</a></p>
+</section>
+
+<section class="console-preview">
+  <h2 class="section-label leather">The Console</h2>
+  <p>A full management dashboard. Cloud users get it instantly at their endpoint. Self-hosted users access it locally.</p>
+  <div class="console-tabs">
+    <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
+    <button class="console-tab" onclick="showConsole('observe')">Observe</button>
+    <button class="console-tab" onclick="showConsole('proxy')">Proxy</button>
+    <button class="console-tab" onclick="showConsole('trust')">Trust</button>
+    <button class="console-tab" onclick="showConsole('studio')">Studio</button>
+    <button class="console-tab" onclick="showConsole('forge')">Forge</button>
+    <button class="console-tab" onclick="showConsole('exchange')">Exchange</button>
+  </div>
+  <div class="console-gallery">
+    <picture><source srcset="/site-assets/assets/screenshots/console-overview.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-overview.png" id="cs-overview"  alt="Stockyard console — system overview showing all 6 apps running" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" id="cs-observe"  alt="Observe dashboard — traces, costs, latency across providers" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-proxy.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-proxy.png" id="cs-proxy"  alt="Proxy middleware chain — 58 modules with runtime toggles" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-trust.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-trust.png" id="cs-trust"  alt="Trust policies and hash-chained audit ledger" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-studio.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-studio.png" id="cs-studio"  alt="Studio — prompt templates, experiments, benchmarks, snapshot tests" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-forge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-forge.png" id="cs-forge"  alt="Forge — workflow DAGs, tool registry, triggers, batch queue" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-exchange.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-exchange.png" id="cs-exchange"  alt="Exchange pack marketplace — one-click config installs" class="hidden" loading="lazy"></picture>
+  </div>
+</section>
+<script>
+function showConsole(name){
+  document.querySelectorAll('.console-gallery img').forEach(i=>i.classList.add('hidden'));
+  document.getElementById('cs-'+name).classList.remove('hidden');
+  document.querySelectorAll('.console-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.console-tab[onclick*="\''+name+'\'"]').classList.add('active');
+}
+</script>
+
+<section class="how">
+  <div class="how-inner">
+    <h2 class="section-label">How it works</h2>
+    <p style="color:var(--cream-dim);margin-bottom:0.5rem">Install. Run. Point your app at it.</p>
+    <div class="code-block">
+<span class="comment"># Install (~15MB binary)</span>
+<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
+
+<span class="comment"># Start</span>
+<span class="cmd">stockyard serve</span>
+
+<span class="comment"># Point your app at Stockyard</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+
+<span class="comment"># That's it. Every LLM call now flows through 58 modules.</span>
+<span class="comment"># Traces, cost caps, caching, audit — all at localhost:4200/ui</span>
+    </div>
+
+    <details style="margin-top:2rem;border:1px solid var(--bg3);padding:0">
+      <summary style="padding:1rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">
+        <span>Want managed cloud instead?</span>
+      </summary>
+      <div class="code-block" style="border:none;border-top:1px solid var(--bg3)">
+<span class="comment"># Sign up at stockyard.dev/cloud — we handle hosting, SSL, and updates</span>
+<span class="cmd">export OPENAI_BASE_URL=https://your-team.stockyard.dev/v1</span>
+      </div>
+    </details>
+
+    <a href="/guide/" style="display:block;margin-top:1rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--rust-light)">Your first 5 minutes &rarr;</a>
+  </div>
+</section>
+
+<section class="modules">
+  <div class="modules-inner">
+    <h2 class="section-label leather">58 middleware modules</h2>
+    <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. Install packs to configure groups at once.</p>
+    <div class="module-row"><span class="module-name">rateshield</span><span class="module-cat">Cost</span></div>
+    <div class="module-row"><span class="module-name">costcap</span><span class="module-cat">Cost</span></div>
+    <div class="module-row"><span class="module-name">cache</span><span class="module-cat">Performance</span></div>
+    <div class="module-row"><span class="module-name">failover</span><span class="module-cat">Reliability</span></div>
+    <div class="module-row"><span class="module-name">piiredactor</span><span class="module-cat">Security</span></div>
+    <div class="module-row"><span class="module-name">contentfilter</span><span class="module-cat">Safety</span></div>
+    <div class="module-row"><span class="module-name">promptguard</span><span class="module-cat">Safety</span></div>
+    <div class="module-row"><span class="module-name">circuitbreaker</span><span class="module-cat">Reliability</span></div>
+    <div class="module-row"><span class="module-name">retry</span><span class="module-cat">Reliability</span></div>
+    <div class="module-row"><span class="module-name">tokenbudget</span><span class="module-cat">Cost</span></div>
+    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 58 modules &rarr;</a></p>
+  </div>
+</section>
+
+<section class="compare">
+  <h2 class="section-label">Why not LiteLLM?</h2>
+  <table class="compare-table">
+    <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th></tr>
+    <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td></tr>
+    <tr><td>Binary</td><td class="us">Single static binary</td><td class="them">pip install + runtime</td></tr>
+    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td></tr>
+    <tr><td>Dashboard</td><td class="us">Embedded console</td><td class="them">Separate UI service</td></tr>
+    <tr><td>Platform</td><td class="us">6 integrated apps</td><td class="them">One proxy</td></tr>
+    <tr><td>Middleware</td><td class="us">58 toggleable modules</td><td class="them">Limited callbacks</td></tr>
+    <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
+    <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td></tr>
+  </table>
+</section>
+
+<section class="pricing-teaser">
+  <h2 class="section-label gold">Pricing</h2>
+  <div class="tier-row">
+    <div class="tier">
+      <div class="tier-name">Free</div>
+      <div class="tier-price">Free</div>
+      <div class="tier-period">self-hosted &middot; you manage</div>
+      <div class="tier-desc">20 modules, 3 providers, 1,000 req/mo. Self-hosted on your infrastructure.</div>
+      <a href="/docs/quickstart/#install" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get the binary</a>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Individual</div>
+      <div class="tier-price has-dollar">9.99</div>
+      <div class="tier-period">per month &middot; self-hosted</div>
+      <div class="tier-desc">All 58 modules, all 16 providers. 10K req/mo. Self-hosted.</div>
+      <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get started</a>
+    </div>
+    <div class="tier tier-highlight">
+      <div class="tier-name">Pro</div>
+      <div class="tier-price has-dollar">49</div>
+      <div class="tier-period">per month &middot; cloud managed</div>
+      <div class="tier-desc">Zero ops. We run everything. Unlimited requests.</div>
+      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Go Pro</a>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Team</div>
+      <div class="tier-price has-dollar">149</div>
+      <div class="tier-period">per month &middot; 5 seats included</div>
+      <div class="tier-desc">Shared dashboard. Team audit trails. 1-year retention.</div>
+      <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start team</a>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Enterprise</div>
+      <div class="tier-price has-dollar">499</div>
+      <div class="tier-period">per month</div>
+      <div class="tier-desc">SSO, SLA, unlimited seats, dedicated support.</div>
+      <a href="mailto:enterprise@stockyard.dev" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Contact sales</a>
+    </div>
+  </div>
+  <div class="cta-group" style="margin-top:2rem">
+    <a href="/pricing/" class="btn btn-primary">See pricing</a>
+  </div>
+</section>
+
+<section class="compare" style="margin-top:0">
+  <h2 class="section-label" style="color:var(--leather-light)">Explore</h2>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;max-width:900px;margin:0 auto">
+    <a href="/architecture/" style="display:block;padding:1rem;border:1px solid var(--bg3);transition:border-color 0.2s"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Architecture</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Animated request flow diagram</span></a>
+    <a href="/benchmarks/" style="display:block;padding:1rem;border:1px solid var(--bg3);transition:border-color 0.2s"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Benchmarks</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Transparent performance data</span></a>
+    <a href="/blog/" style="display:block;padding:1rem;border:1px solid var(--bg3);transition:border-color 0.2s"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Blog</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Building in the open</span></a>
+    <div style="display:block;padding:1rem;border:1px solid var(--bg3)"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Compare</span><br><a href="/vs/litellm/" style="font-size:0.85rem;color:var(--cream-dim)">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/" style="font-size:0.85rem;color:var(--cream-dim)">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/" style="font-size:0.85rem;color:var(--cream-dim)">vs Portkey</a></div>
+  </div>
+</section>
+
+<section class="footer-cta">
+  <h2>Ship with confidence.</h2>
+  <p>Self-hosted LLM control plane. Install the binary or try managed cloud.</p>
+  <div class="cta-group">
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+    <a href="/pricing/" class="btn btn-secondary">Compare plans</a>
+  </div>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
+</footer>
+
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
+</script>
+
+</body>
 </html>
