@@ -1232,7 +1232,7 @@ function App(){
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 7 apps \u00B7 88 endpoints</span><div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-top:2px">Press ? for shortcuts</div></div>
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 9 apps \u00B7 225 endpoints</span><div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-top:2px">Press ? for shortcuts</div></div>
   </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main>
     ${showChangelog&&html`<${ChangelogPanel} onClose=${()=>setShowChangelog(false)}/>`}
     ${showShortcuts&&html`<${ShortcutsModal} onClose=${()=>setShowShortcuts(false)}/>`}
