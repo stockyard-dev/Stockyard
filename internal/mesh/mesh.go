@@ -19,6 +19,14 @@ CREATE TABLE IF NOT EXISTS mesh_nodes (
     url TEXT NOT NULL,
     region TEXT NOT NULL DEFAULT 'default',
     status TEXT DEFAULT 'healthy',
+    gpu_model TEXT DEFAULT '',
+    vram_gb INTEGER DEFAULT 0,
+    supported_models TEXT DEFAULT '[]',
+    current_load REAL DEFAULT 0,
+    max_concurrent INTEGER DEFAULT 4,
+    price_per_1k_cents INTEGER DEFAULT 1,
+    reputation REAL DEFAULT 50,
+    specialization TEXT DEFAULT '',
     last_heartbeat TEXT,
     metadata TEXT DEFAULT '{}',
     created_at TEXT DEFAULT (datetime('now'))
@@ -30,6 +38,37 @@ CREATE TABLE IF NOT EXISTS mesh_pricing (
     region TEXT PRIMARY KEY,
     markup_pct REAL DEFAULT 0,
     description TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS mesh_transactions (
+    id TEXT PRIMARY KEY,
+    demand_node TEXT,
+    supply_node TEXT,
+    model TEXT,
+    input_tokens INTEGER DEFAULT 0,
+    output_tokens INTEGER DEFAULT 0,
+    cost_cents INTEGER DEFAULT 0,
+    latency_ms INTEGER DEFAULT 0,
+    verified INTEGER DEFAULT 0,
+    created_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_mesh_tx_supply ON mesh_transactions(supply_node);
+
+CREATE TABLE IF NOT EXISTS mesh_earnings (
+    operator_id TEXT,
+    period TEXT,
+    tokens_served INTEGER DEFAULT 0,
+    earnings_cents INTEGER DEFAULT 0,
+    fee_cents INTEGER DEFAULT 0,
+    PRIMARY KEY(operator_id, period)
+);
+
+CREATE TABLE IF NOT EXISTS mesh_verifications (
+    id TEXT PRIMARY KEY,
+    node_id TEXT,
+    passed INTEGER,
+    similarity REAL,
+    created_at TEXT
 );
 `
 
@@ -54,9 +93,14 @@ func genNodeID() string {
 func (m *Manager) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/mesh/register", m.handleRegister)
 	mux.HandleFunc("GET /api/mesh/nodes", m.handleListNodes)
+	mux.HandleFunc("GET /api/mesh/nodes/{id}", m.handleGetNode)
 	mux.HandleFunc("POST /api/mesh/heartbeat", m.handleHeartbeat)
+	mux.HandleFunc("POST /api/mesh/deregister", m.handleDeregister)
 	mux.HandleFunc("GET /api/mesh/config", m.handleGetConfig)
 	mux.HandleFunc("GET /api/mesh/pricing", m.handlePricing)
+	mux.HandleFunc("GET /api/mesh/stats", m.handleStats)
+	mux.HandleFunc("GET /api/mesh/earnings", m.handleEarnings)
+	mux.HandleFunc("GET /api/mesh/earnings/summary", m.handleEarningsSummary)
 	log.Printf("[mesh] routes registered")
 }
 
@@ -198,6 +242,102 @@ func (m *Manager) handlePricing(w http.ResponseWriter, r *http.Request) {
 		pricing = []map[string]any{}
 	}
 	writeMeshJSON(w, map[string]any{"pricing": pricing})
+}
+
+func (m *Manager) handleGetNode(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var name, url, region, status, gpuModel, supportedModels, specialization, heartbeat, metaJSON, createdAt string
+	var vramGB, maxConcurrent, pricePer1k int
+	var currentLoad, reputation float64
+	err := m.conn.QueryRow(`SELECT name, url, region, status, gpu_model, vram_gb, supported_models,
+		current_load, max_concurrent, price_per_1k_cents, reputation, specialization,
+		last_heartbeat, metadata, created_at FROM mesh_nodes WHERE id = ?`, id).Scan(
+		&name, &url, &region, &status, &gpuModel, &vramGB, &supportedModels,
+		&currentLoad, &maxConcurrent, &pricePer1k, &reputation, &specialization,
+		&heartbeat, &metaJSON, &createdAt)
+	if err != nil {
+		w.WriteHeader(404)
+		writeMeshJSON(w, map[string]string{"error": "node not found"})
+		return
+	}
+	var models []string
+	json.Unmarshal([]byte(supportedModels), &models)
+	var meta any
+	json.Unmarshal([]byte(metaJSON), &meta)
+	writeMeshJSON(w, map[string]any{
+		"id": id, "name": name, "url": url, "region": region, "status": status,
+		"gpu_model": gpuModel, "vram_gb": vramGB, "supported_models": models,
+		"current_load": currentLoad, "max_concurrent": maxConcurrent,
+		"price_per_1k_cents": pricePer1k, "reputation": reputation,
+		"specialization": specialization, "last_heartbeat": heartbeat,
+		"metadata": meta, "created_at": createdAt,
+	})
+}
+
+func (m *Manager) handleDeregister(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		NodeID string `json:"node_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.NodeID == "" {
+		w.WriteHeader(400)
+		writeMeshJSON(w, map[string]string{"error": "node_id required"})
+		return
+	}
+	m.conn.Exec("UPDATE mesh_nodes SET status = 'offline' WHERE id = ?", req.NodeID)
+	writeMeshJSON(w, map[string]string{"status": "deregistered", "node_id": req.NodeID})
+}
+
+func (m *Manager) handleStats(w http.ResponseWriter, r *http.Request) {
+	var totalNodes, activeNodes, totalTx int
+	var totalTokens, totalEarnings int
+	m.conn.QueryRow("SELECT COUNT(*) FROM mesh_nodes").Scan(&totalNodes)
+	m.conn.QueryRow("SELECT COUNT(*) FROM mesh_nodes WHERE status = 'healthy'").Scan(&activeNodes)
+	m.conn.QueryRow("SELECT COUNT(*) FROM mesh_transactions").Scan(&totalTx)
+	m.conn.QueryRow("SELECT COALESCE(SUM(input_tokens + output_tokens), 0) FROM mesh_transactions").Scan(&totalTokens)
+	m.conn.QueryRow("SELECT COALESCE(SUM(earnings_cents), 0) FROM mesh_earnings").Scan(&totalEarnings)
+	writeMeshJSON(w, map[string]any{
+		"total_nodes": totalNodes, "active_nodes": activeNodes,
+		"total_transactions": totalTx, "total_tokens_served": totalTokens,
+		"total_earnings_cents": totalEarnings,
+	})
+}
+
+func (m *Manager) handleEarnings(w http.ResponseWriter, r *http.Request) {
+	operatorID := r.URL.Query().Get("operator_id")
+	if operatorID == "" {
+		operatorID = "default"
+	}
+	rows, err := m.conn.Query("SELECT period, tokens_served, earnings_cents, fee_cents FROM mesh_earnings WHERE operator_id = ? ORDER BY period DESC", operatorID)
+	if err != nil {
+		writeMeshJSON(w, map[string]any{"earnings": []any{}})
+		return
+	}
+	defer rows.Close()
+	var earnings []map[string]any
+	for rows.Next() {
+		var period string
+		var tokens, earningsCents, feeCents int
+		rows.Scan(&period, &tokens, &earningsCents, &feeCents)
+		earnings = append(earnings, map[string]any{
+			"period": period, "tokens_served": tokens,
+			"earnings_cents": earningsCents, "fee_cents": feeCents,
+		})
+	}
+	if earnings == nil {
+		earnings = []map[string]any{}
+	}
+	writeMeshJSON(w, map[string]any{"earnings": earnings, "operator_id": operatorID})
+}
+
+func (m *Manager) handleEarningsSummary(w http.ResponseWriter, r *http.Request) {
+	period := time.Now().UTC().Format("2006-01")
+	var totalEarnings, totalFees, totalTokens int
+	m.conn.QueryRow("SELECT COALESCE(SUM(earnings_cents), 0), COALESCE(SUM(fee_cents), 0), COALESCE(SUM(tokens_served), 0) FROM mesh_earnings WHERE period = ?", period).Scan(&totalEarnings, &totalFees, &totalTokens)
+	writeMeshJSON(w, map[string]any{
+		"period": period, "total_earnings_cents": totalEarnings,
+		"total_fees_cents": totalFees, "total_tokens_served": totalTokens,
+	})
 }
 
 func writeMeshJSON(w http.ResponseWriter, data any) {

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stockyard AI Inference Protocol",
+  "version": "1.0.0",
+  "description": "Standard protocol for AI inference requests across the Stockyard mesh network",
+  "type": "object",
+  "properties": {
+    "model": {
+      "type": "string",
+      "description": "Model identifier"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {"type": "string", "enum": ["system", "user", "assistant"]},
+          "content": {"type": "string"}
+        },
+        "required": ["role", "content"]
+      }
+    },
+    "temperature": {"type": "number", "minimum": 0, "maximum": 2},
+    "max_tokens": {"type": "integer", "minimum": 1},
+    "stream": {"type": "boolean"},
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "trace_id": {"type": "string"},
+        "tags": {"type": "object"},
+        "priority": {"type": "string", "enum": ["high", "normal", "low"]}
+      }
+    }
+  },
+  "required": ["model", "messages"]
+}

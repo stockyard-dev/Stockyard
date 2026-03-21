@@ -1,47 +1,31 @@
-"""Drop-in OpenAI SDK wrapper that routes all traffic through Stockyard.
-
-Usage:
-    # Before:
-    from openai import OpenAI
-    # After:
-    from stockyard_openai import OpenAI
-
-    client = OpenAI(api_key="sk-...")
-    # All requests now go through Stockyard automatically
-"""
+"""Stockyard OpenAI SDK wrapper — drop-in replacement for OpenAI that routes through Stockyard."""
 
 import os
+try:
+    from openai import OpenAI as _OpenAI, AsyncOpenAI as _AsyncOpenAI
+except ImportError:
+    raise ImportError("Install openai first: pip install openai")
 
-from openai import OpenAI as _OriginalOpenAI
-from openai import AsyncOpenAI as _OriginalAsyncOpenAI
+__version__ = "1.0.0"
 
-_STOCKYARD_URL = os.environ.get("STOCKYARD_URL", "http://localhost:4200")
-_ENABLED = os.environ.get("STOCKYARD_ENABLED", "true").lower() != "false"
+_DEFAULT_BASE = os.getenv("STOCKYARD_URL", "http://localhost:8080") + "/v1"
 
 
-class OpenAI(_OriginalOpenAI):
+class OpenAI(_OpenAI):
     """OpenAI client that routes through Stockyard proxy."""
 
     def __init__(self, **kwargs):
-        if _ENABLED and "base_url" not in kwargs:
-            kwargs["base_url"] = _STOCKYARD_URL + "/v1"
-            if "default_headers" not in kwargs:
-                kwargs["default_headers"] = {}
-            kwargs["default_headers"]["X-Stockyard-Source"] = "sdk-python"
+        kwargs.setdefault("base_url", _DEFAULT_BASE)
+        kwargs.setdefault("default_headers", {})
+        kwargs["default_headers"]["X-Stockyard-Source"] = "python-sdk"
         super().__init__(**kwargs)
 
 
-class AsyncOpenAI(_OriginalAsyncOpenAI):
+class AsyncOpenAI(_AsyncOpenAI):
     """Async OpenAI client that routes through Stockyard proxy."""
 
     def __init__(self, **kwargs):
-        if _ENABLED and "base_url" not in kwargs:
-            kwargs["base_url"] = _STOCKYARD_URL + "/v1"
-            if "default_headers" not in kwargs:
-                kwargs["default_headers"] = {}
-            kwargs["default_headers"]["X-Stockyard-Source"] = "sdk-python-async"
+        kwargs.setdefault("base_url", _DEFAULT_BASE)
+        kwargs.setdefault("default_headers", {})
+        kwargs["default_headers"]["X-Stockyard-Source"] = "python-sdk"
         super().__init__(**kwargs)
-
-
-# Re-export everything from openai
-from openai import *  # noqa: F401,F403,E402

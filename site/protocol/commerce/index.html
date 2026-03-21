@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>AI Commerce Protocol | Stockyard</title>
+<meta name="description" content="The Stockyard AI Commerce Protocol: an open specification for routing, executing, and verifying AI commerce requests across distributed providers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+@media(prefers-color-scheme:light){
+  :root{
+    --bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;
+    --rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;
+    --leather:#7a6544;--leather-light:#8b7355;
+    --cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;
+    --gold:#b08a28;
+  }
+}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+.hero{max-width:900px;margin:0 auto;padding:8rem 2rem 5rem;text-align:center}
+.hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;margin-bottom:1.5rem;color:var(--cream)}
+.hero h1 .accent{color:var(--rust-light)}
+.hero-sub{font-size:1.15rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto 3rem}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}
+.section-label.leather{color:var(--leather-light)}
+.content-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.content-section.alt{background:var(--bg2);max-width:100%;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.content-section.alt .inner{max-width:700px;margin:0 auto}
+.content-section p{font-size:1.05rem;color:var(--cream-dim);line-height:1.9;margin-bottom:1.5rem}
+.content-section h2{font-size:1.5rem;color:var(--cream);margin-bottom:1rem}
+.content-section h3{font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.8rem;margin-top:2rem}
+.content-section ul{margin:0 0 1.5rem 1.5rem;color:var(--cream-dim);font-size:0.95rem}
+.content-section ul li{margin-bottom:0.5rem}
+.content-section ol{margin:0 0 1.5rem 1.5rem;color:var(--cream-dim);font-size:0.95rem}
+.content-section ol li{margin-bottom:0.5rem}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin:1.5rem 0}
+.code-block .comment{color:#5a5040}
+.code-block .key{color:var(--rust-light)}
+.code-block .str{color:var(--gold)}
+.code-block .num{color:var(--green-light)}
+.layer-row{display:flex;gap:1.5rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--bg3)}
+.layer-num{font-family:var(--font-mono);font-size:0.7rem;font-weight:600;color:var(--rust-light);min-width:80px;text-transform:uppercase;letter-spacing:1px}
+.layer-content{flex:1}
+.layer-title{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.3rem}
+.layer-desc{font-size:0.85rem;color:var(--cream-dim)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:600px){
+  .hero{padding:5rem 1.5rem 3rem}
+  .code-block{font-size:0.7rem;padding:0.8rem}
+  .layer-row{flex-direction:column;gap:0.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="hero-eyebrow">Protocol Specification</div>
+  <h1>AI <span class="accent">Inference</span> Protocol</h1>
+  <p class="hero-sub">An open specification for routing, executing, and verifying AI commerce requests across distributed providers.</p>
+</section>
+
+<section class="content-section">
+  <p class="section-label">Overview</p>
+  <h2>Protocol Overview</h2>
+  <p>The Stockyard AI Commerce Protocol (SAIP) defines a standard way for clients, proxies, and commerce providers to communicate. It builds on existing standards like OpenAI's API format while adding layers for routing, verification, and auditability.</p>
+  <ul>
+    <li><strong>Provider-agnostic:</strong> One request format, any backend</li>
+    <li><strong>Verifiable:</strong> Cryptographic attestation of commerce results</li>
+    <li><strong>Observable:</strong> Built-in telemetry and cost tracking</li>
+    <li><strong>Composable:</strong> Middleware pipeline for request/response transformation</li>
+  </ul>
+</section>
+
+<section class="content-section alt">
+  <div class="inner">
+    <p class="section-label gold">Layers</p>
+    <h2>Protocol Layers</h2>
+
+    <div class="layer-row">
+      <span class="layer-num">Layer 1</span>
+      <div class="layer-content">
+        <div class="layer-title">Transport</div>
+        <div class="layer-desc">HTTP/2 and WebSocket connections with TLS 1.3. Supports streaming via Server-Sent Events.</div>
+      </div>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">Layer 2</span>
+      <div class="layer-content">
+        <div class="layer-title">Authentication</div>
+        <div class="layer-desc">API key, JWT, and mutual TLS authentication. Scoped permissions per key.</div>
+      </div>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">Layer 3</span>
+      <div class="layer-content">
+        <div class="layer-title">Routing</div>
+        <div class="layer-desc">Model-based, cost-based, and latency-based routing with fallback chains.</div>
+      </div>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">Layer 4</span>
+      <div class="layer-content">
+        <div class="layer-title">Middleware</div>
+        <div class="layer-desc">Ordered pipeline of request/response transformations: rate limiting, caching, PII redaction, logging.</div>
+      </div>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">Layer 5</span>
+      <div class="layer-content">
+        <div class="layer-title">Execution</div>
+        <div class="layer-desc">Provider-specific adapters translate the unified format to each backend's native API.</div>
+      </div>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">Layer 6</span>
+      <div class="layer-content">
+        <div class="layer-title">Verification</div>
+        <div class="layer-desc">Cryptographic hash of request + response for audit trails and dispute resolution.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <p class="section-label leather">Request Format</p>
+  <h2>Request Envelope</h2>
+  <p>Every commerce request is wrapped in a protocol envelope that carries routing hints, middleware directives, and tracing metadata.</p>
+
+  <div class="code-block"><span class="comment">// SAIP Request Envelope</span>
+{
+  <span class="key">"protocol"</span>: <span class="str">"saip/v1"</span>,
+  <span class="key">"request_id"</span>: <span class="str">"req_abc123"</span>,
+  <span class="key">"routing"</span>: {
+    <span class="key">"strategy"</span>: <span class="str">"lowest-cost"</span>,
+    <span class="key">"fallback"</span>: [<span class="str">"openai"</span>, <span class="str">"anthropic"</span>, <span class="str">"mesh"</span>],
+    <span class="key">"max_latency_ms"</span>: <span class="num">5000</span>
+  },
+  <span class="key">"middleware"</span>: [<span class="str">"pii-redact"</span>, <span class="str">"cache"</span>, <span class="str">"audit"</span>],
+  <span class="key">"payload"</span>: {
+    <span class="key">"model"</span>: <span class="str">"gpt-4o"</span>,
+    <span class="key">"messages"</span>: [
+      { <span class="key">"role"</span>: <span class="str">"user"</span>, <span class="key">"content"</span>: <span class="str">"Summarize this document."</span> }
+    ],
+    <span class="key">"max_tokens"</span>: <span class="num">1024</span>
+  },
+  <span class="key">"trace"</span>: {
+    <span class="key">"parent_id"</span>: <span class="str">"span_xyz"</span>,
+    <span class="key">"tags"</span>: { <span class="key">"team"</span>: <span class="str">"platform"</span> }
+  }
+}</div>
+</section>
+
+</main>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">&copy; 2026 Stockyard &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+</footer>
+
+</body>
+</html>

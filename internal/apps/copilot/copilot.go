@@ -40,10 +40,16 @@ func (a *App) Description() string {
 	return "AI assistant for natural language platform configuration"
 }
 
-// Migrate stores the DB connection. Copilot uses in-memory sessions so no schema is needed.
+// Migrate creates the copilot schema and stores the DB connection.
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn
-	log.Printf("[copilot] migrations applied (no schema needed)")
+	conn.Exec(`CREATE TABLE IF NOT EXISTS copilot_sessions (
+		id TEXT PRIMARY KEY,
+		messages TEXT DEFAULT '[]',
+		created_at TEXT NOT NULL,
+		updated_at TEXT NOT NULL
+	)`)
+	log.Printf("[copilot] migrations applied")
 	return nil
 }
 
@@ -86,6 +92,13 @@ var allowedPrefixes = []struct {
 	{"/api/exchange", nil},
 	{"/api/recall", nil},
 	{"/api/trust/ledger", []string{"GET"}},
+	{"/api/fabric", nil},
+	{"/api/apps", nil},
+	{"/api/knowledge", nil},
+	{"/api/mesh", nil},
+	{"/api/memory", nil},
+	{"/api/governance", nil},
+	{"/api/reputation", nil},
 }
 
 var blockedSubstrings = []string{"key", "auth", "encrypt", "admin", "secret", "token"}
@@ -151,6 +164,15 @@ Available endpoints:
 - POST /api/recall/incidents — create recall incident
 - GET /api/recall/incidents — list incidents
 - GET /api/trust/ledger — view audit ledger
+- POST /api/fabric/deploy — deploy a Fabric manifest
+- GET /api/fabric/deployments — list Fabric deployments
+- POST /api/fabric/validate — validate a manifest
+- POST /api/fabric/diff — preview changes
+- GET /api/apps/store — browse app store
+- POST /api/apps/builder/create — create new app
+- GET /api/knowledge/bases — list knowledge bases
+- GET /api/mesh/nodes — list mesh nodes
+- GET /api/memory/{user_id}/relevant?query=X — search memory
 
 Rules:
 - Only use GET, POST, PUT, DELETE methods

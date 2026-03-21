@@ -16,6 +16,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -90,6 +91,18 @@ func main() {
 		cmdConfig()
 	case "version", "--version", "-v":
 		cmdVersion()
+	case "fabric":
+		cmdFabric()
+	case "apps":
+		cmdApps()
+	case "mesh":
+		cmdMesh()
+	case "reputation":
+		cmdReputation()
+	case "health":
+		cmdHealth()
+	case "search":
+		cmdSearch()
 	case "help", "--help", "-h":
 		printUsage()
 	default:
@@ -113,6 +126,20 @@ Usage:
   sy providers health                    Provider health grid
   sy config export                       Export config JSON to stdout
   sy config import <file>                Import config from JSON file
+  sy fabric deploy <file>                Deploy a Fabric manifest
+  sy fabric validate <file>              Validate a manifest (dry run)
+  sy fabric diff <file>                  Preview changes
+  sy fabric list                         List deployments
+  sy fabric rollback <name> <version>    Rollback deployment
+  sy fabric export <name>                Export deployment manifest
+  sy fabric teardown <name>              Tear down deployment
+  sy apps list                           Browse app store
+  sy apps create <title>                 Create a new app
+  sy mesh status                         Mesh network stats
+  sy mesh earnings                       Current month earnings
+  sy reputation [user_id]                View reputation score
+  sy health                              Platform health pulse
+  sy search <query>                      Search across platform
   sy version                             CLI and server version
 
 Configuration:
@@ -561,3 +588,171 @@ func formatTime(ts string) string {
 	}
 	return t.Format("15:04:05")
 }
+
+// --- Fabric ---
+
+func cmdFabric() {
+	args := os.Args[2:]
+	if len(args) == 0 {
+		fmt.Println("Usage: sy fabric [deploy|validate|diff|list|rollback|export|teardown]")
+		return
+	}
+	switch args[0] {
+	case "deploy", "validate", "diff":
+		if len(args) < 2 {
+			fmt.Printf("Usage: sy fabric %s <manifest.json>\n", args[0])
+			return
+		}
+		data, err := os.ReadFile(args[1])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
+			os.Exit(1)
+		}
+		endpoint := "/api/fabric/" + args[0]
+		body, err := apiRequest("POST", endpoint, string(data))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	case "list":
+		body, err := apiGet("/api/fabric/deployments")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	case "rollback":
+		if len(args) < 3 {
+			fmt.Println("Usage: sy fabric rollback <name> <version>")
+			return
+		}
+		body, err := apiRequest("POST", "/api/fabric/deployments/"+args[1]+"/rollback?version="+args[2], "")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	case "export":
+		if len(args) < 2 {
+			fmt.Println("Usage: sy fabric export <name>")
+			return
+		}
+		body, err := apiRequest("POST", "/api/fabric/export/"+args[1], "")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	case "teardown":
+		if len(args) < 2 {
+			fmt.Println("Usage: sy fabric teardown <name>")
+			return
+		}
+		body, err := apiRequest("DELETE", "/api/fabric/deployments/"+args[1], "")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	default:
+		fmt.Printf("Unknown fabric command: %s\n", args[0])
+	}
+}
+
+func cmdApps() {
+	args := os.Args[2:]
+	if len(args) == 0 || args[0] == "list" {
+		body, err := apiGet("/api/apps/store")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	} else if args[0] == "create" {
+		title := "New App"
+		if len(args) > 1 {
+			title = strings.Join(args[1:], " ")
+		}
+		payload, _ := json.Marshal(map[string]string{"title": title})
+		body, err := apiRequest("POST", "/api/apps/builder/create", string(payload))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	}
+}
+
+func cmdMesh() {
+	args := os.Args[2:]
+	if len(args) > 0 && args[0] == "status" {
+		body, err := apiGet("/api/mesh/stats")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	} else if len(args) > 0 && args[0] == "earnings" {
+		body, err := apiGet("/api/mesh/earnings/summary")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	} else {
+		body, err := apiGet("/api/mesh/nodes")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		prettyPrint(body)
+	}
+}
+
+func cmdReputation() {
+	userID := "default"
+	if len(os.Args) > 2 {
+		userID = os.Args[2]
+	}
+	body, err := apiGet("/api/reputation/" + userID)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	prettyPrint(body)
+}
+
+func cmdHealth() {
+	body, err := apiGet("/api/health/pulse")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	prettyPrint(body)
+}
+
+func cmdSearch() {
+	if len(os.Args) < 3 {
+		fmt.Println("Usage: sy search <query>")
+		return
+	}
+	q := strings.Join(os.Args[2:], " ")
+	body, err := apiGet("/api/search?q=" + q)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	prettyPrint(body)
+}
+
+func prettyPrint(data []byte) {
+	var buf bytes.Buffer
+	if json.Indent(&buf, data, "", "  ") == nil {
+		fmt.Println(buf.String())
+	} else {
+		fmt.Println(string(data))
+	}
+}
+
+// apiDelete is no longer needed — use apiRequest("DELETE", ...) instead.
