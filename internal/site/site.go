@@ -75,7 +75,6 @@ func Register(mux *http.ServeMux) {
 		"/billing/",
 		"/governance/",
 		"/appbuilder/",
-		"/playground/",
 		"/docs/reputation/",
 		"/docs/knowledge/",
 		"/docs/copilot/",
