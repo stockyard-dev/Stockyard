@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/billingerr"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
@@ -115,10 +116,10 @@ func BillingMeterMiddleware(meter *BillingMeter) proxy.Middleware {
 				// Check requests limit
 				if limits.RequestsPerMonth > 0 && totalReqs >= int64(limits.RequestsPerMonth) {
 					if limits.Overage == "block" {
-						return nil, &billingLimitError{
-							msg:      fmt.Sprintf("monthly request limit reached: %d/%d requests", totalReqs, limits.RequestsPerMonth),
-							customer: customerID,
-							limit:    "requests_per_month",
+						return nil, &billingerr.BillingLimitError{
+							Msg:      fmt.Sprintf("monthly request limit reached: %d/%d requests", totalReqs, limits.RequestsPerMonth),
+							Customer: customerID,
+							Limit:    "requests_per_month",
 						}
 					}
 					if limits.Overage == "alert" {
@@ -129,10 +130,10 @@ func BillingMeterMiddleware(meter *BillingMeter) proxy.Middleware {
 				// Check spend cap
 				if limits.SpendCapCents > 0 && totalCostCents >= int64(limits.SpendCapCents) {
 					if limits.Overage == "block" {
-						return nil, &billingLimitError{
-							msg:      fmt.Sprintf("monthly spend cap reached: %d/%d cents", totalCostCents, limits.SpendCapCents),
-							customer: customerID,
-							limit:    "spend_cap_cents",
+						return nil, &billingerr.BillingLimitError{
+							Msg:      fmt.Sprintf("monthly spend cap reached: %d/%d cents", totalCostCents, limits.SpendCapCents),
+							Customer: customerID,
+							Limit:    "spend_cap_cents",
 						}
 					}
 					if limits.Overage == "alert" {
@@ -143,10 +144,10 @@ func BillingMeterMiddleware(meter *BillingMeter) proxy.Middleware {
 				// Check RPM rate limit (in-memory sliding window)
 				if limits.RateLimitRPM > 0 {
 					if !meter.checkRPM(customerID, limits.RateLimitRPM) {
-						return nil, &billingLimitError{
-							msg:      fmt.Sprintf("rate limit exceeded: %d requests per minute", limits.RateLimitRPM),
-							customer: customerID,
-							limit:    "rate_limit_rpm",
+						return nil, &billingerr.BillingLimitError{
+							Msg:      fmt.Sprintf("rate limit exceeded: %d requests per minute", limits.RateLimitRPM),
+							Customer: customerID,
+							Limit:    "rate_limit_rpm",
 						}
 					}
 				}
@@ -161,19 +162,19 @@ func BillingMeterMiddleware(meter *BillingMeter) proxy.Middleware {
 						}
 					}
 					if !allowed {
-						return nil, &billingModelError{
-							msg:      fmt.Sprintf("model %s not allowed by plan", req.Model),
-							customer: customerID,
-							model:    req.Model,
+						return nil, &billingerr.BillingModelError{
+							Msg:      fmt.Sprintf("model %s not allowed by plan", req.Model),
+							Customer: customerID,
+							Model:    req.Model,
 						}
 					}
 				}
 				for _, m := range limits.BlockedModels {
 					if strings.EqualFold(m, req.Model) {
-						return nil, &billingModelError{
-							msg:      fmt.Sprintf("model %s blocked by plan", req.Model),
-							customer: customerID,
-							model:    req.Model,
+						return nil, &billingerr.BillingModelError{
+							Msg:      fmt.Sprintf("model %s blocked by plan", req.Model),
+							Customer: customerID,
+							Model:    req.Model,
 						}
 					}
 				}
@@ -412,36 +413,4 @@ func billingGenID(prefix string) string {
 	return prefix + hex.EncodeToString(b)
 }
 
-// billingLimitError is returned when a customer exceeds plan limits (429).
-type billingLimitError struct {
-	msg      string
-	customer string
-	limit    string
-}
 
-func (e *billingLimitError) Error() string { return e.msg }
-
-// billingModelError is returned when a customer tries a blocked model (403).
-type billingModelError struct {
-	msg      string
-	customer string
-	model    string
-}
-
-func (e *billingModelError) Error() string { return e.msg }
-
-// IsBillingLimitError checks if an error is a billing limit violation.
-func IsBillingLimitError(err error) (*billingLimitError, bool) {
-	if e, ok := err.(*billingLimitError); ok {
-		return e, true
-	}
-	return nil, false
-}
-
-// IsBillingModelError checks if an error is a billing model access violation.
-func IsBillingModelError(err error) (*billingModelError, bool) {
-	if e, ok := err.(*billingModelError); ok {
-		return e, true
-	}
-	return nil, false
-}

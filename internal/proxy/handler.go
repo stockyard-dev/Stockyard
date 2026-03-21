@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/stockyard-dev/stockyard/internal/features"
+	"github.com/stockyard-dev/stockyard/internal/billingerr"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -48,7 +48,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		if isBillingError(err) {
 			status := http.StatusTooManyRequests
 			errType := "billing_limit_exceeded"
-			if _, ok := features.IsBillingModelError(err); ok {
+			if _, ok := billingerr.IsBillingModelError(err); ok {
 				status = http.StatusForbidden
 				errType = "billing_model_denied"
 			}
@@ -368,10 +368,10 @@ func isBillingError(err error) bool {
 	if err == nil {
 		return false
 	}
-	if _, ok := features.IsBillingLimitError(err); ok {
+	if _, ok := billingerr.IsBillingLimitError(err); ok {
 		return true
 	}
-	if _, ok := features.IsBillingModelError(err); ok {
+	if _, ok := billingerr.IsBillingModelError(err); ok {
 		return true
 	}
 	return false
