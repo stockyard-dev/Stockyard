@@ -203,7 +203,7 @@ type ProductConfig struct {
 	Product         string // config key: costcap, llmcache, etc.
 	Version         string // set via ldflags at build time
 	Features        Features
-	Apps            []platform.App // 6 flagship apps (registered in cmd/stockyard/main.go)
+	Apps            []platform.App // registered in cmd/stockyard/main.go
 	EnableAPIServer bool           // mount sy-api billing/licensing/cloud/exchange routes
 }
 
@@ -443,7 +443,7 @@ func Boot(pc ProductConfig) {
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
 
-	// Register 6 flagship apps (if configured)
+	// Register apps (if configured)
 	if len(pc.Apps) > 0 {
 		registry := platform.NewRegistry()
 		for _, app := range pc.Apps {

@@ -3,7 +3,9 @@
 package marketing
 
 import (
+	crand "crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -450,12 +452,9 @@ func (a *App) addLog(taskID, action, detail string) {
 }
 
 func genID() string {
-	b := make([]byte, 8)
-	for i := range b {
-		b[i] = "abcdefghijklmnopqrstuvwxyz0123456789"[time.Now().UnixNano()%36]
-		time.Sleep(time.Nanosecond)
-	}
-	return "mkt_" + string(b)
+	b := make([]byte, 6)
+	crand.Read(b)
+	return "mkt_" + hex.EncodeToString(b)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {

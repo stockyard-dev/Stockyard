@@ -29,7 +29,7 @@ func generateProductPage(p apiserver.Product) Page {
 	// Tags
 	sb.WriteString(`<p>`)
 	sb.WriteString(fmt.Sprintf(`<span class="tag">%s</span>`, esc(categoryLabel(p.Category))))
-	if p.IsSuite {
+	if p.Category == "suite" {
 		sb.WriteString(`<span class="tag new">Suite</span>`)
 	}
 	sb.WriteString(`</p>`)
@@ -58,7 +58,7 @@ func generateProductPage(p apiserver.Product) Page {
 	sb.WriteString(`<p>Add to your <code>config.yaml</code>:</p>`)
 	sb.WriteString(fmt.Sprintf(`<pre><code>%s</code></pre>`, dd.ConfigBlock))
 
-	if !p.IsSuite {
+	if p.Category != "suite" {
 		sb.WriteString(fmt.Sprintf(`<p>Or run as a standalone binary:</p>`))
 		sb.WriteString(fmt.Sprintf(`<div class="code-title">Terminal</div><pre><code><span class="comment"># Install</span>
 <span class="cmd">brew install stockyard-dev/tap/%s</span>
@@ -158,7 +158,7 @@ func apiSection(p apiserver.Product) string {
 }
 
 func pricingSection(p apiserver.Product) string {
-	if p.IsSuite {
+	if p.Category == "suite" {
 		return `<table>
 <tr><th>Tier</th><th>Price</th><th>Includes</th></tr>
 <tr><td>Free</td><td>$0</td><td>All 58 modules, 1,000 requests/day</td></tr>

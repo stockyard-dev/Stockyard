@@ -164,20 +164,38 @@ func (a *App) addCredits(customerID string, amountCents int64, txType, desc stri
 }
 
 // deductCredits removes credits from a customer's balance. Returns false if insufficient.
+// Uses a transaction to prevent race conditions between the balance check and deduction.
 func (a *App) deductCredits(customerID string, amountCents int64) bool {
+	tx, err := a.conn.Begin()
+	if err != nil {
+		log.Printf("[billing] deductCredits: begin tx: %v", err)
+		return false
+	}
+	defer tx.Rollback()
+
 	var balance int64
-	a.conn.QueryRow("SELECT balance_cents FROM billing_credits WHERE customer_id = ?", customerID).Scan(&balance)
+	if err := tx.QueryRow("SELECT balance_cents FROM billing_credits WHERE customer_id = ?", customerID).Scan(&balance); err != nil {
+		return false
+	}
 	if balance < amountCents {
 		return false
 	}
 	now := nowRFC3339()
-	a.conn.Exec("UPDATE billing_credits SET balance_cents = balance_cents - ?, updated_at = ? WHERE customer_id = ?",
-		amountCents, now, customerID)
+	if _, err := tx.Exec("UPDATE billing_credits SET balance_cents = balance_cents - ?, updated_at = ? WHERE customer_id = ?",
+		amountCents, now, customerID); err != nil {
+		return false
+	}
 	txID := genID("ctx_")
-	a.conn.Exec("INSERT INTO billing_credit_transactions (id, customer_id, amount_cents, type, description, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-		txID, customerID, -amountCents, "usage_deduction", "Usage deduction", now)
+	if _, err := tx.Exec("INSERT INTO billing_credit_transactions (id, customer_id, amount_cents, type, description, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+		txID, customerID, -amountCents, "usage_deduction", "Usage deduction", now); err != nil {
+		return false
+	}
 
-	// Low balance warning.
+	if err := tx.Commit(); err != nil {
+		return false
+	}
+
+	// Low balance warning (outside tx).
 	var newBalance int64
 	a.conn.QueryRow("SELECT balance_cents FROM billing_credits WHERE customer_id = ?", customerID).Scan(&newBalance)
 	if newBalance < 500 { // $5.00 threshold
