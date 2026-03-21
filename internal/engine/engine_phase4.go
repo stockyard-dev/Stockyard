@@ -7,6 +7,8 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
+	"github.com/stockyard-dev/stockyard/internal/storage"
+	"github.com/stockyard-dev/stockyard/internal/toggle"
 )
 
 // buildPhase4Middlewares appends Phase 4 middleware to the chain.
@@ -15,6 +17,8 @@ func buildPhase4Middlewares(
 	cfg *config.Config,
 	providers map[string]provider.Provider,
 	mw []proxy.Middleware,
+	db *storage.DB,
+	reg *toggle.Registry,
 ) []proxy.Middleware {
 
 	// Auth & Access Control (early in chain)
@@ -279,6 +283,18 @@ func buildPhase4Middlewares(
 	if pc.Features.WebhookForge && cfg.WebhookForge.Enabled {
 		s := features.NewWebhookForge(cfg.WebhookForge); mw = append(mw, features.WebhookForgeMiddleware(s))
 		log.Printf("webhookforge: enabled")
+	}
+
+	// Top 5 features: Consensus + AutoTag
+	if pc.Features.Consensus {
+		ce := features.NewConsensusEngine(db.Conn(), providers)
+		mw = append(mw, toggle.Wrap("consensus", reg, features.ConsensusMiddleware(ce)))
+		log.Printf("consensus: enabled")
+	}
+	if pc.Features.AutoTag {
+		at := features.NewAutoTagger(db.Conn())
+		mw = append(mw, toggle.Wrap("autotag", reg, features.AutoTagMiddleware(at)))
+		log.Printf("autotag: enabled")
 	}
 
 	return mw

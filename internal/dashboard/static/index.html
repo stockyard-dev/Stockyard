@@ -20,8 +20,10 @@ const APPS={
   exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
   billing:{id:'billing',name:'Bill',icon:'\u00A2',desc:'Usage metering'},
   team:{id:'team',name:'Team',icon:'\u2693',desc:'Members & RBAC'},
+  recall:{id:'recall',name:'Recall',icon:'\u2691',desc:'Incident response'},
+  copilot:{id:'copilot',name:'Copilot',icon:'\u25C8',desc:'AI assistant'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team','recall','copilot'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){
@@ -85,9 +87,16 @@ function OverviewView(){
 function ProxyView(){
   const[tab,setTab]=useState('modules');const[data,setData]=useState({});const[toast,setToast]=useState(null);const[filter,setFilter]=useState('');
   const[health,setHealth]=useState(null);const[checking,setChecking]=useState(false);const[recs,setRecs]=useState(null);
+  const[consensusCfg,setConsensusCfg]=useState([]);const[consensusRes,setConsensusRes]=useState([]);const[showConsForm,setShowConsForm]=useState(false);
+  const[consEdit,setConsEdit]=useState(null);const[consName,setConsName]=useState('');const[consModels,setConsModels]=useState('');const[consThreshold,setConsThreshold]=useState('0.7');const[consDisagree,setConsDisagree]=useState('fail');const[consEnabled,setConsEnabled]=useState(true);
   const load=async()=>{const[m,p,r]=await Promise.all([api('/api/proxy/modules'),api('/api/proxy/providers'),api('/api/proxy/routes')]);setData({modules:m.modules||[],providers:p.providers||[],routes:r.routes||[]})};
   const loadRecs=async()=>{const r=await api('/api/proxy/recommendations');setRecs(r)};
-  useEffect(()=>{load();loadRecs()},[]);
+  const loadCons=async()=>{const[c,cr]=await Promise.all([api('/api/proxy/consensus'),api('/api/proxy/consensus/results')]);setConsensusCfg(c.configs||[]);setConsensusRes(cr.results||[])};
+  useEffect(()=>{load();loadRecs();loadCons()},[]);
+  const saveCons=async()=>{const body={name:consName,models:consModels.split(',').map(s=>s.trim()).filter(Boolean),threshold:parseFloat(consThreshold),on_disagree:consDisagree,enabled:consEnabled};const method=consEdit?'PUT':'POST';const url=consEdit?'/api/proxy/consensus/'+consEdit:'/api/proxy/consensus';const r=await api(url,{method,body:JSON.stringify(body)});if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setToast({msg:'Consensus config saved',type:'success'});setShowConsForm(false);setConsEdit(null);loadCons()};
+  const toggleCons=async(id,enabled)=>{await api('/api/proxy/consensus/'+id,{method:'PUT',body:JSON.stringify({enabled:!enabled})});loadCons()};
+  const editCons=(c)=>{setConsEdit(c.id);setConsName(c.name);setConsModels((c.models||[]).join(', '));setConsThreshold(String(c.threshold||0.7));setConsDisagree(c.on_disagree||'fail');setConsEnabled(c.enabled!==false);setShowConsForm(true)};
+  const newCons=()=>{setConsEdit(null);setConsName('');setConsModels('');setConsThreshold('0.7');setConsDisagree('fail');setConsEnabled(true);setShowConsForm(true)};
   const toggleModule=async(name,enabled)=>{const r=await api('/api/proxy/modules/'+name,{method:'PUT',body:JSON.stringify({enabled:!enabled})});if(r._error){setToast({msg:'Failed: '+name,type:'error'});return}setToast({msg:name+' '+(enabled?'disabled':'enabled'),type:'success'});load()};
   const bulkToggle=async(cat,enabled)=>{const body=cat==='all'?{modules:d('modules').map(m=>m.name),enabled}:{category:cat,enabled};const r=await api('/api/proxy/modules/bulk',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Bulk toggle failed',type:'error'});return}setToast({msg:(r.affected||0)+' modules '+(enabled?'enabled':'disabled'),type:'success'});load()};
   const checkAll=async()=>{setChecking(true);const r=await api('/api/proxy/providers/health');setHealth(r);setChecking(false);load()};
@@ -96,7 +105,7 @@ function ProxyView(){
   const statusColor=s=>s==='ok'?'var(--green)':s==='degraded'?'var(--gold)':s==='unconfigured'?'var(--cream-muted)':'var(--red)';
   return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers & routes.</p></div>
     <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${d('routes').length}/></div>
-    <${TabBar} tabs=${['modules','chain','providers','routes','recommendations']} active=${tab} onChange=${setTab}/>
+    <${TabBar} tabs=${['modules','chain','providers','routes','recommendations','consensus']} active=${tab} onChange=${setTab}/>
     ${tab==='modules'?html`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/>
       <${Btn} small onClick=${()=>bulkToggle('all',false)} disabled=${!d('modules').some(m=>m.enabled)}>Disable All<//><${Btn} small onClick=${()=>bulkToggle('all',true)}>Enable All<//></div>
       <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 80px 80px 80px"><span>Module</span><span>Category</span><span>Chain</span><span>Status</span><span>Toggle</span></div>
@@ -141,7 +150,43 @@ function ProxyView(){
           </div>
           <div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:10px">${r.reason}</div>
           <${Btn} small variant="primary" onClick=${async()=>{await api('/api/proxy/modules/'+r.module,{method:'PUT',body:JSON.stringify({enabled:true})});setToast({msg:r.module+' enabled',type:'success'});load();loadRecs()}}>Enable ${r.module}<//></div>`)}</div>`}
+    </div>`:
+    html`<div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span class="mono" style="font-size:0.82rem;color:var(--cream-dim)">${consensusCfg.length} consensus configs</span>
+        <${Btn} variant="primary" small onClick=${newCons}>+ New Config<//></div>
+      <${DataTable} columns=${[
+        {key:'name',label:'Name',width:'1.2fr',mono:true},
+        {key:'models',label:'Models',width:'1.5fr',mono:true,render:r=>(r.models||[]).join(', ')},
+        {key:'threshold',label:'Threshold',width:'90px',mono:true},
+        {key:'on_disagree',label:'On Disagree',width:'100px',mono:true},
+        {key:'enabled',label:'Enabled',width:'80px',render:r=>html`<button class="toggle-btn ${r.enabled?'on':''}" onClick=${e=>{e.stopPropagation();toggleCons(r.id,r.enabled)}}><span class="toggle-knob"></span></button>`}
+      ]} rows=${consensusCfg} onRowClick=${r=>editCons(r)} emptyMsg="No consensus configs. Create one to enable multi-model agreement checking."/>
+      ${consensusRes.length>0&&html`<div style="margin-top:20px">
+        <div class="section-title" style="margin-bottom:8px">Recent Results</div>
+        <div class="stats-row" style="margin-bottom:12px">
+          <${Stat} label="Consensus Rate" value=${(()=>{const a=consensusRes.filter(r=>r.consensus).length;return consensusRes.length>0?Math.round(a/consensusRes.length*100)+'%':'\u2014'})()}/>
+          <${Stat} label="Avg Agreement" value=${(()=>{if(consensusRes.length===0)return'\u2014';const avg=consensusRes.reduce((s,r)=>s+(r.agreement_score||0),0)/consensusRes.length;return(avg*100).toFixed(0)+'%'})()}/>
+        </div>
+        <${DataTable} columns=${[
+          {key:'trace_id',label:'Trace ID',width:'1fr',mono:true,render:r=>fmt.hash(r.trace_id)},
+          {key:'models',label:'Models',width:'1.5fr',mono:true,render:r=>(r.models||[]).join(', ')},
+          {key:'consensus',label:'Consensus',width:'100px',render:r=>html`<${Badge} text=${r.consensus?'yes':'no'} variant=${r.consensus?'success':'danger'}/>`},
+          {key:'agreement_score',label:'Agreement',width:'100px',mono:true,render:r=>r.agreement_score!=null?Math.round(r.agreement_score*100)+'%':'\u2014'},
+          {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.created_at)}
+        ]} rows=${consensusRes} emptyMsg="No consensus results yet."/>
+      </div>`}
     </div>`}
+    ${showConsForm&&html`<${Modal} title=${consEdit?'Edit Consensus Config':'New Consensus Config'} onClose=${()=>{setShowConsForm(false);setConsEdit(null)}}>
+      <${Input} label="Name" value=${consName} onChange=${setConsName} placeholder="e.g. safety-check"/>
+      <${Input} label="Models (comma-separated)" value=${consModels} onChange=${setConsModels} placeholder="gpt-4o, claude-sonnet-4-5-20250929" mono/>
+      <${Input} label="Threshold" value=${consThreshold} onChange=${setConsThreshold} placeholder="0.7"/>
+      <${Select} label="On Disagree" value=${consDisagree} onChange=${setConsDisagree} options=${[{value:'fail',label:'Fail'},{value:'warn',label:'Warn'},{value:'log',label:'Log'},{value:'majority',label:'Use Majority'}]}/>
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end">
+        <${Btn} onClick=${()=>{setShowConsForm(false);setConsEdit(null)}}>Cancel<//>
+        <${Btn} variant="primary" onClick=${saveCons} disabled=${!consName||!consModels}>Save<//>
+      </div>
+    <//>`}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
@@ -253,6 +298,8 @@ function ObserveView(){
   const[showFavs,setShowFavs]=useState(false);
   const[heatData,setHeatData]=useState(null);const[heatRange,setHeatRange]=useState('24h');
   const[compareA,setCompareA]=useState(null);const[compareB,setCompareB]=useState(null);const[showCompare,setShowCompare]=useState(false);
+  const[tagKeys,setTagKeys]=useState([]);const[selTagKey,setSelTagKey]=useState('');const[tagPeriod,setTagPeriod]=useState('this_month');const[tagData,setTagData]=useState([]);
+  const[sourceFilter,setSourceFilter]=useState('');
   const liveRef=useRef([]);const maxLive=200;
 
   // SSE connection
@@ -285,6 +332,9 @@ function ObserveView(){
   useEffect(()=>{(async()=>{const r=await api('/api/observe/heatmap?range='+heatRange);setHeatData(r||{})})()},[heatRange]);
   // Auto-refresh persisted data every 15s when on live tab
   useEffect(()=>{if(tab==='live'){const t=setInterval(reload,15000);return()=>clearInterval(t)}},[tab]);
+  // Tags
+  useEffect(()=>{(async()=>{const r=await api('/api/observe/costs/tags');setTagKeys(r.tags||[]);if(r.tags&&r.tags.length>0&&!selTagKey)setSelTagKey(r.tags[0])})()},[]);
+  useEffect(()=>{if(!selTagKey)return;(async()=>{const r=await api('/api/observe/costs/by-tag?tag='+selTagKey+'&period='+tagPeriod);setTagData(r.rows||r.data||[])})()},[selTagKey,tagPeriod]);
 
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const ov=data.overview||{};const today=ov.today||{};
@@ -299,7 +349,7 @@ function ObserveView(){
       <${Stat} label="Total Traces" value=${fmt.num(ov.total_traces||0)}/>
       <${Stat} label="Live Feed" value=${liveEvents.length} sub=${html`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:${sseDot};display:inline-block;${sseStatus==='connected'?'animation:pulse 2s infinite':''}"></span>${sseStatus}</span>`}/>
     </div>
-    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','heatmap','alerts','safety']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
+    <${TabBar} tabs=${['\u25CF live','dashboard','traces','costs','heatmap','alerts','safety','tags']} active=${tab==='live'?'\u25CF live':tab} onChange=${t=>setTab(t==='\u25CF live'?'live':t)}/>
     ${tab==='live'?html`
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
         <button class="btn btn-sm ${livePaused?'':'primary'}" onClick=${()=>setLivePaused(!livePaused)}>${livePaused?'\u25B6 Resume':'\u23F8 Pause'}</button>
@@ -335,15 +385,21 @@ function ObserveView(){
         <div class="chart-card"><div class="chart-title">Cost by Model (7d)</div><${MiniBar} items=${models.map((m,i)=>({label:(m.model||'unknown').split('/').pop().substring(0,16),value:m.cost_usd,color:PCOLORS[i%PCOLORS.length],display:fmt.usd(m.cost_usd)}))} width=${340} height=${140}/></div>
       </div>`:
     tab==='traces'?html`<div style="margin-bottom:8px;display:flex;gap:8px;align-items:center"><button class="btn btn-sm" onClick=${reload}>\u21BB Refresh</button><button class="btn btn-sm ${showFavs?'primary':''}" onClick=${()=>setShowFavs(!showFavs)}>\u2605 ${showFavs?'Favorites':'All'}</button>
+      <select style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);font-size:0.75rem;font-family:var(--font-mono);padding:3px 6px" value=${sourceFilter} onChange=${e=>setSourceFilter(e.target.value)}>
+        <option value="">All sources</option>
+        ${[...new Set(d('traces').map(t=>t.source).filter(Boolean))].map(s=>html`<option key=${s} value=${s}>${s}</option>`)}
+      </select>
       ${compareA&&compareB?html`<${Btn} variant="primary" small onClick=${()=>setShowCompare(true)}>Compare 2 traces<//>`:compareA?html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Select 1 more trace to compare</span>`:html`<span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">Click \u2610 to compare traces</span>`}
       ${(compareA||compareB)&&html`<button class="btn btn-sm" onClick=${()=>{setCompareA(null);setCompareB(null)}}>Clear</button>`}</div><${DataTable} columns=${[
       {key:'cmp',label:'\u2610',width:'32px',render:r=>{const sel=compareA?.id===r.id||compareB?.id===r.id;return html`<span onClick=${e=>{e.stopPropagation();if(sel){if(compareA?.id===r.id)setCompareA(null);else setCompareB(null)}else if(!compareA)setCompareA(r);else if(!compareB)setCompareB(r)}} style="cursor:pointer;font-size:0.9rem;color:${sel?'var(--rust)':'var(--bg3)'}">${sel?'\u2611':'\u2610'}</span>`}},
       {key:'fav',label:'\u2605',width:'36px',render:r=>html`<span onClick=${e=>{e.stopPropagation();toggleFav(r.id)}} style="cursor:pointer;font-size:1rem;color:${r.favorited?'var(--gold)':'var(--bg3)'}">${r.favorited?'\u2605':'\u2606'}</span>`},
-      {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},{key:'provider',label:'Provider',width:'110px',mono:true},
+      {key:'ts',label:'Time',width:'100px',render:r=>fmt.ago(r.timestamp||r.created_at)},{key:'model',label:'Model',width:'1fr',mono:true},
+      {key:'source',label:'Source',width:'80px',render:r=>r.source?html`<${Badge} text=${r.source} variant="muted"/>`:'\u2014'},
+      {key:'provider',label:'Provider',width:'110px',mono:true},
       {key:'ti',label:'In',width:'70px',mono:true,render:r=>fmt.num(r.tokens_in)},{key:'to',label:'Out',width:'70px',mono:true,render:r=>fmt.num(r.tokens_out)},
       {key:'lat',label:'Latency',width:'90px',mono:true,render:r=>fmt.ms(r.duration_ms||r.latency_ms)},{key:'cost',label:'Cost',width:'90px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
       {key:'s',label:'',width:'50px',render:r=>html`<${Badge} text=${r.status==='ok'||r.status_code===200||!r.status_code?'ok':'err'} variant=${r.status==='ok'||r.status_code===200||!r.status_code?'success':'danger'}/>`}
-    ]} rows=${d('traces')} onRowClick=${r=>setDetail(r)} emptyMsg=${showFavs?"No favorites yet \u2014 click the \u2605 on any trace.":"No traces yet \u2014 send requests to /v1/chat/completions."}/>`:
+    ]} rows=${(sourceFilter?d('traces').filter(t=>t.source===sourceFilter):d('traces'))} onRowClick=${r=>setDetail(r)} emptyMsg=${showFavs?"No favorites yet \u2014 click the \u2605 on any trace.":"No traces yet \u2014 send requests to /v1/chat/completions."}/>`:
     tab==='costs'?html`<div style="display:flex;gap:8px;margin-bottom:16px">
       <${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=30','_blank')}>Export 30-Day Report<//><${Btn} small onClick=${()=>window.open('/api/observe/cost-report?days=7','_blank')}>7-Day Report<//><${Btn} small variant="danger" onClick=${async()=>{const r=await api('/api/observe/auto-disable',{method:'POST'});if(r.count>0){setToast({msg:r.count+' broken provider(s) disabled: '+r.disabled.join(', '),type:'success'});reload()}else{setToast({msg:'All providers healthy — none disabled',type:'info'})}}}>Auto-Disable Broken Providers<//></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
@@ -380,6 +436,18 @@ function ObserveView(){
         {key:'cat',label:'Category',width:'110px',mono:true,render:r=>r.category||'\u2014'},
         {key:'model',label:'Model',width:'1fr',mono:true,render:r=>r.model||'\u2014'}
       ]} rows=${safetyEvents} emptyMsg="No safety events \u2014 events appear when safety middlewares detect PII, injections, secrets, or toxic content."/>
+    </div>`:
+    html`<div>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+        <${Select} label="Tag Key" value=${selTagKey} onChange=${setSelTagKey} options=${tagKeys.map(t=>({value:t,label:t}))}/>
+        <${Select} label="Period" value=${tagPeriod} onChange=${setTagPeriod} options=${[{value:'this_month',label:'This Month'},{value:'last_month',label:'Last Month'},{value:'7d',label:'Last 7d'},{value:'30d',label:'Last 30d'}]}/>
+      </div>
+      <${DataTable} columns=${[
+        {key:'tag_value',label:'Tag Value',width:'1.5fr',mono:true},
+        {key:'requests',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.requests)},
+        {key:'cost_usd',label:'Cost USD',width:'110px',mono:true,accent:true,render:r=>fmt.usd(r.cost_usd)},
+        {key:'percentage',label:'Percentage',width:'100px',mono:true,render:r=>r.percentage!=null?r.percentage.toFixed(1)+'%':'\u2014'}
+      ]} rows=${tagData} emptyMsg=${selTagKey?'No data for tag "'+selTagKey+'" in this period.':'Select a tag key to view cost breakdown.'}/>
     </div>`}
     ${detail&&html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
       <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
@@ -1095,7 +1163,126 @@ function TeamView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,team:TeamView,settings:SettingsView};
+// ─── Recall ─────────────────────────────────────────────────────────
+function RecallView(){
+  const[incidents,setIncidents]=useState([]);const[selectedIncident,setSelectedIncident]=useState(null);const[incidentTraces,setIncidentTraces]=useState([]);
+  const[toast,setToast]=useState(null);const[showNew,setShowNew]=useState(false);const[previewResults,setPreviewResults]=useState(null);
+  const[title,setTitle]=useState('');const[searchQ,setSearchQ]=useState('');const[searchType,setSearchType]=useState('contains');
+  const[severity,setSeverity]=useState('medium');const[dateFrom,setDateFrom]=useState('');const[dateTo,setDateTo]=useState('');const[modelFilter,setModelFilter]=useState('');
+  const[statusChange,setStatusChange]=useState('');
+  const load=async()=>{const r=await api('/api/recall/incidents');setIncidents(r.incidents||[])};
+  useEffect(()=>{load()},[]);
+  const loadDetail=async(inc)=>{setSelectedIncident(inc);const r=await api('/api/recall/incidents/'+inc.id+'/traces');setIncidentTraces(r.traces||[]);setStatusChange(inc.status||'open')};
+  const preview=async()=>{const r=await api('/api/recall/search?q='+encodeURIComponent(searchQ)+'&type='+searchType);setPreviewResults(r)};
+  const create=async()=>{const body={title,search_query:searchQ,search_type:searchType,severity,date_from:dateFrom||undefined,date_to:dateTo||undefined,model_filter:modelFilter||undefined};const r=await api('/api/recall/incidents',{method:'POST',body:JSON.stringify(body)});if(r._error){setToast({msg:'Failed: '+(r.error||r._error),type:'error'});return}setToast({msg:'Incident created',type:'success'});setShowNew(false);setTitle('');setSearchQ('');setPreviewResults(null);load()};
+  const notify=async(id)=>{const r=await api('/api/recall/incidents/'+id+'/notify',{method:'POST'});setToast({msg:r._error?'Notify failed':'Notifications sent',type:r._error?'error':'success'})};
+  const rescan=async(id)=>{const r=await api('/api/recall/incidents/'+id+'/rescan',{method:'POST'});setToast({msg:r._error?'Rescan failed':'Rescan complete'+(r.new_traces?' — '+r.new_traces+' new traces':''),type:r._error?'error':'success'});loadDetail(selectedIncident)};
+  const changeStatus=async(id,s)=>{await api('/api/recall/incidents/'+id,{method:'PUT',body:JSON.stringify({status:s})});setToast({msg:'Status updated to '+s,type:'success'});load();if(selectedIncident)setSelectedIncident({...selectedIncident,status:s})};
+  const sevVariant=s=>s==='critical'?'error':s==='high'?'warn':s==='medium'?'muted':'success';
+  const statusVariant=s=>s==='open'?'danger':s==='investigating'?'warn':s==='resolved'?'success':'muted';
+  if(selectedIncident)return html`<div class="page-head"><div class="page-eyebrow">Recall</div><h2>Incident: ${selectedIncident.title}</h2></div>
+    <div style="margin-bottom:16px"><${Btn} small onClick=${()=>setSelectedIncident(null)}>\u2190 Back to List<//></div>
+    <div class="stats-row" style="margin-bottom:16px">
+      <${Stat} label="Severity" value=${selectedIncident.severity} accent/>
+      <${Stat} label="Status" value=${selectedIncident.status||'open'}/>
+      <${Stat} label="Affected Traces" value=${incidentTraces.length}/>
+      <${Stat} label="Created" value=${fmt.ago(selectedIncident.created_at)}/>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <${Btn} variant="primary" small onClick=${()=>notify(selectedIncident.id)}>Notify All<//>
+      <${Btn} small onClick=${()=>rescan(selectedIncident.id)}>Rescan<//>
+      <select style="background:var(--bg2);color:var(--cream);border:1px solid var(--bg3);font-size:0.75rem;font-family:var(--font-mono);padding:3px 6px" value=${statusChange} onChange=${e=>{setStatusChange(e.target.value);changeStatus(selectedIncident.id,e.target.value)}}>
+        <option value="open">open</option><option value="investigating">investigating</option><option value="resolved">resolved</option><option value="closed">closed</option>
+      </select>
+    </div>
+    <div class="section-title">Affected Traces</div>
+    <${DataTable} columns=${[
+      {key:'id',label:'Trace ID',width:'1fr',mono:true,render:r=>fmt.hash(r.id||r.trace_id)},
+      {key:'model',label:'Model',width:'1fr',mono:true},
+      {key:'ts',label:'Time',width:'110px',render:r=>fmt.ago(r.created_at||r.timestamp)},
+      {key:'cost',label:'Cost',width:'90px',mono:true,render:r=>fmt.usd(r.cost_usd)},
+      {key:'status',label:'Status',width:'80px',render:r=>html`<${Badge} text=${r.status||'ok'} variant=${r.status==='ok'||!r.status?'success':'danger'}/>`}
+    ]} rows=${incidentTraces} emptyMsg="No affected traces found."/>
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+  return html`<div class="page-head"><div class="page-eyebrow">Recall</div><h2>Incident Response</h2><p class="page-sub">Search historical traces, create incidents, notify affected parties.</p></div>
+    <div class="stats-row" style="margin-bottom:16px">
+      <${Stat} label="Incidents" value=${incidents.length} accent/>
+      <${Stat} label="Open" value=${incidents.filter(i=>i.status==='open').length}/>
+      <${Stat} label="Critical" value=${incidents.filter(i=>i.severity==='critical').length}/>
+    </div>
+    <div style="margin-bottom:12px"><${Btn} variant="primary" small onClick=${()=>setShowNew(true)}>+ New Incident<//></div>
+    <${DataTable} columns=${[
+      {key:'title',label:'Title',width:'2fr'},
+      {key:'severity',label:'Severity',width:'100px',render:r=>html`<${Badge} text=${r.severity} variant=${sevVariant(r.severity)}/>`},
+      {key:'status',label:'Status',width:'100px',render:r=>html`<${Badge} text=${r.status||'open'} variant=${statusVariant(r.status)}/>`},
+      {key:'affected',label:'Affected',width:'80px',mono:true,render:r=>r.affected_count||0},
+      {key:'ts',label:'Created',width:'110px',render:r=>fmt.ago(r.created_at)}
+    ]} rows=${incidents} onRowClick=${r=>loadDetail(r)} emptyMsg="No incidents. Create one to start investigating."/>
+    ${showNew&&html`<${Modal} title="New Incident" onClose=${()=>{setShowNew(false);setPreviewResults(null)}}>
+      <${Input} label="Title" value=${title} onChange=${setTitle} placeholder="e.g. PII leak in model responses"/>
+      <${Input} label="Search Query" value=${searchQ} onChange=${setSearchQ} placeholder="e.g. credit card number" mono/>
+      <${Select} label="Search Type" value=${searchType} onChange=${setSearchType} options=${[{value:'contains',label:'Contains'},{value:'regex',label:'Regex'}]}/>
+      <${Select} label="Severity" value=${severity} onChange=${setSeverity} options=${[{value:'critical',label:'Critical'},{value:'high',label:'High'},{value:'medium',label:'Medium'},{value:'low',label:'Low'}]}/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <${Input} label="Date From" value=${dateFrom} onChange=${setDateFrom} type="date"/>
+        <${Input} label="Date To" value=${dateTo} onChange=${setDateTo} type="date"/>
+      </div>
+      <${Input} label="Model Filter" value=${modelFilter} onChange=${setModelFilter} placeholder="e.g. gpt-4o (optional)" mono/>
+      ${previewResults&&html`<div style="margin:8px 0;padding:8px;border:1px solid var(--bg3);background:var(--bg);font-size:0.8rem">
+        <span class="mono" style="color:var(--cream-muted)">Preview: </span><span class="mono" style="color:var(--cream)">${previewResults.count||0} traces matched</span>
+      </div>`}
+      <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end">
+        <${Btn} small onClick=${preview} disabled=${!searchQ}>Preview<//>
+        <${Btn} variant="primary" onClick=${create} disabled=${!title||!searchQ}>Create<//>
+      </div>
+    <//>`}
+    ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
+}
+
+// ─── Copilot ────────────────────────────────────────────────────────
+function CopilotPanel({open,onClose}){
+  const[messages,setMessages]=useState([]);const[input,setInput]=useState('');const[sending,setSending]=useState(false);const[sessionId]=useState(()=>'cp-'+Math.random().toString(36).slice(2,10));
+  const[expandedActions,setExpandedActions]=useState({});
+  const msgsRef=useRef(null);
+  const suggestions=['Show me today\u2019s cost breakdown','Which providers are unhealthy?','List recent safety events','How many traces had errors today?','Show top models by usage'];
+  const send=async(text)=>{const msg=text||input.trim();if(!msg)return;const userMsg={role:'user',content:msg};setMessages(prev=>[...prev,userMsg]);setInput('');setSending(true);
+    const r=await api('/api/copilot/chat',{method:'POST',body:JSON.stringify({message:msg,session_id:sessionId})});
+    setSending(false);const botMsg={role:'bot',content:r.response||r.message||'No response.',actions:r.actions||null};setMessages(prev=>[...prev,botMsg]);
+    setTimeout(()=>{if(msgsRef.current)msgsRef.current.scrollTop=msgsRef.current.scrollHeight},50)};
+  const toggleActions=(idx)=>setExpandedActions(prev=>({...prev,[idx]:!prev[idx]}));
+  const handleKey=(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}};
+  if(!open)return null;
+  return html`<div class="copilot-panel open">
+    <div class="copilot-header">
+      <span class="mono" style="font-size:0.85rem;color:var(--cream)">Stockyard Copilot</span>
+      <button onClick=${onClose} style="border:none;background:none;color:var(--cream-dim);cursor:pointer;font-size:1rem">\u2715</button>
+    </div>
+    <div class="copilot-messages" ref=${msgsRef}>
+      ${messages.length===0?html`<div style="padding:16px 0;text-align:center">
+        <div style="font-size:0.82rem;color:var(--cream-dim);margin-bottom:12px">Ask anything about your Stockyard setup</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${suggestions.map(s=>html`<span key=${s} class="copilot-chip" onClick=${()=>send(s)}>${s}</span>`)}</div>
+      </div>`:messages.map((m,i)=>html`<div key=${i} class="copilot-msg ${m.role==='user'?'user':'bot'}">
+        ${m.content}
+        ${m.actions&&m.actions.length>0?html`<div class="copilot-actions" onClick=${()=>toggleActions(i)}>
+          ${expandedActions[i]?'\u25BC':'\u25B6'} Actions taken (${m.actions.length})
+          ${expandedActions[i]&&html`<div style="margin-top:4px;color:var(--cream-dim)">${m.actions.map((a,j)=>html`<div key=${j} style="padding:2px 0" class="mono">\u2022 ${a}</div>`)}</div>`}
+        </div>`:''}
+      </div>`)}
+      ${sending&&html`<div class="copilot-msg bot" style="color:var(--cream-muted)">Thinking\u2026</div>`}
+    </div>
+    <div class="copilot-input">
+      <textarea placeholder="Ask Copilot..." value=${input} onInput=${e=>setInput(e.target.value)} onKeyDown=${handleKey} rows="1"/>
+      <${Btn} variant="primary" small onClick=${()=>send()} disabled=${sending||!input.trim()}>\u2191<//>
+    </div>
+  </div>`;
+}
+
+function CopilotView(){
+  return html`<div class="page-head"><div class="page-eyebrow">Copilot</div><h2>AI Assistant</h2><p class="page-sub">Chat with Copilot from the panel on the right side, or open it with the \u25C8 button in the sidebar.</p></div>
+    <div class="empty-state" style="padding:48px">Use the <strong>\u25C8 Copilot</strong> button in the sidebar or press <kbd style="font-family:var(--font-mono);background:var(--bg3);padding:2px 6px;border-radius:3px">C</kbd> to open the chat panel.</div>`;
+}
+
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,billing:BillingView,team:TeamView,recall:RecallView,copilot:CopilotView,settings:SettingsView};
 
 
 function Onboarding({onComplete}){
@@ -1169,7 +1356,7 @@ function ShortcutsModal({onClose}){
     ['g then o','Go to Overview'],['g then p','Go to Proxy'],['g then b','Go to Observe'],
     ['g then t','Go to Trust'],['g then s','Go to Studio'],['g then f','Go to Forge'],
     ['g then e','Go to Exchange'],['g then i','Go to Bill'],
-    ['r','Refresh current view'],['?','Show shortcuts'],['Esc','Close modal/panel'],
+    ['r','Refresh current view'],['C','Toggle Copilot panel'],['?','Show shortcuts'],['Esc','Close modal/panel'],
   ];
   return html`<${Modal} title="Keyboard Shortcuts" onClose=${onClose}>
     <table style="width:100%;font-size:0.82rem;border-collapse:collapse">
@@ -1210,12 +1397,13 @@ function useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts){
 function App(){
   const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
   const[showChangelog,setShowChangelog]=useState(false);const[showShortcuts,setShowShortcuts]=useState(false);
-  const[hasNew,setHasNew]=useState(false);
+  const[hasNew,setHasNew]=useState(false);const[copilotOpen,setCopilotOpen]=useState(false);
   const[theme,setThemeState]=useState(()=>localStorage.getItem('sy_theme')||'dark');
   const setTheme=(t)=>{setThemeState(t);localStorage.setItem('sy_theme',t);document.documentElement.setAttribute('data-theme',t)};
   useEffect(()=>{document.documentElement.setAttribute('data-theme',theme)},[]);
   const View=VIEWS[active]||OverviewView;
   useKeyboardShortcuts(setActive,setShowChangelog,setShowShortcuts);
+  useEffect(()=>{const h=e=>{const tag=e.target.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||e.target.isContentEditable)return;if(e.key==='c'||e.key==='C'){if(!e.ctrlKey&&!e.metaKey&&!e.altKey){setCopilotOpen(s=>!s)}}};document.addEventListener('keydown',h);return()=>document.removeEventListener('keydown',h)},[]);
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
   useEffect(()=>{(async()=>{const r=await api('/api/changelog?limit=1');if(Array.isArray(r)&&r.length>0){const lastSeen=parseInt(localStorage.getItem('sy_changelog_seen')||'0');const entryDate=new Date(r[0].date).getTime();if(entryDate>lastSeen)setHasNew(true)}})()},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
@@ -1226,6 +1414,7 @@ function App(){
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
+    <button class="nav-item" onClick=${()=>setCopilotOpen(s=>!s)} title="Copilot (C)"><span class="nav-icon">\u25C8</span><span class="nav-label">Copilot</span></button>
     <button class="nav-item" onClick=${()=>{setShowChangelog(s=>!s);setHasNew(false)}} title="What's New"><span class="nav-icon" style="position:relative">\u2605${hasNew&&html`<span style="position:absolute;top:-2px;right:-4px;width:6px;height:6px;background:var(--rust);border-radius:50%"></span>`}</span><span class="nav-label">What's New</span></button>
     <button class="nav-item" onClick=${()=>setTheme(theme==='dark'?'light':'dark')} title=${theme==='dark'?'Switch to light mode':'Switch to dark mode'}><span class="nav-icon">${theme==='dark'?'\u263E':'\u2600'}</span><span class="nav-label">${theme==='dark'?'Light Mode':'Dark Mode'}</span></button>
     <button class="nav-item ${active==='settings'?'active':''}" onClick=${()=>setActive('settings')}><span class="nav-icon">\u2699</span><span class="nav-label">Settings</span></button>
@@ -1236,6 +1425,7 @@ function App(){
   </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main>
     ${showChangelog&&html`<${ChangelogPanel} onClose=${()=>setShowChangelog(false)}/>`}
     ${showShortcuts&&html`<${ShortcutsModal} onClose=${()=>setShowShortcuts(false)}/>`}
+    <${CopilotPanel} open=${copilotOpen} onClose=${()=>setCopilotOpen(false)}/>
   </div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));
@@ -1321,6 +1511,19 @@ html[data-theme="light"]{--bg:#f5f0e8;--bg2:#ede6da;--bg3:#ddd5c7;--rust:#b84e20
 .upgrade-cta:hover{background:var(--rust-light,#e8753a)}
 .upgrade-dismiss,.upgrade-next{background:none;border:none;color:var(--cream-dim,#bfb5a3);cursor:pointer;font-size:0.9rem;padding:2px 6px;opacity:0.6}
 .upgrade-dismiss:hover,.upgrade-next:hover{opacity:1;color:var(--cream,#f0e6d3)}
+/* Copilot panel */
+.copilot-panel{position:fixed;top:0;right:0;width:350px;height:100vh;background:var(--bg2);border-left:1px solid var(--bg3);z-index:1000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s}
+.copilot-panel.open{transform:translateX(0)}
+.copilot-header{padding:1rem;border-bottom:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center}
+.copilot-messages{flex:1;overflow-y:auto;padding:1rem}
+.copilot-msg{margin-bottom:.75rem;padding:.5rem .75rem;border-radius:6px;max-width:85%;font-size:.85rem;line-height:1.4}
+.copilot-msg.user{background:var(--bg3);margin-left:auto;text-align:right}
+.copilot-msg.bot{background:var(--bg);border:1px solid var(--bg3)}
+.copilot-input{padding:1rem;border-top:1px solid var(--bg3);display:flex;gap:.5rem}
+.copilot-input textarea{flex:1;background:var(--bg);color:var(--cream);border:1px solid var(--bg3);border-radius:4px;padding:.5rem;font-family:inherit;resize:none;min-height:40px}
+.copilot-actions{font-size:.8rem;color:var(--leather);cursor:pointer;margin-top:.25rem}
+.copilot-chip{display:inline-block;padding:.25rem .75rem;background:var(--bg3);border-radius:12px;font-size:.8rem;cursor:pointer;margin:.25rem}
+.copilot-chip:hover{background:var(--leather);color:var(--bg)}
 </style>
 </head>
 <body><div id="root"></div></body>

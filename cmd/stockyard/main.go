@@ -11,12 +11,14 @@ package main
 
 import (
 	"github.com/stockyard-dev/stockyard/internal/apps/billing"
+	"github.com/stockyard-dev/stockyard/internal/apps/copilot"
 	"github.com/stockyard-dev/stockyard/internal/apps/exchange"
 	"github.com/stockyard-dev/stockyard/internal/apps/forge"
 	"github.com/stockyard-dev/stockyard/internal/apps/marketing"
 	"github.com/stockyard-dev/stockyard/internal/apps/memory"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	proxyapp "github.com/stockyard-dev/stockyard/internal/apps/proxy"
+	"github.com/stockyard-dev/stockyard/internal/apps/recall"
 	"github.com/stockyard-dev/stockyard/internal/apps/studio"
 	"github.com/stockyard-dev/stockyard/internal/apps/team"
 	"github.com/stockyard-dev/stockyard/internal/apps/trust"
@@ -47,6 +49,8 @@ func main() {
 			team.New(nil),
 			memory.New(nil),
 			marketing.New(nil),
+			recall.New(nil),
+			copilot.New(nil),
 		},
 		Features: engine.Features{
 			SpendTracking:  true,
@@ -177,6 +181,8 @@ func main() {
 			CanaryDeploy:   true,
 			PlaybackStudio: true,
 			WebhookForge:   true,
+			Consensus:      true,
+			AutoTag:        true,
 		},
 	})
 }
