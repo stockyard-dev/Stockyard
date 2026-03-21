@@ -13,9 +13,9 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<title>Pricing: Free to Start, Pro $49/mo — Stockyard</title>
-<meta name="description" content="Stockyard pricing. Community free forever. Individual $9.99/mo. Pro $49/mo cloud-managed. Team $149/mo. Enterprise $499/mo. Annual billing saves 2 months.">
-<meta property="og:title" content="Pricing: Free to Start, Pro $49/mo — Stockyard">
+<title>Pricing: Free Forever, Pro $29/mo — Stockyard</title>
+<meta name="description" content="Stockyard pricing. Free self-hosted tier, Pro $29/mo cloud-managed, Team $99/mo, Enterprise $299/mo. App builders earn 80%, mesh operators earn 88%.">
+<meta property="og:title" content="Pricing: Free Forever, Pro $29/mo — Stockyard">
 <meta property="og:description" content="Stockyard pricing. Free to Enterprise. App builders earn 80%, mesh operators earn 88%.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -183,86 +183,100 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
     <div class="tier">
       <div class="tier-name">Free</div>
       <div class="tier-price-free">Free</div>
-      <div class="tier-period">forever</div>
+      <div class="tier-period">self-hosted &middot; forever</div>
       <div class="tier-annual-note">&nbsp;</div>
       <ul class="tier-features">
-        <li>1,000 requests/month</li>
-        <li>3 providers</li>
-        <li>20 basic modules</li>
-        <li>7-day audit retention</li>
-        <li>Playground access</li>
+        <li>All 58 modules</li>
+        <li>All 16 apps</li>
+        <li>All 16 providers</li>
+        <li>Unlimited requests</li>
+        <li>Publish apps to marketplace</li>
+        <li>Contribute to mesh</li>
+        <li>Sell knowledge bases</li>
         <li>Community support</li>
       </ul>
       <a href="https://github.com/stockyard-dev/stockyard" class="btn btn-secondary tier-cta">Download</a>
     </div>
 
-    <div class="tier">
-      <div class="tier-name">Individual</div>
-      <div class="tier-price" data-monthly="9.99" data-annual="99"><span class="dollar">$</span><span class="price-val">9.99</span></div>
-      <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$21/yr"></span>&nbsp;</div>
-      <ul class="tier-features">
-        <li>10,000 requests/month</li>
-        <li>All 16 providers</li>
-        <li>All 58 modules</li>
-        <li>All 16 apps</li>
-        <li>30-day audit retention</li>
-        <li>Email support</li>
-      </ul>
-      <button onclick="checkout('stockyard','individual',event)" class="btn btn-secondary tier-cta">Get started</button>
-    </div>
-
     <div class="tier featured">
       <div class="tier-name">Pro</div>
-      <div class="tier-price" data-monthly="49" data-annual="490"><span class="dollar">$</span><span class="price-val">49</span></div>
+      <div class="tier-price" data-monthly="29" data-annual="290"><span class="dollar">$</span><span class="price-val">29</span></div>
       <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$98/yr"></span>&nbsp;</div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$58/yr"></span>&nbsp;</div>
       <ul class="tier-features">
-        <li>Unlimited requests</li>
-        <li>All 16 providers</li>
-        <li>All 58 modules</li>
+        <li>Everything in Free</li>
         <li>Cloud managed &mdash; zero ops</li>
+        <li>Custom domain</li>
         <li>90-day audit retention</li>
         <li>Auto backups</li>
-        <li>Priority email support</li>
+        <li>Priority support</li>
+        <li>Marketplace seller access</li>
       </ul>
       <button onclick="checkout('stockyard','pro',event)" class="btn btn-rust tier-cta">Go Pro</button>
     </div>
 
     <div class="tier">
       <div class="tier-name">Team</div>
-      <div class="tier-price" data-monthly="149" data-annual="1,490"><span class="dollar">$</span><span class="price-val">149</span></div>
+      <div class="tier-price" data-monthly="99" data-annual="990"><span class="dollar">$</span><span class="price-val">99</span></div>
       <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$298/yr"></span>&nbsp;</div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$198/yr"></span>&nbsp;</div>
       <ul class="tier-features">
         <li>Everything in Pro</li>
-        <li>5 seats included</li>
-        <li>+$25/seat/month after 5</li>
-        <li>Shared dashboard</li>
-        <li>Team-level audit trails</li>
+        <li>5 seats included (+$20/seat)</li>
+        <li>RBAC &amp; team invites</li>
+        <li>Per-member spend tracking</li>
+        <li>Governance tools</li>
+        <li>Compliance presets</li>
         <li>1-year audit retention</li>
-        <li>Slack + email support</li>
       </ul>
       <button onclick="checkout('stockyard','team',event)" class="btn btn-rust tier-cta">Start team</button>
     </div>
 
     <div class="tier">
       <div class="tier-name">Enterprise</div>
-      <div class="tier-price" data-monthly="499" data-annual="4,990"><span class="dollar">$</span><span class="price-val">499</span></div>
+      <div class="tier-price" data-monthly="299" data-annual="2,990"><span class="dollar">$</span><span class="price-val">299</span></div>
       <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$998/yr"></span>&nbsp;</div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$598/yr"></span>&nbsp;</div>
       <ul class="tier-features">
         <li>Everything in Team</li>
         <li>Unlimited seats</li>
-        <li>Unlimited audit retention</li>
-        <li>Custom modules</li>
         <li>SSO &amp; SAML</li>
+        <li>Trust federation</li>
         <li>SLA &amp; compliance export</li>
+        <li>Safety certification</li>
+        <li>Unlimited retention</li>
         <li>Dedicated support</li>
       </ul>
       <a href="mailto:enterprise@stockyard.dev" class="btn btn-secondary tier-cta">Contact sales</a>
     </div>
 
+  </div>
+</section>
+
+<section style="padding:3rem 2rem;max-width:960px;margin:0 auto">
+  <div style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);margin-bottom:2rem;text-align:center">Earn on the Platform</div>
+  <p style="color:var(--cream-dim);text-align:center;max-width:550px;margin:0 auto 2rem;font-size:1rem">Every tier &mdash; including Free &mdash; can earn money on the platform. Stockyard takes a small fee and the rest is yours.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem">
+    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">80%</div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">App Revenue</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Publish AI apps. Set your price. Earn 80% of every transaction.</div>
+    </div>
+    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">88%</div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">Mesh Earnings</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Contribute GPU compute. Earn 88% of every inference fee.</div>
+    </div>
+    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">80%</div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">Knowledge Royalties</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Sell domain expertise. Earn 80% of every query against your data.</div>
+    </div>
+    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">97.5%</div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">Billing Pass-Through</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Bill your customers through Stockyard. 2.5% platform fee + Stripe fees.</div>
+    </div>
   </div>
 </section>
 
@@ -273,28 +287,31 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
       <tr>
         <th></th>
         <th>Free</th>
-        <th>Individual</th>
         <th class="highlight-col">Pro</th>
         <th>Team</th>
         <th>Enterprise</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td>Monthly price</td><td>Free</td><td>$9.99</td><td class="highlight-col">$49</td><td>$149</td><td>$499</td></tr>
-      <tr><td>Annual price</td><td>Free</td><td>$99/yr</td><td class="highlight-col">$490/yr</td><td>$1,490/yr</td><td>$4,990/yr</td></tr>
-      <tr><td>Hosting</td><td>Self-hosted</td><td>Self-hosted</td><td class="highlight-col">Cloud managed</td><td>Cloud managed</td><td>Dedicated</td></tr>
-      <tr><td>Seats</td><td>1</td><td>1</td><td class="highlight-col">1</td><td>5 included</td><td>Unlimited</td></tr>
-      <tr><td>Requests/month</td><td>1,000</td><td>10,000</td><td class="highlight-col">Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
-      <tr><td>Providers</td><td>3</td><td>All 16</td><td class="highlight-col">All 16</td><td>All 16</td><td>All 16 + custom</td></tr>
-      <tr><td>Modules</td><td>20 basic</td><td>All 58</td><td class="highlight-col">All 58</td><td>All 58</td><td>All 58 + custom</td></tr>
-      <tr><td>Audit retention</td><td>7 days</td><td>30 days</td><td class="highlight-col">90 days</td><td>1 year</td><td>Unlimited</td></tr>
-      <tr><td>Support</td><td>Community</td><td>Email</td><td class="highlight-col">Priority email</td><td>Slack + email</td><td>Dedicated + SLA</td></tr>
-      <tr><td>Playground</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>All 16 apps</td><td>&mdash;</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>Cloud managed</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>Team dashboard</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>SSO / SAML</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
-      <tr><td>SLA</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Monthly price</td><td>Free</td><td class="highlight-col">$29</td><td>$99</td><td>$299</td></tr>
+      <tr><td>Annual price</td><td>Free</td><td class="highlight-col">$290/yr</td><td>$990/yr</td><td>$2,990/yr</td></tr>
+      <tr><td>Hosting</td><td>Self-hosted</td><td class="highlight-col">Cloud managed</td><td>Cloud managed</td><td>Dedicated</td></tr>
+      <tr><td>Seats</td><td>1</td><td class="highlight-col">1</td><td>5 (+$20/seat)</td><td>Unlimited</td></tr>
+      <tr><td>Requests</td><td>Unlimited</td><td class="highlight-col">Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Providers</td><td>All 16</td><td class="highlight-col">All 16</td><td>All 16</td><td>All 16 + custom</td></tr>
+      <tr><td>Modules</td><td>All 58</td><td class="highlight-col">All 58</td><td>All 58</td><td>All 58 + custom</td></tr>
+      <tr><td>Apps</td><td>All 16</td><td class="highlight-col">All 16</td><td>All 16</td><td>All 16</td></tr>
+      <tr><td>Marketplace seller</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Mesh contributor</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Knowledge seller</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Audit retention</td><td>30 days</td><td class="highlight-col">90 days</td><td>1 year</td><td>Unlimited</td></tr>
+      <tr><td>Custom domain</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>RBAC &amp; governance</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Compliance presets</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Trust federation</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
+      <tr><td>SSO / SAML</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
+      <tr><td>SLA</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
+      <tr><td>Support</td><td>Community</td><td class="highlight-col">Priority</td><td>Slack + email</td><td>Dedicated</td></tr>
     </tbody>
   </table>
 </section>
@@ -350,39 +367,35 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   <div class="faq-label">Common questions</div>
   <div class="faq-item">
     <div class="faq-q">What do I get for free?</div>
-    <div class="faq-a">The free tier includes 20 modules, 3 providers, 1,000 requests/month, and 7-day audit retention. No credit card, no time limit. MIT licensed — source is fully available.</div>
+    <div class="faq-a">Everything. All 58 modules, all 16 apps, all 16 providers, unlimited requests. Self-hosted on your infrastructure. Free forever. You can also publish apps, contribute to the mesh, and sell knowledge bases on the free tier &mdash; and earn from all of them.</div>
   </div>
   <div class="faq-item">
-    <div class="faq-q">What's the difference between Individual and Pro?</div>
-    <div class="faq-a">Individual is self-hosted &mdash; you run the binary on your own server. Pro is cloud-managed &mdash; we run it for you with zero ops, auto backups, and 90-day audit retention. Both get all 58 modules and all 16 providers.</div>
+    <div class="faq-q">What's the difference between Free and Pro?</div>
+    <div class="faq-a">Free is self-hosted &mdash; you run the binary yourself. Pro is cloud-managed &mdash; we host it for you with zero ops, custom domain, auto backups, 90-day audit retention, and priority support. Both have the same features and marketplace access.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">Can I save with annual billing?</div>
-    <div class="faq-a">Yes. Annual plans give you 2 months free: Individual $99/yr (save $21), Pro $490/yr (save $98), Team $1,490/yr (save $298), Enterprise $4,990/yr (save $998).</div>
+    <div class="faq-a">Yes. Annual plans give you 2 months free: Pro $290/yr (save $58), Team $990/yr (save $198), Enterprise $2,990/yr (save $598).</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">How does Team pricing work for more than 5 people?</div>
-    <div class="faq-a">Team includes 5 seats. Additional seats are $25/seat/month. So a 10-person team is $149 + (5 &times; $25) = $274/month.</div>
+    <div class="faq-a">Team includes 5 seats. Additional seats are $20/seat/month. So a 10-person team is $99 + (5 &times; $20) = $199/month.</div>
   </div>
   <div class="faq-item">
-    <div class="faq-q">How does the license key work?</div>
-    <div class="faq-a">After purchase, you receive a license key via email. Set <code>STOCKYARD_LICENSE_KEY=SY-...</code> in your environment. The proxy validates it offline using cryptographic signatures &mdash; no phone-home, no network dependency.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">What happens when my subscription expires?</div>
-    <div class="faq-a">Your proxy reverts to the free tier (1,000 requests/month, 3 providers, 20 modules). No data loss, no config changes. Re-subscribe anytime.</div>
+    <div class="faq-q">How do I earn money on the platform?</div>
+    <div class="faq-a">Three ways. Publish AI apps to the marketplace and earn 80% of every transaction. Contribute GPU compute to the mesh and earn 88% of inference fees. Sell knowledge bases and earn 80% of query royalties. All three work on every tier including Free.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">What providers are supported?</div>
-    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box.</div>
+    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box. Plus the distributed mesh for open-source model inference.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">Do I need to change my application code?</div>
-    <div class="faq-a">No. Point your <code>OPENAI_BASE_URL</code> at the Stockyard proxy. Your existing OpenAI SDK calls work unchanged.</div>
+    <div class="faq-a">No. Either point your <code>OPENAI_BASE_URL</code> at Stockyard, or use the drop-in SDK: <code>pip install stockyard-openai</code> and change one import line.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">What does Enterprise include beyond Team?</div>
-    <div class="faq-a">Unlimited seats, unlimited audit retention, custom module development, SSO/SAML, SLA with uptime guarantees, compliance export, and a dedicated support channel. Email <a href="mailto:enterprise@stockyard.dev">enterprise@stockyard.dev</a> to discuss.</div>
+    <div class="faq-a">Unlimited seats, Trust federation, SSO/SAML, SLA with uptime guarantees, safety certification, compliance export, unlimited audit retention, and a dedicated support channel. Email <a href="mailto:enterprise@stockyard.dev">enterprise@stockyard.dev</a> to discuss.</div>
   </div>
 </section>
 
