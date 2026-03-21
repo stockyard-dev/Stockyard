@@ -181,6 +181,10 @@ type Features struct {
 	CanaryDeploy    bool
 	PlaybackStudio  bool
 	WebhookForge    bool
+
+	// Top 5 features
+	Consensus bool
+	AutoTag   bool
 }
 
 // ProductConfig defines a product's identity and feature set.
@@ -377,6 +381,10 @@ func Boot(pc ProductConfig) {
 	smartRouter := features.NewSmartRouter(db.Conn())
 	features.RegisterSmartRouteAPI(srv.Mux(), db.Conn(), smartRouter)
 
+	// Consensus multi-model verification API
+	consensusEngine := features.NewConsensusEngine(db.Conn(), providers)
+	consensusEngine.RegisterConsensusRoutes(srv.Mux())
+
 	// Cache v2 analytics + warming API
 	cacheV2 := features.NewCacheV2(0.95, 10000, 1*time.Hour)
 	features.RegisterCacheV2API(srv.Mux(), db.Conn(), cacheV2, cfg.Port)
@@ -442,6 +450,10 @@ func Boot(pc ProductConfig) {
 			// Wire broadcaster into apps that subscribe to live events (observe, trust)
 			if setter, ok := app.(interface{ SetBroadcaster(any) }); ok {
 				setter.SetBroadcaster(broadcaster)
+			}
+			// Wire mux reference to copilot for internal API dispatch
+			if setter, ok := app.(interface{ SetMux(*http.ServeMux) }); ok {
+				setter.SetMux(srv.Mux())
 			}
 		}
 
@@ -1364,7 +1376,7 @@ func buildMiddlewares(reg *toggle.Registry,
 	}
 
 	// ── Phase 4 middleware ──
-	mw = buildPhase4Middlewares(pc, cfg, providers, mw)
+	mw = buildPhase4Middlewares(pc, cfg, providers, mw, db, reg)
 
 	return mw
 }

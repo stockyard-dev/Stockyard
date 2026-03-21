@@ -148,6 +148,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/billing/usage/summary", a.handleUsageSummary)
 	mux.HandleFunc("GET /api/billing/usage/by-customer", a.handleUsageByCustomer)
 	mux.HandleFunc("GET /api/billing/usage/by-model", a.handleUsageByModel)
+	mux.HandleFunc("GET /api/billing/usage/by-tag", a.handleUsageByTag)
 
 	// Customer status
 	mux.HandleFunc("GET /api/billing/customers/{id}/status", a.handleCustomerStatus)
