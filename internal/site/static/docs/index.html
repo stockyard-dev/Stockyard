@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Documentation — Stockyard">
-<meta property="og:description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 9 apps.">
+<meta property="og:description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 16 apps.">
 <meta property="og:url" content="https://stockyard.dev/docs/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Documentation — Stockyard</title>
-<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 9 apps.">
+<meta name="description" content="Stockyard documentation. Quickstart, API reference, configuration, and guides for all 16 apps.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -122,7 +122,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
-    <a href="/playground">Playground</a>
+    <a href="/playground/">Playground</a>
     <a href="/cloud/">Cloud</a>
     <a href="/pricing/">Pricing</a>
     <a href="/docs/">Docs</a>
@@ -153,6 +153,12 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/team/">Team</a>
       <a href="/docs/memory/">Memory</a>
       <a href="/docs/exchange/">Exchange</a>
+      <a href="/docs/recall/">Recall</a>
+      <a href="/docs/copilot/">Copilot</a>
+      <a href="/docs/appbuilder/">AppBuilder</a>
+      <a href="/docs/knowledge/">Knowledge</a>
+      <a href="/docs/reputation/">Reputation</a>
+      <a href="/docs/governance/">Governance</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
@@ -182,6 +188,12 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, environment sync, marketplace.</div></a>
       <a href="/docs/team/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Team</div><div class="ov-desc">RBAC, email invites, per-member spend.</div></a>
       <a href="/docs/memory/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Memory</div><div class="ov-desc">Conversation memory, relevance search, TTL.</div></a>
+      <a href="/docs/recall/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Recall</div><div class="ov-desc">Incident response, affected traces, notifications.</div></a>
+      <a href="/docs/copilot/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Copilot</div><div class="ov-desc">Natural language platform configuration.</div></a>
+      <a href="/docs/appbuilder/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">AppBuilder</div><div class="ov-desc">No-code AI app builder and marketplace.</div></a>
+      <a href="/docs/knowledge/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Knowledge</div><div class="ov-desc">Knowledge base marketplace, verification, embeddings.</div></a>
+      <a href="/docs/reputation/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Reputation</div><div class="ov-desc">Trust scores, certifications, leaderboards.</div></a>
+      <a href="/docs/governance/" class="ov-card"><div class="ov-label">Apps</div><div class="ov-title">Governance</div><div class="ov-desc">Proposals, voting, disputes, compliance.</div></a>
       <a href="/docs/ops/" class="ov-card"><div class="ov-label">Operations</div><div class="ov-title">Ops Guide</div><div class="ov-desc">Webhooks, OTEL, status, config export, doctor.</div></a>
       <a href="/docs/sdks/" class="ov-card"><div class="ov-label">SDKs</div><div class="ov-title">SDK Wrappers</div><div class="ov-desc">Python, Node, Go — zero config.</div></a>
       <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">225+ REST endpoints with examples.</div></a>
@@ -193,7 +205,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
+  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground/">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
   <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
 
