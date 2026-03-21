@@ -1,0 +1,65 @@
+# GDPR Compliance Preset for Stockyard
+# Configures data protection, consent tracking, right to deletion, and processing records.
+name: GDPR Compliance
+slug: compliance-gdpr
+author: Stockyard
+description: "GDPR-aligned configuration: PII redaction, consent tracking, data retention, right to deletion, processing records"
+tags: [compliance, gdpr, privacy, eu]
+
+modules:
+  - name: promptguard
+    enabled: true
+    config:
+      sensitivity: high
+      redact_pii: true
+  - name: firewall
+    enabled: true
+    config:
+      block_threshold: 70
+      warn_threshold: 30
+  - name: compliancelog
+    enabled: true
+  - name: consentgate
+    enabled: true
+  - name: retentionwipe
+    enabled: true
+    config:
+      retention_days: 90
+  - name: secretscan
+    enabled: true
+
+policies:
+  - name: gdpr-pii-redaction
+    type: request
+    action: redact
+    rule: '{"redact_pii":true,"categories":["email","phone","ssn","name","address"]}'
+    description: Redact personal data from prompts before sending to LLM
+  - name: gdpr-response-pii
+    type: response
+    action: block
+    rule: '{"check":"pii","categories":["email","phone","ssn","credit_card"]}'
+    description: Block responses containing personal data
+  - name: gdpr-data-retention
+    type: system
+    action: enforce
+    rule: '{"max_retention_days":90,"auto_purge":true}'
+    description: Auto-purge trace data older than 90 days
+  - name: gdpr-processing-log
+    type: request
+    action: log
+    rule: '{"log_purpose":true,"log_legal_basis":true}'
+    description: Log processing purpose and legal basis
+
+alerts:
+  - name: gdpr-pii-leak
+    metric: firewall_response_blocks
+    condition: gt
+    threshold: 0
+    window: 5m
+    description: Alert on personal data detected in responses
+  - name: gdpr-retention-violation
+    metric: old_traces_count
+    condition: gt
+    threshold: 0
+    window: 24h
+    description: Alert if traces exist beyond retention period

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<meta property="og:title" content="Prompt CI — Stockyard">
+<meta property="og:description" content="Run prompt regression tests in your CI pipeline with Stockyard golden datasets.">
+<title>Prompt CI — Stockyard</title>
+<meta name="description" content="Run prompt regression tests in CI with Stockyard golden dataset testing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content;max-height:100vh;overflow-y:auto}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0;transition:color 0.15s}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
+.copy-btn{position:absolute;top:0.5rem;right:0.5rem;background:var(--bg3);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;opacity:0}
+.copy-btn:hover{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+pre:hover .copy-btn{opacity:1}
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex}.nav-links a{font-size:1rem;padding:0.3rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="/products/">Products</a><a href="/playground">Playground</a><a href="/cloud/">Cloud</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="/guide/">Guide</a><a href="/blog/">Blog</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+<div class="docs-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section"><div class="sidebar-title">Getting Started</div><a href="/docs/quickstart/">Quickstart</a><a href="/docs/auth/">Auth &amp; Config</a></div>
+    <div class="sidebar-section"><div class="sidebar-title">Proxy</div><a href="/docs/proxy/">Modules &amp; Providers</a></div>
+    <div class="sidebar-section"><div class="sidebar-title">Apps</div><a href="/docs/observe/">Observe</a><a href="/docs/trust/">Trust</a><a href="/docs/studio/">Studio</a><a href="/docs/forge/">Forge</a><a href="/docs/exchange/">Exchange</a></div>
+    <div class="sidebar-section"><div class="sidebar-title">Tools</div><a href="/docs/cli/">CLI (sy)</a><a href="/mcp/">MCP Server</a><a href="/docs/editors/">Editor Setup</a></div>
+    <div class="sidebar-section"><div class="sidebar-title">CI/CD</div><a href="/docs/ci/" class="active">Prompt CI</a></div>
+    <div class="sidebar-section"><div class="sidebar-title">Operations</div><a href="/docs/ops/">Ops Guide</a></div>
+    <div class="sidebar-section"><div class="sidebar-title">Reference</div><a href="/docs/api/">API Reference</a></div>
+  </aside>
+  <main class="content" id="main">
+    <h1>Prompt CI</h1>
+    <p class="subtitle">Run prompt regression tests in your CI pipeline with golden datasets.</p>
+
+    <h2 id="overview">Overview</h2>
+    <p>Stockyard&rsquo;s golden dataset testing lets you define test suites with expected criteria, run them against your configured models, and fail CI builds when prompts regress.</p>
+
+    <h2 id="setup">1. Create a Test Suite</h2>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code># Create a test suite
+curl -X POST $STOCKYARD_URL/api/studio/test-suites \
+  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+  -d '{"name": "customer-support", "model": "gpt-4o"}'
+
+# Add test cases
+curl -X POST $STOCKYARD_URL/api/studio/test-suites/ts_abc123/cases \
+  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+  -d '{
+    "prompt": "How do I reset my password?",
+    "expected_criteria": {
+      "contains": ["password", "reset", "email"],
+      "min_length": 50,
+      "not_contains": ["error", "cannot"]
+    }
+  }'</code></pre>
+
+    <h2 id="github-action">2. Add the GitHub Action</h2>
+    <p>Copy <code>.github/workflows/prompt-test.yml</code> to your repository:</p>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>name: Prompt Regression Test
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  prompt-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Stockyard Test Suites
+        env:
+          STOCKYARD_URL: ${{ secrets.STOCKYARD_URL }}
+          STOCKYARD_ADMIN_KEY: ${{ secrets.STOCKYARD_ADMIN_KEY }}
+        run: |
+          # Trigger test run
+          RUN=$(curl -sf -X POST \
+            -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+            "$STOCKYARD_URL/api/studio/test-suites/$SUITE_ID/run")
+          RUN_ID=$(echo "$RUN" | jq -r '.run_id')
+
+          # Poll for results
+          for i in $(seq 1 60); do
+            sleep 5
+            RESULT=$(curl -sf -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+              "$STOCKYARD_URL/api/studio/test-runs/$RUN_ID")
+            STATUS=$(echo "$RESULT" | jq -r '.status')
+            [ "$STATUS" = "completed" ] &amp;&amp; break
+          done
+
+          # Check for failures
+          FAILED=$(echo "$RESULT" | jq -r '.failed')
+          [ "$FAILED" -gt 0 ] &amp;&amp; exit 1</code></pre>
+
+    <h2 id="criteria">3. Expected Criteria</h2>
+    <p>Each test case defines criteria the LLM response must meet:</p>
+    <pre><code>{
+  "contains": ["keyword1", "keyword2"],  // Response must contain these
+  "not_contains": ["banned", "error"],   // Response must not contain these
+  "min_length": 50,                      // Minimum character length
+  "max_tokens": 500                      // Maximum estimated tokens
+}</code></pre>
+
+    <h2 id="secrets">4. Repository Secrets</h2>
+    <p>Set these in your GitHub repository settings:</p>
+    <pre><code>STOCKYARD_URL       — Your Stockyard instance URL
+STOCKYARD_ADMIN_KEY — Admin API key</code></pre>
+
+    <div class="note">
+      <strong>Tip:</strong> Combine with <a href="/docs/observe/">drift detection</a> (<code>GET /api/observe/drift</code>) to catch model behavior changes automatically.
+    </div>
+  </main>
+</div>
+<footer><div class="sig">Built by Michael &mdash; stockyard.dev</div></footer>
+<script>function toggleNav(){document.querySelector('.nav-toggle').classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}
+function copyCode(btn){const code=btn.parentElement.querySelector('code');navigator.clipboard.writeText(code.textContent).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})}</script>
+</body>
+</html>

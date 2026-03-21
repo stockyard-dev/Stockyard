@@ -1,0 +1,98 @@
+# Example GitHub Action for prompt regression testing with Stockyard.
+# Copy this file to your repository's .github/workflows/ directory.
+#
+# Prerequisites:
+# - A running Stockyard instance accessible from GitHub Actions
+# - Test suites created via POST /api/studio/test-suites
+# - Test cases added via POST /api/studio/test-suites/{id}/cases
+#
+# Set these repository secrets:
+# - STOCKYARD_URL: Your Stockyard instance URL
+# - STOCKYARD_ADMIN_KEY: Admin API key
+
+name: Prompt Regression Test
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  prompt-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Stockyard Test Suites
+        env:
+          STOCKYARD_URL: ${{ secrets.STOCKYARD_URL }}
+          STOCKYARD_ADMIN_KEY: ${{ secrets.STOCKYARD_ADMIN_KEY }}
+        run: |
+          # List all test suites
+          SUITES=$(curl -sf -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+            "$STOCKYARD_URL/api/studio/test-suites")
+
+          echo "Found test suites:"
+          echo "$SUITES" | jq -r '.[] | "  - \(.name) (\(.case_count) cases)"'
+
+          # Run each suite and collect results
+          FAILED=0
+          SUITE_IDS=$(echo "$SUITES" | jq -r '.[].id')
+
+          for SUITE_ID in $SUITE_IDS; do
+            SUITE_NAME=$(echo "$SUITES" | jq -r ".[] | select(.id==\"$SUITE_ID\") | .name")
+            echo ""
+            echo "Running suite: $SUITE_NAME ($SUITE_ID)"
+
+            # Trigger the run
+            RUN=$(curl -sf -X POST \
+              -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+              "$STOCKYARD_URL/api/studio/test-suites/$SUITE_ID/run")
+
+            RUN_ID=$(echo "$RUN" | jq -r '.run_id')
+            echo "  Run ID: $RUN_ID"
+
+            # Poll for completion (max 5 minutes)
+            for i in $(seq 1 60); do
+              sleep 5
+              RESULT=$(curl -sf -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+                "$STOCKYARD_URL/api/studio/test-runs/$RUN_ID")
+              STATUS=$(echo "$RESULT" | jq -r '.status')
+              if [ "$STATUS" = "completed" ]; then
+                break
+              fi
+              echo "  Waiting... ($STATUS)"
+            done
+
+            PASSED=$(echo "$RESULT" | jq -r '.passed')
+            TOTAL=$(echo "$RESULT" | jq -r '.total')
+            SUITE_FAILED=$(echo "$RESULT" | jq -r '.failed')
+
+            echo "  Results: $PASSED/$TOTAL passed, $SUITE_FAILED failed"
+
+            if [ "$SUITE_FAILED" -gt 0 ]; then
+              FAILED=1
+              echo "  FAILURES:"
+              echo "$RESULT" | jq -r '.results[] | select(.passed==false) | "    - \(.prompt[:60])... : \(.failures | join(", "))"'
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "PROMPT REGRESSION DETECTED - some test cases failed."
+            exit 1
+          fi
+
+          echo ""
+          echo "All prompt tests passed."
+
+      - name: Post Results to PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ job.status }}' === 'success' ? 'All prompt tests passed.' : 'Some prompt tests failed. See job logs for details.';
+            const icon = '${{ job.status }}' === 'success' ? ':white_check_mark:' : ':x:';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ${icon} Prompt Regression Test\n\n${result}\n\n[View Details](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
+            });

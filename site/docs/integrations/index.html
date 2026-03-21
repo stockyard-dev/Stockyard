@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Integrations — Stockyard</title>
+<meta name="description" content="Connect Stockyard to N8N, Zapier, Make.com, Retool, Slack, Discord, and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.content{max-width:800px;margin:0 auto;padding:4rem 2rem}
+h1{font-size:2rem;margin-bottom:0.5rem}
+.sub{color:var(--cream-dim);margin-bottom:3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
+.card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2);transition:border-color 0.2s}
+.card:hover{border-color:var(--rust)}
+.card-cat{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
+.card-title{font-size:1.1rem;margin-bottom:0.3rem}
+.card-desc{font-size:0.8rem;color:var(--cream-dim)}
+h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin:2rem 0 1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+</nav>
+<div class="content">
+  <h1>Integrations</h1>
+  <p class="sub">Connect Stockyard to your workflow automation, monitoring, and internal tools.</p>
+
+  <h2>Workflow Automation</h2>
+  <div class="grid">
+    <div class="card"><div class="card-cat">Workflow</div><div class="card-title">N8N</div><div class="card-desc">Custom node for sending prompts, listing traces, toggling modules</div></div>
+    <div class="card"><div class="card-cat">Workflow</div><div class="card-title">Zapier</div><div class="card-desc">Triggers (traces, alerts) and actions (send prompt, toggle module)</div></div>
+    <div class="card"><div class="card-cat">Workflow</div><div class="card-title">Make.com</div><div class="card-desc">Pre-configured HTTP module templates for Make scenarios</div></div>
+  </div>
+
+  <h2>Internal Tools</h2>
+  <div class="grid">
+    <div class="card"><div class="card-cat">Low-Code</div><div class="card-title">Retool</div><div class="card-desc">REST API resource templates for building internal AI dashboards</div></div>
+  </div>
+
+  <h2>Notifications</h2>
+  <div class="grid">
+    <div class="card"><div class="card-cat">Chat</div><div class="card-title">Slack</div><div class="card-desc">Webhook notifications + slash commands for costs, status, alerts</div></div>
+    <div class="card"><div class="card-cat">Chat</div><div class="card-title">Discord</div><div class="card-desc">Webhook notifications with embed formatting</div></div>
+    <div class="card"><div class="card-cat">Incident</div><div class="card-title">PagerDuty</div><div class="card-desc">Auto-trigger incidents on provider failure, spend breaches</div></div>
+  </div>
+
+  <h2>AI Editors</h2>
+  <div class="grid">
+    <a class="card" href="/docs/editors/cursor/"><div class="card-cat">MCP</div><div class="card-title">Cursor</div><div class="card-desc">MCP config for Cursor IDE</div></a>
+    <a class="card" href="/docs/editors/windsurf/"><div class="card-cat">MCP</div><div class="card-title">Windsurf</div><div class="card-desc">MCP config for Windsurf</div></a>
+    <a class="card" href="/docs/editors/copilot/"><div class="card-cat">API</div><div class="card-title">GitHub Copilot</div><div class="card-desc">Custom endpoint override</div></a>
+    <a class="card" href="/docs/editors/cline/"><div class="card-cat">MCP</div><div class="card-title">Cline</div><div class="card-desc">VS Code MCP configuration</div></a>
+    <a class="card" href="/docs/editors/aider/"><div class="card-cat">CLI</div><div class="card-title">Aider</div><div class="card-desc">--openai-api-base flag</div></a>
+  </div>
+</div>
+<footer>Stockyard Integrations &mdash; stockyard.dev</footer>
+</body>
+</html>

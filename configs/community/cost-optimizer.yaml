@@ -1,0 +1,21 @@
+name: Cost Optimizer
+slug: cost-optimizer
+author: Community
+description: "Minimize LLM costs: smart routing to cheaper models, aggressive caching, spend caps"
+tags: [cost, routing, community]
+
+modules:
+  - name: smartroute
+    enabled: true
+  - name: tierdrop
+    enabled: true
+  - name: cache
+    enabled: true
+  - name: semanticcache
+    enabled: true
+  - name: costcap
+    enabled: true
+    config:
+      daily_cap_usd: 100
+  - name: costwarn
+    enabled: true

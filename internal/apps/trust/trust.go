@@ -202,6 +202,13 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Status
 	mux.HandleFunc("GET /api/trust/status", a.handleStatus)
 
+	// Compliance evidence exports
+	a.registerComplianceRoutes(mux)
+
+	// Trust verification network
+	a.migrateVerification()
+	a.registerVerificationRoutes(mux)
+
 	log.Printf("[trust] routes registered")
 }
 

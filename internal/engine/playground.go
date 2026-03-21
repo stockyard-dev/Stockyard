@@ -123,6 +123,105 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 		json.NewEncoder(w).Encode(share)
 	})
 
+	// --- Playground Sessions (persistent history) ---
+	conn.Exec(`CREATE TABLE IF NOT EXISTS playground_sessions (
+		id TEXT PRIMARY KEY,
+		config TEXT NOT NULL DEFAULT '{}',
+		messages TEXT NOT NULL DEFAULT '[]',
+		results TEXT NOT NULL DEFAULT '[]',
+		models TEXT NOT NULL DEFAULT '',
+		created_at TEXT NOT NULL DEFAULT (datetime('now'))
+	);
+	CREATE INDEX IF NOT EXISTS idx_pg_sessions_created ON playground_sessions(created_at)`)
+
+	// POST /api/playground/sessions — save a playground session
+	mux.HandleFunc("POST /api/playground/sessions", func(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Config   json.RawMessage `json:"config"`
+			Messages json.RawMessage `json:"messages"`
+			Results  json.RawMessage `json:"results"`
+			Models   string          `json:"models"` // comma-separated model names
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
+			return
+		}
+		id := genShareID()
+		cfgStr := "{}"
+		if len(req.Config) > 0 {
+			cfgStr = string(req.Config)
+		}
+		msgsStr := "[]"
+		if len(req.Messages) > 0 {
+			msgsStr = string(req.Messages)
+		}
+		resultsStr := "[]"
+		if len(req.Results) > 0 {
+			resultsStr = string(req.Results)
+		}
+
+		conn.Exec(`INSERT INTO playground_sessions (id, config, messages, results, models) VALUES (?, ?, ?, ?, ?)`,
+			id, cfgStr, msgsStr, resultsStr, req.Models)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"id": id})
+	})
+
+	// GET /api/playground/sessions — list recent sessions
+	mux.HandleFunc("GET /api/playground/sessions", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := conn.Query(`SELECT id, config, messages, results, models, created_at
+			FROM playground_sessions ORDER BY created_at DESC LIMIT 50`)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode([]any{})
+			return
+		}
+		defer rows.Close()
+
+		var sessions []map[string]any
+		for rows.Next() {
+			var id, cfgStr, msgsStr, resultsStr, models, createdAt string
+			rows.Scan(&id, &cfgStr, &msgsStr, &resultsStr, &models, &createdAt)
+			var cfg, msgs, results any
+			json.Unmarshal([]byte(cfgStr), &cfg)
+			json.Unmarshal([]byte(msgsStr), &msgs)
+			json.Unmarshal([]byte(resultsStr), &results)
+			sessions = append(sessions, map[string]any{
+				"id": id, "config": cfg, "messages": msgs, "results": results,
+				"models": models, "created_at": createdAt,
+			})
+		}
+		if sessions == nil {
+			sessions = []map[string]any{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(sessions)
+	})
+
+	// GET /api/playground/sessions/{id} — get a specific session
+	mux.HandleFunc("GET /api/playground/sessions/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		var cfgStr, msgsStr, resultsStr, models, createdAt string
+		err := conn.QueryRow(`SELECT config, messages, results, models, created_at
+			FROM playground_sessions WHERE id = ?`, id).
+			Scan(&cfgStr, &msgsStr, &resultsStr, &models, &createdAt)
+		if err != nil {
+			http.Error(w, `{"error":"session not found"}`, http.StatusNotFound)
+			return
+		}
+		var cfg, msgs, results any
+		json.Unmarshal([]byte(cfgStr), &cfg)
+		json.Unmarshal([]byte(msgsStr), &msgs)
+		json.Unmarshal([]byte(resultsStr), &results)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"id": id, "config": cfg, "messages": msgs, "results": results,
+			"models": models, "created_at": createdAt,
+		})
+	})
+
+	log.Printf("[playground] session routes registered")
+
 	// Cleanup: remove expired shares periodically
 	go func() {
 		for {

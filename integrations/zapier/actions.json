@@ -1,0 +1,51 @@
+{
+  "actions": [
+    {
+      "key": "send_prompt",
+      "noun": "Chat",
+      "display": {
+        "label": "Send Prompt",
+        "description": "Send a chat completion through Stockyard's proxy."
+      },
+      "operation": {
+        "url": "{{bundle.authData.base_url}}/v1/chat/completions",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{bundle.authData.admin_key}}"
+        },
+        "body": {
+          "model": "{{bundle.inputData.model}}",
+          "messages": [{"role": "user", "content": "{{bundle.inputData.message}}"}]
+        }
+      },
+      "inputFields": [
+        { "key": "model", "label": "Model", "type": "string", "default": "gpt-4o", "required": true },
+        { "key": "message", "label": "Message", "type": "text", "required": true }
+      ]
+    },
+    {
+      "key": "toggle_module",
+      "noun": "Module",
+      "display": {
+        "label": "Toggle Module",
+        "description": "Enable or disable a Stockyard proxy module."
+      },
+      "operation": {
+        "url": "{{bundle.authData.base_url}}/api/proxy/modules/{{bundle.inputData.module_name}}",
+        "method": "PUT",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Admin-Key": "{{bundle.authData.admin_key}}"
+        },
+        "body": {
+          "enabled": "{{bundle.inputData.enabled}}"
+        }
+      },
+      "inputFields": [
+        { "key": "module_name", "label": "Module Name", "type": "string", "required": true },
+        { "key": "enabled", "label": "Enabled", "type": "boolean", "required": true }
+      ]
+    }
+  ]
+}

@@ -51,6 +51,21 @@ h1{font-size:2rem;margin-bottom:0.3rem}
 .comp-status.down{background:rgba(196,77,44,0.15);color:var(--red)}
 .comp-detail{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-left:auto}
 .refresh{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);text-align:center;margin-top:1rem}
+.provider-section{margin-top:2.5rem}
+.provider-section h2{font-size:1rem;margin-bottom:0.8rem}
+.provider-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:1rem}
+.provider-card{padding:1.2rem;border:1px solid var(--bg3);background:var(--bg2)}
+.provider-card.healthy{border-left:3px solid var(--green-light)}
+.provider-card.degraded{border-left:3px solid var(--gold)}
+.provider-card.broken{border-left:3px solid var(--red)}
+.provider-name{font-family:var(--font-mono);font-size:0.9rem;margin-bottom:0.5rem;text-transform:capitalize}
+.provider-badge{display:inline-block;font-family:var(--font-mono);font-size:0.65rem;padding:2px 8px;border-radius:3px;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px}
+.provider-badge.healthy{background:rgba(90,168,110,0.15);color:var(--green-light)}
+.provider-badge.degraded{background:rgba(212,168,67,0.15);color:var(--gold)}
+.provider-badge.broken{background:rgba(196,77,44,0.15);color:var(--red)}
+.provider-stats{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);line-height:1.8}
+.provider-stats span{color:var(--cream-dim)}
+.provider-empty{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);padding:1rem;border:1px solid var(--bg3);text-align:center}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 
@@ -126,9 +141,17 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="comp"><span class="comp-name">Loading...</span></div>
 </div>
 
-<p class="refresh">Last checked: <span id="last-check">—</span> · Refreshes every 30s</p>
+<div class="provider-section">
+<h2>Provider Health</h2>
+<div class="provider-grid" id="provider-grid">
+  <div class="provider-empty">Loading provider health...</div>
+</div>
+<p class="refresh">Provider data refreshes every 60s · Last updated: <span id="provider-last-check">—</span></p>
+</div>
+
+<p class="refresh">System status last checked: <span id="last-check">—</span> · Refreshes every 30s</p>
 <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">
-  API: <code>GET /api/status</code> · <code>GET /health</code>
+  API: <code>GET /api/status</code> · <code>GET /api/observe/provider-health</code>
 </p>
 </div>
 
@@ -184,6 +207,38 @@ async function fetchStatus() {
 }
 fetchStatus();
 setInterval(fetchStatus, 30000);
+
+async function fetchProviderHealth() {
+  try {
+    const r = await fetch('/api/observe/provider-health');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const grid = document.getElementById('provider-grid');
+    if (!d.providers || d.providers.length === 0) {
+      grid.innerHTML = '<div class="provider-empty">No provider data in the last hour.</div>';
+    } else {
+      grid.innerHTML = d.providers.map(function(p) {
+        var errPct = (p.error_rate * 100).toFixed(1);
+        var latency = p.avg_latency_ms.toFixed(0);
+        return '<div class="provider-card ' + p.status + '">' +
+          '<div class="provider-name">' + p.provider + '</div>' +
+          '<div class="provider-badge ' + p.status + '">' + p.status + '</div>' +
+          '<div class="provider-stats">' +
+            'Latency: <span>' + latency + ' ms</span><br>' +
+            'Error rate: <span>' + errPct + '%</span><br>' +
+            'Requests: <span>' + p.total + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+    document.getElementById('provider-last-check').textContent = new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('provider-grid').innerHTML =
+      '<div class="provider-empty">Unable to fetch provider health: ' + e.message + '</div>';
+  }
+}
+fetchProviderHealth();
+setInterval(fetchProviderHealth, 60000);
 </script>
 
 <script>

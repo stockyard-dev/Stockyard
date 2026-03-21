@@ -1,4 +1,4 @@
-.PHONY: all build test clean run dev check lint
+.PHONY: all build cli test clean run dev check lint
 
 VERSION ?= dev
 
@@ -9,11 +9,16 @@ build:
 	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard ./cmd/stockyard
 	@echo "Built dist/stockyard ($(VERSION))"
 
-# Build all binaries (unified + tools)
-build-all: build
+# Build the CLI tool
+cli:
+	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/sy ./cmd/sy
+	@echo "Built dist/sy ($(VERSION))"
+
+# Build all binaries (unified + tools + CLI)
+build-all: build cli
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-api ./cmd/sy-api
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-keygen ./cmd/sy-keygen
-	@echo "Built 3 binaries in dist/"
+	@echo "Built 4 binaries in dist/"
 
 test:
 	go test ./... -count=1 -race -timeout 120s

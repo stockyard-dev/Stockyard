@@ -40,6 +40,9 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	migrateTestingSchema(conn)
+	migrateOptimizeSchema(conn)
+	migrateDistillSchema(conn)
 	log.Printf("[studio] migrations applied")
 	return nil
 }
@@ -144,6 +147,19 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Status
 	mux.HandleFunc("GET /api/studio/status", a.handleStatus)
+
+	// Golden dataset testing
+	proxyPort := 4200
+	if a.runner != nil {
+		proxyPort = a.runner.proxyPort
+	}
+	registerTestingRoutes(mux, a.conn, proxyPort)
+
+	// Prompt optimization
+	registerOptimizeRoutes(mux, a.conn, proxyPort)
+
+	// Model distillation
+	registerDistillRoutes(mux, a.conn)
 
 	log.Printf("[studio] routes registered")
 }

@@ -1,12 +1,83 @@
 package billing
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 )
+
+// registerInvoiceExtras adds period-based generation and CSV export.
+func (a *App) registerInvoiceExtras(mux *http.ServeMux) {
+	mux.HandleFunc("POST /api/billing/invoices/generate", a.handleGenerateFromPeriod)
+	mux.HandleFunc("GET /api/billing/invoices/{id}/csv", a.handleInvoiceCSV)
+}
+
+// handleGenerateFromPeriod creates an invoice from usage for a given month.
+func (a *App) handleGenerateFromPeriod(w http.ResponseWriter, r *http.Request) {
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		period = time.Now().UTC().Format("2006-01")
+	}
+
+	rows, err := a.conn.Query(`SELECT model, COUNT(*) as requests,
+		SUM(input_tokens) as tin, SUM(output_tokens) as tout, SUM(cost_cents) as cost
+		FROM billing_usage WHERE created_at LIKE ? || '%'
+		GROUP BY model ORDER BY cost DESC`, period)
+	if err != nil {
+		w.WriteHeader(500)
+		writeJSON(w, map[string]string{"error": "query failed"})
+		return
+	}
+	defer rows.Close()
+
+	var items []invoiceLineItem
+	var totalCents int64
+	for rows.Next() {
+		var li invoiceLineItem
+		rows.Scan(&li.Model, &li.Requests, &li.InputTokens, &li.OutputTokens, &li.CostCents)
+		totalCents += li.CostCents
+		items = append(items, li)
+	}
+
+	id := genID("inv_")
+	itemsJSON, _ := json.Marshal(items)
+	a.conn.Exec(`INSERT INTO billing_invoices (id, account_id, customer_id, period, total_cents, status, line_items, created_at) VALUES (?,?,?,?,?,?,?,?)`,
+		id, "default", "all", period, totalCents, "draft", string(itemsJSON), nowRFC3339())
+
+	writeJSON(w, map[string]any{
+		"id": id, "period": period, "total_cents": totalCents,
+		"total_usd": fmt.Sprintf("%.2f", float64(totalCents)/100),
+		"line_items": len(items), "status": "draft",
+	})
+}
+
+// handleInvoiceCSV exports line items as CSV download.
+func (a *App) handleInvoiceCSV(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var lineItemsStr string
+	err := a.conn.QueryRow("SELECT line_items FROM billing_invoices WHERE id = ?", id).Scan(&lineItemsStr)
+	if err != nil {
+		http.Error(w, "Invoice not found", http.StatusNotFound)
+		return
+	}
+	var items []invoiceLineItem
+	json.Unmarshal([]byte(lineItemsStr), &items)
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=invoice_%s.csv", id))
+
+	cw := csv.NewWriter(w)
+	cw.Write([]string{"Model", "Requests", "Input Tokens", "Output Tokens", "Cost (USD)"})
+	for _, li := range items {
+		cw.Write([]string{li.Model, fmt.Sprintf("%d", li.Requests),
+			fmt.Sprintf("%d", li.InputTokens), fmt.Sprintf("%d", li.OutputTokens),
+			fmt.Sprintf("%.2f", float64(li.CostCents)/100)})
+	}
+	cw.Flush()
+}
 
 // invoiceLineItem represents a single line on an invoice.
 type invoiceLineItem struct {

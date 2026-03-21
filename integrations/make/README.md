@@ -1,39 +1,29 @@
-# Make.com + Stockyard
+# Make.com Integration for Stockyard
 
-> **Category:** Workflow | **Type:** Custom module
+Pre-configured HTTP module templates for Make.com scenarios.
 
-Connect Make.com automation scenarios to Stockyard.
+## Modules
 
-## Quick Setup
+### Send Prompt
+- **HTTP Module** → POST `{{stockyard_url}}/v1/chat/completions`
+- Headers: `Content-Type: application/json`, `Authorization: Bearer {{admin_key}}`
+- Body: `{"model": "gpt-4o", "messages": [{"role": "user", "content": "{{message}}"}]}`
 
-1. Deploy Stockyard publicly
-2. Add HTTP module pointing at Stockyard
-3. All Make.com LLM calls are now tracked
+### List Traces
+- **HTTP Module** → GET `{{stockyard_url}}/api/observe/traces?limit=20`
+- Headers: `X-Admin-Key: {{admin_key}}`
 
-## Files
+### Toggle Module
+- **HTTP Module** → PUT `{{stockyard_url}}/api/proxy/modules/{{module_name}}`
+- Body: `{"enabled": true}`
 
-- `setup.md`
+### Check Costs
+- **HTTP Module** → GET `{{stockyard_url}}/api/observe/costs?period=today`
 
-## How It Works
+### Provider Health
+- **HTTP Module** → GET `{{stockyard_url}}/api/proxy/providers/health`
 
-All LLM requests from Make.com are routed through Stockyard's proxy at `http://localhost:4000/v1`. Stockyard handles cost tracking, caching, rate limiting, failover, and all other middleware — transparently.
-
-Your Make.com setup doesn't need to change beyond pointing the base URL at Stockyard.
-
-## Using Individual Products
-
-Instead of the full suite (port 4000), you can point at individual products:
-
-| Product | Port | What It Does |
-|---------|------|-------------|
-| CostCap | 4100 | Spending caps only |
-| CacheLayer | 4200 | Response caching only |
-| RateShield | 4500 | Rate limiting only |
-| FallbackRouter | 4400 | Failover routing only |
-
-## Learn More
-
-- [Stockyard Docs](https://stockyard.dev/docs/)
-- [All 125 Products](https://stockyard.dev/products/)
-- [GitHub](https://github.com/stockyard-dev/stockyard)
-
+## Setup
+1. Create a new Make.com scenario
+2. Add an HTTP module for each action
+3. Replace `{{stockyard_url}}` and `{{admin_key}}` with your values

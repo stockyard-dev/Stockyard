@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Marketplace — Stockyard</title>
+<meta name="description" content="Get instant access to LLM APIs. Pay-as-you-go credits with unified billing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.hero{max-width:700px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}
+.hero h1{font-size:2.2rem;margin-bottom:1rem}
+.hero p{color:var(--cream-dim);margin-bottom:2rem}
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;max-width:700px;margin:0 auto;padding:0 2rem 3rem}
+.price-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2);text-align:center}
+.price-card:hover{border-color:var(--rust)}
+.price-amt{font-family:var(--font-mono);font-size:1.8rem;color:var(--rust-light);margin-bottom:0.3rem}
+.price-credits{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted)}
+.signup{max-width:400px;margin:0 auto;padding:0 2rem 4rem}
+.signup h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.signup input{width:100%;padding:0.7rem;margin-bottom:0.8rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem}
+.signup input:focus{outline:none;border-color:var(--rust)}
+.signup button{width:100%;padding:0.7rem;background:var(--rust);border:none;color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;cursor:pointer;letter-spacing:1px}
+.signup button:hover{background:var(--rust-light)}
+.features{max-width:700px;margin:0 auto;padding:0 2rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.feat{padding:1.2rem;border:1px solid var(--bg3)}
+.feat-title{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.5rem}
+.feat-desc{font-size:0.8rem;color:var(--cream-muted)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+@media(max-width:600px){.features{grid-template-columns:1fr}.pricing{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="https://github.com/stockyard-dev/stockyard">GitHub</a></div>
+</nav>
+<div class="hero">
+  <h1>LLM Marketplace</h1>
+  <p>Get instant access to OpenAI, Anthropic, Google, and more. One API key, unified billing, pay-as-you-go credits.</p>
+</div>
+<div class="pricing">
+  <div class="price-card"><div class="price-amt">$5</div><div class="price-credits">500 credits</div></div>
+  <div class="price-card"><div class="price-amt">$20</div><div class="price-credits">2,000 credits</div></div>
+  <div class="price-card"><div class="price-amt">$50</div><div class="price-credits">5,000 credits</div></div>
+  <div class="price-card"><div class="price-amt">$100</div><div class="price-credits">10,000 credits</div></div>
+</div>
+<div class="signup">
+  <h2>Get Started</h2>
+  <input type="email" id="mp-email" placeholder="Email">
+  <input type="password" id="mp-pass" placeholder="Password">
+  <button onclick="signup()">Create Account</button>
+  <div id="mp-result" style="margin-top:1rem;font-family:var(--font-mono);font-size:0.8rem"></div>
+</div>
+<div class="features">
+  <div class="feat"><div class="feat-title">Unified API</div><div class="feat-desc">One OpenAI-compatible endpoint for all providers</div></div>
+  <div class="feat"><div class="feat-title">Pay As You Go</div><div class="feat-desc">Purchase credits, use any model, no commitments</div></div>
+  <div class="feat"><div class="feat-title">Full Observability</div><div class="feat-desc">Every request traced with cost, latency, tokens</div></div>
+  <div class="feat"><div class="feat-title">58+ Modules</div><div class="feat-desc">Caching, guardrails, routing — all included</div></div>
+</div>
+<footer>Stockyard Marketplace &mdash; stockyard.dev</footer>
+<script>
+async function signup(){
+  const email=document.getElementById('mp-email').value;
+  const pass=document.getElementById('mp-pass').value;
+  const el=document.getElementById('mp-result');
+  if(!email||!pass){el.textContent='Email and password required';return}
+  try{
+    const r=await fetch('/api/marketplace/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const d=await r.json();
+    if(d.api_key){el.innerHTML='<span style="color:var(--green-light)">Account created!</span><br>API Key: <code style="background:var(--bg2);padding:2px 6px">'+d.api_key+'</code><br><small style="color:var(--cream-muted)">Save this key — it won\'t be shown again.</small>'}
+    else{el.textContent=d.error||'Signup failed'}
+  }catch(e){el.textContent='Error: '+e.message}
+}
+</script>
+</body>
+</html>

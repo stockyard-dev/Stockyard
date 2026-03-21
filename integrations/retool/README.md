@@ -1,39 +1,45 @@
-# Retool + Stockyard
+# Retool Integration for Stockyard
 
-> **Category:** Low-Code | **Type:** REST API resource
+Build internal AI dashboards with Stockyard as a REST API resource.
 
-Add Stockyard as a REST resource in Retool for internal AI tools with cost tracking.
+## Setup
 
-## Quick Setup
+### 1. Add REST API Resource
+In Retool → Resources → Create New → REST API:
+- **Base URL:** `https://your-stockyard-instance.com`
+- **Headers:** `X-Admin-Key: your-admin-key`
 
-1. Add REST API resource in Retool
-2. Point at Stockyard
-3. Cost tracking for enterprise internal tools
+### 2. Component Templates
 
-## Files
+**Module Toggle Panel:**
+- Table component bound to `GET /api/proxy/modules` → `modules`
+- Toggle column calling `PUT /api/proxy/modules/{{name}}` with `{"enabled": {{value}}}`
 
-- `setup.md`
+**Trace Explorer:**
+- Table component bound to `GET /api/observe/traces?limit=50` → `traces`
+- Columns: id, provider, model, status, duration_ms, cost_usd, created_at
+- Detail panel showing full trace on row click
 
-## How It Works
+**Cost Dashboard:**
+- Stat components bound to `GET /api/observe/costs?period=today`
+- Chart component for daily cost trends from `GET /api/observe/costs/daily`
 
-All LLM requests from Retool are routed through Stockyard's proxy at `http://localhost:4000/v1`. Stockyard handles cost tracking, caching, rate limiting, failover, and all other middleware — transparently.
+**Provider Health Grid:**
+- Cards component bound to `GET /api/proxy/providers/health` → `providers`
+- Conditional coloring: green=ok, yellow=degraded, red=unhealthy
 
-Your Retool setup doesn't need to change beyond pointing the base URL at Stockyard.
+**Team Management:**
+- Table bound to `GET /api/team/members`
+- Form for inviting: `POST /api/team/members` with email, name, role
 
-## Using Individual Products
-
-Instead of the full suite (port 4000), you can point at individual products:
-
-| Product | Port | What It Does |
-|---------|------|-------------|
-| CostCap | 4100 | Spending caps only |
-| CacheLayer | 4200 | Response caching only |
-| RateShield | 4500 | Rate limiting only |
-| FallbackRouter | 4400 | Failover routing only |
-
-## Learn More
-
-- [Stockyard Docs](https://stockyard.dev/docs/)
-- [All 125 Products](https://stockyard.dev/products/)
-- [GitHub](https://github.com/stockyard-dev/stockyard)
-
+## API Endpoints Reference
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/status` | GET | System status |
+| `/api/proxy/modules` | GET | List modules |
+| `/api/proxy/modules/{name}` | PUT | Toggle module |
+| `/api/observe/traces` | GET | List traces |
+| `/api/observe/costs` | GET | Cost breakdown |
+| `/api/team/members` | GET/POST | Team management |
+| `/api/billing/customers` | GET | Billing customers |
+| `/api/firewall/stats` | GET | Firewall stats |

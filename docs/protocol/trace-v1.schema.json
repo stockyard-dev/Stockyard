@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stockyard.dev/protocol/trace-v1.schema.json",
+  "title": "Stockyard Trace v1",
+  "description": "Schema for Stockyard LLM request traces",
+  "type": "object",
+  "required": ["id", "service", "operation", "status", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique trace identifier"
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Client-provided correlation ID"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent trace ID for chained calls"
+    },
+    "service": {
+      "type": "string",
+      "description": "Service name",
+      "default": "proxy"
+    },
+    "operation": {
+      "type": "string",
+      "description": "Operation type",
+      "enum": ["chat_completion", "completion", "embedding"]
+    },
+    "provider": {
+      "type": "string",
+      "description": "LLM provider name"
+    },
+    "model": {
+      "type": "string",
+      "description": "Model identifier"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error"],
+      "description": "Request outcome"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Duration in milliseconds"
+    },
+    "tokens_in": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Input token count"
+    },
+    "tokens_out": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Output token count"
+    },
+    "cost_usd": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Estimated cost in USD"
+    },
+    "metadata_json": {
+      "type": "object",
+      "description": "Arbitrary extension metadata",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp"
+    }
+  }
+}

@@ -27,6 +27,8 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	a.migrateCredits()
+	a.migrateMarketplace()
 	log.Printf("[billing] migrations applied")
 	return nil
 }
@@ -160,6 +162,18 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/billing/customer-keys", a.handleCreateCustomerKey)
 	mux.HandleFunc("GET /api/billing/customer-keys", a.handleListCustomerKeys)
 	mux.HandleFunc("DELETE /api/billing/customer-keys/{userID}", a.handleDeleteCustomerKey)
+
+	// Extended invoice features (period generation, CSV export)
+	a.registerInvoiceExtras(mux)
+
+	// Credits + Stripe Connect
+	a.registerCreditsRoutes(mux)
+
+	// Marketplace
+	a.registerMarketplaceRoutes(mux)
+
+	// Reseller + embedded widgets
+	a.registerResellerRoutes(mux)
 
 	// Stripe integration
 	a.registerStripeRoutes(mux)

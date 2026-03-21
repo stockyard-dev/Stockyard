@@ -1,0 +1,62 @@
+# EU AI Act Compliance Preset for Stockyard
+# Configures transparency, human oversight, decision logging, and risk management.
+name: EU AI Act Compliance
+slug: compliance-euai
+author: Stockyard
+description: "EU AI Act-aligned configuration: AI transparency logging, human oversight, decision audit trail, risk classification"
+tags: [compliance, eu-ai-act, transparency, governance]
+
+modules:
+  - name: compliancelog
+    enabled: true
+  - name: firewall
+    enabled: true
+    config:
+      block_threshold: 70
+      warn_threshold: 30
+  - name: tracelink
+    enabled: true
+  - name: promptguard
+    enabled: true
+    config:
+      sensitivity: high
+  - name: approvalgate
+    enabled: true
+  - name: llmtap
+    enabled: true
+
+policies:
+  - name: euai-transparency
+    type: request
+    action: log
+    rule: '{"log_model_used":true,"log_provider":true,"log_decision_rationale":true}'
+    description: Log AI system transparency information per EU AI Act Article 13
+  - name: euai-human-oversight
+    type: system
+    action: enforce
+    rule: '{"require_approval_for_high_risk":true,"risk_threshold":0.7}'
+    description: Require human oversight for high-risk AI decisions (Article 14)
+  - name: euai-risk-classification
+    type: request
+    action: log
+    rule: '{"classify_risk_level":true,"categories":["minimal","limited","high","unacceptable"]}'
+    description: Classify each request by risk level
+  - name: euai-model-info
+    type: response
+    action: log
+    rule: '{"log_model_capabilities":true,"log_limitations":true}'
+    description: Record model information and capabilities per Article 13
+
+alerts:
+  - name: euai-high-risk-usage
+    metric: high_risk_requests
+    condition: gt
+    threshold: 10
+    window: 1h
+    description: Alert on high volume of high-risk AI usage
+  - name: euai-unacceptable-risk
+    metric: unacceptable_risk_blocks
+    condition: gt
+    threshold: 0
+    window: 5m
+    description: Alert on any unacceptable risk AI usage attempts
