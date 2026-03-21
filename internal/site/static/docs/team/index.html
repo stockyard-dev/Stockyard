@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Operations Docs: Webhooks, OTel, Monitoring — Stockyard">
-<meta property="og:description" content="Stockyard operations: webhooks, OpenTelemetry, status monitoring, config export/import, doctor diagnostics.">
-<meta property="og:url" content="https://stockyard.dev/docs/ops/">
+<meta property="og:title" content="Team Docs: RBAC &amp; Member Management — Stockyard">
+<meta property="og:description" content="Stockyard Team: RBAC, email invites, per-member spend tracking.">
+<meta property="og:url" content="https://stockyard.dev/docs/team/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Operations Docs: Webhooks, OTel, Monitoring — Stockyard</title>
-<meta name="description" content="Stockyard operations: webhooks, OpenTelemetry, status monitoring, config export/import, doctor diagnostics.">
+<title>Team Docs: RBAC &amp; Member Management — Stockyard</title>
+<meta name="description" content="Stockyard Team: RBAC, email invites, per-member spend tracking.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -111,10 +111,11 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/ops/">
+<link rel="canonical" href="https://stockyard.dev/docs/team/">
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to content</a>
+<a href="#main" class="skip-link">Skip to content</a>
+
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-overlay" onclick="toggleNav()"></div>
@@ -130,6 +131,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
   </div>
 </nav>
+
 <div class="docs-layout">
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -147,13 +149,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/trust/">Trust</a>
       <a href="/docs/studio/">Studio</a>
       <a href="/docs/forge/">Forge</a>
-      <a href="/docs/team/">Team</a>
+      <a href="/docs/team/" class="active">Team</a>
       <a href="/docs/memory/">Memory</a>
       <a href="/docs/exchange/">Exchange</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
-      <a href="/docs/ops/" class="active">Ops Guide</a>
+      <a href="/docs/ops/">Ops Guide</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Reference</div>
@@ -161,240 +163,58 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Operations</h1>
-    <p class="subtitle">Webhooks, OpenTelemetry, status monitoring, config management, diagnostics.</p>
+    <h1>Team</h1>
+    <p class="subtitle">RBAC, invites, and per-member spend.</p>
 
-    <h2 id="doctor">Doctor</h2>
-    <p>Run <code>stockyard doctor</code> before first start to verify your environment.</p>
-    <pre><code>$ stockyard doctor
+    <h2 id="overview">Overview</h2>
+    <p>Team provides role-based access control, email invites, and per-member spend tracking. Invite teammates with specific roles, track their LLM usage, and audit every change through Trust's ledger.</p>
 
-  ✓ Go runtime         go1.22.5
-  ✓ Config             port=4200
-  ✓ Data directory     ./stockyard-data (writable)
-  ✓ SQLite database    connected (58 modules)
-  ✓ Port 4200          available
-  ✓ OpenAI API key     set
-  ✓ Anthropic API key  set
-  ⚠ Gemini API key     not set
-  ✓ Ollama             detected (localhost:11434)
-  ⚠ License key        not set (free tier)
-  ✓ Disk space         writable
+    <h2 id="roles">Roles</h2>
+    <p>Four built-in roles control access: <code>admin</code>, <code>developer</code>, <code>viewer</code>, and <code>auditor</code>. Assign roles on invite or change them later via API.</p>
 
-  9 passed · 2 warnings · 0 failures</code></pre>
-    <p>Use <code>stockyard doctor --json</code> for machine-readable output in CI pipelines.</p>
-
-    <h2 id="webhooks">Webhooks</h2>
-    <p>Register HTTP endpoints to receive events from Stockyard: alerts firing, cost thresholds, trust policy violations, and more.</p>
-    <pre><code># Register a Slack webhook
-curl -X POST localhost:4200/api/webhooks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://hooks.slack.com/services/YOUR/SLACK/URL",
-    "secret": "my-signing-secret",
-    "events": "alert.fired,cost.threshold,trust.violation"
-  }'
-
-# List registered webhooks
-curl localhost:4200/api/webhooks
-
-# Send a test event
-curl -X POST localhost:4200/api/webhooks/test
-
-# Delete a webhook
-curl -X DELETE localhost:4200/api/webhooks/1</code></pre>
-
-    <h3>Event Types</h3>
+    <h2 id="endpoints">API Endpoints</h2>
     <table class="endpoint-table">
-      <tr><th>Event</th><th>Fired When</th></tr>
-      <tr><td><code>alert.fired</code></td><td>An Observe alert threshold is exceeded</td></tr>
-      <tr><td><code>cost.threshold</code></td><td>Daily cost exceeds a configured limit</td></tr>
-      <tr><td><code>trust.violation</code></td><td>A Trust policy blocks or warns on a request</td></tr>
-      <tr><td><code>error.spike</code></td><td>Error rate exceeds normal baseline</td></tr>
-      <tr><td><code>webhook.test</code></td><td>Manual test via POST /api/webhooks/test</td></tr>
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method">POST</td><td>/api/team/members</td><td>Invite a new team member</td></tr>
+      <tr><td class="method">GET</td><td>/api/team/members</td><td>List all team members</td></tr>
+      <tr><td class="method">PUT</td><td>/api/team/members/{id}</td><td>Update member role or name</td></tr>
+      <tr><td class="method">DELETE</td><td>/api/team/members/{id}</td><td>Remove a team member</td></tr>
+      <tr><td class="method">POST</td><td>/api/team/accept-invite</td><td>Accept an invite token</td></tr>
+      <tr><td class="method">GET</td><td>/api/team/spend</td><td>Per-member spend this month</td></tr>
     </table>
 
-    <h3>HMAC Signatures</h3>
-    <p>If you set a <code>secret</code>, every delivery includes an <code>X-Stockyard-Signature</code> header with <code>sha256=HMAC</code> of the JSON payload. Verify this on your server to confirm the webhook came from Stockyard.</p>
-
-    <h3>Auto-disable</h3>
-    <p>Webhooks that fail 10 consecutive deliveries are automatically disabled. Check <code>fail_count</code> in the list response.</p>
-
-    <h2 id="otel">OpenTelemetry Export</h2>
-    <p>Export every proxy request as an OTLP trace span. Works with Jaeger, Grafana Tempo, Datadog, Honeycomb, or any OTLP-compatible backend.</p>
-    <pre><code># Set the collector endpoint
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
-
-# Optional: service name (default: "stockyard")
-export OTEL_SERVICE_NAME=my-stockyard
-
-# Optional: auth headers
-export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer my-token"
-
-# Start Stockyard — traces flow automatically
-stockyard</code></pre>
-
-    <h3>Span Attributes</h3>
-    <table class="endpoint-table">
-      <tr><th>Attribute</th><th>Description</th></tr>
-      <tr><td><code>llm.model</code></td><td>Model name (e.g., gpt-4o-mini)</td></tr>
-      <tr><td><code>llm.provider</code></td><td>Provider name (e.g., openai)</td></tr>
-      <tr><td><code>llm.tokens.total</code></td><td>Total tokens used</td></tr>
-      <tr><td><code>llm.cost.usd</code></td><td>Estimated cost in USD</td></tr>
-      <tr><td><code>llm.latency.ms</code></td><td>Request latency in milliseconds</td></tr>
-      <tr><td><code>llm.status</code></td><td>ok, error, or cache_hit</td></tr>
-    </table>
-    <p>Spans are batched (100 per batch, 5s flush interval) and flushed gracefully on shutdown.</p>
-
-    <h2 id="status">Status Monitoring</h2>
-    <p>Real-time system health at <code>GET /api/status</code>:</p>
-    <pre><code>curl localhost:4200/api/status | jq .
-{
-  "status": "healthy",
-  "uptime": "2d 5h 30m",
-  "total_requests": 12453,
-  "error_rate": 0.002,
-  "avg_latency_ms": 245.3,
-  "memory": { "alloc_mb": 8.2, "sys_mb": 24.1 },
-  "goroutines": 12,
-  "components": {
-    "database": { "status": "healthy", "detail": "1.2ms" },
-    "modules": { "status": "healthy", "detail": "58 registered" },
-    "observe": { "status": "healthy", "detail": "12,453 traces" },
-    "trust": { "status": "healthy", "detail": "12,453 events" }
-  }
-}</code></pre>
-    <p>The web status page at <a href="/status/">/status/</a> auto-refreshes every 30 seconds.</p>
-
-    <h2 id="config">Config Export &amp; Import</h2>
-    <p>Snapshot your entire Stockyard configuration and restore it on another instance.</p>
-    <pre><code># Export current config
-curl localhost:4200/api/config/export > stockyard-config.json
-
-# Preview changes before applying
-curl -X POST localhost:4200/api/config/diff \
-  -d @stockyard-config.json
-
-# Import on another instance
-curl -X POST localhost:4200/api/config/import \
-  -d @stockyard-config.json</code></pre>
-    <p>The export includes module states, webhooks, and trust policies. Provider API keys are never included in exports.</p>
-
-    <h2 id="key-rotation">API Key Rotation</h2>
-    <p>Rotate API keys without downtime — the old key is immediately revoked and a new one generated:</p>
-    <pre><code># Rotate your own key
-curl -X POST localhost:4200/api/auth/me/keys/1/rotate \
-  -H "Authorization: Bearer sk-sy-current-key"
-# Returns: { "status": "rotated", "new_key": { "key": "sk-sy-new-...", ... } }
-
-# Admin: rotate any user's key
-curl -X POST localhost:4200/api/auth/users/1/keys/1/rotate</code></pre>
-
-
-    <h2 id="config-export">Config Export &amp; Import</h2>
-    <p>Export the full system configuration as a snapshot:</p>
+    <h2 id="invites">Inviting Members</h2>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/config/export \
-  -H "Authorization: Bearer sy_admin_..." \
-  -o stockyard-config.json</span>
-</pre>
-    <p>Import a config snapshot to a different instance:</p>
-    <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/config/import \
-  -H "Authorization: Bearer sy_admin_..." \
-  -H "Content-Type: application/json" \
-  -d @stockyard-config.json</span>
-</pre>
+<span class="comment"># Invite a developer</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/team/members \</span>
+<span class="cmd">  -H "Authorization: Bearer $STOCKYARD_ADMIN_KEY" \</span>
+<span class="cmd">  -d '{"email":"alice@acme.co", "name":"Alice", "role":"developer"}'</span>
 
-    <h2 id="config-diff">Config Diff</h2>
-    <p>Before importing, diff the snapshot against the current state:</p>
-    <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/config/diff \
-  -H "Authorization: Bearer sy_admin_..." \
-  -H "Content-Type: application/json" \
-  -d @stockyard-config.json</span>
+<span class="comment"># Response includes an invite token</span>
+<span class="cmd">{"id":"tm_8a4f2c","email":"alice@acme.co","role":"developer","invite_token":"a1b2c3..."}</span>
 </pre>
-    <pre>
-{
-  "changes": [
-    {"path": "modules.cachelayer.enabled", "current": false, "incoming": true},
-    {"path": "modules.costcap.config.daily_limit_usd", "current": 10, "incoming": 50}
-  ],
-  "additions": 2,
-  "removals": 0,
-  "modifications": 2
-}
-</pre>
+    <p>If a mailer is configured, the invite email is sent automatically with an accept link.</p>
 
-    <h2 id="webhooks-ops">Webhooks</h2>
-    <p>Register webhooks to receive real-time notifications:</p>
+    <h2 id="spend">Spend Tracking</h2>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/webhooks \
-  -H "Authorization: Bearer sy_admin_..." \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://hooks.slack.com/services/...",
-    "events": ["alert.triggered", "cost.threshold", "module.toggled"],
-    "secret": "whsec_..."
-  }'</span>
-</pre>
-    <p>Test your webhooks:</p>
-    <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/webhooks/test \
-  -H "Authorization: Bearer sy_admin_..."</span>
-</pre>
+<span class="comment"># Get per-member spend for the current month</span>
+<span class="cmd">curl http://localhost:4200/api/team/spend \</span>
+<span class="cmd">  -H "Authorization: Bearer $STOCKYARD_ADMIN_KEY"</span>
 
-    <h2 id="monitoring-ops">Monitoring</h2>
-    <p>Health endpoint for load balancers and uptime monitors:</p>
-    <pre>
-<span class="cmd">curl http://localhost:4200/health</span>
-<span class="comment"># {"status":"ok","uptime":"48h12m","version":"1.0.0"}</span>
+<span class="comment"># Returns request counts, cost, and token breakdown per member</span>
 </pre>
-    <p>Detailed system status with component health:</p>
-    <pre>
-<span class="cmd">curl http://localhost:4200/api/status \
-  -H "Authorization: Bearer sy_admin_..."</span>
-</pre>
-    <pre>
-{
-  "status": "healthy",
-  "uptime": "48h12m",
-  "version": "1.0.0",
-  "components": {
-    "proxy": "ok",
-    "observe": "ok",
-    "trust": "ok",
-    "studio": "ok",
-    "forge": "ok",
-    "exchange": "ok"
-  },
-  "database_size_mb": 42.5,
-  "total_requests": 15240
-}
-</pre>
+    <p>Spend data is pulled from billing_usage (if available) or observe_traces as a fallback, grouped by customer ID.</p>
 
-    <h2 id="railway-ops">Railway Deployment</h2>
-    <p>Stockyard runs on Railway with zero configuration. Set environment variables in the Railway dashboard:</p>
-    <pre>
-OPENAI_API_KEY=sk-...
-STOCKYARD_ADMIN_KEY=sy_admin_...
-PORT=4200
-</pre>
-    <div class="note"><strong>Timing:</strong> Railway auto-deploys from the main branch. Allow 120&ndash;180 seconds after push for the deploy to complete and circuit breakers to reset.</div>
+    <h2 id="audit">Audit Integration</h2>
+    <p>Every invite, role change, and member removal is logged to Trust's append-only audit ledger. Events include <code>team_member.invite</code>, <code>team_member.role.update</code>, and <code>team_member.remove</code>.</p>
 
-    <h2 id="backup-ops">Backup &amp; Recovery</h2>
-    <p>The SQLite database contains all traces, costs, audit logs, and configs. Back it up regularly:</p>
-    <pre>
-<span class="comment"># Export config snapshot (modules, webhooks, policies)</span>
-<span class="cmd">curl http://localhost:4200/api/config/export \
-  -H "Authorization: Bearer sy_admin_..." > backup.json</span>
-
-<span class="comment"># Copy the SQLite database for full backup</span>
-<span class="cmd">cp /data/stockyard.db /backups/stockyard-$(date +%Y%m%d).db</span>
-</pre>
+    <div class="note">
+      <strong>Note:</strong> All <code>/api/team/*</code> routes require the <code>STOCKYARD_ADMIN_KEY</code> header. Per-member RBAC enforcement is planned for a future release.
+    </div>
 
     <div class="pn">
       <a href="/docs/exchange/">&larr; Exchange</a>
-      <a href="/docs/api/">API Reference &rarr;</a>
+      <a href="/docs/memory/" class="next">Memory &rarr;</a>
     </div>
   </main>
 </div>
@@ -404,6 +224,22 @@ PORT=4200
   <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
   <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
+
+<script>
+document.querySelectorAll('.content pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = () => {
+    const text = pre.textContent.replace(/^Copy/, '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '\u2713 Copied';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  };
+  pre.appendChild(btn);
+});
+</script>
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
