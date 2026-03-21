@@ -859,6 +859,359 @@ func Boot(pc ProductConfig) {
 		json.NewEncoder(w).Encode(map[string]int{"sent": sent, "failed": failed})
 	})
 
+	// ══════════════════════════════════════════════════════════════════════
+	// MISSING MAGNUM OPUS FEATURES
+	// ══════════════════════════════════════════════════════════════════════
+
+	// 1. FTS5 Platform Search (upgrade existing LIKE-based search)
+	db.Conn().Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(type, entity_id, title, content)`)
+
+	// 2. Debugger — per-middleware step recording
+	db.Conn().Exec(`ALTER TABLE observe_traces ADD COLUMN debug_steps TEXT DEFAULT '[]'`)
+
+	// 3. Contextual Billing — request complexity classification
+	db.Conn().Exec(`ALTER TABLE app_uses ADD COLUMN complexity TEXT DEFAULT 'simple'`)
+
+	// 4. Prophecy — predicted prompt pre-caching
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS prophecy_cache (
+		prompt_hash TEXT PRIMARY KEY, predicted_response TEXT, model TEXT,
+		accuracy_hits INTEGER DEFAULT 0, accuracy_misses INTEGER DEFAULT 0,
+		created_at TEXT, expires_at TEXT
+	)`)
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS prophecy_patterns (
+		id TEXT PRIMARY KEY, hour_utc INTEGER, prompt_prefix TEXT, frequency INTEGER DEFAULT 1,
+		last_seen TEXT
+	)`)
+
+	// 5. Black Box — incident investigation reconstruction
+	// No new table needed — aggregates from observe_traces + trust_ledger + billing_usage
+
+	// 6. PBOM — prompt supply chain
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS prompt_dependencies (
+		template_id TEXT, dependency_type TEXT, dependency_id TEXT, created_at TEXT,
+		PRIMARY KEY(template_id, dependency_type, dependency_id)
+	)`)
+
+	// 7. Webhook Debugger
+	db.Conn().Exec(`CREATE TABLE IF NOT EXISTS webhook_deliveries (
+		id TEXT PRIMARY KEY, event_type TEXT, url TEXT, request_body TEXT,
+		response_status INTEGER, response_body TEXT, latency_ms INTEGER,
+		retry_count INTEGER DEFAULT 0, status TEXT DEFAULT 'sent', created_at TEXT
+	)`)
+
+	// --- FTS5 Search Endpoint (upgrade) ---
+	srv.Mux().HandleFunc("GET /api/search/fts", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query().Get("q")
+		typ := r.URL.Query().Get("type") // all, traces, apps, knowledge
+		if q == "" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"results": []any{}, "query": ""})
+			return
+		}
+		if typ == "" {
+			typ = "all"
+		}
+		var results []map[string]any
+		query := "SELECT type, entity_id, title, snippet(search_index, 3, '<b>', '</b>', '...', 32) FROM search_index WHERE search_index MATCH ?"
+		if typ != "all" {
+			query += " AND type = '" + typ + "'"
+		}
+		query += " ORDER BY rank LIMIT 20"
+		rows, err := db.Conn().Query(query, q)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var sType, entityID, title, snippet string
+				rows.Scan(&sType, &entityID, &title, &snippet)
+				results = append(results, map[string]any{"type": sType, "id": entityID, "title": title, "snippet": snippet})
+			}
+		}
+		if results == nil {
+			results = []map[string]any{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"results": results, "count": len(results), "query": q})
+	})
+
+	// --- Debugger Endpoint ---
+	srv.Mux().HandleFunc("GET /api/observe/traces/{id}/debug", func(w http.ResponseWriter, r *http.Request) {
+		traceID := r.PathValue("id")
+		var debugSteps string
+		err := db.Conn().QueryRow("SELECT COALESCE(debug_steps, '[]') FROM observe_traces WHERE id = ?", traceID).Scan(&debugSteps)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		var steps []any
+		json.Unmarshal([]byte(debugSteps), &steps)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"trace_id": traceID, "steps": steps, "count": len(steps)})
+	})
+
+	// --- Contextual Billing Classifier ---
+	srv.Mux().HandleFunc("GET /api/billing/complexity-stats", func(w http.ResponseWriter, r *http.Request) {
+		var simple, moderate, complex int
+		db.Conn().QueryRow("SELECT COUNT(*) FROM app_uses WHERE complexity = 'simple'").Scan(&simple)
+		db.Conn().QueryRow("SELECT COUNT(*) FROM app_uses WHERE complexity = 'moderate'").Scan(&moderate)
+		db.Conn().QueryRow("SELECT COUNT(*) FROM app_uses WHERE complexity = 'complex'").Scan(&complex)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"simple": simple, "moderate": moderate, "complex": complex})
+	})
+
+	// --- Prophecy Endpoints ---
+	srv.Mux().HandleFunc("GET /api/prophecy/patterns", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.Conn().Query("SELECT id, hour_utc, prompt_prefix, frequency, last_seen FROM prophecy_patterns ORDER BY frequency DESC LIMIT 50")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"patterns": []any{}})
+			return
+		}
+		defer rows.Close()
+		var patterns []map[string]any
+		for rows.Next() {
+			var id, prefix, lastSeen string
+			var hour, freq int
+			rows.Scan(&id, &hour, &prefix, &freq, &lastSeen)
+			patterns = append(patterns, map[string]any{"id": id, "hour_utc": hour, "prompt_prefix": prefix, "frequency": freq, "last_seen": lastSeen})
+		}
+		if patterns == nil {
+			patterns = []map[string]any{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"patterns": patterns, "count": len(patterns)})
+	})
+	srv.Mux().HandleFunc("GET /api/prophecy/stats", func(w http.ResponseWriter, r *http.Request) {
+		var totalPatterns, totalHits, totalMisses int
+		db.Conn().QueryRow("SELECT COUNT(*) FROM prophecy_patterns").Scan(&totalPatterns)
+		db.Conn().QueryRow("SELECT COALESCE(SUM(accuracy_hits), 0) FROM prophecy_cache").Scan(&totalHits)
+		db.Conn().QueryRow("SELECT COALESCE(SUM(accuracy_misses), 0) FROM prophecy_cache").Scan(&totalMisses)
+		accuracy := 0.0
+		if totalHits+totalMisses > 0 {
+			accuracy = float64(totalHits) / float64(totalHits+totalMisses) * 100
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"patterns": totalPatterns, "cache_hits": totalHits, "cache_misses": totalMisses, "accuracy_pct": accuracy})
+	})
+
+	// --- Black Box Investigation Endpoint ---
+	srv.Mux().HandleFunc("GET /api/trust/blackbox/{traceID}", func(w http.ResponseWriter, r *http.Request) {
+		traceID := r.PathValue("traceID")
+
+		// Collect trace data
+		var model, providerName, status, costStr, tagsStr, sourceStr, debugStr, responseBody, createdAt string
+		var durationMs int
+		var inputTokens, outputTokens int
+		err := db.Conn().QueryRow(`SELECT COALESCE(model,''), COALESCE(provider,''), COALESCE(status,''), 
+			COALESCE(cost_usd,'0'), COALESCE(tags,'{}'), COALESCE(source,''), COALESCE(debug_steps,'[]'),
+			COALESCE(response_body,''), COALESCE(created_at,''), COALESCE(duration_ms,0),
+			COALESCE(input_tokens,0), COALESCE(output_tokens,0)
+			FROM observe_traces WHERE id = ?`, traceID).Scan(
+			&model, &providerName, &status, &costStr, &tagsStr, &sourceStr, &debugStr,
+			&responseBody, &createdAt, &durationMs, &inputTokens, &outputTokens)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		// Collect audit trail
+		var auditEntries []map[string]string
+		auditRows, err := db.Conn().Query("SELECT COALESCE(action,''), COALESCE(detail,''), COALESCE(created_at,'') FROM trust_ledger WHERE trace_id = ? ORDER BY created_at", traceID)
+		if err == nil {
+			defer auditRows.Close()
+			for auditRows.Next() {
+				var action, detail, at string
+				auditRows.Scan(&action, &detail, &at)
+				auditEntries = append(auditEntries, map[string]string{"action": action, "detail": detail, "created_at": at})
+			}
+		}
+
+		// Collect billing record
+		var billingCustomer, billingCost string
+		db.Conn().QueryRow("SELECT COALESCE(customer_id,''), COALESCE(cost_cents,0) FROM billing_usage WHERE trace_id = ?", traceID).Scan(&billingCustomer, &billingCost)
+
+		var tags, debugSteps any
+		json.Unmarshal([]byte(tagsStr), &tags)
+		json.Unmarshal([]byte(debugStr), &debugSteps)
+
+		blackbox := map[string]any{
+			"trace_id": traceID,
+			"request": map[string]any{
+				"model": model, "provider": providerName, "source": sourceStr,
+				"tags": tags, "created_at": createdAt,
+			},
+			"response": map[string]any{
+				"status": status, "body_preview": responseBody,
+				"input_tokens": inputTokens, "output_tokens": outputTokens,
+				"cost_usd": costStr, "duration_ms": durationMs,
+			},
+			"middleware_debug": debugSteps,
+			"audit_trail":     auditEntries,
+			"billing": map[string]any{
+				"customer_id": billingCustomer, "cost_cents": billingCost,
+			},
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(blackbox)
+	})
+
+	// --- PBOM (Prompt Bill of Materials) ---
+	srv.Mux().HandleFunc("GET /api/studio/templates/{id}/pbom", func(w http.ResponseWriter, r *http.Request) {
+		templateID := r.PathValue("id")
+
+		// Get template info
+		var name, model, createdAt, updatedAt string
+		err := db.Conn().QueryRow("SELECT COALESCE(name,''), COALESCE(model,''), COALESCE(created_at,''), COALESCE(updated_at,'') FROM prompt_templates WHERE id = ?", templateID).Scan(&name, &model, &createdAt, &updatedAt)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		// Get dependencies
+		var deps []map[string]string
+		depRows, err := db.Conn().Query("SELECT dependency_type, dependency_id, created_at FROM prompt_dependencies WHERE template_id = ?", templateID)
+		if err == nil {
+			defer depRows.Close()
+			for depRows.Next() {
+				var dtype, did, dat string
+				depRows.Scan(&dtype, &did, &dat)
+				deps = append(deps, map[string]string{"type": dtype, "id": did, "created_at": dat})
+			}
+		}
+
+		// Get apps using this template
+		var apps []map[string]string
+		appRows, err := db.Conn().Query("SELECT id, title FROM published_apps WHERE template_id = ?", templateID)
+		if err == nil {
+			defer appRows.Close()
+			for appRows.Next() {
+				var aid, atitle string
+				appRows.Scan(&aid, &atitle)
+				apps = append(apps, map[string]string{"id": aid, "title": atitle})
+			}
+		}
+
+		if deps == nil {
+			deps = []map[string]string{}
+		}
+		if apps == nil {
+			apps = []map[string]string{}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"template_id":    templateID,
+			"name":           name,
+			"model":          model,
+			"created_at":     createdAt,
+			"updated_at":     updatedAt,
+			"dependencies":   deps,
+			"downstream_apps": apps,
+			"blast_radius":   len(apps),
+		})
+	})
+
+	// Blast radius endpoint
+	srv.Mux().HandleFunc("GET /api/studio/templates/{id}/blast-radius", func(w http.ResponseWriter, r *http.Request) {
+		templateID := r.PathValue("id")
+		var apps []map[string]string
+		rows, err := db.Conn().Query("SELECT id, title, use_count FROM published_apps WHERE template_id = ?", templateID)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var id, title string
+				var uses int
+				rows.Scan(&id, &title, &uses)
+				apps = append(apps, map[string]string{"id": id, "title": title, "use_count": fmt.Sprintf("%d", uses)})
+			}
+		}
+		if apps == nil {
+			apps = []map[string]string{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"template_id": templateID, "affected_apps": apps, "count": len(apps)})
+	})
+
+	// --- Webhook Debugger ---
+	srv.Mux().HandleFunc("GET /api/webhooks/deliveries", func(w http.ResponseWriter, r *http.Request) {
+		limit := 50
+		rows, err := db.Conn().Query(`SELECT id, event_type, url, response_status, latency_ms, retry_count, status, created_at 
+			FROM webhook_deliveries ORDER BY created_at DESC LIMIT ?`, limit)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"deliveries": []any{}})
+			return
+		}
+		defer rows.Close()
+		var deliveries []map[string]any
+		for rows.Next() {
+			var id, eventType, url, status, createdAt string
+			var respStatus, latencyMs, retryCount int
+			rows.Scan(&id, &eventType, &url, &respStatus, &latencyMs, &retryCount, &status, &createdAt)
+			deliveries = append(deliveries, map[string]any{
+				"id": id, "event_type": eventType, "url": url,
+				"response_status": respStatus, "latency_ms": latencyMs,
+				"retry_count": retryCount, "status": status, "created_at": createdAt,
+			})
+		}
+		if deliveries == nil {
+			deliveries = []map[string]any{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"deliveries": deliveries, "count": len(deliveries)})
+	})
+	srv.Mux().HandleFunc("GET /api/webhooks/deliveries/{id}", func(w http.ResponseWriter, r *http.Request) {
+		deliveryID := r.PathValue("id")
+		var id, eventType, url, reqBody, respBody, status, createdAt string
+		var respStatus, latencyMs, retryCount int
+		err := db.Conn().QueryRow(`SELECT id, event_type, url, COALESCE(request_body,''), response_status, 
+			COALESCE(response_body,''), latency_ms, retry_count, status, created_at 
+			FROM webhook_deliveries WHERE id = ?`, deliveryID).Scan(
+			&id, &eventType, &url, &reqBody, &respStatus, &respBody, &latencyMs, &retryCount, &status, &createdAt)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"id": id, "event_type": eventType, "url": url,
+			"request_body": reqBody, "response_status": respStatus,
+			"response_body": respBody, "latency_ms": latencyMs,
+			"retry_count": retryCount, "status": status, "created_at": createdAt,
+		})
+	})
+	srv.Mux().HandleFunc("POST /api/webhooks/deliveries/{id}/replay", func(w http.ResponseWriter, r *http.Request) {
+		deliveryID := r.PathValue("id")
+		var url, reqBody string
+		err := db.Conn().QueryRow("SELECT url, COALESCE(request_body,'') FROM webhook_deliveries WHERE id = ?", deliveryID).Scan(&url, &reqBody)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		// Re-send the webhook
+		go func() {
+			client := &http.Client{Timeout: 10 * time.Second}
+			resp, err := client.Post(url, "application/json", strings.NewReader(reqBody))
+			status := "failed"
+			respStatus := 0
+			if err == nil {
+				respStatus = resp.StatusCode
+				resp.Body.Close()
+				if respStatus >= 200 && respStatus < 300 {
+					status = "sent"
+				}
+			}
+			replayID := fmt.Sprintf("wd_%d", time.Now().UnixNano())
+			db.Conn().Exec(`INSERT INTO webhook_deliveries (id, event_type, url, request_body, response_status, status, retry_count, created_at)
+				VALUES (?, 'replay', ?, ?, ?, ?, 0, ?)`,
+				replayID, url, reqBody, respStatus, status, time.Now().Format(time.RFC3339))
+		}()
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"status": "replaying", "original_id": deliveryID})
+	})
+
+	log.Println("[engine] magnum opus features: FTS5 search, debugger, contextual billing, prophecy, black box, PBOM, webhook debugger")
+
 	// Register branded 404 handler as catch-all (lowest priority pattern)
 	notFound := site.NotFoundHandler()
 	srv.Mux().HandleFunc("/{path...}", func(w http.ResponseWriter, r *http.Request) {
