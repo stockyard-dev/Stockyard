@@ -414,7 +414,7 @@ func cmdTracesFollow() {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("Following traces (Ctrl+C to stop)...\n")
+	fmt.Println("Following traces (Ctrl+C to stop)...")
 
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {

@@ -147,8 +147,8 @@ func (pp *PromptPadManager) Stats() map[string]any {
 
 func selectVariant(variants []variantEntry) *variantEntry {
 	total := 0
-	for _, v := range variants {
-		total += v.Weight
+	for i := range variants {
+		total += variants[i].Weight
 	}
 	r := rand.Intn(total)
 	for i := range variants {

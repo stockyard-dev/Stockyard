@@ -1,5 +1,5 @@
 // Package platform provides the shared App interface and registration pattern
-// for the 6 Stockyard flagship apps (Proxy, Observe, Trust, Studio, Forge, Exchange).
+// for all Stockyard apps.
 package platform
 
 import (

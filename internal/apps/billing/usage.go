@@ -303,7 +303,7 @@ func (a *App) handleUsageByTag(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.conn.Query(`SELECT tags, cost_cents, input_tokens, output_tokens FROM billing_usage
 		WHERE tags != '{}' AND tags != '' AND created_at >= ? AND created_at < ?`,
-		period+"-01T00:00:00Z", period+"-31T23:59:59Z")
+		period+"-01T00:00:00Z", nextMonth(period))
 	if err != nil {
 		http.Error(w, `{"error":"query failed"}`, http.StatusInternalServerError)
 		return
@@ -367,4 +367,13 @@ func (a *App) handleUsageByTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{"tag": tagKey, "period": period, "breakdown": breakdown})
+}
+
+// nextMonth returns the first day of the month after the given "YYYY-MM" period.
+func nextMonth(period string) string {
+	t, err := time.Parse("2006-01", period)
+	if err != nil {
+		return period + "-31T23:59:59Z"
+	}
+	return t.AddDate(0, 1, 0).Format("2006-01-02") + "T00:00:00Z"
 }

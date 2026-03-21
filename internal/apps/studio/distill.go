@@ -3,7 +3,6 @@ package studio
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -69,8 +68,9 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 				LIMIT 10000
 			`, req.Model, req.DateFrom, req.DateTo)
 			if err != nil {
+				errJSON, _ := json.Marshal(map[string]string{"error": err.Error()})
 				conn.Exec("UPDATE distillation_jobs SET status = 'failed', result = ? WHERE id = ?",
-					fmt.Sprintf(`{"error":"%s"}`, err.Error()), id)
+					string(errJSON), id)
 				return
 			}
 			defer rows.Close()
