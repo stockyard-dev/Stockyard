@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>AI Commerce Protocol | Stockyard</title>
-<meta name="description" content="The Stockyard AI Commerce Protocol: an open specification for routing, executing, and verifying AI commerce requests across distributed providers.">
+<meta name="description" content="The Stockyard AI Commerce Protocol: an open specification for buying, selling, and settling AI inference in a decentralized marketplace.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -56,24 +56,22 @@ a:hover{color:var(--gold)}
 .content-section h3{font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.8rem;margin-top:2rem}
 .content-section ul{margin:0 0 1.5rem 1.5rem;color:var(--cream-dim);font-size:0.95rem}
 .content-section ul li{margin-bottom:0.5rem}
-.content-section ol{margin:0 0 1.5rem 1.5rem;color:var(--cream-dim);font-size:0.95rem}
-.content-section ol li{margin-bottom:0.5rem}
 .code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin:1.5rem 0}
 .code-block .comment{color:#5a5040}
 .code-block .key{color:var(--rust-light)}
 .code-block .str{color:var(--gold)}
 .code-block .num{color:var(--green-light)}
-.layer-row{display:flex;gap:1.5rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--bg3)}
-.layer-num{font-family:var(--font-mono);font-size:0.7rem;font-weight:600;color:var(--rust-light);min-width:80px;text-transform:uppercase;letter-spacing:1px}
-.layer-content{flex:1}
-.layer-title{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.3rem}
-.layer-desc{font-size:0.85rem;color:var(--cream-dim)}
+.flow-row{display:flex;gap:1.5rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--bg3)}
+.flow-num{font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--rust-light);min-width:40px}
+.flow-content{flex:1}
+.flow-title{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.3rem}
+.flow-desc{font-size:0.85rem;color:var(--cream-dim)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:600px){
   .hero{padding:5rem 1.5rem 3rem}
   .code-block{font-size:0.7rem;padding:0.8rem}
-  .layer-row{flex-direction:column;gap:0.5rem}
+  .flow-row{flex-direction:column;gap:0.5rem}
 }
 </style>
 </head>
@@ -93,98 +91,114 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="hero">
   <div class="hero-eyebrow">Protocol Specification</div>
-  <h1>AI <span class="accent">Inference</span> Protocol</h1>
-  <p class="hero-sub">An open specification for routing, executing, and verifying AI commerce requests across distributed providers.</p>
+  <h1>AI <span class="accent">Commerce</span> Protocol</h1>
+  <p class="hero-sub">An open specification for buying, selling, and settling AI inference in a decentralized marketplace.</p>
 </section>
 
 <section class="content-section">
   <p class="section-label">Overview</p>
   <h2>Protocol Overview</h2>
-  <p>The Stockyard AI Commerce Protocol (SAIP) defines a standard way for clients, proxies, and commerce providers to communicate. It builds on existing standards like OpenAI's API format while adding layers for routing, verification, and auditability.</p>
+  <p>The Stockyard AI Commerce Protocol (SACP) defines how participants in the AI marketplace discover services, negotiate pricing, execute transactions, and settle payments. It enables a trustless marketplace where providers and consumers transact without intermediaries.</p>
   <ul>
-    <li><strong>Provider-agnostic:</strong> One request format, any backend</li>
-    <li><strong>Verifiable:</strong> Cryptographic attestation of commerce results</li>
-    <li><strong>Observable:</strong> Built-in telemetry and cost tracking</li>
-    <li><strong>Composable:</strong> Middleware pipeline for request/response transformation</li>
+    <li><strong>Price discovery:</strong> Real-time bid/ask for inference capacity</li>
+    <li><strong>Escrow:</strong> Funds held until inference is verified</li>
+    <li><strong>Settlement:</strong> Automatic payment on successful completion</li>
+    <li><strong>Disputes:</strong> Cryptographic proof for resolution</li>
+    <li><strong>Reputation:</strong> On-chain quality and uptime scores</li>
   </ul>
 </section>
 
 <section class="content-section alt">
   <div class="inner">
-    <p class="section-label gold">Layers</p>
-    <h2>Protocol Layers</h2>
+    <p class="section-label gold">Transaction Flow</p>
+    <h2>Transaction Lifecycle</h2>
 
-    <div class="layer-row">
-      <span class="layer-num">Layer 1</span>
-      <div class="layer-content">
-        <div class="layer-title">Transport</div>
-        <div class="layer-desc">HTTP/2 and WebSocket connections with TLS 1.3. Supports streaming via Server-Sent Events.</div>
+    <div class="flow-row">
+      <span class="flow-num">01</span>
+      <div class="flow-content">
+        <div class="flow-title">Discovery</div>
+        <div class="flow-desc">Consumer queries the marketplace for available providers, filtering by model, price, latency, and reputation score.</div>
       </div>
     </div>
-    <div class="layer-row">
-      <span class="layer-num">Layer 2</span>
-      <div class="layer-content">
-        <div class="layer-title">Authentication</div>
-        <div class="layer-desc">API key, JWT, and mutual TLS authentication. Scoped permissions per key.</div>
+    <div class="flow-row">
+      <span class="flow-num">02</span>
+      <div class="flow-content">
+        <div class="flow-title">Quote</div>
+        <div class="flow-desc">Provider returns a signed quote with price-per-token, estimated latency, and validity window.</div>
       </div>
     </div>
-    <div class="layer-row">
-      <span class="layer-num">Layer 3</span>
-      <div class="layer-content">
-        <div class="layer-title">Routing</div>
-        <div class="layer-desc">Model-based, cost-based, and latency-based routing with fallback chains.</div>
+    <div class="flow-row">
+      <span class="flow-num">03</span>
+      <div class="flow-content">
+        <div class="flow-title">Escrow</div>
+        <div class="flow-desc">Consumer locks funds equal to the maximum cost estimate. Funds are held by the protocol.</div>
       </div>
     </div>
-    <div class="layer-row">
-      <span class="layer-num">Layer 4</span>
-      <div class="layer-content">
-        <div class="layer-title">Middleware</div>
-        <div class="layer-desc">Ordered pipeline of request/response transformations: rate limiting, caching, PII redaction, logging.</div>
+    <div class="flow-row">
+      <span class="flow-num">04</span>
+      <div class="flow-content">
+        <div class="flow-title">Execution</div>
+        <div class="flow-desc">Inference request is sent to the provider via the AI Inference Protocol (SAIP).</div>
       </div>
     </div>
-    <div class="layer-row">
-      <span class="layer-num">Layer 5</span>
-      <div class="layer-content">
-        <div class="layer-title">Execution</div>
-        <div class="layer-desc">Provider-specific adapters translate the unified format to each backend's native API.</div>
+    <div class="flow-row">
+      <span class="flow-num">05</span>
+      <div class="flow-content">
+        <div class="flow-title">Verification</div>
+        <div class="flow-desc">Response is hashed and signed. Both parties agree on token counts and quality metrics.</div>
       </div>
     </div>
-    <div class="layer-row">
-      <span class="layer-num">Layer 6</span>
-      <div class="layer-content">
-        <div class="layer-title">Verification</div>
-        <div class="layer-desc">Cryptographic hash of request + response for audit trails and dispute resolution.</div>
+    <div class="flow-row">
+      <span class="flow-num">06</span>
+      <div class="flow-content">
+        <div class="flow-title">Settlement</div>
+        <div class="flow-desc">Escrow releases actual cost to the provider. Remainder is returned to the consumer. Reputation scores update.</div>
       </div>
     </div>
   </div>
 </section>
 
 <section class="content-section">
-  <p class="section-label leather">Request Format</p>
-  <h2>Request Envelope</h2>
-  <p>Every commerce request is wrapped in a protocol envelope that carries routing hints, middleware directives, and tracing metadata.</p>
+  <p class="section-label leather">Listing Format</p>
+  <h2>Provider Listing</h2>
+  <p>Providers publish their capabilities and pricing to the marketplace using a standardized listing format.</p>
 
-  <div class="code-block"><span class="comment">// SAIP Request Envelope</span>
+  <div class="code-block"><span class="comment">// SACP Provider Listing</span>
 {
-  <span class="key">"protocol"</span>: <span class="str">"saip/v1"</span>,
-  <span class="key">"request_id"</span>: <span class="str">"req_abc123"</span>,
-  <span class="key">"routing"</span>: {
-    <span class="key">"strategy"</span>: <span class="str">"lowest-cost"</span>,
-    <span class="key">"fallback"</span>: [<span class="str">"openai"</span>, <span class="str">"anthropic"</span>, <span class="str">"mesh"</span>],
-    <span class="key">"max_latency_ms"</span>: <span class="num">5000</span>
+  <span class="key">"protocol"</span>: <span class="str">"sacp/v1"</span>,
+  <span class="key">"provider"</span>: {
+    <span class="key">"id"</span>: <span class="str">"node_mesh_abc123"</span>,
+    <span class="key">"name"</span>: <span class="str">"FastGPU Labs"</span>,
+    <span class="key">"reputation"</span>: <span class="num">0.97</span>,
+    <span class="key">"uptime_30d"</span>: <span class="num">0.994</span>
   },
-  <span class="key">"middleware"</span>: [<span class="str">"pii-redact"</span>, <span class="str">"cache"</span>, <span class="str">"audit"</span>],
-  <span class="key">"payload"</span>: {
-    <span class="key">"model"</span>: <span class="str">"gpt-4o"</span>,
-    <span class="key">"messages"</span>: [
-      { <span class="key">"role"</span>: <span class="str">"user"</span>, <span class="key">"content"</span>: <span class="str">"Summarize this document."</span> }
-    ],
-    <span class="key">"max_tokens"</span>: <span class="num">1024</span>
-  },
-  <span class="key">"trace"</span>: {
-    <span class="key">"parent_id"</span>: <span class="str">"span_xyz"</span>,
-    <span class="key">"tags"</span>: { <span class="key">"team"</span>: <span class="str">"platform"</span> }
+  <span class="key">"offerings"</span>: [
+    {
+      <span class="key">"model"</span>: <span class="str">"llama-3-70b"</span>,
+      <span class="key">"price_per_1k_input"</span>: <span class="num">0.0004</span>,
+      <span class="key">"price_per_1k_output"</span>: <span class="num">0.0012</span>,
+      <span class="key">"max_context"</span>: <span class="num">8192</span>,
+      <span class="key">"avg_latency_ms"</span>: <span class="num">850</span>,
+      <span class="key">"capacity_tps"</span>: <span class="num">120</span>
+    }
+  ],
+  <span class="key">"payment"</span>: {
+    <span class="key">"methods"</span>: [<span class="str">"usdc"</span>, <span class="str">"credit"</span>],
+    <span class="key">"settlement"</span>: <span class="str">"immediate"</span>
   }
+}</div>
+
+  <h3>Quote Response</h3>
+  <div class="code-block"><span class="comment">// SACP Quote Response</span>
+{
+  <span class="key">"quote_id"</span>: <span class="str">"qt_def456"</span>,
+  <span class="key">"provider"</span>: <span class="str">"node_mesh_abc123"</span>,
+  <span class="key">"model"</span>: <span class="str">"llama-3-70b"</span>,
+  <span class="key">"estimated_cost"</span>: <span class="num">0.0082</span>,
+  <span class="key">"max_cost"</span>: <span class="num">0.0150</span>,
+  <span class="key">"currency"</span>: <span class="str">"USD"</span>,
+  <span class="key">"valid_until"</span>: <span class="str">"2026-03-21T12:05:00Z"</span>,
+  <span class="key">"signature"</span>: <span class="str">"0xabc...def"</span>
 }</div>
 </section>
 
