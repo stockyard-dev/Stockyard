@@ -576,7 +576,7 @@ func Boot(pc ProductConfig) {
 			{"date": "2026-03-16", "title": "Forge Workflow Engine", "body": "Build multi-step LLM pipelines with DAG execution, conditional branching, and tool integration."},
 			{"date": "2026-03-15", "title": "Trust Ledger & Policies", "body": "Append-only audit chain, runtime policy enforcement, and compliance logging."},
 			{"date": "2026-03-14", "title": "Studio Prompt Lab", "body": "Version-controlled prompt templates, A/B experiments, and evaluation workflows."},
-			{"date": "2026-03-13", "title": "v1.0 Launch", "body": "Stockyard ships with 7 apps, 88 endpoints, and 50+ proxy middleware modules."},
+			{"date": "2026-03-13", "title": "v1.0 Launch", "body": "Stockyard ships with 6 apps, 62 endpoints, and 58 proxy middleware modules."},
 		}
 		limit := 5
 		if l := r.URL.Query().Get("limit"); l != "" {

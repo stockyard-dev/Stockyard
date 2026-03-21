@@ -170,9 +170,9 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"idlekill", "cost", pc.Features.IdleKill, 33},
 		{"outputcap", "cost", pc.Features.OutputCap, 34},
 		{"usagepulse", "cost", pc.Features.UsagePulse, 35},
-		{"responseheaders", "observe", true, 35},
-		{"costwarn", "cost", true, 36},
-		{"billingmeter", "billing", false, 37},
+		{"responseheaders", "observe", true, 36},
+		{"costwarn", "cost", true, 37},
+		{"billingmeter", "billing", false, 38},
 		// Rate
 		{"ratelimit", "rate", pc.Features.RateLimiting, 40},
 		{"ipfence", "tenant", pc.Features.IPFence, 41},
@@ -185,8 +185,8 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"contextpack", "transform", pc.Features.ContextPack, 62},
 		{"chatmem", "transform", pc.Features.ChatMem, 63},
 		{"memoryinject", "transform", true, 64},
-		{"langbridge", "transform", pc.Features.LangBridge, 64},
-		{"voicebridge", "transform", pc.Features.VoiceBridge, 65},
+		{"langbridge", "transform", pc.Features.LangBridge, 65},
+		{"voicebridge", "transform", pc.Features.VoiceBridge, 66},
 		// Validate
 		{"evalgate", "validate", pc.Features.EvalGate, 70},
 		{"codefence", "validate", pc.Features.CodeFence, 71},

@@ -99,15 +99,10 @@ var validRoles = map[string]bool{
 
 // --- Role-based access helpers ---
 
-// CheckRole verifies the caller has the required role.
-// In a full implementation, this would read from the request context.
-// For now, admin endpoints are protected by the existing admin key middleware.
-func (a *App) requireAdmin(r *http.Request) bool {
-	// The admin auth middleware in engine.go already protects /api/* routes.
-	// Team member RBAC enforcement is additive — admin-only endpoints
-	// check that the caller is an admin team member (or has the admin key).
-	return true
-}
+// Note: All /api/team/* routes are protected by the global admin key middleware
+// (adminAuthMiddleware in engine.go, requires STOCKYARD_ADMIN_KEY).
+// Per-member RBAC (e.g. viewer can't delete members) is planned for a future release.
+// Until then, anyone with the admin key has full team management access.
 
 // --- Handlers ---
 
