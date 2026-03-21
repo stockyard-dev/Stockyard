@@ -185,6 +185,12 @@ type Features struct {
 	// Top 5 features
 	Consensus bool
 	AutoTag   bool
+
+	// Magnum Opus features
+	Ghost          bool
+	PromptCompress bool
+	Honeypot       bool
+	PriorityQueue  bool
 }
 
 // ProductConfig defines a product's identity and feature set.
@@ -610,6 +616,22 @@ func Boot(pc ProductConfig) {
 
 	// Seed demo data if database is empty (populates traces, costs, experiments)
 	db.SeedDemoData(pc.Product)
+
+	// Start background loops for Fabric self-healing and Cortex intelligence
+	for _, app := range pc.Apps {
+		if starter, ok := app.(interface{ StartHealingLoop() }); ok {
+			starter.StartHealingLoop()
+			log.Printf("  Fabric:    self-healing loop started")
+		}
+		if starter, ok := app.(interface{ StartRecommendationLoop() }); ok {
+			starter.StartRecommendationLoop()
+			log.Printf("  Cortex:    recommendation loop started")
+		}
+		if starter, ok := app.(interface{ StartDreamsLoop() }); ok {
+			starter.StartDreamsLoop()
+			log.Printf("  Cortex:    dreams loop started")
+		}
+	}
 
 	// Start data retention cleanup loop
 	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
@@ -1377,6 +1399,20 @@ func buildMiddlewares(reg *toggle.Registry,
 
 	// ── Phase 4 middleware ──
 	mw = buildPhase4Middlewares(pc, cfg, providers, mw, db, reg)
+
+	// ── Magnum Opus middleware ──
+	if pc.Features.Ghost {
+		add("ghost", features.GhostMiddleware(db.Conn()))
+	}
+	if pc.Features.PromptCompress {
+		add("promptcompress", features.PromptCompressMiddleware())
+	}
+	if pc.Features.Honeypot {
+		add("honeypot", features.HoneypotMiddleware(db.Conn()))
+	}
+	if pc.Features.PriorityQueue {
+		add("priorityqueue", features.PriorityQueueMiddleware())
+	}
 
 	return mw
 }

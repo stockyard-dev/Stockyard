@@ -12,6 +12,16 @@
 //	sy config export                  Export config to stdout
 //	sy config import <file>           Import config from file
 //	sy version                        Show CLI and server version
+//	sy apps list                      List apps from the store
+//	sy mesh status                    Show mesh network stats
+//	sy fabric deploy <file>           Deploy a fabric manifest
+//	sy fabric validate <file>         Validate a fabric manifest
+//	sy fabric diff <file>             Diff a fabric manifest against current
+//	sy fabric list                    List fabric deployments
+//	sy fabric rollback <name> <ver>   Rollback a deployment to a version
+//	sy fabric export <name>           Export a deployment manifest
+//	sy fabric teardown <name>         Tear down a deployment
+//	sy reputation <user_id>           Show user reputation
 package main
 
 import (
@@ -39,7 +49,7 @@ type config struct {
 }
 
 func loadConfig() config {
-	cfg := config{URL: "http://localhost:4200"}
+	cfg := config{URL: "http://localhost:8080"}
 
 	// Load from config file first.
 	home, _ := os.UserHomeDir()
@@ -88,6 +98,14 @@ func main() {
 		cmdProviders()
 	case "config":
 		cmdConfig()
+	case "apps":
+		cmdApps()
+	case "mesh":
+		cmdMesh()
+	case "fabric":
+		cmdFabric()
+	case "reputation":
+		cmdReputation()
 	case "version", "--version", "-v":
 		cmdVersion()
 	case "help", "--help", "-h":
@@ -113,10 +131,20 @@ Usage:
   sy providers health                    Provider health grid
   sy config export                       Export config JSON to stdout
   sy config import <file>                Import config from JSON file
+  sy apps list                           List apps from the store
+  sy mesh status                         Mesh network stats
+  sy fabric deploy <file>                Deploy a fabric manifest
+  sy fabric validate <file>              Validate a fabric manifest
+  sy fabric diff <file>                  Diff manifest against current
+  sy fabric list                         List fabric deployments
+  sy fabric rollback <name> <version>    Rollback a deployment
+  sy fabric export <name>                Export a deployment manifest
+  sy fabric teardown <name>              Tear down a deployment
+  sy reputation <user_id>                Show user reputation
   sy version                             CLI and server version
 
 Configuration:
-  STOCKYARD_URL       Server URL (default: http://localhost:4200)
+  STOCKYARD_URL       Server URL (default: http://localhost:8080)
   STOCKYARD_ADMIN_KEY Admin API key
   ~/.stockyard/config.json  {"url": "...", "admin_key": "..."}`)
 }
@@ -513,6 +541,185 @@ func cmdVersion() {
 	var status map[string]any
 	json.Unmarshal(data, &status)
 	fmt.Printf("Server: %s (%s)\n", getString(status, "version"), getString(status, "status"))
+}
+
+func cmdApps() {
+	if len(os.Args) < 3 || os.Args[2] != "list" {
+		fmt.Fprintln(os.Stderr, "Usage: sy apps list")
+		os.Exit(1)
+	}
+
+	data, err := apiGet("/api/apps/store")
+	if err != nil {
+		fatal("%v", err)
+	}
+
+	var resp map[string]any
+	json.Unmarshal(data, &resp)
+	apps, _ := resp["apps"].([]any)
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "APP\tDESCRIPTION\tSTATUS")
+	for _, a := range apps {
+		m, _ := a.(map[string]any)
+		fmt.Fprintf(w, "%s\t%s\t%s\n",
+			getString(m, "name"),
+			getString(m, "description"),
+			getString(m, "status"),
+		)
+	}
+	w.Flush()
+	fmt.Printf("\n%d apps\n", len(apps))
+}
+
+func cmdMesh() {
+	if len(os.Args) < 3 || os.Args[2] != "status" {
+		fmt.Fprintln(os.Stderr, "Usage: sy mesh status")
+		os.Exit(1)
+	}
+
+	data, err := apiGet("/api/mesh/stats")
+	if err != nil {
+		fatal("%v", err)
+	}
+
+	var resp map[string]any
+	json.Unmarshal(data, &resp)
+
+	pretty, _ := json.MarshalIndent(resp, "", "  ")
+	fmt.Println(string(pretty))
+}
+
+func cmdFabric() {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "Usage: sy fabric [deploy|validate|diff|list|rollback|export|teardown] ...")
+		os.Exit(1)
+	}
+
+	sub := os.Args[2]
+	switch sub {
+	case "deploy":
+		if len(os.Args) < 4 {
+			fatal("Usage: sy fabric deploy <file>")
+		}
+		fileData, err := os.ReadFile(os.Args[3])
+		if err != nil {
+			fatal("Cannot read file: %v", err)
+		}
+		result, err := apiRequest("POST", "/api/fabric/deploy", string(fileData))
+		if err != nil {
+			fatal("%v", err)
+		}
+		fmt.Println(string(result))
+
+	case "validate":
+		if len(os.Args) < 4 {
+			fatal("Usage: sy fabric validate <file>")
+		}
+		fileData, err := os.ReadFile(os.Args[3])
+		if err != nil {
+			fatal("Cannot read file: %v", err)
+		}
+		result, err := apiRequest("POST", "/api/fabric/validate", string(fileData))
+		if err != nil {
+			fatal("%v", err)
+		}
+		fmt.Println(string(result))
+
+	case "diff":
+		if len(os.Args) < 4 {
+			fatal("Usage: sy fabric diff <file>")
+		}
+		fileData, err := os.ReadFile(os.Args[3])
+		if err != nil {
+			fatal("Cannot read file: %v", err)
+		}
+		result, err := apiRequest("POST", "/api/fabric/diff", string(fileData))
+		if err != nil {
+			fatal("%v", err)
+		}
+		fmt.Println(string(result))
+
+	case "list":
+		data, err := apiGet("/api/fabric/deployments")
+		if err != nil {
+			fatal("%v", err)
+		}
+		var resp map[string]any
+		json.Unmarshal(data, &resp)
+		deployments, _ := resp["deployments"].([]any)
+
+		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+		fmt.Fprintln(w, "NAME\tVERSION\tSTATUS\tCREATED")
+		for _, d := range deployments {
+			m, _ := d.(map[string]any)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
+				getString(m, "name"),
+				getString(m, "version"),
+				getString(m, "status"),
+				getString(m, "created_at"),
+			)
+		}
+		w.Flush()
+		fmt.Printf("\n%d deployments\n", len(deployments))
+
+	case "rollback":
+		if len(os.Args) < 5 {
+			fatal("Usage: sy fabric rollback <name> <version>")
+		}
+		name := os.Args[3]
+		ver := os.Args[4]
+		result, err := apiRequest("POST", "/api/fabric/deployments/"+name+"/rollback?version="+ver, "")
+		if err != nil {
+			fatal("%v", err)
+		}
+		fmt.Println(string(result))
+
+	case "export":
+		if len(os.Args) < 4 {
+			fatal("Usage: sy fabric export <name>")
+		}
+		name := os.Args[3]
+		result, err := apiRequest("POST", "/api/fabric/export/"+name, "")
+		if err != nil {
+			fatal("%v", err)
+		}
+		fmt.Println(string(result))
+
+	case "teardown":
+		if len(os.Args) < 4 {
+			fatal("Usage: sy fabric teardown <name>")
+		}
+		name := os.Args[3]
+		_, err := apiRequest("DELETE", "/api/fabric/deployments/"+name, "")
+		if err != nil {
+			fatal("%v", err)
+		}
+		fmt.Printf("Deployment %q torn down.\n", name)
+
+	default:
+		fmt.Fprintf(os.Stderr, "Unknown fabric subcommand: %s\n", sub)
+		os.Exit(1)
+	}
+}
+
+func cmdReputation() {
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "Usage: sy reputation <user_id>")
+		os.Exit(1)
+	}
+
+	userID := os.Args[2]
+	data, err := apiGet("/api/reputation/" + userID)
+	if err != nil {
+		fatal("%v", err)
+	}
+
+	var resp map[string]any
+	json.Unmarshal(data, &resp)
+
+	pretty, _ := json.MarshalIndent(resp, "", "  ")
+	fmt.Println(string(pretty))
 }
 
 // --- Helpers ---

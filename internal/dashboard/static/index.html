@@ -23,8 +23,16 @@ const APPS={
   memory:{id:'memory',name:'Memory',icon:'\u29BE',desc:'Per-user memory'},
   recall:{id:'recall',name:'Recall',icon:'\u2691',desc:'Incident response'},
   copilot:{id:'copilot',name:'Copilot',icon:'\u25C8',desc:'AI assistant'},
+  fabric:{id:'fabric',name:'Fabric',icon:'\u2B1A',desc:'Declarative deploys'},
+  appbuilder:{id:'appbuilder',name:'Apps',icon:'\u2B2A',desc:'App builder & store'},
+  knowledge:{id:'knowledge',name:'Knowledge',icon:'\u2261',desc:'Knowledge marketplace'},
+  reputation:{id:'reputation',name:'Rep',icon:'\u2605',desc:'Reputation & karma'},
+  governance:{id:'governance',name:'Gov',icon:'\u2696',desc:'Governance & safety'},
+  finance:{id:'finance',name:'Finance',icon:'\u00A4',desc:'Advances & insurance'},
+  connect:{id:'connect',name:'Connect',icon:'\u26A1',desc:'OAuth & vault'},
+  cortex:{id:'cortex',name:'Cortex',icon:'\u2609',desc:'Platform intelligence'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team','memory','recall','copilot'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','billing','team','memory','recall','copilot','fabric','appbuilder','knowledge','reputation','governance','finance','connect','cortex'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){

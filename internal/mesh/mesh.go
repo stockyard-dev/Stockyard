@@ -31,6 +31,45 @@ CREATE TABLE IF NOT EXISTS mesh_pricing (
     markup_pct REAL DEFAULT 0,
     description TEXT DEFAULT ''
 );
+
+CREATE TABLE IF NOT EXISTS mesh_transactions (
+    id TEXT PRIMARY KEY,
+    demand_node TEXT DEFAULT '',
+    supply_node TEXT DEFAULT '',
+    model TEXT DEFAULT '',
+    input_tokens INTEGER DEFAULT 0,
+    output_tokens INTEGER DEFAULT 0,
+    cost_cents INTEGER DEFAULT 0,
+    latency_ms INTEGER DEFAULT 0,
+    verified INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_mesh_tx_supply ON mesh_transactions(supply_node);
+
+CREATE TABLE IF NOT EXISTS mesh_earnings (
+    operator_id TEXT NOT NULL,
+    period TEXT NOT NULL,
+    tokens_served INTEGER DEFAULT 0,
+    earnings_cents INTEGER DEFAULT 0,
+    fee_cents INTEGER DEFAULT 0,
+    PRIMARY KEY(operator_id, period)
+);
+
+CREATE TABLE IF NOT EXISTS mesh_verifications (
+    id TEXT PRIMARY KEY,
+    node_id TEXT NOT NULL,
+    passed INTEGER DEFAULT 1,
+    similarity REAL DEFAULT 1.0,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS mesh_dedup_cache (
+    prompt_hash TEXT PRIMARY KEY,
+    response TEXT DEFAULT '',
+    node_id TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now')),
+    expires_at TEXT
+);
 `
 
 // Manager handles mesh node registration and health tracking.
@@ -57,6 +96,12 @@ func (m *Manager) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/mesh/heartbeat", m.handleHeartbeat)
 	mux.HandleFunc("GET /api/mesh/config", m.handleGetConfig)
 	mux.HandleFunc("GET /api/mesh/pricing", m.handlePricing)
+	mux.HandleFunc("GET /api/mesh/nodes/{id}", m.handleGetNode)
+	mux.HandleFunc("POST /api/mesh/deregister", m.handleDeregister)
+	mux.HandleFunc("GET /api/mesh/stats", m.handleStats)
+	mux.HandleFunc("GET /api/mesh/earnings", m.handleEarnings)
+	mux.HandleFunc("GET /api/mesh/earnings/summary", m.handleEarningsSummary)
+	mux.HandleFunc("POST /api/mesh/payout", m.handlePayout)
 	log.Printf("[mesh] routes registered")
 }
 
@@ -198,6 +243,105 @@ func (m *Manager) handlePricing(w http.ResponseWriter, r *http.Request) {
 		pricing = []map[string]any{}
 	}
 	writeMeshJSON(w, map[string]any{"pricing": pricing})
+}
+
+func (m *Manager) handleGetNode(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var name, url, region, status, heartbeat, metaJSON, createdAt string
+	err := m.conn.QueryRow(`SELECT name, url, region, status, last_heartbeat, metadata, created_at
+		FROM mesh_nodes WHERE id = ?`, id).Scan(&name, &url, &region, &status, &heartbeat, &metaJSON, &createdAt)
+	if err != nil {
+		w.WriteHeader(404)
+		writeMeshJSON(w, map[string]string{"error": "node not found"})
+		return
+	}
+	var meta any
+	json.Unmarshal([]byte(metaJSON), &meta)
+	writeMeshJSON(w, map[string]any{
+		"id": id, "name": name, "url": url, "region": region,
+		"status": status, "last_heartbeat": heartbeat, "metadata": meta, "created_at": createdAt,
+	})
+}
+
+func (m *Manager) handleDeregister(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		NodeID string `json:"node_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.NodeID == "" {
+		w.WriteHeader(400)
+		writeMeshJSON(w, map[string]string{"error": "node_id required"})
+		return
+	}
+	m.conn.Exec(`UPDATE mesh_nodes SET status = 'offline' WHERE id = ?`, req.NodeID)
+	writeMeshJSON(w, map[string]string{"status": "deregistered"})
+}
+
+func (m *Manager) handleStats(w http.ResponseWriter, r *http.Request) {
+	var totalNodes, healthyNodes int
+	m.conn.QueryRow(`SELECT COUNT(*) FROM mesh_nodes`).Scan(&totalNodes)
+	m.conn.QueryRow(`SELECT COUNT(*) FROM mesh_nodes WHERE status = 'healthy'`).Scan(&healthyNodes)
+	var totalTx, totalTokens, totalCost int
+	m.conn.QueryRow(`SELECT COALESCE(COUNT(*),0), COALESCE(SUM(input_tokens+output_tokens),0), COALESCE(SUM(cost_cents),0) FROM mesh_transactions`).Scan(&totalTx, &totalTokens, &totalCost)
+	writeMeshJSON(w, map[string]any{
+		"total_nodes": totalNodes, "healthy_nodes": healthyNodes,
+		"total_transactions": totalTx, "total_tokens_served": totalTokens, "total_cost_cents": totalCost,
+	})
+}
+
+func (m *Manager) handleEarnings(w http.ResponseWriter, r *http.Request) {
+	rows, err := m.conn.Query(`SELECT operator_id, period, tokens_served, earnings_cents, fee_cents
+		FROM mesh_earnings ORDER BY period DESC LIMIT 50`)
+	if err != nil {
+		writeMeshJSON(w, map[string]any{"earnings": []any{}})
+		return
+	}
+	defer rows.Close()
+	var earnings []map[string]any
+	for rows.Next() {
+		var opID, period string
+		var tokens, earn, fee int
+		if rows.Scan(&opID, &period, &tokens, &earn, &fee) == nil {
+			earnings = append(earnings, map[string]any{
+				"operator_id": opID, "period": period, "tokens_served": tokens,
+				"earnings_cents": earn, "fee_cents": fee, "net_cents": earn - fee,
+			})
+		}
+	}
+	if earnings == nil {
+		earnings = []map[string]any{}
+	}
+	writeMeshJSON(w, map[string]any{"earnings": earnings})
+}
+
+func (m *Manager) handleEarningsSummary(w http.ResponseWriter, r *http.Request) {
+	period := time.Now().UTC().Format("2006-01")
+	var totalEarnings, totalFees, totalTokens int
+	m.conn.QueryRow(`SELECT COALESCE(SUM(earnings_cents),0), COALESCE(SUM(fee_cents),0), COALESCE(SUM(tokens_served),0)
+		FROM mesh_earnings WHERE period = ?`, period).Scan(&totalEarnings, &totalFees, &totalTokens)
+	writeMeshJSON(w, map[string]any{
+		"period": period, "total_earnings_cents": totalEarnings,
+		"total_fees_cents": totalFees, "net_cents": totalEarnings - totalFees,
+		"total_tokens_served": totalTokens,
+	})
+}
+
+func (m *Manager) handlePayout(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		OperatorID string `json:"operator_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.OperatorID == "" {
+		w.WriteHeader(400)
+		writeMeshJSON(w, map[string]string{"error": "operator_id required"})
+		return
+	}
+	var net int
+	m.conn.QueryRow(`SELECT COALESCE(SUM(earnings_cents - fee_cents), 0) FROM mesh_earnings WHERE operator_id = ?`,
+		req.OperatorID).Scan(&net)
+	writeMeshJSON(w, map[string]any{
+		"operator_id": req.OperatorID, "payout_cents": net, "status": "pending",
+	})
 }
 
 func writeMeshJSON(w http.ResponseWriter, data any) {

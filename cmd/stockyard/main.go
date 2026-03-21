@@ -1,28 +1,33 @@
 // Stockyard — "Where LLM traffic gets sorted."
 //
-// Single binary shipping all 9 flagship apps:
-//   - Proxy:    Core reverse-proxy, middleware chain, provider dispatch
-//   - Observe:  Analytics, traces, alerts, anomaly detection, cost attribution
-//   - Trust:    Audit ledger, compliance, evidence packs, replay lab
-//   - Studio:   Prompt templates, experiments, benchmarks, snapshot tests
-//   - Forge:    Workflow engine, tool registry, triggers, sessions, batch
-//   - Exchange: Pack marketplace, config sharing, environment sync
+// Single binary shipping all flagship apps:
+//   - Proxy, Observe, Trust, Studio, Forge, Exchange, Billing, Team, Memory
+//   - Recall, Copilot, Fabric, AppBuilder, Knowledge, Reputation
+//   - Governance, Finance, Connect, Cortex
 package main
 
 import (
+	"github.com/stockyard-dev/stockyard/internal/apps/appbuilder"
 	"github.com/stockyard-dev/stockyard/internal/apps/billing"
+	"github.com/stockyard-dev/stockyard/internal/apps/connect"
 	"github.com/stockyard-dev/stockyard/internal/apps/copilot"
 	"github.com/stockyard-dev/stockyard/internal/apps/exchange"
+	"github.com/stockyard-dev/stockyard/internal/apps/finance"
 	"github.com/stockyard-dev/stockyard/internal/apps/forge"
+	"github.com/stockyard-dev/stockyard/internal/apps/governance"
+	"github.com/stockyard-dev/stockyard/internal/apps/knowledge"
 	"github.com/stockyard-dev/stockyard/internal/apps/marketing"
 	"github.com/stockyard-dev/stockyard/internal/apps/memory"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	proxyapp "github.com/stockyard-dev/stockyard/internal/apps/proxy"
 	"github.com/stockyard-dev/stockyard/internal/apps/recall"
+	"github.com/stockyard-dev/stockyard/internal/apps/reputation"
 	"github.com/stockyard-dev/stockyard/internal/apps/studio"
 	"github.com/stockyard-dev/stockyard/internal/apps/team"
 	"github.com/stockyard-dev/stockyard/internal/apps/trust"
+	"github.com/stockyard-dev/stockyard/internal/cortex"
 	"github.com/stockyard-dev/stockyard/internal/engine"
+	"github.com/stockyard-dev/stockyard/internal/fabric"
 	"github.com/stockyard-dev/stockyard/internal/platform"
 )
 
@@ -51,6 +56,14 @@ func main() {
 			marketing.New(nil),
 			recall.New(nil),
 			copilot.New(nil),
+			fabric.New(nil),
+			appbuilder.New(nil),
+			knowledge.New(nil),
+			reputation.New(nil),
+			governance.New(nil),
+			finance.New(nil),
+			connect.New(nil),
+			cortex.New(nil),
 		},
 		Features: engine.Features{
 			SpendTracking:  true,
@@ -183,6 +196,10 @@ func main() {
 			WebhookForge:   true,
 			Consensus:      true,
 			AutoTag:        true,
+			Ghost:          true,
+			PromptCompress: true,
+			Honeypot:       true,
+			PriorityQueue:  true,
 		},
 	})
 }

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Fabric: Declarative Deployment Engine — Stockyard</title>
+<meta name="description" content="Define your entire AI infrastructure as a single JSON manifest. Fabric reconciles, deploys, and self-heals automatically.">
+<meta property="og:title" content="Fabric: Declarative Deployment Engine — Stockyard">
+<meta property="og:description" content="Declare your desired state. Fabric makes it real. Idempotent deployments, drift detection, auto-healing.">
+<meta property="og:url" content="https://stockyard.dev/fabric/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--red:#b84233;--amber:#c49a3c;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+.page-hero{max-width:750px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto 2.5rem}
+
+.demo{padding:3rem 2rem 5rem;max-width:800px;margin:0 auto}
+.demo-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-bottom:1rem}
+.demo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.demo-title{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.demo-badge{font-family:var(--font-mono);font-size:0.65rem;padding:0.2rem 0.6rem;border:1px solid}
+.badge-green{color:var(--green);border-color:var(--green)}
+.badge-amber{color:var(--amber);border-color:var(--amber)}
+
+.manifest-line{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);line-height:2;padding:0 0.5rem}
+.manifest-line .key{color:var(--leather-light)}
+.manifest-line .val{color:var(--green)}
+.manifest-line .str{color:var(--gold)}
+
+.features{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.features-inner{max-width:800px;margin:0 auto}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+.feat{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg)}
+.feat-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
+.feat-desc{font-size:0.8rem;color:var(--cream-dim);line-height:1.6}
+
+.api-section{padding:5rem 2rem;max-width:700px;margin:0 auto}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
+.code-block .comment{color:#5a5040}
+.code-block .cmd{color:var(--cream)}
+
+.page-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
+.page-cta h2{font-size:2rem;margin-bottom:1rem}
+.page-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+.related-apps{padding:3rem 2rem;max-width:740px;margin:0 auto}
+.related-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem}
+.related-grid a{display:block;padding:0.8rem 1rem;background:var(--bg2);border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s}
+.related-grid a:hover{border-color:var(--rust)}
+.related-grid .r-name{color:var(--cream);font-weight:700;font-size:0.9rem}
+.related-grid .r-desc{color:var(--cream-dim);font-size:0.75rem;font-family:var(--font-mono);margin-top:0.2rem}
+
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2);border-left:1px solid var(--bg3);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1rem;padding:0.3rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+@media(max-width:600px){
+  .page-hero{padding:5rem 1.5rem 3rem}
+  .feat-grid{grid-template-columns:1fr}
+  .cta-group{flex-direction:column;align-items:center}
+  .code-block{font-size:0.7rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+}
+
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--gold:#b08a28}}
+</style>
+<link rel="canonical" href="https://stockyard.dev/fabric/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="/products/">Products</a>
+    <a href="/playground">Playground</a>
+    <a href="/cloud/">Cloud</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/guide/">Guide</a>
+    <a href="/blog/">Blog</a>
+    <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="page-hero" id="main">
+  <div class="eyebrow">Fabric</div>
+  <h1>Declare your AI infrastructure. <span class="accent">Fabric makes it real.</span></h1>
+  <p class="sub">Define models, middleware, routing, guardrails, and billing in a single JSON manifest. Fabric reconciles, deploys, and self-heals automatically.</p>
+  <div class="cta-group">
+    <a href="/guide/" class="btn btn-primary">Get Started</a>
+    <a href="#api" class="btn btn-secondary">See the API</a>
+  </div>
+</section>
+
+<section class="demo">
+  <div class="demo-card">
+    <div class="demo-header">
+      <span class="demo-title">Example Manifest</span>
+      <span class="demo-badge badge-green">Valid</span>
+    </div>
+    <div class="manifest-line">{</div>
+    <div class="manifest-line">&nbsp;&nbsp;<span class="key">"name"</span>: <span class="str">"support-bot-v2"</span>,</div>
+    <div class="manifest-line">&nbsp;&nbsp;<span class="key">"model"</span>: <span class="str">"gpt-4o"</span>,</div>
+    <div class="manifest-line">&nbsp;&nbsp;<span class="key">"fallback_models"</span>: [<span class="str">"claude-3.5-sonnet"</span>, <span class="str">"gemini-pro"</span>],</div>
+    <div class="manifest-line">&nbsp;&nbsp;<span class="key">"modules"</span>: [<span class="str">"ratelimit"</span>, <span class="str">"toxicfilter"</span>, <span class="str">"cache"</span>],</div>
+    <div class="manifest-line">&nbsp;&nbsp;<span class="key">"guardrails"</span>: [{ <span class="key">"name"</span>: <span class="str">"no-pii"</span>, <span class="key">"type"</span>: <span class="str">"regex"</span>, <span class="key">"action"</span>: <span class="str">"block"</span> }],</div>
+    <div class="manifest-line">&nbsp;&nbsp;<span class="key">"auto_heal"</span>: <span class="val">true</span></div>
+    <div class="manifest-line">}</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Reconcile Result</span>
+        <span class="demo-badge badge-green">Applied</span>
+      </div>
+      <div class="manifest-line"><span class="key">Actions:</span> <span class="val">5 applied</span></div>
+      <div class="manifest-line"><span class="key">Modules:</span> ratelimit, toxicfilter, cache</div>
+      <div class="manifest-line"><span class="key">Guardrails:</span> no-pii (regex/block)</div>
+      <div class="manifest-line"><span class="key">Duration:</span> <span class="val">12ms</span></div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-title">Drift Detection</span>
+        <span class="demo-badge badge-amber">1 healed</span>
+      </div>
+      <div class="manifest-line"><span class="key">Check:</span> every 5 minutes</div>
+      <div class="manifest-line"><span class="key">Drift:</span> toxicfilter was disabled</div>
+      <div class="manifest-line"><span class="key">Action:</span> <span class="val">auto-re-enabled</span></div>
+      <div class="manifest-line"><span class="key">Status:</span> <span class="val">healed</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <h2 class="section-label leather">What Fabric does</h2>
+    <div class="feat-grid">
+      <div class="feat">
+        <h3 class="feat-name">Declarative Manifests</h3>
+        <div class="feat-desc">Define your entire AI infrastructure as JSON. Models, middleware, routing, guardrails, billing, alerts, and more in one file.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Idempotent Deploys</h3>
+        <div class="feat-desc">Apply the same manifest twice and nothing changes. Fabric only modifies what has drifted from the desired state.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Drift Detection</h3>
+        <div class="feat-desc">Background loop checks platform state every 5 minutes. Detects when someone manually changes a setting and reverts it.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Auto-Healing</h3>
+        <div class="feat-desc">When drift is detected, Fabric automatically re-reconciles to the desired state. No manual intervention needed.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Version History</h3>
+        <div class="feat-desc">Every deployment is versioned. Roll back to any previous version with a single API call.</div>
+      </div>
+      <div class="feat">
+        <h3 class="feat-name">Diff Preview</h3>
+        <div class="feat-desc">Preview what changes a manifest would make before applying. Validate without deploying. Dry-run everything.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="api-section" id="api">
+  <h2 class="section-label">API</h2>
+  <div class="code-block">
+<span class="comment"># Deploy a manifest</span>
+<span class="cmd">curl -X POST /api/fabric/deploy \
+  -d '{"name":"my-app","model":"gpt-4o","modules":["cache","ratelimit"]}'</span>
+
+<span class="comment"># Preview changes without applying</span>
+<span class="cmd">curl -X POST /api/fabric/diff \
+  -d '{"name":"my-app","model":"gpt-4o","modules":["cache"]}'</span>
+
+<span class="comment"># Roll back to version 2</span>
+<span class="cmd">curl -X POST /api/fabric/deployments/my-app/rollback?version=2</span>
+
+<span class="comment"># Export current state as manifest</span>
+<span class="cmd">curl -X POST /api/fabric/export/my-app</span>
+  </div>
+</section>
+
+<section class="related-apps">
+  <div class="related-label">Related</div>
+  <div class="related-grid">
+    <a href="/products/"><span class="r-name">Products</span><span class="r-desc">All Stockyard apps</span></a>
+    <a href="/recall/"><span class="r-name">Recall</span><span class="r-desc">Incident response</span></a>
+    <a href="/observe/"><span class="r-name">Observe</span><span class="r-desc">Traces &amp; costs</span></a>
+    <a href="/trust/"><span class="r-name">Trust</span><span class="r-desc">Audit &amp; compliance</span></a>
+  </div>
+</section>
+
+<section class="page-cta">
+  <h2>Infrastructure as code for AI</h2>
+  <p>Stop clicking through dashboards. Declare your desired state and let Fabric handle the rest.</p>
+  <div class="cta-group">
+    <a href="/guide/" class="btn btn-primary">Get Started</a>
+    <a href="/docs/" class="btn btn-secondary">Read the Docs</a>
+  </div>
+</section>
+
+<footer>
+  <div class="sig">Built by hand in Texas.</div>
+  stockyard.dev &copy; 2025
+</footer>
+
+<script>
+function toggleNav(){
+  document.querySelector('.nav-toggle').classList.toggle('open');
+  document.querySelector('.nav-links').classList.toggle('open');
+  document.querySelector('.nav-overlay').classList.toggle('open');
+}
+</script>
+</body>
+</html>
