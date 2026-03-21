@@ -33,7 +33,9 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	seedTemplates(conn)
+	if err := SeedTemplates(conn); err != nil {
+		return err
+	}
 	log.Printf("[appbuilder] migrations applied")
 	return nil
 }
@@ -603,12 +605,13 @@ func (a *App) handlePortfolio(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// seedTemplates populates the initial template apps.
-func seedTemplates(conn *sql.DB) {
+// SeedTemplates populates the initial 25 template apps (5 per category).
+// It is called from Migrate and is safe to call multiple times.
+func SeedTemplates(conn *sql.DB) error {
 	var count int
 	conn.QueryRow("SELECT COUNT(*) FROM published_apps WHERE status = 'template'").Scan(&count)
 	if count >= 25 {
-		return
+		return nil
 	}
 
 	templates := []struct {
@@ -649,11 +652,15 @@ func seedTemplates(conn *sql.DB) {
 	now := time.Now().UTC().Format(time.RFC3339)
 	for _, t := range templates {
 		id := genAppID("app_")
-		conn.Exec(`INSERT OR IGNORE INTO published_apps (id, title, description, category, system_prompt, model, status, created_at, updated_at)
+		_, err := conn.Exec(`INSERT OR IGNORE INTO published_apps (id, title, description, category, system_prompt, model, status, created_at, updated_at)
 			VALUES (?, ?, ?, ?, ?, 'gpt-4o-mini', 'template', ?, ?)`,
 			id, t.title, "Template: "+t.title, t.category, t.prompt, now, now)
+		if err != nil {
+			return err
+		}
 	}
 	log.Printf("[appbuilder] seeded %d template apps", len(templates))
+	return nil
 }
 
 func writeJSON(w http.ResponseWriter, v any) {
