@@ -190,7 +190,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       "name": "Stockyard",
       "url": "https://stockyard.dev",
       "logo": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png",
-      "description": "Open-source LLM proxy suite. 16 apps, 58 middleware modules, one binary.",
+      "description": "The AI Economy Platform. Build apps, contribute compute, monetize expertise. 16 apps, 58 middleware modules, one binary.",
       "sameAs": [
         "https://github.com/stockyard-dev/stockyard"
       ]
@@ -278,15 +278,22 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="hero" id="main">
   <div class="hero-eyebrow">The AI Economy Platform</div>
-  <h1>Build. <span class="accent">Deploy.</span> Earn.</h1>
-  <p class="hero-sub">One binary runs the entire AI lifecycle &mdash; from proxy to app store to compute network. Zero dependencies.</p>
+  <h1>Build AI apps. <span class="accent">Earn from your GPU.</span> Monetize your expertise.</h1>
+  <p class="hero-sub">One binary. Zero dependencies. From LLM proxy to app store to compute network.</p>
 
-  <div class="hero-stats">
-    <div class="stat"><span class="stat-num">350+</span><span class="stat-label">API Endpoints</span></div>
-    <div class="stat"><span class="stat-num">106</span><span class="stat-label">Data Tables</span></div>
-    <div class="stat"><span class="stat-num">58</span><span class="stat-label">Modules</span></div>
-    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
-    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Chain Overhead</span></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;max-width:900px;margin:0 auto 3rem;text-align:left">
+    <a href="/for/builders/" style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-decoration:none;transition:border-color 0.2s">
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light);margin-bottom:0.5rem;letter-spacing:1px">FOR BUILDERS</div>
+      <div style="color:var(--cream-dim);font-size:0.9rem">Create AI apps without code. Publish to the marketplace. Earn revenue from every use.</div>
+    </a>
+    <a href="/for/gpu-owners/" style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-decoration:none;transition:border-color 0.2s">
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light);margin-bottom:0.5rem;letter-spacing:1px">FOR GPU OWNERS</div>
+      <div style="color:var(--cream-dim);font-size:0.9rem">Contribute idle compute to the mesh. Earn per-token credits automatically.</div>
+    </a>
+    <a href="/for/experts/" style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-decoration:none;transition:border-color 0.2s">
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light);margin-bottom:0.5rem;letter-spacing:1px">FOR DOMAIN EXPERTS</div>
+      <div style="color:var(--cream-dim);font-size:0.9rem">Turn your knowledge into a monetizable knowledge base. Earn royalties when apps use your data.</div>
+    </a>
   </div>
 
   <div class="cta-group">
@@ -294,22 +301,28 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="https://github.com/stockyard-dev/Stockyard" class="btn btn-secondary">View Source</a>
   </div>
 
-  <!-- Trust strip -->
+  <div style="margin-top:1.5rem;font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);letter-spacing:1px">
+    350+ API endpoints &middot; 106 data tables &middot; 58 middleware modules &middot; 16 providers &middot; 400ns chain overhead
+  </div>
+
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
     <a href="/playground/" style="color:var(--cream-dim)">Playground &rarr;</a>
     <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-dim)">GitHub &rarr;</a>
     <a href="/benchmarks/" style="color:var(--cream-dim)">Benchmarks &rarr;</a>
     <a href="/api/openapi.json" style="color:var(--cream-dim)">OpenAPI spec &rarr;</a>
     <a href="/changelog/" style="color:var(--cream-dim)">Changelog &rarr;</a>
-    <a href="/docs/auth/" style="color:var(--cream-dim)">Security &rarr;</a>
+    <a href="/protocol/" style="color:var(--cream-dim)">Protocol &rarr;</a>
   </div>
 </section>
 
 <section class="problem">
   <div class="problem-inner">
-    <h2 class="section-label">The problem</h2>
+    <h2 class="section-label">The platform problem</h2>
     <p class="problem-text">
-      You shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, workflow orchestration, and a way to share configs across environments. You're not going to set up six different tools with Redis and Postgres just to stop surprise bills.
+      Developers rebuild the same AI infrastructure for every project &mdash; proxy, logging, cost tracking, safety, audit. Millions of GPUs sit idle while companies pay premium cloud prices. Domain experts have knowledge that would make AI better but no way to earn from it.
+    </p>
+    <p class="problem-text" style="margin-top:1rem;color:var(--cream)">
+      Stockyard solves all three with a single binary.
     </p>
   </div>
 </section>
@@ -342,112 +355,115 @@ Console: http://localhost:4200/ui</span>
 
 <section class="apps" id="apps">
   <div class="apps-inner">
-    <h2 class="section-label leather">The platform</h2>
+
+    <h2 class="section-label leather">Core Infrastructure</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">The foundation. Every LLM request flows through 58 middleware modules with tracing, cost tracking, and an immutable audit trail.</p>
     <div class="app-grid">
       <div class="app-card"><a href="/products/">
-        <span class="app-num">App 01</span>
         <h3 class="app-name">Proxy</h3>
-        <span class="app-tagline">The LLM gateway layer. 58 middleware modules, runtime toggles.</span>
-        <span class="app-features">Caching &bull; Rate limiting &bull; Cost caps &bull; Failover &bull; PII redaction &bull; Content filter &bull; Retry &bull; Load balancing &bull; Circuit breakers</span>
+        <span class="app-tagline">58 middleware modules. 16 providers. 400ns overhead.</span>
       </a></div>
       <div class="app-card"><a href="/observe/">
-        <span class="app-num">App 02</span>
         <h3 class="app-name">Observe</h3>
-        <span class="app-tagline">Request tracing, cost dashboards, and alerts.</span>
-        <span class="app-features">Request tracing &bull; Cost rollups &bull; Latency tracking &bull; Alert rules &bull; Anomaly detection &bull; Daily dashboards</span>
+        <span class="app-tagline">Request tracing, cost dashboards, and anomaly detection.</span>
       </a></div>
       <div class="app-card"><a href="/trust/">
-        <span class="app-num">App 03</span>
         <h3 class="app-name">Trust</h3>
-        <span class="app-tagline">Append-only audit ledger. Hash-chained. Tamper-evident.</span>
-        <span class="app-features">Audit trails &bull; Evidence packs &bull; Policy engine &bull; Feedback capture &bull; AES-256 encryption at rest &bull; Replay</span>
-      </a></div>
-      <div class="app-card"><a href="/studio/">
-        <span class="app-num">App 04</span>
-        <h3 class="app-name">Studio</h3>
-        <span class="app-tagline">Prompt engineering, versioned. Experiment, benchmark, snapshot.</span>
-        <span class="app-features">Prompt templates &bull; A/B experiments &bull; Benchmarks &bull; Snapshot comparison &bull; Version history</span>
-      </a></div>
-      <div class="app-card"><a href="/forge/">
-        <span class="app-num">App 05</span>
-        <h3 class="app-name">Forge</h3>
-        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
-        <span class="app-features">Topological execution &bull; Template variables &bull; Transform steps &bull; Tool integration &bull; Batch processing</span>
-      </a></div>
-      <div class="app-card"><a href="/exchange/">
-        <span class="app-num">App 06</span>
-        <h3 class="app-name">Exchange</h3>
-        <span class="app-tagline">Config packs. Install a stack in one click.</span>
-        <span class="app-features">Starter packs &bull; One-click install &bull; Clean uninstall &bull; Environment sync &bull; Version control</span>
-      </a></div>
-      <div class="app-card"><a href="/products/">
-        <span class="app-num">App 07</span>
-        <h3 class="app-name">Bill</h3>
-        <span class="app-tagline">Usage metering, per-customer billing, and Stripe integration for AI products.</span>
-        <span class="app-features">Per-customer metering &bull; Plans &amp; limits &bull; Spend caps &bull; Model access control &bull; Stripe sync</span>
-      </a></div>
-      <div class="app-card"><a href="/team/">
-        <span class="app-num">App 08</span>
-        <h3 class="app-name">Team</h3>
-        <span class="app-tagline">RBAC, team members, invites, and per-member spend tracking.</span>
-        <span class="app-features">Role-based access &bull; Email invites &bull; Per-member spend &bull; Audit logging &bull; Admin / Developer / Viewer / Auditor roles</span>
-      </a></div>
-      <div class="app-card"><a href="/memory/">
-        <span class="app-num">App 09</span>
-        <h3 class="app-name">Memory</h3>
-        <span class="app-tagline">Per-user conversation memory with semantic retrieval and auto-summarization.</span>
-        <span class="app-features">Store &amp; retrieve &bull; Semantic relevance &bull; Auto-summarize &bull; Per-user scoping &bull; TTL expiry</span>
-      </a></div>
-      <div class="app-card"><a href="/recall/">
-        <span class="app-num">App 10</span>
-        <h3 class="app-name">Recall</h3>
-        <span class="app-tagline">AI incident response. Find every affected response, notify customers, resolve fast.</span>
-        <span class="app-features">Full-text response search &bull; Pattern matching &bull; Date filtering &bull; One-click notifications</span>
-      </a></div>
-      <div class="app-card"><a href="/copilot/">
-        <span class="app-num">App 11</span>
-        <h3 class="app-name">Copilot</h3>
-        <span class="app-tagline">Natural language platform configuration. Ask questions, get instant setup.</span>
-        <span class="app-features">AI-powered setup &bull; Session management &bull; Natural language queries &bull; Configuration assistance</span>
-      </a></div>
-      <div class="app-card"><a href="/appbuilder/">
-        <span class="app-num">App 12</span>
-        <h3 class="app-name">AppBuilder</h3>
-        <span class="app-tagline">No-code AI app builder. Create, publish, and monetize LLM applications.</span>
-        <span class="app-features">Visual builder &bull; App marketplace &bull; Revenue sharing &bull; A/B testing &bull; Analytics</span>
-      </a></div>
-      <div class="app-card"><a href="/knowledge/">
-        <span class="app-num">App 13</span>
-        <h3 class="app-name">Knowledge</h3>
-        <span class="app-tagline">Knowledge base marketplace. Publish, subscribe, and query verified knowledge.</span>
-        <span class="app-features">Knowledge bases &bull; Crowdsourced verification &bull; Marketplace &bull; Vector embeddings &bull; Watch notifications</span>
-      </a></div>
-      <div class="app-card"><a href="/reputation/">
-        <span class="app-num">App 14</span>
-        <h3 class="app-name">Reputation</h3>
-        <span class="app-tagline">Trust scores, certifications, and gamified leaderboards for the AI economy.</span>
-        <span class="app-features">Reputation scoring &bull; Certifications &bull; Leaderboards &bull; Karma system &bull; Seasons</span>
-      </a></div>
-      <div class="app-card"><a href="/governance/">
-        <span class="app-num">App 15</span>
-        <h3 class="app-name">Governance</h3>
-        <span class="app-tagline">Decentralized platform governance. Proposals, voting, and dispute resolution.</span>
-        <span class="app-features">Community proposals &bull; Voting system &bull; Dispute resolution &bull; Safety certifications &bull; Compliance checks</span>
-      </a></div>
-      <div class="app-card"><a href="/billing/">
-        <span class="app-num">App 16</span>
-        <h3 class="app-name">Billing</h3>
-        <span class="app-tagline">Usage metering, per-customer billing, credits, and Stripe integration.</span>
-        <span class="app-features">Per-customer metering &bull; Plans &amp; limits &bull; Credits system &bull; Stripe sync &bull; Revenue advances</span>
+        <span class="app-tagline">Hash-chained audit ledger. Tamper-evident. Compliance-ready.</span>
       </a></div>
     </div>
+
+    <h2 class="section-label" style="margin-top:4rem">Creation Tools</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">Build AI applications without code. Visual app builder, prompt engineering, workflow orchestration, and natural language platform control.</p>
+    <div class="app-grid">
+      <div class="app-card"><a href="/studio/">
+        <h3 class="app-name">Studio</h3>
+        <span class="app-tagline">Prompt versioning, A/B testing, and benchmarks.</span>
+      </a></div>
+      <div class="app-card"><a href="/forge/">
+        <h3 class="app-name">Forge</h3>
+        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
+      </a></div>
+      <div class="app-card"><a href="/appbuilder/">
+        <h3 class="app-name">App Builder</h3>
+        <span class="app-tagline">No-code AI apps. Publish and monetize on the marketplace.</span>
+      </a></div>
+      <div class="app-card"><a href="/copilot/">
+        <h3 class="app-name">Copilot</h3>
+        <span class="app-tagline">Configure the entire platform in natural language.</span>
+      </a></div>
+    </div>
+
+    <h2 class="section-label gold" style="margin-top:4rem">The Economy</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">A marketplace where apps, knowledge, and compute are created, shared, and monetized by the community.</p>
+    <div class="app-grid">
+      <div class="app-card"><a href="/exchange/">
+        <h3 class="app-name">Exchange</h3>
+        <span class="app-tagline">Config packs and app marketplace. One-click install.</span>
+      </a></div>
+      <div class="app-card"><a href="/knowledge/">
+        <h3 class="app-name">Knowledge</h3>
+        <span class="app-tagline">Domain expertise marketplace. Publish, subscribe, earn royalties.</span>
+      </a></div>
+      <div class="app-card"><a href="/node/">
+        <h3 class="app-name">Mesh</h3>
+        <span class="app-tagline">Distributed GPU network. Contribute compute, earn credits.</span>
+      </a></div>
+      <div class="app-card"><a href="/reputation/">
+        <h3 class="app-name">Reputation</h3>
+        <span class="app-tagline">Trust scores, certifications, and seasonal leaderboards.</span>
+      </a></div>
+    </div>
+
+    <h2 class="section-label leather" style="margin-top:4rem">Business Operations</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">Usage metering, declarative deployment, AI incident response, and conversational memory. The operational backbone.</p>
+    <div class="app-grid">
+      <div class="app-card"><a href="/billing/">
+        <h3 class="app-name">Billing</h3>
+        <span class="app-tagline">Usage metering, Stripe Connect, credits, and invoices.</span>
+      </a></div>
+      <div class="app-card"><a href="/fabric/">
+        <h3 class="app-name">Fabric</h3>
+        <span class="app-tagline">One JSON manifest deploys your entire AI application.</span>
+      </a></div>
+      <div class="app-card"><a href="/recall/">
+        <h3 class="app-name">Recall</h3>
+        <span class="app-tagline">AI incident response. Find every affected response in seconds.</span>
+      </a></div>
+      <div class="app-card"><a href="/memory/">
+        <h3 class="app-name">Memory</h3>
+        <span class="app-tagline">Per-user conversational memory with semantic retrieval.</span>
+      </a></div>
+    </div>
+
+    <h2 class="section-label" style="margin-top:4rem;color:var(--green-light)">Governance &amp; Security</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">RBAC, democratic governance, compliance automation, and safety certification. Enterprise-grade from day one.</p>
+    <div class="app-grid">
+      <div class="app-card"><a href="/team/">
+        <h3 class="app-name">Team</h3>
+        <span class="app-tagline">RBAC, invites, and per-member spend tracking.</span>
+      </a></div>
+      <div class="app-card"><a href="/governance/">
+        <h3 class="app-name">Governance</h3>
+        <span class="app-tagline">Democratic proposals, voting, and dispute resolution.</span>
+      </a></div>
+      <div class="app-card"><a href="/products/">
+        <h3 class="app-name">Connect</h3>
+        <span class="app-tagline">OAuth identity, secret vault, and threat intelligence.</span>
+      </a></div>
+      <div class="app-card"><a href="/protocol/">
+        <h3 class="app-name">Protocol</h3>
+        <span class="app-tagline">Open standard for AI inference, governance, and commerce.</span>
+      </a></div>
+    </div>
+
   </div>
 </section>
 
 <section class="sdk-section" style="padding:5rem 2rem;text-align:center">
   <div class="section-label">Zero Config</div>
-  <h2 style="font-size:2rem;margin-bottom:1rem">Works with every SDK</h2>
-  <p style="color:var(--cream-dim);max-width:500px;margin:0 auto 3rem">One import change. Zero config. All traffic routes through Stockyard automatically.</p>
+  <h2 style="font-size:2rem;margin-bottom:1rem">One import. Full observability.</h2>
+  <p style="color:var(--cream-dim);max-width:500px;margin:0 auto 1rem">Change one import line. Every request gets tracing, cost tracking, audit logging, and safety filtering.</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:900px;margin:0 auto">
     <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
       <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Python</div>
@@ -611,6 +627,7 @@ function showConsole(name){
   <div class="cta-group" style="margin-top:2rem">
     <a href="/pricing/" class="btn btn-primary">See pricing</a>
   </div>
+  <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1.5rem;max-width:600px;margin-left:auto;margin-right:auto">App builders earn 80% of revenue. Mesh operators earn 88% of inference fees. Knowledge contributors earn 80% of query royalties. Stockyard makes money when you make money.</p>
 </section>
 
 <section class="compare" style="margin-top:0">
@@ -624,18 +641,20 @@ function showConsole(name){
 </section>
 
 <section class="footer-cta">
-  <h2>Ship with confidence.</h2>
-  <p>Self-hosted LLM control plane. Install the binary or try managed cloud.</p>
+  <h2>Join the AI economy.</h2>
+  <p>Build apps. Contribute compute. Share knowledge. Earn from all of it.</p>
   <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
-    <a href="/pricing/" class="btn btn-secondary">Compare plans</a>
+    <a href="/guide/" class="btn btn-primary">Get Started</a>
+    <a href="/products/" class="btn btn-secondary">Explore the Platform</a>
   </div>
 </section>
 
 <footer>
   <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where LLM traffic gets sorted. &nbsp;&middot;&nbsp; <a href="/">Home</a> &nbsp;&middot;&nbsp; <a href="/products/">Products</a> &nbsp;&middot;&nbsp; <a href="/playground/">Playground</a> &nbsp;&middot;&nbsp; <a href="/cloud/">Cloud</a> &nbsp;&middot;&nbsp; <a href="/pricing/">Pricing</a> &nbsp;&middot;&nbsp; <a href="/docs/">Docs</a> &nbsp;&middot;&nbsp; <a href="/guide/">Guide</a> &nbsp;&middot;&nbsp; <a href="/blog/">Blog</a> &nbsp;&middot;&nbsp; <a href="https://github.com/stockyard-dev/stockyard">GitHub</a></p>
-  <p style="margin-top:0.4rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &nbsp;&middot;&nbsp; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &nbsp;&middot;&nbsp; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
+  <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/appbuilder/">Build</a> &middot; <a href="/node/">Network</a> &middot; <a href="/governance/">Enterprise</a> &middot; <a href="/docs/">Developers</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a></p>
+  <p style="margin-top:0.3rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/fabric/" style="color:var(--cream-muted)">Fabric</a> &middot; <a href="/copilot/" style="color:var(--cream-muted)">Copilot</a> &middot; <a href="/recall/" style="color:var(--cream-muted)">Recall</a> &middot; <a href="/appbuilder/" style="color:var(--cream-muted)">App Builder</a> &middot; <a href="/node/" style="color:var(--cream-muted)">Mesh</a> &middot; <a href="/knowledge/" style="color:var(--cream-muted)">Knowledge</a> &middot; <a href="/protocol/" style="color:var(--cream-muted)">Protocol</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
 </footer>
 
 
