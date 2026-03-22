@@ -64,7 +64,6 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/recall/autoscan", a.handleAutoScan)
 	// Start background scanner (every 5 minutes)
 	go a.backgroundScanner()
-}
 	log.Printf("[recall] routes registered")
 }
 

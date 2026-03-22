@@ -377,10 +377,7 @@ func (a *App) handlePlatformRevenue(w http.ResponseWriter, r *http.Request) {
 	var billingFees int64
 	a.conn.QueryRow("SELECT COALESCE(SUM(total_cents * 25 / 1000), 0) FROM billing_invoices WHERE period = ?", period).Scan(&billingFees)
 
-	// Subscription revenue (from apiserver - separate DB, estimate from plans)
-	var subscriptionRevenue int64
-	// This comes from Stripe directly — we track it from webhooks in the apiserver DB
-	// For now, return 0 and note it's tracked separately
+	// Subscription revenue tracked via Stripe webhooks in license system
 	subscriptionNote := "tracked via Stripe webhooks in license system"
 
 	totalPlatformFees := appFees + meshFees + knowledgeFees + billingFees
