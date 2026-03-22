@@ -482,6 +482,10 @@ func Boot(pc ProductConfig) {
 			if setter, ok := app.(interface{ SetMux(*http.ServeMux) }); ok {
 				setter.SetMux(srv.Mux())
 			}
+			// Wire integration event dispatcher (Slack, Discord, PagerDuty)
+			if setter, ok := app.(interface{ SetEventDispatcher(func(string, any)) }); ok {
+				setter.SetEventDispatcher(integrationMgr.EventDispatcher())
+			}
 		}
 
 		// Second pass: extract trust auditor and wire to all apps + middleware
