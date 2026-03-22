@@ -4,7 +4,7 @@
 // written to SQLite and decrypted only when needed for outbound API calls.
 //
 // Key derivation:
-//   - If STOCKYARD_ENCRYPTION_KEY is set, derive a 256-bit key via SHA-256.
+//   - If STOCKYARD_ENCRYPTION_KEY is set, derive a 256-bit key via PBKDF2-HMAC-SHA256 (100k iterations).
 //   - Otherwise, auto-generate a random 32-byte key and persist it in the
 //     stockyard_secrets table so it survives restarts.
 //
@@ -15,6 +15,7 @@ package auth
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
@@ -44,17 +45,13 @@ func initEncryptionKey(db *sql.DB) ([]byte, error) {
 
 	// 1. Check env var
 	if envKey := strings.TrimSpace(os.Getenv("STOCKYARD_ENCRYPTION_KEY")); envKey != "" {
-		if len(envKey) < 16 {
-			return nil, fmt.Errorf("STOCKYARD_ENCRYPTION_KEY must be at least 16 characters (got %d)", len(envKey))
+		if len(envKey) < 32 {
+			return nil, fmt.Errorf("STOCKYARD_ENCRYPTION_KEY must be at least 32 characters (got %d)", len(envKey))
 		}
-		// Use SHA-256 with a fixed salt to derive a 256-bit key.
-		// For keys >= 32 chars this provides adequate entropy.
-		salt := []byte("stockyard-encryption-key-v1")
-		h := sha256.New()
-		h.Write(salt)
-		h.Write([]byte(envKey))
-		key := h.Sum(nil)
-		log.Println("[auth] encryption key loaded from STOCKYARD_ENCRYPTION_KEY")
+		// Derive a 256-bit key using PBKDF2-HMAC-SHA256 (100k iterations).
+		salt := []byte("stockyard-encryption-key-v2")
+		key := deriveKey([]byte(envKey), salt, 100000)
+		log.Println("[auth] encryption key derived from STOCKYARD_ENCRYPTION_KEY (PBKDF2, 100k iterations)")
 		return key, nil
 	}
 
@@ -83,6 +80,26 @@ func initEncryptionKey(db *sql.DB) ([]byte, error) {
 	}
 	log.Println("[auth] encryption key auto-generated and stored")
 	return key, nil
+}
+
+// deriveKey implements PBKDF2-HMAC-SHA256 using only Go stdlib.
+// Returns a 32-byte key suitable for AES-256.
+func deriveKey(password, salt []byte, iterations int) []byte {
+	mac := hmac.New(sha256.New, password)
+	mac.Write(salt)
+	mac.Write([]byte{0, 0, 0, 1}) // block index 1
+	u := mac.Sum(nil)
+	result := make([]byte, sha256.Size)
+	copy(result, u)
+	for i := 1; i < iterations; i++ {
+		mac.Reset()
+		mac.Write(u)
+		u = mac.Sum(nil)
+		for j := range result {
+			result[j] ^= u[j]
+		}
+	}
+	return result[:32]
 }
 
 // encrypt encrypts plaintext using AES-256-GCM and returns "enc:" + base64.
