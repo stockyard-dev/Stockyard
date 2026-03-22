@@ -317,16 +317,20 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// Verify Stripe signature
+	// Verify Stripe signature — ALWAYS required. Reject if secret not configured.
 	whSecret := os.Getenv("STRIPE_WEBHOOK_SECRET")
-	if whSecret != "" {
-		sig := r.Header.Get("Stripe-Signature")
-		if sig == "" || !verifyStripeSignature(body, sig, whSecret) {
-			log.Printf("[billing/stripe] webhook: invalid signature")
-			w.WriteHeader(400)
-			writeJSON(w, map[string]string{"error": "invalid signature"})
-			return
-		}
+	if whSecret == "" {
+		log.Printf("[billing/stripe] webhook: STRIPE_WEBHOOK_SECRET not configured — rejecting")
+		w.WriteHeader(403)
+		writeJSON(w, map[string]string{"error": "webhook signature verification not configured"})
+		return
+	}
+	sig := r.Header.Get("Stripe-Signature")
+	if sig == "" || !verifyStripeSignature(body, sig, whSecret) {
+		log.Printf("[billing/stripe] webhook: invalid signature")
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "invalid signature"})
+		return
 	}
 
 	var event struct {
