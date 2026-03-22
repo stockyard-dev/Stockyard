@@ -1,6 +1,9 @@
 package billing
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -313,6 +317,18 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	// Verify Stripe signature
+	whSecret := os.Getenv("STRIPE_WEBHOOK_SECRET")
+	if whSecret != "" {
+		sig := r.Header.Get("Stripe-Signature")
+		if sig == "" || !verifyStripeSignature(body, sig, whSecret) {
+			log.Printf("[billing/stripe] webhook: invalid signature")
+			w.WriteHeader(400)
+			writeJSON(w, map[string]string{"error": "invalid signature"})
+			return
+		}
+	}
+
 	var event struct {
 		Type string         `json:"type"`
 		Data map[string]any `json:"data"`
@@ -364,4 +380,52 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	writeJSON(w, map[string]string{"received": "true"})
+}
+
+// verifyStripeSignature checks the Stripe-Signature header using HMAC-SHA256.
+func verifyStripeSignature(payload []byte, sigHeader, secret string) bool {
+	if secret == "" || sigHeader == "" {
+		return false
+	}
+
+	var timestamp string
+	var signatures []string
+	for _, part := range strings.Split(sigHeader, ",") {
+		kv := strings.SplitN(part, "=", 2)
+		if len(kv) != 2 {
+			continue
+		}
+		switch kv[0] {
+		case "t":
+			timestamp = kv[1]
+		case "v1":
+			signatures = append(signatures, kv[1])
+		}
+	}
+
+	if timestamp == "" || len(signatures) == 0 {
+		return false
+	}
+
+	// Reject if timestamp is more than 5 minutes old
+	ts, err := strconv.ParseInt(timestamp, 10, 64)
+	if err != nil {
+		return false
+	}
+	if time.Since(time.Unix(ts, 0)).Abs() > 5*time.Minute {
+		return false
+	}
+
+	// Compute expected signature
+	signedPayload := timestamp + "." + string(payload)
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(signedPayload))
+	expected := hex.EncodeToString(mac.Sum(nil))
+
+	for _, sig := range signatures {
+		if hmac.Equal([]byte(expected), []byte(sig)) {
+			return true
+		}
+	}
+	return false
 }

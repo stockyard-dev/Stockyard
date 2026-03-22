@@ -182,9 +182,12 @@ func isPublicRoute(method, path string) bool {
 	if method == "POST" && path == "/api/checkout" {
 		return true
 	}
-	// Stripe webhooks
+	// Stripe webhooks (signature-verified, not admin-key-verified)
 	if method == "POST" && path == "/webhooks/stripe" {
 		return true
+	}
+	if method == "POST" && path == "/api/billing/stripe/webhook" {
+		return true // verified by Stripe signature in handler
 	}
 	return false
 }
