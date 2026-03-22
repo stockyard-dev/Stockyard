@@ -67,7 +67,7 @@ Or open `http://localhost:4200/ui` in your browser for the full dashboard.
 | **Forge** | DAG workflow engine for chaining LLM calls, transforms, and tool calls |
 | **Exchange** | Config pack marketplace — install pre-built provider/module/workflow bundles |
 
-All six run from the same binary on the same port. No microservices.
+Plus 10 more: Billing, Team, Memory, Recall, Copilot, App Builder, Knowledge, Reputation, Governance, Marketing. All 16 run from the same binary on the same port.
 
 ## When Stockyard Is NOT the Right Fit
 
@@ -178,7 +178,7 @@ Requires Go 1.22+. No other dependencies.
 
 ## Pricing
 
-Self-hosted free tier includes 20 modules, 3 providers, and 1,000 requests/month. Individual ($9.99/mo) unlocks all 58 modules, all 16 providers, and 10,000 requests/month. Pro and above are unlimited.
+Self-hosted is free forever — all 58 modules, all 16 providers, all 16 apps, unlimited requests. Cloud-managed starts at $29/mo (Pro), $99/mo (Team), $299/mo (Enterprise).
 
 See [stockyard.dev/pricing](https://stockyard.dev/pricing) for details.
 
