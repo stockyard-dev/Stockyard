@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS stories (
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Reputation
 	mux.HandleFunc("GET /api/reputation/{user_id}", a.handleGetReputation)
+	mux.HandleFunc("POST /api/reputation/refresh", a.handleRefreshScores)
 	mux.HandleFunc("GET /api/reputation/leaderboard", a.handleLeaderboard)
 
 	// Certifications
@@ -161,14 +162,19 @@ func (a *App) handleGetReputation(w http.ResponseWriter, r *http.Request) {
 	err := a.conn.QueryRow(
 		"SELECT builder_score, operator_score, contributor_score, overall_score, factors, updated_at FROM reputation_scores WHERE user_id = ?", userID,
 	).Scan(&builderScore, &operatorScore, &contributorScore, &overallScore, &factors, &updated)
-	if err != nil {
-		// Return default scores for new users
-		writeJSON(w, map[string]any{
-			"user_id": userID, "builder_score": 0, "operator_score": 0,
-			"contributor_score": 0, "overall_score": 0, "factors": map[string]any{},
-		})
+
+	// Auto-refresh if missing or stale (>5 min)
+	stale := err != nil
+	if !stale && updated != "" {
+		if t, e := time.Parse(time.RFC3339, updated); e == nil {
+			stale = time.Since(t) > 5*time.Minute
+		}
+	}
+	if stale {
+		writeJSON(w, a.computeScores(userID))
 		return
 	}
+
 	var factorsMap any
 	json.Unmarshal([]byte(factors), &factorsMap)
 	writeJSON(w, map[string]any{
@@ -176,6 +182,99 @@ func (a *App) handleGetReputation(w http.ResponseWriter, r *http.Request) {
 		"contributor_score": contributorScore, "overall_score": overallScore,
 		"factors": factorsMap, "updated_at": updated,
 	})
+}
+
+// handleRefreshScores recomputes reputation from live platform data.
+func (a *App) handleRefreshScores(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		userID = "default"
+	}
+	scores := a.computeScores(userID)
+	writeJSON(w, scores)
+}
+
+// computeScores derives reputation from observe traces, trust ledger, exchange packs, and app builder.
+func (a *App) computeScores(userID string) map[string]any {
+	now := time.Now().UTC().Format(time.RFC3339)
+
+	// === Operator Score (0-100) ===
+	// Based on: request volume, error rate, uptime (boot count), trust integrity
+	var totalReqs, errorReqs int
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_traces").Scan(&totalReqs)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_traces WHERE status = 'error'").Scan(&errorReqs)
+
+	var trustValid int
+	a.conn.QueryRow("SELECT COUNT(*) FROM trust_ledger").Scan(&trustValid)
+
+	errorRate := 0.0
+	if totalReqs > 0 {
+		errorRate = float64(errorReqs) / float64(totalReqs)
+	}
+	// Score: low error rate = high score, more requests = bonus
+	opReliability := max(0, 100.0-errorRate*500) // 0% errors = 100, 20% errors = 0
+	opVolume := min(float64(totalReqs)/100.0, 20.0) // up to 20 points for volume
+	opTrust := 0.0
+	if trustValid > 0 {
+		opTrust = 20.0 // trust ledger exists and has entries
+	}
+	operatorScore := min(opReliability*0.6+opVolume+opTrust, 100)
+
+	// === Builder Score (0-100) ===
+	// Based on: published apps, app uses, average rating
+	var publishedApps, totalUses int
+	var avgRating float64
+	a.conn.QueryRow("SELECT COUNT(*) FROM published_apps WHERE status = 'published'").Scan(&publishedApps)
+	a.conn.QueryRow("SELECT COALESCE(SUM(use_count), 0) FROM published_apps").Scan(&totalUses)
+	a.conn.QueryRow("SELECT COALESCE(AVG(rating), 0) FROM published_apps WHERE rating > 0").Scan(&avgRating)
+
+	builderApps := min(float64(publishedApps)*10, 40.0)    // up to 40 for apps
+	builderUses := min(float64(totalUses)/10.0, 30.0)       // up to 30 for usage
+	builderRating := min(avgRating*6, 30.0)                  // up to 30 for ratings
+	builderScore := min(builderApps+builderUses+builderRating, 100)
+
+	// === Contributor Score (0-100) ===
+	// Based on: exchange packs created, installs, templates, workflows
+	var packCount, packInstalls, templateCount, workflowCount int
+	a.conn.QueryRow("SELECT COUNT(*) FROM exchange_packs").Scan(&packCount)
+	a.conn.QueryRow("SELECT COALESCE(SUM(installs), 0) FROM exchange_packs").Scan(&packInstalls)
+	a.conn.QueryRow("SELECT COUNT(*) FROM studio_templates").Scan(&templateCount)
+	a.conn.QueryRow("SELECT COUNT(*) FROM forge_workflows").Scan(&workflowCount)
+
+	contribPacks := min(float64(packCount)*5, 30.0)
+	contribInstalls := min(float64(packInstalls)*3, 30.0)
+	contribContent := min(float64(templateCount+workflowCount)*3, 40.0)
+	contributorScore := min(contribPacks+contribInstalls+contribContent, 100)
+
+	// === Overall (weighted average) ===
+	overallScore := operatorScore*0.4 + builderScore*0.3 + contributorScore*0.3
+
+	factors := map[string]any{
+		"total_requests": totalReqs, "error_rate": errorRate,
+		"trust_events": trustValid, "published_apps": publishedApps,
+		"app_uses": totalUses, "avg_rating": avgRating,
+		"packs": packCount, "pack_installs": packInstalls,
+		"templates": templateCount, "workflows": workflowCount,
+	}
+	factorsJSON, _ := json.Marshal(factors)
+
+	// Upsert scores
+	a.conn.Exec(`INSERT INTO reputation_scores (user_id, builder_score, operator_score, contributor_score, overall_score, factors, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(user_id) DO UPDATE SET
+			builder_score = excluded.builder_score, operator_score = excluded.operator_score,
+			contributor_score = excluded.contributor_score, overall_score = excluded.overall_score,
+			factors = excluded.factors, updated_at = excluded.updated_at`,
+		userID, builderScore, operatorScore, contributorScore, overallScore, string(factorsJSON), now)
+
+	log.Printf("[reputation] refreshed %s: operator=%.1f builder=%.1f contributor=%.1f overall=%.1f",
+		userID, operatorScore, builderScore, contributorScore, overallScore)
+
+	return map[string]any{
+		"user_id": userID, "operator_score": operatorScore, "builder_score": builderScore,
+		"contributor_score": contributorScore, "overall_score": overallScore,
+		"factors": factors, "updated_at": now,
+	}
 }
 
 func (a *App) handleLeaderboard(w http.ResponseWriter, r *http.Request) {
