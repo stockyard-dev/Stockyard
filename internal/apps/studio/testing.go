@@ -51,7 +51,9 @@ func migrateTestingSchema(conn *sql.DB) {
 
 func generateTestID(prefix string) string {
 	b := make([]byte, 6)
-	rand.Read(b)
+	if _, err := rand.Read(b); err != nil {
+		panic("crypto/rand failed: " + err.Error())
+	}
 	return prefix + hex.EncodeToString(b)
 }
 

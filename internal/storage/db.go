@@ -35,6 +35,10 @@ func Open(dataDir string) (*DB, error) {
 	if _, err := conn.Exec("PRAGMA busy_timeout=5000"); err != nil {
 		return nil, fmt.Errorf("set busy timeout: %w", err)
 	}
+	// Enforce foreign key constraints (off by default in SQLite)
+	if _, err := conn.Exec("PRAGMA foreign_keys=ON"); err != nil {
+		return nil, fmt.Errorf("enable foreign keys: %w", err)
+	}
 
 	db := &DB{conn: conn, dataDir: dataDir}
 	if err := db.migrate(); err != nil {

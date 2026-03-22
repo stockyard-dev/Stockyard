@@ -60,7 +60,9 @@ type ExchangeItem struct {
 
 func generateID(prefix string, length int) string {
 	b := make([]byte, length)
-	rand.Read(b)
+	if _, err := rand.Read(b); err != nil {
+		panic("crypto/rand failed: " + err.Error())
+	}
 	return prefix + hex.EncodeToString(b)[:length]
 }
 
@@ -70,6 +72,8 @@ func generateTenantID() string {
 
 func generateAPIKey() string {
 	b := make([]byte, 24)
-	rand.Read(b)
+	if _, err := rand.Read(b); err != nil {
+		panic("crypto/rand failed: " + err.Error())
+	}
 	return fmt.Sprintf("sk_sy_%s", hex.EncodeToString(b))
 }

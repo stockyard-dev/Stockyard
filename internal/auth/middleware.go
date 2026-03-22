@@ -159,10 +159,24 @@ type cachedProvider struct {
 
 // NewProviderFactory creates a factory that resolves providers for users.
 func NewProviderFactory(store *Store, globalProviders map[string]provider.Provider) *ProviderFactory {
-	return &ProviderFactory{
+	f := &ProviderFactory{
 		store:           store,
 		globalProviders: globalProviders,
 	}
+	// Background cleanup every 60s to evict expired entries
+	go func() {
+		ticker := time.NewTicker(60 * time.Second)
+		for range ticker.C {
+			now := time.Now()
+			f.cache.Range(func(key, value any) bool {
+				if cp, ok := value.(cachedProvider); ok && now.After(cp.expires) {
+					f.cache.Delete(key)
+				}
+				return true
+			})
+		}
+	}()
+	return f
 }
 
 // ResolveProvider returns the best provider for a request.
