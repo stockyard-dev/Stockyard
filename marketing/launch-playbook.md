@@ -199,7 +199,7 @@ Sections:
 1. The Problem — fragmented tooling for LLM apps
 2. What I Built — one binary, six apps, 58 modules
 3. The Tech Stack — Go + SQLite, why zero dependencies matters
-4. Pricing Model — 5 tiers, free forever self-hosted
+4. Pricing Model — 4 tiers, free forever self-hosted
 5. Launch Results So Far — (fill in after Day 1)
 6. What I Learned — solo dev lessons
 7. Ask IH — what features would you want?

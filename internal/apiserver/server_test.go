@@ -248,8 +248,8 @@ func TestProductsEndpoint(t *testing.T) {
 	var resp map[string]any
 	json.Unmarshal(w.Body.Bytes(), &resp)
 	count := resp["count"].(float64)
-	if count != 6 {
-		t.Errorf("product count = %v, expected 6 apps", count)
+	if count != 16 {
+		t.Errorf("product count = %v, expected 16 apps", count)
 	}
 }
 
