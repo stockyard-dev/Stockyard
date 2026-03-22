@@ -146,6 +146,19 @@ func genAppID(prefix string) string {
 	return prefix + hex.EncodeToString(b)
 }
 
+// deductCredits removes amount from a customer's credit balance.
+func (a *App) deductCredits(customerID string, amountCents int64) {
+	if amountCents <= 0 {
+		return
+	}
+	now := time.Now().UTC().Format(time.RFC3339)
+	a.conn.Exec(`UPDATE billing_credits SET balance_cents = MAX(balance_cents - ?, 0), updated_at = ? WHERE customer_id = ?`,
+		amountCents, now, customerID)
+	txID := genAppID("ctx_")
+	a.conn.Exec(`INSERT INTO billing_credit_transactions (id, customer_id, amount_cents, type, description, created_at)
+		VALUES (?, ?, ?, 'app_fee', 'App usage fee', ?)`, txID, customerID, -amountCents, now)
+}
+
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/apps/builder/create", a.handleCreate)
 	mux.HandleFunc("GET /api/apps/builder/mine", a.handleMyApps)
@@ -492,6 +505,12 @@ func (a *App) handleRun(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("[appbuilder] run %s: app=%s price=%d¢ (builder=%d¢ fee=%d¢) llm=%d¢",
 			useID, appID, priceCents, netCents, feeCents, llmCostCents)
+
+		// Deduct app fee from caller's credit balance
+		callerID := r.Header.Get("X-Customer-ID")
+		if callerID != "" {
+			a.deductCredits(callerID, int64(priceCents))
+		}
 	}
 
 	a.conn.Exec(`INSERT INTO app_uses (id, app_id, user_session, input, output, cost_cents, created_at)
