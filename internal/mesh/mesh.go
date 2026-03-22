@@ -7,8 +7,12 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -115,6 +119,11 @@ func (m *Manager) handleRegister(w http.ResponseWriter, r *http.Request) {
 	if req.Name == "" || req.URL == "" {
 		w.WriteHeader(400)
 		writeMeshJSON(w, map[string]string{"error": "name and url required"})
+		return
+	}
+	if err := validateNodeURL(req.URL); err != nil {
+		w.WriteHeader(400)
+		writeMeshJSON(w, map[string]string{"error": "invalid node URL: " + err.Error()})
 		return
 	}
 	if req.Region == "" {
@@ -338,6 +347,54 @@ func (m *Manager) handleEarningsSummary(w http.ResponseWriter, r *http.Request) 
 		"period": period, "total_earnings_cents": totalEarnings,
 		"total_fees_cents": totalFees, "total_tokens_served": totalTokens,
 	})
+}
+
+// validateNodeURL checks that a mesh node URL is safe (no SSRF to internal services).
+func validateNodeURL(rawURL string) error {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return fmt.Errorf("invalid URL: %w", err)
+	}
+	scheme := strings.ToLower(u.Scheme)
+	if scheme != "http" && scheme != "https" {
+		return fmt.Errorf("blocked scheme %q (only http/https allowed)", scheme)
+	}
+	host := u.Hostname()
+	if host == "" {
+		return fmt.Errorf("URL must include a hostname")
+	}
+	ip := net.ParseIP(host)
+	if ip == nil {
+		addrs, err := net.LookupIP(host)
+		if err != nil {
+			return fmt.Errorf("cannot resolve host %q: %w", host, err)
+		}
+		for _, addr := range addrs {
+			if isPrivateMeshIP(addr) {
+				return fmt.Errorf("blocked: %s resolves to private IP %s", host, addr)
+			}
+		}
+		return nil
+	}
+	if isPrivateMeshIP(ip) {
+		return fmt.Errorf("blocked: private/internal IP %s", ip)
+	}
+	return nil
+}
+
+func isPrivateMeshIP(ip net.IP) bool {
+	privateRanges := []string{
+		"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",
+		"127.0.0.0/8", "169.254.0.0/16",
+		"::1/128", "fc00::/7", "fe80::/10",
+	}
+	for _, cidr := range privateRanges {
+		_, network, _ := net.ParseCIDR(cidr)
+		if network.Contains(ip) {
+			return true
+		}
+	}
+	return false
 }
 
 func writeMeshJSON(w http.ResponseWriter, data any) {
