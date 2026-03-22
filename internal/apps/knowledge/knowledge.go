@@ -103,6 +103,19 @@ CREATE TABLE IF NOT EXISTS embedding_cache (
     trigrams TEXT,
     created_at TEXT
 );
+
+CREATE TABLE IF NOT EXISTS knowledge_earnings (
+    id TEXT PRIMARY KEY,
+    kb_id TEXT NOT NULL,
+    author_id TEXT NOT NULL,
+    amount_cents INTEGER DEFAULT 0,
+    fee_cents INTEGER DEFAULT 0,
+    net_cents INTEGER DEFAULT 0,
+    query TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_kb_earnings_kb ON knowledge_earnings(kb_id);
+CREATE INDEX IF NOT EXISTS idx_kb_earnings_author ON knowledge_earnings(author_id);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
