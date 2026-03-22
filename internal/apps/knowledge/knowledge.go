@@ -456,6 +456,11 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Look up pricing info
+	var priceCents int
+	var authorID string
+	a.conn.QueryRow("SELECT COALESCE(price_per_query_cents,0), COALESCE(author_id,'default') FROM knowledge_bases WHERE id = ?", kbID).Scan(&priceCents, &authorID)
+
 	// Try FTS5 full-text search first, fall back to LIKE
 	rows, err := a.conn.Query(
 		`SELECT e.id, e.fact, e.source, e.verified, e.verification_count, e.disputed
@@ -488,7 +493,27 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 			"verified": verified, "verification_count": verificationCount, "disputed": disputed,
 		})
 	}
-	writeJSON(w, map[string]any{"results": results, "count": len(results), "query": q, "kb_id": kbID})
+
+	// Charge for paid knowledge bases (only if results found)
+	var feeCents, netCents int
+	if priceCents > 0 && len(results) > 0 {
+		feeCents = priceCents * 20 / 100 // 20% platform fee
+		if feeCents < 1 {
+			feeCents = 1
+		}
+		netCents = priceCents - feeCents
+		earningID := genID("ke_")
+		ts := now()
+		a.conn.Exec(`INSERT INTO knowledge_earnings (id, kb_id, author_id, amount_cents, fee_cents, net_cents, query, created_at)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, earningID, kbID, authorID, priceCents, feeCents, netCents, q, ts)
+	}
+
+	resp := map[string]any{"results": results, "count": len(results), "query": q, "kb_id": kbID}
+	if priceCents > 0 {
+		resp["query_fee_cents"] = priceCents
+		resp["platform_fee_cents"] = feeCents
+	}
+	writeJSON(w, resp)
 }
 
 // --- Verify and Dispute ---
