@@ -3,10 +3,84 @@ package engine
 import (
 	"crypto/subtle"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
+	"time"
 )
+
+// ipRateLimiter provides per-IP sliding window rate limiting for public endpoints.
+type ipRateLimiter struct {
+	mu      sync.Mutex
+	windows map[string][]time.Time
+}
+
+var publicRateLimiter = &ipRateLimiter{
+	windows: make(map[string][]time.Time),
+}
+
+// allow returns true if the IP is within the rate limit.
+// limit: max requests per window. window: time window duration.
+func (rl *ipRateLimiter) allow(ip string, limit int, window time.Duration) bool {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	now := time.Now()
+	cutoff := now.Add(-window)
+
+	// Prune old entries
+	valid := rl.windows[ip][:0]
+	for _, t := range rl.windows[ip] {
+		if t.After(cutoff) {
+			valid = append(valid, t)
+		}
+	}
+
+	if len(valid) >= limit {
+		rl.windows[ip] = valid
+		return false
+	}
+
+	rl.windows[ip] = append(valid, now)
+
+	// Periodic cleanup: if map grows too large, prune stale IPs
+	if len(rl.windows) > 10000 {
+		for k, v := range rl.windows {
+			fresh := v[:0]
+			for _, t := range v {
+				if t.After(cutoff) {
+					fresh = append(fresh, t)
+				}
+			}
+			if len(fresh) == 0 {
+				delete(rl.windows, k)
+			} else {
+				rl.windows[k] = fresh
+			}
+		}
+	}
+
+	return true
+}
+
+// clientIP extracts the client IP from the request, respecting X-Forwarded-For
+// from trusted proxies (Railway).
+func clientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		// First IP in chain is the original client
+		if i := strings.Index(xff, ","); i > 0 {
+			return strings.TrimSpace(xff[:i])
+		}
+		return strings.TrimSpace(xff)
+	}
+	if xri := r.Header.Get("X-Real-Ip"); xri != "" {
+		return xri
+	}
+	host, _, _ := net.SplitHostPort(r.RemoteAddr)
+	return host
+}
 
 // adminAuthMiddleware wraps an http.Handler and enforces API key authentication
 // on management API routes (/api/*). Proxy routes (/v1/*), health checks,
@@ -84,6 +158,18 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 
 		// Public-safe read routes (needed by website, signup, marketplace)
 		if isPublicRoute(r.Method, path) {
+			// Rate limit public POST endpoints (10/min) to prevent abuse
+			if r.Method == "POST" {
+				ip := clientIP(r)
+				if !publicRateLimiter.allow(ip, 10, time.Minute) {
+					log.Printf("[ratelimit] blocked %s %s from %s", r.Method, path, ip)
+					w.Header().Set("Content-Type", "application/json")
+					w.Header().Set("Retry-After", "60")
+					w.WriteHeader(http.StatusTooManyRequests)
+					w.Write([]byte(`{"error":{"message":"rate limit exceeded — max 10 requests per minute","type":"rate_limit_error"}}`))
+					return
+				}
+			}
 			next.ServeHTTP(w, r)
 			return
 		}
