@@ -18,8 +18,9 @@ import (
 
 // App implements the recall incident response service.
 type App struct {
-	conn  *sql.DB
-	audit func(string, string, string, string, any)
+	conn       *sql.DB
+	audit      func(string, string, string, string, any)
+	dispatcher func(string, any)
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
@@ -30,6 +31,11 @@ func (a *App) Description() string { return "LLM output recall and incident resp
 // SetAuditor wires the trust audit function for recording recall events.
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 	a.audit = fn
+}
+
+// SetEventDispatcher wires the integration dispatcher (Slack, Discord, PagerDuty).
+func (a *App) SetEventDispatcher(fn func(string, any)) {
+	a.dispatcher = fn
 }
 
 func (a *App) Migrate(conn *sql.DB) error {
@@ -470,6 +476,20 @@ func (a *App) handleNotify(w http.ResponseWriter, r *http.Request) {
 		a.audit("recall", "notify", id, "system", map[string]any{
 			"incident_id": id,
 			"notified":    len(traceIDs),
+		})
+	}
+
+	// Dispatch to Slack, Discord, PagerDuty via integration manager
+	if a.dispatcher != nil && len(traceIDs) > 0 {
+		inc, _ := a.loadIncident(id)
+		a.dispatcher("recall_notification", map[string]any{
+			"incident_id":   id,
+			"title":         inc.Title,
+			"severity":      inc.Severity,
+			"status":        inc.Status,
+			"affected":      len(traceIDs),
+			"description":   inc.Description,
+			"search_query":  inc.SearchQuery,
 		})
 	}
 
