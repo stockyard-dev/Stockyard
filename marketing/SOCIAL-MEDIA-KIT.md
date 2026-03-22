@@ -41,14 +41,14 @@ That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.
 
 **Tweet 3:**
 ```
-Stockyard replaces all of them. One binary. 58 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more.
+Stockyard replaces all of them. One binary. 66 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more.
 
 Just change your base URL.
 ```
 
 **Tweet 4:**
 ```
-Try it live — no signup needed. Paste your API key in our playground and route your first request through 58 middleware modules:
+Try it live — no signup needed. Paste your API key in our playground and route your first request through 66 middleware modules:
 
 stockyard.dev/playground
 ```
@@ -61,7 +61,7 @@ Pro $29/mo
 Team $99/mo
 Enterprise $299/mo
 
-Every tier gets all 16 apps, all 58 modules, all 16 providers.
+Every tier gets all 16 apps, all 66 modules, all 16 providers.
 
 stockyard.dev
 ```
@@ -88,7 +88,7 @@ Hey HN, I built Stockyard because I was tired of stitching together separate too
 
 Stockyard is one Go binary that gives you 6 integrated apps:
 
-• Proxy — 58 middleware modules, 16 providers
+• Proxy — 66 middleware modules, 16 providers
 • Observe — traces, costs, anomaly detection
 • Trust — immutable audit ledger, policies
 • Studio — prompt management, experiments
@@ -120,7 +120,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
 
 - **Description:**
   ```
-  Stockyard is a single Go binary that gives you 6 integrated LLM apps: Proxy (58 middleware modules, 16 providers), Observe (traces, costs, anomaly detection), Trust (immutable audit ledger), Studio (prompt management, A/B experiments), Forge (DAG workflow engine), and Exchange (config marketplace).
+  Stockyard is a single Go binary that gives you 6 integrated LLM apps: Proxy (66 middleware modules, 16 providers), Observe (traces, costs, anomaly detection), Trust (immutable audit ledger), Studio (prompt management, A/B experiments), Forge (DAG workflow engine), and Exchange (config marketplace).
 
   Zero external dependencies. Runs on embedded SQLite. Self-hosted is free forever.
   ```
@@ -166,14 +166,14 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
   The first stable release of Stockyard. A self-hosted LLM proxy and control plane in one Go binary.
 
   ### Highlights
-  - 58 middleware modules, runtime-toggleable via API
+  - 66 middleware modules, runtime-toggleable via API
   - 16 LLM provider integrations
   - 62 REST API endpoints
   - AES-256-GCM encryption for provider keys at rest
   - 400ns per-request overhead (benchmarked)
 
   ### The 6 Apps
-  - **Proxy** — Gateway layer with 58 middleware modules
+  - **Proxy** — Gateway layer with 66 middleware modules
   - **Observe** — Tracing, cost dashboards, anomaly detection
   - **Trust** — Hash-chained audit ledger, policies, compliance
   - **Studio** — Prompt templates, A/B experiments, benchmarks
@@ -223,7 +223,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
 ```
 Stockyard is a self-hosted LLM proxy and control plane in one Go binary. Instead of stitching together separate tools for proxy routing, observability, cost tracking, audit trails, prompt management, and workflow orchestration, Stockyard gives you six integrated apps:
 
-Proxy — 58 middleware modules with runtime toggles. Route through OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more providers. Caching, rate limiting, cost caps, safety filters, failover — all in the request chain.
+Proxy — 66 middleware modules with runtime toggles. Route through OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more providers. Caching, rate limiting, cost caps, safety filters, failover — all in the request chain.
 
 Observe — Automatic tracing, cost dashboards, anomaly detection, and real-time alerts for every LLM request.
 
@@ -246,7 +246,7 @@ Your LLM stack doesn't need 12 separate tools.
 
 I just shipped Stockyard — six LLM infrastructure apps in one Go binary.
 
-→ 58 middleware modules, every one toggleable at runtime
+→ 66 middleware modules, every one toggleable at runtime
 → 16 LLM providers, unified API
 → 400ns per-request overhead (benchmarked)
 → AES-256-GCM encryption for all provider keys
@@ -269,14 +269,14 @@ Try the playground (no signup): stockyard.dev/playground
 
 **r/golang:**
 ```
-Title: Show r/golang: Built a self-hosted LLM proxy and control plane in Go — single binary, embedded SQLite, 58 middleware modules
+Title: Show r/golang: Built a self-hosted LLM proxy and control plane in Go — single binary, embedded SQLite, 66 middleware modules
 
 Body:
 I've been working on Stockyard, an LLM infrastructure platform that ships as a single Go binary with zero external dependencies.
 
 Architecture highlights that might interest this community:
 
-- 58 middleware modules in a chain, each implementing a simple interface — composable, runtime-toggleable via API
+- 66 middleware modules in a chain, each implementing a simple interface — composable, runtime-toggleable via API
 - Embedded SQLite (mattn/go-sqlite3) — no external DB
 - 62 REST endpoints served on a single port with Go 1.22 routing
 - Benchmarked at 400ns per-request overhead for the full 58-module chain on Xeon Platinum
@@ -300,11 +300,11 @@ Built an LLM infrastructure platform designed for self-hosting:
 - Embedded SQLite — no Postgres, no Redis, no Docker required
 - curl -fsSL stockyard.dev/install.sh | sh → running in 30 seconds
 - 6 integrated apps: proxy, observability, audit trails, prompt management, workflows, config marketplace
-- All 58 middleware modules and 16 provider integrations included in the free tier
+- All 66 middleware modules and 16 provider integrations included in the free tier
 - AES-256-GCM encryption for provider API keys at rest
 - Works with Ollama for fully local inference
 
-Self-hosted free tier includes all 58 modules, all 16 providers, and unlimited requests. Cloud from $29/mo.
+Self-hosted free tier includes all 66 modules, all 16 providers, and unlimited requests. Cloud from $29/mo.
 
 stockyard.dev | GitHub: github.com/stockyard-dev/stockyard
 ```
@@ -319,7 +319,7 @@ I built Stockyard as a unified gateway for LLM traffic. It sits between your app
 What it gives you:
 
 - OpenAI-compatible API — point OPENAI_BASE_URL at Stockyard and your existing code works
-- 58 middleware modules: caching (saves re-running inference), rate limiting, cost tracking, safety filters, prompt management
+- 66 middleware modules: caching (saves re-running inference), rate limiting, cost tracking, safety filters, prompt management
 - Works with Ollama, VLLM, OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, and 8 more
 - Single binary, embedded SQLite, zero dependencies
 - Failover routing — if your local Ollama is down, automatically route to a cloud provider
@@ -335,7 +335,7 @@ Try it: stockyard.dev/playground | GitHub: github.com/stockyard-dev/stockyard
 ```
 Hey! Just launched Stockyard — a single Go binary that replaces 6+ separate LLM tools.
 
-58 middleware modules · 16 providers · embedded SQLite · zero external dependencies
+66 middleware modules · 16 providers · embedded SQLite · zero external dependencies
 
 What it does: sits between your app and LLM providers. Gives you caching, rate limiting, cost tracking, safety filters, audit trails, prompt management, and workflow orchestration — all in one binary.
 
@@ -358,7 +358,7 @@ Happy to answer questions!
 
 Same template as Discord, shortened:
 ```
-Launched Stockyard — self-hosted LLM proxy and control plane in one Go binary. 58 middleware modules, 16 providers, zero dependencies.
+Launched Stockyard — self-hosted LLM proxy and control plane in one Go binary. 66 middleware modules, 16 providers, zero dependencies.
 
 Proxy + observability + audit trails + prompt management + workflow engine + config marketplace.
 
@@ -383,7 +383,7 @@ Every time I shipped an app with LLM calls, I needed cost caps, caching, safety 
 ## What I Built
 One Go binary. Six integrated apps. Zero external dependencies.
 
-- Proxy: 58 middleware modules, 16 providers
+- Proxy: 66 middleware modules, 16 providers
 - Observe: traces, cost dashboards, anomaly detection
 - Trust: immutable audit ledger, compliance
 - Studio: prompt templates, A/B experiments

@@ -26,13 +26,13 @@ TWEET 2:
 The problem: you shipped an app with LLM calls. Now you need cost caps, caching, safety filters, routing, observability, prompt management, and audit trails. That's 6+ separate tools, each with its own Redis/Postgres/Docker setup.
 
 TWEET 3:
-Stockyard replaces all of them. One binary. 58 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more. Just change your base URL.
+Stockyard replaces all of them. One binary. 66 middleware modules. 16 LLM providers. Works with OpenAI, Anthropic, Gemini, Groq, Mistral, and 11 more. Just change your base URL.
 
 TWEET 4:
-Try it live — no signup needed. Paste your API key in our playground and route your first request through 58 middleware modules: stockyard.dev/playground
+Try it live — no signup needed. Paste your API key in our playground and route your first request through 66 middleware modules: stockyard.dev/playground
 
 TWEET 5:
-Free forever self-hosted. Pro $29/mo. Team $99/mo. Enterprise $299/mo. Every tier gets all 16 apps, all 58 modules, all 16 providers. stockyard.dev
+Free forever self-hosted. Pro $29/mo. Team $99/mo. Enterprise $299/mo. Every tier gets all 16 apps, all 66 modules, all 16 providers. stockyard.dev
 ```
 
 ---
@@ -44,7 +44,7 @@ Free forever self-hosted. Pro $29/mo. Team $99/mo. Enterprise $299/mo. Every tie
 TAGLINE: Where LLM traffic gets sorted
 
 DESCRIPTION:
-Stockyard is a single Go binary that gives you 6 integrated LLM apps: Proxy (58 middleware modules, 16 providers), Observe (traces, costs, anomaly detection), Trust (immutable audit ledger), Studio (prompt management, A/B experiments), Forge (DAG workflow engine), and Exchange (config marketplace).
+Stockyard is a single Go binary that gives you 6 integrated LLM apps: Proxy (66 middleware modules, 16 providers), Observe (traces, costs, anomaly detection), Trust (immutable audit ledger), Studio (prompt management, A/B experiments), Forge (DAG workflow engine), and Exchange (config marketplace).
 
 Zero external dependencies. Runs on embedded SQLite. Self-hosted is free forever.
 
@@ -71,7 +71,7 @@ Body:
 The first stable release of Stockyard. A self-hosted LLM proxy and control plane in one Go binary.
 
 Highlights:
-- 58 middleware modules, runtime-toggleable via API
+- 66 middleware modules, runtime-toggleable via API
 - 16 LLM provider integrations
 - 62 REST API endpoints
 - AES-256-GCM encryption for provider keys at rest
@@ -97,7 +97,7 @@ Hi {{name}},
 Stockyard just launched. Six LLM infrastructure apps in one Go binary. No Redis. No Postgres. No Docker. 30-second install.
 
 What you get:
-- Proxy: 58 middleware modules, 16 providers
+- Proxy: 66 middleware modules, 16 providers
 - Observe: automatic tracing, cost dashboards
 - Trust: immutable audit ledger, compliance
 - Studio: prompt management, A/B testing
@@ -126,7 +126,7 @@ FIRST COMMENT:
 Hey HN, I built Stockyard because I was tired of stitching together separate tools for proxy routing, observability, cost tracking, and compliance every time I shipped an LLM-powered app.
 
 Stockyard is one Go binary that gives you 6 integrated apps:
-• Proxy — 58 middleware modules, 16 providers
+• Proxy — 66 middleware modules, 16 providers
 • Observe — traces, costs, anomaly detection
 • Trust — immutable audit ledger, policies
 • Studio — prompt management, experiments
@@ -163,7 +163,7 @@ Post in:
 TEMPLATE:
 Hey! I just launched Stockyard — a single Go binary that replaces 6+ separate LLM tools (proxy, observability, audit, prompts, workflows, config marketplace).
 
-58 middleware modules, 16 providers, embedded SQLite, zero external dependencies. Try the playground: stockyard.dev/playground
+66 middleware modules, 16 providers, embedded SQLite, zero external dependencies. Try the playground: stockyard.dev/playground
 
 Happy to answer any questions!
 
@@ -197,7 +197,7 @@ TITLE: I built a self-hosted LLM proxy and control plane in one Go binary — la
 
 Sections:
 1. The Problem — fragmented tooling for LLM apps
-2. What I Built — one binary, six apps, 58 modules
+2. What I Built — one binary, six apps, 66 modules
 3. The Tech Stack — Go + SQLite, why zero dependencies matters
 4. Pricing Model — 4 tiers, free forever self-hosted
 5. Launch Results So Far — (fill in after Day 1)
@@ -301,7 +301,7 @@ Canonical URL: stockyard.dev/blog/why-i-built-stockyard
 **Priority:** medium · **Status:** queued
 
 ```
-Thread highlighting 10 of the 58 middleware modules with emoji + one-liner for each.
+Thread highlighting 10 of the 66 middleware modules with emoji + one-liner for each.
 ```
 
 ---
@@ -356,11 +356,11 @@ Transparency post: stars, installs, cloud signups, playground sessions, dollars 
 
 ## Day 15
 
-### 🟠 [BLOG] 58 Modules Explained
+### 🟠 [BLOG] 66 Modules Explained
 **Priority:** high · **Status:** queued
 
 ```
-Reference page: one-liner for each of the 58 middleware modules. SEO target: llm proxy middleware.
+Reference page: one-liner for each of the 66 middleware modules. SEO target: llm proxy middleware.
 ```
 
 ---

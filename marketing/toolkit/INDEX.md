@@ -14,7 +14,7 @@ Generated from live screenshots of [stockyard.dev](https://stockyard.dev).
 | `screenshots/studio-templates.png` | Studio app — templates, A/B experiments, benchmarks |
 | `screenshots/forge-dag.png` | Forge app — DAG workflow with CSS connectors |
 | `screenshots/exchange-packs.png` | Exchange app — 13-pack marketplace |
-| `screenshots/modules-grid.png` | 58 middleware modules grid |
+| `screenshots/modules-grid.png` | 66 middleware modules grid |
 | `screenshots/playground.png` | Interactive LLM playground |
 
 ## Social Cards

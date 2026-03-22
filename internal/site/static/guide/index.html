@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>Guide — Your First 5 Minutes — Stockyard</title>
-<meta name="description" content="Install Stockyard, send your first request, explore the console, and see what 58 middleware modules actually do — in under 5 minutes.">
+<meta name="description" content="Install Stockyard, send your first request, explore the console, and see what 66 middleware modules actually do — in under 5 minutes.">
 <meta property="og:title" content="Your First 5 Minutes with Stockyard">
 <meta property="og:description" content="From install to traces in 5 minutes. See what the platform actually does.">
 <meta property="og:type" content="website">
@@ -197,7 +197,7 @@ footer a:hover{color:var(--rust-light)}
 <section class="guide-hero">
   <div class="eyebrow">Getting Started</div>
   <h1>Your first <span class="accent">5 minutes</span></h1>
-  <p class="sub">Install the binary, send a request, and watch 58 middleware modules light up. Five minutes to full observability.</p>
+  <p class="sub">Install the binary, send a request, and watch 66 middleware modules light up. Five minutes to full observability.</p>
 </section>
 
 <section class="steps">
@@ -212,7 +212,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
       </div>
       <div class="outcome">
-        <strong>What just happened:</strong> A ~15MB Go binary is now on your PATH. It contains all 16 apps, 58 middleware modules, an embedded SQLite database, and a full web console. Nothing else was installed.
+        <strong>What just happened:</strong> A ~25MB Go binary is now on your PATH. It contains all 16 apps, 66 middleware modules, an embedded SQLite database, and a full web console. Nothing else was installed.
       </div>
     </div>
   </div>
@@ -228,7 +228,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="comment"># Output:</span>
 <span class="comment"># Stockyard v1.0 — Where AI infrastructure gets sorted</span>
 <span class="comment"># ┌─────────────────────────────────────────────┐</span>
-<span class="comment"># │  Proxy      :4200/v1    ✓ 58 modules active │</span>
+<span class="comment"># │  Proxy      :4200/v1    ✓ 66 modules active │</span>
 <span class="comment"># │  Console    :4200/ui    ✓ 16 apps loaded     │</span>
 <span class="comment"># │  API        :4200/api   ✓ 350+ endpoints     │</span>
 <span class="comment"># │  Playground :4200/play  ✓ ready              │</span>
@@ -261,7 +261,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="fn">client</span> = <span class="fn">OpenAI</span>(<span class="kw">base_url</span>=<span class="str">"http://localhost:4200/v1"</span>)
       </div>
       <div class="outcome">
-        <strong>What just happened:</strong> Your request hit the proxy, flowed through 58 middleware modules (rate limiter, cost tracker, safety filter, semantic cache, etc.), reached OpenAI, and the response came back — with a trace logged in Observe and an audit event written to Trust. You didn't configure any of that.
+        <strong>What just happened:</strong> Your request hit the proxy, flowed through 66 middleware modules (rate limiter, cost tracker, safety filter, semantic cache, etc.), reached OpenAI, and the response came back — with a trace logged in Observe and an audit event written to Trust. You didn't configure any of that.
       </div>
     </div>
   </div>
@@ -287,7 +287,7 @@ footer a:hover{color:var(--rust-light)}
     <h3>Toggle a module</h3>
     <p class="step-sub">Turn features on and off at runtime — no restart, no redeploy.</p>
     <div class="step-body">
-      <p>Navigate to <strong>Proxy</strong> in the sidebar. You'll see all 58 modules with toggle switches.</p>
+      <p>Navigate to <strong>Proxy</strong> in the sidebar. You'll see all 66 modules with toggle switches.</p>
       <div class="code-block">
 <span class="comment"># Or via the API:</span>
 <span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cost-cap \</span>

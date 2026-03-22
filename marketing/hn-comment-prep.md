@@ -52,7 +52,7 @@ If the site still feels cloud-forward when you looked, I'd appreciate knowing wh
 
 **Answer:**
 Production-ready today:
-- Proxy with all 58 middleware modules (tested, benchmarked at 400ns/request)
+- Proxy with all 66 middleware modules (tested, benchmarked at 400ns/request)
 - Observe (tracing, cost dashboards — running on the live site right now with real data)
 - Trust (hash-chained audit ledger, policy enforcement)
 - 16 provider integrations

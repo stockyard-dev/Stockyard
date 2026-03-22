@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Proxy Docs: 58 Middleware Modules — Stockyard">
-<meta property="og:description" content="Stockyard proxy: 58 middleware modules, 16 providers, routing, and runtime toggles.">
+<meta property="og:title" content="Proxy Docs: 66 Middleware Modules — Stockyard">
+<meta property="og:description" content="Stockyard proxy: 66 middleware modules, 16 providers, routing, and runtime toggles.">
 <meta property="og:url" content="https://stockyard.dev/docs/proxy/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Proxy Docs: 58 Middleware Modules — Stockyard</title>
-<meta name="description" content="Stockyard proxy: 58 middleware modules, 16 providers, LLM cache, rate limiting, routing, and runtime toggles.">
+<title>Proxy Docs: 66 Middleware Modules — Stockyard</title>
+<meta name="description" content="Stockyard proxy: 66 middleware modules, 16 providers, LLM cache, rate limiting, routing, and runtime toggles.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -173,10 +173,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>Proxy</h1>
-    <p class="subtitle">The gateway layer. 58 modules, 16 providers, runtime toggles.</p>
+    <p class="subtitle">The gateway layer. 66 modules, 16 providers, runtime toggles.</p>
 
     <h2 id="overview">Overview</h2>
-    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 58 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
+    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 66 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
 
     <h2 id="modules">Modules</h2>
     <p>Modules are organized by category:</p>
@@ -372,7 +372,7 @@ for module in promptguard toxicfilter guardrail secretscan agentguard; do
     -d '{"enabled": true}'</span>
 done
 </pre>
-    <div class="note"><strong>Performance:</strong> The full 58-module chain adds ~4ms of overhead. Safety modules are the heaviest at 0.06&ndash;0.35ms each, but still negligible compared to LLM provider latency (500ms&ndash;3s).</div>
+    <div class="note"><strong>Performance:</strong> The full 66-module chain adds ~4ms of overhead. Safety modules are the heaviest at 0.06&ndash;0.35ms each, but still negligible compared to LLM provider latency (500ms&ndash;3s).</div>
 
 
     <h2 id="rate-limiting">Rate Limiting</h2>
