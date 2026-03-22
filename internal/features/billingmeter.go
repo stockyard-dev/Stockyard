@@ -376,6 +376,11 @@ func (m *BillingMeter) recordUsage(ctx context.Context, customerID string, req *
 		custID = "_unattributed"
 	}
 
+	// Deduct credits from customer balance (if they have a balance)
+	if customerID != "" && costCents > 0 {
+		m.deductCredits(customerID, costCents)
+	}
+
 	daily := time.Now().UTC().Format("2006-01-02")
 	monthly := time.Now().UTC().Format("2006-01")
 
@@ -412,6 +417,39 @@ func (m *BillingMeter) fireOverageAlert(customerID, accountID, limitType string,
 		"percentage":  float64(current) / float64(limit) * 100,
 		"timestamp":   time.Now().UTC().Format(time.RFC3339),
 	})
+}
+
+// deductCredits removes cost from a customer's credit balance.
+// Silently succeeds if customer has no credit balance (they may be on a subscription).
+func (m *BillingMeter) deductCredits(customerID string, costCents int64) {
+	tx, err := m.conn.Begin()
+	if err != nil {
+		return
+	}
+	defer tx.Rollback()
+
+	var balance int64
+	if err := tx.QueryRow("SELECT balance_cents FROM billing_credits WHERE customer_id = ?", customerID).Scan(&balance); err != nil {
+		return // No credit balance — subscription customer, skip
+	}
+	if balance <= 0 {
+		return
+	}
+
+	// Deduct (allow going to zero but not negative)
+	deduct := costCents
+	if deduct > balance {
+		deduct = balance
+	}
+
+	now := time.Now().UTC().Format(time.RFC3339)
+	tx.Exec("UPDATE billing_credits SET balance_cents = balance_cents - ?, updated_at = ? WHERE customer_id = ?",
+		deduct, now, customerID)
+
+	txID := billingGenID("ctx_")
+	tx.Exec("INSERT INTO billing_credit_transactions (id, customer_id, amount_cents, type, description, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+		txID, customerID, -deduct, "usage_deduction", "LLM usage deduction", now)
+	tx.Commit()
 }
 
 func billingGenID(prefix string) string {

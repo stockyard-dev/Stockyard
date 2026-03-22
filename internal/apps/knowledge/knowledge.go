@@ -171,6 +171,18 @@ func now() string {
 	return time.Now().Format(time.RFC3339)
 }
 
+// deductCredits removes amount from a customer's credit balance.
+func (a *App) deductCredits(customerID string, amountCents int64) {
+	if amountCents <= 0 {
+		return
+	}
+	a.conn.Exec(`UPDATE billing_credits SET balance_cents = MAX(balance_cents - ?, 0), updated_at = ? WHERE customer_id = ?`,
+		amountCents, now(), customerID)
+	id := genID("ctx_")
+	a.conn.Exec(`INSERT INTO billing_credit_transactions (id, customer_id, amount_cents, type, description, created_at)
+		VALUES (?, ?, ?, 'knowledge_query', 'Knowledge query fee', ?)`, id, customerID, -amountCents, now())
+}
+
 // --- Knowledge Bases ---
 
 func (a *App) handleCreateBase(w http.ResponseWriter, r *http.Request) {
@@ -506,6 +518,12 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 		ts := now()
 		a.conn.Exec(`INSERT INTO knowledge_earnings (id, kb_id, author_id, amount_cents, fee_cents, net_cents, query, created_at)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, earningID, kbID, authorID, priceCents, feeCents, netCents, q, ts)
+
+		// Deduct from caller's credit balance
+		callerID := r.Header.Get("X-Customer-ID")
+		if callerID != "" {
+			a.deductCredits(callerID, int64(priceCents))
+		}
 	}
 
 	resp := map[string]any{"results": results, "count": len(results), "query": q, "kb_id": kbID}
