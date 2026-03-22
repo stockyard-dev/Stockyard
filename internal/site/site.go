@@ -42,6 +42,7 @@ func Register(mux *http.ServeMux) {
 		"/blog/", "/blog/why-i-built-stockyard/",
 		"/blog/architecture-decisions/", "/blog/134-tools-one-binary/",
 		"/blog/why-go-sqlite/",
+		"/blog/58-modules-400ns/",
 		"/architecture/",
 		"/status/",
 		"/marketing/",
