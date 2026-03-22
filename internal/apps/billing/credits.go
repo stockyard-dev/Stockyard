@@ -245,9 +245,24 @@ func (a *App) handleStripeCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	stripeUserID, _ := result["stripe_user_id"].(string)
+
+	// Save the connected account (user_id from state param or query)
+	userID := r.URL.Query().Get("state") // pass user_id as state in the OAuth URL
+	if userID == "" {
+		userID = "default"
+	}
+	if stripeUserID != "" {
+		now := nowRFC3339()
+		a.conn.Exec(`INSERT INTO connected_accounts (user_id, stripe_account_id, payouts_enabled, created_at) VALUES (?, ?, 1, ?)
+			ON CONFLICT(user_id) DO UPDATE SET stripe_account_id = ?, payouts_enabled = 1`,
+			userID, stripeUserID, now, stripeUserID)
+		log.Printf("[billing] Stripe Connect: saved account %s for user %s", stripeUserID, userID)
+	}
+
 	writeJSON(w, map[string]any{
 		"status":         "connected",
 		"stripe_user_id": stripeUserID,
+		"user_id":        userID,
 	})
 }
 

@@ -325,6 +325,24 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[billing/stripe] webhook: %s", event.Type)
 
 	switch event.Type {
+	case "payment_intent.succeeded":
+		// Credit purchase completed — add credits to customer balance
+		if obj, ok := event.Data["object"].(map[string]any); ok {
+			amountCents := int64(0)
+			if v, ok := obj["amount"].(float64); ok {
+				amountCents = int64(v)
+			}
+			customerID := ""
+			if meta, ok := obj["metadata"].(map[string]any); ok {
+				if cid, ok := meta["customer_id"].(string); ok {
+					customerID = cid
+				}
+			}
+			if customerID != "" && amountCents > 0 {
+				a.addCredits(customerID, amountCents, "stripe_purchase", "Credit purchase via Stripe")
+				log.Printf("[billing/stripe] credited %d¢ to customer %s", amountCents, customerID)
+			}
+		}
 	case "invoice.paid":
 		// Record payment in local DB
 		if obj, ok := event.Data["object"].(map[string]any); ok {
