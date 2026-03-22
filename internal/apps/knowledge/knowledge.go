@@ -43,6 +43,8 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// Backfill FTS5 index from existing entries (rebuild syncs from content table)
+	conn.Exec("INSERT INTO knowledge_entries_fts(knowledge_entries_fts) VALUES('rebuild')")
 	log.Printf("[knowledge] migrations applied")
 	return nil
 }
@@ -73,6 +75,10 @@ CREATE TABLE IF NOT EXISTS knowledge_entries (
     disputed INTEGER DEFAULT 0,
     created_at TEXT,
     expires_at TEXT
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS knowledge_entries_fts USING fts5(
+    fact, source, content=knowledge_entries, content_rowid=rowid
 );
 
 CREATE TABLE IF NOT EXISTS knowledge_subscriptions (
@@ -314,6 +320,8 @@ func (a *App) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]string{"error": err.Error()})
 		return
 	}
+	// Populate FTS5 index
+	a.conn.Exec("INSERT INTO knowledge_entries_fts(rowid, fact, source) SELECT rowid, fact, source FROM knowledge_entries WHERE id = ?", id)
 	a.conn.Exec("UPDATE knowledge_bases SET entries_count = entries_count + 1, updated_at = ? WHERE id = ?", ts, kbID)
 	writeJSON(w, map[string]any{"status": "created", "id": id, "kb_id": kbID})
 }
@@ -376,6 +384,9 @@ func (a *App) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
 	var kbID string
 	a.conn.QueryRow("SELECT kb_id FROM knowledge_entries WHERE id = ?", id).Scan(&kbID)
 
+	// Remove from FTS5 index before deleting the row
+	a.conn.Exec("DELETE FROM knowledge_entries_fts WHERE rowid = (SELECT rowid FROM knowledge_entries WHERE id = ?)", id)
+
 	res, _ := a.conn.Exec("DELETE FROM knowledge_entries WHERE id = ?", id)
 	affected, _ := res.RowsAffected()
 	if affected == 0 {
@@ -432,12 +443,23 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Simple keyword search using LIKE
-	pattern := "%" + q + "%"
+	// Try FTS5 full-text search first, fall back to LIKE
 	rows, err := a.conn.Query(
-		"SELECT id, fact, source, verified, verification_count, disputed FROM knowledge_entries WHERE kb_id = ? AND (fact LIKE ? OR source LIKE ?) LIMIT ?",
-		kbID, pattern, pattern, limit,
+		`SELECT e.id, e.fact, e.source, e.verified, e.verification_count, e.disputed
+		FROM knowledge_entries e
+		JOIN knowledge_entries_fts fts ON fts.rowid = e.rowid
+		WHERE e.kb_id = ? AND knowledge_entries_fts MATCH ?
+		ORDER BY rank LIMIT ?`,
+		kbID, q, limit,
 	)
+	if err != nil || rows == nil {
+		// FTS5 may not be populated for old entries — fall back to LIKE
+		pattern := "%" + q + "%"
+		rows, err = a.conn.Query(
+			"SELECT id, fact, source, verified, verification_count, disputed FROM knowledge_entries WHERE kb_id = ? AND (fact LIKE ? OR source LIKE ?) LIMIT ?",
+			kbID, pattern, pattern, limit,
+		)
+	}
 	if err != nil || rows == nil {
 		writeJSON(w, map[string]any{"results": []any{}, "query": q})
 		return
