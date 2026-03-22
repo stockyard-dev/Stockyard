@@ -65,21 +65,37 @@ func (rl *ipRateLimiter) allow(ip string, limit int, window time.Duration) bool 
 	return true
 }
 
-// clientIP extracts the client IP from the request, respecting X-Forwarded-For
-// from trusted proxies (Railway).
+// clientIP extracts the client IP. Only trusts X-Forwarded-For from
+// known proxies (Railway, localhost) to prevent rate limit bypass via spoofed headers.
 func clientIP(r *http.Request) string {
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		// First IP in chain is the original client
-		if i := strings.Index(xff, ","); i > 0 {
-			return strings.TrimSpace(xff[:i])
-		}
-		return strings.TrimSpace(xff)
-	}
-	if xri := r.Header.Get("X-Real-Ip"); xri != "" {
-		return xri
-	}
 	host, _, _ := net.SplitHostPort(r.RemoteAddr)
+	// Only trust forwarded headers from private/proxy IPs
+	if isProxyIP(host) {
+		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+			if i := strings.Index(xff, ","); i > 0 {
+				return strings.TrimSpace(xff[:i])
+			}
+			return strings.TrimSpace(xff)
+		}
+		if xri := r.Header.Get("X-Real-Ip"); xri != "" {
+			return xri
+		}
+	}
 	return host
+}
+
+func isProxyIP(ip string) bool {
+	parsed := net.ParseIP(ip)
+	if parsed == nil {
+		return false
+	}
+	for _, cidr := range []string{"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "::1/128"} {
+		_, network, _ := net.ParseCIDR(cidr)
+		if network.Contains(parsed) {
+			return true
+		}
+	}
+	return false
 }
 
 // adminAuthMiddleware wraps an http.Handler and enforces API key authentication
@@ -179,11 +195,12 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// If no admin key set, allow read-only access but block writes (dev mode)
+		// If no admin key set, block ALL management API access (not just writes)
 		if adminKey == "" {
-			if r.Method != "GET" && r.Method != "HEAD" && strings.HasPrefix(path, "/api/") {
-				log.Printf("⚠️  Blocked unauthenticated %s %s — set STOCKYARD_ADMIN_KEY to enable", r.Method, path)
-				http.Error(w, `{"error":"admin key required for write operations — set STOCKYARD_ADMIN_KEY"}`, http.StatusForbidden)
+			if strings.HasPrefix(path, "/api/") {
+				log.Printf("⚠️  Blocked unauthenticated %s %s — set STOCKYARD_ADMIN_KEY", r.Method, path)
+				w.Header().Set("Content-Type", "application/json")
+				http.Error(w, `{"error":"STOCKYARD_ADMIN_KEY not set — management API disabled for security. Set the env var to enable."}`, http.StatusForbidden)
 				return
 			}
 			next.ServeHTTP(w, r)
