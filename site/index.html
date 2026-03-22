@@ -343,21 +343,39 @@ Console: http://localhost:4200/ui</span>
   <p>A full management dashboard. Cloud users get it instantly at their endpoint. Self-hosted users access it locally.</p>
   <div class="console-tabs">
     <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
-    <button class="console-tab" onclick="showConsole('observe')">Observe</button>
     <button class="console-tab" onclick="showConsole('proxy')">Proxy</button>
+    <button class="console-tab" onclick="showConsole('observe')">Observe</button>
     <button class="console-tab" onclick="showConsole('trust')">Trust</button>
     <button class="console-tab" onclick="showConsole('studio')">Studio</button>
     <button class="console-tab" onclick="showConsole('forge')">Forge</button>
     <button class="console-tab" onclick="showConsole('exchange')">Exchange</button>
+    <button class="console-tab" onclick="showConsole('billing')">Billing</button>
+    <button class="console-tab" onclick="showConsole('team')">Team</button>
+    <button class="console-tab" onclick="showConsole('memory')">Memory</button>
+    <button class="console-tab" onclick="showConsole('recall')">Recall</button>
+    <button class="console-tab" onclick="showConsole('copilot')">Copilot</button>
+    <button class="console-tab" onclick="showConsole('appbuilder')">Apps</button>
+    <button class="console-tab" onclick="showConsole('knowledge')">Knowledge</button>
+    <button class="console-tab" onclick="showConsole('reputation')">Reputation</button>
+    <button class="console-tab" onclick="showConsole('governance')">Governance</button>
   </div>
   <div class="console-gallery">
     <picture><source srcset="/site-assets/assets/screenshots/console-overview.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-overview.png" id="cs-overview"  alt="Stockyard console — system overview showing all 16 apps running" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" id="cs-observe"  alt="Observe dashboard — traces, costs, latency across providers" class="hidden" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-proxy.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-proxy.png" id="cs-proxy"  alt="Proxy middleware chain — 66 modules with runtime toggles" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-trust.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-trust.png" id="cs-trust"  alt="Trust policies and hash-chained audit ledger" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-studio.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-studio.png" id="cs-studio"  alt="Studio — prompt templates, experiments, benchmarks, snapshot tests" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-forge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-forge.png" id="cs-forge"  alt="Forge — workflow DAGs, tool registry, triggers, batch queue" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-exchange.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-exchange.png" id="cs-exchange"  alt="Exchange pack marketplace — one-click config installs" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" id="cs-observe"  alt="Observe dashboard — traces, costs, latency across providers" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-trust.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-trust.png" id="cs-trust"  alt="Trust — tamper-evident hash-chained audit ledger" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-studio.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-studio.png" id="cs-studio"  alt="Studio — prompt templates, A/B experiments, evaluations" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-forge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-forge.png" id="cs-forge"  alt="Forge — workflow DAGs, tool registry, multi-step pipelines" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-exchange.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-exchange.png" id="cs-exchange"  alt="Exchange — config pack marketplace with one-click installs" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-billing.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-billing.png" id="cs-billing"  alt="Billing — per-customer metering, usage tracking, invoices" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-team.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-team.png" id="cs-team"  alt="Team — RBAC, members, invites, per-member spend tracking" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-memory.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-memory.png" id="cs-memory"  alt="Memory — conversation threads with relevance search" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-recall.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-recall.png" id="cs-recall"  alt="Recall — incident response for problematic LLM outputs" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-copilot.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-copilot.png" id="cs-copilot"  alt="Copilot — natural language platform configuration" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-appbuilder.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-appbuilder.png" id="cs-appbuilder"  alt="App Builder — no-code AI app store and marketplace" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-knowledge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-knowledge.png" id="cs-knowledge"  alt="Knowledge — document bases with search and RAG" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-reputation.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-reputation.png" id="cs-reputation"  alt="Reputation — scoring, certifications, leaderboard" class="hidden" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-governance.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-governance.png" id="cs-governance"  alt="Governance — proposals, votes, disputes, compliance" class="hidden" loading="lazy"></picture>
   </div>
 </section>
 <script>
