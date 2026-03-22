@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
 	"strings"
 	"time"
@@ -268,7 +269,7 @@ func (a *App) handleInvoiceHTML(w http.ResponseWriter, r *http.Request) {
 			<td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">%d</td>
 			<td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">%d</td>
 			<td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right;font-weight:600">%s</td>
-		</tr>`, li.Model, li.Requests, li.InputTokens, li.OutputTokens, dollars))
+		</tr>`, html.EscapeString(li.Model), li.Requests, li.InputTokens, li.OutputTokens, dollars))
 	}
 
 	totalDollars := fmt.Sprintf("$%.2f", float64(totalCents)/100)
@@ -363,8 +364,8 @@ func (a *App) handleInvoiceHTML(w http.ResponseWriter, r *http.Request) {
 </html>`,
 		id, id, createdDisplay, period,
 		status, strings.ToUpper(status),
-		name, email, custID,
-		acctID,
+		html.EscapeString(name), html.EscapeString(email), html.EscapeString(custID),
+		html.EscapeString(acctID),
 		lineRows.String(),
 		totalDollars,
 		id, createdDisplay)

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html"
 	"log"
 	"math"
 	"net/http"
@@ -1070,21 +1071,21 @@ td{padding:8px 12px;border-bottom:1px solid #eee;font-size:13px}
 	// Provider table
 	fmt.Fprintf(w, `<div class="section"><h2>By Provider</h2><table><tr><th>Provider</th><th class="right">Requests</th><th class="right">Tokens In</th><th class="right">Tokens Out</th><th class="right">Cost</th></tr>`)
 	for _, p := range providers {
-		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, p.Provider, fmtNum(p.Requests), fmtNum64(p.TokensIn), fmtNum64(p.TokensOut), p.Cost)
+		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, html.EscapeString(p.Provider), fmtNum(p.Requests), fmtNum64(p.TokensIn), fmtNum64(p.TokensOut), p.Cost)
 	}
 	fmt.Fprintf(w, `</table></div>`)
 
 	// Model table
 	fmt.Fprintf(w, `<div class="section"><h2>By Model (Top 20)</h2><table><tr><th>Model</th><th class="right">Requests</th><th class="right">Cost</th></tr>`)
 	for _, m := range models {
-		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, m.Model, fmtNum(m.Requests), m.Cost)
+		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, html.EscapeString(m.Model), fmtNum(m.Requests), m.Cost)
 	}
 	fmt.Fprintf(w, `</table></div>`)
 
 	// Daily table
 	fmt.Fprintf(w, `<div class="section"><h2>Daily Breakdown</h2><table><tr><th>Date</th><th class="right">Requests</th><th class="right">Cost</th></tr>`)
 	for _, d := range daily {
-		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, d.Date, fmtNum(d.Requests), d.Cost)
+		fmt.Fprintf(w, `<tr><td class="mono">%s</td><td class="right">%s</td><td class="right mono">$%.4f</td></tr>`, html.EscapeString(d.Date), fmtNum(d.Requests), d.Cost)
 	}
 	fmt.Fprintf(w, `</table></div>`)
 
