@@ -586,6 +586,10 @@ func Boot(pc ProductConfig) {
 	// Wrap with self-service auth (/api/auth/me/* uses API key, not admin key)
 	srv.WrapHandler(auth.SelfServiceAuthMiddleware(authStore))
 
+	// Wrap with RBAC enforcement (checks team_members.role for /api/* mutations)
+	// Must be BEFORE auth wraps (innermost) so it runs AFTER user is in context.
+	srv.WrapHandler(auth.RBACMiddleware(db.Conn()))
+
 	// Wrap with proxy auth (authenticates /v1/* requests with sk-sy- keys)
 	proxyAuthMode := auth.GetProxyAuthMode()
 	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode))
