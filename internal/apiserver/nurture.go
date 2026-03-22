@@ -29,7 +29,7 @@ func NurtureSequence() []NurtureEmail {
 			Subject: "Welcome to Stockyard — here's what you just unlocked",
 			Body: `Hey!
 
-Welcome to Stockyard. You just got access to the self-hosted LLM proxy and control plane — 16 apps, 58 middleware modules, 16 providers, one binary.
+Welcome to Stockyard. You just got access to the self-hosted LLM proxy and control plane — 16 apps, 66 middleware modules, 16 providers, one binary.
 
 Here's the fastest way to see it in action:
 
@@ -43,7 +43,7 @@ Here's the fastest way to see it in action:
 3. Then point your app at it:
    export OPENAI_BASE_URL=http://localhost:4200/v1
 
-That's it. Your requests now flow through 58 middleware modules — caching, cost tracking, safety filters, rate limiting, observability — all enabled by default.
+That's it. Your requests now flow through 66 middleware modules — caching, cost tracking, safety filters, rate limiting, observability — all enabled by default.
 
 Quick links:
 - Docs: https://stockyard.dev/docs
@@ -107,7 +107,7 @@ Other cost-saving modules running by default:
 - outputcap: prevents runaway token generation
 - spend: real-time cost tracking per request
 
-All 58 modules are included in every tier, including the free self-hosted tier.
+All 66 modules are included in every tier, including the free self-hosted tier.
 
 If you want cloud-managed hosting with zero ops, Pro is
 $29/mo: https://stockyard.dev/pricing

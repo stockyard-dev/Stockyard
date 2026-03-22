@@ -214,7 +214,7 @@ func pageDocsHome(products []apiserver.Product) Page {
 		Section:     "Getting Started",
 		Description: "Stockyard documentation. Install, configure, and deploy your LLM proxy infrastructure.",
 		Content: fmt.Sprintf(`<h1>Stockyard Documentation</h1>
-<p class="lead">Where LLM traffic gets sorted. 58 modules. Single binary. No dependencies.</p>
+<p class="lead">Where LLM traffic gets sorted. 66 modules. Single binary. No dependencies.</p>
 
 <p>Stockyard is a shared Go proxy engine that sits between your application and LLM providers. It ships as 125 standalone products plus a unified suite, each a different middleware configuration of the same core binary.</p>
 

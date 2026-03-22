@@ -3,7 +3,7 @@ package apiserver
 // ─── Pricing Plans ─────────────────────────────────────────────────────
 // Stockyard uses a 4-tier pricing model:
 //   Free (self-hosted) → Pro ($29/mo cloud) → Team ($99/mo) → Enterprise ($299/mo)
-// All tiers include the full platform (16 apps, 58 modules, all providers).
+// All tiers include the full platform (16 apps, 66 modules, all providers).
 // Platform fees: 20% app store, 12% mesh, 20% knowledge, 2.5% billing.
 
 // Plan represents a Stockyard pricing tier.
@@ -27,7 +27,7 @@ func Plans() []Plan {
 			PriceCents: 0,
 			Features: []string{
 				"All 16 apps",
-				"58 middleware modules",
+				"66 middleware modules",
 				"All 16 providers",
 				"Unlimited requests",
 				"SQLite storage",

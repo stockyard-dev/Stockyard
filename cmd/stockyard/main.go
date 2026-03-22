@@ -1,6 +1,6 @@
 // Stockyard — "Where LLM traffic gets sorted."
 //
-// Single binary shipping all 9 flagship apps:
+// Single binary shipping all 16 apps:
 //   - Proxy:    Core reverse-proxy, middleware chain, provider dispatch
 //   - Observe:  Analytics, traces, alerts, anomaly detection, cost attribution
 //   - Trust:    Audit ledger, compliance, evidence packs, replay lab
