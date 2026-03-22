@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -60,7 +61,134 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/recall/incidents/{id}/notify", a.handleNotify)
 	mux.HandleFunc("POST /api/recall/incidents/{id}/rescan", a.handleRescan)
 	mux.HandleFunc("GET /api/recall/search", a.handleSearch)
+	mux.HandleFunc("POST /api/recall/autoscan", a.handleAutoScan)
+	// Start background scanner (every 5 minutes)
+	go a.backgroundScanner()
+}
 	log.Printf("[recall] routes registered")
+}
+
+// --- Auto-Scanner ---
+
+// piiPatterns are regex patterns for common PII in LLM outputs.
+var piiPatterns = []struct {
+	name    string
+	pattern string
+}{
+	{"email", `[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}`},
+	{"phone_us", `\b\d{3}[-.]?\d{3}[-.]?\d{4}\b`},
+	{"ssn", `\b\d{3}-\d{2}-\d{4}\b`},
+	{"credit_card", `\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b`},
+}
+
+// backgroundScanner periodically scans new traces for PII and anomalies.
+func (a *App) backgroundScanner() {
+	// Wait for system to boot and accumulate some traces
+	time.Sleep(2 * time.Minute)
+
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		a.runAutoScan()
+	}
+}
+
+// handleAutoScan triggers an immediate scan (POST /api/recall/autoscan).
+func (a *App) handleAutoScan(w http.ResponseWriter, r *http.Request) {
+	results := a.runAutoScan()
+	writeJSON(w, http.StatusOK, results)
+}
+
+// runAutoScan checks recent traces for PII patterns and creates incidents automatically.
+func (a *App) runAutoScan() map[string]any {
+	// Only scan traces from the last scan window (5 min)
+	cutoff := time.Now().Add(-6 * time.Minute).UTC().Format(time.RFC3339)
+
+	rows, err := a.conn.Query(
+		"SELECT id, model, response_body, created_at FROM observe_traces WHERE created_at > ? AND response_body != ''",
+		cutoff,
+	)
+	if err != nil {
+		return map[string]any{"scanned": 0, "incidents_created": 0, "error": err.Error()}
+	}
+	defer rows.Close()
+
+	scanned := 0
+	incidentsCreated := 0
+
+	for rows.Next() {
+		var traceID, model, body, createdAt string
+		rows.Scan(&traceID, &model, &body, &createdAt)
+		scanned++
+
+		// Check each PII pattern
+		for _, pat := range piiPatterns {
+			re, err := regexp.Compile(pat.pattern)
+			if err != nil {
+				continue
+			}
+			matches := re.FindAllString(body, 5)
+			if len(matches) == 0 {
+				continue
+			}
+
+			// Check if we already have an open incident for this pattern
+			var existingCount int
+			a.conn.QueryRow(
+				"SELECT COUNT(*) FROM recall_incidents WHERE search_query = ? AND status IN ('open','investigating') AND created_at > datetime('now', '-24 hours')",
+				pat.name,
+			).Scan(&existingCount)
+			if existingCount > 0 {
+				// Add this trace to the existing incident
+				var existingID string
+				a.conn.QueryRow(
+					"SELECT id FROM recall_incidents WHERE search_query = ? AND status IN ('open','investigating') ORDER BY created_at DESC LIMIT 1",
+					pat.name,
+				).Scan(&existingID)
+				a.conn.Exec("INSERT OR IGNORE INTO recall_affected_traces (incident_id, trace_id, response_snippet) VALUES (?, ?, ?)",
+					existingID, traceID, truncateRecall(matches[0], 100))
+				a.conn.Exec("UPDATE recall_incidents SET affected_count = affected_count + 1, updated_at = ? WHERE id = ?",
+					time.Now().UTC().Format(time.RFC3339), existingID)
+				continue
+			}
+
+			// Create new incident
+			incID := genRecallID("ri_")
+			now := time.Now().UTC().Format(time.RFC3339)
+			title := fmt.Sprintf("Auto-detected: %s pattern in LLM output", pat.name)
+			desc := fmt.Sprintf("Automatic scan found %d %s pattern match(es) in trace %s (model: %s)", len(matches), pat.name, traceID, model)
+
+			a.conn.Exec(`INSERT INTO recall_incidents (id, title, description, severity, status, search_query, search_type, affected_count, created_at, updated_at)
+				VALUES (?, ?, ?, 'high', 'open', ?, 'regex', 1, ?, ?)`,
+				incID, title, desc, pat.pattern, now, now)
+			a.conn.Exec("INSERT INTO recall_affected_traces (incident_id, trace_id, response_snippet) VALUES (?, ?, ?)",
+				incID, traceID, truncateRecall(matches[0], 100))
+
+			// Dispatch notification
+			if a.dispatcher != nil {
+				a.dispatcher("recall_auto_incident", map[string]any{
+					"incident_id": incID, "title": title, "severity": "high",
+					"pattern": pat.name, "model": model, "trace_id": traceID,
+				})
+			}
+
+			log.Printf("[recall] auto-scan: created incident %s — %s pattern in trace %s", incID, pat.name, traceID)
+			incidentsCreated++
+		}
+	}
+
+	if scanned > 0 {
+		log.Printf("[recall] auto-scan: scanned %d traces, created %d incidents", scanned, incidentsCreated)
+	}
+	return map[string]any{"scanned": scanned, "incidents_created": incidentsCreated}
+}
+
+func truncateRecall(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…"
 }
 
 // --- Types ---
