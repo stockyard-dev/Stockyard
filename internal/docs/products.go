@@ -161,10 +161,10 @@ func pricingSection(p apiserver.Product) string {
 	if p.Category == "suite" {
 		return `<table>
 <tr><th>Tier</th><th>Price</th><th>Includes</th></tr>
-<tr><td>Free</td><td>$0</td><td>All 58 modules, 1,000 requests/day</td></tr>
-<tr><td>Individual</td><td>$9.99/mo</td><td>10,000 requests/day</td></tr>
-<tr><td>Pro</td><td>$49/mo</td><td>100,000 requests/day</td></tr>
-<tr><td>Team</td><td>$149/mo</td><td>Unlimited</td></tr>
+<tr><td>Free</td><td>$0</td><td>All 66 modules, unlimited (self-hosted)</td></tr>
+
+<tr><td>Pro</td><td>$29/mo</td><td>Unlimited (cloud managed)</td></tr>
+<tr><td>Team</td><td>$99/mo</td><td>5 seats, RBAC</td></tr>
 </table>
 
 <p><a href="/pricing/">View full pricing</a></p>`
@@ -173,9 +173,9 @@ func pricingSection(p apiserver.Product) string {
 	return fmt.Sprintf(`<table>
 <tr><th>Tier</th><th>Individual</th><th>Via Suite</th></tr>
 <tr><td>Free</td><td>$0</td><td>$0</td></tr>
-<tr><td>Starter</td><td>$9.99/mo</td><td>$9.99/mo</td></tr>
-<tr><td>Pro</td><td>$49/mo</td><td>$49/mo</td></tr>
-<tr><td>Team</td><td>$149/mo</td><td>$149/mo</td></tr>
+
+<tr><td>Pro</td><td>$29/mo</td><td>$29/mo</td></tr>
+<tr><td>Team</td><td>$99/mo</td><td>$99/mo</td></tr>
 </table>
 
 <div class="callout tip">

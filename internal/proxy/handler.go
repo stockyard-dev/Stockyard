@@ -156,6 +156,32 @@ func (s *Server) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
 	w.Write(respBody)
 }
 
+// handleModels handles GET /v1/models (OpenAI-compatible model listing).
+// Many OpenAI SDKs call this on init, so it must return a valid response.
+func (s *Server) handleModels(w http.ResponseWriter, r *http.Request) {
+	pricing := provider.ListPricing()
+	type modelEntry struct {
+		ID      string `json:"id"`
+		Object  string `json:"object"`
+		Created int64  `json:"created"`
+		OwnedBy string `json:"owned_by"`
+	}
+	models := make([]modelEntry, 0, len(pricing))
+	for name, p := range pricing {
+		models = append(models, modelEntry{
+			ID:      name,
+			Object:  "model",
+			Created: 1700000000, // stable timestamp
+			OwnedBy: p.Provider,
+		})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"object": "list",
+		"data":   models,
+	})
+}
+
 // handleHealth handles GET /health
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	providerStatus := make(map[string]string)

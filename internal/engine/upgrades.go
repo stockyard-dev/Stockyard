@@ -223,7 +223,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 				ID:       "team_detection",
 				Priority: 3,
 				Title:    "Team detected",
-				Message:  fmt.Sprintf("You have %d API keys active. The Team plan gives you a shared dashboard, team-level audit trails, and 5 seats for $149/mo.", apiKeyCount),
+				Message:  fmt.Sprintf("You have %d API keys active. The Team plan gives you a shared dashboard, team-level audit trails, and 5 seats for $99/mo.", apiKeyCount),
 				CTA:      "Explore Team",
 				CTALink:  "/pricing/",
 				Tier:     "team",
@@ -245,8 +245,8 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 				ID:       "usage_ceiling",
 				Priority: 1,
 				Title:    "Approaching request limit",
-				Message:  fmt.Sprintf("You've used %d of %d requests this month (%d remaining). Upgrade to Individual for 10,000 requests/mo.", requests, limits.MaxRequestsPerMonth, remaining),
-				CTA:      "Upgrade to Individual — $9.99/mo",
+				Message:  fmt.Sprintf("You've used %d of %d requests this month (%d remaining). Upgrade to Pro for cloud-managed hosting.", requests, limits.MaxRequestsPerMonth, remaining),
+				CTA:      "Upgrade to Pro — $29/mo",
 				CTALink:  "/pricing/",
 				Tier:     "individual",
 			})
@@ -259,8 +259,8 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			ID:       "cost_savings",
 			Priority: 2,
 			Title:    "Cache is saving you money",
-			Message:  fmt.Sprintf("Cache has saved you $%.2f this month across %d hits. Unlock all 58 modules with Individual to save even more.", cacheSavings, cacheHits),
-			CTA:      "Unlock all modules — $9.99/mo",
+			Message:  fmt.Sprintf("Cache has saved you $%.2f this month across %d hits. Unlock all 66 modules with Pro to save even more.", cacheSavings, cacheHits),
+			CTA:      "Unlock all modules — $29/mo",
 			CTALink:  "/pricing/",
 			Tier:     "individual",
 		})
@@ -272,8 +272,8 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			ID:       "provider_lock",
 			Priority: 2,
 			Title:    "Provider limit reached",
-			Message:  fmt.Sprintf("Community tier includes %d providers. You've used %d. Unlock all 16 providers with Individual.", limits.MaxProviders, providersUsed),
-			CTA:      "Unlock all providers — $9.99/mo",
+			Message:  fmt.Sprintf("Community tier includes %d providers. You've used %d. Upgrade to Pro for all 16 providers.", limits.MaxProviders, providersUsed),
+			CTA:      "Unlock all providers — $29/mo",
 			CTALink:  "/pricing/",
 			Tier:     "individual",
 		})
@@ -285,8 +285,8 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			ID:       "module_gate",
 			Priority: 3,
 			Title:    "Premium modules available",
-			Message:  fmt.Sprintf("You've tried to enable %d premium modules. Community includes 20 basic modules — Individual unlocks all 58.", modulesBlocked),
-			CTA:      "Unlock all modules — $9.99/mo",
+			Message:  fmt.Sprintf("You've tried to enable %d premium modules. Community includes 20 basic modules — Pro unlocks all 66.", modulesBlocked),
+			CTA:      "Unlock all modules — $29/mo",
 			CTALink:  "/pricing/",
 			Tier:     "individual",
 		})
@@ -299,7 +299,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			Priority: 4,
 			Title:    "Audit trail expiring",
 			Message:  fmt.Sprintf("Community tier keeps %d days of audit history. Your earliest records are being archived. Pro retains 90 days.", limits.RetentionDays),
-			CTA:      "Keep 90 days with Pro — $49/mo",
+			CTA:      "Keep 90 days with Pro — $29/mo",
 			CTALink:  "/pricing/",
 			Tier:     "pro",
 		})
@@ -312,7 +312,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			Priority: 3,
 			Title:    "Team detected",
 			Message:  fmt.Sprintf("You have %d API keys active. The Team plan includes a shared dashboard, team-level audit trails, and 5 seats.", apiKeyCount),
-			CTA:      "Explore Team — $149/mo",
+			CTA:      "Explore Team — $99/mo",
 			CTALink:  "/pricing/",
 			Tier:     "team",
 		})
@@ -325,7 +325,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			Priority: 5,
 			Title:    "Tired of managing infra?",
 			Message:  fmt.Sprintf("This instance has restarted %d times. Pro Cloud gives you zero-ops hosting — we manage everything. 30-second migration.", bootCount),
-			CTA:      "Go Cloud — $49/mo",
+			CTA:      "Go Cloud — $29/mo",
 			CTALink:  "/cloud/",
 			Tier:     "pro",
 		})
@@ -342,7 +342,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 				Priority: 2,
 				Title:    "Tired of managing infra?",
 				Message:  fmt.Sprintf("This instance has restarted %d times. Pro Cloud gives you zero-ops hosting with auto backups and 90-day retention.", bootCount),
-				CTA:      "Go Pro — $49/mo",
+				CTA:      "Go Pro — $29/mo",
 				CTALink:  "/cloud/",
 				Tier:     "pro",
 			})
@@ -354,7 +354,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 				Priority: 3,
 				Title:    "Heavy usage detected",
 				Message:  fmt.Sprintf("You've made %d requests this month. Pro gives you unlimited requests, cloud hosting, and 90-day audit retention.", requests),
-				CTA:      "Upgrade to Pro — $49/mo",
+				CTA:      "Upgrade to Pro — $29/mo",
 				CTALink:  "/pricing/",
 				Tier:     "pro",
 			})

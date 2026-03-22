@@ -77,6 +77,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /v1/chat/completions", s.handleChatCompletions)
 	s.mux.HandleFunc("POST /v1/completions", s.handleCompletions)
 	s.mux.HandleFunc("POST /v1/embeddings", s.handleEmbeddings)
+	s.mux.HandleFunc("GET /v1/models", s.handleModels)
 
 	// Health check
 	s.mux.HandleFunc("GET /health", s.handleHealth)
