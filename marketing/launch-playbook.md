@@ -32,7 +32,7 @@ TWEET 4:
 Try it live — no signup needed. Paste your API key in our playground and route your first request through 58 middleware modules: stockyard.dev/playground
 
 TWEET 5:
-Free forever self-hosted. Individual $9.99/mo. Pro $49/mo. Team $149/mo. Enterprise $499/mo. Every tier gets all 6 apps, all 58 modules, all 16 providers. stockyard.dev
+Free forever self-hosted. Pro $29/mo. Team $99/mo. Enterprise $299/mo. Every tier gets all 16 apps, all 58 modules, all 16 providers. stockyard.dev
 ```
 
 ---
@@ -260,7 +260,7 @@ Script:
 1:45 - Studio: show templates, run an experiment
 2:15 - Forge: show a workflow DAG executing
 2:30 - Exchange: install a pack in one click
-2:45 - Pricing: free forever, paid from $9.99
+2:45 - Pricing: free forever, cloud from $29
 3:00 - CTA: stockyard.dev/playground
 
 Use: OBS screen recording + voiceover. Dark theme matches the product.

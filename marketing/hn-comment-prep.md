@@ -56,13 +56,15 @@ Production-ready today:
 - Observe (tracing, cost dashboards — running on the live site right now with real data)
 - Trust (hash-chained audit ledger, policy enforcement)
 - 16 provider integrations
+- Billing with Stripe integration, Team with RBAC
 
-Newer / less battle-tested:
+Functional and complete but newer:
 - Studio (prompt templates and A/B experiments work, but the experiment runner is basic)
 - Forge (DAG workflows execute correctly, but the visual builder is early)
 - Exchange (packs install and work, but the marketplace has only first-party packs so far)
+- Memory, Recall, Copilot, App Builder, Knowledge, Reputation, Governance, Marketing — all built and deployed, APIs work, but they haven't seen production traffic beyond my own testing yet
 
-I wouldn't call Studio/Forge/Exchange production-ready for critical workflows yet. They're functional and improving weekly.
+I won't pretend all 16 apps are battle-tested at scale. The core proxy/observe/trust stack is. The rest is functional and improving. You can read the code and judge for yourself.
 
 ---
 

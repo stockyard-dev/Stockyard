@@ -11,7 +11,7 @@ CostCap is a lightweight Go proxy that tracks every dollar you spend on LLM APIs
 
 **Topics:** Artificial Intelligence, Developer Tools, APIs
 
-**Pricing:** Free, $9.99/mo, $49/mo (Pro)
+**Pricing:** Free (self-hosted), $29/mo (Pro), $99/mo (Team)
 
 **Link:** https://stockyard.dev/products/costcap/
 
@@ -42,7 +42,7 @@ Technical details:
 - OpenAI-compatible API (change one URL in your app)
 - Embedded real-time dashboard
 
-CostCap is one of 58 modules in Stockyard, our LLM proxy suite. Free tier is 1,000 requests/day. Paid is Individual $9.99/mo, Pro $49/mo.
+CostCap is one of 58 modules in Stockyard, our LLM proxy suite. Free tier is unlimited. Cloud managed: Pro $29/mo, Team $99/mo.
 
 What's the most you've accidentally spent on LLM APIs? I'd love to hear your horror stories.
 
