@@ -17,12 +17,23 @@ type ipRateLimiter struct {
 	windows map[string][]time.Time
 }
 
-var publicRateLimiter = &ipRateLimiter{
-	windows: make(map[string][]time.Time),
+var publicRateLimiter = newIPRateLimiter()
+
+func newIPRateLimiter() *ipRateLimiter {
+	rl := &ipRateLimiter{
+		windows: make(map[string][]time.Time),
+	}
+	// Background cleanup every 60s — runs outside the hot path
+	go func() {
+		ticker := time.NewTicker(60 * time.Second)
+		for range ticker.C {
+			rl.cleanup()
+		}
+	}()
+	return rl
 }
 
 // allow returns true if the IP is within the rate limit.
-// limit: max requests per window. window: time window duration.
 func (rl *ipRateLimiter) allow(ip string, limit int, window time.Duration) bool {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
@@ -30,7 +41,7 @@ func (rl *ipRateLimiter) allow(ip string, limit int, window time.Duration) bool 
 	now := time.Now()
 	cutoff := now.Add(-window)
 
-	// Prune old entries
+	// Prune this IP's old entries
 	valid := rl.windows[ip][:0]
 	for _, t := range rl.windows[ip] {
 		if t.After(cutoff) {
@@ -44,25 +55,28 @@ func (rl *ipRateLimiter) allow(ip string, limit int, window time.Duration) bool 
 	}
 
 	rl.windows[ip] = append(valid, now)
+	return true
+}
 
-	// Periodic cleanup: if map grows too large, prune stale IPs
-	if len(rl.windows) > 10000 {
-		for k, v := range rl.windows {
-			fresh := v[:0]
-			for _, t := range v {
-				if t.After(cutoff) {
-					fresh = append(fresh, t)
-				}
-			}
-			if len(fresh) == 0 {
-				delete(rl.windows, k)
-			} else {
-				rl.windows[k] = fresh
+// cleanup prunes stale IPs. Called by background goroutine, not in hot path.
+func (rl *ipRateLimiter) cleanup() {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	cutoff := time.Now().Add(-2 * time.Minute)
+	for k, v := range rl.windows {
+		fresh := v[:0]
+		for _, t := range v {
+			if t.After(cutoff) {
+				fresh = append(fresh, t)
 			}
 		}
+		if len(fresh) == 0 {
+			delete(rl.windows, k)
+		} else {
+			rl.windows[k] = fresh
+		}
 	}
-
-	return true
 }
 
 // clientIP extracts the client IP. Only trusts X-Forwarded-For from

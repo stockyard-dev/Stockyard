@@ -109,8 +109,9 @@ func (o *OpenAI) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+o.config.APIKey)
 
-	// Use a separate client without timeout for streaming
-	streamClient := &http.Client{}
+	// Streaming client: generous timeout (5 min) to prevent indefinite hangs
+	// while allowing long-running completions to finish
+	streamClient := &http.Client{Timeout: 5 * time.Minute}
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("openai: send stream request: %w", err)

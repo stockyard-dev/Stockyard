@@ -201,8 +201,9 @@ func evaluatePrompt(conn *sql.DB, proxyPort int, prompt, templateName string) fl
 		if err != nil {
 			continue
 		}
+		status := resp.StatusCode
 		resp.Body.Close()
-		if resp.StatusCode < 300 {
+		if status < 300 {
 			passed++
 		}
 	}
