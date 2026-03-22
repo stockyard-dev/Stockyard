@@ -29,7 +29,7 @@ func NurtureSequence() []NurtureEmail {
 			Subject: "Welcome to Stockyard — here's what you just unlocked",
 			Body: `Hey!
 
-Welcome to Stockyard. You just got access to the self-hosted LLM proxy and control plane — six apps, 58 middleware modules, 16 providers, one binary.
+Welcome to Stockyard. You just got access to the self-hosted LLM proxy and control plane — 16 apps, 58 middleware modules, 16 providers, one binary.
 
 Here's the fastest way to see it in action:
 
@@ -76,10 +76,10 @@ You've had Stockyard for a few days. Here are 3 things worth trying:
    Go to /ui → Exchange and install the "Cost Control Pack" — it
    configures rate limiting, spending caps, and cost alerts in one click.
 
-All of this works on the free Community tier. No credit card needed.
+All of this works on the free tier. No credit card needed.
 
-If you're running more than 10,000 requests/month, Individual ($9.99/mo)
-removes the cap: https://stockyard.dev/pricing
+If you need cloud-managed hosting with zero ops, Pro ($29/mo)
+handles everything: https://stockyard.dev/pricing
 
 — Michael`,
 		},
@@ -107,10 +107,10 @@ Other cost-saving modules running by default:
 - outputcap: prevents runaway token generation
 - spend: real-time cost tracking per request
 
-All 58 modules are included in every tier, including Community (free).
+All 58 modules are included in every tier, including the free self-hosted tier.
 
-If you want unlimited requests + priority support, Individual is
-$9.99/mo: https://stockyard.dev/pricing
+If you want cloud-managed hosting with zero ops, Pro is
+$29/mo: https://stockyard.dev/pricing
 
 — Michael`,
 		},
@@ -141,7 +141,7 @@ A/B TESTING MODELS
 Use Studio to create an experiment — send 50% of traffic to GPT-4o
 and 50% to Claude Sonnet, then compare quality scores and costs.
 
-If you're evaluating Stockyard for your team, Pro ($49/mo) includes
+If you're evaluating Stockyard for your team, Pro ($29/mo) includes
 cloud-managed infrastructure with zero ops and 90-day audit retention.
 
 Book a walkthrough if you want: just reply to this email.
@@ -169,11 +169,10 @@ We ship improvements every week. Check the changelog for what's landed
 since you signed up: https://stockyard.dev/changelog
 
 PRICING REMINDER
-Community tier: free forever, 10K requests/month
-Individual: $9.99/mo — unlimited requests, priority support
-Pro: $49/mo — cloud-managed, 90-day retention
-Team: $149/mo — multi-seat, SSO
-Enterprise: $499/mo — dedicated infra, custom SLAs
+Free tier: self-hosted, everything unlimited, forever
+Pro: $29/mo — cloud-managed, 90-day retention
+Team: $99/mo — 5 seats, RBAC, compliance
+Enterprise: $299/mo — unlimited seats, SSO, SLA
 
 Annual billing saves 2 months: https://stockyard.dev/pricing
 
@@ -193,7 +192,7 @@ I don't want to spam you.
 If Stockyard is working for you:
 → A GitHub star helps a lot: https://github.com/stockyard-dev/stockyard
 → Tell a friend who's building with LLMs
-→ Upgrade to Individual ($9.99/mo) if you need unlimited requests
+→ Check out Pro ($29/mo) if you want cloud-managed hosting
 
 If it's not working for you:
 → Reply and tell me what's missing — I'll either build it or
