@@ -1212,9 +1212,34 @@ func Boot(pc ProductConfig) {
 
 	log.Println("[engine] magnum opus features: FTS5 search, debugger, contextual billing, prophecy, black box, PBOM, webhook debugger")
 
-	// Register branded 404 handler as catch-all (lowest priority pattern)
+	// Register branded 404 handler as catch-all (lowest priority pattern).
+	// Handle /v1/models here as fallback — the proxy mux registers it too,
+	// but the catch-all pattern may shadow GET routes in some Go versions.
+	// /v1/ paths always get JSON errors (not the branded HTML 404 page).
 	notFound := site.NotFoundHandler()
 	srv.Mux().HandleFunc("/{path...}", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v1/models" && r.Method == http.MethodGet {
+			pricing := provider.ListPricing()
+			type me struct {
+				ID      string `json:"id"`
+				Object  string `json:"object"`
+				Created int64  `json:"created"`
+				OwnedBy string `json:"owned_by"`
+			}
+			models := make([]me, 0, len(pricing))
+			for name, p := range pricing {
+				models = append(models, me{ID: name, Object: "model", Created: 1700000000, OwnedBy: p.Provider})
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"object": "list", "data": models})
+			return
+		}
+		if strings.HasPrefix(r.URL.Path, "/v1/") {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(`{"error":{"message":"unknown endpoint","type":"invalid_request_error"}}`))
+			return
+		}
 		notFound(w, r)
 	})
 
