@@ -22,7 +22,7 @@ Single Go binary. Embedded SQLite. No Redis, no Postgres, no Docker required.
 ## See It Work in 60 Seconds
 
 ```bash
-# Install (~15MB binary)
+# Install (~25MB binary)
 curl -fsSL https://stockyard.dev/install.sh | sh
 
 # Start (all services on one port)
@@ -41,7 +41,7 @@ curl http://localhost:4200/v1/chat/completions \
   }'
 ```
 
-That request just flowed through 58 middleware modules — rate limiter, cost tracker, safety filter, cache check, audit logger — and back. No configuration. Check the results:
+That request just flowed through 66 middleware modules — rate limiter, cost tracker, safety filter, cache check, audit logger — and back. No configuration. Check the results:
 
 ```bash
 # See the trace (cost, latency, tokens, provider)
@@ -60,7 +60,7 @@ Or open `http://localhost:4200/ui` in your browser for the full dashboard.
 
 | Component | What it does |
 |-----------|-------------|
-| **Proxy** | OpenAI-compatible gateway with 58 middleware modules and 16 provider integrations |
+| **Proxy** | OpenAI-compatible gateway with 66 middleware modules and 16 provider integrations |
 | **Observe** | Automatic request tracing, per-model cost dashboards, anomaly detection, alerts |
 | **Trust** | SHA-256 hash-chained audit ledger, policy enforcement, compliance evidence export |
 | **Studio** | Versioned prompt templates, A/B experiments, model benchmarks |
@@ -85,7 +85,7 @@ Your App (OpenAI SDK)
         ▼
 ┌─── STOCKYARD (:4200) ───────────────────────┐
 │                                               │
-│  Request → [58 middleware modules] → Provider │
+│  Request → [66 middleware modules] → Provider │
 │            rate limit → cache → safety →      │
 │            cost cap → route → failover        │
 │                                               │
@@ -96,14 +96,14 @@ Your App (OpenAI SDK)
 │  └──────────┘ └──────────┘ └──────────┘     │
 │  ┌──────────┐ ┌──────────┐                  │
 │  │  Forge   │ │ Exchange │  SQLite (WAL)    │
-│  │ workflows│ │ packs    │  ~15MB binary    │
+│  │ workflows│ │ packs    │  ~25MB binary    │
 │  └──────────┘ └──────────┘                  │
 └───────────────────────────────────────────────┘
 ```
 
 - **Single binary**, single port, single process. No orchestration.
 - **Embedded SQLite** with WAL mode. No external database.
-- **58 middleware modules**, each toggleable at runtime via `PUT /api/proxy/modules/{name}`.
+- **66 middleware modules**, each toggleable at runtime via `PUT /api/proxy/modules/{name}`.
 - **16 LLM providers**: OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Ollama, VLLM, AWS Bedrock, Azure OpenAI, Cohere, Together AI, Fireworks, Replicate, Perplexity, Hugging Face.
 - **AES-256-GCM encryption** for all provider keys at rest.
 - **400ns chain traversal overhead** across the full 58-module middleware chain ([benchmarks](https://stockyard.dev/benchmarks)). Total per-request overhead including module logic is <5ms.
@@ -156,7 +156,7 @@ LiteLLM is a Python LLM router. Stockyard is a router plus local observability a
 | Workflow engine | Built-in (Forge) | Not included |
 | Providers | 16 | 100+ |
 | Self-hosted | `curl install`, 30s | Docker Compose |
-| Binary size | ~15MB | ~200MB Docker image |
+| Binary size | ~25MB | ~200MB Docker image |
 
 ## Security
 
@@ -178,7 +178,7 @@ Requires Go 1.22+. No other dependencies.
 
 ## Pricing
 
-Self-hosted is free forever — all 58 modules, all 16 providers, all 16 apps, unlimited requests. Cloud-managed starts at $29/mo (Pro), $99/mo (Team), $299/mo (Enterprise).
+Self-hosted is free forever — all 66 modules, all 16 providers, all 16 apps, unlimited requests. Cloud-managed starts at $29/mo (Pro), $99/mo (Team), $299/mo (Enterprise).
 
 See [stockyard.dev/pricing](https://stockyard.dev/pricing) for details.
 

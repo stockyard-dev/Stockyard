@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="58 Middleware Modules at 400ns: How I Built a Hot-Swappable LLM Proxy Chain in Go">
 <meta property="og:description" content="The architecture behind Stockyard's middleware chain. Function composition, zero-alloc toggle registry, and why Go closures are the right primitive for LLM proxying.">
-<meta property="og:url" content="https://stockyard.dev/blog/58-modules-400ns/">
+<meta property="og:url" content="https://stockyard.dev/blog/66-modules-400ns/">
 <meta property="og:type" content="article">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -73,7 +73,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <h1>58 Middleware Modules at 400ns</h1>
   <p class="post-meta">March 22, 2026 &middot; 8 min read</p>
 
-  <p>Stockyard runs 58 middleware modules on every LLM request. Rate limiting, cost tracking, caching, PII redaction, content filtering, prompt injection detection, circuit breaking, audit logging &mdash; the full stack. The entire chain adds 400 nanoseconds of overhead.</p>
+  <p>Stockyard runs 66 middleware modules on every LLM request. Rate limiting, cost tracking, caching, PII redaction, content filtering, prompt injection detection, circuit breaking, audit logging &mdash; the full stack. The entire chain adds 400 nanoseconds of overhead.</p>
 
   <p>This post explains the architecture that makes that possible: Go function composition, a zero-allocation toggle registry, and why these choices matter when you&rsquo;re sitting between an application and an LLM provider.</p>
 
@@ -133,7 +133,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
   <h2>The toggle problem</h2>
 
-  <p>Static middleware chains are fast but inflexible. Stockyard lets you enable and disable any of the 58 modules at runtime via API call, without restarting the process. This is important for production use &mdash; you want to turn off a misbehaving module without dropping traffic.</p>
+  <p>Static middleware chains are fast but inflexible. Stockyard lets you enable and disable any of the 66 modules at runtime via API call, without restarting the process. This is important for production use &mdash; you want to turn off a misbehaving module without dropping traffic.</p>
 
   <p>The naive solution is to check a map on every request for every module. That&rsquo;s 58 map lookups per request, which gets expensive under contention.</p>
 
@@ -182,7 +182,7 @@ func (r *Registry) Enabled(name string) bool {
 <span class="cmd">BenchmarkToggleLookup        23.1 ns/op      0 B/op    0 allocs/op</span>
 <span class="cmd">BenchmarkChain58Parallel    10377 ns/op    192 B/op    2 allocs/op</span></pre>
 
-  <p><strong>400ns for 58 modules</strong> without toggles. That&rsquo;s ~6.9ns per module &mdash; barely more than a function call.</p>
+  <p><strong>400ns for 66 modules</strong> without toggles. That&rsquo;s ~6.9ns per module &mdash; barely more than a function call.</p>
 
   <p><strong>1.56&mu;s with toggle checks.</strong> Each toggle lookup costs 23ns (map access + RLock/RUnlock). Multiply by 58 and you get the expected ~1.3&mu;s overhead on top of the base 400ns.</p>
 
@@ -190,7 +190,7 @@ func (r *Registry) Enabled(name string) bool {
 
   <p>For context, a typical LLM API call takes 500ms&ndash;3,000ms. The middleware chain adds 0.0001% overhead.</p>
 
-  <h2>What 58 modules actually do</h2>
+  <h2>What 66 modules actually do</h2>
 
   <p>The chain isn&rsquo;t 58 copies of the same thing. It&rsquo;s organized into phases that execute in a specific order:</p>
 

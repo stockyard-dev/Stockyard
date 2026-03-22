@@ -169,7 +169,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-group-label">New Features</div>
     <div class="change-item">Provider key encryption at rest — all BYOK provider API keys (OpenAI, Anthropic, etc.) are now encrypted with AES-256-GCM before being written to SQLite. Existing plaintext keys are auto-migrated on startup.</div>
     <div class="change-item">Configurable encryption key — set <code>STOCKYARD_ENCRYPTION_KEY</code> env var for deterministic key derivation, or let Stockyard auto-generate and persist a random key.</div>
-    <div class="change-item">Benchmark page updated with real <code>go test -bench</code> data — measured on Xeon Platinum 8581C. 58-module chain: 400ns, toggle chain: 1.56μs, registry lookup: 23ns.</div>
+    <div class="change-item">Benchmark page updated with real <code>go test -bench</code> data — measured on Xeon Platinum 8581C. 66-module chain: 400ns, toggle chain: 1.56μs, registry lookup: 23ns.</div>
     <div class="change-item">API reference expanded to 62 REST endpoints across 11 sections with color-coded methods.</div>
   </div>
   <div class="change-group">
@@ -235,14 +235,14 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Docs split into 10 pages with sidebar navigation, prev/next links, and active state highlighting.</div>
     <div class="change-item">3 comparison pages: <a href="/vs/litellm/">vs LiteLLM</a>, <a href="/vs/helicone/">vs Helicone</a>, <a href="/vs/portkey/">vs Portkey</a>.</div>
     <div class="change-item">Blog with 3 launch posts. RSS feed at <a href="/blog/feed.xml">/blog/feed.xml</a>.</div>
-    <div class="change-item">Interactive architecture diagram at <a href="/architecture/">/architecture/</a> — animated request flow through all 58 modules.</div>
+    <div class="change-item">Interactive architecture diagram at <a href="/architecture/">/architecture/</a> — animated request flow through all 66 modules.</div>
     <div class="change-item">Install script: <code>curl -fsSL stockyard.dev/install.sh | sh</code></div>
     <div class="change-item">Sitemap expanded to 35 URLs. Blog nav link added site-wide.</div>
   </div>
   <div class="change-group">
     <div class="change-group-label">Fixes</div>
     <div class="change-item">Fixed JavaScript SyntaxError on 4 pages (stray CSS in script blocks).</div>
-    <div class="change-item">Standardized module count to 58 across all pages.</div>
+    <div class="change-item">Standardized module count to 66 across all pages.</div>
     <div class="change-item">Removed dead Discord links. Unified footers across all page variants.</div>
     <div class="change-item">Fixed visible skip-link elements on 7 pages. Added missing logo SVGs and Guide nav links.</div>
   </div>
@@ -268,7 +268,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   </div>
   <div class="change-group">
     <div class="change-group-label">Proxy</div>
-    <div class="change-item">58 middleware modules across 8 categories (routing, caching, cost, safety, transform, validate, observe, shims)</div>
+    <div class="change-item">66 middleware modules across 8 categories (routing, caching, cost, safety, transform, validate, observe, shims)</div>
     <div class="change-item">Runtime module toggling via API</div>
     <div class="change-item">Multi-provider failover with circuit breaker</div>
     <div class="change-item">Bring-your-own-key (BYOK) with auto-detection from key prefix</div>
