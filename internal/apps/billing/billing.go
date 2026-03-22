@@ -183,6 +183,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Payouts, revenue dashboard, seat billing
 	a.registerPayoutRoutes(mux)
 
+	// Metering status and debug
+	a.registerMeteringRoutes(mux)
+
 	// Waitlist
 	mux.HandleFunc("POST /api/billing/waitlist", a.handleWaitlist)
 
