@@ -460,8 +460,9 @@ func (a *App) handleRun(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewDecoder(r.Body).Decode(&req)
 
-	var prompt, model string
-	err := a.conn.QueryRow("SELECT system_prompt, model FROM published_apps WHERE id = ?", appID).Scan(&prompt, &model)
+	var prompt, model, pricingModel, builderID string
+	var priceCents int
+	err := a.conn.QueryRow("SELECT system_prompt, model, pricing_model, price_cents, builder_id FROM published_apps WHERE id = ?", appID).Scan(&prompt, &model, &pricingModel, &priceCents, &builderID)
 	if err != nil {
 		w.WriteHeader(404)
 		writeJSON(w, map[string]string{"error": "app not found"})
@@ -472,15 +473,35 @@ func (a *App) handleRun(w http.ResponseWriter, r *http.Request) {
 	now := time.Now().UTC().Format(time.RFC3339)
 
 	// Call the LLM through the local proxy
-	output, costCents := a.callProxy(model, prompt, req.Input)
+	output, llmCostCents := a.callProxy(model, prompt, req.Input)
+
+	// Determine total charge: app price (if paid) + LLM cost
+	totalCostCents := llmCostCents
+	if pricingModel != "free" && priceCents > 0 {
+		totalCostCents += priceCents
+
+		// Record earnings: 20% platform fee, 80% to builder
+		feeCents := priceCents * 20 / 100
+		if feeCents < 1 {
+			feeCents = 1
+		}
+		netCents := priceCents - feeCents
+		earningID := genAppID("ae_")
+		a.conn.Exec(`INSERT INTO app_earnings (id, app_id, builder_id, amount_cents, fee_cents, net_cents, created_at)
+			VALUES (?, ?, ?, ?, ?, ?, ?)`, earningID, appID, builderID, priceCents, feeCents, netCents, now)
+
+		log.Printf("[appbuilder] run %s: app=%s price=%d¢ (builder=%d¢ fee=%d¢) llm=%d¢",
+			useID, appID, priceCents, netCents, feeCents, llmCostCents)
+	}
 
 	a.conn.Exec(`INSERT INTO app_uses (id, app_id, user_session, input, output, cost_cents, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?)`, useID, appID, req.UserSession, req.Input, output, costCents, now)
+		VALUES (?, ?, ?, ?, ?, ?, ?)`, useID, appID, req.UserSession, req.Input, output, totalCostCents, now)
 	a.conn.Exec("UPDATE published_apps SET use_count = use_count + 1 WHERE id = ?", appID)
 
 	writeJSON(w, map[string]any{
 		"use_id": useID, "app_id": appID, "model": model,
-		"output": output, "cost_cents": costCents, "created_at": now,
+		"output": output, "cost_cents": totalCostCents,
+		"app_fee_cents": priceCents, "created_at": now,
 	})
 }
 

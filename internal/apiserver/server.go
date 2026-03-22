@@ -315,8 +315,8 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, http.StatusBadRequest, "free plan requires no checkout — download at github.com/stockyard-dev/stockyard")
 			return
 		}
-		product = plan.Slug
-		tier = plan.Slug // "cloud" → both product and tier
+		product = "stockyard"
+		tier = plan.Slug
 	} else {
 		// Legacy fallback
 		if product == "" {
