@@ -19,9 +19,10 @@ import (
 
 // App implements the app builder service.
 type App struct {
-	conn      *sql.DB
-	proxyPort int
-	audit     func(string, string, string, string, any)
+	conn                 *sql.DB
+	proxyPort            int
+	audit                func(string, string, string, string, any)
+	reportMarketplaceFee func(string, int64) // Stripe metered billing callback
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
@@ -32,6 +33,7 @@ func (a *App) APIBase() string     { return "/api/apps/builder" }
 
 func (a *App) SetProxyPort(port int)                                   { a.proxyPort = port }
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) { a.audit = fn }
+func (a *App) SetMarketplaceMeter(fn func(string, int64))              { a.reportMarketplaceFee = fn }
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn
@@ -506,10 +508,20 @@ func (a *App) handleRun(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[appbuilder] run %s: app=%s price=%d¢ (builder=%d¢ fee=%d¢) llm=%d¢",
 			useID, appID, priceCents, netCents, feeCents, llmCostCents)
 
-		// Deduct app fee from caller's credit balance
+		// Charge the caller: Stripe metered billing or credit deduction
 		callerID := r.Header.Get("X-Customer-ID")
 		if callerID != "" {
-			a.deductCredits(callerID, int64(priceCents))
+			if a.reportMarketplaceFee != nil {
+				// Cloud: report to Stripe — caller billed at end of cycle
+				var stripeCustomerID string
+				a.conn.QueryRow("SELECT external_id FROM billing_customers WHERE id = ?", callerID).Scan(&stripeCustomerID)
+				if stripeCustomerID != "" {
+					go a.reportMarketplaceFee(stripeCustomerID, int64(priceCents))
+				}
+			} else {
+				// Self-hosted: deduct from prepaid credits
+				a.deductCredits(callerID, int64(priceCents))
+			}
 		}
 	}
 

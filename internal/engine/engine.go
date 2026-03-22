@@ -486,6 +486,12 @@ func Boot(pc ProductConfig) {
 			if setter, ok := app.(interface{ SetEventDispatcher(func(string, any)) }); ok {
 				setter.SetEventDispatcher(integrationMgr.EventDispatcher())
 			}
+			// Wire Stripe marketplace meter (App Builder, Knowledge)
+			if billing.GlobalMeter != nil {
+				if setter, ok := app.(interface{ SetMarketplaceMeter(func(string, int64)) }); ok {
+					setter.SetMarketplaceMeter(billing.GlobalMeter.ReportMarketplaceFee)
+				}
+			}
 		}
 
 		// Second pass: extract trust auditor and wire to all apps + middleware
@@ -1528,6 +1534,14 @@ func buildMiddlewares(reg *toggle.Registry,
 	// BillingMeter — per-customer usage metering and plan limit enforcement
 	if pc.Features.BillingMeter && db != nil {
 		meter := features.NewBillingMeter(db.Conn())
+		// Wire Stripe metered billing if configured (cloud mode)
+		meterReporter := billing.StartMeterReporter()
+		if meterReporter != nil {
+			meter.ReportUsage = meterReporter.ReportLLMUsage
+			log.Printf("billingmeter: Stripe metered billing active — no credit wallet needed")
+		} else {
+			log.Printf("billingmeter: using prepaid credit deduction (self-hosted mode)")
+		}
 		add("billingmeter", features.BillingMeterMiddleware(meter))
 		log.Printf("billingmeter: per-customer metering enabled")
 	}

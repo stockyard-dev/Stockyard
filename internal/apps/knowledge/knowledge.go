@@ -16,8 +16,9 @@ import (
 
 // App implements the platform.App interface for the knowledge app.
 type App struct {
-	conn  *sql.DB
-	audit func(string, string, string, string, any)
+	conn                 *sql.DB
+	audit                func(string, string, string, string, any)
+	reportMarketplaceFee func(string, int64) // Stripe metered billing callback
 }
 
 // New creates a new knowledge App backed by the given database.
@@ -26,6 +27,11 @@ func New(conn *sql.DB) *App { return &App{conn: conn} }
 // SetAuditor wires the trust audit function for recording knowledge events.
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 	a.audit = fn
+}
+
+// SetMarketplaceMeter wires the Stripe metered billing callback.
+func (a *App) SetMarketplaceMeter(fn func(string, int64)) {
+	a.reportMarketplaceFee = fn
 }
 
 func (a *App) auditEvent(action, resource string, detail any) {
@@ -519,10 +525,18 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 		a.conn.Exec(`INSERT INTO knowledge_earnings (id, kb_id, author_id, amount_cents, fee_cents, net_cents, query, created_at)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, earningID, kbID, authorID, priceCents, feeCents, netCents, q, ts)
 
-		// Deduct from caller's credit balance
+		// Charge the caller: Stripe metered billing or credit deduction
 		callerID := r.Header.Get("X-Customer-ID")
 		if callerID != "" {
-			a.deductCredits(callerID, int64(priceCents))
+			if a.reportMarketplaceFee != nil {
+				var stripeCustomerID string
+				a.conn.QueryRow("SELECT external_id FROM billing_customers WHERE id = ?", callerID).Scan(&stripeCustomerID)
+				if stripeCustomerID != "" {
+					go a.reportMarketplaceFee(stripeCustomerID, int64(priceCents))
+				}
+			} else {
+				a.deductCredits(callerID, int64(priceCents))
+			}
 		}
 	}
 

@@ -26,6 +26,12 @@ type BillingMeter struct {
 	// RPM tracking: customer_id → sliding window of request timestamps
 	rpmMu      sync.Mutex
 	rpmWindows map[string][]time.Time
+
+	// Metered billing: if set, reports usage to Stripe Billing Meters
+	// instead of deducting from prepaid credit balance. The engine wires
+	// this callback to billing.GlobalMeter.ReportLLMUsage.
+	// Args: (stripeCustomerID string, costCents int64)
+	ReportUsage func(string, int64)
 }
 
 // NewBillingMeter creates a new billing meter backed by SQLite.
@@ -376,9 +382,19 @@ func (m *BillingMeter) recordUsage(ctx context.Context, customerID string, req *
 		custID = "_unattributed"
 	}
 
-	// Deduct credits from customer balance (if they have a balance)
+	// Report usage: Stripe metered billing (cloud) or credit deduction (self-hosted)
 	if customerID != "" && costCents > 0 {
-		m.deductCredits(customerID, costCents)
+		if m.ReportUsage != nil {
+			// Cloud mode: report to Stripe Billing Meter — customer is billed at end of cycle
+			var stripeCustomerID string
+			m.conn.QueryRow("SELECT external_id FROM billing_customers WHERE id = ?", customerID).Scan(&stripeCustomerID)
+			if stripeCustomerID != "" {
+				go m.ReportUsage(stripeCustomerID, costCents)
+			}
+		} else {
+			// Self-hosted mode: deduct from prepaid credit balance
+			m.deductCredits(customerID, costCents)
+		}
 	}
 
 	daily := time.Now().UTC().Format("2006-01-02")
