@@ -7,10 +7,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Stockyard — The AI Economy Platform</title>
-<meta name="description" content="Build AI apps without code. Earn from your GPU. Monetize your expertise. One Go binary, zero dependencies.">
-<meta property="og:title" content="Stockyard — The AI Economy Platform">
-<meta property="og:description" content="Build AI apps without code. Earn from your GPU. Monetize your expertise. One Go binary, zero dependencies.">
+<title>Stockyard — Replace Your LLM Middleware Stack</title>
+<meta name="description" content="58 middleware modules, 16 providers, one ~15MB Go binary, zero dependencies. Proxy, observability, cost tracking, audit ledger, caching, guardrails. MIT licensed.">
+<meta property="og:title" content="Stockyard — Replace Your LLM Middleware Stack">
+<meta property="og:description" content="58 middleware modules, 16 providers, one ~15MB Go binary, zero dependencies. Open source, MIT licensed.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -190,7 +190,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       "name": "Stockyard",
       "url": "https://stockyard.dev",
       "logo": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png",
-      "description": "The AI Economy Platform. Build apps, contribute compute, monetize expertise. 16 apps, 58 middleware modules, one binary.",
+      "description": "Open-source LLM gateway. 58 middleware modules, 16 providers, one binary, zero dependencies. MIT licensed.",
       "sameAs": [
         "https://github.com/stockyard-dev/stockyard"
       ]
@@ -200,7 +200,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       "name": "Stockyard",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Linux, macOS, Windows",
-      "description": "Open-source LLM gateway and AI proxy platform that replaces 134+ middleware tools with a single binary. Proxy, observability, audit, prompt management, workflows, and a config marketplace.",
+      "description": "Open-source LLM gateway and proxy platform with 58 middleware modules, 16 providers, and an embedded web console. Single Go binary, zero external dependencies.",
       "url": "https://stockyard.dev",
       "downloadUrl": "https://stockyard.dev/docs/quickstart/",
       "offers": [
@@ -259,33 +259,24 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Platform</a>
-    <a href="/appbuilder/">Build</a>
-    <a href="/node/">Network</a>
-    <a href="/governance/">Enterprise</a>
-    <a href="/docs/">Developers</a>
+    <a href="/docs/">Docs</a>
+    <a href="/benchmarks/">Benchmarks</a>
     <a href="/pricing/">Pricing</a>
     <a href="/playground/">Playground</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
 
 <section class="hero" id="main">
-  <div class="hero-eyebrow">The AI Economy Platform</div>
-  <h1>Build AI apps. <span class="accent">Earn from your GPU.</span> Monetize your expertise.</h1>
-  <p class="hero-sub">One binary. Zero dependencies. From LLM proxy to app store to compute network.</p>
+  <div class="hero-eyebrow">Open Source &middot; MIT Licensed &middot; 67K Lines of Go</div>
+  <h1>Replace your LLM middleware stack <span class="accent">with a single binary.</span></h1>
+  <p class="hero-sub">Proxy, observability, cost tracking, audit ledger, prompt management, workflows, caching, guardrails &mdash; 58 modules, one ~15MB binary, zero dependencies.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;max-width:900px;margin:0 auto 3rem;text-align:left">
-    <a href="/for/builders/" style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light);margin-bottom:0.5rem;letter-spacing:1px">FOR BUILDERS</div>
-      <div style="color:var(--cream-dim);font-size:0.9rem">Create AI apps without code. Publish to the marketplace. Earn revenue from every use.</div>
-    </a>
-    <a href="/for/gpu-owners/" style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light);margin-bottom:0.5rem;letter-spacing:1px">FOR GPU OWNERS</div>
-      <div style="color:var(--cream-dim);font-size:0.9rem">Contribute idle compute to the mesh. Earn per-token credits automatically.</div>
-    </a>
-    <a href="/for/experts/" style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light);margin-bottom:0.5rem;letter-spacing:1px">FOR DOMAIN EXPERTS</div>
-      <div style="color:var(--cream-dim);font-size:0.9rem">Turn your knowledge into a monetizable knowledge base. Earn royalties when apps use your data.</div>
-    </a>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">58</span><span class="stat-label">Modules</span></div>
+    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
+    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Chain Overhead</span></div>
+    <div class="stat"><span class="stat-num">~15MB</span><span class="stat-label">Binary</span></div>
   </div>
 
   <div class="cta-group">
@@ -293,30 +284,32 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="https://github.com/stockyard-dev/Stockyard" class="btn btn-secondary">View Source</a>
   </div>
 
-  <div style="margin-top:1.5rem;font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);letter-spacing:1px">
-    350+ API endpoints &middot; 106 data tables &middot; 58 middleware modules &middot; 16 providers &middot; 400ns chain overhead
-  </div>
+  <div class="install-cmd" style="margin-top:1.5rem">curl -fsSL stockyard.dev/install.sh | sh</div>
 
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
-    <a href="/playground/" style="color:var(--cream-dim)">Playground &rarr;</a>
-    <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-dim)">GitHub &rarr;</a>
+    <a href="/playground/" style="color:var(--cream-dim)">Try the Playground &rarr;</a>
     <a href="/benchmarks/" style="color:var(--cream-dim)">Benchmarks &rarr;</a>
-    <a href="/api/openapi.json" style="color:var(--cream-dim)">OpenAPI spec &rarr;</a>
+    <a href="/docs/api/" style="color:var(--cream-dim)">350+ API Endpoints &rarr;</a>
     <a href="/changelog/" style="color:var(--cream-dim)">Changelog &rarr;</a>
-    <a href="/protocol/" style="color:var(--cream-dim)">Protocol &rarr;</a>
   </div>
 </section>
 
-<section class="problem">
-  <div class="problem-inner">
-    <h2 class="section-label">The platform problem</h2>
-    <p class="problem-text">
-      Developers rebuild the same AI infrastructure for every project &mdash; proxy, logging, cost tracking, safety, audit. Millions of GPUs sit idle while companies pay premium cloud prices. Domain experts have knowledge that would make AI better but no way to earn from it.
-    </p>
-    <p class="problem-text" style="margin-top:1rem;color:var(--cream)">
-      Stockyard solves all three with a single binary.
-    </p>
-  </div>
+<section class="compare">
+  <h2 class="section-label">How Stockyard compares</h2>
+  <table class="compare-table">
+    <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th><th>Helicone</th></tr>
+    <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
+    <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip + Redis + Postgres</td><td class="them">Managed SaaS</td></tr>
+    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td><td class="them">Cloud only</td></tr>
+    <tr><td>Platform</td><td class="us">16 integrated apps</td><td class="them">One proxy</td><td class="them">Observability</td></tr>
+    <tr><td>Middleware</td><td class="us">58 toggleable modules</td><td class="them">Limited callbacks</td><td class="them">N/A</td></tr>
+    <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td><td class="them">Cloud</td></tr>
+    <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td><td class="them">N/A</td></tr>
+    <tr><td>Self-hosted</td><td class="us">Free, unlimited</td><td class="them">Free, limited</td><td class="them">No</td></tr>
+    <tr><td>Audit ledger</td><td class="us">Hash-chained, built-in</td><td class="them">No</td><td class="them">No</td></tr>
+    <tr><td>License</td><td class="us">MIT</td><td class="them">MIT</td><td class="them">Proprietary</td></tr>
+  </table>
+  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">Detailed comparison &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a></p>
 </section>
 
 <section class="solution">
@@ -341,177 +334,7 @@ Console: http://localhost:4200/ui</span>
 
 <span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/trust/ledger?limit=1</span>
 <span style="color:var(--gold)">→ hash: 6b69ef01... | prev: 0378b55a... | chain: intact</span></pre>
-    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">One binary. No Redis. No Postgres. No Docker. Open <a href="/playground/" style="color:var(--rust-light)">the playground</a> to try without installing.</p>
-  </div>
-</section>
-
-<section class="apps" id="apps">
-  <div class="apps-inner">
-
-    <h2 class="section-label leather">Core Infrastructure</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">The foundation. Every LLM request flows through 58 middleware modules with tracing, cost tracking, and an immutable audit trail.</p>
-    <div class="app-grid">
-      <div class="app-card"><a href="/products/">
-        <h3 class="app-name">Proxy</h3>
-        <span class="app-tagline">58 middleware modules. 16 providers. 400ns overhead.</span>
-      </a></div>
-      <div class="app-card"><a href="/observe/">
-        <h3 class="app-name">Observe</h3>
-        <span class="app-tagline">Request tracing, cost dashboards, and anomaly detection.</span>
-      </a></div>
-      <div class="app-card"><a href="/trust/">
-        <h3 class="app-name">Trust</h3>
-        <span class="app-tagline">Hash-chained audit ledger. Tamper-evident. Compliance-ready.</span>
-      </a></div>
-    </div>
-
-    <h2 class="section-label" style="margin-top:4rem">Creation Tools</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">Build AI applications without code. Visual app builder, prompt engineering, workflow orchestration, and natural language platform control.</p>
-    <div class="app-grid">
-      <div class="app-card"><a href="/studio/">
-        <h3 class="app-name">Studio</h3>
-        <span class="app-tagline">Prompt versioning, A/B testing, and benchmarks.</span>
-      </a></div>
-      <div class="app-card"><a href="/forge/">
-        <h3 class="app-name">Forge</h3>
-        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
-      </a></div>
-      <div class="app-card"><a href="/appbuilder/">
-        <h3 class="app-name">App Builder</h3>
-        <span class="app-tagline">No-code AI apps. Publish and monetize on the marketplace.</span>
-      </a></div>
-      <div class="app-card"><a href="/copilot/">
-        <h3 class="app-name">Copilot</h3>
-        <span class="app-tagline">Configure the entire platform in natural language.</span>
-      </a></div>
-    </div>
-
-    <h2 class="section-label gold" style="margin-top:4rem">The Economy</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">A marketplace where apps, knowledge, and compute are created, shared, and monetized by the community.</p>
-    <div class="app-grid">
-      <div class="app-card"><a href="/exchange/">
-        <h3 class="app-name">Exchange</h3>
-        <span class="app-tagline">Config packs and app marketplace. One-click install.</span>
-      </a></div>
-      <div class="app-card"><a href="/knowledge/">
-        <h3 class="app-name">Knowledge</h3>
-        <span class="app-tagline">Domain expertise marketplace. Publish, subscribe, earn royalties.</span>
-      </a></div>
-      <div class="app-card"><a href="/node/">
-        <h3 class="app-name">Mesh</h3>
-        <span class="app-tagline">Distributed GPU network. Contribute compute, earn credits.</span>
-      </a></div>
-      <div class="app-card"><a href="/reputation/">
-        <h3 class="app-name">Reputation</h3>
-        <span class="app-tagline">Trust scores, certifications, and seasonal leaderboards.</span>
-      </a></div>
-    </div>
-
-    <h2 class="section-label leather" style="margin-top:4rem">Business Operations</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">Usage metering, declarative deployment, AI incident response, and conversational memory. The operational backbone.</p>
-    <div class="app-grid">
-      <div class="app-card"><a href="/billing/">
-        <h3 class="app-name">Billing</h3>
-        <span class="app-tagline">Usage metering, Stripe Connect, credits, and invoices.</span>
-      </a></div>
-      <div class="app-card"><a href="/fabric/">
-        <h3 class="app-name">Fabric</h3>
-        <span class="app-tagline">One JSON manifest deploys your entire AI application.</span>
-      </a></div>
-      <div class="app-card"><a href="/recall/">
-        <h3 class="app-name">Recall</h3>
-        <span class="app-tagline">AI incident response. Find every affected response in seconds.</span>
-      </a></div>
-      <div class="app-card"><a href="/memory/">
-        <h3 class="app-name">Memory</h3>
-        <span class="app-tagline">Per-user conversational memory with semantic retrieval.</span>
-      </a></div>
-    </div>
-
-    <h2 class="section-label" style="margin-top:4rem;color:var(--green-light)">Governance &amp; Security</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">RBAC, democratic governance, compliance automation, and safety certification. Enterprise-grade from day one.</p>
-    <div class="app-grid">
-      <div class="app-card"><a href="/team/">
-        <h3 class="app-name">Team</h3>
-        <span class="app-tagline">RBAC, invites, and per-member spend tracking.</span>
-      </a></div>
-      <div class="app-card"><a href="/governance/">
-        <h3 class="app-name">Governance</h3>
-        <span class="app-tagline">Democratic proposals, voting, and dispute resolution.</span>
-      </a></div>
-      <div class="app-card"><a href="/products/">
-        <h3 class="app-name">Connect</h3>
-        <span class="app-tagline">OAuth identity, secret vault, and threat intelligence.</span>
-      </a></div>
-      <div class="app-card"><a href="/protocol/">
-        <h3 class="app-name">Protocol</h3>
-        <span class="app-tagline">Open standard for AI inference, governance, and commerce.</span>
-      </a></div>
-      <div class="app-card"><a href="/security/">
-        <h3 class="app-name">Security</h3>
-        <span class="app-tagline">AES-256-GCM encryption, prompt injection detection, threat intelligence.</span>
-      </a></div>
-    </div>
-
-  </div>
-</section>
-
-<section style="padding:4rem 2rem;max-width:960px;margin:0 auto">
-  <div class="section-label" style="text-align:center">Who is this for?</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-top:2rem">
-    <a href="/for/startups/" style="padding:1.5rem;border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem">For Startups</div>
-      <div style="font-size:0.85rem;color:var(--cream-dim)">Deploy AI in minutes. Ship features, not infrastructure.</div>
-    </a>
-    <a href="/for/enterprise/" style="padding:1.5rem;border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem">For Enterprise</div>
-      <div style="font-size:0.85rem;color:var(--cream-dim)">Governance, compliance, audit trails, incident response.</div>
-    </a>
-    <a href="/for/developers/" style="padding:1.5rem;border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem">For Developers</div>
-      <div style="font-size:0.85rem;color:var(--cream-dim)">SDKs, CLI, Terraform, 350+ endpoints. One import line.</div>
-    </a>
-    <a href="/for/gpu-owners/" style="padding:1.5rem;border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem">For GPU Owners</div>
-      <div style="font-size:0.85rem;color:var(--cream-dim)">Earn from idle hardware. Join the compute mesh.</div>
-    </a>
-    <a href="/for/experts/" style="padding:1.5rem;border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem">For Domain Experts</div>
-      <div style="font-size:0.85rem;color:var(--cream-dim)">Monetize your knowledge. Earn royalties per query.</div>
-    </a>
-    <a href="/for/builders/" style="padding:1.5rem;border:1px solid var(--bg3);text-decoration:none;transition:border-color 0.2s">
-      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem">For App Builders</div>
-      <div style="font-size:0.85rem;color:var(--cream-dim)">No-code AI apps. Publish and earn from every use.</div>
-    </a>
-  </div>
-</section>
-
-<section class="sdk-section" style="padding:5rem 2rem;text-align:center">
-  <div class="section-label">Zero Config</div>
-  <h2 style="font-size:2rem;margin-bottom:1rem">One import. Full observability.</h2>
-  <p style="color:var(--cream-dim);max-width:500px;margin:0 auto 1rem">Change one import line. Every request gets tracing, cost tracking, audit logging, and safety filtering.</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:900px;margin:0 auto">
-    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
-      <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Python</div>
-      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap">pip install stockyard-openai
-
-from stockyard_openai import OpenAI
-client = OpenAI(api_key="sk-...")</pre>
-    </div>
-    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
-      <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Node</div>
-      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap">npm install @stockyard/openai
-
-import OpenAI from '@stockyard/openai';
-const client = new OpenAI();</pre>
-    </div>
-    <div style="background:var(--bg2);padding:1.5rem;border-radius:8px;text-align:left">
-      <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather);margin-bottom:.75rem">Go</div>
-      <pre style="font-family:var(--font-mono);font-size:.8rem;color:var(--cream);white-space:pre-wrap">go get github.com/stockyard-dev/stockyard-openai-go
-
-config.BaseURL = stockyard.BaseURL()
-config.HTTPClient = &amp;http.Client{Transport: stockyard.Transport()}</pre>
-    </div>
+    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">No Redis. No Postgres. No Docker. Open <a href="/playground/" style="color:var(--rust-light)">the playground</a> to try without installing.</p>
   </div>
 </section>
 
@@ -546,42 +369,53 @@ function showConsole(name){
 }
 </script>
 
-<section class="how">
-  <div class="how-inner">
-    <h2 class="section-label">How it works</h2>
-    <p style="color:var(--cream-dim);margin-bottom:0.5rem">Install. Run. Point your app at it.</p>
-    <div class="code-block">
-<span class="comment"># Install (~15MB binary)</span>
-<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
+<section class="apps" id="apps">
+  <div class="apps-inner">
+    <h2 class="section-label leather">What&rsquo;s inside the binary</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">16 integrated apps. Every LLM request flows through 58 middleware modules with tracing, cost tracking, and an immutable audit trail.</p>
 
-<span class="comment"># Start</span>
-<span class="cmd">stockyard serve</span>
-
-<span class="comment"># Point your app at Stockyard</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
-
-<span class="comment"># That's it. Every LLM call now flows through 58 modules.</span>
-<span class="comment"># Traces, cost caps, caching, audit — all at localhost:4200/ui</span>
+    <div class="app-grid">
+      <div class="app-card"><a href="/products/">
+        <span class="app-num">Core</span>
+        <h3 class="app-name">Proxy</h3>
+        <span class="app-tagline">58 middleware modules. 16 providers. 400ns overhead.</span>
+      </a></div>
+      <div class="app-card"><a href="/observe/">
+        <span class="app-num">Core</span>
+        <h3 class="app-name">Observe</h3>
+        <span class="app-tagline">Request tracing, cost dashboards, and anomaly detection.</span>
+      </a></div>
+      <div class="app-card"><a href="/trust/">
+        <span class="app-num">Core</span>
+        <h3 class="app-name">Trust</h3>
+        <span class="app-tagline">Hash-chained audit ledger. Tamper-evident. Compliance-ready.</span>
+      </a></div>
+      <div class="app-card"><a href="/studio/">
+        <span class="app-num">Creation</span>
+        <h3 class="app-name">Studio</h3>
+        <span class="app-tagline">Prompt versioning, A/B testing, and benchmarks.</span>
+      </a></div>
+      <div class="app-card"><a href="/forge/">
+        <span class="app-num">Creation</span>
+        <h3 class="app-name">Forge</h3>
+        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
+      </a></div>
+      <div class="app-card"><a href="/exchange/">
+        <span class="app-num">Marketplace</span>
+        <h3 class="app-name">Exchange</h3>
+        <span class="app-tagline">Config packs and app marketplace. One-click install.</span>
+      </a></div>
     </div>
 
-    <details style="margin-top:2rem;border:1px solid var(--bg3);padding:0">
-      <summary style="padding:1rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center">
-        <span>Want managed cloud instead?</span>
-      </summary>
-      <div class="code-block" style="border:none;border-top:1px solid var(--bg3)">
-<span class="comment"># Sign up at stockyard.dev/cloud — we handle hosting, SSL, and updates</span>
-<span class="cmd">export OPENAI_BASE_URL=https://your-team.stockyard.dev/v1</span>
-      </div>
-    </details>
-
-    <a href="/guide/" style="display:block;margin-top:1rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--rust-light)">Your first 5 minutes &rarr;</a>
+    <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.8rem"><a href="/products/">See all 16 apps &rarr;</a></p>
+    <p style="text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:0.5rem">Plus: Billing, Team, Memory, Recall, Copilot, App Builder, Knowledge, Reputation, Governance, Marketing</p>
   </div>
 </section>
 
 <section class="modules">
   <div class="modules-inner">
     <h2 class="section-label leather">58 middleware modules</h2>
-    <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. Install packs to configure groups at once.</p>
+    <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. <a href="/benchmarks/" style="color:var(--rust-light)">400ns chain overhead</a>, measured on real hardware.</p>
     <div class="module-row"><span class="module-name">rateshield</span><span class="module-cat">Cost</span></div>
     <div class="module-row"><span class="module-name">costcap</span><span class="module-cat">Cost</span></div>
     <div class="module-row"><span class="module-name">cache</span><span class="module-cat">Performance</span></div>
@@ -594,21 +428,6 @@ function showConsole(name){
     <div class="module-row"><span class="module-name">tokenbudget</span><span class="module-cat">Cost</span></div>
     <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 58 modules &rarr;</a></p>
   </div>
-</section>
-
-<section class="compare">
-  <h2 class="section-label">Why not LiteLLM?</h2>
-  <table class="compare-table">
-    <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th></tr>
-    <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td></tr>
-    <tr><td>Binary</td><td class="us">Single static binary</td><td class="them">pip install + runtime</td></tr>
-    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td></tr>
-    <tr><td>Dashboard</td><td class="us">Embedded console</td><td class="them">Separate UI service</td></tr>
-    <tr><td>Platform</td><td class="us">16 integrated apps</td><td class="them">One proxy</td></tr>
-    <tr><td>Middleware</td><td class="us">58 toggleable modules</td><td class="them">Limited callbacks</td></tr>
-    <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td></tr>
-    <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td></tr>
-  </table>
 </section>
 
 <section class="pricing-teaser">
@@ -660,12 +479,13 @@ function showConsole(name){
 </section>
 
 <section class="footer-cta">
-  <h2>Join the AI economy.</h2>
-  <p>Build apps. Contribute compute. Share knowledge. Earn from all of it.</p>
+  <h2>Try it in 30 seconds.</h2>
+  <p>One curl. One binary. Every LLM call observed, audited, and controlled.</p>
   <div class="cta-group">
     <a href="/guide/" class="btn btn-primary">Get Started</a>
-    <a href="/products/" class="btn btn-secondary">Explore the Platform</a>
+    <a href="/playground/" class="btn btn-secondary">Try the Playground</a>
   </div>
+  <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1.5rem">MIT Licensed &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--leather-light)">View Source on GitHub</a></p>
 </section>
 
 <footer>
