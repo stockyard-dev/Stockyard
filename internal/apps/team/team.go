@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -72,6 +73,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/team/members/{id}", a.handleDeleteMember)
 	mux.HandleFunc("POST /api/team/accept-invite", a.handleAcceptInvite)
 	mux.HandleFunc("GET /api/team/spend", a.handleTeamSpend)
+	mux.HandleFunc("GET /api/team/seats", a.handleSeats)
 	log.Printf("[team] routes: /api/team/members, /api/team/spend")
 }
 
@@ -389,6 +391,34 @@ func (a *App) handleTeamSpend(w http.ResponseWriter, r *http.Request) {
 		members = []map[string]any{}
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"members": members, "period": "current_month"})
+}
+
+func (a *App) handleSeats(w http.ResponseWriter, r *http.Request) {
+	const includedSeats = 5
+	const seatPriceCents = 2000 // $20/seat/mo
+
+	var totalMembers, acceptedMembers int
+	a.conn.QueryRow("SELECT COUNT(*) FROM team_members").Scan(&totalMembers)
+	a.conn.QueryRow("SELECT COUNT(*) FROM team_members WHERE invite_accepted = 1").Scan(&acceptedMembers)
+
+	billableSeats := 0
+	if acceptedMembers > includedSeats {
+		billableSeats = acceptedMembers - includedSeats
+	}
+	monthlyCostCents := billableSeats * seatPriceCents
+
+	// Get the Stripe price ID for additional seats
+	seatPriceID := os.Getenv("STRIPE_PRICE_STOCKYARD_TEAM_SEAT_MONTHLY")
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"total_members":      totalMembers,
+		"accepted_members":   acceptedMembers,
+		"included_seats":     includedSeats,
+		"billable_seats":     billableSeats,
+		"seat_price_cents":   seatPriceCents,
+		"monthly_cost_cents": monthlyCostCents,
+		"stripe_configured":  seatPriceID != "",
+	})
 }
 
 func writeJSON(w http.ResponseWriter, status int, data any) {
