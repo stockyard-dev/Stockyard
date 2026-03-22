@@ -3,10 +3,13 @@
 package appbuilder
 
 import (
+	"bytes"
 	"crypto/rand"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -16,8 +19,9 @@ import (
 
 // App implements the app builder service.
 type App struct {
-	conn  *sql.DB
-	audit func(string, string, string, string, any)
+	conn      *sql.DB
+	proxyPort int
+	audit     func(string, string, string, string, any)
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
@@ -26,6 +30,7 @@ func (a *App) Name() string        { return "appbuilder" }
 func (a *App) Description() string { return "No-code AI app builder and marketplace" }
 func (a *App) APIBase() string     { return "/api/apps/builder" }
 
+func (a *App) SetProxyPort(port int)                                   { a.proxyPort = port }
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) { a.audit = fn }
 
 func (a *App) Migrate(conn *sql.DB) error {
@@ -463,18 +468,77 @@ func (a *App) handleRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Record the use (actual LLM call would go through proxy)
 	useID := genAppID("au_")
 	now := time.Now().UTC().Format(time.RFC3339)
-	output := "[App execution recorded — connect a provider for live responses]"
-	a.conn.Exec(`INSERT INTO app_uses (id, app_id, user_session, input, output, created_at)
-		VALUES (?, ?, ?, ?, ?, ?)`, useID, appID, req.UserSession, req.Input, output, now)
+
+	// Call the LLM through the local proxy
+	output, costCents := a.callProxy(model, prompt, req.Input)
+
+	a.conn.Exec(`INSERT INTO app_uses (id, app_id, user_session, input, output, cost_cents, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?)`, useID, appID, req.UserSession, req.Input, output, costCents, now)
 	a.conn.Exec("UPDATE published_apps SET use_count = use_count + 1 WHERE id = ?", appID)
 
 	writeJSON(w, map[string]any{
 		"use_id": useID, "app_id": appID, "model": model,
-		"output": output, "created_at": now,
+		"output": output, "cost_cents": costCents, "created_at": now,
 	})
+}
+
+// callProxy sends the app's system prompt + user input through the local proxy.
+// Returns the LLM output and estimated cost in cents.
+func (a *App) callProxy(model, systemPrompt, userInput string) (string, int) {
+	if a.proxyPort == 0 {
+		return "[No proxy configured — set a provider key to enable live responses]", 0
+	}
+
+	messages := []map[string]string{
+		{"role": "system", "content": systemPrompt},
+		{"role": "user", "content": userInput},
+	}
+	body, _ := json.Marshal(map[string]any{
+		"model": model, "messages": messages, "max_tokens": 1000,
+	})
+
+	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", a.proxyPort)
+	httpReq, err := http.NewRequest("POST", url, bytes.NewReader(body))
+	if err != nil {
+		log.Printf("[appbuilder] create request: %v", err)
+		return "[Error creating request]", 0
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("X-Stockyard-Source", "appbuilder")
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		log.Printf("[appbuilder] proxy call: %v", err)
+		return "[Error calling LLM — check provider configuration]", 0
+	}
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode >= 400 {
+		log.Printf("[appbuilder] proxy returned %d: %s", resp.StatusCode, string(respBody[:min(len(respBody), 200)]))
+		return "[LLM returned an error — check provider configuration]", 0
+	}
+
+	var result struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+		Usage struct {
+			TotalTokens int `json:"total_tokens"`
+		} `json:"usage"`
+	}
+	if err := json.Unmarshal(respBody, &result); err != nil || len(result.Choices) == 0 {
+		return "[Could not parse LLM response]", 0
+	}
+
+	// Rough cost estimate: $0.15/1M input + $0.60/1M output for gpt-4o-mini
+	costCents := max(result.Usage.TotalTokens/1000, 1)
+	return result.Choices[0].Message.Content, costCents
 }
 
 func (a *App) handleRunHistory(w http.ResponseWriter, r *http.Request) {
