@@ -121,6 +121,11 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// Limit request body size on management API (5MB). Proxy has its own limit (10MB).
+		if strings.HasPrefix(path, "/api/") && (r.Method == "POST" || r.Method == "PUT" || r.Method == "DELETE") {
+			r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
+		}
+
 		// Exempt paths: proxy endpoints, health, dashboard, site pages
 		if strings.HasPrefix(path, "/v1/") ||
 			path == "/health" ||
