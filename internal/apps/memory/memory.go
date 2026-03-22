@@ -3,10 +3,13 @@
 package memory
 
 import (
+	"bytes"
 	"crypto/rand"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"math"
 	"net/http"
@@ -16,13 +19,15 @@ import (
 
 // App implements the memory service.
 type App struct {
-	conn *sql.DB
+	conn      *sql.DB
+	proxyPort int
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
-func (a *App) Name() string        { return "memory" }
-func (a *App) Description() string { return "Conversation memory service with relevance search" }
+func (a *App) Name() string                { return "memory" }
+func (a *App) Description() string         { return "Conversation memory service with relevance search" }
+func (a *App) SetProxyPort(port int)       { a.proxyPort = port }
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn
@@ -245,10 +250,21 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create a summary entry from the old entries.
-	summaryText := "Summary of " + string(rune(len(oldIDs)+'0')) + " older memories: " + strings.Join(contents, " | ")
-	if len(summaryText) > 2000 {
-		summaryText = summaryText[:2000]
+	// Summarize via LLM if proxy is available, otherwise concatenate
+	var summaryText string
+	if a.proxyPort > 0 {
+		combined := strings.Join(contents, "\n---\n")
+		if len(combined) > 4000 {
+			combined = combined[:4000]
+		}
+		summaryText = a.llmSummarize(combined, len(oldIDs))
+	}
+	if summaryText == "" {
+		// Fallback: simple concatenation
+		summaryText = "Summary of " + fmt.Sprintf("%d", len(oldIDs)) + " older memories: " + strings.Join(contents, " | ")
+		if len(summaryText) > 2000 {
+			summaryText = summaryText[:2000]
+		}
 	}
 
 	summaryID := generateMemoryID()
@@ -269,6 +285,51 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 }
 
 // --- Trigram similarity (lightweight, no external embeddings) ---
+
+// llmSummarize calls the proxy to generate a real summary of conversation memories.
+func (a *App) llmSummarize(content string, entryCount int) string {
+	prompt := fmt.Sprintf("Summarize these %d conversation memory entries into a concise paragraph. "+
+		"Preserve key facts, names, decisions, and action items. Be specific, not generic.\n\n%s", entryCount, content)
+
+	body, _ := json.Marshal(map[string]any{
+		"model":      "gpt-4o-mini",
+		"messages":   []map[string]string{{"role": "user", "content": prompt}},
+		"max_tokens": 300,
+	})
+
+	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", a.proxyPort)
+	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
+	if err != nil {
+		return ""
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Stockyard-Source", "memory-summarizer")
+
+	resp, err := (&http.Client{Timeout: 30 * time.Second}).Do(req)
+	if err != nil {
+		log.Printf("[memory] summarize LLM call failed: %v", err)
+		return ""
+	}
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode >= 400 {
+		log.Printf("[memory] summarize LLM returned %d", resp.StatusCode)
+		return ""
+	}
+
+	var result struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+	if json.Unmarshal(respBody, &result) != nil || len(result.Choices) == 0 {
+		return ""
+	}
+	return result.Choices[0].Message.Content
+}
 
 func trigramVec(text string) map[string]float64 {
 	text = strings.ToLower(strings.TrimSpace(text))
