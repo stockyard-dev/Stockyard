@@ -312,7 +312,7 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if plan.PriceCents == 0 && !plan.Custom {
-			writeErr(w, http.StatusBadRequest, "community plan is free — no checkout needed. Download at github.com/stockyard-dev/stockyard")
+			writeErr(w, http.StatusBadRequest, "free plan requires no checkout — download at github.com/stockyard-dev/stockyard")
 			return
 		}
 		product = plan.Slug
@@ -965,7 +965,9 @@ func (s *Server) seedExchange() {
 
 func getPriceID(product, tier, interval string) string {
 	// Convention: STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}
-	// e.g., STRIPE_PRICE_STOCKYARD_INDIVIDUAL_MONTHLY, STRIPE_PRICE_STOCKYARD_PRO_ANNUAL
+	// e.g., STRIPE_PRICE_STOCKYARD_PRO_MONTHLY, STRIPE_PRICE_STOCKYARD_TEAM_ANNUAL
+	//
+	// Tiers: free, pro, team, enterprise
 	//
 	// Fallback chain:
 	//   1. STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}
