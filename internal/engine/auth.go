@@ -154,8 +154,6 @@ func isPublicRoute(method, path string) bool {
 		switch {
 		case path == "/api/apps":
 			return true
-		case path == "/api/proxy/modules":
-			return true // Playground needs module list
 		case path == "/api/exchange/packs":
 			return true
 		case strings.HasPrefix(path, "/api/exchange/packs/") && !strings.Contains(path, "/install"):
@@ -186,10 +184,6 @@ func isPublicRoute(method, path string) bool {
 	}
 	// Stripe webhooks
 	if method == "POST" && path == "/webhooks/stripe" {
-		return true
-	}
-	// Module toggles (playground)
-	if method == "PUT" && strings.HasPrefix(path, "/api/proxy/modules/") {
 		return true
 	}
 	return false
