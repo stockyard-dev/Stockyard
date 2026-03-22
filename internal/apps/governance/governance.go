@@ -367,8 +367,46 @@ func (a *App) handleVote(w http.ResponseWriter, r *http.Request) {
 		a.conn.Exec("UPDATE governance_proposals SET votes_against = votes_against + 1 WHERE id = ?", proposalID)
 	}
 
+	// Check if proposal should be auto-resolved
+	var votesFor, votesAgainst int
+	var votingEnds, status string
+	a.conn.QueryRow("SELECT votes_for, votes_against, COALESCE(voting_ends,''), status FROM governance_proposals WHERE id = ?",
+		proposalID).Scan(&votesFor, &votesAgainst, &votingEnds, &status)
+
+	autoResolved := ""
+	if status == "discussion" || status == "voting" {
+		// Move to voting if still in discussion
+		if status == "discussion" {
+			a.conn.Exec("UPDATE governance_proposals SET status = 'voting' WHERE id = ?", proposalID)
+		}
+
+		// Auto-pass: 3+ votes for with majority, or voting deadline passed with majority
+		totalVotes := votesFor + votesAgainst
+		passed := votesFor > votesAgainst && totalVotes >= 3
+		if !passed && votingEnds != "" {
+			deadline, err := time.Parse(time.RFC3339, votingEnds)
+			if err == nil && time.Now().After(deadline) && votesFor > votesAgainst {
+				passed = true
+			}
+		}
+
+		if passed {
+			a.conn.Exec("UPDATE governance_proposals SET status = 'passed' WHERE id = ?", proposalID)
+			autoResolved = "passed"
+			log.Printf("[governance] proposal %s passed (%d for, %d against)", proposalID, votesFor, votesAgainst)
+		} else if totalVotes >= 3 && votesAgainst > votesFor {
+			a.conn.Exec("UPDATE governance_proposals SET status = 'rejected' WHERE id = ?", proposalID)
+			autoResolved = "rejected"
+		}
+	}
+
 	a.auditEvent("vote_cast", proposalID, map[string]any{"voter_id": req.VoterID, "vote": req.Vote})
-	writeJSON(w, map[string]any{"status": "voted", "proposal_id": proposalID, "vote": req.Vote})
+	resp := map[string]any{"status": "voted", "proposal_id": proposalID, "vote": req.Vote,
+		"votes_for": votesFor, "votes_against": votesAgainst}
+	if autoResolved != "" {
+		resp["resolution"] = autoResolved
+	}
+	writeJSON(w, resp)
 }
 
 // --- Disputes ---
