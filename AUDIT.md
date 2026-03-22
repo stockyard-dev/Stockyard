@@ -11,8 +11,8 @@
 Stockyard is a well-structured LLM proxy/gateway platform with a large feature surface (~130+ middleware modules). The codebase demonstrates solid foundations — parameterized SQL queries, AES-256-GCM encryption at rest, HMAC webhook signatures, constant-time admin key comparison, and SSRF protection. However, several areas need attention across security, testing, and architecture.
 
 **Critical Issues:** 2
-**High Severity:** 8
-**Medium Severity:** 12
+**High Severity:** 9
+**Medium Severity:** 17
 **Low Severity:** 10
 
 ---
@@ -275,7 +275,42 @@ These are things done well that should be maintained:
 
 ---
 
-## 7. Recommended Priority Actions
+## 7. Additional Code Quality Findings (from deep analysis)
+
+### Unchecked `rand.Read` in ID/Key Generation
+**Files:** `internal/apiserver/types.go:63,73`, `internal/mcp/server.go:67`, `internal/apps/studio/testing.go:54`
+**Issue:** `rand.Read(b)` return errors are ignored across multiple ID generation functions, including `generateAPIKey()`. If the entropy source fails, generated IDs/keys become predictable.
+**Severity:** High (security-sensitive for API key generation)
+
+### Widespread Missing `rows.Err()` Checks
+**Files:** `internal/apps/studio/studio.go`, `internal/apps/observe/observe.go`, `internal/connect/connect.go`, and others
+**Issue:** After `for rows.Next()` loops, `rows.Err()` is rarely checked. This can silently mask I/O errors during database iteration.
+**Severity:** Medium
+
+### Silent Database Exec/Scan Failures
+**Files:** `internal/apps/forge/executor.go` (6 locations), `internal/connect/connect.go` (5 locations), `internal/apps/studio/testing.go` (3 locations)
+**Issue:** Many `db.Exec()` and `QueryRow().Scan()` calls ignore returned errors. On failure, code continues with zero values, leading to data inconsistencies.
+**Severity:** Medium
+
+### Goroutine Leaks
+- `internal/apiserver/nurture.go:257-266` — Ticker goroutine runs forever with no stop mechanism
+- `internal/dashboard/events.go:60-64` — SSE subscriber goroutines leak if channels aren't closed
+- `internal/apps/studio/testing.go:198-216` — Background test runner with no error observation
+**Severity:** Medium
+
+### HTTP Response Body Leaks
+- `internal/provider/openai.go:61` — Body not closed on error path before return
+- `internal/apps/studio/optimize.go:204` — `resp.Body.Close()` without defer; leaks on panic
+**Severity:** Medium
+
+### No Timeout on Streaming HTTP Client
+**File:** `internal/provider/openai.go:113`
+**Issue:** `streamClient := &http.Client{}` — streaming client has no timeout, could hang indefinitely.
+**Severity:** Medium
+
+---
+
+## 8. Recommended Priority Actions
 
 ### Immediate (before next release)
 1. **Fix Stripe webhook bypass** (S2) — reject events when secret not configured
