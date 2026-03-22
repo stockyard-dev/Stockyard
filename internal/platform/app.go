@@ -64,10 +64,15 @@ func (r *Registry) Apps() []App {
 func (r *Registry) AppList() []map[string]string {
 	var list []map[string]string
 	for _, app := range r.apps {
+		apiPath := "/api/" + app.Name()
+		// Allow apps to override their listed API base path
+		if ab, ok := app.(interface{ APIBase() string }); ok {
+			apiPath = ab.APIBase()
+		}
 		list = append(list, map[string]string{
 			"name":        app.Name(),
 			"description": app.Description(),
-			"api":         "/api/" + app.Name(),
+			"api":         apiPath,
 		})
 	}
 	return list
