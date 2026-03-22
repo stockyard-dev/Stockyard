@@ -24,6 +24,7 @@ func New(conn *sql.DB) *App { return &App{conn: conn} }
 
 func (a *App) Name() string        { return "appbuilder" }
 func (a *App) Description() string { return "No-code AI app builder and marketplace" }
+func (a *App) APIBase() string     { return "/api/apps/builder" }
 
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) { a.audit = fn }
 
