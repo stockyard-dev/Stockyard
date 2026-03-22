@@ -29,6 +29,7 @@ func (a *App) Migrate(conn *sql.DB) error {
 	}
 	a.migrateCredits()
 	a.migrateMarketplace()
+	a.migratePayouts()
 	log.Printf("[billing] migrations applied")
 	return nil
 }
@@ -178,6 +179,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Stripe integration
 	a.registerStripeRoutes(mux)
+
+	// Payouts, revenue dashboard, seat billing
+	a.registerPayoutRoutes(mux)
 
 	// Waitlist
 	mux.HandleFunc("POST /api/billing/waitlist", a.handleWaitlist)
