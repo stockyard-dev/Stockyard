@@ -11,8 +11,8 @@
 Stockyard is a well-structured LLM proxy/gateway platform with a large feature surface (~130+ middleware modules). The codebase demonstrates solid foundations — parameterized SQL queries, AES-256-GCM encryption at rest, HMAC webhook signatures, constant-time admin key comparison, and SSRF protection. However, several areas need attention across security, testing, and architecture.
 
 **Critical Issues:** 2
-**High Severity:** 9
-**Medium Severity:** 17
+**High Severity:** 12
+**Medium Severity:** 19
 **Low Severity:** 10
 
 ---
@@ -193,11 +193,31 @@ WAL mode and busy timeout are correctly configured (`internal/storage/db.go:31-3
 
 The toggle system (`internal/toggle/`) mitigates runtime impact, but the binary still carries all code.
 
+#### A4b. Single DB Connection Pool in API Server
+**File:** `internal/apiserver/sqlitedb.go:41`
+**Issue:** `SetMaxOpenConns(1)` limits read concurrency. SQLite WAL mode supports concurrent readers, so this should be at least 5 for read-heavy workloads.
+
+#### A4c. 158 Feature Flags Hardcoded to `true`
+**File:** `cmd/stockyard/main.go:46-198`
+**Issue:** All 158 feature flags are hardcoded as `true` in the main binary. This defeats the purpose of feature flags — they should be read from config.yaml or environment variables so features can be disabled without recompilation.
+
+#### A4d. String-Based Error Classification (Fragile)
+**File:** `internal/proxy/handler.go:424-461`
+**Issue:** Error classification uses substring matching (`contains(err.Error(), "cap exceeded")`) instead of typed errors. If error messages change, classification silently breaks. Should use custom error types with `errors.Is/As`.
+
 ### MEDIUM
 
 #### A5. No Database Migration Versioning Beyond Sequential
 **File:** `internal/storage/migrations.go`
 **Issue:** Migrations are a simple sequential list (`migrationV1` through `migrationV5`). There's no down-migration support, no migration checksums, and no way to verify migration integrity. For a platform handling billing and financial data, this is risky.
+
+#### A5b. Missing Database Indexes
+**File:** `internal/apiserver/sqlitedb.go:88-183`
+**Issue:** Missing indexes on frequently-queried columns: `licenses.status`, `cloud_usage.date`, `exchange_items.status`. These will cause full table scans on status/date filter queries.
+
+#### A5c. No Security Scanning in CI
+**File:** `.github/workflows/ci.yml`
+**Issue:** No `gosec`, `trivy`, or SARIF security scanning. No dependency vulnerability scanning (`go mod audit`). No code coverage reporting.
 
 #### A6. No Request Tracing/Correlation Across Services
 **Issue:** While individual request tracing exists within the proxy, there's no distributed tracing correlation (W3C Trace Context / B3) between mesh nodes. The `internal/engine/otel.go` file suggests OTEL support, but mesh-to-mesh requests may not propagate trace context.
