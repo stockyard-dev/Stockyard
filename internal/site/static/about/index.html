@@ -63,19 +63,13 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </nav>
 
 <div class="content">
-  <h1>One developer. One binary. <span class="accent">One vision.</span></h1>
+  <h1>67,000 lines of Go. <span class="accent">One developer.</span></h1>
 
-  <p>Stockyard started with a simple frustration: every AI project needed the same infrastructure &mdash; a proxy, a logger, a cost tracker, safety filters, an audit trail &mdash; and every team built it from scratch. Six tools, six bills, six points of failure.</p>
+  <p>My name is Michael. I built Stockyard alone.</p>
 
-  <p>So I put all of it in one Go binary. No Redis. No Postgres. No Docker compose. Just <strong>curl | sh</strong> and you're running.</p>
+  <p>In early 2026, I was building an app with the OpenAI API. Within the first week, three things went wrong: an uncapped test run cost me $47, a provider outage took down my demo, and I had no way to prove to a client that their data hadn&rsquo;t been logged. I needed a proxy, a cost tracker, an audit trail, and a cache. Four tools, four configs, four points of failure.</p>
 
-  <p>That was the LLM proxy. But the proxy was just the door.</p>
-
-  <p>Behind it, I saw something bigger: an economy. A platform where <strong>anyone can build AI apps without code</strong> and publish them to a marketplace. Where <strong>GPU owners earn money from idle hardware</strong> by contributing compute to a distributed mesh. Where <strong>domain experts monetize their knowledge</strong> through a knowledge base marketplace with automatic royalties.</p>
-
-  <p>Today Stockyard is 16 integrated apps, 58 middleware modules, 350+ API endpoints, a declarative deployment engine, a natural language control interface, an AI incident response system, a distributed compute network, a knowledge marketplace, a financial layer, a governance framework, and an open protocol specification.</p>
-
-  <p>All in a single binary. All with zero external dependencies. All open source.</p>
+  <p>So I wrote a Go binary that did all four. Then I kept going.</p>
 
   <div class="section-label">By the numbers</div>
   <div class="stats">
@@ -85,22 +79,39 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
     <div class="stat"><span class="stat-num">350+</span><span class="stat-label">API Endpoints</span></div>
     <div class="stat"><span class="stat-num">58</span><span class="stat-label">Middleware Modules</span></div>
     <div class="stat"><span class="stat-num">16</span><span class="stat-label">Integrated Apps</span></div>
-    <div class="stat"><span class="stat-num">25MB</span><span class="stat-label">Binary Size</span></div>
-    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
+    <div class="stat"><span class="stat-num">~25MB</span><span class="stat-label">Binary Size</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">External Dependencies</span></div>
   </div>
 
-  <div class="section-label">The mission</div>
-  <p>Make AI infrastructure accessible to everyone. Not just developers at well-funded companies. Everyone. The startup founder who needs to ship an AI feature today. The GPU owner who wants to earn from idle hardware. The retired doctor whose medical expertise could save lives if it were accessible to AI systems. The non-technical entrepreneur who has a great idea for an AI application but can't code.</p>
+  <p>Every line is Go. The database is embedded SQLite in WAL mode. The dashboard is a Preact SPA served from the same binary. Provider keys are encrypted at rest with AES-256-GCM. The middleware chain processes 58 modules in 400 nanoseconds. There are no external dependencies &mdash; no Redis, no Postgres, no Docker, no Node.js runtime.</p>
 
-  <p>The AI economy shouldn't require a DevOps team, a cloud budget, and six months of infrastructure work. It should require one binary and 30 seconds.</p>
+  <p>You install it with one curl, run it with one command, and point your app at it. That&rsquo;s the entire deployment.</p>
+
+  <div class="section-label">Why one binary</div>
+
+  <p>I chose Go because it compiles to a static binary. I chose SQLite because it embeds. I chose to put everything in one process because <strong>the alternative is worse</strong>.</p>
+
+  <p>The LLM middleware ecosystem has dozens of standalone tools. A proxy here, an observability layer there, a cost tracker somewhere else, a safety filter from another vendor. Each one needs its own deployment, its own database, its own monitoring. The complexity compounds faster than the value.</p>
+
+  <p>Stockyard&rsquo;s bet is that a single, well-integrated binary beats a constellation of microservices. The proxy, the tracer, the cost tracker, the audit ledger, the cache, the workflow engine, the prompt manager &mdash; they all share one database, one process, one config. When the rate limiter blocks a request, the tracer records it, the cost tracker skips it, and the audit ledger hashes it. In one function call chain, not across three network hops.</p>
+
+  <div class="section-label">What&rsquo;s here today</div>
+
+  <p>The core is real and works: <strong>Proxy</strong> with 58 middleware modules and 16 provider integrations. <strong>Observe</strong> for tracing, cost tracking, and anomaly detection. <strong>Trust</strong> for a hash-chained, tamper-evident audit ledger. <strong>Studio</strong> for prompt versioning and A/B testing. <strong>Forge</strong> for DAG workflows. <strong>Exchange</strong> for config pack sharing.</p>
+
+  <p>Beyond the core, the platform includes billing with Stripe integration, team management with RBAC, conversational memory, an AI incident response system, a natural language control interface, a no-code app builder, a knowledge marketplace, a reputation system, and a governance framework. All built, all deployed, all accessible via API.</p>
+
+  <p>I won&rsquo;t pretend every one of these 16 apps is battle-tested at scale. The proxy is. The observer is. The trust ledger is. The rest are functional and complete but new. This is an honest assessment. You can read the code and judge for yourself.</p>
 
   <div class="section-label">Open source</div>
-  <p>Stockyard is MIT licensed and fully open source. The entire codebase is at <a href="https://github.com/stockyard-dev/Stockyard">github.com/stockyard-dev/Stockyard</a>. Read every line. Audit every decision. Fork it, extend it, contribute to it. The platform belongs to the community that uses it.</p>
+
+  <p>Stockyard is MIT licensed. The entire codebase is at <a href="https://github.com/stockyard-dev/Stockyard">github.com/stockyard-dev/Stockyard</a>. Read every line. Audit every decision. Fork it. The self-hosted version is free with no limits &mdash; all 16 apps, all 58 modules, unlimited requests, forever. Cloud hosting starts at $29/month if you don&rsquo;t want to manage infrastructure.</p>
 
   <div class="section-label">Built in the open</div>
-  <p>Every commit is public. Every decision is documented. The <a href="/blog/">blog</a> explains the engineering tradeoffs. The <a href="/changelog/">changelog</a> tracks every ship. The <a href="/protocol/">protocol specification</a> is published for anyone to adopt. Transparency isn't a marketing strategy. It's how trust is built.</p>
 
-  <p style="margin-top:3rem;font-family:var(--font-mono);font-size:0.85rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a> &middot; <a href="/protocol/">Protocol</a></p>
+  <p>Every commit is public. The <a href="/blog/">blog</a> explains the engineering tradeoffs. The <a href="/changelog/">changelog</a> tracks every ship. The <a href="/benchmarks/">benchmarks</a> are reproducible with a single <code>go test</code> command. Transparency isn&rsquo;t a marketing strategy. It&rsquo;s how trust is built.</p>
+
+  <p style="margin-top:3rem;font-family:var(--font-mono);font-size:0.85rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a> &middot; <a href="/benchmarks/">Benchmarks</a></p>
 </div>
 
 <footer>
