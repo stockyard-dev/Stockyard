@@ -1,8 +1,10 @@
 package billing
 
 import (
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -59,7 +61,7 @@ func (a *App) handleMarketplaceSignup(w http.ResponseWriter, r *http.Request) {
 
 	// Create account.
 	accountID := genID("mp_")
-	passwordHash := hashString(req.Password)
+	passwordHash := hashPassword(req.Password)
 
 	// Generate API key.
 	keyBytes := make([]byte, 24)
@@ -169,6 +171,54 @@ func (a *App) handleMarketplaceBalance(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// hashPassword creates a salted, iterated HMAC-SHA256 hash (100k iterations).
+// Format: "pbkdf2:100000:salt_hex:hash_hex"
+// This is resistant to GPU brute-force attacks unlike plain SHA-256.
+func hashPassword(password string) string {
+	salt := make([]byte, 16)
+	rand.Read(salt)
+	iterations := 100000
+	hash := pbkdf2Hash([]byte(password), salt, iterations)
+	return fmt.Sprintf("pbkdf2:%d:%s:%s", iterations, hex.EncodeToString(salt), hex.EncodeToString(hash))
+}
+
+// verifyPassword checks a password against a stored hash.
+func verifyPassword(password, stored string) bool {
+	parts := strings.SplitN(stored, ":", 4)
+	if len(parts) == 4 && parts[0] == "pbkdf2" {
+		var iterations int
+		fmt.Sscanf(parts[1], "%d", &iterations)
+		salt, _ := hex.DecodeString(parts[2])
+		expected, _ := hex.DecodeString(parts[3])
+		actual := pbkdf2Hash([]byte(password), salt, iterations)
+		return subtle.ConstantTimeCompare(expected, actual) == 1
+	}
+	// Legacy: plain SHA-256 (migrate on next login)
+	h := sha256.Sum256([]byte(password))
+	legacy := hex.EncodeToString(h[:])
+	return subtle.ConstantTimeCompare([]byte(legacy), []byte(stored)) == 1
+}
+
+// pbkdf2Hash implements PBKDF2-HMAC-SHA256 using only stdlib.
+func pbkdf2Hash(password, salt []byte, iterations int) []byte {
+	mac := hmac.New(sha256.New, password)
+	mac.Write(salt)
+	mac.Write([]byte{0, 0, 0, 1}) // block index
+	u := mac.Sum(nil)
+	result := make([]byte, len(u))
+	copy(result, u)
+	for i := 1; i < iterations; i++ {
+		mac.Reset()
+		mac.Write(u)
+		u = mac.Sum(nil)[:sha256.Size]
+		for j := range result {
+			result[j] ^= u[j]
+		}
+	}
+	return result
+}
+
+// hashString is used for API key hashing (high-entropy input, SHA-256 is fine).
 func hashString(s string) string {
 	h := sha256.Sum256([]byte(s))
 	return hex.EncodeToString(h[:])
