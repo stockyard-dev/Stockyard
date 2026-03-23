@@ -3,13 +3,19 @@
 package connect
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -102,6 +108,7 @@ CREATE TABLE IF NOT EXISTS user_preferences (
 // ConnectService is a standalone service for OAuth, vault, security, and labs.
 type ConnectService struct {
 	conn *sql.DB
+	gcm  cipher.AEAD // AES-256-GCM for vault secret encryption
 }
 
 // NewConnectService creates a ConnectService, runs schema migrations, and seeds data.
@@ -118,8 +125,24 @@ func NewConnectService(conn *sql.DB) *ConnectService {
 	conn.Exec(`INSERT OR IGNORE INTO labs_features (id, name, description, status, created_at) VALUES (?, ?, ?, ?, ?)`,
 		"lab_fabric_canary", "fabric_canary", "Canary deployments for fabric configurations", "alpha", now)
 
+	// Initialize AES-256-GCM for vault secrets.
+	// Derive key from STOCKYARD_ADMIN_KEY via SHA-256. If not set, vault stores base64 only.
+	var gcm cipher.AEAD
+	if adminKey := os.Getenv("STOCKYARD_ADMIN_KEY"); adminKey != "" {
+		hash := sha256.Sum256([]byte("stockyard-vault:" + adminKey))
+		block, err := aes.NewCipher(hash[:])
+		if err == nil {
+			gcm, _ = cipher.NewGCM(block)
+		}
+	}
+	if gcm != nil {
+		log.Printf("[connect] vault encryption: AES-256-GCM active")
+	} else {
+		log.Printf("[connect] ⚠️  vault encryption: disabled (set STOCKYARD_ADMIN_KEY to enable)")
+	}
+
 	log.Printf("[connect] schema applied and labs features seeded")
-	return &ConnectService{conn: conn}
+	return &ConnectService{conn: conn, gcm: gcm}
 }
 
 func connectGenID(prefix string) string {
@@ -299,18 +322,69 @@ func (c *ConnectService) handleStoreSecret(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	encoded := base64.StdEncoding.EncodeToString([]byte(req.Value))
+	encrypted, err := c.encryptVaultSecret(req.Value)
+	if err != nil {
+		log.Printf("[connect] vault encrypt error: %v", err)
+		w.WriteHeader(500)
+		writeConnectJSON(w, map[string]string{"error": "encryption failed"})
+		return
+	}
 	now := connectNow()
 
 	c.conn.Exec(`INSERT OR REPLACE INTO vault_secrets (name, encrypted_value, created_at, updated_at) VALUES (?, ?, COALESCE((SELECT created_at FROM vault_secrets WHERE name = ?), ?), ?)`,
-		req.Name, encoded, req.Name, now, now)
+		req.Name, encrypted, req.Name, now, now)
 
 	w.WriteHeader(201)
 	writeConnectJSON(w, map[string]any{
 		"name":       req.Name,
 		"stored":     true,
+		"encrypted":  c.gcm != nil,
 		"updated_at": now,
 	})
+}
+
+// encryptVaultSecret encrypts a secret value with AES-256-GCM.
+// Falls back to base64 encoding if encryption key is not configured.
+func (c *ConnectService) encryptVaultSecret(plaintext string) (string, error) {
+	if c.gcm == nil {
+		// No encryption key — base64 encode with warning prefix
+		return "b64:" + base64.StdEncoding.EncodeToString([]byte(plaintext)), nil
+	}
+	nonce := make([]byte, c.gcm.NonceSize())
+	if _, err := rand.Read(nonce); err != nil {
+		return "", err
+	}
+	sealed := c.gcm.Seal(nonce, nonce, []byte(plaintext), nil)
+	return "enc:" + base64.StdEncoding.EncodeToString(sealed), nil
+}
+
+// decryptVaultSecret decrypts an encrypted vault secret.
+func (c *ConnectService) decryptVaultSecret(stored string) (string, error) {
+	if strings.HasPrefix(stored, "enc:") {
+		if c.gcm == nil {
+			return "", fmt.Errorf("encryption key not available")
+		}
+		data, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(stored, "enc:"))
+		if err != nil {
+			return "", err
+		}
+		nonceSize := c.gcm.NonceSize()
+		if len(data) < nonceSize {
+			return "", fmt.Errorf("ciphertext too short")
+		}
+		plaintext, err := c.gcm.Open(nil, data[:nonceSize], data[nonceSize:], nil)
+		if err != nil {
+			return "", err
+		}
+		return string(plaintext), nil
+	}
+	if strings.HasPrefix(stored, "b64:") {
+		decoded, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(stored, "b64:"))
+		return string(decoded), err
+	}
+	// Legacy plain base64
+	decoded, err := base64.StdEncoding.DecodeString(stored)
+	return string(decoded), err
 }
 
 func (c *ConnectService) handleListSecrets(w http.ResponseWriter, r *http.Request) {
