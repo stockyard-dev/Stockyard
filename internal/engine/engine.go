@@ -1270,10 +1270,19 @@ func Boot(pc ProductConfig) {
 		}
 	}()
 
-	log.Printf("══════════════════════════════════════")
-	log.Printf("  %s is running", pc.Name)
-	log.Printf("  Proxy:     http://localhost:%d/v1", cfg.Port)
-	log.Printf("  Dashboard: http://localhost:%d/ui", cfg.Port)
+	log.Printf("")
+	log.Printf("  ╔══════════════════════════════════════════════╗")
+	log.Printf("  ║  %s %s                          ║", pc.Name, pc.Version)
+	log.Printf("  ╠══════════════════════════════════════════════╣")
+	log.Printf("  ║  Proxy:     http://localhost:%d/v1           ║", cfg.Port)
+	log.Printf("  ║  Console:   http://localhost:%d/ui           ║", cfg.Port)
+	log.Printf("  ║  Playground: http://localhost:%d/playground  ║", cfg.Port)
+	log.Printf("  ╚══════════════════════════════════════════════╝")
+	log.Printf("")
+	log.Printf("  Quick start:")
+	log.Printf("    export OPENAI_BASE_URL=http://localhost:%d/v1", cfg.Port)
+	log.Printf("    # Then use your app normally — all requests route through Stockyard")
+	log.Printf("")
 	log.Printf("  API:       http://localhost:%d/api", cfg.Port)
 	log.Printf("  Auth:      http://localhost:%d/api/auth (signup: POST /api/auth/signup)", cfg.Port)
 	if proxyAuthMode == auth.ProxyAuthRequired {
@@ -1283,10 +1292,9 @@ func Boot(pc ProductConfig) {
 	}
 	if pc.EnableAPIServer {
 		log.Printf("  Billing:   http://localhost:%d/api/checkout", cfg.Port)
-		log.Printf("  Cloud:     http://localhost:%d/api/cloud/signup", cfg.Port)
 		log.Printf("  Exchange:  http://localhost:%d/api/exchange", cfg.Port)
 	}
-	log.Printf("══════════════════════════════════════")
+	log.Printf("")
 
 	<-ctx.Done()
 	log.Println("shutting down...")
