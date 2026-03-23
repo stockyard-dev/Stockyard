@@ -137,7 +137,7 @@ func RunDoctor(pc ProductConfig) {
 	if key := os.Getenv("STOCKYARD_LICENSE_KEY"); key != "" {
 		checks = append(checks, checkResult{"License", "pass", "Key set (SY-...)"})
 	} else {
-		checks = append(checks, checkResult{"License", "warn", "No license key (Community tier — 10k reqs/mo)"})
+		checks = append(checks, checkResult{"License", "warn", "No license key (Community tier — unlimited, self-hosted)"})
 	}
 
 	// 9. Git (for version tracking)

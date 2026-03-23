@@ -113,7 +113,7 @@ func (m *SMTPMailer) SendCancellation(to, productName string) error {
 
 Your %s subscription has been canceled. Your license key will continue
 working until the end of your current billing period, then revert to
-the free tier (1,000 requests/day).
+the free tier (unlimited requests).
 
 Your data and configuration are preserved — just re-subscribe at
 stockyard.dev/pricing to pick up where you left off.
