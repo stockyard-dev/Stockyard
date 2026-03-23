@@ -213,12 +213,29 @@ footer a:hover{color:var(--rust-light)}
       </div>
       <div class="outcome">
         <strong>What just happened:</strong> A ~25MB Go binary is now on your PATH. It contains all 16 apps, 66 middleware modules, an embedded SQLite database, and a full web console. Nothing else was installed.
+      </p>
+      <p style="font-size:0.85rem;color:var(--cream-dim);margin-top:0.8rem"><strong>Tip:</strong> Run <code>stockyard doctor</code> to verify your environment before starting. It checks your config, port availability, provider API keys, and disk access.</p>
       </div>
     </div>
   </div>
 
   <div class="step">
     <div class="step-num">2</div>
+    <h3>Set a provider key</h3>
+    <p class="step-sub">Stockyard needs at least one LLM provider key to proxy requests. Set it as an environment variable — Stockyard auto-detects the provider from the key prefix.</p>
+    <div class="step-body">
+      <div class="code-block">
+<span class="comment"># Set at least one (Stockyard auto-detects the provider)</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="comment"># Or: export ANTHROPIC_API_KEY=sk-ant-...</span>
+<span class="comment"># Or: export GROQ_API_KEY=gsk_...</span>
+<span class="comment"># Or: export GEMINI_API_KEY=...</span>
+      </div>
+      <div class="outcome">
+        <strong>No key yet?</strong> Use the <a href="/playground/" style="color:var(--rust-light)">Playground</a> to try Stockyard with your key in the browser — nothing gets stored.
+      </div>
+    </div>
+
     <h3>Start the platform</h3>
     <p class="step-sub">One command. All 16 apps boot on a single port.</p>
     <div class="step-body">
