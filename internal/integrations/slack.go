@@ -121,6 +121,7 @@ func (s *SlackIntegration) getWebhookURL() string {
 }
 
 func (s *SlackIntegration) costsSummary(period string) map[string]any {
+	// Whitelist valid periods — filter values feed into fmt.Sprintf SQL
 	var filter string
 	switch period {
 	case "week":
