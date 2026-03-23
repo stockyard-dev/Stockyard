@@ -213,7 +213,8 @@ func (a *App) handleCreateBase(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[knowledge] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 	a.auditEvent("base_created", id, map[string]any{"title": req.Title})
@@ -348,7 +349,8 @@ func (a *App) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[knowledge] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 	// Populate FTS5 index
@@ -447,7 +449,8 @@ func (a *App) handleSubscribe(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[knowledge] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 	a.conn.Exec("UPDATE knowledge_bases SET installs = installs + 1, updated_at = ? WHERE id = ?", ts, kbID)
@@ -632,7 +635,8 @@ func (a *App) handleAddWatch(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[knowledge] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 	writeJSON(w, map[string]any{"status": "created", "id": id, "kb_id": kbID})

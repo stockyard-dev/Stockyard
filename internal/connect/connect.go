@@ -7,6 +7,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"database/sql"
 	"encoding/base64"
 	"encoding/hex"
@@ -283,7 +284,15 @@ func (c *ConnectService) handleToken(w http.ResponseWriter, r *http.Request) {
 		req.Scopes = "read"
 	}
 
-	// Stub: generate token without full OAuth flow.
+	// Verify app_id and secret against the database
+	var storedSecret string
+	err := c.conn.QueryRow("SELECT secret FROM connect_apps WHERE id = ?", req.AppID).Scan(&storedSecret)
+	if err != nil || subtle.ConstantTimeCompare([]byte(req.Secret), []byte(storedSecret)) != 1 {
+		w.WriteHeader(401)
+		writeConnectJSON(w, map[string]string{"error": "invalid app credentials"})
+		return
+	}
+
 	token := connectGenID("tok_")
 	sessionID := connectGenID("cs_")
 	now := connectNow()

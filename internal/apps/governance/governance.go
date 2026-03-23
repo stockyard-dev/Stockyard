@@ -223,7 +223,8 @@ func (a *App) handleCreateProposal(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[governance] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 	a.auditEvent("proposal_created", id, map[string]any{"author_id": req.AuthorID, "title": req.Title})
@@ -434,7 +435,8 @@ func (a *App) handleFileDispute(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[governance] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 	a.auditEvent("dispute_filed", id, map[string]any{"type": req.Type, "reporter_id": req.ReporterID})

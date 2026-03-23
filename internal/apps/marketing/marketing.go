@@ -150,7 +150,8 @@ func (a *App) listTasks(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.conn.Query(q, args...)
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	defer rows.Close()
@@ -185,7 +186,8 @@ func (a *App) getTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	jsonOK(w, t)
@@ -194,7 +196,7 @@ func (a *App) getTask(w http.ResponseWriter, r *http.Request) {
 func (a *App) createTask(w http.ResponseWriter, r *http.Request) {
 	var t Task
 	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-		jsonErr(w, "invalid JSON: "+err.Error(), 400)
+		jsonErr(w, "invalid JSON", 400)
 		return
 	}
 	if t.ID == "" {
@@ -216,7 +218,8 @@ func (a *App) createTask(w http.ResponseWriter, r *http.Request) {
 		t.ID, t.Channel, t.Status, t.Priority, t.Scheduled, t.Title, t.Content,
 		t.PlatformInstructions, t.SortOrder, now, now)
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	a.addLog(t.ID, "created", t.Title)
@@ -243,7 +246,7 @@ func (a *App) updateTask(w http.ResponseWriter, r *http.Request) {
 	// Merge updates
 	var update Task
 	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
-		jsonErr(w, "invalid JSON: "+err.Error(), 400)
+		jsonErr(w, "invalid JSON", 400)
 		return
 	}
 
@@ -283,7 +286,8 @@ func (a *App) updateTask(w http.ResponseWriter, r *http.Request) {
 		existing.Title, existing.Content, existing.PlatformInstructions,
 		existing.SortOrder, now, id)
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	existing.UpdatedAt = now
@@ -294,7 +298,8 @@ func (a *App) deleteTask(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	res, err := a.conn.Exec(`DELETE FROM marketing_tasks WHERE id = ?`, id)
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	n, _ := res.RowsAffected()
@@ -313,7 +318,7 @@ func (a *App) bulkStatus(w http.ResponseWriter, r *http.Request) {
 		IDs        []string `json:"ids"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonErr(w, "invalid JSON: "+err.Error(), 400)
+		jsonErr(w, "invalid JSON", 400)
 		return
 	}
 
@@ -335,7 +340,8 @@ func (a *App) bulkStatus(w http.ResponseWriter, r *http.Request) {
 		res, err := a.conn.Exec(`UPDATE marketing_tasks SET status=?, updated_at=? WHERE status=?`,
 			req.ToStatus, now, req.FromStatus)
 		if err != nil {
-			jsonErr(w, err.Error(), 500)
+			log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 			return
 		}
 		count, _ = res.RowsAffected()
@@ -369,7 +375,8 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) {
 	stats := make(map[string]int)
 	rows, err := a.conn.Query(`SELECT status, COUNT(*) FROM marketing_tasks GROUP BY status`)
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	defer rows.Close()
@@ -404,7 +411,8 @@ func (a *App) listLog(w http.ResponseWriter, r *http.Request) {
 	rows, err := a.conn.Query(`SELECT id, task_id, action, detail, created_at 
 		FROM marketing_log ORDER BY created_at DESC LIMIT ?`, limit)
 	if err != nil {
-		jsonErr(w, err.Error(), 500)
+		log.Printf("[marketing] error: %v", err)
+		jsonErr(w, "internal error", 500)
 		return
 	}
 	defer rows.Close()

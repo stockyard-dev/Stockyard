@@ -1,10 +1,12 @@
 package dashboard
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 )
 
@@ -77,6 +79,15 @@ func (b *Broadcaster) RegisterSSE(mux *http.ServeMux) {
 }
 
 func (b *Broadcaster) handleSSE(w http.ResponseWriter, r *http.Request) {
+	// Require same auth as /ui — check session cookie
+	if adminKey := os.Getenv("STOCKYARD_ADMIN_KEY"); adminKey != "" {
+		cookie, _ := r.Cookie("stockyard_session")
+		if cookie == nil || subtle.ConstantTimeCompare([]byte(cookie.Value), []byte(adminKey)) != 1 {
+			http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+			return
+		}
+	}
+
 	flusher, ok := w.(http.Flusher)
 	if !ok {
 		http.Error(w, "streaming not supported", http.StatusInternalServerError)

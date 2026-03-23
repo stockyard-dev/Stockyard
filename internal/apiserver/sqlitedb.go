@@ -691,6 +691,14 @@ func (db *SqliteDB) scanTenant(query string, args ...any) (*CloudTenant, error) 
 	if err := json.Unmarshal([]byte(providerJSON), &t.ProviderKeys); err != nil {
 		log.Printf("[cloud] warning: failed to parse provider_keys_json for tenant %s: %v", t.ID, err)
 	}
+	// Mask provider key values — never expose full keys via API
+	for provider, key := range t.ProviderKeys {
+		if len(key) > 8 {
+			t.ProviderKeys[provider] = key[:4] + "..." + key[len(key)-4:]
+		} else if key != "" {
+			t.ProviderKeys[provider] = "****"
+		}
+	}
 	if err := json.Unmarshal([]byte(configJSON), &t.ProxyConfig); err != nil {
 		log.Printf("[cloud] warning: failed to parse proxy_config_json for tenant %s: %v", t.ID, err)
 	}
@@ -815,6 +823,14 @@ func (db *SqliteDB) ListTenants() []*CloudTenant {
 		t.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 		if err := json.Unmarshal([]byte(providerJSON), &t.ProviderKeys); err != nil {
 			log.Printf("[cloud] warning: failed to parse provider_keys_json: %v", err)
+		}
+		// Mask provider key values — never expose full keys via API
+		for provider, key := range t.ProviderKeys {
+			if len(key) > 8 {
+				t.ProviderKeys[provider] = key[:4] + "..." + key[len(key)-4:]
+			} else if key != "" {
+				t.ProviderKeys[provider] = "****"
+			}
 		}
 		if err := json.Unmarshal([]byte(configJSON), &t.ProxyConfig); err != nil {
 			log.Printf("[cloud] warning: failed to parse proxy_config_json: %v", err)
