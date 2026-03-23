@@ -326,10 +326,11 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 	a.conn.Exec("INSERT INTO forge_runs (id, workflow_id, workflow_slug, status, input_json, steps_total) VALUES (?,?,?,?,?,?)",
 		runID, wfID, slug, "running", string(inputJSON), len(steps))
 
-	// Determine proxy port — default to 4200 (Stockyard default)
+	// Determine proxy port — must be explicitly set via SetProxyPort
 	port := a.proxyPort
-	if port == 0 {
-		port = 4200
+	if port <= 0 || port > 65535 {
+		writeJSON(w, map[string]string{"error": "forge proxy port not configured"})
+		return
 	}
 
 	// Launch the executor in a goroutine — non-blocking
