@@ -635,7 +635,7 @@ func (a *API) handleSignup(w http.ResponseWriter, r *http.Request) {
 	if a.licEnforcer != nil {
 		if err := a.licEnforcer.CheckUserLimit(a.store.CountUsers()); err != nil {
 			writeJSON(w, 402, map[string]string{
-				"error": err.Error(),
+				"error": "user limit reached for current license tier",
 				"type":  "license_limit",
 			})
 			return
@@ -644,18 +644,23 @@ func (a *API) handleSignup(w http.ResponseWriter, r *http.Request) {
 
 	user, err := a.store.CreateUser(body.Email, body.Name)
 	if err != nil {
-		status := 500
-		if strings.Contains(err.Error(), "already exists") || strings.Contains(err.Error(), "required") {
-			status = 409
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "already exists") {
+			writeJSON(w, 409, map[string]string{"error": "email already exists"})
+		} else if strings.Contains(errMsg, "required") {
+			writeJSON(w, 400, map[string]string{"error": "email is required"})
+		} else {
+			log.Printf("[auth] signup create user error: %v", err)
+			writeJSON(w, 500, map[string]string{"error": "failed to create user"})
 		}
-		writeJSON(w, status, map[string]string{"error": err.Error()})
 		return
 	}
 
 	// Auto-generate first API key
 	key, err := a.store.GenerateKey(user.ID, "default")
 	if err != nil {
-		writeJSON(w, 201, map[string]any{"user": user, "error": "user created but key generation failed: " + err.Error()})
+		log.Printf("[auth] signup key generation error for user %d: %v", user.ID, err)
+		writeJSON(w, 201, map[string]any{"user": user, "error": "user created but key generation failed"})
 		return
 	}
 
@@ -682,7 +687,7 @@ func (a *API) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	if a.licEnforcer != nil {
 		if err := a.licEnforcer.CheckUserLimit(a.store.CountUsers()); err != nil {
 			writeJSON(w, 402, map[string]string{
-				"error": err.Error(),
+				"error": "user limit reached for current license tier",
 				"type":  "license_limit",
 			})
 			return
@@ -691,11 +696,15 @@ func (a *API) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := a.store.CreateUser(body.Email, body.Name)
 	if err != nil {
-		status := 500
-		if strings.Contains(err.Error(), "already exists") || strings.Contains(err.Error(), "required") {
-			status = 409
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "already exists") {
+			writeJSON(w, 409, map[string]string{"error": "email already exists"})
+		} else if strings.Contains(errMsg, "required") {
+			writeJSON(w, 400, map[string]string{"error": "email is required"})
+		} else {
+			log.Printf("[auth] admin create user error: %v", err)
+			writeJSON(w, 500, map[string]string{"error": "failed to create user"})
 		}
-		writeJSON(w, status, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -703,7 +712,8 @@ func (a *API) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	key, err := a.store.GenerateKey(user.ID, "default")
 	if err != nil {
 		// User created but key failed — still return user
-		writeJSON(w, 201, map[string]any{"user": user, "error": "user created but key generation failed: " + err.Error()})
+		log.Printf("[auth] admin key generation error for user %d: %v", user.ID, err)
+		writeJSON(w, 201, map[string]any{"user": user, "error": "user created but key generation failed"})
 		return
 	}
 
