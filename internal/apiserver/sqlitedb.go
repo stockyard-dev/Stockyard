@@ -38,7 +38,8 @@ func OpenSqliteDB(path string) (*SqliteDB, error) {
 	}
 
 	// Single writer, multiple readers
-	conn.SetMaxOpenConns(1)
+	conn.SetMaxOpenConns(4)
+	conn.SetMaxIdleConns(2)
 
 	db := &SqliteDB{conn: conn, path: path}
 	if err := db.migrate(); err != nil {

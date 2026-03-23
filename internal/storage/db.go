@@ -41,6 +41,13 @@ func Open(dataDir string) (*DB, error) {
 	}
 
 	db := &DB{conn: conn, dataDir: dataDir}
+
+	// SQLite WAL mode: concurrent readers, serialized writers.
+	// More than 1 connection allows concurrent reads while writes wait.
+	// busy_timeout=5000 handles write contention gracefully.
+	conn.SetMaxOpenConns(4)
+	conn.SetMaxIdleConns(2)
+	conn.SetConnMaxLifetime(0) // Don't close idle connections
 	if err := db.migrate(); err != nil {
 		return nil, fmt.Errorf("run migrations: %w", err)
 	}

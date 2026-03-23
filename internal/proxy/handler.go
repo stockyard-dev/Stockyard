@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -340,9 +341,12 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 		req.CustomerID = r.Header.Get("X-Customer-ID")
 	}
 
-	// Store auth header for JWT claim extraction by billing meter
+	// Extract JWT claims for billing meter — store only the claim, NEVER the raw header.
+	// The raw Authorization header contains the provider API key.
 	if authHeader := r.Header.Get("Authorization"); authHeader != "" {
-		req.Extra["_auth_header"] = authHeader
+		if cid := extractBillingClaim(authHeader); cid != "" {
+			req.Extra["_billing_customer_id"] = cid
+		}
 	}
 
 	// Parse cost attribution tags from X-Stockyard-Tags header
@@ -540,4 +544,26 @@ func extractClientIP(r *http.Request) string {
 		return r.RemoteAddr
 	}
 	return host
+}
+
+// extractBillingClaim extracts customer_id from a JWT in the Authorization header.
+// Returns empty string if header isn't a JWT or doesn't contain the claim.
+func extractBillingClaim(authHeader string) string {
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	parts := strings.SplitN(strings.TrimSpace(token), ".", 3)
+	if len(parts) != 3 {
+		return ""
+	}
+	decoded, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return ""
+	}
+	var claims map[string]any
+	if json.Unmarshal(decoded, &claims) != nil {
+		return ""
+	}
+	if cid, ok := claims["customer_id"].(string); ok {
+		return cid
+	}
+	return ""
 }

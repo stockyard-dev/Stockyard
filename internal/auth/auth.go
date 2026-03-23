@@ -157,7 +157,7 @@ func (s *Store) CreateUser(email, name string) (*User, error) {
 	)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return nil, fmt.Errorf("user with email %s already exists", email)
+			return nil, fmt.Errorf("account already exists")
 		}
 		return nil, err
 	}

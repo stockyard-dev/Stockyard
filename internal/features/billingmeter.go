@@ -228,11 +228,9 @@ func (m *BillingMeter) resolveCustomerID(req *provider.Request) string {
 				return cid
 			}
 		}
-		// Try extracting from raw Authorization header if it's a JWT
-		if authHeader, ok := req.Extra["_auth_header"].(string); ok {
-			if cid := extractJWTClaim(authHeader, "customer_id"); cid != "" {
-				return cid
-			}
+		// Try pre-extracted billing customer ID (set in proxy handler)
+		if cid, ok := req.Extra["_billing_customer_id"].(string); ok && cid != "" {
+			return cid
 		}
 	}
 

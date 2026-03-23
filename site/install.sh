@@ -93,6 +93,42 @@ else
 fi
 
 info "Extracting..."
+
+# Verify checksum if checksums file is available
+CHECKSUMS_URL="https://github.com/${REPO}/releases/download/${VERSION}/checksums.txt"
+if command -v sha256sum >/dev/null 2>&1; then
+  CHECKSUM_FILE="$TMPDIR/checksums.txt"
+  if command -v curl >/dev/null 2>&1; then
+    curl -sSL "$CHECKSUMS_URL" -o "$CHECKSUM_FILE" 2>/dev/null
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q "$CHECKSUMS_URL" -O "$CHECKSUM_FILE" 2>/dev/null
+  fi
+  if [ -f "$CHECKSUM_FILE" ] && [ -s "$CHECKSUM_FILE" ]; then
+    EXPECTED=$(grep "$TARBALL" "$CHECKSUM_FILE" | awk '{print $1}')
+    if [ -n "$EXPECTED" ]; then
+      ACTUAL=$(sha256sum "$TMPDIR/stockyard.tar.gz" | awk '{print $1}')
+      if [ "$EXPECTED" != "$ACTUAL" ]; then
+        fail "Checksum mismatch! Expected $EXPECTED, got $ACTUAL. Download may be corrupted or tampered with."
+      fi
+      info "Checksum verified ✓"
+    fi
+  fi
+elif command -v shasum >/dev/null 2>&1; then
+  CHECKSUM_FILE="$TMPDIR/checksums.txt"
+  if command -v curl >/dev/null 2>&1; then
+    curl -sSL "$CHECKSUMS_URL" -o "$CHECKSUM_FILE" 2>/dev/null
+  fi
+  if [ -f "$CHECKSUM_FILE" ] && [ -s "$CHECKSUM_FILE" ]; then
+    EXPECTED=$(grep "$TARBALL" "$CHECKSUM_FILE" | awk '{print $1}')
+    if [ -n "$EXPECTED" ]; then
+      ACTUAL=$(shasum -a 256 "$TMPDIR/stockyard.tar.gz" | awk '{print $1}')
+      if [ "$EXPECTED" != "$ACTUAL" ]; then
+        fail "Checksum mismatch! Download may be corrupted or tampered with."
+      fi
+      info "Checksum verified ✓"
+    fi
+  fi
+fi
 tar -xzf "$TMPDIR/stockyard.tar.gz" -C "$TMPDIR" 2>/dev/null || {
   # Might be a plain binary
   mv "$TMPDIR/stockyard.tar.gz" "$TMPDIR/stockyard"
