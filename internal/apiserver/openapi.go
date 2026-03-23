@@ -215,6 +215,9 @@ func epFull(desc, tag string, security []map[string]any, ok, err4, err5 map[stri
 func HandleOpenAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "public, max-age=3600")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	origin := r.Header.Get("Origin")
+	if corsAllowedOrigin(origin) {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	}
 	json.NewEncoder(w).Encode(OpenAPISpec())
 }

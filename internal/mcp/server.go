@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -93,7 +94,12 @@ func (s *Server) handleSSE(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	origin := r.Header.Get("Origin")
+	if origin == "https://stockyard.dev" || origin == "http://stockyard.dev" ||
+		strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "http://localhost") ||
+		strings.HasPrefix(origin, "http://127.0.0.1:") || strings.HasPrefix(origin, "http://127.0.0.1") {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	}
 
 	// Send the endpoint event so the client knows where to POST messages.
 	fmt.Fprintf(w, "event: endpoint\ndata: /mcp/message?session_id=%s\n\n", sessionID)
