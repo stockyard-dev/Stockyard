@@ -57,10 +57,9 @@ stockyard.dev/playground
 ```
 Free forever self-hosted.
 
-Individual $9.99/mo
-Pro $49/mo
-Team $149/mo
-Enterprise $499/mo
+Pro $29/mo
+Team $99/mo
+Enterprise $299/mo
 
 Every tier gets all 16 apps, all 66 modules, all 16 providers.
 
@@ -255,7 +254,7 @@ I just shipped Stockyard — six LLM infrastructure apps in one Go binary.
 
 One curl command, 30 seconds to your first proxied request.
 
-Free forever self-hosted (unlimited everything). Cloud from $9.99/mo.
+Free forever self-hosted (unlimited everything). Cloud from $29/mo.
 
 Try the playground (no signup): stockyard.dev/playground
 
@@ -305,7 +304,7 @@ Built an LLM infrastructure platform designed for self-hosting:
 - AES-256-GCM encryption for provider API keys at rest
 - Works with Ollama for fully local inference
 
-Self-hosted free tier includes all 66 modules, all 16 providers, and unlimited requests. Cloud from $9.99/mo.
+Self-hosted free tier includes all 66 modules, all 16 providers, and unlimited requests. Cloud from $29/mo.
 
 stockyard.dev | GitHub: github.com/stockyard-dev/stockyard
 ```
@@ -395,7 +394,7 @@ One Go binary. Six integrated apps. Zero external dependencies.
 Go + embedded SQLite. ~20MB binary. AES-256-GCM encryption. 400ns per-request overhead.
 
 ## Pricing
-Free forever self-hosted (everything unlimited). Individual $9.99/mo. Pro $49/mo. Team $149/mo. Enterprise $499/mo.
+Free forever self-hosted (everything unlimited). Pro $29/mo. Team $99/mo. Enterprise $299/mo.
 
 ## Try It
 Playground (no signup): stockyard.dev/playground
