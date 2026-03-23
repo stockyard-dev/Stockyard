@@ -4,8 +4,10 @@
 package dashboard
 
 import (
+	"crypto/subtle"
 	"embed"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -143,6 +145,8 @@ var productNames = map[string]string{
 
 // Register mounts the dashboard routes on the given ServeMux.
 func Register(mux *http.ServeMux, product string) {
+	adminKey := os.Getenv("STOCKYARD_ADMIN_KEY")
+
 	// Read the template HTML at startup
 	htmlBytes, err := staticFiles.ReadFile("static/index.html")
 	if err != nil {
@@ -163,16 +167,51 @@ func Register(mux *http.ServeMux, product string) {
 	html = strings.Replace(html, "__PRODUCT_NAME__", name, 1)
 	rendered := []byte(html)
 
+	// serveUI wraps the SPA handler with admin key auth (cookie or query param).
+	// If STOCKYARD_ADMIN_KEY is not set, the dashboard is open (dev mode).
+	serveUI := func(w http.ResponseWriter, r *http.Request) {
+		if adminKey != "" {
+			// Check cookie
+			cookie, _ := r.Cookie("stockyard_session")
+			if cookie == nil || subtle.ConstantTimeCompare([]byte(cookie.Value), []byte(adminKey)) != 1 {
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte(loginHTML))
+				return
+			}
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Write(rendered)
+	}
+
 	// Serve the SPA for /ui and /ui/ (all client-side routing)
-	mux.HandleFunc("GET /ui", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-cache")
-		w.Write(rendered)
-	})
-	mux.HandleFunc("GET /ui/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-cache")
-		w.Write(rendered)
+	mux.HandleFunc("GET /ui", serveUI)
+	mux.HandleFunc("GET /ui/", serveUI)
+
+	// POST /ui/login — handle login form submission
+	mux.HandleFunc("POST /ui/login", func(w http.ResponseWriter, r *http.Request) {
+		if adminKey == "" {
+			http.Redirect(w, r, "/ui", http.StatusFound)
+			return
+		}
+		r.ParseForm()
+		key := r.FormValue("key")
+		if subtle.ConstantTimeCompare([]byte(key), []byte(adminKey)) == 1 {
+			http.SetCookie(w, &http.Cookie{
+				Name:     "stockyard_session",
+				Value:    adminKey,
+				Path:     "/ui",
+				HttpOnly: true,
+				SameSite: http.SameSiteStrictMode,
+				MaxAge:   86400 * 7,
+			})
+			http.Redirect(w, r, "/ui", http.StatusFound)
+		} else {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(loginHTML))
+		}
 	})
 
 	// Serve the playground (public, no auth)
@@ -191,6 +230,17 @@ func Register(mux *http.ServeMux, product string) {
 		})
 	}
 }
+
+const loginHTML = `<!DOCTYPE html>
+<html><head><title>Stockyard — Login</title>
+<style>body{font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#1a1a1a;color:#e0d5c8}
+.login{background:#2a2a2a;padding:2rem;border-radius:8px;max-width:360px;width:100%}
+h2{margin-top:0;color:#c87533}input{width:100%;padding:8px;margin:8px 0 16px;border:1px solid #555;border-radius:4px;background:#333;color:#e0d5c8;box-sizing:border-box}
+button{width:100%;padding:10px;background:#c87533;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:1rem}
+button:hover{background:#a85d22}</style></head>
+<body><div class="login"><h2>Stockyard Dashboard</h2><p>Enter your admin key to continue.</p>
+<form method="POST" action="/ui/login"><input type="password" name="key" placeholder="Admin Key" autofocus>
+<button type="submit">Sign In</button></form></div></body></html>`
 
 func fallbackHTML(product string) string {
 	name := productNames[product]
