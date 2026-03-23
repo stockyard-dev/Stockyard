@@ -3,7 +3,9 @@ package forge
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -322,7 +324,9 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&input)
 	inputJSON, _ := json.Marshal(input.Input)
 
-	runID := fmt.Sprintf("run_%s", time.Now().Format("20060102150405.000"))
+	rb := make([]byte, 4)
+	rand.Read(rb)
+	runID := fmt.Sprintf("run_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(rb))
 	a.conn.Exec("INSERT INTO forge_runs (id, workflow_id, workflow_slug, status, input_json, steps_total) VALUES (?,?,?,?,?,?)",
 		runID, wfID, slug, "running", string(inputJSON), len(steps))
 
@@ -486,7 +490,9 @@ func (a *App) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		SystemPrompt string `json:"system_prompt"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	id := fmt.Sprintf("sess_%s", time.Now().Format("20060102150405"))
+	sb := make([]byte, 4)
+	rand.Read(sb)
+	id := fmt.Sprintf("sess_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(sb))
 	a.conn.Exec("INSERT INTO forge_sessions (id, name, model, system_prompt) VALUES (?,?,?,?)", id, req.Name, req.Model, req.SystemPrompt)
 	writeJSON(w, map[string]any{"status": "created", "id": id})
 }
@@ -552,7 +558,9 @@ func (a *App) handleSubmitBatch(w http.ResponseWriter, r *http.Request) {
 	if req.Type == "" {
 		req.Type = "completion"
 	}
-	id := fmt.Sprintf("batch_%s", time.Now().Format("20060102150405.000"))
+	bb := make([]byte, 4)
+	rand.Read(bb)
+	id := fmt.Sprintf("batch_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(bb))
 	inputJSON, _ := json.Marshal(req.Input)
 	a.conn.Exec("INSERT INTO forge_batch_jobs (id, type, input_json, priority) VALUES (?,?,?,?)", id, req.Type, string(inputJSON), req.Priority)
 	writeJSON(w, map[string]any{"status": "queued", "id": id})
