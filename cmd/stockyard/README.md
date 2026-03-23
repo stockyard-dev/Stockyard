@@ -8,7 +8,7 @@
 
 ```bash
 curl -fsSL https://stockyard.dev/install.sh | sh
-stockyard serve
+stockyard
 
 # Proxy:   http://localhost:4200/v1
 # Console: http://localhost:4200/ui
@@ -18,7 +18,7 @@ stockyard serve
 
 ```bash
 CGO_ENABLED=0 go build -o stockyard ./cmd/stockyard/
-./stockyard serve
+./stockyard
 ```
 
 ## What You Get
