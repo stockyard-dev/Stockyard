@@ -70,6 +70,11 @@ func handleOptimizeTemplate(conn *sql.DB, proxyPort int) http.HandlerFunc {
 
 		// Run variants against test suites in background.
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Printf("[studio] PANIC in optimize run %s: %v", runID, r)
+				}
+			}()
 			scores := map[string]float64{}
 			originalScore := evaluatePrompt(conn, proxyPort, currentContent, name)
 			scores["original"] = originalScore

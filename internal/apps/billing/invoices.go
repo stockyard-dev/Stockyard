@@ -73,11 +73,23 @@ func (a *App) handleInvoiceCSV(w http.ResponseWriter, r *http.Request) {
 	cw := csv.NewWriter(w)
 	cw.Write([]string{"Model", "Requests", "Input Tokens", "Output Tokens", "Cost (USD)"})
 	for _, li := range items {
-		cw.Write([]string{li.Model, fmt.Sprintf("%d", li.Requests),
+		cw.Write([]string{csvSafe(li.Model), fmt.Sprintf("%d", li.Requests),
 			fmt.Sprintf("%d", li.InputTokens), fmt.Sprintf("%d", li.OutputTokens),
 			fmt.Sprintf("%.2f", float64(li.CostCents)/100)})
 	}
 	cw.Flush()
+}
+
+// csvSafe prefixes dangerous characters that trigger formula execution in Excel/Sheets.
+func csvSafe(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	switch s[0] {
+	case '=', '+', '-', '@', '\t', '\r':
+		return "'" + s
+	}
+	return s
 }
 
 // invoiceLineItem represents a single line on an invoice.

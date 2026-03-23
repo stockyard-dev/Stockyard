@@ -631,6 +631,13 @@ func (a *API) handleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate email format
+	body.Email = strings.TrimSpace(body.Email)
+	if body.Email == "" || !strings.Contains(body.Email, "@") || !strings.Contains(body.Email, ".") || len(body.Email) > 254 {
+		writeJSON(w, 400, map[string]string{"error": "invalid email format"})
+		return
+	}
+
 	// Enforce user cap
 	if a.licEnforcer != nil {
 		if err := a.licEnforcer.CheckUserLimit(a.store.CountUsers()); err != nil {

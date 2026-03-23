@@ -60,6 +60,12 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 
 		// Extract training data in background.
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Printf("[studio] PANIC in distill job %s: %v", id, r)
+					conn.Exec("UPDATE distillation_jobs SET status = 'failed', result = '{\"error\":\"internal error\"}' WHERE id = ?", id)
+				}
+			}()
 			rows, err := conn.Query(`
 				SELECT model, metadata_json
 				FROM observe_traces
