@@ -492,8 +492,12 @@ func safeDiv(a, b float64) float64 {
 
 // SlackNotify is a convenience wrapper for Slack Incoming Webhooks.
 func SlackNotify(webhookURL, text string) error {
+	if err := validateWebhookURL(webhookURL); err != nil {
+		return fmt.Errorf("invalid slack webhook URL: %w", err)
+	}
 	payload, _ := json.Marshal(map[string]string{"text": text})
-	resp, err := http.Post(webhookURL, "application/json", bytes.NewReader(payload))
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Post(webhookURL, "application/json", bytes.NewReader(payload))
 	if err != nil {
 		return err
 	}
