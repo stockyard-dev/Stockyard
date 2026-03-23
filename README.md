@@ -8,7 +8,7 @@
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-MIT-E8753A)](LICENSE)
-[![Modules](https://img.shields.io/badge/Modules-58-E8753A)](https://stockyard.dev/products)
+[![Modules](https://img.shields.io/badge/Modules-66-E8753A)](https://stockyard.dev/products)
 [![Providers](https://img.shields.io/badge/Providers-16-C4A87A)](https://stockyard.dev/docs)
 
 </div>
