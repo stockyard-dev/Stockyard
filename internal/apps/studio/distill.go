@@ -68,7 +68,8 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 				LIMIT 10000
 			`, req.Model, req.DateFrom, req.DateTo)
 			if err != nil {
-				errJSON, _ := json.Marshal(map[string]string{"error": err.Error()})
+				log.Printf("[studio] distill query error for job %s: %v", id, err)
+				errJSON, _ := json.Marshal(map[string]string{"error": "failed to query trace data"})
 				conn.Exec("UPDATE distillation_jobs SET status = 'failed', result = ? WHERE id = ?",
 					string(errJSON), id)
 				return

@@ -623,7 +623,8 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.conn.Query(query)
 	if err != nil {
-		writeJSON(w, map[string]any{"buckets": []any{}, "error": err.Error()})
+		log.Printf("[observe] histogram query error: %v", err)
+		writeJSON(w, map[string]any{"buckets": []any{}, "error": "query failed"})
 		return
 	}
 	defer rows.Close()
@@ -712,7 +713,8 @@ func (a *App) handleListSafetyEvents(w http.ResponseWriter, r *http.Request) {
 		rows, err = a.conn.Query("SELECT id, event_type, severity, category, detail_json, source_ip, user_id, model, request_id, action_taken, created_at FROM observe_safety_events ORDER BY created_at DESC LIMIT ?", limit)
 	}
 	if err != nil {
-		writeJSON(w, map[string]any{"events": []any{}, "error": err.Error()})
+		log.Printf("[observe] safety events query error: %v", err)
+		writeJSON(w, map[string]any{"events": []any{}, "error": "query failed"})
 		return
 	}
 	defer rows.Close()
