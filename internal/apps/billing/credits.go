@@ -95,7 +95,7 @@ func (a *App) handleCreditPurchase(w http.ResponseWriter, r *http.Request) {
 		result, err := stripeRequest("POST", "/payment_intents", params)
 		if err != nil {
 			w.WriteHeader(502)
-			writeJSON(w, map[string]string{"error": "stripe error: " + err.Error()})
+			writeJSON(w, map[string]string{"error": "stripe operation failed"})
 			return
 		}
 
@@ -240,7 +240,7 @@ func (a *App) handleStripeCallback(w http.ResponseWriter, r *http.Request) {
 	result, err := stripeRequest("POST", "/oauth/token", params)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": "stripe oauth failed: " + err.Error()})
+		writeJSON(w, map[string]string{"error": "stripe oauth failed"})
 		return
 	}
 
@@ -296,7 +296,7 @@ func (a *App) handleStripeInvoiceSync(w http.ResponseWriter, r *http.Request) {
 	result, err := stripeRequest("POST", "/invoices", params)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": "stripe sync failed: " + err.Error()})
+		writeJSON(w, map[string]string{"error": "stripe sync failed"})
 		return
 	}
 

@@ -900,7 +900,8 @@ func (s *Server) handleExchangeFork(w http.ResponseWriter, r *http.Request) {
 
 	fork, err := s.db.ForkExchangeItem(slug, req.NewSlug, req.Email, req.Name)
 	if err != nil {
-		writeErr(w, http.StatusBadRequest, err.Error())
+		log.Printf("[exchange] fork error: %v", err)
+		writeErr(w, http.StatusBadRequest, "fork failed")
 		return
 	}
 
