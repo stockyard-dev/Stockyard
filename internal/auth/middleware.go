@@ -166,6 +166,7 @@ func NewProviderFactory(store *Store, globalProviders map[string]provider.Provid
 	// Background cleanup every 60s to evict expired entries
 	go func() {
 		ticker := time.NewTicker(60 * time.Second)
+		defer ticker.Stop()
 		for range ticker.C {
 			now := time.Now()
 			f.cache.Range(func(key, value any) bool {
