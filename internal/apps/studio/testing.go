@@ -235,7 +235,7 @@ func runTestCase(proxyPort int, model, caseID, prompt, criteriaJSON string) map[
 		},
 	})
 
-	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", proxyPort)
+	url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", proxyPort)
 	client := &http.Client{Timeout: 60 * time.Second}
 	resp, err := client.Post(url, "application/json", strings.NewReader(string(reqBody)))
 

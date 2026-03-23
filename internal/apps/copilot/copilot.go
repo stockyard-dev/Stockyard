@@ -194,7 +194,7 @@ func callLLM(port int, messages []map[string]string) (string, error) {
 		return "", fmt.Errorf("marshal request: %w", err)
 	}
 
-	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", port)
+	url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", port)
 	req, err := http.NewRequest("POST", url, bytes.NewReader(payload))
 	if err != nil {
 		return "", fmt.Errorf("create request: %w", err)
@@ -338,7 +338,7 @@ func (a *App) handleChat(w http.ResponseWriter, r *http.Request) {
 	llmMessages = append(llmMessages, map[string]string{"role": "user", "content": req.Message})
 
 	// Call LLM.
-	if a.proxyPort == 0 {
+	if a.proxyPort <= 0 || a.proxyPort > 65535 {
 		// Append user message to session and save.
 		messages = append(messages, map[string]string{"role": "user", "content": req.Message})
 		a.saveSession(sessionID, messages)

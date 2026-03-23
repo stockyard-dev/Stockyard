@@ -236,7 +236,7 @@ func (r *Runner) executeRun(ctx context.Context, req RunExperimentRequest, model
 		"messages": messages,
 	})
 
-	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", r.proxyPort)
+	url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", r.proxyPort)
 	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
 	if err != nil {
 		return RunResult{Error: err.Error()}

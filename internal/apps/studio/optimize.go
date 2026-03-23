@@ -196,7 +196,7 @@ func evaluatePrompt(conn *sql.DB, proxyPort int, prompt, templateName string) fl
 		})
 
 		resp, err := client.Post(
-			fmt.Sprintf("http://localhost:%d/v1/chat/completions", proxyPort),
+			fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", proxyPort),
 			"application/json", strings.NewReader(string(body)))
 		if err != nil {
 			continue
