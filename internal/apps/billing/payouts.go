@@ -97,7 +97,7 @@ func (a *App) handleConnectOnboard(w http.ResponseWriter, r *http.Request) {
 		link, err := a.createAccountLink(existingAcct)
 		if err != nil {
 			w.WriteHeader(502)
-			writeJSON(w, map[string]string{"error": err.Error()})
+			writeJSON(w, map[string]string{"error": "operation failed"})
 			return
 		}
 		writeJSON(w, map[string]any{"url": link, "account_id": existingAcct, "status": "existing"})
@@ -118,7 +118,7 @@ func (a *App) handleConnectOnboard(w http.ResponseWriter, r *http.Request) {
 	result, err := stripeRequest("POST", "/accounts", params)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": "create account: " + err.Error()})
+		writeJSON(w, map[string]string{"error": "failed to create payout account"})
 		return
 	}
 
@@ -139,7 +139,7 @@ func (a *App) handleConnectOnboard(w http.ResponseWriter, r *http.Request) {
 	link, err := a.createAccountLink(acctID)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": "create link: " + err.Error()})
+		writeJSON(w, map[string]string{"error": "failed to create onboarding link"})
 		return
 	}
 
@@ -301,7 +301,7 @@ func (a *App) handlePayoutRequest(w http.ResponseWriter, r *http.Request) {
 		result, err := stripeRequest("POST", "/transfers", params)
 		if err != nil {
 			w.WriteHeader(502)
-			writeJSON(w, map[string]string{"error": "stripe transfer failed: " + err.Error()})
+			writeJSON(w, map[string]string{"error": "payout transfer failed"})
 			return
 		}
 		stripeTransferID, _ = result["id"].(string)
@@ -485,7 +485,7 @@ func (a *App) handleSeatSync(w http.ResponseWriter, r *http.Request) {
 	result, err := stripeRequest("POST", "/subscriptions/"+subID, params)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": "stripe seat update: " + err.Error()})
+		writeJSON(w, map[string]string{"error": "seat sync failed"})
 		return
 	}
 

@@ -841,7 +841,8 @@ func (a *App) handleHeatmap(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := a.conn.Query(query)
 	if err != nil {
-		writeJSON(w, map[string]any{"cells": []any{}, "error": err.Error()})
+		log.Printf("[observe] heatmap query error: %v", err)
+		writeJSON(w, map[string]any{"cells": []any{}, "error": "query failed"})
 		return
 	}
 	defer rows.Close()

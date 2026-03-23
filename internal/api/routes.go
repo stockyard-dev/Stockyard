@@ -215,10 +215,11 @@ func (a *API) handleReplay(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := a.handler(ctx, &req)
 	if err != nil {
+		log.Printf("[api] replay error for %s: %v", id, err)
 		writeJSON(w, map[string]any{
 			"status":      "error",
 			"original_id": id,
-			"error":       err.Error(),
+			"error":       "replay failed",
 		})
 		return
 	}

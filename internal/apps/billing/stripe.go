@@ -141,7 +141,8 @@ func (a *App) handleStripeSyncCustomer(w http.ResponseWriter, r *http.Request) {
 		result, err := stripeRequest("POST", "/customers/"+externalID, params)
 		if err != nil {
 			w.WriteHeader(502)
-			writeJSON(w, map[string]string{"error": err.Error()})
+			log.Printf("[billing/stripe] error: %v", err)
+		writeJSON(w, map[string]string{"error": "stripe operation failed"})
 			return
 		}
 
@@ -166,7 +167,8 @@ func (a *App) handleStripeSyncCustomer(w http.ResponseWriter, r *http.Request) {
 	result, err := stripeRequest("POST", "/customers", params)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[billing/stripe] error: %v", err)
+		writeJSON(w, map[string]string{"error": "stripe operation failed"})
 		return
 	}
 
@@ -236,7 +238,8 @@ func (a *App) handleStripeCreateInvoice(w http.ResponseWriter, r *http.Request) 
 	invoice, err := stripeRequest("POST", "/invoices", invParams)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[billing/stripe] error: %v", err)
+		writeJSON(w, map[string]string{"error": "stripe operation failed"})
 		return
 	}
 	invoiceID, _ := invoice["id"].(string)
@@ -301,7 +304,8 @@ func (a *App) handleStripeListInvoices(w http.ResponseWriter, r *http.Request) {
 	result, err := stripeRequest("GET", "/invoices", params)
 	if err != nil {
 		w.WriteHeader(502)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[billing/stripe] error: %v", err)
+		writeJSON(w, map[string]string{"error": "stripe operation failed"})
 		return
 	}
 
