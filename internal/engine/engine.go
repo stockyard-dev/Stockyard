@@ -628,6 +628,8 @@ func Boot(pc ProductConfig) {
 	// Changelog — embedded entries served to console "What's New" panel
 	srv.Mux().HandleFunc("GET /api/changelog", func(w http.ResponseWriter, r *http.Request) {
 		entries := []map[string]string{
+			{"date": "2026-03-24", "title": "v1.0.0: Stockyard Launches", "body": "The complete LLM infrastructure platform goes live. 16 apps, 66 middleware modules, 16 providers, 350+ endpoints, 18 Exchange packs. Free forever for self-hosted. Install: curl -sSL stockyard.dev/install.sh | sh"},
+			{"date": "2026-03-23", "title": "Launch Prep: Tests, Performance, Security", "body": "All 17 test packages passing. Gzip compression (73% reduction). HSTS header. Community tier fixed to unlimited (was incorrectly capped at 1K requests). Favicon and apple-touch-icon root routes. Improved proxy error messages. Startup banner with quick-start guide."},
 			{"date": "2026-03-21", "title": "Magnum Opus: Complete AI Economy Platform", "body": "Fabric declarative deployments, Copilot NL control, App Builder + Store, Knowledge Marketplace, Mesh Network, Reputation + Certification, Financial Layer, Governance Framework, Cortex Intelligence, 30+ new middleware modules, CLI enhancements, and Protocol Specification."},
 			{"date": "2026-03-19", "title": "Week 6: Auto-Disable & Cost Reports", "body": "Auto-disable broken providers based on error rates, and exportable printable HTML cost reports with provider/model/daily breakdowns."},
 			{"date": "2026-03-19", "title": "Week 5: Prompt Diff & Dark Mode", "body": "Side-by-side prompt version diffs with LCS algorithm, and dark/light mode toggle with localStorage persistence."},
