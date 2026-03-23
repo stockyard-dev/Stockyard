@@ -481,6 +481,8 @@ func sanitizeError(err error) string {
 		return "authentication error — check that your API key is valid and has sufficient permissions"
 	case strings.Contains(msg, "status 403"):
 		return "forbidden by upstream provider"
+	case strings.Contains(msg, "parse request") || strings.Contains(msg, "invalid character") || strings.Contains(msg, "unexpected end of JSON"):
+		return "invalid request body — check that your JSON is well-formed"
 	case strings.Contains(msg, "all providers failed"):
 		return "all providers failed — check API keys and provider status at stockyard.dev/status/"
 	case strings.Contains(msg, "model") && strings.Contains(msg, "not"):
