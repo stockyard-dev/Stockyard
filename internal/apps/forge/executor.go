@@ -143,6 +143,12 @@ func safeError(stepID, context string, err error) string {
 // Execute runs a workflow's steps in dependency order.
 // Called in a goroutine from handleRunWorkflow.
 func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, input any, proxyPort int) {
+	// Validate proxy port — must be explicitly configured
+	if proxyPort <= 0 || proxyPort > 65535 {
+		failRun(conn, runID, "proxy port not configured")
+		return
+	}
+
 	// 5-minute max timeout for entire workflow run
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
@@ -152,7 +158,7 @@ func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, inpu
 		RunID:    runID,
 		Input:    string(inputJSON),
 		Results:  make(map[string]*StepResult),
-		ProxyURL: fmt.Sprintf("http://localhost:%d", proxyPort),
+		ProxyURL: fmt.Sprintf("http://127.0.0.1:%d", proxyPort),
 		Conn:     conn,
 	}
 
