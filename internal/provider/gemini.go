@@ -101,7 +101,7 @@ func (g *Gemini) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	streamClient := &http.Client{}
+	streamClient := &http.Client{Timeout: 5 * time.Minute}
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("gemini: send stream request: %w", err)

@@ -106,7 +106,7 @@ func (g *Groq) SendStream(ctx context.Context, req *Request) (<-chan StreamChunk
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+g.config.APIKey)
 
-	streamClient := &http.Client{}
+	streamClient := &http.Client{Timeout: 5 * time.Minute}
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("groq: send stream request: %w", err)
