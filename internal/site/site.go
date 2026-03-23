@@ -53,6 +53,7 @@ func Register(mux *http.ServeMux) {
 		"/blog/architecture-decisions/", "/blog/134-tools-one-binary/",
 		"/blog/why-go-sqlite/",
 		"/blog/58-modules-400ns/",
+		"/blog/66-modules-400ns/",
 		"/architecture/",
 		"/status/",
 		"/marketing/",
