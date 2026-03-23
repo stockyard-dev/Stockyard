@@ -96,9 +96,20 @@ func (s *Server) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
 
 	// Find an embedding-capable provider
 	var embProvider provider.EmbeddingProvider
+
+	// Parse model name from body for provider detection
+	var bodyParsed struct {
+		Model string `json:"model"`
+	}
+	json.Unmarshal(body, &bodyParsed)
+
 	// Prefer provider specified in X-Provider header
-	if pname := r.Header.Get("X-Provider"); pname != "" {
-		// Try user-specific provider first
+	pname := r.Header.Get("X-Provider")
+	if pname == "" && bodyParsed.Model != "" {
+		pname = provider.ProviderForModel(bodyParsed.Model)
+	}
+	if pname != "" {
+		// Try user-specific provider first (from auth key)
 		if s.config.ProviderResolver != nil {
 			if resolved, err := s.config.ProviderResolver(r.Context(), pname); err == nil && resolved != nil {
 				if ep, ok := resolved.(provider.EmbeddingProvider); ok {
