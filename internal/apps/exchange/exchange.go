@@ -4,7 +4,9 @@
 package exchange
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -224,7 +226,9 @@ func (a *App) handleCreatePack(w http.ResponseWriter, r *http.Request) {
 		req.Type = "config"
 	}
 
-	id := fmt.Sprintf("pk_%s", time.Now().Format("20060102150405"))
+	b := make([]byte, 4)
+	rand.Read(b)
+	id := fmt.Sprintf("pk_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(b))
 	tags, _ := json.Marshal(req.Tags)
 	content, _ := json.Marshal(req.Content)
 
