@@ -99,7 +99,7 @@ The whole thing runs on SQLite — no external databases. AES-256-GCM encryption
 
 Try it live: stockyard.dev/playground — paste your OpenAI key and route a request. Self-hosted is free forever.
 
-Stack: Go 1.22, embedded SQLite, Preact dashboard. ~15MB binary. Ships as `curl | sh` or Docker.
+Stack: Go 1.22, embedded SQLite, Preact dashboard. ~20MB binary. Ships as `curl | sh` or Docker.
 
 Happy to answer any architecture questions. I'm particularly proud of the hash-chained audit ledger in Trust and the DAG workflow engine in Forge.
 ```
@@ -281,7 +281,7 @@ Architecture highlights that might interest this community:
 - 62 REST endpoints served on a single port with Go 1.22 routing
 - Benchmarked at 400ns per-request overhead for the full 58-module chain on Xeon Platinum
 - AES-256-GCM encryption for provider keys at rest
-- ~15MB binary, CGO_ENABLED=0 builds
+- ~20MB binary, CGO_ENABLED=0 builds
 
 The middleware chain pattern turned out really clean — each module gets the request context, can modify it, and calls next(). Toggle any module on/off at runtime via PUT /api/proxy/modules/{name}.
 
@@ -296,7 +296,7 @@ Title: Stockyard — self-hosted LLM platform, single binary, zero dependencies,
 Body:
 Built an LLM infrastructure platform designed for self-hosting:
 
-- Single Go binary (~15MB), zero external dependencies
+- Single Go binary (~20MB), zero external dependencies
 - Embedded SQLite — no Postgres, no Redis, no Docker required
 - curl -fsSL stockyard.dev/install.sh | sh → running in 30 seconds
 - 6 integrated apps: proxy, observability, audit trails, prompt management, workflows, config marketplace
@@ -391,7 +391,7 @@ One Go binary. Six integrated apps. Zero external dependencies.
 - Exchange: config pack marketplace
 
 ## Tech Stack
-Go + embedded SQLite. ~15MB binary. AES-256-GCM encryption. 400ns per-request overhead.
+Go + embedded SQLite. ~20MB binary. AES-256-GCM encryption. 400ns per-request overhead.
 
 ## Pricing
 Free forever self-hosted (everything unlimited). Pro $29/mo. Team $99/mo. Enterprise $299/mo.

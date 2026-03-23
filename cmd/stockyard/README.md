@@ -29,7 +29,7 @@ CGO_ENABLED=0 go build -o stockyard ./cmd/stockyard/
 - OpenAI-compatible API endpoint
 - Embedded SQLite with WAL mode
 - AES-256-GCM encryption for provider keys at rest
-- ~15MB static binary
+- ~20MB static binary
 
 ## More
 

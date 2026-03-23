@@ -124,7 +124,7 @@ typically run Stockyard in production:
 
 DEPLOYMENT
 Most teams run Stockyard on the same server as their app, or as a
-sidecar. The binary is ~15MB and uses <50MB of memory. No external
+sidecar. The binary is ~20MB and uses <50MB of memory. No external
 databases, no Redis, no Docker required.
 
 MULTI-PROVIDER FAILOVER
@@ -145,6 +145,9 @@ If you're evaluating Stockyard for your team, Pro ($29/mo) includes
 cloud-managed infrastructure with zero ops and 90-day audit retention.
 
 Book a walkthrough if you want: just reply to this email.
+
+Pricing: https://stockyard.dev/pricing
+Docs: https://stockyard.dev/docs
 
 — Michael`,
 		},
