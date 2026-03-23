@@ -79,7 +79,7 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
   <div class="grid">
     <div class="card">
       <h3>AES-256-GCM Encryption</h3>
-      <p>Provider API keys are encrypted at rest using AES-256-GCM via <code>internal/auth/crypto.go</code>. Keys never appear in logs, API responses, or trace data.</p>
+      <p>Provider API keys are encrypted at rest using AES-256-GCM with a PBKDF2-derived encryption key (100K iterations). Keys are encrypted in <code>internal/auth/crypto.go</code> and never appear in logs, API responses, or trace data.</p>
     </div>
     <div class="card">
       <h3>Secret Vault</h3>
@@ -141,7 +141,8 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
 
   <div class="section-label">Security Checklist</div>
   <div style="max-width:600px">
-    <div class="check">Provider keys encrypted at rest (AES-256-GCM)</div>
+    <div class="check">Provider keys encrypted at rest (AES-256-GCM, PBKDF2-derived key)</div>
+    <div class="check">Passwords hashed with PBKDF2-HMAC-SHA256 (100K iterations + unique salt)</div>
     <div class="check">Hash-chained audit trail on every request</div>
     <div class="check">PII detection and automatic redaction</div>
     <div class="check">Prompt injection detection (500+ patterns)</div>
@@ -149,12 +150,16 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
     <div class="check">Role-based access control (admin/developer/viewer/auditor)</div>
     <div class="check">Secret scanning in prompts and responses</div>
     <div class="check">HIPAA, GDPR, SOX, EU AI Act compliance presets</div>
+    <div class="check">Rate limiting on public endpoints (10 POST/min/IP)</div>
+    <div class="check">HSTS, CSP, X-Frame-Options, X-Content-Type-Options headers</div>
     <div class="check">Synthetic monitoring (probes every 5 minutes)</div>
     <div class="check">SLA compliance tracking per provider</div>
     <div class="check">Trust federation for cross-org audit verification</div>
-    <div class="check">Webhook signature verification</div>
+    <div class="check">Webhook signature verification (Stripe)</div>
     <div class="check">Parameterized SQL everywhere (zero injection surface)</div>
-    <div class="check">SSRF protection on all external requests</div>
+    <div class="check">SSRF protection on mesh node registration</div>
+    <div class="check">XSS escaping on all user-rendered fields</div>
+    <div class="check">X-Forwarded-For trusted only from private proxy IPs</div>
     <div class="check">Constant-time authentication checks</div>
     <div class="check">No external dependencies (reduced attack surface)</div>
   </div>
