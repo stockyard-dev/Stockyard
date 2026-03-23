@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Extract version
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Build binaries
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          mkdir -p dist
+
+          for PAIR in "linux/amd64" "linux/arm64" "darwin/arm64" "darwin/amd64"; do
+            OS="${PAIR%/*}"
+            ARCH="${PAIR#*/}"
+            TARBALL="stockyard_${VERSION#v}_${OS}_${ARCH}.tar.gz"
+
+            echo "Building ${OS}/${ARCH}..."
+            GOOS=$OS GOARCH=$ARCH CGO_ENABLED=0 go build \
+              -ldflags="-s -w -X main.version=${VERSION}" \
+              -o dist/stockyard \
+              ./cmd/stockyard/
+
+            tar -czf "dist/${TARBALL}" -C dist stockyard
+            rm dist/stockyard
+            echo "  ✓ ${TARBALL}"
+          done
+
+          ls -lh dist/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/stockyard_*.tar.gz
+          generate_release_notes: true
+          body: |
+            ## Stockyard ${{ steps.version.outputs.VERSION }}
+
+            ### Install
+
+            ```sh
+            curl -sSL https://stockyard.dev/install.sh | sh
+            ```
+
+            ### Downloads
+
+            | Platform | Architecture | File |
+            |---|---|---|
+            | Linux | x86_64 | `stockyard_${{ steps.version.outputs.VERSION }}_linux_amd64.tar.gz` |
+            | Linux | ARM64 | `stockyard_${{ steps.version.outputs.VERSION }}_linux_arm64.tar.gz` |
+            | macOS | Apple Silicon | `stockyard_${{ steps.version.outputs.VERSION }}_darwin_arm64.tar.gz` |
+            | macOS | Intel | `stockyard_${{ steps.version.outputs.VERSION }}_darwin_amd64.tar.gz` |
