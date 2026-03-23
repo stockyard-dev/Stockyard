@@ -328,10 +328,17 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 	if req.Project == "" {
 		req.Project = "default"
 	}
-	req.UserID = r.Header.Get("X-User-Id")
-	req.CustomerID = r.Header.Get("X-Customer-ID")
 	req.Schema = r.Header.Get("X-Schema")
 	req.Provider = r.Header.Get("X-Provider")
+
+	// SECURITY: X-User-Id and X-Customer-ID control billing attribution
+	// and audit identity. Only trust them from a reverse proxy that sets
+	// them after authenticating the user. Without STOCKYARD_TRUST_PROXY,
+	// these are ignored to prevent spoofing.
+	if os.Getenv("STOCKYARD_TRUST_PROXY") != "" {
+		req.UserID = r.Header.Get("X-User-Id")
+		req.CustomerID = r.Header.Get("X-Customer-ID")
+	}
 
 	// Store auth header for JWT claim extraction by billing meter
 	if authHeader := r.Header.Get("Authorization"); authHeader != "" {

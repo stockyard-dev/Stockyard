@@ -142,6 +142,12 @@ func (s *Store) CreateUser(email, name string) (*User, error) {
 	if email == "" {
 		return nil, errors.New("email is required")
 	}
+	if !strings.Contains(email, "@") || !strings.Contains(email, ".") {
+		return nil, errors.New("invalid email format")
+	}
+	if len(email) > 254 {
+		return nil, errors.New("email too long")
+	}
 	if name == "" {
 		name = strings.Split(email, "@")[0]
 	}
