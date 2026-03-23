@@ -2,6 +2,7 @@
 package trust
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
@@ -348,7 +349,9 @@ func (a *App) handleCreateEvidence(w http.ResponseWriter, r *http.Request) {
 	var count int
 	a.conn.QueryRow("SELECT COUNT(*) FROM trust_ledger WHERE created_at >= ? AND created_at <= ?", req.DateFrom, req.DateTo).Scan(&count)
 
-	id := fmt.Sprintf("ep_%s", time.Now().Format("20060102150405"))
+	epb := make([]byte, 4)
+	rand.Read(epb)
+	id := fmt.Sprintf("ep_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(epb))
 	h := sha256.Sum256([]byte(fmt.Sprintf("%s|%s|%s|%d", id, req.DateFrom, req.DateTo, count)))
 	hash := hex.EncodeToString(h[:])
 
@@ -468,7 +471,9 @@ func (a *App) handleCreateReplay(w http.ResponseWriter, r *http.Request) {
 		Input     any    `json:"input"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	id := fmt.Sprintf("rp_%s", time.Now().Format("20060102150405"))
+	rpb := make([]byte, 4)
+	rand.Read(rpb)
+	id := fmt.Sprintf("rp_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(rpb))
 	inputJSON, _ := json.Marshal(req.Input)
 	a.conn.Exec("INSERT INTO trust_replays (id, original_request_id, provider, model, input_json) VALUES (?,?,?,?,?)",
 		id, req.RequestID, req.Provider, req.Model, string(inputJSON))
