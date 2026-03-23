@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS cloud_tenants (
     stripe_subscription_id TEXT DEFAULT '',
     provider_keys_json TEXT DEFAULT '{}',
     proxy_config_json TEXT DEFAULT '{}',
-    enabled_products_json TEXT DEFAULT '["costcap"]',
+    enabled_products_json TEXT DEFAULT '["proxy","observe","trust","studio","forge","exchange","billing","team","memory","recall","copilot","appbuilder","knowledge","reputation","governance","marketing"]',
     created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_cloud_apikey ON cloud_tenants(api_key);
@@ -589,7 +589,7 @@ func (db *SqliteDB) CreateTenant(email, name string) (*CloudTenant, error) {
 		DailyRequestLimit: 1000,
 		ProviderKeys:      make(map[string]string),
 		ProxyConfig:       make(map[string]any),
-		EnabledProducts:   []string{"costcap"},
+		EnabledProducts:   []string{"proxy", "observe", "trust", "studio", "forge", "exchange", "billing", "team", "memory", "recall", "copilot", "appbuilder", "knowledge", "reputation", "governance", "marketing"},
 	}
 
 	_, err := db.conn.Exec(`INSERT INTO cloud_tenants (id, email, name, api_key, plan, daily_request_limit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -662,7 +662,7 @@ func (db *SqliteDB) UpgradeToPro(apiKey, stripeCustomerID, stripeSubID string) e
 }
 
 func (db *SqliteDB) DowngradeToFree(stripeSubID string) error {
-	productsJSON, _ := json.Marshal([]string{"costcap"})
+	productsJSON, _ := json.Marshal([]string{"proxy", "observe", "trust", "studio", "forge", "exchange", "billing", "team", "memory", "recall", "copilot", "appbuilder", "knowledge", "reputation", "governance", "marketing"})
 	res, err := db.conn.Exec("UPDATE cloud_tenants SET plan = 'free', daily_request_limit = 1000, enabled_products_json = ?, stripe_subscription_id = '' WHERE stripe_subscription_id = ?",
 		string(productsJSON), stripeSubID)
 	if err != nil {
