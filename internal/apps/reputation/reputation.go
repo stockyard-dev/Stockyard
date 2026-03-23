@@ -345,7 +345,8 @@ func (a *App) handleAssess(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[reputation] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 
@@ -438,7 +439,8 @@ func (a *App) handleCreateStory(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		log.Printf("[reputation] error: %v", err)
+		writeJSON(w, map[string]string{"error": "internal error"})
 		return
 	}
 

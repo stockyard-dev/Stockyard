@@ -610,7 +610,7 @@ func (a *App) handleRunExperiment(w http.ResponseWriter, r *http.Request) {
 	var req RunExperimentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(400)
-		writeJSON(w, map[string]string{"error": "invalid JSON: " + err.Error()})
+		writeJSON(w, map[string]string{"error": "invalid JSON"})
 		return
 	}
 	if req.Name == "" {
@@ -619,8 +619,9 @@ func (a *App) handleRunExperiment(w http.ResponseWriter, r *http.Request) {
 
 	result, err := a.runner.Run(r.Context(), req)
 	if err != nil {
+		log.Printf("[studio] run experiment error: %v", err)
 		w.WriteHeader(400)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		writeJSON(w, map[string]string{"error": "experiment failed"})
 		return
 	}
 
