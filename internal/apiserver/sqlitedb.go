@@ -10,7 +10,9 @@
 package apiserver
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -21,6 +23,20 @@ import (
 
 	_ "modernc.org/sqlite"
 )
+
+// hashAPIKey returns the hex-encoded SHA-256 hash of an API key for storage/lookup.
+func hashAPIKey(key string) string {
+	h := sha256.Sum256([]byte(key))
+	return hex.EncodeToString(h[:])
+}
+
+// maskAPIKey returns a display-safe masked version of an API key (e.g. "sk_sy_abc...def").
+func maskAPIKey(key string) string {
+	if len(key) <= 10 {
+		return "sk_sy_****"
+	}
+	return key[:8] + "..." + key[len(key)-4:]
+}
 
 // SqliteDB is the unified SQLite-backed store for the API backend.
 // It replaces DB (customers/licenses), CloudStore, and ExchangeStore.
@@ -68,7 +84,7 @@ func (db *SqliteDB) migrate() error {
 		return err
 	}
 
-	migrations := []string{apiMigrationV1}
+	migrations := []string{apiMigrationV1, apiMigrationV2}
 
 	for i, m := range migrations {
 		v := i + 1
@@ -83,6 +99,8 @@ func (db *SqliteDB) migrate() error {
 		db.conn.Exec("INSERT INTO schema_version (version) VALUES (?)", v)
 		log.Printf("db: applied migration v%d", v)
 	}
+	// Hash any remaining plaintext API keys
+	db.migrateHashCloudKeys()
 	return nil
 }
 
@@ -183,6 +201,38 @@ CREATE TABLE IF NOT EXISTS exchange_stars (
 );
 `
 
+// apiMigrationV2 adds hashed API key column and key prefix for cloud tenants.
+// After this migration, api_key stores the SHA-256 hash and key_prefix stores "sk_sy_xxxx...yyyy".
+const apiMigrationV2 = `
+ALTER TABLE cloud_tenants ADD COLUMN key_prefix TEXT DEFAULT '';
+`
+
+// migrateHashCloudKeys hashes any plaintext API keys left in the api_key column.
+// Detects plaintext by checking for the "sk_sy_" prefix (hashes are hex strings).
+func (db *SqliteDB) migrateHashCloudKeys() {
+	rows, err := db.conn.Query("SELECT id, api_key FROM cloud_tenants WHERE api_key LIKE 'sk_sy_%'")
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	type kv struct{ id, key string }
+	var toMigrate []kv
+	for rows.Next() {
+		var id, key string
+		if err := rows.Scan(&id, &key); err == nil {
+			toMigrate = append(toMigrate, kv{id, key})
+		}
+	}
+
+	for _, item := range toMigrate {
+		hashed := hashAPIKey(item.key)
+		prefix := maskAPIKey(item.key)
+		db.conn.Exec("UPDATE cloud_tenants SET api_key = ?, key_prefix = ? WHERE id = ?", hashed, prefix, item.id)
+		log.Printf("db: hashed API key for tenant %s", item.id)
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Legacy JSON import
 // ---------------------------------------------------------------------------
@@ -204,6 +254,9 @@ func (db *SqliteDB) ImportLegacyJSON(dataDir string) error {
 	if err := db.importExchangeJSON(dataDir); err != nil {
 		log.Printf("db: import exchange: %v (skipping)", err)
 	}
+
+	// Hash any plaintext API keys that were just imported
+	db.migrateHashCloudKeys()
 
 	return nil
 }
@@ -593,35 +646,45 @@ func (db *SqliteDB) CreateTenant(email, name string) (*CloudTenant, error) {
 		EnabledProducts:   []string{"proxy", "observe", "trust", "studio", "forge", "exchange", "billing", "team", "memory", "recall", "copilot", "appbuilder", "knowledge", "reputation", "governance", "marketing"},
 	}
 
-	_, err := db.conn.Exec(`INSERT INTO cloud_tenants (id, email, name, api_key, plan, daily_request_limit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		tenant.ID, tenant.Email, tenant.Name, tenant.APIKey, tenant.Plan, tenant.DailyRequestLimit, tenant.CreatedAt.Format(time.RFC3339))
+	// Store the hash — plaintext is only returned this once
+	plaintextKey := tenant.APIKey
+	hashedKey := hashAPIKey(plaintextKey)
+	prefix := maskAPIKey(plaintextKey)
+
+	_, err := db.conn.Exec(`INSERT INTO cloud_tenants (id, email, name, api_key, key_prefix, plan, daily_request_limit, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		tenant.ID, tenant.Email, tenant.Name, hashedKey, prefix, tenant.Plan, tenant.DailyRequestLimit, tenant.CreatedAt.Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}
+	// Return plaintext key to caller — this is the only time it's available
+	tenant.APIKey = plaintextKey
 	return tenant, nil
 }
 
 func (db *SqliteDB) GetTenantByAPIKey(apiKey string) (*CloudTenant, error) {
-	return db.scanTenant("SELECT id, email, name, api_key, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants WHERE api_key = ?", apiKey)
+	hashed := hashAPIKey(apiKey)
+	return db.scanTenant("SELECT id, email, name, api_key, key_prefix, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants WHERE api_key = ?", hashed)
 }
 
 func (db *SqliteDB) GetTenantByEmail(email string) (*CloudTenant, error) {
-	return db.scanTenant("SELECT id, email, name, api_key, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants WHERE email = ?", email)
+	return db.scanTenant("SELECT id, email, name, api_key, key_prefix, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants WHERE email = ?", email)
 }
 
 func (db *SqliteDB) GetTenantByID(id string) (*CloudTenant, error) {
-	return db.scanTenant("SELECT id, email, name, api_key, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants WHERE id = ?", id)
+	return db.scanTenant("SELECT id, email, name, api_key, key_prefix, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants WHERE id = ?", id)
 }
 
 func (db *SqliteDB) scanTenant(query string, args ...any) (*CloudTenant, error) {
 	t := &CloudTenant{}
-	var providerJSON, configJSON, productsJSON, createdAt, stripeCust, stripeSub string
+	var providerJSON, configJSON, productsJSON, createdAt, stripeCust, stripeSub, keyPrefix string
 	err := db.conn.QueryRow(query, args...).Scan(
-		&t.ID, &t.Email, &t.Name, &t.APIKey, &t.Plan, &t.DailyRequestLimit,
+		&t.ID, &t.Email, &t.Name, &t.APIKey, &keyPrefix, &t.Plan, &t.DailyRequestLimit,
 		&stripeCust, &stripeSub, &providerJSON, &configJSON, &productsJSON, &createdAt)
 	if err != nil {
 		return nil, fmt.Errorf("invalid API key")
 	}
+	// Never return the hash to callers — show the masked prefix instead
+	t.APIKey = keyPrefix
 	t.StripeCustomerID = stripeCust
 	t.StripeSubscriptionID = stripeSub
 	t.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
@@ -645,20 +708,23 @@ func (db *SqliteDB) scanTenant(query string, args ...any) (*CloudTenant, error) 
 
 func (db *SqliteDB) UpdateProviderKeys(apiKey string, keys map[string]string) error {
 	j, _ := json.Marshal(keys)
-	_, err := db.conn.Exec("UPDATE cloud_tenants SET provider_keys_json = ? WHERE api_key = ?", string(j), apiKey)
+	hashed := hashAPIKey(apiKey)
+	_, err := db.conn.Exec("UPDATE cloud_tenants SET provider_keys_json = ? WHERE api_key = ?", string(j), hashed)
 	return err
 }
 
 func (db *SqliteDB) UpdateProxyConfig(apiKey string, config map[string]any) error {
 	j, _ := json.Marshal(config)
-	_, err := db.conn.Exec("UPDATE cloud_tenants SET proxy_config_json = ? WHERE api_key = ?", string(j), apiKey)
+	hashed := hashAPIKey(apiKey)
+	_, err := db.conn.Exec("UPDATE cloud_tenants SET proxy_config_json = ? WHERE api_key = ?", string(j), hashed)
 	return err
 }
 
 func (db *SqliteDB) UpgradeToPro(apiKey, stripeCustomerID, stripeSubID string) error {
 	productsJSON, _ := json.Marshal([]string{"*"})
+	hashed := hashAPIKey(apiKey)
 	_, err := db.conn.Exec("UPDATE cloud_tenants SET plan = 'pro', daily_request_limit = 0, enabled_products_json = ?, stripe_customer_id = ?, stripe_subscription_id = ? WHERE api_key = ?",
-		string(productsJSON), stripeCustomerID, stripeSubID, apiKey)
+		string(productsJSON), stripeCustomerID, stripeSubID, hashed)
 	return err
 }
 
@@ -730,7 +796,7 @@ func (db *SqliteDB) CheckRateLimit(tenantID string, limit int) bool {
 }
 
 func (db *SqliteDB) ListTenants() []*CloudTenant {
-	rows, err := db.conn.Query("SELECT id, email, name, api_key, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants ORDER BY created_at DESC")
+	rows, err := db.conn.Query("SELECT id, email, name, api_key, key_prefix, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at FROM cloud_tenants ORDER BY created_at DESC")
 	if err != nil {
 		return nil
 	}
@@ -738,10 +804,12 @@ func (db *SqliteDB) ListTenants() []*CloudTenant {
 	var result []*CloudTenant
 	for rows.Next() {
 		t := &CloudTenant{}
-		var providerJSON, configJSON, productsJSON, createdAt, stripeCust, stripeSub string
-		if err := rows.Scan(&t.ID, &t.Email, &t.Name, &t.APIKey, &t.Plan, &t.DailyRequestLimit, &stripeCust, &stripeSub, &providerJSON, &configJSON, &productsJSON, &createdAt); err != nil {
+		var providerJSON, configJSON, productsJSON, createdAt, stripeCust, stripeSub, keyPrefix string
+		if err := rows.Scan(&t.ID, &t.Email, &t.Name, &t.APIKey, &keyPrefix, &t.Plan, &t.DailyRequestLimit, &stripeCust, &stripeSub, &providerJSON, &configJSON, &productsJSON, &createdAt); err != nil {
 			continue
 		}
+		// Never expose the hash — show masked prefix
+		t.APIKey = keyPrefix
 		t.StripeCustomerID = stripeCust
 		t.StripeSubscriptionID = stripeSub
 		t.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
