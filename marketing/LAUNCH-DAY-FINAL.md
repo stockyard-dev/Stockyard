@@ -2,7 +2,7 @@
 ## Product Hunt + Hacker News — Final, Launch-Ready
 
 Current stats: 16 apps, 66 modules, 360+ endpoints, 16 provider integrations
-Pricing: Community (free), Individual ($9.99), Pro ($49), Team ($149), Enterprise ($499)
+Pricing: Free (self-hosted), Pro ($29/mo), Team ($99/mo), Enterprise ($299/mo)
 
 ---
 
@@ -110,7 +110,7 @@ ready vs early-stage.
 ```
 No catch. MIT license, no telemetry, no usage limits on self-hosted. 
 The business model is the managed cloud tiers for teams that don't want 
-to run infrastructure. Individual $9.99/mo, Pro $49/mo, Team $149/mo.
+to run infrastructure. Pro $29/mo, Team $99/mo.
 ```
 
 ---
@@ -135,7 +135,7 @@ embedded SQLite. Zero dependencies. MIT licensed. Self-hosted free forever.
 
 **Topics:** Developer Tools, Artificial Intelligence, Open Source
 
-**Pricing:** Freemium — Free (self-hosted), Individual $9.99/mo, Pro $49/mo, Team $149/mo, Enterprise $499/mo
+**Pricing:** Freemium — Free (self-hosted), Pro $29/mo, Team $99/mo, Enterprise $299/mo
 
 **URL:** https://stockyard.dev
 
@@ -180,7 +180,7 @@ hear what to build next.
 2. **Dashboard** — Observe traces with live cost data, latency graphs, provider breakdown.
 3. **Playground** — The web playground at stockyard.dev/playground with a completed request.
 4. **Architecture** — Clean diagram: App → Stockyard (66 modules) → Providers. Show the middleware chain.
-5. **Pricing** — The 5-tier pricing table from stockyard.dev/pricing.
+5. **Pricing** — The pricing table from stockyard.dev/pricing.
 
 ---
 
@@ -276,4 +276,4 @@ concurrent reads well, and the proxy workload is write-light.
 | Database | SQLite (WAL mode) | Zero-ops |
 | Encryption | AES-256-GCM | Provider keys at rest |
 | License | MIT | LICENSE file |
-| Pricing | Free → $9.99 → $49 → $149 → $499 | /pricing |
+| Pricing | Free → $29 → $99 → $299 | /pricing |

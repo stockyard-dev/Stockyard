@@ -173,6 +173,7 @@ since you signed up: https://stockyard.dev/changelog
 
 PRICING REMINDER
 Free tier: self-hosted, everything unlimited, forever
+
 Pro: $29/mo — cloud-managed, 90-day retention
 Team: $99/mo — 5 seats, RBAC, compliance
 Enterprise: $299/mo — unlimited seats, SSO, SLA

@@ -25,7 +25,7 @@ Tech stack: Go with no CGO, embedded SQLite, embedded Preact dashboard. Zero ext
 
 Works with OpenAI, Anthropic, Gemini, Groq, Ollama, and 12 more providers.
 
-Pricing: Free forever self-hosted (all modules). Cloud: Individual $9.99/mo, Pro $49/mo, Team $149/mo, Enterprise $299/mo.
+Pricing: Free forever self-hosted (all modules). Cloud: Pro $29/mo, Team $99/mo, Enterprise $299/mo.
 
 - Site: stockyard.dev
 - GitHub: github.com/stockyard-dev/stockyard
