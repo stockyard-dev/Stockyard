@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -79,13 +80,14 @@ func RegisterConfigRoutes(mux *http.ServeMux, conn *sql.DB) {
 			}
 		}
 
-		// Webhooks (redact secrets)
+		// Webhooks (redact URL paths — may contain tokens like Slack webhook secrets)
 		whRows, err := conn.Query(`SELECT url, events FROM webhooks WHERE enabled = 1 ORDER BY id`)
 		if err == nil {
 			defer whRows.Close()
 			for whRows.Next() {
 				var wh WebhookExport
 				if whRows.Scan(&wh.URL, &wh.Events) == nil {
+					wh.URL = redactWebhookURL(wh.URL)
 					cfg.Webhooks = append(cfg.Webhooks, wh)
 				}
 			}
@@ -234,4 +236,14 @@ func ExportConfigCLI(conn *sql.DB) error {
 	enc := json.NewEncoder(nil) // will be os.Stdout in real usage
 	enc.SetIndent("", "  ")
 	return enc.Encode(cfg)
+}
+
+// redactWebhookURL shows the scheme + host but hides the path and query,
+// which often contain secrets (e.g. Slack webhook tokens).
+func redactWebhookURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return "***"
+	}
+	return fmt.Sprintf("%s://%s/***", u.Scheme, u.Host)
 }
