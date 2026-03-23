@@ -21,6 +21,10 @@ Single Go binary. Embedded SQLite. No Redis, no Postgres, no Docker required.
 
 ## See It Work in 60 Seconds
 
+<p align="center">
+  <img src="marketing/toolkit/demo.svg" alt="Stockyard demo — install, start, and send a request through 66 middleware modules" width="800">
+</p>
+
 ```bash
 # Install (~25MB binary)
 curl -fsSL https://stockyard.dev/install.sh | sh
