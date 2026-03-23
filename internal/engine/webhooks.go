@@ -344,7 +344,7 @@ func RegisterWebhookRoutes(mux *http.ServeMux, wm *WebhookManager) {
 				continue
 			}
 			h := map[string]any{
-				"id": id, "url": url, "events": events,
+				"id": id, "url": redactWebhookURL(url), "events": events,
 				"enabled": enabled == 1, "created_at": createdAt,
 				"fail_count": failCount,
 			}

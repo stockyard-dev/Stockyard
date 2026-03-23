@@ -412,8 +412,9 @@ func (a *App) handleDeleteRun(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	res, err := a.conn.Exec("DELETE FROM forge_runs WHERE id = ?", id)
 	if err != nil {
+		log.Printf("[forge] delete run %s: %v", id, err)
 		w.WriteHeader(500)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		writeJSON(w, map[string]string{"error": "failed to delete run"})
 		return
 	}
 	affected, _ := res.RowsAffected()

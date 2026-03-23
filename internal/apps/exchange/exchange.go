@@ -272,8 +272,9 @@ func (a *App) handleInstallPack(w http.ResponseWriter, r *http.Request) {
 	// Run the full installer
 	result, err := a.Install(slug)
 	if err != nil {
+		log.Printf("[exchange] install %s: %v", slug, err)
 		w.WriteHeader(404)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		writeJSON(w, map[string]string{"error": "pack not found or install failed"})
 		return
 	}
 
@@ -389,8 +390,9 @@ func (a *App) handleUninstall(w http.ResponseWriter, r *http.Request) {
 	fmt.Sscanf(id, "%d", &idInt)
 	result, err := a.Uninstall(idInt)
 	if err != nil {
+		log.Printf("[exchange] uninstall %s: %v", id, err)
 		w.WriteHeader(404)
-		writeJSON(w, map[string]string{"error": err.Error()})
+		writeJSON(w, map[string]string{"error": "pack not found or uninstall failed"})
 		return
 	}
 	writeJSON(w, map[string]any{"status": "uninstalled", "removed": result.Applied})
