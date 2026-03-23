@@ -148,6 +148,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Install gate (email capture — no auth required)
 	mux.HandleFunc("POST /api/exchange/gate", a.handleGateCapture)
 	mux.HandleFunc("GET /api/exchange/gate/stats", a.handleGateStats)
+	mux.HandleFunc("GET /api/exchange/gate/export", a.handleGateExport)
 
 	log.Printf("[exchange] routes registered")
 }
@@ -553,4 +554,35 @@ func (a *App) handleGateStats(w http.ResponseWriter, r *http.Request) {
 		"top_packs":      topPacks,
 		"recent":         recent,
 	})
+}
+
+func (a *App) handleGateExport(w http.ResponseWriter, r *http.Request) {
+	format := r.URL.Query().Get("format")
+
+	rows, err := a.conn.Query("SELECT DISTINCT email, MIN(source) as source, MIN(created_at) as first_seen FROM exchange_gate_captures GROUP BY email ORDER BY first_seen DESC")
+	if err != nil {
+		w.WriteHeader(500)
+		writeJSON(w, map[string]string{"error": "query failed"})
+		return
+	}
+	defer rows.Close()
+
+	var emails []map[string]string
+	for rows.Next() {
+		var email, source, firstSeen string
+		rows.Scan(&email, &source, &firstSeen)
+		emails = append(emails, map[string]string{"email": email, "source": source, "first_seen": firstSeen})
+	}
+
+	if format == "csv" {
+		w.Header().Set("Content-Type", "text/csv")
+		w.Header().Set("Content-Disposition", "attachment; filename=stockyard-emails.csv")
+		fmt.Fprintln(w, "email,source,first_seen")
+		for _, e := range emails {
+			fmt.Fprintf(w, "%s,%s,%s\n", e["email"], e["source"], e["first_seen"])
+		}
+		return
+	}
+
+	writeJSON(w, map[string]any{"count": len(emails), "emails": emails})
 }
