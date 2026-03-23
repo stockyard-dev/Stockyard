@@ -129,20 +129,7 @@ func (a *App) Install(packSlug string) (*InstallResult, error) {
 		Errors:   make(map[string][]string),
 	}
 
-	// Wrap all install operations in a transaction for atomicity
-	tx, err := a.conn.Begin()
-	if err != nil {
-		return nil, fmt.Errorf("begin transaction: %v", err)
-	}
-	defer tx.Rollback()
-
-	// Temporarily swap conn for tx so install* helpers use the transaction
-	origConn := a.conn
-	// The install helpers use a.conn directly, so we can't easily swap to tx
-	// without refactoring. Instead, apply and record within the existing conn
-	// but at least record the install atomically.
-
-	// Apply each section
+	// Apply each section (uses a.conn directly for individual writes)
 	a.installProviders(content.Providers, result)
 	a.installRoutes(content.Routes, result)
 	a.installModules(content.Modules, result)
@@ -152,9 +139,14 @@ func (a *App) Install(packSlug string) (*InstallResult, error) {
 	a.installPolicies(content.Policies, result)
 	a.installAlerts(content.Alerts, result)
 
-	_ = origConn // keep reference
+	// Record the install atomically (separate from content writes to avoid
+	// SQLite write lock contention — helpers write via a.conn, this uses tx)
+	tx, err := a.conn.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("begin transaction: %v", err)
+	}
+	defer tx.Rollback()
 
-	// Record the install (within transaction)
 	tx.Exec("INSERT INTO exchange_installed (pack_id, pack_slug, version) VALUES (?,?,?)",
 		packID, packSlug, version)
 	tx.Exec("UPDATE exchange_packs SET installs = installs + 1 WHERE id = ?", packID)

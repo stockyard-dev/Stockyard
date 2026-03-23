@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stockyard-dev/stockyard/internal/config"
@@ -70,7 +71,7 @@ func TestInitProvidersNoKeys(t *testing.T) {
 
 func TestMakeSendHandlerNoProviders(t *testing.T) {
 	handler := makeSendHandler(map[string]provider.Provider{}, nil)
-	_, err := handler(nil, &provider.Request{Model: "gpt-4o-mini", Messages: []provider.Message{{Role: "user", Content: "hi"}}})
+	_, err := handler(context.Background(), &provider.Request{Model: "gpt-4o-mini", Messages: []provider.Message{{Role: "user", Content: "hi"}}})
 	if err == nil {
 		t.Error("expected error with no providers configured")
 	}

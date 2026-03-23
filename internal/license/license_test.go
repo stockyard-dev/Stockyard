@@ -156,11 +156,11 @@ func TestCoversProduct(t *testing.T) {
 
 func TestTierLimits(t *testing.T) {
 	community := Limits(TierCommunity)
-	if community.MaxRequestsPerMonth != 10_000 {
-		t.Errorf("community monthly limit = %d, want 10000", community.MaxRequestsPerMonth)
+	if community.MaxRequestsPerMonth != 0 {
+		t.Errorf("community monthly limit = %d, want 0 (unlimited)", community.MaxRequestsPerMonth)
 	}
-	if community.MaxUsers != 3 {
-		t.Errorf("community max users = %d, want 3", community.MaxUsers)
+	if community.MaxUsers != 0 {
+		t.Errorf("community max users = %d, want 0 (unlimited)", community.MaxUsers)
 	}
 	if community.EmailAlerts {
 		t.Error("community should not have email alerts")
@@ -170,8 +170,8 @@ func TestTierLimits(t *testing.T) {
 	if pro.MaxRequestsPerMonth != 0 {
 		t.Error("pro should have unlimited monthly requests")
 	}
-	if pro.MaxUsers != 0 {
-		t.Error("pro should have unlimited users")
+	if pro.MaxUsers != 1 {
+		t.Errorf("pro max users = %d, want 1", pro.MaxUsers)
 	}
 	if !pro.EmailAlerts {
 		t.Error("pro should have email alerts")
@@ -181,19 +181,19 @@ func TestTierLimits(t *testing.T) {
 	if enterprise.MaxRequestsPerMonth != 0 {
 		t.Error("enterprise should have unlimited requests")
 	}
-	if enterprise.RetentionDays != 365 {
-		t.Errorf("enterprise retention = %d, want 365", enterprise.RetentionDays)
+	if enterprise.RetentionDays != 0 {
+		t.Errorf("enterprise retention = %d, want 0 (unlimited)", enterprise.RetentionDays)
 	}
 }
 
 func TestEnforcerMonthlyLimit(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Product: "stockyard", Tier: TierCommunity, CustomerID: "test"},
+		Payload: Payload{Product: "stockyard", Tier: TierIndividual, CustomerID: "test"},
 	}
 	e := NewEnforcer(lic)
 
-	// Community tier = 10,000/month. Burn through them.
+	// Individual tier = 10,000/month. Burn through them.
 	for i := int64(0); i < 10_000; i++ {
 		if err := e.Check(); err != nil {
 			t.Fatalf("request %d should be allowed: %v", i, err)
@@ -210,6 +210,21 @@ func TestEnforcerMonthlyLimit(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "stockyard.dev/pricing") {
 		t.Error("error should include upgrade URL")
+	}
+}
+
+func TestEnforcerCommunityUnlimited(t *testing.T) {
+	lic := &License{
+		Valid:   true,
+		Payload: Payload{Product: "stockyard", Tier: TierCommunity, CustomerID: "test"},
+	}
+	e := NewEnforcer(lic)
+
+	// Community tier is unlimited. Run 50k requests — all should pass.
+	for i := int64(0); i < 50_000; i++ {
+		if err := e.Check(); err != nil {
+			t.Fatalf("request %d should be allowed (community is unlimited): %v", i, err)
+		}
 	}
 }
 
@@ -254,7 +269,7 @@ func TestEnforcerStats(t *testing.T) {
 func TestMiddlewareBlocks(t *testing.T) {
 	lic := &License{
 		Valid:   true,
-		Payload: Payload{Product: "stockyard", Tier: TierCommunity, CustomerID: "test"},
+		Payload: Payload{Product: "stockyard", Tier: TierIndividual, CustomerID: "test"},
 	}
 	e := NewEnforcer(lic)
 
@@ -264,7 +279,7 @@ func TestMiddlewareBlocks(t *testing.T) {
 		return &provider.Response{ID: "ok"}, nil
 	})
 
-	// Exhaust community tier (10k/month)
+	// Exhaust individual tier (10k/month)
 	for i := 0; i < 10_001; i++ {
 		handler(context.Background(), &provider.Request{Model: "gpt-4o"})
 	}
