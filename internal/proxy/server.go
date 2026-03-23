@@ -60,11 +60,12 @@ func NewServer(cfg ServerConfig) *Server {
 		config: cfg,
 		mux:    mux,
 		httpServer: &http.Server{
-			Addr:         fmt.Sprintf(":%d", cfg.Port),
-			Handler:      mux,
-			ReadTimeout:  30 * time.Second,
-			WriteTimeout: 120 * time.Second, // Long for streaming
-			IdleTimeout:  60 * time.Second,
+			Addr:              fmt.Sprintf(":%d", cfg.Port),
+			Handler:           mux,
+			ReadTimeout:       30 * time.Second,
+			ReadHeaderTimeout: 10 * time.Second,
+			WriteTimeout:      120 * time.Second, // Long for streaming
+			IdleTimeout:       60 * time.Second,
 		},
 	}
 	s.registerRoutes()
