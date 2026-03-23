@@ -172,6 +172,30 @@ func Register(mux *http.ServeMux) {
 		w.Write(data)
 	})
 
+	// Serve /favicon.ico from root (browsers auto-request this)
+	mux.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "assets/brand/favicon.ico")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "image/x-icon")
+		w.Header().Set("Cache-Control", "public, max-age=604800, immutable")
+		w.Write(data)
+	})
+
+	// Serve /apple-touch-icon.png from root (iOS auto-requests this)
+	mux.HandleFunc("GET /apple-touch-icon.png", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "assets/brand/apple-touch-icon.png")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Cache-Control", "public, max-age=604800, immutable")
+		w.Write(data)
+	})
+
 	// Serve sitemap.xml
 	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "sitemap.xml")
