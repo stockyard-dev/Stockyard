@@ -436,7 +436,7 @@ func pageLicense() Page {
 
 <table>
 <tr><th>Tier</th><th>Individual Product</th><th>Suite (66 modules)</th><th>Limits</th></tr>
-<tr><td>Free</td><td>$0</td><td>$0</td><td>1,000 requests/day, 5 products max (suite)</td></tr>
+<tr><td>Free</td><td>$0</td><td>$0</td><td>Unlimited requests, all features</td></tr>
 
 <tr><td>Pro</td><td>$29/mo</td><td>$29/mo</td><td>Unlimited requests</td></tr>
 <tr><td>Team</td><td>$99/mo</td><td>$99/mo</td><td>Unlimited requests, 5 seats</td></tr>
@@ -486,7 +486,7 @@ The suite at all tiers include all 66 modules. That is
 
 <h2 id="free-tier">Free tier</h2>
 
-<p>Stockyard works without any license key. The free tier provides 1,000 requests per day with all features enabled. This is enough for local development and evaluation. When the daily limit is reached, the proxy returns <code>402 Payment Required</code> with a message indicating the limit.</p>
+<p>Stockyard works without any license key. The free tier provides unlimited requests with all features enabled. No license key needed for self-hosted use.</p>
 
 <h2 id="grace-period">Grace period</h2>
 
