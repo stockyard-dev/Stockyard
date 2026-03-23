@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/toggle"
@@ -471,6 +472,22 @@ func (a *App) handleStatus(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// csvSafe escapes CSV fields that could trigger formula injection in spreadsheets.
+// Prefixes with a single quote if the field starts with =, +, -, @, tab, or CR.
+func csvSafe(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	switch s[0] {
+	case '=', '+', '-', '@', '\t', '\r':
+		return "'" + s
+	}
+	if strings.ContainsAny(s, ",\"\n") {
+		return `"` + strings.ReplaceAll(s, `"`, `""`) + `"`
+	}
+	return s
+}
+
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(v)
@@ -579,7 +596,8 @@ func (a *App) handleGateExport(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Disposition", "attachment; filename=stockyard-emails.csv")
 		fmt.Fprintln(w, "email,source,first_seen")
 		for _, e := range emails {
-			fmt.Fprintf(w, "%s,%s,%s\n", e["email"], e["source"], e["first_seen"])
+			// Escape CSV fields to prevent formula injection in spreadsheets
+			fmt.Fprintf(w, "%s,%s,%s\n", csvSafe(e["email"]), csvSafe(e["source"]), csvSafe(e["first_seen"]))
 		}
 		return
 	}
