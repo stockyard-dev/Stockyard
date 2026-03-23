@@ -203,6 +203,7 @@ func Register(mux *http.ServeMux, product string) {
 				Value:    adminKey,
 				Path:     "/ui",
 				HttpOnly: true,
+				Secure:   true,
 				SameSite: http.SameSiteStrictMode,
 				MaxAge:   86400 * 7,
 			})
