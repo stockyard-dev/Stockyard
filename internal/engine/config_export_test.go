@@ -21,7 +21,7 @@ func setupConfigExportTest(t *testing.T) (*sql.DB, *http.ServeMux) {
 	for _, ddl := range []string{
 		`CREATE TABLE IF NOT EXISTS proxy_modules (name TEXT PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 1)`,
 		`CREATE TABLE IF NOT EXISTS webhooks (id INTEGER PRIMARY KEY, url TEXT, secret TEXT DEFAULT '', events TEXT DEFAULT '*', enabled INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')), last_fired TEXT, fail_count INTEGER DEFAULT 0)`,
-		`CREATE TABLE IF NOT EXISTS trust_policies (id INTEGER PRIMARY KEY, name TEXT, action TEXT, pattern TEXT, enabled INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')))`,
+		`CREATE TABLE IF NOT EXISTS trust_policies (id INTEGER PRIMARY KEY, name TEXT, type TEXT DEFAULT 'regex', action TEXT, pattern TEXT, enabled INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')))`,
 	} {
 		db.Exec(ddl)
 	}
@@ -121,8 +121,12 @@ func TestConfigDiff(t *testing.T) {
 
 	var result map[string]any
 	json.Unmarshal(w.Body.Bytes(), &result)
-	changes, ok := result["changes"].([]any)
-	if !ok || len(changes) == 0 {
-		t.Error("expected changes in diff result")
+	diffs, ok := result["diffs"].([]any)
+	if !ok || len(diffs) == 0 {
+		t.Errorf("expected diffs in result, got: %v", result)
+	}
+	changes, _ := result["changes"].(float64)
+	if changes < 1 {
+		t.Errorf("expected at least 1 change, got %v", changes)
 	}
 }
