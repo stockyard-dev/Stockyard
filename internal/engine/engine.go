@@ -602,6 +602,9 @@ func Boot(pc ProductConfig) {
 	// Gzip compression (outermost — compresses all HTML, JSON, text responses)
 	srv.WrapHandler(gzipMiddleware)
 
+	// Panic recovery (outermost — catches panics from any handler, returns clean 500)
+	srv.WrapHandler(recoveryMiddleware)
+
 	// Register marketing website (/, /docs/, /pricing/, etc.)
 	site.Register(srv.Mux())
 
