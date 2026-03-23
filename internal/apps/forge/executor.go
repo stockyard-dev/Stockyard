@@ -134,6 +134,12 @@ type RunContext struct {
 	Conn     *sql.DB                // for tool lookups
 }
 
+// safeError logs the real error server-side and returns a generic message for the client.
+func safeError(stepID, context string, err error) string {
+	log.Printf("[forge] step %s %s: %v", stepID, context, err)
+	return context + " failed"
+}
+
 // Execute runs a workflow's steps in dependency order.
 // Called in a goroutine from handleRunWorkflow.
 func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, input any, proxyPort int) {
@@ -153,7 +159,8 @@ func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, inpu
 	// Build dependency graph and find execution order
 	order, err := topoSort(steps)
 	if err != nil {
-		failRun(conn, runID, fmt.Sprintf("invalid DAG: %v", err))
+		log.Printf("[forge] run %s: invalid DAG: %v", runID, err)
+		failRun(conn, runID, "invalid workflow DAG")
 		return
 	}
 
@@ -264,17 +271,18 @@ func executeLLMStep(ctx context.Context, rc *RunContext, step Step, start time.T
 	resp, err := client.Do(req)
 	latency := time.Since(start).Milliseconds()
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: latency}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "llm request", err), LatencyMS: latency}
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("read response: %v", err), LatencyMS: latency}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "read llm response", err), LatencyMS: latency}
 	}
 
 	if resp.StatusCode != 200 {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("proxy returned %d: %s", resp.StatusCode, truncate(string(respBody), 200)), LatencyMS: latency}
+		log.Printf("[forge] step %s: proxy returned %d: %s", step.ID, resp.StatusCode, truncate(string(respBody), 200))
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("proxy returned HTTP %d", resp.StatusCode), LatencyMS: latency}
 	}
 
 	// Parse the response
@@ -407,7 +415,7 @@ func executeToolStep(ctx context.Context, rc *RunContext, step Step, start time.
 	// If handler is a URL, call it; otherwise treat as a built-in
 	if handler != "" && (strings.HasPrefix(handler, "http://") || strings.HasPrefix(handler, "https://")) {
 		if err := isSafeURL(handler); err != nil {
-			return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool handler url blocked: %v", err), LatencyMS: time.Since(start).Milliseconds()}
+			return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "tool handler url validation", err), LatencyMS: time.Since(start).Milliseconds()}
 		}
 		return callToolEndpoint(ctx, rc, step, handler, argsJSON, start)
 	}
@@ -419,7 +427,7 @@ func executeToolStep(ctx context.Context, rc *RunContext, step Step, start time.
 	case "json_validate":
 		var parsed any
 		if err := json.Unmarshal(argsJSON, &parsed); err != nil {
-			return &StepResult{StepID: step.ID, Status: "success", Output: `{"valid": false, "error": "` + err.Error() + `"}`, LatencyMS: time.Since(start).Milliseconds()}
+			return &StepResult{StepID: step.ID, Status: "success", Output: `{"valid": false, "error": "invalid JSON"}`, LatencyMS: time.Since(start).Milliseconds()}
 		}
 		return &StepResult{StepID: step.ID, Status: "success", Output: `{"valid": true}`, LatencyMS: time.Since(start).Milliseconds()}
 	case "timestamp":
@@ -455,16 +463,17 @@ func callToolEndpoint(ctx context.Context, rc *RunContext, step Step, url string
 	resp, err := client.Do(req)
 	latency := time.Since(start).Milliseconds()
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: latency}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "tool request", err), LatencyMS: latency}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("read tool response: %v", err), LatencyMS: latency}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "read tool response", err), LatencyMS: latency}
 	}
 	if resp.StatusCode >= 400 {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool returned %d: %s", resp.StatusCode, truncate(string(body), 200)), LatencyMS: latency}
+		log.Printf("[forge] step %s: tool returned %d: %s", step.ID, resp.StatusCode, truncate(string(body), 200))
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("tool returned HTTP %d", resp.StatusCode), LatencyMS: latency}
 	}
 
 	return &StepResult{StepID: step.ID, Status: "success", Output: string(body), LatencyMS: latency}
@@ -479,7 +488,7 @@ func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.
 
 	// SSRF protection: block requests to private/internal IPs
 	if err := isSafeURL(rawURL); err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("url blocked: %v", err), LatencyMS: time.Since(start).Milliseconds()}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "url validation", err), LatencyMS: time.Since(start).Milliseconds()}
 	}
 
 	method := step.Config.Method
@@ -497,7 +506,7 @@ func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.
 
 	req, err := http.NewRequestWithContext(stepCtx, method, rawURL, bodyReader)
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: time.Since(start).Milliseconds()}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "build http request", err), LatencyMS: time.Since(start).Milliseconds()}
 	}
 	for k, v := range step.Config.Headers {
 		req.Header.Set(k, resolveTemplate(v, rc))
@@ -510,16 +519,17 @@ func executeHTTPStep(ctx context.Context, rc *RunContext, step Step, start time.
 	resp, err := client.Do(req)
 	latency := time.Since(start).Milliseconds()
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: err.Error(), LatencyMS: latency}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "http request", err), LatencyMS: latency}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("read http response: %v", err), LatencyMS: latency}
+		return &StepResult{StepID: step.ID, Status: "error", Error: safeError(step.ID, "read http response", err), LatencyMS: latency}
 	}
 	if resp.StatusCode >= 400 {
-		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("http %d: %s", resp.StatusCode, truncate(string(body), 200)), LatencyMS: latency}
+		log.Printf("[forge] step %s: http %d: %s", step.ID, resp.StatusCode, truncate(string(body), 200))
+		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("http request returned %d", resp.StatusCode), LatencyMS: latency}
 	}
 
 	return &StepResult{StepID: step.ID, Status: "success", Output: string(body), LatencyMS: latency}
