@@ -96,7 +96,7 @@ func main() {
 		pubKey = kp.PublicKeyB64()
 		privKey = kp.PrivateKeyB64()
 		log.Printf("   Public key:  %s", pubKey)
-		log.Printf("   Private key: %s", privKey)
+		log.Printf("   Private key: %s... (truncated)", privKey[:12])
 		log.Println("   ⚠️  Keys are ephemeral — set env vars for production!")
 	}
 
