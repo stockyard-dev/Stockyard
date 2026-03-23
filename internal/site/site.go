@@ -2,8 +2,6 @@
 package site
 
 import (
-	"bytes"
-	"compress/gzip"
 	"embed"
 	"io/fs"
 	"net/http"
@@ -23,22 +21,12 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 }
 
-// writeCompressed sends data with gzip compression if the client supports it.
-func writeCompressed(w http.ResponseWriter, r *http.Request, contentType string, data []byte, cacheControl string) {
+// servePage writes an HTML page with security headers and cache control.
+// Gzip compression is handled by the outer gzipMiddleware.
+func servePage(w http.ResponseWriter, data []byte, cacheControl string) {
 	setSecurityHeaders(w)
-	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", cacheControl)
-	w.Header().Set("Vary", "Accept-Encoding")
-
-	if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-		var buf bytes.Buffer
-		gz, _ := gzip.NewWriterLevel(&buf, gzip.BestSpeed)
-		gz.Write(data)
-		gz.Close()
-		w.Header().Set("Content-Encoding", "gzip")
-		w.Write(buf.Bytes())
-		return
-	}
 	w.Write(data)
 }
 
@@ -121,7 +109,7 @@ func Register(mux *http.ServeMux) {
 			http.NotFound(w, r)
 			return
 		}
-		writeCompressed(w, r, "text/html; charset=utf-8", data, "public, max-age=300")
+		servePage(w, data, "public, max-age=300")
 	})
 
 	for _, page := range pages {
@@ -138,7 +126,7 @@ func Register(mux *http.ServeMux) {
 				http.NotFound(w, r)
 				return
 			}
-			writeCompressed(w, r, "text/html; charset=utf-8", data, "public, max-age=300")
+			servePage(w, data, "public, max-age=300")
 		})
 	}
 

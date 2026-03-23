@@ -606,6 +606,9 @@ func Boot(pc ProductConfig) {
 	// Wrap with admin auth (reads STOCKYARD_ADMIN_KEY env var)
 	srv.WrapHandler(adminAuthMiddleware)
 
+	// Gzip compression (outermost — compresses all HTML, JSON, text responses)
+	srv.WrapHandler(gzipMiddleware)
+
 	// Register marketing website (/, /docs/, /pricing/, etc.)
 	site.Register(srv.Mux())
 
