@@ -19,6 +19,38 @@ Stockyard sits between your app and your LLM providers. Point your `OPENAI_BASE_
 
 Single Go binary. Embedded SQLite. No Redis, no Postgres, no Docker required.
 
+## Before / After
+
+**Before Stockyard** — your LLM stack:
+```
+Your App → OpenAI API
+  + LiteLLM (proxy)            — Python + Redis + Postgres
+  + Langfuse (observability)   — separate deployment
+  + PromptLayer (prompts)      — SaaS, $49/mo
+  + custom billing webhook     — you maintain this
+  + custom audit logging       — you maintain this
+  + custom rate limiter        — you maintain this
+= 6 tools, 4 deployments, 3 databases, 2 SaaS subscriptions
+```
+
+**After Stockyard:**
+```
+Your App → Stockyard → OpenAI API
+  ✓ proxy + caching + failover
+  ✓ cost tracking + alerts
+  ✓ prompt templates + A/B tests
+  ✓ billing + invoices
+  ✓ audit trail + compliance
+  ✓ rate limiting + safety
+= 1 binary, 1 port, 0 dependencies
+```
+
+```bash
+# One line to switch
+export OPENAI_BASE_URL=http://localhost:4200/v1
+# That's it. Your existing code works unchanged.
+```
+
 ## See It Work in 60 Seconds
 
 <p align="center">
@@ -30,7 +62,7 @@ Single Go binary. Embedded SQLite. No Redis, no Postgres, no Docker required.
 curl -fsSL https://stockyard.dev/install.sh | sh
 
 # Start (all services on one port)
-stockyard serve
+stockyard
 # → Stockyard running on :4200
 # → Proxy:   http://localhost:4200/v1
 # → Console: http://localhost:4200/ui
@@ -175,7 +207,7 @@ LiteLLM is a Python LLM router. Stockyard is a router plus local observability a
 git clone https://github.com/stockyard-dev/stockyard.git
 cd stockyard
 CGO_ENABLED=0 go build -o stockyard ./cmd/stockyard/
-./stockyard serve
+./stockyard
 ```
 
 Requires Go 1.22+. No other dependencies.
