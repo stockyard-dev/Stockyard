@@ -94,7 +94,8 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 		// Check if error is retryable
 		if apiErr, ok := streamErr.(*provider.ProviderAPIError); ok && !apiErr.IsRetryable() {
 			// Non-retryable error (4xx) — don't failover
-			writeSSEError(w, flusher, streamErr.Error())
+			log.Printf("stream non-retryable error from %s: %v", name, streamErr)
+			writeSSEError(w, flusher, "provider returned an error — check your API key and model name")
 			return
 		}
 
@@ -102,7 +103,8 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 	}
 
 	if streamErr != nil {
-		writeSSEError(w, flusher, fmt.Sprintf("all providers failed: %v", streamErr))
+		log.Printf("stream: all providers failed: %v", streamErr)
+		writeSSEError(w, flusher, "all providers failed — check API keys and provider status")
 		return
 	}
 
@@ -120,7 +122,8 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 	var lastTokens int
 	for chunk := range stream {
 		if chunk.Error != nil {
-			writeSSEError(w, flusher, chunk.Error.Error())
+			log.Printf("stream chunk error: %v", chunk.Error)
+			writeSSEError(w, flusher, "stream interrupted")
 			// Drain remaining chunks so provider goroutine can exit
 			for range stream {
 			}
