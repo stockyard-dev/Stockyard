@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
@@ -51,7 +52,14 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 		if err := s.config.PreFlight.CheckCaps(req); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusTooManyRequests)
-			fmt.Fprintf(w, `{"error":{"message":%q,"type":"cap_exceeded"}}`, err.Error())
+			// Only expose cap-related messages; sanitize anything else
+			msg := "spending cap exceeded"
+			if strings.Contains(err.Error(), "cap exceeded") {
+				msg = err.Error()
+			} else {
+				log.Printf("[streaming] cap check error (sanitized): %v", err)
+			}
+			fmt.Fprintf(w, `{"error":{"message":%q,"type":"cap_exceeded"}}`, msg)
 			return
 		}
 	}
