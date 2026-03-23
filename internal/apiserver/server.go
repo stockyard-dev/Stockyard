@@ -647,7 +647,8 @@ func (s *Server) handleCloudSignup(w http.ResponseWriter, r *http.Request) {
 	tenant, err := s.db.CreateTenant(req.Email, req.Name)
 	if err != nil {
 		if strings.Contains(err.Error(), "already registered") {
-			writeErr(w, http.StatusConflict, err.Error())
+			// Generic message to prevent email enumeration
+			writeErr(w, http.StatusConflict, "account already exists")
 			return
 		}
 		writeErr(w, http.StatusInternalServerError, "failed to create tenant")
