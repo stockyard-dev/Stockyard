@@ -286,7 +286,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="https://github.com/stockyard-dev/Stockyard" class="btn btn-secondary">View Source</a>
   </div>
 
-  <div class="install-cmd" style="margin-top:1.5rem">curl -fsSL stockyard.dev/install.sh | sh</div>
+  <div class="install-cmd" style="margin-top:1.5rem;cursor:pointer;position:relative" onclick="copyInstall(this)" title="Click to copy">
+    <span>curl -fsSL stockyard.dev/install.sh | sh</span>
+    <span style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem" id="copy-hint">click to copy</span>
+  </div>
 
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
     <a href="/playground/" style="color:var(--cream-dim)">Try the Playground &rarr;</a>
@@ -531,6 +534,7 @@ function showConsole(name){
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 function captureEmail(){var input=document.getElementById('email-input');var status=document.getElementById('email-status');var email=input.value.trim();if(!email||!email.includes('@')){status.textContent='Please enter a valid email';status.style.color='var(--rust)';status.style.display='block';return;}fetch('/api/exchange/gate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})}).then(function(r){return r.json()}).then(function(){status.textContent="You're in. We'll keep you posted.";status.style.color='var(--green-light)';status.style.display='block';input.value='';}).catch(function(){status.textContent='Something went wrong. Try again.';status.style.color='var(--rust)';status.style.display='block';});}
+function copyInstall(el){navigator.clipboard.writeText('curl -fsSL stockyard.dev/install.sh | sh').then(function(){var h=document.getElementById('copy-hint');if(h){h.textContent='copied!';h.style.opacity='1';h.style.color='var(--green-light)';setTimeout(function(){h.textContent='click to copy';h.style.opacity='0.4';h.style.color='';},2000);}});}
 </script>
 
 </body>
