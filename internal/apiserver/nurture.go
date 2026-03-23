@@ -38,7 +38,7 @@ Here's the fastest way to see it in action:
 
 2. Or install locally in 30 seconds:
    curl -fsSL stockyard.dev/install.sh | sh
-   stockyard serve
+   stockyard
 
 3. Then point your app at it:
    export OPENAI_BASE_URL=http://localhost:4200/v1

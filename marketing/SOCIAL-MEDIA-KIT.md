@@ -183,7 +183,7 @@ Happy to answer any architecture questions. I'm particularly proud of the hash-c
   ### Get Started
   ```bash
   curl -fsSL stockyard.dev/install.sh | sh
-  stockyard serve
+  stockyard
   ```
 
   ### Links
