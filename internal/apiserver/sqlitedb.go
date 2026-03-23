@@ -630,7 +630,7 @@ func (db *SqliteDB) CreateTenant(email, name string) (*CloudTenant, error) {
 	var count int
 	db.conn.QueryRow("SELECT COUNT(*) FROM cloud_tenants WHERE email = ?", email).Scan(&count)
 	if count > 0 {
-		return nil, fmt.Errorf("email already registered: %s", email)
+		return nil, fmt.Errorf("email already registered")
 	}
 
 	tenant := &CloudTenant{
