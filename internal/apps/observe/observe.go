@@ -1361,3 +1361,99 @@ func (a *App) handleListTags(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, map[string]any{"tags": tagList})
 }
+
+// ---------------------------------------------------------------------------
+// Data retention / purge
+// ---------------------------------------------------------------------------
+
+// PurgeOldData deletes observe data older than retentionDays.
+// Favorites are preserved. Returns total rows deleted.
+func (a *App) PurgeOldData(retentionDays int) (int64, error) {
+	if retentionDays <= 0 {
+		return 0, nil
+	}
+
+	cutoff := time.Now().AddDate(0, 0, -retentionDays).Format(time.RFC3339)
+	var total int64
+
+	// Traces (skip favorites)
+	res, err := a.conn.Exec(`DELETE FROM observe_traces WHERE created_at < ? AND id NOT IN (SELECT trace_id FROM observe_trace_favorites)`, cutoff)
+	if err != nil {
+		return total, fmt.Errorf("purge traces: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n > 0 {
+		total += n
+		log.Printf("[observe] purged %d old traces (cutoff: %s)", n, cutoff)
+	}
+
+	// Alert history
+	res, err = a.conn.Exec(`DELETE FROM observe_alert_history WHERE fired_at < ?`, cutoff)
+	if err != nil {
+		return total, fmt.Errorf("purge alert history: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n > 0 {
+		total += n
+		log.Printf("[observe] purged %d old alert history entries", n)
+	}
+
+	// Anomalies
+	res, err = a.conn.Exec(`DELETE FROM observe_anomalies WHERE detected_at < ?`, cutoff)
+	if err != nil {
+		return total, fmt.Errorf("purge anomalies: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n > 0 {
+		total += n
+		log.Printf("[observe] purged %d old anomalies", n)
+	}
+
+	// Safety events
+	res, err = a.conn.Exec(`DELETE FROM observe_safety_events WHERE created_at < ?`, cutoff)
+	if err != nil {
+		return total, fmt.Errorf("purge safety events: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n > 0 {
+		total += n
+		log.Printf("[observe] purged %d old safety events", n)
+	}
+
+	// Cost daily (keep 365 days minimum for yearly reports)
+	costCutoff := time.Now().AddDate(0, 0, -max(retentionDays, 365)).Format("2006-01-02")
+	res, err = a.conn.Exec(`DELETE FROM observe_cost_daily WHERE date < ?`, costCutoff)
+	if err != nil {
+		return total, fmt.Errorf("purge cost daily: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n > 0 {
+		total += n
+		log.Printf("[observe] purged %d old cost_daily rows (cutoff: %s)", n, costCutoff)
+	}
+
+	return total, nil
+}
+
+// StartRetentionLoop runs PurgeOldData periodically in the background.
+// Default: 30-day retention, runs every hour. Pass retentionDays <= 0 to disable.
+func (a *App) StartRetentionLoop(retentionDays int) {
+	if retentionDays <= 0 {
+		retentionDays = 30
+	}
+	go func() {
+		// Run once on startup after a short delay
+		time.Sleep(30 * time.Second)
+		if n, err := a.PurgeOldData(retentionDays); err != nil {
+			log.Printf("[observe] retention startup purge error: %v", err)
+		} else if n > 0 {
+			log.Printf("[observe] retention startup: purged %d total rows", n)
+		}
+
+		ticker := time.NewTicker(1 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
+			if n, err := a.PurgeOldData(retentionDays); err != nil {
+				log.Printf("[observe] retention purge error: %v", err)
+			} else if n > 0 {
+				log.Printf("[observe] retention: purged %d total rows", n)
+			}
+		}
+	}()
+	log.Printf("[observe] retention loop started: %d-day retention, hourly purge", retentionDays)
+}
