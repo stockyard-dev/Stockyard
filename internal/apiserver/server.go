@@ -639,8 +639,8 @@ func (s *Server) handleCloudSignup(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
-	if req.Email == "" {
-		writeErr(w, http.StatusBadRequest, "email required")
+	if err := ValidateEmail(req.Email); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid email format")
 		return
 	}
 

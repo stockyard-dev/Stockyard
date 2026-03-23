@@ -198,6 +198,12 @@ func handleRunSuite(conn *sql.DB, proxyPort int) http.HandlerFunc {
 
 		// Run tests in background.
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Printf("[studio] PANIC in test run %s: %v", runID, r)
+					conn.Exec("UPDATE test_runs SET status = 'failed' WHERE id = ?", runID)
+				}
+			}()
 			var results []map[string]any
 			passed, failed := 0, 0
 

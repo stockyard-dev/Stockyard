@@ -145,8 +145,8 @@ func TestSqliteDB_CloudTenantLifecycle(t *testing.T) {
 	// Update provider keys
 	db.UpdateProviderKeys(tenant.APIKey, map[string]string{"openai": "sk-test123"})
 	t3, _ := db.GetTenantByAPIKey(tenant.APIKey)
-	if t3.ProviderKeys["openai"] != "sk-test123" {
-		t.Fatalf("expected sk-test123, got %s", t3.ProviderKeys["openai"])
+	if t3.ProviderKeys["openai"] != "sk-t...t123" {
+		t.Fatalf("expected masked sk-t...t123, got %s", t3.ProviderKeys["openai"])
 	}
 
 	// Update proxy config
@@ -378,8 +378,8 @@ func TestSqliteDB_LegacyJSONImport(t *testing.T) {
 	if tenant.Plan != "pro" {
 		t.Fatalf("expected pro, got %s", tenant.Plan)
 	}
-	if tenant.ProviderKeys["openai"] != "sk-legacykey" {
-		t.Fatalf("expected sk-legacykey, got %s", tenant.ProviderKeys["openai"])
+	if tenant.ProviderKeys["openai"] != "sk-l...ykey" {
+		t.Fatalf("expected masked sk-l...ykey, got %s", tenant.ProviderKeys["openai"])
 	}
 
 	// Verify usage imported
