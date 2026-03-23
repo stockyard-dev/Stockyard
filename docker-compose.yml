@@ -2,7 +2,9 @@
 # Usage: docker compose up
 services:
   stockyard:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.manual
     ports:
       - "4200:4200"
     volumes:
