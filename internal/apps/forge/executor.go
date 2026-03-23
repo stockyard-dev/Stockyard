@@ -143,6 +143,15 @@ func safeError(stepID, context string, err error) string {
 // Execute runs a workflow's steps in dependency order.
 // Called in a goroutine from handleRunWorkflow.
 func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, input any, proxyPort int) {
+	// Recover from panics — this runs in a goroutine outside HTTP handlers,
+	// so the recovery middleware won't catch panics here.
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("[forge] PANIC in run %s: %v", runID, r)
+			failRun(conn, runID, "internal error (panic recovered)")
+		}
+	}()
+
 	// Validate proxy port — must be explicitly configured
 	if proxyPort <= 0 || proxyPort > 65535 {
 		failRun(conn, runID, "proxy port not configured")
