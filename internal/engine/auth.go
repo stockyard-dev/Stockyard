@@ -26,6 +26,7 @@ func newIPRateLimiter() *ipRateLimiter {
 	// Background cleanup every 60s — runs outside the hot path
 	go func() {
 		ticker := time.NewTicker(60 * time.Second)
+		defer ticker.Stop()
 		for range ticker.C {
 			rl.cleanup()
 		}
