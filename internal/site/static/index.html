@@ -20,6 +20,7 @@
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" type="image/webp" href="/site-assets/assets/screenshots/console-overview.webp">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -360,7 +361,7 @@ Console: http://localhost:4200/ui</span>
     <button class="console-tab" onclick="showConsole('governance')">Governance</button>
   </div>
   <div class="console-gallery">
-    <picture><source srcset="/site-assets/assets/screenshots/console-overview.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-overview.png" id="cs-overview"  alt="Stockyard console — system overview showing all 16 apps running" loading="lazy"></picture>
+    <picture><source srcset="/site-assets/assets/screenshots/console-overview.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-overview.png" id="cs-overview"  alt="Stockyard console — system overview showing all 16 apps running" loading="eager" fetchpriority="high"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-proxy.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-proxy.png" id="cs-proxy"  alt="Proxy middleware chain — 66 modules with runtime toggles" class="hidden" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" id="cs-observe"  alt="Observe dashboard — traces, costs, latency across providers" class="hidden" loading="lazy"></picture>
     <picture><source srcset="/site-assets/assets/screenshots/console-trust.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-trust.png" id="cs-trust"  alt="Trust — tamper-evident hash-chained audit ledger" class="hidden" loading="lazy"></picture>

@@ -2,9 +2,12 @@
 package site
 
 import (
+	"bytes"
+	"compress/gzip"
 	"embed"
 	"io/fs"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -18,6 +21,25 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'")
 	w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+}
+
+// writeCompressed sends data with gzip compression if the client supports it.
+func writeCompressed(w http.ResponseWriter, r *http.Request, contentType string, data []byte, cacheControl string) {
+	setSecurityHeaders(w)
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Cache-Control", cacheControl)
+	w.Header().Set("Vary", "Accept-Encoding")
+
+	if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+		var buf bytes.Buffer
+		gz, _ := gzip.NewWriterLevel(&buf, gzip.BestSpeed)
+		gz.Write(data)
+		gz.Close()
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Write(buf.Bytes())
+		return
+	}
+	w.Write(data)
 }
 
 // Register mounts the site routes on the given ServeMux.
@@ -99,10 +121,7 @@ func Register(mux *http.ServeMux) {
 			http.NotFound(w, r)
 			return
 		}
-		setSecurityHeaders(w)
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Header().Set("Cache-Control", "public, max-age=300")
-		w.Write(data)
+		writeCompressed(w, r, "text/html; charset=utf-8", data, "public, max-age=300")
 	})
 
 	for _, page := range pages {
@@ -119,10 +138,7 @@ func Register(mux *http.ServeMux) {
 				http.NotFound(w, r)
 				return
 			}
-			setSecurityHeaders(w)
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			w.Header().Set("Cache-Control", "public, max-age=300")
-			w.Write(data)
+			writeCompressed(w, r, "text/html; charset=utf-8", data, "public, max-age=300")
 		})
 	}
 
@@ -177,6 +193,18 @@ func Register(mux *http.ServeMux) {
 	// Serve static assets (JS, CSS, images) from site/js/ etc.
 	fileServer := http.FileServer(http.FS(sub))
 	mux.HandleFunc("GET /site-assets/", func(w http.ResponseWriter, r *http.Request) {
+		// Immutable cache for static assets — they change only on deploy (new binary)
+		ext := path.Ext(r.URL.Path)
+		switch ext {
+		case ".png", ".webp", ".jpg", ".ico", ".svg", ".gif":
+			w.Header().Set("Cache-Control", "public, max-age=86400, immutable")
+		case ".css", ".js":
+			w.Header().Set("Cache-Control", "public, max-age=86400, immutable")
+		case ".woff", ".woff2", ".ttf":
+			w.Header().Set("Cache-Control", "public, max-age=604800, immutable")
+		default:
+			w.Header().Set("Cache-Control", "public, max-age=3600")
+		}
 		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/site-assets")
 		fileServer.ServeHTTP(w, r)
 	})
