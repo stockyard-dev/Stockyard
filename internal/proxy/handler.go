@@ -474,18 +474,20 @@ func sanitizeError(err error) string {
 	case strings.Contains(msg, "rate limit") || strings.Contains(msg, "status 429"):
 		return "rate limit exceeded"
 	case strings.Contains(msg, "no providers configured"):
-		return "no providers configured for the requested model"
+		return "no providers configured — set OPENAI_API_KEY, ANTHROPIC_API_KEY, or another provider key"
 	case strings.Contains(msg, "circuit open"):
-		return "service temporarily unavailable"
+		return "provider unavailable (circuit breaker open) — check your API key and provider status"
 	case strings.Contains(msg, "status 401") || strings.Contains(msg, "invalid API key"):
-		return "authentication error with upstream provider"
+		return "authentication error — check that your API key is valid and has sufficient permissions"
 	case strings.Contains(msg, "status 403"):
 		return "forbidden by upstream provider"
 	case strings.Contains(msg, "all providers failed"):
-		return "all providers failed to process the request"
+		return "all providers failed — check API keys and provider status at stockyard.dev/status/"
+	case strings.Contains(msg, "model") && strings.Contains(msg, "not"):
+		return "model not found — check model name or configure a provider that supports it"
 	default:
 		log.Printf("proxy error (sanitized): %v", err)
-		return "internal proxy error"
+		return "proxy error — see stockyard.dev/docs/quickstart/ for setup help"
 	}
 }
 
