@@ -54,7 +54,7 @@ Each one has its own embedded dashboard and works with OpenAI, Anthropic, Gemini
 
 ## Pricing
 
-Free forever self-hosted. Pro $29/mo. Team $99/mo. Enterprise $299/mo.
+Free forever self-hosted. Individual $9.99/mo. Pro $49/mo. Team $149/mo. Enterprise $499/mo.
 
 No credit card for the free tier. Download and run.
 
