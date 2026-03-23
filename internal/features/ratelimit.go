@@ -87,7 +87,11 @@ func (rl *RateLimiter) Allow(key string) bool {
 		if maxTokens == 0 {
 			maxTokens = 10
 		}
-		refillRate := float64(rl.config.RequestsPerMinute) / 60.0
+		rpm := rl.config.RequestsPerMinute
+		if rpm == 0 {
+			rpm = 60 // default: 1 request per second
+		}
+		refillRate := float64(rpm) / 60.0
 		bucket = NewTokenBucket(maxTokens, refillRate)
 		rl.buckets[key] = bucket
 	}
