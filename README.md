@@ -216,6 +216,19 @@ CGO_ENABLED=0 go build -o stockyard ./cmd/stockyard/
 
 Requires Go 1.22+. No other dependencies.
 
+## Docker
+
+```bash
+docker build -t stockyard -f Dockerfile.manual .
+docker run -p 4200:4200 -e OPENAI_API_KEY=$OPENAI_API_KEY stockyard
+```
+
+Or use docker-compose:
+
+```bash
+docker compose up
+```
+
 ## Pricing
 
 Self-hosted is free forever — all 66 modules, all 16 providers, all 16 apps, unlimited requests. Cloud-managed starts at $29/mo (Pro), $99/mo (Team), $299/mo (Enterprise).
