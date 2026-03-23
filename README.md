@@ -196,10 +196,14 @@ LiteLLM is a Python LLM router. Stockyard is a router plus local observability a
 
 ## Security
 
-- **Provider keys encrypted at rest** — AES-256-GCM with random nonce per write
+- **Provider keys encrypted at rest** — AES-256-GCM with PBKDF2-derived key (100K iterations)
 - **Hash-chained audit ledger** — every event cryptographically linked to the previous
-- **API keys hashed** — SHA-256, never stored in plaintext
+- **Passwords** — PBKDF2-HMAC-SHA256 with 100K iterations and unique salt
 - **No key leakage** — provider keys never appear in logs, traces, or API responses
+- **Rate limiting** — 10 POST/min/IP on public endpoints
+- **Webhook verification** — Stripe signatures validated, rejects if secret unset
+- **SSRF protection** — mesh node URLs validated against private IP ranges
+- **Security headers** — HSTS, CSP, X-Frame-Options, X-Content-Type-Options
 
 ## Build from Source
 
