@@ -805,7 +805,11 @@ func (a *App) handleSafetySummary(w http.ResponseWriter, r *http.Request) {
 // Query params: range=24h|7d|30d (default 24h)
 func (a *App) handleHeatmap(w http.ResponseWriter, r *http.Request) {
 	rangeParam := r.URL.Query().Get("range")
-	if rangeParam == "" {
+	// Whitelist valid range values — these feed into fmt.Sprintf SQL construction
+	switch rangeParam {
+	case "7d", "30d":
+		// valid
+	default:
 		rangeParam = "24h"
 	}
 

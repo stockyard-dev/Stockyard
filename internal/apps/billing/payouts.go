@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -358,6 +359,10 @@ func (a *App) handleListPayouts(w http.ResponseWriter, r *http.Request) {
 func (a *App) handlePlatformRevenue(w http.ResponseWriter, r *http.Request) {
 	period := r.URL.Query().Get("period")
 	if period == "" {
+		period = time.Now().UTC().Format("2006-01")
+	}
+	// Validate period format (YYYY-MM) to prevent LIKE wildcard injection
+	if len(period) < 4 || len(period) > 7 || strings.ContainsAny(period, "%_") {
 		period = time.Now().UTC().Format("2006-01")
 	}
 
