@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bytes"
 	"compress/gzip"
 	"io"
 	"net/http"
@@ -54,6 +55,17 @@ func gzipMiddleware(next http.Handler) http.Handler {
 		if strings.HasSuffix(r.URL.Path, "/stream") || r.URL.Query().Get("stream") == "true" {
 			next.ServeHTTP(w, r)
 			return
+		}
+
+		// Skip proxy endpoints when body contains "stream":true (OpenAI SSE format)
+		// Peek at the first few bytes — streaming requests always have it near the start
+		if strings.HasPrefix(r.URL.Path, "/v1/") && r.Body != nil {
+			bodyBytes, _ := io.ReadAll(io.LimitReader(r.Body, 512))
+			r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(bodyBytes), r.Body))
+			if bytes.Contains(bodyBytes, []byte(`"stream":true`)) || bytes.Contains(bodyBytes, []byte(`"stream": true`)) {
+				next.ServeHTTP(w, r)
+				return
+			}
 		}
 
 		// Skip binary downloads
