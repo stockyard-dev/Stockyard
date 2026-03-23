@@ -252,7 +252,7 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 
 	// Summarize via LLM if proxy is available, otherwise concatenate
 	var summaryText string
-	if a.proxyPort > 0 {
+	if a.proxyPort > 0 && a.proxyPort <= 65535 {
 		combined := strings.Join(contents, "\n---\n")
 		if len(combined) > 4000 {
 			combined = combined[:4000]
@@ -297,7 +297,7 @@ func (a *App) llmSummarize(content string, entryCount int) string {
 		"max_tokens": 300,
 	})
 
-	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", a.proxyPort)
+	url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", a.proxyPort)
 	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		return ""

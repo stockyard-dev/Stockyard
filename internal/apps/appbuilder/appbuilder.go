@@ -539,7 +539,7 @@ func (a *App) handleRun(w http.ResponseWriter, r *http.Request) {
 // callProxy sends the app's system prompt + user input through the local proxy.
 // Returns the LLM output and estimated cost in cents.
 func (a *App) callProxy(model, systemPrompt, userInput string) (string, int) {
-	if a.proxyPort == 0 {
+	if a.proxyPort <= 0 || a.proxyPort > 65535 {
 		return "[No proxy configured — set a provider key to enable live responses]", 0
 	}
 
@@ -551,7 +551,7 @@ func (a *App) callProxy(model, systemPrompt, userInput string) (string, int) {
 		"model": model, "messages": messages, "max_tokens": 1000,
 	})
 
-	url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", a.proxyPort)
+	url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", a.proxyPort)
 	httpReq, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		log.Printf("[appbuilder] create request: %v", err)

@@ -96,7 +96,7 @@ func warmCache(cache *CacheV2, proxyPort int, model string, prompts []string) {
 			},
 		})
 
-		url := fmt.Sprintf("http://localhost:%d/v1/chat/completions", proxyPort)
+		url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", proxyPort)
 		resp, err := client.Post(url, "application/json", strings.NewReader(string(body)))
 		if err != nil {
 			failed++
