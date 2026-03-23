@@ -24,7 +24,7 @@ services:
       - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-stockyard}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "stockyard", "--health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4200/health"]
       interval: 30s
       timeout: 5s
       retries: 3
