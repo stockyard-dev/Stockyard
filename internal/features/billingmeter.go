@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"database/sql"
-	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -234,49 +233,6 @@ func (m *BillingMeter) resolveCustomerID(req *provider.Request) string {
 		}
 	}
 
-	return ""
-}
-
-// extractJWTClaim parses a JWT (without verification — the auth layer handles that)
-// and returns the value of the named claim.
-func extractJWTClaim(authHeader string, claimName string) string {
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	token = strings.TrimSpace(token)
-
-	// JWT has 3 parts: header.payload.signature
-	parts := strings.SplitN(token, ".", 3)
-	if len(parts) != 3 {
-		return ""
-	}
-
-	// Decode payload (base64url)
-	payload := parts[1]
-	// Add padding if needed
-	switch len(payload) % 4 {
-	case 2:
-		payload += "=="
-	case 3:
-		payload += "="
-	}
-	decoded, err := base64.URLEncoding.DecodeString(payload)
-	if err != nil {
-		// Try without padding
-		decoded, err = base64.RawURLEncoding.DecodeString(parts[1])
-		if err != nil {
-			return ""
-		}
-	}
-
-	var claims map[string]any
-	if err := json.Unmarshal(decoded, &claims); err != nil {
-		return ""
-	}
-
-	if val, ok := claims[claimName]; ok {
-		if s, ok := val.(string); ok {
-			return s
-		}
-	}
 	return ""
 }
 
