@@ -791,6 +791,18 @@ func Boot(pc ProductConfig) {
 	// Start data retention cleanup loop
 	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
 
+	// Start observe data retention/purge loop (traces, alerts, anomalies, safety events)
+	for _, app := range pc.Apps {
+		if obsApp, ok := app.(*observe.App); ok {
+			retentionDays := cfg.Logging.RetentionDays
+			if retentionDays <= 0 {
+				retentionDays = 30
+			}
+			obsApp.StartRetentionLoop(retentionDays)
+			break
+		}
+	}
+
 	// Start spend flusher (writes in-memory counters to SQLite every 5s)
 	flushCtx, flushCancel := context.WithCancel(context.Background())
 	flusher := tracker.NewFlusher(counter, db, 5*time.Second)
