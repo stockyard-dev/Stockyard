@@ -7,11 +7,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"sync"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/grain/store"
 	"gopkg.in/yaml.v3"
 )
 
@@ -66,14 +68,84 @@ type Registry struct {
 	decisions map[string]*Decision
 	overrides map[string]string // decision ID -> forced value
 	rng       *rand.Rand
+	db        *store.DB
 }
 
 // NewRegistry creates a decision registry.
-func NewRegistry() *Registry {
-	return &Registry{
+func NewRegistry(db *store.DB) *Registry {
+	r := &Registry{
 		decisions: map[string]*Decision{},
 		overrides: map[string]string{},
 		rng:       rand.New(rand.NewSource(time.Now().UnixNano())),
+		db:        db,
+	}
+	if db != nil {
+		r.loadFromDB()
+	}
+	return r
+}
+
+// loadFromDB restores decisions and overrides from SQLite on startup.
+func (r *Registry) loadFromDB() {
+	decisions, err := r.db.ListDecisions()
+	if err != nil {
+		log.Printf("grain: loading decisions from db: %v", err)
+		return
+	}
+	for id, sd := range decisions {
+		d := storeToDecision(sd)
+		r.decisions[id] = &d
+	}
+
+	overrides, err := r.db.GetOverrides()
+	if err != nil {
+		log.Printf("grain: loading overrides from db: %v", err)
+		return
+	}
+	for id, val := range overrides {
+		r.overrides[id] = val
+	}
+}
+
+func decisionToStore(d Decision) store.Decision {
+	var variants []store.Variant
+	for _, v := range d.Variants {
+		variants = append(variants, store.Variant{Name: v.Name, Value: v.Value, Weight: v.Weight})
+	}
+	var rules []store.Rule
+	for _, r := range d.Rules {
+		rules = append(rules, store.Rule{Condition: r.Condition, Value: r.Value, Priority: r.Priority})
+	}
+	return store.Decision{
+		ID:          d.ID,
+		Name:        d.Name,
+		Description: d.Description,
+		Default:     d.Default,
+		Variants:    variants,
+		Rules:       rules,
+		Tags:        d.Tags,
+		Locked:      d.Locked,
+	}
+}
+
+func storeToDecision(sd *store.Decision) Decision {
+	var variants []Variant
+	for _, v := range sd.Variants {
+		variants = append(variants, Variant{Name: v.Name, Value: v.Value, Weight: v.Weight})
+	}
+	var rules []Rule
+	for _, r := range sd.Rules {
+		rules = append(rules, Rule{Condition: r.Condition, Value: r.Value, Priority: r.Priority})
+	}
+	return Decision{
+		ID:          sd.ID,
+		Name:        sd.Name,
+		Description: sd.Description,
+		Default:     sd.Default,
+		Variants:    variants,
+		Rules:       rules,
+		Tags:        sd.Tags,
+		Locked:      sd.Locked,
 	}
 }
 
@@ -82,6 +154,11 @@ func (r *Registry) Register(d Decision) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.decisions[d.ID] = &d
+	if r.db != nil {
+		if err := r.db.SaveDecision(decisionToStore(d)); err != nil {
+			log.Printf("grain: saving decision %s: %v", d.ID, err)
+		}
+	}
 }
 
 // Evaluate resolves a decision to an outcome.
@@ -127,6 +204,11 @@ func (r *Registry) Override(decisionID, value string) {
 		return // locked decisions can't be overridden
 	}
 	r.overrides[decisionID] = value
+	if r.db != nil {
+		if err := r.db.SetOverride(decisionID, value); err != nil {
+			log.Printf("grain: saving override %s: %v", decisionID, err)
+		}
+	}
 }
 
 // ClearOverride removes an override, returning to normal evaluation.
@@ -134,6 +216,11 @@ func (r *Registry) ClearOverride(decisionID string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	delete(r.overrides, decisionID)
+	if r.db != nil {
+		if err := r.db.DeleteOverride(decisionID); err != nil {
+			log.Printf("grain: deleting override %s: %v", decisionID, err)
+		}
+	}
 }
 
 // ListDecisions returns all registered decisions.

@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/stockyard-dev/stockyard/internal/grain/audit"
+	"github.com/stockyard-dev/stockyard/internal/grain/store"
 	"github.com/stockyard-dev/stockyard/internal/grain/tree"
 )
 
@@ -14,6 +17,7 @@ type Config struct {
 	Port     int
 	Registry *tree.Registry
 	Audit    *audit.Log
+	Store    *store.DB
 }
 
 type Server struct {
@@ -27,10 +31,32 @@ func New(cfg Config) *Server {
 	return s
 }
 
+// OpenStore opens the Grain SQLite database in the directory specified by
+// GRAIN_DATA_DIR (default /tmp/grain). The caller is responsible for closing
+// the returned *store.DB.
+func OpenStore() (*store.DB, error) {
+	dir := os.Getenv("GRAIN_DATA_DIR")
+	if dir == "" {
+		dir = "/tmp/grain"
+	}
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, fmt.Errorf("creating data dir %s: %w", dir, err)
+	}
+	return store.Open(filepath.Join(dir, "grain.db"))
+}
+
 func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", s.cfg.Port)
 	log.Printf("Grain server listening on %s (%d decisions)", addr, s.cfg.Registry.Count())
 	return http.ListenAndServe(addr, s.mux)
+}
+
+// Close releases resources held by the server, including the store.
+func (s *Server) Close() error {
+	if s.cfg.Store != nil {
+		return s.cfg.Store.Close()
+	}
+	return nil
 }
 
 func (s *Server) routes() {

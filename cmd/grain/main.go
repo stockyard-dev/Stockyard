@@ -79,28 +79,35 @@ func cmdServe(file string, args []string) {
 		}
 	}
 
-	reg := tree.NewRegistry()
+	db, err := server.OpenStore()
+	if err != nil {
+		fmt.Printf("Error opening store: %v\n", err)
+		os.Exit(1)
+	}
+
+	reg := tree.NewRegistry(db)
 	if err := reg.LoadFromFile(file); err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	auditLog := audit.NewLog(10000)
+	auditLog := audit.NewLog(10000, db)
 
 	fmt.Printf("\n  🌾 Stockyard Grain\n\n")
 	fmt.Printf("    Decisions:  %d loaded from %s\n", reg.Count(), file)
 	fmt.Printf("    Dashboard:  http://localhost:%d/ui\n", *port)
 	fmt.Printf("    API:        http://localhost:%d/api/evaluate\n\n", *port)
 
-	srv := server.New(server.Config{Port: *port, Registry: reg, Audit: auditLog})
+	srv := server.New(server.Config{Port: *port, Registry: reg, Audit: auditLog, Store: db})
 	if err := srv.ListenAndServe(); err != nil {
+		srv.Close()
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
 func cmdEval(file, decisionID string) {
-	reg := tree.NewRegistry()
+	reg := tree.NewRegistry(nil)
 	if err := reg.LoadFromFile(file); err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
@@ -112,7 +119,7 @@ func cmdEval(file, decisionID string) {
 }
 
 func cmdList(file string) {
-	reg := tree.NewRegistry()
+	reg := tree.NewRegistry(nil)
 	if err := reg.LoadFromFile(file); err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)

@@ -4,9 +4,11 @@
 package audit
 
 import (
+	"log"
 	"sync"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/grain/store"
 	"github.com/stockyard-dev/stockyard/internal/grain/tree"
 )
 
@@ -30,17 +32,53 @@ type Log struct {
 	entries []Entry
 	max     int
 	traces  map[string]*RequestTrace
+	db      *store.DB
 }
 
 // NewLog creates an audit log.
-func NewLog(maxEntries int) *Log {
+func NewLog(maxEntries int, db *store.DB) *Log {
 	if maxEntries <= 0 {
 		maxEntries = 10000
 	}
-	return &Log{
+	l := &Log{
 		entries: nil,
 		max:     maxEntries,
 		traces:  map[string]*RequestTrace{},
+		db:      db,
+	}
+	if db != nil {
+		l.loadFromDB()
+	}
+	return l
+}
+
+// loadFromDB restores recent audit entries from SQLite on startup.
+func (l *Log) loadFromDB() {
+	entries, err := l.db.ListAuditEntries(l.max)
+	if err != nil {
+		log.Printf("grain: loading audit entries from db: %v", err)
+		return
+	}
+	// Entries come back newest-first; reverse for chronological order.
+	for i := len(entries) - 1; i >= 0; i-- {
+		se := entries[i]
+		e := Entry{
+			RequestID: se.RequestID,
+			Outcome: tree.Outcome{
+				DecisionID: se.DecisionID,
+				Value:      se.Value,
+				Reason:     se.Reason,
+				Variant:    se.Variant,
+				Timestamp:  se.CreatedAt,
+			},
+		}
+		l.entries = append(l.entries, e)
+		trace, ok := l.traces[se.RequestID]
+		if !ok {
+			trace = &RequestTrace{RequestID: se.RequestID, StartedAt: se.CreatedAt}
+			l.traces[se.RequestID] = trace
+		}
+		trace.Entries = append(trace.Entries, e)
 	}
 }
 
@@ -77,6 +115,39 @@ func (l *Log) Record(requestID string, outcome tree.Outcome, ctx *tree.EvalConte
 		}
 		if oldest != "" {
 			delete(l.traces, oldest)
+		}
+	}
+
+	// Persist to SQLite
+	if l.db != nil {
+		ctxMap := make(map[string]string)
+		if ctx != nil {
+			if ctx.UserID != "" {
+				ctxMap["user_id"] = ctx.UserID
+			}
+			if ctx.Plan != "" {
+				ctxMap["plan"] = ctx.Plan
+			}
+			if ctx.Country != "" {
+				ctxMap["country"] = ctx.Country
+			}
+			if ctx.RequestID != "" {
+				ctxMap["request_id"] = ctx.RequestID
+			}
+			for k, v := range ctx.Custom {
+				ctxMap[k] = v
+			}
+		}
+		se := store.Entry{
+			RequestID:  requestID,
+			DecisionID: outcome.DecisionID,
+			Value:      outcome.Value,
+			Reason:     outcome.Reason,
+			Variant:    outcome.Variant,
+			Context:    ctxMap,
+		}
+		if err := l.db.AppendAuditEntry(se); err != nil {
+			log.Printf("grain: saving audit entry: %v", err)
 		}
 	}
 }
