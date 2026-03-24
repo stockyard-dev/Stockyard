@@ -5,6 +5,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -33,7 +34,7 @@ func main() {
 }
 
 func cmdDemo() {
-	engine := metabolic.New(0.7)
+	engine := metabolic.New(0.7, nil)
 
 	// Register example features
 	engine.Register(metabolic.Feature{ID: "auth", Name: "Authentication", Priority: 1, CPUWeight: 0.05, MemWeight: 0.03, Fallback: "reject"})
@@ -69,7 +70,13 @@ func cmdServe(args []string) {
 	fs.Parse(args)
 	if p := os.Getenv("PORT"); p != "" { if n, err := strconv.Atoi(p); err == nil { *port = n } }
 
-	engine := metabolic.New(*threshold)
+	// Open persistent store
+	db, err := server.OpenStore()
+	if err != nil {
+		log.Fatalf("tide: open store: %v", err)
+	}
+
+	engine := metabolic.New(*threshold, db)
 
 	// Register demo features
 	engine.Register(metabolic.Feature{ID: "auth", Name: "Authentication", Priority: 1, CPUWeight: 0.05, MemWeight: 0.03})
@@ -84,7 +91,8 @@ func cmdServe(args []string) {
 	fmt.Printf("    Features:  %d registered\n", len(engine.Features()))
 	fmt.Printf("    Dashboard: http://localhost:%d/ui\n\n", *port)
 
-	srv := server.New(server.Config{Port: *port, Engine: engine})
+	srv := server.New(server.Config{Port: *port, Engine: engine, Store: db})
+	defer srv.Close()
 	srv.ListenAndServe()
 }
 

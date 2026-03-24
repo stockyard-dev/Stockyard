@@ -4,8 +4,11 @@ package metabolic
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/tide/store"
 )
 
 // State represents a feature's current metabolic state.
@@ -37,6 +40,7 @@ type Engine struct {
 	pressure   float64   // 0-1, current system pressure
 	threshold  float64   // pressure level that triggers hibernation (default 0.7)
 	history    []Event
+	db         *store.DB // optional persistent store
 }
 
 // Event records a metabolic state change.
@@ -49,14 +53,62 @@ type Event struct {
 	Reason    string    `json:"reason"`
 }
 
-// New creates a metabolic engine.
-func New(threshold float64) *Engine {
+// New creates a metabolic engine. If db is non-nil, features and events are
+// persisted to SQLite and restored on startup.
+func New(threshold float64, db *store.DB) *Engine {
 	if threshold <= 0 {
 		threshold = 0.7
 	}
-	return &Engine{
+	e := &Engine{
 		features:  map[string]*Feature{},
 		threshold: threshold,
+		db:        db,
+	}
+	if db != nil {
+		e.loadFromStore()
+	}
+	return e
+}
+
+// loadFromStore restores features and recent events from the database.
+func (e *Engine) loadFromStore() {
+	feats, err := e.db.ListFeatures()
+	if err != nil {
+		log.Printf("tide: failed to load features from store: %v", err)
+		return
+	}
+	for id, sf := range feats {
+		e.features[id] = &Feature{
+			ID:         sf.ID,
+			Name:       sf.Name,
+			Priority:   sf.Priority,
+			State:      State(sf.State),
+			CPUWeight:  sf.CPUWeight,
+			MemWeight:  sf.MemWeight,
+			LastActive: sf.LastActive,
+			Fallback:   sf.Fallback,
+		}
+	}
+
+	events, err := e.db.ListEvents(500)
+	if err != nil {
+		log.Printf("tide: failed to load events from store: %v", err)
+		return
+	}
+	// Events come back newest-first; reverse for chronological order.
+	for i := len(events) - 1; i >= 0; i-- {
+		se := events[i]
+		e.history = append(e.history, Event{
+			FeatureID: se.FeatureID,
+			From:      State(se.FromState),
+			To:        State(se.ToState),
+			Pressure:  se.Pressure,
+			Timestamp: se.CreatedAt,
+			Reason:    se.Reason,
+		})
+	}
+	if len(e.features) > 0 {
+		log.Printf("tide: restored %d features and %d events from store", len(e.features), len(e.history))
 	}
 }
 
@@ -67,6 +119,7 @@ func (e *Engine) Register(f Feature) {
 	f.State = StateActive
 	f.LastActive = time.Now()
 	e.features[f.ID] = &f
+	e.persistFeature(&f)
 }
 
 // IsActive checks if a feature is currently active (not hibernating).
@@ -115,6 +168,9 @@ func (e *Engine) SetPressure(pressure float64) []Event {
 		e.history = e.history[len(e.history)-500:]
 	}
 
+	// Persist state changes
+	e.persistEvents(events)
+
 	return events
 }
 
@@ -131,6 +187,7 @@ func (e *Engine) hibernateByPriority(pressure float64) []Event {
 					Pressure: pressure, Timestamp: time.Now(),
 					Reason: fmt.Sprintf("pressure %.0f%% exceeded threshold, priority %d", pressure*100, pri),
 				})
+				e.persistFeature(f)
 			}
 		}
 		// Check if we've shed enough
@@ -153,6 +210,7 @@ func (e *Engine) wakeAll(pressure float64) []Event {
 				Pressure: pressure, Timestamp: time.Now(),
 				Reason: fmt.Sprintf("pressure dropped to %.0f%%", pressure*100),
 			})
+			e.persistFeature(f)
 		}
 	}
 	return events
@@ -166,6 +224,44 @@ func (e *Engine) estimateRelief() float64 {
 		}
 	}
 	return relief
+}
+
+// persistFeature saves a single feature to the store if available.
+func (e *Engine) persistFeature(f *Feature) {
+	if e.db == nil {
+		return
+	}
+	if err := e.db.SaveFeature(store.Feature{
+		ID:         f.ID,
+		Name:       f.Name,
+		Priority:   f.Priority,
+		State:      string(f.State),
+		CPUWeight:  f.CPUWeight,
+		MemWeight:  f.MemWeight,
+		LastActive: f.LastActive,
+		Fallback:   f.Fallback,
+	}); err != nil {
+		log.Printf("tide: persist feature %s: %v", f.ID, err)
+	}
+}
+
+// persistEvents saves a batch of events to the store if available.
+func (e *Engine) persistEvents(events []Event) {
+	if e.db == nil {
+		return
+	}
+	for _, ev := range events {
+		if err := e.db.AppendEvent(store.Event{
+			FeatureID: ev.FeatureID,
+			FromState: string(ev.From),
+			ToState:   string(ev.To),
+			Pressure:  ev.Pressure,
+			Reason:    ev.Reason,
+			CreatedAt: ev.Timestamp,
+		}); err != nil {
+			log.Printf("tide: persist event: %v", err)
+		}
+	}
 }
 
 // Features returns all managed features.

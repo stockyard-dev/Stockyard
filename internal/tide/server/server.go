@@ -5,18 +5,36 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/stockyard-dev/stockyard/internal/tide/metabolic"
+	"github.com/stockyard-dev/stockyard/internal/tide/store"
 )
 
 type Config struct {
 	Port   int
 	Engine *metabolic.Engine
+	Store  *store.DB
 }
 
 type Server struct {
 	cfg Config
 	mux *http.ServeMux
+}
+
+// OpenStore opens the Tide SQLite database under dataDir.
+// It creates the directory if needed and returns a *store.DB.
+func OpenStore() (*store.DB, error) {
+	dataDir := os.Getenv("TIDE_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "/tmp/tide"
+	}
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		return nil, fmt.Errorf("create data dir: %w", err)
+	}
+	dbPath := filepath.Join(dataDir, "tide.db")
+	return store.Open(dbPath)
 }
 
 func New(cfg Config) *Server {
@@ -34,6 +52,14 @@ func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", s.cfg.Port)
 	log.Printf("Tide server listening on %s", addr)
 	return http.ListenAndServe(addr, s.mux)
+}
+
+// Close releases resources held by the server, including the store.
+func (s *Server) Close() error {
+	if s.cfg.Store != nil {
+		return s.cfg.Store.Close()
+	}
+	return nil
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
