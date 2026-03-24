@@ -168,6 +168,19 @@ func runTests(ctx context.Context, spec *parser.Spec, dir string) (passed, total
 }
 
 func runGoTests(ctx context.Context, dir string) (int, int, string, error) {
+	// Ensure go.mod exists (generated code needs a module)
+	goModPath := filepath.Join(dir, "go.mod")
+	if _, err := os.Stat(goModPath); os.IsNotExist(err) {
+		initCmd := exec.CommandContext(ctx, "go", "mod", "init", "generated")
+		initCmd.Dir = dir
+		if out, err := initCmd.CombinedOutput(); err != nil {
+			return 0, 0, string(out), fmt.Errorf("go mod init: %w", err)
+		}
+		tidyCmd := exec.CommandContext(ctx, "go", "mod", "tidy")
+		tidyCmd.Dir = dir
+		tidyCmd.CombinedOutput() // best effort
+	}
+
 	cmd := exec.CommandContext(ctx, "go", "test", "-v", "-count=1", "./...")
 	cmd.Dir = dir
 	out, err := cmd.CombinedOutput()
