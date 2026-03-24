@@ -170,6 +170,7 @@ func latencyAccuracy(results []RequestResult) float64 {
 		return 0.5
 	}
 	var totalError float64
+	validCount := 0
 	for _, r := range results {
 		if r.BidLatencyMs <= 0 {
 			continue
@@ -181,8 +182,12 @@ func latencyAccuracy(results []RequestResult) float64 {
 			err = -err
 		}
 		totalError += err
+		validCount++
 	}
-	avgError := totalError / float64(len(results))
+	if validCount == 0 {
+		return 0.5
+	}
+	avgError := totalError / float64(validCount)
 	accuracy := 1.0 - avgError
 	if accuracy < 0 {
 		accuracy = 0
