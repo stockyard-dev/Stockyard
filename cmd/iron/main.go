@@ -7,6 +7,7 @@
 //	iron tests <dir|file>        Generate tests only (preview what will be tested)
 //	iron stats <dir|file>        Show spec statistics
 //	iron init <dir>              Create an example spec file
+//	iron serve                   Start the HTTP server with admin UI
 //	iron version                 Show version
 package main
 
@@ -15,9 +16,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -26,6 +29,8 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/iron/codegen"
 	"github.com/stockyard-dev/stockyard/internal/iron/parser"
 	"github.com/stockyard-dev/stockyard/internal/iron/runner"
+	"github.com/stockyard-dev/stockyard/internal/iron/server"
+	"github.com/stockyard-dev/stockyard/internal/iron/store"
 	"github.com/stockyard-dev/stockyard/internal/iron/testgen"
 )
 
@@ -64,6 +69,8 @@ func main() {
 			dir = os.Args[2]
 		}
 		cmdInit(dir)
+	case "serve":
+		cmdServe()
 	case "version":
 		fmt.Printf("iron %s\n", version)
 	case "help", "--help", "-h":
@@ -236,6 +243,38 @@ func cmdStats(path string) {
 	fmt.Println()
 }
 
+func cmdServe() {
+	port := 9650
+	if p := os.Getenv("PORT"); p != "" {
+		if v, err := strconv.Atoi(p); err == nil {
+			port = v
+		}
+	}
+
+	dataDir := os.Getenv("IRON_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "./iron-data"
+	}
+
+	st, err := store.Open(dataDir)
+	if err != nil {
+		log.Fatalf("Error opening database: %v", err)
+	}
+	defer st.Close()
+
+	srv := server.New(st, server.Config{
+		Port:    port,
+		DataDir: dataDir,
+	})
+
+	fmt.Printf("\n  ⚙ Stockyard Iron — Admin UI\n\n")
+	fmt.Printf("    http://localhost:%d\n\n", port)
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatalf("Server error: %v", err)
+	}
+}
+
 func cmdInit(dir string) {
 	os.MkdirAll(dir, 0755)
 	path := filepath.Join(dir, "app.spec.yaml")
@@ -288,6 +327,7 @@ func printUsage() {
     iron tests <dir|file>        Preview generated tests
     iron stats <dir|file>        Show spec statistics
     iron init [dir]              Create example spec file
+    iron serve                   Start HTTP server with admin UI
     iron version                 Show version
 
   Build flags:
@@ -303,6 +343,8 @@ func printUsage() {
     IRON_API_KEY        API key for code generation
     ANTHROPIC_API_KEY   Anthropic API key (fallback)
     OPENAI_API_KEY      OpenAI API key (fallback)
+    PORT                HTTP server port (default: 9650)
+    IRON_DATA_DIR       Data directory for SQLite (default: ./iron-data)
 
   Example:
     iron init myapp
