@@ -42,6 +42,28 @@ type Diagnosis struct {
 	CreatedAt        time.Time       `json:"created_at"`
 }
 
+// HealAttempt records the result of applying a patch to the codebase.
+type HealAttempt struct {
+	ID               int       `json:"id"`
+	ErrorFingerprint string    `json:"error_fingerprint"`
+	BranchName       string    `json:"branch_name"`
+	FilesChanged     string    `json:"files_changed"`
+	TestsPassed      bool      `json:"tests_passed"`
+	TestOutput       string    `json:"test_output"`
+	CreatedAt        time.Time `json:"created_at"`
+}
+
+// Pattern stores a remembered fix that worked for a specific error signature.
+type Pattern struct {
+	ID             int       `json:"id"`
+	Fingerprint    string    `json:"fingerprint"`
+	ErrorType      string    `json:"error_type"`
+	MessagePattern string    `json:"message_pattern"`
+	DiagnosisJSON  string    `json:"diagnosis_json"`
+	SuccessCount   int       `json:"success_count"`
+	LastUsed       time.Time `json:"last_used"`
+}
+
 // DB wraps a SQLite connection for Fault persistence.
 type DB struct {
 	conn *sql.DB
@@ -100,6 +122,26 @@ func (db *DB) migrate() error {
 			suggested_fix     TEXT,
 			patch_json        TEXT,
 			created_at        DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+
+		CREATE TABLE IF NOT EXISTS heal_attempts (
+			id                INTEGER PRIMARY KEY AUTOINCREMENT,
+			error_fingerprint TEXT,
+			branch_name       TEXT,
+			files_changed     TEXT,
+			tests_passed      BOOLEAN,
+			test_output       TEXT,
+			created_at        DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+
+		CREATE TABLE IF NOT EXISTS patterns (
+			id              INTEGER PRIMARY KEY AUTOINCREMENT,
+			fingerprint     TEXT UNIQUE,
+			error_type      TEXT,
+			message_pattern TEXT,
+			diagnosis_json  TEXT,
+			success_count   INTEGER DEFAULT 1,
+			last_used       DATETIME
 		);
 	`)
 	return err
@@ -238,6 +280,107 @@ func (db *DB) ListDiagnoses() ([]Diagnosis, error) {
 		}
 		d.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 		out = append(out, d)
+	}
+	return out, rows.Err()
+}
+
+// SaveHealAttempt records a patch application attempt.
+func (db *DB) SaveHealAttempt(h HealAttempt) error {
+	if h.CreatedAt.IsZero() {
+		h.CreatedAt = time.Now()
+	}
+	_, err := db.conn.Exec(`
+		INSERT INTO heal_attempts (error_fingerprint, branch_name, files_changed, tests_passed, test_output, created_at)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`, h.ErrorFingerprint, h.BranchName, h.FilesChanged, h.TestsPassed, h.TestOutput, h.CreatedAt)
+	return err
+}
+
+// ListHealAttempts returns all heal attempts ordered by creation time descending.
+func (db *DB) ListHealAttempts() ([]HealAttempt, error) {
+	rows, err := db.conn.Query(`
+		SELECT id, error_fingerprint, branch_name, files_changed, tests_passed, test_output, created_at
+		FROM heal_attempts
+		ORDER BY created_at DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []HealAttempt
+	for rows.Next() {
+		var h HealAttempt
+		var createdAt string
+		if err := rows.Scan(&h.ID, &h.ErrorFingerprint, &h.BranchName, &h.FilesChanged,
+			&h.TestsPassed, &h.TestOutput, &createdAt); err != nil {
+			return nil, err
+		}
+		h.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
+		out = append(out, h)
+	}
+	return out, rows.Err()
+}
+
+// SavePattern upserts a fix pattern by fingerprint.
+func (db *DB) SavePattern(p Pattern) error {
+	if p.LastUsed.IsZero() {
+		p.LastUsed = time.Now()
+	}
+	_, err := db.conn.Exec(`
+		INSERT INTO patterns (fingerprint, error_type, message_pattern, diagnosis_json, success_count, last_used)
+		VALUES (?, ?, ?, ?, ?, ?)
+		ON CONFLICT(fingerprint) DO UPDATE SET
+			success_count  = ?,
+			last_used      = ?,
+			diagnosis_json = ?
+	`, p.Fingerprint, p.ErrorType, p.MessagePattern, p.DiagnosisJSON, p.SuccessCount, p.LastUsed,
+		p.SuccessCount, p.LastUsed, p.DiagnosisJSON)
+	return err
+}
+
+// RecallPattern retrieves a pattern by exact fingerprint.
+func (db *DB) RecallPattern(fingerprint string) (*Pattern, error) {
+	var p Pattern
+	var lastUsed string
+	err := db.conn.QueryRow(`
+		SELECT id, fingerprint, error_type, message_pattern, diagnosis_json, success_count, last_used
+		FROM patterns
+		WHERE fingerprint = ?
+	`, fingerprint).Scan(&p.ID, &p.Fingerprint, &p.ErrorType, &p.MessagePattern,
+		&p.DiagnosisJSON, &p.SuccessCount, &lastUsed)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	p.LastUsed, _ = time.Parse(time.RFC3339, lastUsed)
+	return &p, nil
+}
+
+// ListPatterns returns all known fix patterns ordered by success count descending.
+func (db *DB) ListPatterns() ([]Pattern, error) {
+	rows, err := db.conn.Query(`
+		SELECT id, fingerprint, error_type, message_pattern, diagnosis_json, success_count, last_used
+		FROM patterns
+		ORDER BY success_count DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Pattern
+	for rows.Next() {
+		var p Pattern
+		var lastUsed string
+		if err := rows.Scan(&p.ID, &p.Fingerprint, &p.ErrorType, &p.MessagePattern,
+			&p.DiagnosisJSON, &p.SuccessCount, &lastUsed); err != nil {
+			return nil, err
+		}
+		p.LastUsed, _ = time.Parse(time.RFC3339, lastUsed)
+		out = append(out, p)
 	}
 	return out, rows.Err()
 }
