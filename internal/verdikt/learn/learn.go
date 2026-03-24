@@ -3,9 +3,11 @@
 package learn
 
 import (
+	"log"
 	"sync"
 
 	"github.com/stockyard-dev/stockyard/internal/verdikt/judge"
+	"github.com/stockyard-dev/stockyard/internal/verdikt/store"
 )
 
 // Feedback records a user's reaction to an AI response.
@@ -18,6 +20,7 @@ type Feedback struct {
 // Calibrator learns the relationship between Verdikt scores and user satisfaction.
 type Calibrator struct {
 	mu        sync.RWMutex
+	db        *store.DB
 	pairs     []calibrationPair
 	maxPairs  int
 	biasShift float64 // learned adjustment to raw scores
@@ -29,9 +32,24 @@ type calibrationPair struct {
 	Happy    bool // derived from reaction
 }
 
-// New creates a calibrator.
-func New() *Calibrator {
-	return &Calibrator{maxPairs: 2000}
+// New creates a calibrator. If db is non-nil, feedback and calibration
+// state are persisted to SQLite and restored on startup.
+func New(db *store.DB) *Calibrator {
+	c := &Calibrator{db: db, maxPairs: 2000}
+	if db != nil {
+		c.loadFromDB()
+	}
+	return c
+}
+
+// loadFromDB restores the bias shift from the calibration table.
+func (c *Calibrator) loadFromDB() {
+	v, err := c.db.GetCalibration("bias_shift")
+	if err != nil {
+		log.Printf("verdikt/learn: failed to load calibration: %v", err)
+		return
+	}
+	c.biasShift = v
 }
 
 // RecordFeedback correlates a user reaction with the evaluation score.
@@ -45,6 +63,10 @@ func (c *Calibrator) RecordFeedback(eval *judge.Evaluation, fb Feedback) {
 	})
 	if len(c.pairs) > c.maxPairs {
 		c.pairs = c.pairs[len(c.pairs)-c.maxPairs:]
+	}
+
+	if c.db != nil {
+		_ = c.db.SaveFeedback(fb.RequestID, fb.Reaction, fb.Comment, eval.Score)
 	}
 
 	// Recalculate bias
@@ -95,6 +117,10 @@ func (c *Calibrator) recalibrate() {
 	actualMidpoint := (happyAvg + unhappyAvg) / 2
 
 	c.biasShift = (idealMidpoint - actualMidpoint) * 0.5 // conservative adjustment
+
+	if c.db != nil {
+		_ = c.db.SetCalibration("bias_shift", c.biasShift)
+	}
 }
 
 // CalibrationStats shows how well Verdikt correlates with user satisfaction.

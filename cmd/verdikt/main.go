@@ -16,6 +16,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/verdikt/judge"
 	"github.com/stockyard-dev/stockyard/internal/verdikt/learn"
 	"github.com/stockyard-dev/stockyard/internal/verdikt/server"
+	"github.com/stockyard-dev/stockyard/internal/verdikt/store"
 )
 
 var version = "dev"
@@ -62,7 +63,7 @@ func cmdEval(path string) {
 	}
 
 	llm := provider.NewOpenAI(provider.ProviderConfig{APIKey: llmKey})
-	engine := judge.New(llm, "gpt-4o-mini", "")
+	engine := judge.New(llm, "gpt-4o-mini", "", nil)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -95,6 +96,22 @@ func cmdServe(args []string) {
 		if n, err := strconv.Atoi(p); err == nil { *port = n }
 	}
 
+	dataDir := os.Getenv("VERDIKT_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "/tmp/verdikt"
+	}
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		fmt.Printf("  Error creating data dir: %v\n", err)
+		os.Exit(1)
+	}
+
+	db, err := store.Open(dataDir + "/verdikt.db")
+	if err != nil {
+		fmt.Printf("  Error opening database: %v\n", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
 	llmKey := resolveLLMKey()
 	if llmKey == "" {
 		fmt.Println("  Warning: No LLM key — evaluations will fail.")
@@ -103,17 +120,18 @@ func cmdServe(args []string) {
 	var engine *judge.Engine
 	if llmKey != "" {
 		llm := provider.NewOpenAI(provider.ProviderConfig{APIKey: llmKey})
-		engine = judge.New(llm, "gpt-4o-mini", *domain)
+		engine = judge.New(llm, "gpt-4o-mini", *domain, db)
 	}
-	cal := learn.New()
+	cal := learn.New(db)
 
 	fmt.Printf("\n  ⚖️ Stockyard Verdikt\n\n")
 	fmt.Printf("    Port:      :%d\n", *port)
 	fmt.Printf("    Domain:    %s\n", *domain)
+	fmt.Printf("    Data:      %s\n", dataDir)
 	fmt.Printf("    Dashboard: http://localhost:%d/ui\n", *port)
 	fmt.Printf("    Evaluate:  POST http://localhost:%d/api/evaluate\n\n", *port)
 
-	srv := server.New(server.Config{Port: *port, Judge: engine, Calibrator: cal})
+	srv := server.New(server.Config{Port: *port, Judge: engine, Calibrator: cal, Store: db})
 	srv.ListenAndServe()
 }
 

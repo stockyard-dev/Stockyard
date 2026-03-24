@@ -8,12 +8,14 @@ import (
 
 	"github.com/stockyard-dev/stockyard/internal/verdikt/judge"
 	"github.com/stockyard-dev/stockyard/internal/verdikt/learn"
+	"github.com/stockyard-dev/stockyard/internal/verdikt/store"
 )
 
 type Config struct {
 	Port       int
 	Judge      *judge.Engine
 	Calibrator *learn.Calibrator
+	Store      *store.DB
 }
 
 type Server struct {

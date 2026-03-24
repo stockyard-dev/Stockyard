@@ -7,11 +7,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
+	"github.com/stockyard-dev/stockyard/internal/verdikt/store"
 )
 
 // Evaluation is the judge's assessment of a single AI response.
@@ -52,21 +54,62 @@ type Engine struct {
 	llm       provider.Provider
 	model     string
 	domain    string
+	db        *store.DB
 	mu        sync.RWMutex
 	history   []Evaluation
 	baselines map[string]float64 // learned quality baselines per domain
 }
 
-// New creates a judge engine.
-func New(llm provider.Provider, model, domain string) *Engine {
+// New creates a judge engine. If db is non-nil, evaluations are persisted
+// and baselines are loaded from SQLite on startup.
+func New(llm provider.Provider, model, domain string, db *store.DB) *Engine {
 	if model == "" {
 		model = "gpt-4o-mini"
 	}
-	return &Engine{
+	e := &Engine{
 		llm:       llm,
 		model:     model,
 		domain:    domain,
+		db:        db,
 		baselines: map[string]float64{},
+	}
+	if db != nil {
+		e.loadFromDB()
+	}
+	return e
+}
+
+// loadFromDB restores in-memory state from the database.
+func (e *Engine) loadFromDB() {
+	baselines, err := e.db.ListBaselines()
+	if err != nil {
+		log.Printf("verdikt/judge: failed to load baselines: %v", err)
+	} else {
+		e.baselines = baselines
+	}
+
+	rows, err := e.db.ListEvaluations(5000)
+	if err != nil {
+		log.Printf("verdikt/judge: failed to load evaluations: %v", err)
+		return
+	}
+	// rows come newest-first; reverse into chronological order
+	for i := len(rows) - 1; i >= 0; i-- {
+		r := rows[i]
+		e.history = append(e.history, Evaluation{
+			ID:        fmt.Sprintf("eval-db-%d", r.ID),
+			RequestID: r.RequestID,
+			Score:     r.Score,
+			Dimensions: Scores{
+				Relevance:   r.Relevance,
+				Accuracy:    r.Accuracy,
+				Helpfulness: r.Helpfulness,
+				Safety:      r.Safety,
+				Tone:        r.Tone,
+			},
+			Verdict: r.Verdict,
+			Issues:  r.Issues,
+		})
 	}
 }
 
@@ -135,6 +178,22 @@ func (e *Engine) Evaluate(ctx context.Context, interaction Interaction) (*Evalua
 		e.history = e.history[len(e.history)-5000:]
 	}
 	e.mu.Unlock()
+
+	if e.db != nil {
+		_ = e.db.SaveEvaluation(store.Evaluation{
+			RequestID:   eval.RequestID,
+			Domain:      interaction.Domain,
+			Score:       eval.Score,
+			Relevance:   eval.Dimensions.Relevance,
+			Accuracy:    eval.Dimensions.Accuracy,
+			Helpfulness: eval.Dimensions.Helpfulness,
+			Safety:      eval.Dimensions.Safety,
+			Tone:        eval.Dimensions.Tone,
+			Verdict:     eval.Verdict,
+			Issues:      eval.Issues,
+			LatencyMs:   float64(eval.LatencyMs),
+		})
+	}
 
 	return &eval, nil
 }
