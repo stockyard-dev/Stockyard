@@ -85,6 +85,13 @@ func (db *DB) migrate() error {
 			key   TEXT PRIMARY KEY,
 			value TEXT
 		)`,
+		`CREATE TABLE IF NOT EXISTS pressure_history (
+			id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+			pressure             REAL,
+			feature_count_active INTEGER,
+			feature_count_dormant INTEGER,
+			recorded_at          DATETIME DEFAULT CURRENT_TIMESTAMP
+		)`,
 	}
 	for _, s := range stmts {
 		if _, err := db.conn.Exec(s); err != nil {
@@ -186,4 +193,53 @@ func (db *DB) GetConfig(key string) (string, error) {
 		return "", nil
 	}
 	return value, err
+}
+
+// PressureRecord is a single pressure history data point.
+type PressureRecord struct {
+	ID           int64     `json:"id"`
+	Pressure     float64   `json:"pressure"`
+	ActiveCount  int       `json:"feature_count_active"`
+	DormantCount int       `json:"feature_count_dormant"`
+	RecordedAt   time.Time `json:"recorded_at"`
+}
+
+// RecordPressure inserts a pressure history record.
+func (db *DB) RecordPressure(pressure float64, activeCount, dormantCount int) error {
+	_, err := db.conn.Exec(
+		`INSERT INTO pressure_history (pressure, feature_count_active, feature_count_dormant) VALUES (?, ?, ?)`,
+		pressure, activeCount, dormantCount,
+	)
+	return err
+}
+
+// GetPressureHistory returns pressure records since the given time, up to limit.
+func (db *DB) GetPressureHistory(since time.Time, limit int) ([]PressureRecord, error) {
+	rows, err := db.conn.Query(
+		`SELECT id, pressure, feature_count_active, feature_count_dormant, recorded_at
+		 FROM pressure_history
+		 WHERE recorded_at >= ?
+		 ORDER BY recorded_at DESC
+		 LIMIT ?`, since, limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []PressureRecord
+	for rows.Next() {
+		var r PressureRecord
+		if err := rows.Scan(&r.ID, &r.Pressure, &r.ActiveCount, &r.DormantCount, &r.RecordedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, r)
+	}
+	return out, rows.Err()
+}
+
+// DeleteFeature removes a feature by ID.
+func (db *DB) DeleteFeature(id string) error {
+	_, err := db.conn.Exec(`DELETE FROM features WHERE id = ?`, id)
+	return err
 }
