@@ -427,5 +427,3 @@ func billingGenID(prefix string) string {
 	rand.Read(b)
 	return prefix + hex.EncodeToString(b)
 }
-
-

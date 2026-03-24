@@ -63,8 +63,8 @@ func TestMultiCaller_SelectWinner_Cheapest(t *testing.T) {
 
 func TestJaccardSimilarity(t *testing.T) {
 	tests := []struct {
-		a, b     string
-		minSim   float64
+		a, b   string
+		minSim float64
 	}{
 		{"the cat sat on the mat", "the cat sat on the mat", 1.0},
 		{"hello world", "goodbye world", 0.3},

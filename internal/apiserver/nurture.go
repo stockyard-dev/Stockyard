@@ -16,7 +16,7 @@ import (
 
 // NurtureEmail defines a single email in the sequence.
 type NurtureEmail struct {
-	Day     int    // days after signup
+	Day     int // days after signup
 	Subject string
 	Body    string
 }
@@ -416,11 +416,11 @@ func (nr *NurtureRunner) Blast(subject, body string) (int, int) {
 
 // NurtureStats returns stats about the nurture sequence.
 type NurtureStats struct {
-	TotalCaptures  int            `json:"total_captures"`
-	UniqueEmails   int            `json:"unique_emails"`
-	EmailsSent     int            `json:"emails_sent"`
-	EmailsFailed   int            `json:"emails_failed"`
-	ByDay          map[int]int    `json:"by_day"`
+	TotalCaptures int         `json:"total_captures"`
+	UniqueEmails  int         `json:"unique_emails"`
+	EmailsSent    int         `json:"emails_sent"`
+	EmailsFailed  int         `json:"emails_failed"`
+	ByDay         map[int]int `json:"by_day"`
 }
 
 // GetNurtureStats returns current nurture sequence stats.

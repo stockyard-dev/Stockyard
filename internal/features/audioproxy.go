@@ -13,14 +13,18 @@ import (
 
 type AudioProxyEvent struct {
 	Timestamp time.Time `json:"timestamp"`
-	Direction string `json:"direction"`
-	Cached bool `json:"cached"`
-	Model string `json:"model"`
+	Direction string    `json:"direction"`
+	Cached    bool      `json:"cached"`
+	Model     string    `json:"model"`
 }
 
 type AudioProxyState struct {
-	mu sync.Mutex; cfg config.AudioProxyConfig; recentEvents []AudioProxyEvent
-	sttRequests atomic.Int64; ttsRequests atomic.Int64; cacheHits atomic.Int64
+	mu           sync.Mutex
+	cfg          config.AudioProxyConfig
+	recentEvents []AudioProxyEvent
+	sttRequests  atomic.Int64
+	ttsRequests  atomic.Int64
+	cacheHits    atomic.Int64
 }
 
 func NewAudioProxy(cfg config.AudioProxyConfig) *AudioProxyState {
@@ -28,7 +32,10 @@ func NewAudioProxy(cfg config.AudioProxyConfig) *AudioProxyState {
 }
 
 func (a *AudioProxyState) Stats() map[string]any {
-	a.mu.Lock(); events := make([]AudioProxyEvent, len(a.recentEvents)); copy(events, a.recentEvents); a.mu.Unlock()
+	a.mu.Lock()
+	events := make([]AudioProxyEvent, len(a.recentEvents))
+	copy(events, a.recentEvents)
+	a.mu.Unlock()
 	return map[string]any{"stt_requests": a.sttRequests.Load(), "tts_requests": a.ttsRequests.Load(), "cache_hits": a.cacheHits.Load(), "recent_events": events}
 }
 

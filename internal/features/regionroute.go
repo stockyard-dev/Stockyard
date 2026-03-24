@@ -21,9 +21,9 @@ type RegionRouteEvent struct {
 }
 
 type RegionRouteState struct {
-	mu           sync.Mutex
-	cfg          config.RegionRouteConfig
-	recentEvents []RegionRouteEvent
+	mu             sync.Mutex
+	cfg            config.RegionRouteConfig
+	recentEvents   []RegionRouteEvent
 	requestsRouted atomic.Int64
 	regionHits     map[string]int64
 }
@@ -40,7 +40,9 @@ func (rr *RegionRouteState) Stats() map[string]any {
 	events := make([]RegionRouteEvent, len(rr.recentEvents))
 	copy(events, rr.recentEvents)
 	hits := make(map[string]int64)
-	for k, v := range rr.regionHits { hits[k] = v }
+	for k, v := range rr.regionHits {
+		hits[k] = v
+	}
 	rr.mu.Unlock()
 	return map[string]any{
 		"requests_routed": rr.requestsRouted.Load(), "region_hits": hits,
@@ -66,7 +68,9 @@ func RegionRouteMiddleware(rr *RegionRouteState) proxy.Middleware {
 			}
 			rr.mu.Lock()
 			rr.regionHits[region]++
-			if len(rr.recentEvents) >= 200 { rr.recentEvents = rr.recentEvents[1:] }
+			if len(rr.recentEvents) >= 200 {
+				rr.recentEvents = rr.recentEvents[1:]
+			}
 			rr.recentEvents = append(rr.recentEvents, RegionRouteEvent{
 				Timestamp: time.Now(), Region: region, Model: req.Model,
 			})

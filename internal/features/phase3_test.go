@@ -289,7 +289,7 @@ func TestComplianceLogMiddleware(t *testing.T) {
 	mw := ComplianceLogMiddleware(cl)
 	handler := mw(inner)
 	resp, err := handler(context.Background(), &provider.Request{
-		Model:   "gpt-4o",
+		Model:    "gpt-4o",
 		Messages: []provider.Message{{Role: "user", Content: "Hello"}},
 	})
 
@@ -404,11 +404,11 @@ func TestSecretScanMiddlewareBlock(t *testing.T) {
 
 func TestSecretScanMiddlewareRedact(t *testing.T) {
 	scanner := NewSecretScanner(config.SecretScanConfig{
-		Enabled:    true,
-		ScanOutput: true,
-		Action:     "redact",
+		Enabled:     true,
+		ScanOutput:  true,
+		Action:      "redact",
 		MaskPreview: true,
-		Patterns:   []string{"github_pat"},
+		Patterns:    []string{"github_pat"},
 	})
 
 	inner := func(_ context.Context, req *provider.Request) (*provider.Response, error) {

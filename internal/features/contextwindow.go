@@ -12,17 +12,17 @@ import (
 )
 
 type ContextWindowEvent struct {
-	Timestamp  time.Time          `json:"timestamp"`
-	TotalChars int                `json:"total_chars"`
-	EstTokens  int                `json:"est_tokens"`
-	Breakdown  map[string]int     `json:"breakdown"`
-	Model      string             `json:"model"`
+	Timestamp  time.Time      `json:"timestamp"`
+	TotalChars int            `json:"total_chars"`
+	EstTokens  int            `json:"est_tokens"`
+	Breakdown  map[string]int `json:"breakdown"`
+	Model      string         `json:"model"`
 }
 
 type ContextWindowState struct {
-	mu           sync.Mutex
-	cfg          config.ContextWindowConfig
-	recentEvents []ContextWindowEvent
+	mu               sync.Mutex
+	cfg              config.ContextWindowConfig
+	recentEvents     []ContextWindowEvent
 	requestsAnalyzed atomic.Int64
 	totalTokensEst   atomic.Int64
 }
@@ -56,7 +56,9 @@ func ContextWindowMiddleware(cw *ContextWindowState) proxy.Middleware {
 			estTokens := totalChars / 4
 			cw.totalTokensEst.Add(int64(estTokens))
 			cw.mu.Lock()
-			if len(cw.recentEvents) >= 200 { cw.recentEvents = cw.recentEvents[1:] }
+			if len(cw.recentEvents) >= 200 {
+				cw.recentEvents = cw.recentEvents[1:]
+			}
 			cw.recentEvents = append(cw.recentEvents, ContextWindowEvent{
 				Timestamp: time.Now(), TotalChars: totalChars, EstTokens: estTokens,
 				Breakdown: breakdown, Model: req.Model,

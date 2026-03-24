@@ -20,17 +20,19 @@ type TokenMarketEvent struct {
 }
 
 type TokenMarketState struct {
-	mu           sync.Mutex
-	cfg          config.TokenMarketConfig
-	poolBalances map[string]float64
-	recentEvents []TokenMarketEvent
+	mu                    sync.Mutex
+	cfg                   config.TokenMarketConfig
+	poolBalances          map[string]float64
+	recentEvents          []TokenMarketEvent
 	transactionsProcessed atomic.Int64
 	rebalancesRun         atomic.Int64
 }
 
 func NewTokenMarket(cfg config.TokenMarketConfig) *TokenMarketState {
 	pools := make(map[string]float64)
-	for _, p := range cfg.Pools { pools[p.Name] = p.Budget }
+	for _, p := range cfg.Pools {
+		pools[p.Name] = p.Budget
+	}
 	return &TokenMarketState{cfg: cfg, poolBalances: pools, recentEvents: make([]TokenMarketEvent, 0, 200)}
 }
 
@@ -39,7 +41,9 @@ func (tm *TokenMarketState) Stats() map[string]any {
 	events := make([]TokenMarketEvent, len(tm.recentEvents))
 	copy(events, tm.recentEvents)
 	balances := make(map[string]float64)
-	for k, v := range tm.poolBalances { balances[k] = v }
+	for k, v := range tm.poolBalances {
+		balances[k] = v
+	}
 	tm.mu.Unlock()
 	return map[string]any{
 		"transactions": tm.transactionsProcessed.Load(), "rebalances": tm.rebalancesRun.Load(),
@@ -55,10 +59,14 @@ func TokenMarketMiddleware(tm *TokenMarketState) proxy.Middleware {
 			if resp != nil {
 				cost := provider.CalculateCost(req.Model, resp.Usage.PromptTokens, resp.Usage.CompletionTokens)
 				pool := req.Project
-				if pool == "" { pool = "default" }
+				if pool == "" {
+					pool = "default"
+				}
 				tm.mu.Lock()
 				tm.poolBalances[pool] -= cost
-				if len(tm.recentEvents) >= 200 { tm.recentEvents = tm.recentEvents[1:] }
+				if len(tm.recentEvents) >= 200 {
+					tm.recentEvents = tm.recentEvents[1:]
+				}
 				tm.recentEvents = append(tm.recentEvents, TokenMarketEvent{
 					Timestamp: time.Now(), Pool: pool, Action: "debit", Amount: cost, Model: req.Model,
 				})

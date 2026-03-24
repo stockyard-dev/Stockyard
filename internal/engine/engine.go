@@ -18,19 +18,19 @@ import (
 
 	"github.com/stockyard-dev/stockyard/internal/api"
 	"github.com/stockyard-dev/stockyard/internal/apiserver"
+	"github.com/stockyard-dev/stockyard/internal/apps/billing"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
+	"github.com/stockyard-dev/stockyard/internal/connect"
+	"github.com/stockyard-dev/stockyard/internal/cortex"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
+	"github.com/stockyard-dev/stockyard/internal/fabric"
 	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/integrations"
 	"github.com/stockyard-dev/stockyard/internal/license"
-	"github.com/stockyard-dev/stockyard/internal/apps/billing"
-	"github.com/stockyard-dev/stockyard/internal/connect"
-	"github.com/stockyard-dev/stockyard/internal/cortex"
-	"github.com/stockyard-dev/stockyard/internal/fabric"
-	"github.com/stockyard-dev/stockyard/internal/mesh"
 	"github.com/stockyard-dev/stockyard/internal/mcp"
+	"github.com/stockyard-dev/stockyard/internal/mesh"
 	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
@@ -820,7 +820,9 @@ func Boot(pc ProductConfig) {
 	// Wire mailer to apps that need it (e.g., team invites)
 	if len(pc.Apps) > 0 {
 		type mailerSetter interface {
-			SetMailer(interface{ Send(to, subject, body string) error })
+			SetMailer(interface {
+				Send(to, subject, body string) error
+			})
 		}
 		for _, app := range pc.Apps {
 			if setter, ok := app.(mailerSetter); ok {
@@ -1072,7 +1074,7 @@ func Boot(pc ProductConfig) {
 				"cost_usd": costStr, "duration_ms": durationMs,
 			},
 			"middleware_debug": debugSteps,
-			"audit_trail":     auditEntries,
+			"audit_trail":      auditEntries,
 			"billing": map[string]any{
 				"customer_id": billingCustomer, "cost_cents": billingCost,
 			},
@@ -1127,14 +1129,14 @@ func Boot(pc ProductConfig) {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"template_id":    templateID,
-			"name":           name,
-			"model":          model,
-			"created_at":     createdAt,
-			"updated_at":     updatedAt,
-			"dependencies":   deps,
+			"template_id":     templateID,
+			"name":            name,
+			"model":           model,
+			"created_at":      createdAt,
+			"updated_at":      updatedAt,
+			"dependencies":    deps,
 			"downstream_apps": apps,
-			"blast_radius":   len(apps),
+			"blast_radius":    len(apps),
 		})
 	})
 

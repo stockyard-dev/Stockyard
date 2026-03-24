@@ -19,9 +19,9 @@ type ClusterModeEvent struct {
 }
 
 type ClusterModeState struct {
-	mu           sync.Mutex
-	cfg          config.ClusterModeConfig
-	recentEvents []ClusterModeEvent
+	mu                sync.Mutex
+	cfg               config.ClusterModeConfig
+	recentEvents      []ClusterModeEvent
 	requestsProcessed atomic.Int64
 	nodesActive       atomic.Int64
 }

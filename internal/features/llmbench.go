@@ -20,10 +20,10 @@ type LLMBenchEvent struct {
 }
 
 type LLMBenchState struct {
-	mu           sync.Mutex
-	cfg          config.LLMBenchConfig
-	modelStats   map[string]*benchModelStats
-	recentEvents []LLMBenchEvent
+	mu            sync.Mutex
+	cfg           config.LLMBenchConfig
+	modelStats    map[string]*benchModelStats
+	recentEvents  []LLMBenchEvent
 	benchmarksRun atomic.Int64
 }
 
@@ -43,7 +43,9 @@ func (lb *LLMBenchState) Stats() map[string]any {
 	events := make([]LLMBenchEvent, len(lb.recentEvents))
 	copy(events, lb.recentEvents)
 	stats := make(map[string]any)
-	for k, v := range lb.modelStats { stats[k] = v }
+	for k, v := range lb.modelStats {
+		stats[k] = v
+	}
 	lb.mu.Unlock()
 	return map[string]any{
 		"benchmarks_run": lb.benchmarksRun.Load(), "model_stats": stats, "recent_events": events,
@@ -65,9 +67,17 @@ func LLMBenchMiddleware(lb *LLMBenchState) proxy.Middleware {
 			}
 			lb.mu.Lock()
 			ms, ok := lb.modelStats[req.Model]
-			if !ok { ms = &benchModelStats{}; lb.modelStats[req.Model] = ms }
-			ms.Requests++; ms.TotalMs += latency; ms.TotalCost += cost; ms.Tokens += int64(tokens)
-			if len(lb.recentEvents) >= 200 { lb.recentEvents = lb.recentEvents[1:] }
+			if !ok {
+				ms = &benchModelStats{}
+				lb.modelStats[req.Model] = ms
+			}
+			ms.Requests++
+			ms.TotalMs += latency
+			ms.TotalCost += cost
+			ms.Tokens += int64(tokens)
+			if len(lb.recentEvents) >= 200 {
+				lb.recentEvents = lb.recentEvents[1:]
+			}
 			lb.recentEvents = append(lb.recentEvents, LLMBenchEvent{
 				Timestamp: time.Now(), Model: req.Model, Latency: latency, Tokens: tokens, Cost: cost,
 			})

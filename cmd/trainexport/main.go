@@ -15,7 +15,7 @@ func main() {
 		Product: "trainexport",
 		Version: version,
 		Features: engine.Features{
-			TrainExport:     true,
+			TrainExport:    true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

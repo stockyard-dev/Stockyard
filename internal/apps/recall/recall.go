@@ -610,13 +610,13 @@ func (a *App) handleNotify(w http.ResponseWriter, r *http.Request) {
 	if a.dispatcher != nil && len(traceIDs) > 0 {
 		inc, _ := a.loadIncident(id)
 		a.dispatcher("recall_notification", map[string]any{
-			"incident_id":   id,
-			"title":         inc.Title,
-			"severity":      inc.Severity,
-			"status":        inc.Status,
-			"affected":      len(traceIDs),
-			"description":   inc.Description,
-			"search_query":  inc.SearchQuery,
+			"incident_id":  id,
+			"title":        inc.Title,
+			"severity":     inc.Severity,
+			"status":       inc.Status,
+			"affected":     len(traceIDs),
+			"description":  inc.Description,
+			"search_query": inc.SearchQuery,
 		})
 	}
 

@@ -17,7 +17,7 @@ import (
 
 // EmbeddingRequest is the OpenAI-compatible /v1/embeddings request format.
 type EmbeddingRequest struct {
-	Input          interface{} `json:"input"`          // string or []string
+	Input          interface{} `json:"input"` // string or []string
 	Model          string      `json:"model"`
 	EncodingFormat string      `json:"encoding_format,omitempty"` // float or base64
 	Dimensions     *int        `json:"dimensions,omitempty"`
@@ -64,12 +64,12 @@ type EmbeddingResponse struct {
 
 // EmbedCache caches embedding responses by content hash.
 type EmbedCache struct {
-	cfg     config.EmbedCacheConfig
-	mu      sync.RWMutex
-	cache   map[string]*embedCacheEntry
-	hits    atomic.Int64
-	misses  atomic.Int64
-	evictions atomic.Int64
+	cfg        config.EmbedCacheConfig
+	mu         sync.RWMutex
+	cache      map[string]*embedCacheEntry
+	hits       atomic.Int64
+	misses     atomic.Int64
+	evictions  atomic.Int64
 	bytesSaved atomic.Int64
 }
 

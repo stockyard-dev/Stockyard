@@ -38,12 +38,12 @@ func (a *App) handleBulkPurchase(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("Bulk purchase: $%.2f + %d%% bonus", float64(req.AmountCents)/100, discountPct))
 
 	writeJSON(w, map[string]any{
-		"customer_id":   req.CustomerID,
-		"paid_cents":    req.AmountCents,
-		"credit_cents":  creditAmount,
-		"discount_pct":  discountPct,
-		"bonus_cents":   creditAmount - req.AmountCents,
-		"status":        "credited",
+		"customer_id":  req.CustomerID,
+		"paid_cents":   req.AmountCents,
+		"credit_cents": creditAmount,
+		"discount_pct": discountPct,
+		"bonus_cents":  creditAmount - req.AmountCents,
+		"status":       "credited",
 	})
 }
 

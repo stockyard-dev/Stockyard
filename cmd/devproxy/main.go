@@ -15,7 +15,7 @@ func main() {
 		Product: "devproxy",
 		Version: version,
 		Features: engine.Features{
-			DevProxy:     true,
+			DevProxy:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

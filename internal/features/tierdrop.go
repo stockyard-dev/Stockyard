@@ -13,17 +13,17 @@ import (
 )
 
 type TierDropEvent struct {
-	Timestamp    time.Time `json:"timestamp"`
-	OriginalModel string   `json:"original_model"`
-	DroppedModel  string   `json:"dropped_model"`
-	Reason        string   `json:"reason"`
-	SpendPct     float64   `json:"spend_pct"`
+	Timestamp     time.Time `json:"timestamp"`
+	OriginalModel string    `json:"original_model"`
+	DroppedModel  string    `json:"dropped_model"`
+	Reason        string    `json:"reason"`
+	SpendPct      float64   `json:"spend_pct"`
 }
 
 type TierDropState struct {
-	mu           sync.Mutex
-	cfg          config.TierDropConfig
-	recentEvents []TierDropEvent
+	mu                sync.Mutex
+	cfg               config.TierDropConfig
+	recentEvents      []TierDropEvent
 	requestsProcessed atomic.Int64
 	requestsDropped   atomic.Int64
 	costSaved         atomic.Int64
@@ -48,7 +48,9 @@ func (td *TierDropState) Stats() map[string]any {
 func (td *TierDropState) tdRecordEvent(ev TierDropEvent) {
 	td.mu.Lock()
 	defer td.mu.Unlock()
-	if len(td.recentEvents) >= 200 { td.recentEvents = td.recentEvents[1:] }
+	if len(td.recentEvents) >= 200 {
+		td.recentEvents = td.recentEvents[1:]
+	}
 	td.recentEvents = append(td.recentEvents, ev)
 }
 

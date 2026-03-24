@@ -77,9 +77,9 @@ func handleForecast(conn *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"forecast":     forecast,
-			"based_on":     "4_weeks",
-			"hours_ahead":  24,
+			"forecast":    forecast,
+			"based_on":    "4_weeks",
+			"hours_ahead": 24,
 		})
 	}
 }

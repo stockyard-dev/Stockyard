@@ -15,7 +15,7 @@ func main() {
 		Product: "feedbackloop",
 		Version: version,
 		Features: engine.Features{
-			FeedbackLoop:     true,
+			FeedbackLoop:   true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

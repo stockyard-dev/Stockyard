@@ -50,7 +50,7 @@ func (a *App) handleGenerateFromPeriod(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, map[string]any{
 		"id": id, "period": period, "total_cents": totalCents,
-		"total_usd": fmt.Sprintf("%.2f", float64(totalCents)/100),
+		"total_usd":  fmt.Sprintf("%.2f", float64(totalCents)/100),
 		"line_items": len(items), "status": "draft",
 	})
 }

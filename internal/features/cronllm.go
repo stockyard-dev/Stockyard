@@ -48,9 +48,14 @@ func CronLLMMiddleware(cl *CronLLMState) proxy.Middleware {
 			cl.jobsRun.Add(1)
 			resp, err := next(ctx, req)
 			status := "ok"
-			if err != nil { status = "error"; cl.jobsFailed.Add(1) }
+			if err != nil {
+				status = "error"
+				cl.jobsFailed.Add(1)
+			}
 			cl.mu.Lock()
-			if len(cl.recentEvents) >= 200 { cl.recentEvents = cl.recentEvents[1:] }
+			if len(cl.recentEvents) >= 200 {
+				cl.recentEvents = cl.recentEvents[1:]
+			}
 			cl.recentEvents = append(cl.recentEvents, CronLLMEvent{
 				Timestamp: time.Now(), Job: "default", Status: status, Model: req.Model,
 			})

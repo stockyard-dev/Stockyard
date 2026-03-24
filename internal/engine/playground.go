@@ -12,13 +12,13 @@ import (
 
 // PlaygroundShare stores a shared playground session.
 type PlaygroundShare struct {
-	ID        string    `json:"id"`
+	ID        string          `json:"id"`
 	Messages  json.RawMessage `json:"messages"`
-	Model     string    `json:"model"`
-	Provider  string    `json:"provider,omitempty"`
+	Model     string          `json:"model"`
+	Provider  string          `json:"provider,omitempty"`
 	Modules   json.RawMessage `json:"modules,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	ExpiresAt time.Time `json:"expires_at"`
+	CreatedAt time.Time       `json:"created_at"`
+	ExpiresAt time.Time       `json:"expires_at"`
 }
 
 const playgroundSchema = `

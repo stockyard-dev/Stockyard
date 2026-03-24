@@ -147,9 +147,9 @@ func extractBearerKey(r *http.Request) string {
 // ProviderFactory creates provider instances from API keys.
 // Caches per-user providers briefly to avoid re-creating on every request.
 type ProviderFactory struct {
-	store          *Store
+	store           *Store
 	globalProviders map[string]provider.Provider
-	cache          sync.Map // map[string]cachedProvider
+	cache           sync.Map // map[string]cachedProvider
 }
 
 type cachedProvider struct {

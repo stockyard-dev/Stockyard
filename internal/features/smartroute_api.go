@@ -179,7 +179,7 @@ func handleSavings(conn *sql.DB) http.HandlerFunc {
 		if err != nil {
 			// Fallback: show general model cost breakdown.
 			writeSmartJSON(w, http.StatusOK, map[string]any{
-				"savings":        []any{},
+				"savings":         []any{},
 				"total_saved_usd": 0,
 				"period":          "7d",
 			})
@@ -207,12 +207,12 @@ func handleSavings(conn *sql.DB) http.HandlerFunc {
 			saved := estimatedOriginalCost - actualCost
 
 			savings = append(savings, map[string]any{
-				"original_model":       originalModel.String,
-				"routed_model":         model,
-				"request_count":        count,
-				"actual_cost_usd":      actualCost,
+				"original_model":         originalModel.String,
+				"routed_model":           model,
+				"request_count":          count,
+				"actual_cost_usd":        actualCost,
 				"estimated_original_usd": estimatedOriginalCost,
-				"saved_usd":            saved,
+				"saved_usd":              saved,
 			})
 			totalSaved += saved
 		}
@@ -254,11 +254,11 @@ func handleOptimize(conn *sql.DB) http.HandlerFunc {
 
 		// Model cost tiers (rough, input per 1M tokens).
 		cheapModels := map[string]string{
-			"gpt-4o":              "gpt-4o-mini",
-			"gpt-4-turbo":        "gpt-4o-mini",
-			"claude-3-5-sonnet":  "claude-3-haiku",
-			"claude-sonnet-4-20250514":      "claude-3-haiku",
-			"claude-3-opus":     "claude-sonnet-4-20250514",
+			"gpt-4o":                   "gpt-4o-mini",
+			"gpt-4-turbo":              "gpt-4o-mini",
+			"claude-3-5-sonnet":        "claude-3-haiku",
+			"claude-sonnet-4-20250514": "claude-3-haiku",
+			"claude-3-opus":            "claude-sonnet-4-20250514",
 		}
 
 		var recommendations []map[string]any
@@ -283,11 +283,11 @@ func handleOptimize(conn *sql.DB) http.HandlerFunc {
 			monthlySavings := estimatedSavings * (30.0 / 7.0)
 
 			recommendations = append(recommendations, map[string]any{
-				"current_model":           model,
-				"suggested_model":         cheaper,
-				"request_count":           count,
-				"avg_tokens_in":           int(avgTokensIn),
-				"current_weekly_cost":     totalCost,
+				"current_model":             model,
+				"suggested_model":           cheaper,
+				"request_count":             count,
+				"avg_tokens_in":             int(avgTokensIn),
+				"current_weekly_cost":       totalCost,
 				"estimated_monthly_savings": monthlySavings,
 				"suggested_rule": map[string]any{
 					"name":      fmt.Sprintf("optimize-%s-to-%s", model, cheaper),
@@ -369,15 +369,15 @@ func handleABResults(conn *sql.DB) http.HandlerFunc {
 func estimateModelCost(model string, tokensIn, tokensOut int) float64 {
 	// Rough pricing per 1K tokens (input/output).
 	pricing := map[string][2]float64{
-		"gpt-4o":             {0.005, 0.015},
-		"gpt-4o-mini":        {0.00015, 0.0006},
-		"gpt-4-turbo":        {0.01, 0.03},
-		"gpt-3.5-turbo":      {0.0005, 0.0015},
-		"claude-3-opus":      {0.015, 0.075},
-		"claude-sonnet-4-20250514":       {0.003, 0.015},
-		"claude-3-haiku":     {0.00025, 0.00125},
-		"gemini-pro":         {0.00025, 0.0005},
-		"gemini-1.5-pro":     {0.00125, 0.005},
+		"gpt-4o":                   {0.005, 0.015},
+		"gpt-4o-mini":              {0.00015, 0.0006},
+		"gpt-4-turbo":              {0.01, 0.03},
+		"gpt-3.5-turbo":            {0.0005, 0.0015},
+		"claude-3-opus":            {0.015, 0.075},
+		"claude-sonnet-4-20250514": {0.003, 0.015},
+		"claude-3-haiku":           {0.00025, 0.00125},
+		"gemini-pro":               {0.00025, 0.0005},
+		"gemini-1.5-pro":           {0.00125, 0.005},
 	}
 
 	p, ok := pricing[model]

@@ -78,10 +78,10 @@ func mustParseCIDR(s string) *net.IPNet {
 
 // Step defines a single node in the workflow DAG.
 type Step struct {
-	ID        string   `json:"id"`
-	Name      string   `json:"name"`
-	Type      string   `json:"type"`      // "llm", "tool", "transform"
-	DependsOn []string `json:"depends_on"` // IDs of steps this depends on
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	Type      string     `json:"type"`       // "llm", "tool", "transform"
+	DependsOn []string   `json:"depends_on"` // IDs of steps this depends on
 	Config    StepConfig `json:"config"`
 }
 
@@ -89,7 +89,7 @@ type Step struct {
 type StepConfig struct {
 	// LLM step fields
 	Model       string   `json:"model,omitempty"`
-	Prompt      string   `json:"prompt,omitempty"`      // template — {{input}}, {{steps.step_id.output}}
+	Prompt      string   `json:"prompt,omitempty"` // template — {{input}}, {{steps.step_id.output}}
 	System      string   `json:"system,omitempty"`
 	Temperature *float64 `json:"temperature,omitempty"`
 	MaxTokens   *int     `json:"max_tokens,omitempty"`
@@ -116,13 +116,13 @@ type StepConfig struct {
 
 // StepResult holds the output of an executed step.
 type StepResult struct {
-	StepID      string `json:"step_id"`
-	Status      string `json:"status"` // "success", "error", "skipped"
-	Output      string `json:"output"`
-	TokensIn    int    `json:"tokens_in"`
-	TokensOut   int    `json:"tokens_out"`
-	LatencyMS   int64  `json:"latency_ms"`
-	Error       string `json:"error,omitempty"`
+	StepID    string `json:"step_id"`
+	Status    string `json:"status"` // "success", "error", "skipped"
+	Output    string `json:"output"`
+	TokensIn  int    `json:"tokens_in"`
+	TokensOut int    `json:"tokens_out"`
+	LatencyMS int64  `json:"latency_ms"`
+	Error     string `json:"error,omitempty"`
 }
 
 // RunContext holds the state for a single workflow execution.
@@ -356,13 +356,25 @@ func executeTransformStep(rc *RunContext, step Step, start time.Time) *StepResul
 			depth := 0
 			open := rune(input[idx])
 			shut := '}'
-			if open == '[' { shut = ']' }
+			if open == '[' {
+				shut = ']'
+			}
 			for i := idx; i < len(input); i++ {
-				if rune(input[i]) == open { depth++ }
-				if rune(input[i]) == shut { depth--; if depth == 0 { output = input[idx:i+1]; break } }
+				if rune(input[i]) == open {
+					depth++
+				}
+				if rune(input[i]) == shut {
+					depth--
+					if depth == 0 {
+						output = input[idx : i+1]
+						break
+					}
+				}
 			}
 		}
-		if output == "" { output = input }
+		if output == "" {
+			output = input
+		}
 	case "concat":
 		// Concatenate all dependency outputs
 		var parts []string
@@ -388,7 +400,9 @@ func executeTransformStep(rc *RunContext, step Step, start time.Time) *StepResul
 		var obj map[string]any
 		if json.Unmarshal([]byte(input), &obj) == nil {
 			keys := make([]string, 0, len(obj))
-			for k := range obj { keys = append(keys, k) }
+			for k := range obj {
+				keys = append(keys, k)
+			}
 			output = strings.Join(keys, ", ")
 		} else {
 			output = input
@@ -654,7 +668,10 @@ func topoSort(steps []Step) ([]Step, error) {
 	// No dependencies? Return in original order
 	hasDeps := false
 	for _, s := range steps {
-		if len(s.DependsOn) > 0 { hasDeps = true; break }
+		if len(s.DependsOn) > 0 {
+			hasDeps = true
+			break
+		}
 	}
 	if !hasDeps {
 		return steps, nil
@@ -748,6 +765,8 @@ func saveResults(conn *sql.DB, runID string, results map[string]*StepResult) {
 }
 
 func truncate(s string, n int) string {
-	if len(s) <= n { return s }
+	if len(s) <= n {
+		return s
+	}
 	return s[:n] + "…"
 }

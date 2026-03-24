@@ -19,9 +19,9 @@ type ApprovalGateEvent struct {
 }
 
 type ApprovalGateState struct {
-	mu           sync.Mutex
-	cfg          config.ApprovalGateConfig
-	recentEvents []ApprovalGateEvent
+	mu                sync.Mutex
+	cfg               config.ApprovalGateConfig
+	recentEvents      []ApprovalGateEvent
 	requestsProcessed atomic.Int64
 	requestsApproved  atomic.Int64
 	requestsPending   atomic.Int64
@@ -48,7 +48,9 @@ func ApprovalGateMiddleware(ag *ApprovalGateState) proxy.Middleware {
 			ag.requestsProcessed.Add(1)
 			ag.requestsApproved.Add(1) // auto-approve for now, full workflow TBD
 			ag.mu.Lock()
-			if len(ag.recentEvents) >= 200 { ag.recentEvents = ag.recentEvents[1:] }
+			if len(ag.recentEvents) >= 200 {
+				ag.recentEvents = ag.recentEvents[1:]
+			}
 			ag.recentEvents = append(ag.recentEvents, ApprovalGateEvent{
 				Timestamp: time.Now(), Action: "approved", Model: req.Model, User: req.UserID,
 			})

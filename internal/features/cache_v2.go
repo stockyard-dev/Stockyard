@@ -105,14 +105,14 @@ func (c *CacheV2) Stats() map[string]any {
 	c.analytics.mu.Unlock()
 
 	return map[string]any{
-		"tenant_cache":         tenantStats,
-		"shared_cache":         sharedStats,
-		"total_hits":           totalHits,
-		"total_misses":         totalMisses,
-		"overall_hit_rate":     hitRate(totalHits, totalMisses),
-		"estimated_savings":    totalSaved,
-		"evictions":            c.analytics.evictions.Load(),
-		"model_stats":          modelBreakdown,
+		"tenant_cache":      tenantStats,
+		"shared_cache":      sharedStats,
+		"total_hits":        totalHits,
+		"total_misses":      totalMisses,
+		"overall_hit_rate":  hitRate(totalHits, totalMisses),
+		"estimated_savings": totalSaved,
+		"evictions":         c.analytics.evictions.Load(),
+		"model_stats":       modelBreakdown,
 	}
 }
 
@@ -171,9 +171,9 @@ func estimateCacheSavings(model string) float64 {
 // PII and customer-specific content patterns.
 var (
 	piiPatternCache = []*regexp.Regexp{
-		regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`), // email
-		regexp.MustCompile(`\b\d{3}-\d{2}-\d{4}\b`),                                // SSN
-		regexp.MustCompile(`\b(?:\d{4}[-\s]?){3}\d{4}\b`),                          // credit card
+		regexp.MustCompile(`\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b`),      // email
+		regexp.MustCompile(`\b\d{3}-\d{2}-\d{4}\b`),                                   // SSN
+		regexp.MustCompile(`\b(?:\d{4}[-\s]?){3}\d{4}\b`),                             // credit card
 		regexp.MustCompile(`\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b`), // phone
 	}
 	customerRefPatterns = []*regexp.Regexp{

@@ -15,7 +15,7 @@ func main() {
 		Product: "localsync",
 		Version: version,
 		Features: engine.Features{
-			LocalSync:     true,
+			LocalSync:      true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

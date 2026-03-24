@@ -25,14 +25,14 @@ type CloudTenant struct {
 
 // CloudUsage holds daily usage counters for a tenant.
 type CloudUsage struct {
-	TenantID string  `json:"tenant_id"`
-	Date     string  `json:"date"`
-	Requests int64   `json:"requests"`
-	TokensIn int64   `json:"tokens_in"`
-	TokensOut int64  `json:"tokens_out"`
-	CostUSD  float64 `json:"cost_usd"`
-	CacheHits int64  `json:"cache_hits"`
-	Errors   int64   `json:"errors"`
+	TenantID  string  `json:"tenant_id"`
+	Date      string  `json:"date"`
+	Requests  int64   `json:"requests"`
+	TokensIn  int64   `json:"tokens_in"`
+	TokensOut int64   `json:"tokens_out"`
+	CostUSD   float64 `json:"cost_usd"`
+	CacheHits int64   `json:"cache_hits"`
+	Errors    int64   `json:"errors"`
 }
 
 // ExchangeItem represents a shared config, chain, or pack in the Exchange marketplace.

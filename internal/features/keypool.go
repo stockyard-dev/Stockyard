@@ -122,12 +122,12 @@ func (kp *KeyPoolManager) Stats() []map[string]any {
 			cooling = false
 		}
 		stats = append(stats, map[string]any{
-			"name":        k.Name,
-			"provider":    k.Provider,
-			"weight":      k.Weight,
-			"requests":    k.Requests.Load(),
-			"tokens":      k.Tokens.Load(),
-			"errors":      k.Errors.Load(),
+			"name":         k.Name,
+			"provider":     k.Provider,
+			"weight":       k.Weight,
+			"requests":     k.Requests.Load(),
+			"tokens":       k.Tokens.Load(),
+			"errors":       k.Errors.Load(),
 			"cooling_down": cooling,
 		})
 	}

@@ -20,9 +20,9 @@ type OutputCapEvent struct {
 }
 
 type OutputCapState struct {
-	mu           sync.Mutex
-	cfg          config.OutputCapConfig
-	recentEvents []OutputCapEvent
+	mu                 sync.Mutex
+	cfg                config.OutputCapConfig
+	recentEvents       []OutputCapEvent
 	responsesCapped    atomic.Int64
 	responsesProcessed atomic.Int64
 	tokensSaved        atomic.Int64
@@ -45,7 +45,9 @@ func (oc *OutputCapState) Stats() map[string]any {
 
 // ocTruncateAtSentence cuts text at the last sentence boundary before maxLen.
 func ocTruncateAtSentence(text string, maxLen int) string {
-	if len(text) <= maxLen { return text }
+	if len(text) <= maxLen {
+		return text
+	}
 	// Find last sentence boundary before maxLen
 	sub := text[:maxLen]
 	for _, sep := range []string{". ", "! ", "? ", ".\n", "!\n", "?\n"} {
@@ -64,10 +66,14 @@ func OutputCapMiddleware(oc *OutputCapState) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			oc.responsesProcessed.Add(1)
 			maxChars := oc.cfg.MaxChars
-			if maxChars <= 0 { maxChars = 4000 }
+			if maxChars <= 0 {
+				maxChars = 4000
+			}
 			for i, choice := range resp.Choices {
 				original := choice.Message.Content
 				if len(original) > maxChars {
@@ -77,7 +83,9 @@ func OutputCapMiddleware(oc *OutputCapState) proxy.Middleware {
 					saved := len(original) - len(capped)
 					oc.tokensSaved.Add(int64(saved / 4))
 					oc.mu.Lock()
-					if len(oc.recentEvents) >= 200 { oc.recentEvents = oc.recentEvents[1:] }
+					if len(oc.recentEvents) >= 200 {
+						oc.recentEvents = oc.recentEvents[1:]
+					}
 					oc.recentEvents = append(oc.recentEvents, OutputCapEvent{
 						Timestamp: time.Now(), OriginalLen: len(original), CappedLen: len(capped), Model: req.Model,
 					})

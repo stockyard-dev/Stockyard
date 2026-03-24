@@ -22,9 +22,9 @@ type HalluciCheckEvent struct {
 }
 
 type HalluciCheckState struct {
-	mu           sync.Mutex
-	cfg          config.HalluciCheckConfig
-	recentEvents []HalluciCheckEvent
+	mu               sync.Mutex
+	cfg              config.HalluciCheckConfig
+	recentEvents     []HalluciCheckEvent
 	responsesChecked atomic.Int64
 	urlsChecked      atomic.Int64
 	urlsInvalid      atomic.Int64
@@ -51,7 +51,9 @@ func (hc *HalluciCheckState) Stats() map[string]any {
 func (hc *HalluciCheckState) hcRecordEvent(ev HalluciCheckEvent) {
 	hc.mu.Lock()
 	defer hc.mu.Unlock()
-	if len(hc.recentEvents) >= 200 { hc.recentEvents = hc.recentEvents[1:] }
+	if len(hc.recentEvents) >= 200 {
+		hc.recentEvents = hc.recentEvents[1:]
+	}
 	hc.recentEvents = append(hc.recentEvents, ev)
 }
 
@@ -62,7 +64,9 @@ func HalluciCheckMiddleware(hc *HalluciCheckState) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			hc.responsesChecked.Add(1)
 			for _, choice := range resp.Choices {
 				content := choice.Message.Content
@@ -71,7 +75,9 @@ func HalluciCheckMiddleware(hc *HalluciCheckState) proxy.Middleware {
 						hc.urlsChecked.Add(1)
 						parsed, perr := url.Parse(u)
 						valid := perr == nil && parsed.Host != ""
-						if !valid { hc.urlsInvalid.Add(1) }
+						if !valid {
+							hc.urlsInvalid.Add(1)
+						}
 						hc.hcRecordEvent(HalluciCheckEvent{Timestamp: time.Now(), Type: "url", Value: u, Valid: valid, Model: req.Model})
 					}
 				}
@@ -79,7 +85,9 @@ func HalluciCheckMiddleware(hc *HalluciCheckState) proxy.Middleware {
 					for _, e := range hcEmailRe.FindAllString(content, -1) {
 						hc.emailsChecked.Add(1)
 						valid := len(e) > 5
-						if !valid { hc.emailsInvalid.Add(1) }
+						if !valid {
+							hc.emailsInvalid.Add(1)
+						}
 						hc.hcRecordEvent(HalluciCheckEvent{Timestamp: time.Now(), Type: "email", Value: e, Valid: valid, Model: req.Model})
 					}
 				}

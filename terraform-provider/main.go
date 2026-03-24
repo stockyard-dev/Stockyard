@@ -51,9 +51,9 @@ import (
 
 // Client wraps HTTP calls to the Stockyard API.
 type Client struct {
-	BaseURL   string
-	AdminKey  string
-	HTTP      *http.Client
+	BaseURL  string
+	AdminKey string
+	HTTP     *http.Client
 }
 
 func NewClient(baseURL, adminKey string) *Client {

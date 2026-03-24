@@ -22,11 +22,11 @@ type ChainForgeEvent struct {
 }
 
 type ChainForgeState struct {
-	mu           sync.Mutex
-	cfg          config.ChainForgeConfig
-	recentEvents []ChainForgeEvent
-	pipelinesRun   atomic.Int64
-	stepsExecuted  atomic.Int64
+	mu              sync.Mutex
+	cfg             config.ChainForgeConfig
+	recentEvents    []ChainForgeEvent
+	pipelinesRun    atomic.Int64
+	stepsExecuted   atomic.Int64
 	pipelinesFailed atomic.Int64
 }
 
@@ -53,9 +53,14 @@ func ChainForgeMiddleware(cf *ChainForgeState) proxy.Middleware {
 			start := time.Now()
 			resp, err := next(ctx, req)
 			status := "ok"
-			if err != nil { status = "error"; cf.pipelinesFailed.Add(1) }
+			if err != nil {
+				status = "error"
+				cf.pipelinesFailed.Add(1)
+			}
 			cf.mu.Lock()
-			if len(cf.recentEvents) >= 200 { cf.recentEvents = cf.recentEvents[1:] }
+			if len(cf.recentEvents) >= 200 {
+				cf.recentEvents = cf.recentEvents[1:]
+			}
 			cf.recentEvents = append(cf.recentEvents, ChainForgeEvent{
 				Timestamp: time.Now(), Pipeline: "default", Steps: 1, Status: status,
 				Duration: float64(time.Since(start).Milliseconds()), Model: req.Model,

@@ -22,11 +22,11 @@ type ABRouterEvent struct {
 }
 
 type ABRouterState struct {
-	mu           sync.Mutex
-	cfg          config.ABRouterConfig
-	recentEvents []ABRouterEvent
-	variantHits  map[string]map[string]int64 // experiment -> variant -> count
-	requestsRouted   atomic.Int64
+	mu                sync.Mutex
+	cfg               config.ABRouterConfig
+	recentEvents      []ABRouterEvent
+	variantHits       map[string]map[string]int64 // experiment -> variant -> count
+	requestsRouted    atomic.Int64
 	experimentsActive atomic.Int64
 }
 
@@ -49,7 +49,9 @@ func (ab *ABRouterState) Stats() map[string]any {
 	hits := make(map[string]map[string]int64)
 	for k, v := range ab.variantHits {
 		hits[k] = make(map[string]int64)
-		for kk, vv := range v { hits[k][kk] = vv }
+		for kk, vv := range v {
+			hits[k][kk] = vv
+		}
 	}
 	ab.mu.Unlock()
 	return map[string]any{
@@ -61,7 +63,9 @@ func (ab *ABRouterState) Stats() map[string]any {
 func (ab *ABRouterState) abRecordEvent(ev ABRouterEvent) {
 	ab.mu.Lock()
 	defer ab.mu.Unlock()
-	if len(ab.recentEvents) >= 200 { ab.recentEvents = ab.recentEvents[1:] }
+	if len(ab.recentEvents) >= 200 {
+		ab.recentEvents = ab.recentEvents[1:]
+	}
 	ab.recentEvents = append(ab.recentEvents, ev)
 }
 
@@ -70,10 +74,14 @@ func ABRouterMiddleware(ab *ABRouterState) proxy.Middleware {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			ab.requestsRouted.Add(1)
 			for _, exp := range ab.cfg.Experiments {
-				if len(exp.Variants) == 0 { continue }
+				if len(exp.Variants) == 0 {
+					continue
+				}
 				// Weighted random selection
 				totalWeight := 0.0
-				for _, v := range exp.Variants { totalWeight += v.Weight }
+				for _, v := range exp.Variants {
+					totalWeight += v.Weight
+				}
 				r := rand.Float64() * totalWeight
 				cumulative := 0.0
 				for _, v := range exp.Variants {
@@ -85,7 +93,9 @@ func ABRouterMiddleware(ab *ABRouterState) proxy.Middleware {
 							log.Printf("abrouter: %s → variant %s (model %s → %s)", exp.Name, v.Name, original, v.Model)
 						}
 						ab.mu.Lock()
-						if ab.variantHits[exp.Name] == nil { ab.variantHits[exp.Name] = make(map[string]int64) }
+						if ab.variantHits[exp.Name] == nil {
+							ab.variantHits[exp.Name] = make(map[string]int64)
+						}
 						ab.variantHits[exp.Name][v.Name]++
 						ab.mu.Unlock()
 						start := time.Now()

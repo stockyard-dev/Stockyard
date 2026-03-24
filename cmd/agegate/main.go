@@ -15,7 +15,7 @@ func main() {
 		Product: "agegate",
 		Version: version,
 		Features: engine.Features{
-			AgeGate:     true,
+			AgeGate:        true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

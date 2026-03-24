@@ -76,11 +76,11 @@ func (f *financeHandler) handleAdvancesEligible(w http.ResponseWriter, r *http.R
 	maxAdvance := totalSpend * 2   // Up to 2x trailing usage.
 
 	writeJSON(w, map[string]any{
-		"builder_id":         builderID,
-		"eligible":           eligible,
-		"total_spend_cents":  totalSpend,
-		"max_advance_cents":  maxAdvance,
-		"fee_pct":            5.0,
+		"builder_id":        builderID,
+		"eligible":          eligible,
+		"total_spend_cents": totalSpend,
+		"max_advance_cents": maxAdvance,
+		"fee_pct":           5.0,
 	})
 }
 
@@ -265,15 +265,15 @@ func (f *financeHandler) handleDashboard(w http.ResponseWriter, r *http.Request)
 	writeJSON(w, map[string]any{
 		"builder_id": builderID,
 		"advances": map[string]any{
-			"active_count":     activeAdvances,
-			"total_advanced":   totalAdvanced,
-			"total_repaid":     totalRepaid,
-			"outstanding":      totalAdvanced - totalRepaid,
+			"active_count":   activeAdvances,
+			"total_advanced": totalAdvanced,
+			"total_repaid":   totalRepaid,
+			"outstanding":    totalAdvanced - totalRepaid,
 		},
 		"insurance": map[string]any{
-			"active_policies":  activePolicies,
-			"total_coverage":   totalCoverage,
-			"pending_claims":   pendingClaims,
+			"active_policies": activePolicies,
+			"total_coverage":  totalCoverage,
+			"pending_claims":  pendingClaims,
 		},
 	})
 }

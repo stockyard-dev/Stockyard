@@ -26,19 +26,19 @@ const (
 
 // BatchJob represents a single queued LLM request.
 type BatchJob struct {
-	ID        string         `json:"id"`
-	BatchID   string         `json:"batch_id,omitempty"`
-	Priority  string         `json:"priority"`
-	Status    JobStatus      `json:"status"`
-	Request   *provider.Request `json:"-"`
-	ReqJSON   json.RawMessage `json:"request"`
+	ID        string             `json:"id"`
+	BatchID   string             `json:"batch_id,omitempty"`
+	Priority  string             `json:"priority"`
+	Status    JobStatus          `json:"status"`
+	Request   *provider.Request  `json:"-"`
+	ReqJSON   json.RawMessage    `json:"request"`
 	Response  *provider.Response `json:"-"`
-	RespJSON  json.RawMessage `json:"response,omitempty"`
-	Error     string         `json:"error,omitempty"`
-	Attempts  int            `json:"attempts"`
-	CreatedAt time.Time      `json:"created_at"`
-	StartedAt *time.Time     `json:"started_at,omitempty"`
-	DoneAt    *time.Time     `json:"done_at,omitempty"`
+	RespJSON  json.RawMessage    `json:"response,omitempty"`
+	Error     string             `json:"error,omitempty"`
+	Attempts  int                `json:"attempts"`
+	CreatedAt time.Time          `json:"created_at"`
+	StartedAt *time.Time         `json:"started_at,omitempty"`
+	DoneAt    *time.Time         `json:"done_at,omitempty"`
 }
 
 // BatchQueueManager manages the async job queue.

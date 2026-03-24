@@ -15,7 +15,7 @@ func main() {
 		Product: "cronllm",
 		Version: version,
 		Features: engine.Features{
-			CronLLM:     true,
+			CronLLM:        true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

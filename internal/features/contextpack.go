@@ -26,9 +26,9 @@ type ContextChunk struct {
 
 // ContextPacker manages context sources and injection.
 type ContextPacker struct {
-	mu       sync.RWMutex
-	sources  []contextSource
-	cfg      config.ContextPackConfig
+	mu      sync.RWMutex
+	sources []contextSource
+	cfg     config.ContextPackConfig
 
 	totalReqs   atomic.Int64
 	injected    atomic.Int64
@@ -36,10 +36,10 @@ type ContextPacker struct {
 }
 
 type contextSource struct {
-	Name      string
-	Type      string // directory | sqlite | url | inline
-	Chunks    []ContextChunk
-	LoadedAt  time.Time
+	Name     string
+	Type     string // directory | sqlite | url | inline
+	Chunks   []ContextChunk
+	LoadedAt time.Time
 }
 
 // NewContextPacker creates a new context packer and loads sources.
@@ -393,11 +393,11 @@ func (cp *ContextPacker) Stats() map[string]any {
 	cp.mu.RUnlock()
 
 	return map[string]any{
-		"total_requests":  cp.totalReqs.Load(),
-		"injected":        cp.injected.Load(),
-		"tokens_added":    cp.tokensAdded.Load(),
-		"total_chunks":    totalChunks,
-		"sources":         sources,
+		"total_requests": cp.totalReqs.Load(),
+		"injected":       cp.injected.Load(),
+		"tokens_added":   cp.tokensAdded.Load(),
+		"total_chunks":   totalChunks,
+		"sources":        sources,
 	}
 }
 

@@ -29,10 +29,10 @@ type AgeGateEvent struct {
 }
 
 type AgeGateState struct {
-	mu           sync.Mutex
-	cfg          config.AgeGateConfig
-	recentEvents []AgeGateEvent
-	requestsChecked  atomic.Int64
+	mu                sync.Mutex
+	cfg               config.AgeGateConfig
+	recentEvents      []AgeGateEvent
+	requestsChecked   atomic.Int64
 	responsesFiltered atomic.Int64
 	contentBlocked    atomic.Int64
 }
@@ -55,7 +55,9 @@ func (ag *AgeGateState) Stats() map[string]any {
 func (ag *AgeGateState) agRecordEvent(ev AgeGateEvent) {
 	ag.mu.Lock()
 	defer ag.mu.Unlock()
-	if len(ag.recentEvents) >= 200 { ag.recentEvents = ag.recentEvents[1:] }
+	if len(ag.recentEvents) >= 200 {
+		ag.recentEvents = ag.recentEvents[1:]
+	}
 	ag.recentEvents = append(ag.recentEvents, ev)
 }
 
@@ -65,7 +67,9 @@ func AgeGateMiddleware(ag *AgeGateState) proxy.Middleware {
 			ag.requestsChecked.Add(1)
 			// Inject age-appropriate system prompt
 			tier := ag.cfg.Tier
-			if tier == "" { tier = "child" }
+			if tier == "" {
+				tier = "child"
+			}
 			safetyPrompt := "Respond in an age-appropriate manner. "
 			switch tier {
 			case "child":
@@ -81,7 +85,9 @@ func AgeGateMiddleware(ag *AgeGateState) proxy.Middleware {
 			}
 
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 
 			// Scan output for adult content
 			for i, choice := range resp.Choices {

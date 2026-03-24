@@ -15,7 +15,7 @@ func main() {
 		Product: "billsync",
 		Version: version,
 		Features: engine.Features{
-			BillSync:     true,
+			BillSync:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

@@ -20,9 +20,9 @@ type FeedbackEvent struct {
 }
 
 type FeedbackLoopState struct {
-	mu           sync.Mutex
-	cfg          config.FeedbackLoopConfig
-	recentEvents []FeedbackEvent
+	mu                sync.Mutex
+	cfg               config.FeedbackLoopConfig
+	recentEvents      []FeedbackEvent
 	requestsProcessed atomic.Int64
 	feedbackReceived  atomic.Int64
 	avgRating         atomic.Int64
@@ -40,7 +40,9 @@ func (fl *FeedbackLoopState) Stats() map[string]any {
 	fl.mu.Unlock()
 	fb := fl.feedbackReceived.Load()
 	avg := 0.0
-	if fb > 0 { avg = float64(fl.ratingSum.Load()) / float64(fb) }
+	if fb > 0 {
+		avg = float64(fl.ratingSum.Load()) / float64(fb)
+	}
 	return map[string]any{
 		"requests_processed": fl.requestsProcessed.Load(), "feedback_received": fb,
 		"avg_rating": avg, "recent_events": events,

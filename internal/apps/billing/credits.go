@@ -87,10 +87,10 @@ func (a *App) handleCreditPurchase(w http.ResponseWriter, r *http.Request) {
 	// If Stripe is configured, create a payment intent.
 	if stripeEnabled() {
 		params := url.Values{
-			"amount":   {fmt.Sprintf("%d", req.AmountCents)},
-			"currency": {"usd"},
-			"metadata[customer_id]":  {req.CustomerID},
-			"metadata[type]":         {"credit_purchase"},
+			"amount":                {fmt.Sprintf("%d", req.AmountCents)},
+			"currency":              {"usd"},
+			"metadata[customer_id]": {req.CustomerID},
+			"metadata[type]":        {"credit_purchase"},
 		}
 		result, err := stripeRequest("POST", "/payment_intents", params)
 		if err != nil {
@@ -111,9 +111,9 @@ func (a *App) handleCreditPurchase(w http.ResponseWriter, r *http.Request) {
 	a.addCredits(req.CustomerID, req.AmountCents, "manual_purchase", "Credit purchase")
 
 	writeJSON(w, map[string]any{
-		"customer_id":   req.CustomerID,
-		"amount_cents":  req.AmountCents,
-		"status":        "credited",
+		"customer_id":  req.CustomerID,
+		"amount_cents": req.AmountCents,
+		"status":       "credited",
 	})
 }
 

@@ -21,10 +21,10 @@ type DiffPromptEvent struct {
 }
 
 type DiffPromptState struct {
-	mu           sync.Mutex
-	cfg          config.DiffPromptConfig
-	lastHashes   map[string]string // model -> hash
-	recentEvents []DiffPromptEvent
+	mu              sync.Mutex
+	cfg             config.DiffPromptConfig
+	lastHashes      map[string]string // model -> hash
+	recentEvents    []DiffPromptEvent
 	promptsChecked  atomic.Int64
 	changesDetected atomic.Int64
 }
@@ -51,15 +51,22 @@ func DiffPromptMiddleware(dp *DiffPromptState) proxy.Middleware {
 			// Hash system prompt to detect changes
 			var sysPrompt string
 			for _, msg := range req.Messages {
-				if msg.Role == "system" { sysPrompt = msg.Content; break }
+				if msg.Role == "system" {
+					sysPrompt = msg.Content
+					break
+				}
 			}
 			hash := fmt.Sprintf("%x", sha256.Sum256([]byte(sysPrompt)))[:16]
 			dp.mu.Lock()
 			lastHash := dp.lastHashes[req.Model]
 			changed := lastHash != "" && lastHash != hash
 			dp.lastHashes[req.Model] = hash
-			if changed { dp.changesDetected.Add(1) }
-			if len(dp.recentEvents) >= 200 { dp.recentEvents = dp.recentEvents[1:] }
+			if changed {
+				dp.changesDetected.Add(1)
+			}
+			if len(dp.recentEvents) >= 200 {
+				dp.recentEvents = dp.recentEvents[1:]
+			}
 			dp.recentEvents = append(dp.recentEvents, DiffPromptEvent{
 				Timestamp: time.Now(), PromptHash: hash, Changed: changed, Model: req.Model,
 			})

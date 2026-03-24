@@ -15,7 +15,7 @@ func main() {
 		Product: "regionroute",
 		Version: version,
 		Features: engine.Features{
-			RegionRoute:     true,
+			RegionRoute:    true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

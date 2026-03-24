@@ -19,10 +19,10 @@ import (
 
 // StripeConfig holds Stripe API credentials and settings.
 type StripeConfig struct {
-	SecretKey      string // sk_live_... or sk_test_...
-	WebhookSecret  string // whsec_...
-	SuccessURL     string // redirect after checkout
-	CancelURL      string // redirect on cancel
+	SecretKey     string // sk_live_... or sk_test_...
+	WebhookSecret string // whsec_...
+	SuccessURL    string // redirect after checkout
+	CancelURL     string // redirect on cancel
 }
 
 // StripeClient wraps Stripe API calls using raw HTTP (no SDK dependency).
@@ -225,12 +225,12 @@ func VerifyWebhookSignature(payload []byte, sigHeader, secret string) bool {
 // --- Webhook event types ---
 
 const (
-	EventCheckoutCompleted       = "checkout.session.completed"
-	EventSubscriptionCreated     = "customer.subscription.created"
-	EventSubscriptionUpdated     = "customer.subscription.updated"
-	EventSubscriptionDeleted     = "customer.subscription.deleted"
-	EventInvoicePaid             = "invoice.paid"
-	EventInvoicePaymentFailed    = "invoice.payment_failed"
+	EventCheckoutCompleted    = "checkout.session.completed"
+	EventSubscriptionCreated  = "customer.subscription.created"
+	EventSubscriptionUpdated  = "customer.subscription.updated"
+	EventSubscriptionDeleted  = "customer.subscription.deleted"
+	EventInvoicePaid          = "invoice.paid"
+	EventInvoicePaymentFailed = "invoice.payment_failed"
 )
 
 // WebhookHandler processes Stripe webhook events.
@@ -254,8 +254,8 @@ func NewWebhookHandler(db *SqliteDB, stripe *StripeClient, kp *license.KeyPair, 
 
 // StripeEvent represents a parsed Stripe webhook event.
 type StripeEvent struct {
-	ID   string         `json:"id"`
-	Type string         `json:"type"`
+	ID   string          `json:"id"`
+	Type string          `json:"type"`
 	Data StripeEventData `json:"data"`
 }
 

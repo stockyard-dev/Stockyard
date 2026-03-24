@@ -499,7 +499,7 @@ func (c *ConnectService) handleThreatStats(w http.ResponseWriter, r *http.Reques
 		var count, totalOccurrences int
 		rows.Scan(&typ, &count, &totalOccurrences)
 		stats[typ] = map[string]any{
-			"signatures":       count,
+			"signatures":        count,
 			"total_occurrences": totalOccurrences,
 		}
 	}
@@ -610,9 +610,9 @@ func (c *ConnectService) handleBillingForecast(w http.ResponseWriter, r *http.Re
 	writeConnectJSON(w, map[string]any{
 		"forecast": map[string]any{
 			"current_month_cents": 0,
-			"projected_cents":    0,
-			"trend":              "stable",
-			"confidence":         0.0,
+			"projected_cents":     0,
+			"trend":               "stable",
+			"confidence":          0.0,
 		},
 		"message": "Forecast data will be available after sufficient billing history accumulates",
 	})
@@ -790,8 +790,8 @@ func (c *ConnectService) handleBeaconContribute(w http.ResponseWriter, r *http.R
 	json.NewDecoder(r.Body).Decode(&req)
 
 	writeConnectJSON(w, map[string]any{
-		"accepted":   true,
-		"message":    "Contribution received. Anonymized benchmarks will be updated.",
+		"accepted":       true,
+		"message":        "Contribution received. Anonymized benchmarks will be updated.",
 		"contributed_at": connectNow(),
 	})
 }

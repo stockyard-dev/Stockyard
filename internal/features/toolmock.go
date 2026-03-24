@@ -13,14 +13,17 @@ import (
 
 type ToolMockEvent struct {
 	Timestamp time.Time `json:"timestamp"`
-	Tool string `json:"tool"`
-	Mocked bool `json:"mocked"`
-	Model string `json:"model"`
+	Tool      string    `json:"tool"`
+	Mocked    bool      `json:"mocked"`
+	Model     string    `json:"model"`
 }
 
 type ToolMockState struct {
-	mu sync.Mutex; cfg config.ToolMockConfig; recentEvents []ToolMockEvent
-	callsMocked atomic.Int64; callsPassthrough atomic.Int64
+	mu               sync.Mutex
+	cfg              config.ToolMockConfig
+	recentEvents     []ToolMockEvent
+	callsMocked      atomic.Int64
+	callsPassthrough atomic.Int64
 }
 
 func NewToolMock(cfg config.ToolMockConfig) *ToolMockState {
@@ -28,7 +31,10 @@ func NewToolMock(cfg config.ToolMockConfig) *ToolMockState {
 }
 
 func (t *ToolMockState) Stats() map[string]any {
-	t.mu.Lock(); events := make([]ToolMockEvent, len(t.recentEvents)); copy(events, t.recentEvents); t.mu.Unlock()
+	t.mu.Lock()
+	events := make([]ToolMockEvent, len(t.recentEvents))
+	copy(events, t.recentEvents)
+	t.mu.Unlock()
 	return map[string]any{"calls_mocked": t.callsMocked.Load(), "calls_passthrough": t.callsPassthrough.Load(), "recent_events": events}
 }
 

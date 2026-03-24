@@ -15,7 +15,7 @@ func main() {
 		Product: "hallucicheck",
 		Version: version,
 		Features: engine.Features{
-			HalluciCheck:     true,
+			HalluciCheck:   true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

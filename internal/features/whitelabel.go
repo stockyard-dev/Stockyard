@@ -18,9 +18,9 @@ type WhiteLabelEvent struct {
 }
 
 type WhiteLabelState struct {
-	mu           sync.Mutex
-	cfg          config.WhiteLabelConfig
-	recentEvents []WhiteLabelEvent
+	mu             sync.Mutex
+	cfg            config.WhiteLabelConfig
+	recentEvents   []WhiteLabelEvent
 	requestsServed atomic.Int64
 }
 

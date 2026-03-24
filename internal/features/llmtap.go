@@ -26,15 +26,15 @@ type LatencyBucket struct {
 
 // LLMTapAnalytics collects and serves API analytics.
 type LLMTapAnalytics struct {
-	mu       sync.RWMutex
-	buckets  []LatencyBucket
-	maxSize  int
-	cfg      config.LLMTapConfig
+	mu      sync.RWMutex
+	buckets []LatencyBucket
+	maxSize int
+	cfg     config.LLMTapConfig
 
-	totalReqs  atomic.Int64
-	totalErrs  atomic.Int64
-	totalCost  atomic.Int64 // stored as microdollars (cost * 1e6)
-	totalTokIn atomic.Int64
+	totalReqs   atomic.Int64
+	totalErrs   atomic.Int64
+	totalCost   atomic.Int64 // stored as microdollars (cost * 1e6)
+	totalTokIn  atomic.Int64
 	totalTokOut atomic.Int64
 
 	// Per-model aggregates
@@ -201,17 +201,17 @@ func (t *LLMTapAnalytics) RequestVolume(window time.Duration) map[string]int {
 func (t *LLMTapAnalytics) Summary(window time.Duration) map[string]any {
 	percs := t.LatencyPercentiles(window)
 	return map[string]any{
-		"total_requests":  t.totalReqs.Load(),
-		"total_errors":    t.totalErrs.Load(),
-		"total_cost_usd":  float64(t.totalCost.Load()) / 1e6,
-		"total_tokens_in": t.totalTokIn.Load(),
+		"total_requests":   t.totalReqs.Load(),
+		"total_errors":     t.totalErrs.Load(),
+		"total_cost_usd":   float64(t.totalCost.Load()) / 1e6,
+		"total_tokens_in":  t.totalTokIn.Load(),
 		"total_tokens_out": t.totalTokOut.Load(),
-		"latency_p50_ms":  percs["p50"].Milliseconds(),
-		"latency_p95_ms":  percs["p95"].Milliseconds(),
-		"latency_p99_ms":  percs["p99"].Milliseconds(),
-		"error_rate":      t.ErrorRate(window),
-		"cost_by_model":   t.CostByModel(window),
-		"hourly_volume":   t.RequestVolume(window),
+		"latency_p50_ms":   percs["p50"].Milliseconds(),
+		"latency_p95_ms":   percs["p95"].Milliseconds(),
+		"latency_p99_ms":   percs["p99"].Milliseconds(),
+		"error_rate":       t.ErrorRate(window),
+		"cost_by_model":    t.CostByModel(window),
+		"hourly_volume":    t.RequestVolume(window),
 	}
 }
 

@@ -11,15 +11,28 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
 
-type PromptMarketEvent struct { Timestamp time.Time `json:"timestamp"`; PromptID string `json:"prompt_id"`; Action string `json:"action"`; Model string `json:"model"` }
+type PromptMarketEvent struct {
+	Timestamp time.Time `json:"timestamp"`
+	PromptID  string    `json:"prompt_id"`
+	Action    string    `json:"action"`
+	Model     string    `json:"model"`
+}
 type PromptMarketState struct {
-	mu sync.Mutex; cfg config.PromptMarketConfig; recentEvents []PromptMarketEvent
-	promptsPublished atomic.Int64; promptsUsed atomic.Int64
+	mu               sync.Mutex
+	cfg              config.PromptMarketConfig
+	recentEvents     []PromptMarketEvent
+	promptsPublished atomic.Int64
+	promptsUsed      atomic.Int64
 }
 
-func NewPromptMarket(cfg config.PromptMarketConfig) *PromptMarketState { return &PromptMarketState{cfg: cfg, recentEvents: make([]PromptMarketEvent, 0, 200)} }
+func NewPromptMarket(cfg config.PromptMarketConfig) *PromptMarketState {
+	return &PromptMarketState{cfg: cfg, recentEvents: make([]PromptMarketEvent, 0, 200)}
+}
 func (p *PromptMarketState) Stats() map[string]any {
-	p.mu.Lock(); events := make([]PromptMarketEvent, len(p.recentEvents)); copy(events, p.recentEvents); p.mu.Unlock()
+	p.mu.Lock()
+	events := make([]PromptMarketEvent, len(p.recentEvents))
+	copy(events, p.recentEvents)
+	p.mu.Unlock()
 	return map[string]any{"published": p.promptsPublished.Load(), "used": p.promptsUsed.Load(), "recent_events": events}
 }
 func PromptMarketMiddleware(p *PromptMarketState) proxy.Middleware {

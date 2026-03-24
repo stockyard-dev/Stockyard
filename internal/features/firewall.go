@@ -602,12 +602,12 @@ func (fw *Firewall) seedPatterns() {
 		{"toxic", `tax\s+evasion`, "medium"},
 
 		// === PII PATTERNS (50+) ===
-		{"pii", `\b\d{3}-\d{2}-\d{4}\b`, "critical"},       // SSN
-		{"pii", `\b\d{9}\b`, "medium"},                       // SSN no dashes
-		{"pii", `\b(?:\d{4}[-\s]?){3}\d{4}\b`, "critical"},  // Credit card
+		{"pii", `\b\d{3}-\d{2}-\d{4}\b`, "critical"},                                // SSN
+		{"pii", `\b\d{9}\b`, "medium"},                                              // SSN no dashes
+		{"pii", `\b(?:\d{4}[-\s]?){3}\d{4}\b`, "critical"},                          // Credit card
 		{"pii", `\b(?:\+1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b`, "medium"}, // Phone
-		{"pii", `\b[A-Z]{1,2}\d{1,2}\s?\d[A-Z]{2}\b`, "medium"}, // UK postcode
-		{"pii", `\b\d{5}(?:-\d{4})?\b`, "low"},              // US ZIP
+		{"pii", `\b[A-Z]{1,2}\d{1,2}\s?\d[A-Z]{2}\b`, "medium"},                     // UK postcode
+		{"pii", `\b\d{5}(?:-\d{4})?\b`, "low"},                                      // US ZIP
 		{"pii", `\bpassport\s*(?:number|#|no)?\s*[:\s]?\s*[A-Z0-9]{6,9}\b`, "high"},
 		{"pii", `\bdriver'?s?\s*licen[cs]e\s*(?:number|#|no)?\s*[:\s]`, "high"},
 		{"pii", `\b(?:date\s+of\s+birth|DOB)\s*[:\s]\s*\d`, "medium"},

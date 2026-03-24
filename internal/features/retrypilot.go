@@ -39,8 +39,8 @@ type RetryPilotEngine struct {
 
 	// Rate limiting retries
 	retryBudget struct {
-		mu       sync.Mutex
-		count    int
+		mu          sync.Mutex
+		count       int
 		windowStart time.Time
 	}
 }

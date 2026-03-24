@@ -21,10 +21,10 @@ type DriftWatchEvent struct {
 }
 
 type DriftWatchState struct {
-	mu           sync.Mutex
-	cfg          config.DriftWatchConfig
-	baselines    map[string]map[string]float64 // model -> metric -> value
-	recentEvents []DriftWatchEvent
+	mu              sync.Mutex
+	cfg             config.DriftWatchConfig
+	baselines       map[string]map[string]float64 // model -> metric -> value
+	recentEvents    []DriftWatchEvent
 	requestsTracked atomic.Int64
 	driftsDetected  atomic.Int64
 }
@@ -50,7 +50,9 @@ func (dw *DriftWatchState) Stats() map[string]any {
 func (dw *DriftWatchState) dwRecordEvent(ev DriftWatchEvent) {
 	dw.mu.Lock()
 	defer dw.mu.Unlock()
-	if len(dw.recentEvents) >= 200 { dw.recentEvents = dw.recentEvents[1:] }
+	if len(dw.recentEvents) >= 200 {
+		dw.recentEvents = dw.recentEvents[1:]
+	}
 	dw.recentEvents = append(dw.recentEvents, ev)
 }
 
@@ -59,11 +61,15 @@ func DriftWatchMiddleware(dw *DriftWatchState) proxy.Middleware {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			start := time.Now()
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			dw.requestsTracked.Add(1)
 			latency := time.Since(start).Seconds()
 			outputLen := 0
-			for _, c := range resp.Choices { outputLen += len(c.Message.Content) }
+			for _, c := range resp.Choices {
+				outputLen += len(c.Message.Content)
+			}
 
 			dw.mu.Lock()
 			if _, ok := dw.baselines[req.Model]; !ok {

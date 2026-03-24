@@ -13,14 +13,18 @@ import (
 
 type VisionProxyEvent struct {
 	Timestamp time.Time `json:"timestamp"`
-	Images int `json:"images"`
-	Cached bool `json:"cached"`
-	Model string `json:"model"`
+	Images    int       `json:"images"`
+	Cached    bool      `json:"cached"`
+	Model     string    `json:"model"`
 }
 
 type VisionProxyState struct {
-	mu sync.Mutex; cfg config.VisionProxyConfig; recentEvents []VisionProxyEvent
-	requestsProcessed atomic.Int64; imagesProcessed atomic.Int64; cacheHits atomic.Int64
+	mu                sync.Mutex
+	cfg               config.VisionProxyConfig
+	recentEvents      []VisionProxyEvent
+	requestsProcessed atomic.Int64
+	imagesProcessed   atomic.Int64
+	cacheHits         atomic.Int64
 }
 
 func NewVisionProxy(cfg config.VisionProxyConfig) *VisionProxyState {
@@ -28,7 +32,10 @@ func NewVisionProxy(cfg config.VisionProxyConfig) *VisionProxyState {
 }
 
 func (v *VisionProxyState) Stats() map[string]any {
-	v.mu.Lock(); events := make([]VisionProxyEvent, len(v.recentEvents)); copy(events, v.recentEvents); v.mu.Unlock()
+	v.mu.Lock()
+	events := make([]VisionProxyEvent, len(v.recentEvents))
+	copy(events, v.recentEvents)
+	v.mu.Unlock()
 	return map[string]any{"requests": v.requestsProcessed.Load(), "images": v.imagesProcessed.Load(), "cache_hits": v.cacheHits.Load(), "recent_events": events}
 }
 

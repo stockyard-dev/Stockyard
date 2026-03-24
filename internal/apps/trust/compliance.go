@@ -56,16 +56,16 @@ func (a *App) handleSOC2Evidence(w http.ResponseWriter, r *http.Request) {
 	a.conn.QueryRow("SELECT COUNT(*) FROM proxy_modules WHERE name = 'compliancelog' AND enabled = 1").Scan(&auditEnabled)
 
 	report := map[string]any{
-		"framework":  "SOC 2 Type II",
-		"generated":  now,
+		"framework": "SOC 2 Type II",
+		"generated": now,
 		"audit_chain": map[string]any{
 			"total_events": chainCount,
 			"chain_valid":  chainValid,
 		},
 		"access_control": map[string]any{
-			"total_members":  teamCount,
-			"roles_summary":  roles,
-			"rbac_enabled":   teamCount > 0,
+			"total_members": teamCount,
+			"roles_summary": roles,
+			"rbac_enabled":  teamCount > 0,
 		},
 		"policies": map[string]any{
 			"active_policies": policyCount,
@@ -74,7 +74,7 @@ func (a *App) handleSOC2Evidence(w http.ResponseWriter, r *http.Request) {
 			"configured_alerts": alertCount,
 		},
 		"encryption": map[string]any{
-			"secret_scan_enabled":    encryptionEnabled > 0,
+			"secret_scan_enabled":     encryptionEnabled > 0,
 			"provider_keys_encrypted": true,
 		},
 		"data_retention": map[string]any{
@@ -103,11 +103,11 @@ func (a *App) handleHIPAAEvidence(w http.ResponseWriter, r *http.Request) {
 			"firewall_enabled":  firewallEnabled > 0,
 		},
 		"encryption": map[string]any{
-			"data_at_rest":       "SQLite WAL mode, provider keys encrypted via AES-256-GCM",
-			"keys_encrypted":     true,
+			"data_at_rest":   "SQLite WAL mode, provider keys encrypted via AES-256-GCM",
+			"keys_encrypted": true,
 		},
 		"access_logs": map[string]any{
-			"events_30d": accessLogCount,
+			"events_30d":  accessLogCount,
 			"audit_chain": true,
 		},
 		"minimum_necessary": map[string]any{
@@ -140,9 +140,9 @@ func (a *App) handleGDPREvidence(w http.ResponseWriter, r *http.Request) {
 			"description":            "Data can be purged per-user via the retention wipe module",
 		},
 		"processing_records": map[string]any{
-			"total_traces":     traceCount,
-			"audit_chain":      true,
-			"purpose_logging":  true,
+			"total_traces":    traceCount,
+			"audit_chain":     true,
+			"purpose_logging": true,
 		},
 		"pii_protection": map[string]any{
 			"redaction_enabled": piiEnabled > 0,
@@ -170,15 +170,15 @@ func (a *App) handleEUAIActEvidence(w http.ResponseWriter, r *http.Request) {
 		"framework": "EU AI Act",
 		"generated": now,
 		"transparency": map[string]any{
-			"total_traces":       traceCount,
-			"model_info_logged":  true,
-			"provider_logged":    true,
-			"description":        "Every AI interaction is logged with model, provider, cost, and latency",
+			"total_traces":      traceCount,
+			"model_info_logged": true,
+			"provider_logged":   true,
+			"description":       "Every AI interaction is logged with model, provider, cost, and latency",
 		},
 		"decision_audit_trail": map[string]any{
-			"audit_events":  auditCount,
-			"hash_chain":    true,
-			"tamper_proof":  true,
+			"audit_events": auditCount,
+			"hash_chain":   true,
+			"tamper_proof": true,
 		},
 		"human_oversight": map[string]any{
 			"approval_gate_enabled": approvalGateEnabled > 0,
@@ -186,7 +186,7 @@ func (a *App) handleEUAIActEvidence(w http.ResponseWriter, r *http.Request) {
 		},
 		"model_information": map[string]any{
 			"models_tracked": true,
-			"capabilities":    "Logged per-request via observe_traces",
+			"capabilities":   "Logged per-request via observe_traces",
 		},
 	}
 

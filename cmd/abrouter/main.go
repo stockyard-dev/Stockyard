@@ -15,7 +15,7 @@ func main() {
 		Product: "abrouter",
 		Version: version,
 		Features: engine.Features{
-			ABRouter:     true,
+			ABRouter:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

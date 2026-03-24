@@ -14,16 +14,16 @@ import (
 
 // Known model context limits (tokens).
 var defaultContextLimits = map[string]int{
-	"gpt-4o":             128000,
-	"gpt-4o-mini":        128000,
-	"gpt-4-turbo":        128000,
-	"gpt-4":              8192,
-	"gpt-3.5-turbo":      16385,
-	"claude-sonnet-4-20250514": 200000,
-	"claude-haiku-3-5-20241022":    200000,
-	"claude-opus-4-0-20250514":   200000,
-	"gemini-2.0-flash":   1048576,
-	"gemini-1.5-pro":     2097152,
+	"gpt-4o":                    128000,
+	"gpt-4o-mini":               128000,
+	"gpt-4-turbo":               128000,
+	"gpt-4":                     8192,
+	"gpt-3.5-turbo":             16385,
+	"claude-sonnet-4-20250514":  200000,
+	"claude-haiku-3-5-20241022": 200000,
+	"claude-opus-4-0-20250514":  200000,
+	"gemini-2.0-flash":          1048576,
+	"gemini-1.5-pro":            2097152,
 }
 
 // TokenTrimmer manages context window optimization.
@@ -275,7 +275,7 @@ func (tt *TokenTrimmer) mergeProtected(protectedIdx []int, trimmable []provider.
 // Stats returns trimmer statistics.
 func (tt *TokenTrimmer) Stats() map[string]any {
 	return map[string]any{
-		"trims":       tt.trimCount.Load(),
+		"trims":        tt.trimCount.Load(),
 		"tokens_saved": tt.tokensSaved.Load(),
 	}
 }

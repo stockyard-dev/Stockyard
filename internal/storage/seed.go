@@ -60,7 +60,10 @@ func (db *DB) SeedDemoData(project string) {
 
 	// Track per-day per-provider-model costs for observe_cost_daily
 	type costKey struct{ date, provider, model string }
-	costAgg := make(map[costKey]*struct{ reqs, tokIn, tokOut int; cost float64 })
+	costAgg := make(map[costKey]*struct {
+		reqs, tokIn, tokOut int
+		cost                float64
+	})
 
 	// Generate 7 days of data, ~15-40 requests per day
 	for day := 6; day >= 0; day-- {
@@ -78,7 +81,7 @@ func (db *DB) SeedDemoData(project string) {
 			prompt := prompts[rng.Intn(len(prompts))]
 
 			tokIn := 50 + rng.Intn(450)   // 50-500
-			tokOut := 100 + rng.Intn(900)  // 100-1000
+			tokOut := 100 + rng.Intn(900) // 100-1000
 			cost := float64(tokIn)/1000*m.costIn + float64(tokOut)/1000*m.costOut
 			latency := 200 + rng.Int63n(2800) // 200-3000ms
 
@@ -125,7 +128,10 @@ func (db *DB) SeedDemoData(project string) {
 			key := costKey{dateStr, m.provider, m.model}
 			agg, ok := costAgg[key]
 			if !ok {
-				agg = &struct{ reqs, tokIn, tokOut int; cost float64 }{}
+				agg = &struct {
+					reqs, tokIn, tokOut int
+					cost                float64
+				}{}
 				costAgg[key] = agg
 			}
 			agg.reqs++

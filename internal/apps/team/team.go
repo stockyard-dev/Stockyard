@@ -15,9 +15,9 @@ import (
 
 // App implements the team management system.
 type App struct {
-	conn    *sql.DB
-	audit   func(string, string, string, string, any)
-	mailer  Mailer
+	conn   *sql.DB
+	audit  func(string, string, string, string, any)
+	mailer Mailer
 }
 
 // Mailer is the interface for sending emails.
@@ -93,10 +93,10 @@ func generateToken() string {
 
 // validRoles are the allowed role values.
 var validRoles = map[string]bool{
-	"admin":   true,
+	"admin":     true,
 	"developer": true,
-	"viewer":  true,
-	"auditor": true,
+	"viewer":    true,
+	"auditor":   true,
 }
 
 // --- Role-based access helpers ---
@@ -173,11 +173,11 @@ func (a *App) handleCreateMember(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusCreated, map[string]any{
-		"id":       id,
-		"email":    req.Email,
-		"name":     req.Name,
-		"role":     req.Role,
-		"invite_token": token,
+		"id":              id,
+		"email":           req.Email,
+		"name":            req.Name,
+		"role":            req.Role,
+		"invite_token":    token,
 		"invite_accepted": false,
 	})
 }
@@ -197,13 +197,13 @@ func (a *App) handleListMembers(w http.ResponseWriter, r *http.Request) {
 		var accepted int
 		rows.Scan(&id, &email, &name, &role, &accepted, &createdAt, &updatedAt)
 		m := map[string]any{
-			"id":               id,
-			"email":            email,
-			"name":             name.String,
-			"role":             role,
-			"invite_accepted":  accepted == 1,
-			"created_at":       createdAt,
-			"updated_at":       updatedAt,
+			"id":              id,
+			"email":           email,
+			"name":            name.String,
+			"role":            role,
+			"invite_accepted": accepted == 1,
+			"created_at":      createdAt,
+			"updated_at":      updatedAt,
 		}
 		members = append(members, m)
 	}
@@ -380,11 +380,11 @@ func (a *App) handleTeamSpend(w http.ResponseWriter, r *http.Request) {
 		var reqCount, costCents, inputTokens, outputTokens int64
 		rows.Scan(&member, &reqCount, &costCents, &inputTokens, &outputTokens)
 		members = append(members, map[string]any{
-			"user_id":        member,
-			"request_count":  reqCount,
-			"cost_cents":     costCents,
-			"input_tokens":   inputTokens,
-			"output_tokens":  outputTokens,
+			"user_id":       member,
+			"request_count": reqCount,
+			"cost_cents":    costCents,
+			"input_tokens":  inputTokens,
+			"output_tokens": outputTokens,
 		})
 	}
 	if members == nil {

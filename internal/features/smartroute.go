@@ -43,24 +43,24 @@ type RoutingRule struct {
 
 // routeCondition is the parsed condition JSON.
 type routeCondition struct {
-	Field string  `json:"field"` // prompt_length, model, provider, time_of_day, ab_split
-	Op    string  `json:"op"`    // <, >, <=, >=, ==, !=, contains
-	Value any     `json:"value"` // numeric or string depending on field
+	Field string `json:"field"` // prompt_length, model, provider, time_of_day, ab_split
+	Op    string `json:"op"`    // <, >, <=, >=, ==, !=, contains
+	Value any    `json:"value"` // numeric or string depending on field
 }
 
 // routeAction is the parsed action JSON.
 type routeAction struct {
-	RouteToModel string `json:"route_to_model"`
+	RouteToModel    string `json:"route_to_model"`
 	RouteToProvider string `json:"route_to_provider,omitempty"`
 }
 
 // SmartRouter manages routing rules with in-memory caching.
 type SmartRouter struct {
-	conn      *sql.DB
-	mu        sync.RWMutex
-	rules     []RoutingRule
-	lastLoad  time.Time
-	cacheTTL  time.Duration
+	conn     *sql.DB
+	mu       sync.RWMutex
+	rules    []RoutingRule
+	lastLoad time.Time
+	cacheTTL time.Duration
 }
 
 // NewSmartRouter creates a new smart router with DB-backed rules.

@@ -24,12 +24,16 @@ CREATE TABLE IF NOT EXISTS scheduled_reports (
 // Scheduler manages periodic report generation and delivery.
 type Scheduler struct {
 	conn   *sql.DB
-	mailer interface{ Send(to, subject, body string) error }
-	stop   chan struct{}
+	mailer interface {
+		Send(to, subject, body string) error
+	}
+	stop chan struct{}
 }
 
 // NewScheduler creates a report scheduler.
-func NewScheduler(conn *sql.DB, mailer interface{ Send(to, subject, body string) error }) *Scheduler {
+func NewScheduler(conn *sql.DB, mailer interface {
+	Send(to, subject, body string) error
+}) *Scheduler {
 	conn.Exec(schedulerSchema)
 	return &Scheduler{conn: conn, mailer: mailer, stop: make(chan struct{})}
 }

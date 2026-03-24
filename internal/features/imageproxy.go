@@ -19,9 +19,9 @@ type ImageProxyEvent struct {
 }
 
 type ImageProxyState struct {
-	mu           sync.Mutex
-	cfg          config.ImageProxyConfig
-	recentEvents []ImageProxyEvent
+	mu                sync.Mutex
+	cfg               config.ImageProxyConfig
+	recentEvents      []ImageProxyEvent
 	requestsProcessed atomic.Int64
 	cacheHits         atomic.Int64
 	cacheMisses       atomic.Int64
@@ -51,7 +51,9 @@ func ImageProxyMiddleware(ip *ImageProxyState) proxy.Middleware {
 			ip.cacheMisses.Add(1)
 			resp, err := next(ctx, req)
 			ip.mu.Lock()
-			if len(ip.recentEvents) >= 200 { ip.recentEvents = ip.recentEvents[1:] }
+			if len(ip.recentEvents) >= 200 {
+				ip.recentEvents = ip.recentEvents[1:]
+			}
 			ip.recentEvents = append(ip.recentEvents, ImageProxyEvent{
 				Timestamp: time.Now(), Action: "proxy", Model: req.Model, CacheHit: false,
 			})

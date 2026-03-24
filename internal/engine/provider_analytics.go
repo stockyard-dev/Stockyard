@@ -123,13 +123,13 @@ func handleProviderCompare(conn *sql.DB) http.HandlerFunc {
 		}
 
 		type provStats struct {
-			Provider    string  `json:"provider"`
-			Requests    int64   `json:"requests"`
-			AvgLatency  float64 `json:"avg_latency_ms"`
-			ErrorRate   float64 `json:"error_rate"`
-			AvgCost     float64 `json:"avg_cost_per_request"`
-			TotalCost   float64 `json:"total_cost_usd"`
-			AvgTokensIn float64 `json:"avg_tokens_in"`
+			Provider     string  `json:"provider"`
+			Requests     int64   `json:"requests"`
+			AvgLatency   float64 `json:"avg_latency_ms"`
+			ErrorRate    float64 `json:"error_rate"`
+			AvgCost      float64 `json:"avg_cost_per_request"`
+			TotalCost    float64 `json:"total_cost_usd"`
+			AvgTokensIn  float64 `json:"avg_tokens_in"`
 			AvgTokensOut float64 `json:"avg_tokens_out"`
 		}
 
@@ -156,12 +156,12 @@ func handleProviderCompare(conn *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"provider_a":      statsA,
-			"provider_b":      statsB,
-			"latency_winner":  winner(statsA.AvgLatency, statsB.AvgLatency, provA, provB, true),
-			"cost_winner":     winner(statsA.AvgCost, statsB.AvgCost, provA, provB, true),
+			"provider_a":         statsA,
+			"provider_b":         statsB,
+			"latency_winner":     winner(statsA.AvgLatency, statsB.AvgLatency, provA, provB, true),
+			"cost_winner":        winner(statsA.AvgCost, statsB.AvgCost, provA, provB, true),
 			"reliability_winner": winner(statsA.ErrorRate, statsB.ErrorRate, provA, provB, true),
-			"period":          "30d",
+			"period":             "30d",
 		})
 	}
 }
@@ -210,10 +210,10 @@ func handleRateCalculator(conn *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"providers":      results,
-			"discount_pct":   discountPct,
-			"total_savings":  totalSavings,
-			"period":         "30d",
+			"providers":     results,
+			"discount_pct":  discountPct,
+			"total_savings": totalSavings,
+			"period":        "30d",
 		})
 	}
 }

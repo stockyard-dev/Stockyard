@@ -98,11 +98,11 @@ func (a *App) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		var reqs, input, output, cost int64
 		rows.Scan(&cust, &reqs, &input, &output, &cost)
 		summary = append(summary, map[string]any{
-			"customer_id":  cust,
-			"requests":     reqs,
-			"input_tokens": input,
+			"customer_id":   cust,
+			"requests":      reqs,
+			"input_tokens":  input,
 			"output_tokens": output,
-			"cost_cents":   cost,
+			"cost_cents":    cost,
 		})
 		totalRequests += reqs
 		totalInput += input
@@ -116,10 +116,10 @@ func (a *App) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		"period":  period,
 		"summary": summary,
 		"totals": map[string]any{
-			"requests":     totalRequests,
-			"input_tokens": totalInput,
+			"requests":      totalRequests,
+			"input_tokens":  totalInput,
 			"output_tokens": totalOutput,
-			"cost_cents":   totalCost,
+			"cost_cents":    totalCost,
 		},
 	})
 }
@@ -191,11 +191,11 @@ func (a *App) handleUsageByModel(w http.ResponseWriter, r *http.Request) {
 		var reqs, input, output, cost int64
 		rows.Scan(&model, &reqs, &input, &output, &cost)
 		models = append(models, map[string]any{
-			"model":        model,
-			"requests":     reqs,
-			"input_tokens": input,
+			"model":         model,
+			"requests":      reqs,
+			"input_tokens":  input,
 			"output_tokens": output,
-			"cost_cents":   cost,
+			"cost_cents":    cost,
 		})
 	}
 	if models == nil {
@@ -252,16 +252,16 @@ func (a *App) handleCustomerStatus(w http.ResponseWriter, r *http.Request) {
 		"customer_name": name,
 		"period":        monthStart,
 		"usage": map[string]any{
-			"requests":     totalRequests,
-			"input_tokens": totalInputTokens,
+			"requests":      totalRequests,
+			"input_tokens":  totalInputTokens,
 			"output_tokens": totalOutputTokens,
-			"cost_cents":   totalCostCents,
+			"cost_cents":    totalCostCents,
 		},
 		"projection": map[string]any{
 			"daily_run_rate_cents": int64(math.Round(dailyRunRate)),
-			"projected_monthly":   projectedMonthly,
-			"day_of_month":        dayOfMonth,
-			"days_in_month":       daysInMonth,
+			"projected_monthly":    projectedMonthly,
+			"day_of_month":         dayOfMonth,
+			"days_in_month":        daysInMonth,
 		},
 	}
 

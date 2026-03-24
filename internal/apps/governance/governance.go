@@ -521,14 +521,14 @@ func (a *App) handleCertifySafety(w http.ResponseWriter, r *http.Request) {
 	// Simple score based on presence of guardrails
 	score := 0.0
 	guardrailWeights := map[string]float64{
-		"input_validation":  15,
-		"output_filtering":  15,
-		"rate_limiting":     10,
-		"content_moderation": 15,
-		"pii_detection":     15,
-		"bias_detection":    10,
+		"input_validation":    15,
+		"output_filtering":    15,
+		"rate_limiting":       10,
+		"content_moderation":  15,
+		"pii_detection":       15,
+		"bias_detection":      10,
 		"hallucination_check": 10,
-		"human_oversight":   10,
+		"human_oversight":     10,
 	}
 
 	details := make(map[string]any)
@@ -653,12 +653,12 @@ func (a *App) handleAutoFix(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(configJSON), &config)
 
 		suggestions = append(suggestions, map[string]any{
-			"rule_id":            ruleID,
-			"regulation":         regulation,
-			"requirement":        requirement,
-			"suggested_config":   config,
-			"auto_fixable":       true,
-			"fix_description":    "Apply the suggested Stockyard configuration to meet " + regulation + " requirements",
+			"rule_id":          ruleID,
+			"regulation":       regulation,
+			"requirement":      requirement,
+			"suggested_config": config,
+			"auto_fixable":     true,
+			"fix_description":  "Apply the suggested Stockyard configuration to meet " + regulation + " requirements",
 		})
 	}
 

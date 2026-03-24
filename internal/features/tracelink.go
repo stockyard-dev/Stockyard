@@ -20,44 +20,44 @@ import (
 
 // Span represents a single trace span in a distributed trace.
 type Span struct {
-	TraceID    string    `json:"trace_id"`
-	SpanID     string    `json:"span_id"`
-	ParentID   string    `json:"parent_id,omitempty"`
-	Service    string    `json:"service"`
-	Operation  string    `json:"operation"`
-	Model      string    `json:"model"`
-	Provider   string    `json:"provider"`
-	StartTime  time.Time `json:"start_time"`
-	EndTime    time.Time `json:"end_time"`
-	Duration   int64     `json:"duration_ms"`
-	Status     string    `json:"status"` // ok, error
-	StatusMsg  string    `json:"status_msg,omitempty"`
+	TraceID    string         `json:"trace_id"`
+	SpanID     string         `json:"span_id"`
+	ParentID   string         `json:"parent_id,omitempty"`
+	Service    string         `json:"service"`
+	Operation  string         `json:"operation"`
+	Model      string         `json:"model"`
+	Provider   string         `json:"provider"`
+	StartTime  time.Time      `json:"start_time"`
+	EndTime    time.Time      `json:"end_time"`
+	Duration   int64          `json:"duration_ms"`
+	Status     string         `json:"status"` // ok, error
+	StatusMsg  string         `json:"status_msg,omitempty"`
 	Attributes map[string]any `json:"attributes,omitempty"`
 }
 
 // TraceTree represents a complete trace with all its spans.
 type TraceTree struct {
-	TraceID    string    `json:"trace_id"`
-	RootSpan   string    `json:"root_span"`
-	SpanCount  int       `json:"span_count"`
-	StartTime  time.Time `json:"start_time"`
-	TotalDur   int64     `json:"total_duration_ms"`
-	Spans      []Span    `json:"spans"`
+	TraceID   string    `json:"trace_id"`
+	RootSpan  string    `json:"root_span"`
+	SpanCount int       `json:"span_count"`
+	StartTime time.Time `json:"start_time"`
+	TotalDur  int64     `json:"total_duration_ms"`
+	Spans     []Span    `json:"spans"`
 }
 
 // TraceLinkState holds runtime state for the distributed tracer.
 type TraceLinkState struct {
-	mu          sync.RWMutex
-	cfg         config.TraceLinkConfig
-	traces      map[string]*TraceTree // traceID → tree
-	recentIDs   []string              // ordered trace IDs for eviction
-	maxTraces   int
+	mu        sync.RWMutex
+	cfg       config.TraceLinkConfig
+	traces    map[string]*TraceTree // traceID → tree
+	recentIDs []string              // ordered trace IDs for eviction
+	maxTraces int
 
-	totalSpans   atomic.Int64
-	totalTraces  atomic.Int64
-	totalErrors  atomic.Int64
-	sampled      atomic.Int64
-	dropped      atomic.Int64
+	totalSpans  atomic.Int64
+	totalTraces atomic.Int64
+	totalErrors atomic.Int64
+	sampled     atomic.Int64
+	dropped     atomic.Int64
 }
 
 // NewTraceLinker creates a new distributed tracer from config.
@@ -170,14 +170,14 @@ func (tl *TraceLinkState) WaterfallView(traceID string) []map[string]any {
 	for _, span := range tree.Spans {
 		offset := span.StartTime.Sub(tree.StartTime).Milliseconds()
 		waterfall = append(waterfall, map[string]any{
-			"span_id":    span.SpanID,
-			"parent_id":  span.ParentID,
-			"operation":  span.Operation,
-			"model":      span.Model,
-			"provider":   span.Provider,
-			"offset_ms":  offset,
+			"span_id":     span.SpanID,
+			"parent_id":   span.ParentID,
+			"operation":   span.Operation,
+			"model":       span.Model,
+			"provider":    span.Provider,
+			"offset_ms":   offset,
 			"duration_ms": span.Duration,
-			"status":     span.Status,
+			"status":      span.Status,
 		})
 	}
 	return waterfall
@@ -198,12 +198,12 @@ func (tl *TraceLinkState) ShouldSample() bool {
 func (tl *TraceLinkState) Stats() map[string]any {
 	recent := tl.RecentTraces(20)
 	return map[string]any{
-		"total_spans":  tl.totalSpans.Load(),
-		"total_traces": tl.totalTraces.Load(),
-		"total_errors": tl.totalErrors.Load(),
-		"sampled":      tl.sampled.Load(),
-		"dropped":      tl.dropped.Load(),
-		"sample_rate":  tl.cfg.SampleRate,
+		"total_spans":   tl.totalSpans.Load(),
+		"total_traces":  tl.totalTraces.Load(),
+		"total_errors":  tl.totalErrors.Load(),
+		"sampled":       tl.sampled.Load(),
+		"dropped":       tl.dropped.Load(),
+		"sample_rate":   tl.cfg.SampleRate,
 		"recent_traces": recent,
 	}
 }

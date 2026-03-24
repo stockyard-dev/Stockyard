@@ -15,7 +15,7 @@ func main() {
 		Product: "guardrail",
 		Version: version,
 		Features: engine.Features{
-			GuardRail:     true,
+			GuardRail:      true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

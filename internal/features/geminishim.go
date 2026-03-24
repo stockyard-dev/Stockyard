@@ -20,9 +20,9 @@ type GeminiShimEvent struct {
 }
 
 type GeminiShimState struct {
-	mu           sync.Mutex
-	cfg          config.GeminiShimConfig
-	recentEvents []GeminiShimEvent
+	mu                sync.Mutex
+	cfg               config.GeminiShimConfig
+	recentEvents      []GeminiShimEvent
 	requestsProcessed atomic.Int64
 	safetyRetries     atomic.Int64
 	tokenNormalized   atomic.Int64
@@ -46,7 +46,9 @@ func (gs *GeminiShimState) Stats() map[string]any {
 func (gs *GeminiShimState) gsRecordEvent(ev GeminiShimEvent) {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
-	if len(gs.recentEvents) >= 200 { gs.recentEvents = gs.recentEvents[1:] }
+	if len(gs.recentEvents) >= 200 {
+		gs.recentEvents = gs.recentEvents[1:]
+	}
 	gs.recentEvents = append(gs.recentEvents, ev)
 }
 

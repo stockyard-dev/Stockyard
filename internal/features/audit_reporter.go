@@ -6,8 +6,8 @@ import "sync"
 type AuditFunc func(string, string, string, string, any)
 
 var (
-	auditMu  sync.RWMutex
-	auditFn  AuditFunc
+	auditMu sync.RWMutex
+	auditFn AuditFunc
 )
 
 // SetAuditFunc installs the trust auditor for use by middlewares.

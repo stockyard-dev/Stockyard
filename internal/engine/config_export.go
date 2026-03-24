@@ -11,12 +11,12 @@ import (
 
 // ExportConfig represents a full Stockyard configuration snapshot.
 type ExportConfig struct {
-	Version   string         `json:"version"`
-	ExportedAt string        `json:"exported_at"`
-	Modules   []ModuleExport `json:"modules"`
-	Providers []ProvExport   `json:"providers,omitempty"`
-	Webhooks  []WebhookExport `json:"webhooks,omitempty"`
-	Policies  []PolicyExport `json:"policies,omitempty"`
+	Version    string          `json:"version"`
+	ExportedAt string          `json:"exported_at"`
+	Modules    []ModuleExport  `json:"modules"`
+	Providers  []ProvExport    `json:"providers,omitempty"`
+	Webhooks   []WebhookExport `json:"webhooks,omitempty"`
+	Policies   []PolicyExport  `json:"policies,omitempty"`
 }
 
 type ModuleExport struct {
@@ -35,9 +35,9 @@ type WebhookExport struct {
 }
 
 type PolicyExport struct {
-	Name   string `json:"name"`
-	Type   string `json:"type"`
-	Action string `json:"action"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Action  string `json:"action"`
 	Pattern string `json:"pattern,omitempty"`
 }
 
@@ -186,9 +186,9 @@ func RegisterConfigRoutes(mux *http.ServeMux, conn *sql.DB) {
 		}
 
 		type Diff struct {
-			Module  string `json:"module"`
-			Current bool   `json:"current"`
-			Incoming bool  `json:"incoming"`
+			Module   string `json:"module"`
+			Current  bool   `json:"current"`
+			Incoming bool   `json:"incoming"`
 		}
 
 		var diffs []Diff

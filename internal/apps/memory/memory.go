@@ -25,9 +25,9 @@ type App struct {
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
-func (a *App) Name() string                { return "memory" }
-func (a *App) Description() string         { return "Conversation memory service with relevance search" }
-func (a *App) SetProxyPort(port int)       { a.proxyPort = port }
+func (a *App) Name() string          { return "memory" }
+func (a *App) Description() string   { return "Conversation memory service with relevance search" }
+func (a *App) SetProxyPort(port int) { a.proxyPort = port }
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn

@@ -15,7 +15,7 @@ func main() {
 		Product: "tokenmarket",
 		Version: version,
 		Features: engine.Features{
-			TokenMarket:     true,
+			TokenMarket:    true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

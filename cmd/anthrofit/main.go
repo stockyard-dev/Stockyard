@@ -14,7 +14,7 @@ func main() {
 		Version: version,
 		Features: engine.Features{
 			AnthroFit:      true,
-			Failover:       true,  // Need failover for routing to Anthropic
+			Failover:       true, // Need failover for routing to Anthropic
 			RequestLogging: true,
 		},
 	})

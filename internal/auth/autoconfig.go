@@ -91,7 +91,7 @@ func AutoConfigMiddleware(store *Store, factory *ProviderFactory) func(http.Hand
 type autoConfigContextKey int
 
 const (
-	autoProviderKey     autoConfigContextKey = iota
+	autoProviderKey autoConfigContextKey = iota
 	autoProviderNameKey
 )
 
