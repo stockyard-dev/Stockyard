@@ -1,5 +1,5 @@
 [build]
-buildCommand = "CGO_ENABLED=0 go build -ldflags='-s -w -X main.version=v1.0.0' -o bin/stockyard ./cmd/stockyard/"
+buildCommand = "CGO_ENABLED=0 go build -o bin/stockyard ./cmd/stockyard/"
 
 [deploy]
 startCommand = "./bin/stockyard"
