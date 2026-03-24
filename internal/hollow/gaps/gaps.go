@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	hollowast "github.com/stockyard-dev/stockyard/internal/hollow/ast"
 )
 
 // Gap is something your software doesn't do but probably should.
@@ -57,6 +59,13 @@ func Analyze(dir string) (*AnalysisResult, error) {
 		case ".go":
 			gaps := analyzeGoFile(path, relPath)
 			result.Gaps = append(result.Gaps, gaps...)
+			for _, f := range hollowast.AnalyzeFile(path, relPath) {
+				result.Gaps = append(result.Gaps, Gap{
+					ID: f.ID, Type: f.Type, Severity: f.Severity, Category: f.Category,
+					File: f.File, Line: f.Line, Description: f.Description,
+					Evidence: f.Evidence, Suggestion: f.Suggestion,
+				})
+			}
 			result.Files++
 		case ".py":
 			gaps := analyzePythonFile(path, relPath)
