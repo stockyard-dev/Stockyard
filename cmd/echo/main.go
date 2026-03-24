@@ -101,12 +101,13 @@ func cmdStats() {
 func cmdServe(args []string) {
 	fs := flag.NewFlagSet("serve", flag.ExitOnError)
 	port := fs.Int("port", 9400, "HTTP port")
+	repoDir := fs.String("repo", ".", "Repository directory")
 	fs.Parse(args)
 	if p := os.Getenv("PORT"); p != "" { if n, err := strconv.Atoi(p); err == nil { *port = n } }
 	db := openDB()
 	defer db.Close()
 	fmt.Printf("\n  📜 Echo server: http://localhost:%d/ui\n\n", *port)
-	srv := server.New(server.Config{Port: *port, DB: db})
+	srv := server.New(server.Config{Port: *port, DB: db, RepoDir: *repoDir})
 	srv.ListenAndServe()
 }
 

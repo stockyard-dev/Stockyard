@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -232,6 +233,133 @@ func (d *DB) Stats() Stats {
 	d.db.QueryRow("SELECT COUNT(*) FROM versions").Scan(&s.Versions)
 	d.db.QueryRow("SELECT COUNT(*) FROM annotations").Scan(&s.Annotations)
 	return s
+}
+
+// LineageRecord represents a relationship between two code units across time.
+type LineageRecord struct {
+	ID             int    `json:"id"`
+	UnitID         string `json:"unit_id"`
+	PredecessorID  string `json:"predecessor_id"`
+	Relationship   string `json:"relationship"` // rename, move, split, merge
+	Context        string `json:"context"`
+}
+
+// RecordLineage inserts a lineage relationship.
+func (d *DB) RecordLineage(unitID, predecessorID, relationship, context string) error {
+	// Avoid duplicates
+	var exists int
+	d.db.QueryRow(`SELECT COUNT(*) FROM lineage WHERE unit_id = ? AND predecessor_id = ? AND relationship = ?`,
+		unitID, predecessorID, relationship).Scan(&exists)
+	if exists > 0 {
+		return nil
+	}
+	_, err := d.db.Exec(`INSERT INTO lineage (unit_id, predecessor_id, relationship, context) VALUES (?, ?, ?, ?)`,
+		unitID, predecessorID, relationship, context)
+	return err
+}
+
+// GetLineage returns all lineage records for a unit (as child or predecessor).
+func (d *DB) GetLineage(unitID string) ([]LineageRecord, error) {
+	rows, err := d.db.Query(`SELECT id, unit_id, COALESCE(predecessor_id,''), relationship, COALESCE(context,'') FROM lineage WHERE unit_id = ? OR predecessor_id = ? ORDER BY id`, unitID, unitID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []LineageRecord
+	for rows.Next() {
+		var r LineageRecord
+		rows.Scan(&r.ID, &r.UnitID, &r.PredecessorID, &r.Relationship, &r.Context)
+		out = append(out, r)
+	}
+	return out, nil
+}
+
+// ChurnReport returns units ranked by number of distinct versions since a time.
+func (d *DB) ChurnReport(since time.Time) ([]ChurnEntry, error) {
+	rows, err := d.db.Query(`
+		SELECT u.id, u.name, u.file, u.type, COUNT(v.id) as changes,
+			MAX(v.timestamp) as last_mod, GROUP_CONCAT(DISTINCT v.author) as authors
+		FROM units u
+		JOIN versions v ON v.unit_id = u.id
+		WHERE v.timestamp >= ?
+		GROUP BY u.id
+		ORDER BY changes DESC
+		LIMIT 100
+	`, since.Format("2006-01-02 15:04:05"))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var entries []ChurnEntry
+	for rows.Next() {
+		var e ChurnEntry
+		var lastMod, authors string
+		rows.Scan(&e.UnitID, &e.Name, &e.File, &e.Kind, &e.ChangeCount, &lastMod, &authors)
+		e.LastModified, _ = time.Parse(time.RFC3339, lastMod)
+		if authors != "" {
+			e.Authors = strings.Split(authors, ",")
+		}
+		entries = append(entries, e)
+	}
+	return entries, nil
+}
+
+// ChurnEntry summarizes how frequently a code unit changes.
+type ChurnEntry struct {
+	UnitID       string    `json:"unit_id"`
+	Name         string    `json:"name"`
+	File         string    `json:"file"`
+	Kind         string    `json:"kind"`
+	ChangeCount  int       `json:"change_count"`
+	LastModified time.Time `json:"last_modified"`
+	Authors      []string  `json:"authors"`
+}
+
+// ListUnitsFiltered returns units with optional filtering and sorting.
+func (d *DB) ListUnitsFiltered(kind, search, sort string) ([]Unit, error) {
+	query := `SELECT u.id, u.name, u.file, u.type, COALESCE(u.current_hash,''), COUNT(v.id)
+		FROM units u LEFT JOIN versions v ON v.unit_id = u.id`
+	var conditions []string
+	var args []any
+
+	if kind != "" {
+		conditions = append(conditions, "u.type = ?")
+		args = append(args, kind)
+	}
+	if search != "" {
+		conditions = append(conditions, "(u.name LIKE ? OR u.file LIKE ?)")
+		pattern := "%" + search + "%"
+		args = append(args, pattern, pattern)
+	}
+
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
+	}
+	query += " GROUP BY u.id"
+
+	switch sort {
+	case "churn":
+		query += " ORDER BY COUNT(v.id) DESC"
+	case "name":
+		query += " ORDER BY u.name"
+	default:
+		query += " ORDER BY u.file, u.name"
+	}
+
+	rows, err := d.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var units []Unit
+	for rows.Next() {
+		var u Unit
+		rows.Scan(&u.ID, &u.Name, &u.File, &u.Type, &u.CurrentHash, &u.VersionCount)
+		units = append(units, u)
+	}
+	return units, nil
 }
 
 func contentHash(content string) string {
