@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/bid/bidder"
 	"github.com/stockyard-dev/stockyard/internal/bid/exchange"
 	"github.com/stockyard-dev/stockyard/internal/bid/quality"
+	"github.com/stockyard-dev/stockyard/internal/bid/store"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -36,22 +39,38 @@ type Server struct {
 	cfg     Config
 	engine  *exchange.Engine
 	quality *quality.Tracker
+	store   *store.DB
 	mux     *http.ServeMux
 }
 
 // New creates a new Bid server.
 func New(cfg Config) *Server {
-	engine := exchange.New(cfg.Strategy)
+	// Open SQLite store
+	dataDir := os.Getenv("BID_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "/tmp/bid"
+	}
+
+	var db *store.DB
+	dbPath := filepath.Join(dataDir, "bid.db")
+	var err error
+	db, err = store.Open(dbPath)
+	if err != nil {
+		log.Printf("WARNING: failed to open store at %s: %v (running without persistence)", dbPath, err)
+	}
+
+	engine := exchange.New(cfg.Strategy, db)
 
 	q := cfg.QualityTracker
 	if q == nil {
-		q = quality.New()
+		q = quality.New(db)
 	}
 
 	s := &Server{
 		cfg:     cfg,
 		engine:  engine,
 		quality: q,
+		store:   db,
 		mux:     http.NewServeMux(),
 	}
 
@@ -75,6 +94,14 @@ func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", s.cfg.Port)
 	log.Printf("Bid exchange listening on %s (%d providers, strategy: %s)", addr, s.engine.BidderCount(), s.cfg.Strategy)
 	return http.ListenAndServe(addr, s.mux)
+}
+
+// Close shuts down the server and releases resources.
+func (s *Server) Close() error {
+	if s.store != nil {
+		return s.store.Close()
+	}
+	return nil
 }
 
 func (s *Server) routes() {

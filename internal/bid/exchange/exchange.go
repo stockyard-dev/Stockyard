@@ -7,10 +7,17 @@ package exchange
 import (
 	"context"
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 	"time"
 )
+
+// Store defines the persistence interface used by the exchange engine.
+type Store interface {
+	SaveAuction(result AuctionResult) error
+	ListAuctions(limit int) ([]AuctionResult, error)
+}
 
 // Request represents an incoming LLM request to be auctioned.
 type Request struct {
@@ -93,6 +100,7 @@ type Engine struct {
 	strategy Strategy
 	history  []AuctionResult   // recent auctions for analytics
 	maxHist  int
+	store    Store             // optional persistence
 }
 
 // Bidder interface — providers implement this to participate in auctions.
@@ -102,16 +110,37 @@ type Bidder interface {
 	Execute(ctx context.Context, req *Request) (*CompletedRequest, error)
 }
 
-// New creates a new auction engine.
-func New(strategy Strategy) *Engine {
+// New creates a new auction engine. If a Store is provided, history is loaded
+// from it at startup and new results are persisted on every auction.
+func New(strategy Strategy, s ...Store) *Engine {
 	if strategy == "" {
 		strategy = StrategyCheapest
 	}
-	return &Engine{
+	e := &Engine{
 		bidders:  make(map[string]Bidder),
 		strategy: strategy,
 		maxHist:  10000,
 	}
+	if len(s) > 0 && s[0] != nil {
+		e.store = s[0]
+		e.loadHistory()
+	}
+	return e
+}
+
+// loadHistory populates in-memory history from the store.
+func (e *Engine) loadHistory() {
+	results, err := e.store.ListAuctions(e.maxHist)
+	if err != nil {
+		log.Printf("exchange: failed to load auction history: %v", err)
+		return
+	}
+	// ListAuctions returns newest-first; reverse for chronological order.
+	for i, j := 0, len(results)-1; i < j; i, j = i+1, j-1 {
+		results[i], results[j] = results[j], results[i]
+	}
+	e.history = results
+	log.Printf("exchange: loaded %d auctions from store", len(results))
 }
 
 // RegisterBidder adds a provider to the exchange.
@@ -318,6 +347,11 @@ func (e *Engine) recordResult(r *AuctionResult) {
 	e.history = append(e.history, *r)
 	if len(e.history) > e.maxHist {
 		e.history = e.history[len(e.history)-e.maxHist:]
+	}
+	if e.store != nil {
+		if err := e.store.SaveAuction(*r); err != nil {
+			log.Printf("exchange: failed to persist auction %s: %v", r.RequestID, err)
+		}
 	}
 }
 

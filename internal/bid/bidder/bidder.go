@@ -5,7 +5,6 @@ package bidder
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -67,7 +66,7 @@ func (b *LLMBidder) SubmitBid(ctx context.Context, req *exchange.Request) (*exch
 	defer b.mu.RUnlock()
 
 	// Estimate token count from prompt/messages
-	estimatedTokens := estimateTokens(req)
+	_ = estimateTokens(req)
 
 	// Calculate price
 	price := b.pricing.BlendedPer1K

@@ -4,17 +4,27 @@
 package quality
 
 import (
+	"log"
 	"sync"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/bid/exchange"
 )
 
+// Store defines the persistence interface used by the quality tracker.
+type Store interface {
+	SaveCompletedRequest(req exchange.CompletedRequest) error
+	GetProviderQuality(providerID string) (*ProviderRecord, error)
+	UpdateProviderQuality(providerID string, record *ProviderRecord) error
+	ListProviderQuality() (map[string]*ProviderRecord, error)
+}
+
 // Tracker monitors provider quality over time.
 type Tracker struct {
 	mu       sync.RWMutex
 	records  map[string]*ProviderRecord // provider ID -> record
 	maxHist  int
+	store    Store // optional persistence
 }
 
 // ProviderRecord holds quality history for a single provider.
@@ -42,12 +52,29 @@ type RequestResult struct {
 	Timestamp       time.Time
 }
 
-// New creates a quality tracker.
-func New() *Tracker {
-	return &Tracker{
+// New creates a quality tracker. If a Store is provided, quality records are
+// loaded from it at startup and persisted on every completion.
+func New(s ...Store) *Tracker {
+	t := &Tracker{
 		records: make(map[string]*ProviderRecord),
 		maxHist: 200,
 	}
+	if len(s) > 0 && s[0] != nil {
+		t.store = s[0]
+		t.loadRecords()
+	}
+	return t
+}
+
+// loadRecords populates in-memory records from the store.
+func (t *Tracker) loadRecords() {
+	records, err := t.store.ListProviderQuality()
+	if err != nil {
+		log.Printf("quality: failed to load provider records: %v", err)
+		return
+	}
+	t.records = records
+	log.Printf("quality: loaded %d provider records from store", len(records))
 }
 
 // RecordCompletion records the outcome of an auction execution.
@@ -93,6 +120,16 @@ func (t *Tracker) RecordCompletion(bid *exchange.Bid, completed *exchange.Comple
 	rec.LatencyAccuracy = latencyAccuracy(rec.RecentResults)
 	rec.QualityBias = qualityBias(rec.RecentResults)
 	rec.ReliabilityScore = reliability(rec)
+
+	// Persist to store
+	if t.store != nil {
+		if err := t.store.SaveCompletedRequest(*completed); err != nil {
+			log.Printf("quality: failed to persist completed request: %v", err)
+		}
+		if err := t.store.UpdateProviderQuality(completed.ProviderID, rec); err != nil {
+			log.Printf("quality: failed to persist provider quality for %s: %v", completed.ProviderID, err)
+		}
+	}
 }
 
 // GetRecord returns the quality record for a provider.
