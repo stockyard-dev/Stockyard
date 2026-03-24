@@ -76,17 +76,100 @@ func Terminal(r *store.SimulationResult) {
 		fmt.Printf("\n  ⚠ %d conversations encountered errors\n", totalErrors)
 	}
 
-	// Top failure reasons
-	failures := collectFailureReasons(r)
-	if len(failures) > 0 {
+	// Graded results (if analysis ran, these override self-reported)
+	if len(r.Grades) > 0 {
+		gradedCompleted := 0
+		gradedPartial := 0
+		gradedFailed := 0
+		for _, g := range r.Grades {
+			switch g.Result {
+			case "completed":
+				gradedCompleted++
+			case "partial":
+				gradedPartial++
+			case "failed":
+				gradedFailed++
+			}
+		}
+		gradedRate := 0.0
+		if len(r.Grades) > 0 {
+			gradedRate = float64(gradedCompleted) / float64(len(r.Grades)) * 100
+		}
+		fmt.Println()
+		fmt.Println("  GRADED RESULTS (LLM judge)")
+		fmt.Printf("  Completed: %d  |  Partial: %d  |  Failed: %d  |  Rate: %.1f%%\n",
+			gradedCompleted, gradedPartial, gradedFailed, gradedRate)
+	}
+
+	// Safety findings
+	if len(r.SafetyFindings) > 0 {
+		critical, high, medium, low := 0, 0, 0, 0
+		for _, f := range r.SafetyFindings {
+			switch f.Severity {
+			case "critical":
+				critical++
+			case "high":
+				high++
+			case "medium":
+				medium++
+			case "low":
+				low++
+			}
+		}
+		fmt.Println()
+		fmt.Println("  ⚠  SAFETY FINDINGS")
+		if critical > 0 {
+			fmt.Printf("  │ %d CRITICAL\n", critical)
+			for _, f := range r.SafetyFindings {
+				if f.Severity == "critical" {
+					fmt.Printf("  │   → %s (conv %s, turn %d)\n", f.Description, f.ConversationID, f.TurnNumber)
+				}
+			}
+		}
+		if high > 0 {
+			fmt.Printf("  │ %d HIGH\n", high)
+			for _, f := range r.SafetyFindings {
+				if f.Severity == "high" {
+					fmt.Printf("  │   → %s (conv %s, turn %d)\n", f.Description, f.ConversationID, f.TurnNumber)
+				}
+			}
+		}
+		if medium > 0 {
+			fmt.Printf("  │ %d MEDIUM\n", medium)
+		}
+		if low > 0 {
+			fmt.Printf("  │ %d LOW\n", low)
+		}
+	} else {
+		fmt.Println()
+		fmt.Println("  ✓ SAFETY: No findings detected")
+	}
+
+	// Top failure patterns (from graded results)
+	if len(r.FailurePatterns) > 0 {
 		fmt.Println()
 		fmt.Println("  TOP FAILURE PATTERNS")
 		limit := 5
-		if len(failures) < limit {
-			limit = len(failures)
+		if len(r.FailurePatterns) < limit {
+			limit = len(r.FailurePatterns)
 		}
 		for i := 0; i < limit; i++ {
-			fmt.Printf("  │ %d. %s (%d conversations)\n", i+1, failures[i].Reason, failures[i].Count)
+			fmt.Printf("  │ %d. %s (%d conversations)\n",
+				i+1, r.FailurePatterns[i].Pattern, r.FailurePatterns[i].Count)
+		}
+	}
+
+	// Top suggestions from grader
+	suggestions := collectSuggestions(r)
+	if len(suggestions) > 0 {
+		fmt.Println()
+		fmt.Println("  IMPROVEMENT SUGGESTIONS (from grader)")
+		limit := 3
+		if len(suggestions) < limit {
+			limit = len(suggestions)
+		}
+		for i := 0; i < limit; i++ {
+			fmt.Printf("  │ • %s\n", suggestions[i])
 		}
 	}
 
@@ -224,6 +307,30 @@ func Compare(a, b *store.SimulationResult) {
 	} else {
 		fmt.Println("  VERDICT: NO SIGNIFICANT CHANGE")
 	}
+
+	// Safety comparison
+	safetyCritA, safetyCritB := 0, 0
+	for _, f := range a.SafetyFindings {
+		if f.Severity == "critical" || f.Severity == "high" {
+			safetyCritA++
+		}
+	}
+	for _, f := range b.SafetyFindings {
+		if f.Severity == "critical" || f.Severity == "high" {
+			safetyCritB++
+		}
+	}
+	if safetyCritA > 0 || safetyCritB > 0 {
+		fmt.Println()
+		fmt.Printf("  SAFETY (critical+high): %d → %d", safetyCritA, safetyCritB)
+		if safetyCritB < safetyCritA {
+			fmt.Print(" ✓ IMPROVED")
+		} else if safetyCritB > safetyCritA {
+			fmt.Print(" ⚠ DEGRADED")
+		}
+		fmt.Println()
+	}
+
 	fmt.Println()
 }
 
@@ -283,4 +390,17 @@ func personaRows(r *store.SimulationResult) string {
 		))
 	}
 	return sb.String()
+}
+
+// collectSuggestions extracts unique improvement suggestions from grades.
+func collectSuggestions(r *store.SimulationResult) []string {
+	seen := map[string]bool{}
+	var out []string
+	for _, g := range r.Grades {
+		if g.Suggestion != "" && !seen[g.Suggestion] {
+			seen[g.Suggestion] = true
+			out = append(out, g.Suggestion)
+		}
+	}
+	return out
 }

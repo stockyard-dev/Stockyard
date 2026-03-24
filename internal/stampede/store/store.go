@@ -66,6 +66,30 @@ func (s *DB) migrate() error {
 
 		CREATE INDEX IF NOT EXISTS idx_conv_sim ON conversations(simulation_id);
 		CREATE INDEX IF NOT EXISTS idx_conv_persona ON conversations(persona_name);
+
+		CREATE TABLE IF NOT EXISTS grades (
+			conversation_id TEXT PRIMARY KEY REFERENCES conversations(id),
+			simulation_id TEXT,
+			result TEXT,
+			confidence REAL,
+			reason TEXT,
+			failure_point INTEGER DEFAULT -1,
+			suggestion TEXT
+		);
+
+		CREATE TABLE IF NOT EXISTS safety_findings (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			simulation_id TEXT,
+			conversation_id TEXT,
+			type TEXT NOT NULL,
+			severity TEXT NOT NULL,
+			description TEXT,
+			turn_number INTEGER,
+			evidence TEXT
+		);
+
+		CREATE INDEX IF NOT EXISTS idx_grades_sim ON grades(simulation_id);
+		CREATE INDEX IF NOT EXISTS idx_safety_sim ON safety_findings(simulation_id);
 	`)
 	return err
 }
@@ -81,6 +105,36 @@ type SimulationResult struct {
 	TotalCost        float64               `json:"total_cost_cents"`
 	Conversations    []ConversationSummary `json:"conversations"`
 	PersonaBreakdown map[string]PersonaStats `json:"persona_breakdown"`
+	Grades           []GradeSummary        `json:"grades,omitempty"`
+	SafetyFindings   []SafetySummary       `json:"safety_findings,omitempty"`
+	FailurePatterns  []FailurePatternSummary `json:"failure_patterns,omitempty"`
+}
+
+// GradeSummary holds a grading result loaded from the DB.
+type GradeSummary struct {
+	ConversationID string  `json:"conversation_id"`
+	Result         string  `json:"result"`
+	Confidence     float64 `json:"confidence"`
+	Reason         string  `json:"reason"`
+	FailurePoint   int     `json:"failure_point"`
+	Suggestion     string  `json:"suggestion"`
+}
+
+// SafetySummary holds a safety finding loaded from the DB.
+type SafetySummary struct {
+	ConversationID string `json:"conversation_id"`
+	Type           string `json:"type"`
+	Severity       string `json:"severity"`
+	Description    string `json:"description"`
+	TurnNumber     int    `json:"turn_number"`
+	Evidence       string `json:"evidence"`
+}
+
+// FailurePatternSummary groups similar failure reasons.
+type FailurePatternSummary struct {
+	Pattern string   `json:"pattern"`
+	Count   int      `json:"count"`
+	IDs     []string `json:"conversation_ids"`
 }
 
 // ConversationSummary is a lightweight summary of a conversation.
@@ -204,7 +258,62 @@ func (s *DB) LoadSimulationResult(simID string) (*SimulationResult, error) {
 		r.PersonaBreakdown[name] = *ps
 	}
 
+	// Load grades
+	gradeRows, err := s.db.Query(
+		"SELECT conversation_id, COALESCE(result,''), COALESCE(confidence,0), COALESCE(reason,''), COALESCE(failure_point,-1), COALESCE(suggestion,'') FROM grades WHERE simulation_id = ?",
+		simID,
+	)
+	if err == nil {
+		defer gradeRows.Close()
+		failureReasons := map[string][]string{}
+		for gradeRows.Next() {
+			var g GradeSummary
+			gradeRows.Scan(&g.ConversationID, &g.Result, &g.Confidence, &g.Reason, &g.FailurePoint, &g.Suggestion)
+			r.Grades = append(r.Grades, g)
+			if g.Result == "failed" && g.Reason != "" {
+				failureReasons[g.Reason] = append(failureReasons[g.Reason], g.ConversationID)
+			}
+		}
+		for reason, ids := range failureReasons {
+			r.FailurePatterns = append(r.FailurePatterns, FailurePatternSummary{
+				Pattern: reason, Count: len(ids), IDs: ids,
+			})
+		}
+	}
+
+	// Load safety findings
+	safetyRows, err := s.db.Query(
+		"SELECT conversation_id, type, severity, COALESCE(description,''), COALESCE(turn_number,0), COALESCE(evidence,'') FROM safety_findings WHERE simulation_id = ?",
+		simID,
+	)
+	if err == nil {
+		defer safetyRows.Close()
+		for safetyRows.Next() {
+			var f SafetySummary
+			safetyRows.Scan(&f.ConversationID, &f.Type, &f.Severity, &f.Description, &f.TurnNumber, &f.Evidence)
+			r.SafetyFindings = append(r.SafetyFindings, f)
+		}
+	}
+
 	return &r, nil
+}
+
+// SaveGrade persists a grade result.
+func (s *DB) SaveGrade(simID string, convID string, result string, confidence float64, reason string, failurePoint int, suggestion string) error {
+	_, err := s.db.Exec(
+		"INSERT OR REPLACE INTO grades (conversation_id, simulation_id, result, confidence, reason, failure_point, suggestion) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		convID, simID, result, confidence, reason, failurePoint, suggestion,
+	)
+	return err
+}
+
+// SaveSafetyFinding persists a safety finding.
+func (s *DB) SaveSafetyFinding(simID string, convID string, findingType string, severity string, description string, turnNumber int, evidence string) error {
+	_, err := s.db.Exec(
+		"INSERT INTO safety_findings (simulation_id, conversation_id, type, severity, description, turn_number, evidence) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		simID, convID, findingType, severity, description, turnNumber, evidence,
+	)
+	return err
 }
 
 // ListSimulations returns recent simulation summaries.

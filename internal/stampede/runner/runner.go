@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stockyard-dev/stockyard/internal/provider"
+	"github.com/stockyard-dev/stockyard/internal/stampede/analysis"
 	"github.com/stockyard-dev/stockyard/internal/stampede/conversation"
 	"github.com/stockyard-dev/stockyard/internal/stampede/persona"
 	"github.com/stockyard-dev/stockyard/internal/stampede/store"
@@ -165,6 +166,30 @@ func Run(ctx context.Context, cfg Config, tgt *target.Client, db *store.DB) (*st
 	wg.Wait()
 	if !cfg.Verbose {
 		fmt.Println() // Clear progress line
+	}
+
+	// Run analysis (goal grading + safety scanning)
+	fmt.Println()
+	analysisCtx, analysisCancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer analysisCancel()
+
+	analysisResult, err := analysis.Analyze(analysisCtx, results, llm, analysis.Config{
+		GraderModel: cfg.ProviderModel,
+		Concurrency: 5,
+	})
+	if err != nil {
+		fmt.Printf("  Warning: analysis failed: %v (results still saved)\n", err)
+	} else {
+		// Save grades to DB
+		for _, g := range analysisResult.Grades {
+			db.SaveGrade(simID, g.ConversationID, g.Result, g.Confidence, g.Reason, g.FailurePoint, g.Suggestion)
+		}
+		// Save safety findings to DB
+		for _, f := range analysisResult.SafetyFindings {
+			db.SaveSafetyFinding(simID, f.ConversationID, f.Type, f.Severity, f.Description, f.TurnNumber, f.Evidence)
+		}
+		fmt.Printf("  Analysis complete: %d graded, %d safety findings\n",
+			len(analysisResult.Grades), len(analysisResult.SafetyFindings))
 	}
 
 	// Complete simulation in DB
