@@ -225,12 +225,17 @@ func (s *Server) handleCreateSimulation(w http.ResponseWriter, r *http.Request) 
 		ProviderModel: s.cfg.Model,
 	}
 
+	// Pre-generate simulation ID so we can return it immediately
+	simID := fmt.Sprintf("sim-%d", time.Now().UnixNano()%100000000)
+	cfg.SimID = simID
+
 	// Return immediately, run simulation in background
 	simRef := &activeSimulation{
-		ID:        "pending",
-		Status:    "starting",
+		ID:        simID,
+		Status:    "running",
 		StartedAt: time.Now(),
 	}
+	s.active.Store(simID, simRef)
 
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), duration+10*time.Minute)
@@ -241,32 +246,23 @@ func (s *Server) handleCreateSimulation(w http.ResponseWriter, r *http.Request) 
 			simRef.mu.Lock()
 			simRef.Status = "failed"
 			simRef.mu.Unlock()
-			log.Printf("Simulation failed: %v", err)
+			log.Printf("Simulation %s failed: %v", simID, err)
 			return
 		}
 
 		simRef.mu.Lock()
-		simRef.ID = result.ID
 		simRef.Status = "complete"
 		simRef.mu.Unlock()
 
-		s.active.Store(result.ID, simRef)
 		log.Printf("Simulation %s complete: %d conversations", result.ID, len(result.Conversations))
 	}()
 
-	// Wait briefly for the simulation to get its ID
-	time.Sleep(500 * time.Millisecond)
-
-	simRef.mu.Lock()
-	resp := map[string]any{
-		"status":     simRef.Status,
-		"id":         simRef.ID,
+	writeJSON(w, 202, map[string]any{
+		"status":     "running",
+		"id":         simID,
 		"started_at": simRef.StartedAt,
-		"message":    "Simulation started. Poll GET /api/simulations/{id} for status.",
-	}
-	simRef.mu.Unlock()
-
-	writeJSON(w, 202, resp)
+		"message":    "Simulation started. Poll GET /api/simulations/" + simID + " for results.",
+	})
 }
 
 func (s *Server) handleListSimulations(w http.ResponseWriter, r *http.Request) {

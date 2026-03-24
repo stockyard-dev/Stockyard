@@ -33,11 +33,15 @@ type Config struct {
 	ProviderName  string
 	ProviderKey   string
 	ProviderModel string
+	SimID         string // optional: pre-assigned simulation ID
 }
 
 // Run executes a full simulation and returns aggregated results.
 func Run(ctx context.Context, cfg Config, tgt *target.Client, db *store.DB) (*store.SimulationResult, error) {
-	simID := uuid.New().String()[:8]
+	simID := cfg.SimID
+	if simID == "" {
+		simID = uuid.New().String()[:8]
+	}
 
 	// Create the LLM provider for synthetic users
 	llm, err := makeProvider(cfg)
