@@ -6,11 +6,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/stockyard-dev/stockyard/internal/morph/executor"
 	"github.com/stockyard-dev/stockyard/internal/morph/intent"
 	"github.com/stockyard-dev/stockyard/internal/morph/keyvault"
 	"github.com/stockyard-dev/stockyard/internal/morph/registry"
+	"github.com/stockyard-dev/stockyard/internal/morph/store"
+	"github.com/stockyard-dev/stockyard/internal/morph/validate"
 )
 
 // Config holds server settings.
@@ -20,6 +23,7 @@ type Config struct {
 	Registry *registry.Registry
 	Executor *executor.Executor
 	Vault    *keyvault.Vault
+	Store    *store.Store
 }
 
 // Server is the Morph HTTP API.
@@ -48,6 +52,10 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/services", s.handleServices)
 	s.mux.HandleFunc("GET /api/services/{id}", s.handleGetService)
 	s.mux.HandleFunc("GET /api/keys", s.handleListKeys)
+	s.mux.HandleFunc("GET /api/history", s.handleHistory)
+	s.mux.HandleFunc("GET /api/history/{id}", s.handleHistoryDetail)
+	s.mux.HandleFunc("POST /api/dry-run", s.handleDryRun)
+	s.mux.HandleFunc("GET /api/stats", s.handleStats)
 	s.mux.HandleFunc("GET /", s.handleUI)
 	s.mux.HandleFunc("GET /ui", s.handleUI)
 }
@@ -63,9 +71,9 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 
 // DoRequest is the main API endpoint — send intent, get result.
 type DoRequest struct {
-	Intent  string         `json:"intent"`            // "charge a customer $50"
-	Service string         `json:"service,omitempty"`  // optional: limit to one service
-	Params  map[string]any `json:"params,omitempty"`   // optional: override resolved params
+	Intent  string         `json:"intent"`           // "charge a customer $50"
+	Service string         `json:"service,omitempty"` // optional: limit to one service
+	Params  map[string]any `json:"params,omitempty"`  // optional: override resolved params
 }
 
 func (s *Server) handleDo(w http.ResponseWriter, r *http.Request) {
@@ -84,9 +92,9 @@ func (s *Server) handleDo(w http.ResponseWriter, r *http.Request) {
 	op, err := s.cfg.Resolver.Resolve(r.Context(), req.Intent, req.Service, available)
 	if err != nil {
 		writeJSON(w, 422, map[string]any{
-			"error":   "could not resolve intent",
-			"detail":  err.Error(),
-			"hint":    "Try being more specific, or specify a service",
+			"error":  "could not resolve intent",
+			"detail": err.Error(),
+			"hint":   "Try being more specific, or specify a service",
 		})
 		return
 	}
@@ -107,6 +115,11 @@ func (s *Server) handleDo(w http.ResponseWriter, r *http.Request) {
 			"hint":      keyvault.Hint(op.Service),
 		})
 		return
+	}
+
+	// Persist to store if available
+	if s.cfg.Store != nil && result != nil {
+		s.saveExecution(req.Intent, result)
 	}
 
 	writeJSON(w, 200, map[string]any{
@@ -177,9 +190,130 @@ func (s *Server) handleListKeys(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, s.cfg.Vault.List())
 }
 
+// handleHistory returns execution history.
+func (s *Server) handleHistory(w http.ResponseWriter, r *http.Request) {
+	if s.cfg.Store == nil {
+		writeJSON(w, 200, []any{})
+		return
+	}
+	limit := 50
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if n, err := strconv.Atoi(l); err == nil && n > 0 {
+			limit = n
+		}
+	}
+	execs, err := s.cfg.Store.ListExecutions(limit)
+	if err != nil {
+		writeJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	if execs == nil {
+		execs = []store.Execution{}
+	}
+	writeJSON(w, 200, execs)
+}
+
+// handleHistoryDetail returns a single execution by ID.
+func (s *Server) handleHistoryDetail(w http.ResponseWriter, r *http.Request) {
+	if s.cfg.Store == nil {
+		writeJSON(w, 404, map[string]string{"error": "no store configured"})
+		return
+	}
+	id := r.PathValue("id")
+	exec, err := s.cfg.Store.GetExecution(id)
+	if err != nil {
+		writeJSON(w, 404, map[string]string{"error": "execution not found"})
+		return
+	}
+	writeJSON(w, 200, exec)
+}
+
+// handleDryRun validates and previews an operation without executing.
+func (s *Server) handleDryRun(w http.ResponseWriter, r *http.Request) {
+	var req DoRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, 400, map[string]string{"error": "invalid JSON: " + err.Error()})
+		return
+	}
+	if req.Intent == "" {
+		writeJSON(w, 400, map[string]string{"error": "intent is required"})
+		return
+	}
+
+	available := s.cfg.Vault.ConfiguredServices()
+	if len(available) == 0 {
+		available = s.cfg.Registry.ServiceNames()
+	}
+
+	op, err := s.cfg.Resolver.Resolve(r.Context(), req.Intent, req.Service, available)
+	if err != nil {
+		writeJSON(w, 422, map[string]any{
+			"error":  "could not resolve intent",
+			"detail": err.Error(),
+		})
+		return
+	}
+
+	// Override params if provided
+	if req.Params != nil {
+		for k, v := range req.Params {
+			op.Parameters[k] = v
+		}
+	}
+
+	svc, action, err := s.cfg.Registry.ResolveAction(op.Service, op.Action)
+	if err != nil {
+		writeJSON(w, 422, map[string]any{
+			"error":     err.Error(),
+			"operation": op,
+		})
+		return
+	}
+
+	result := validate.DryRun(op, svc, action)
+	writeJSON(w, 200, map[string]any{
+		"operation": op,
+		"preview":   result,
+	})
+}
+
+// handleStats returns aggregate execution statistics.
+func (s *Server) handleStats(w http.ResponseWriter, r *http.Request) {
+	if s.cfg.Store == nil {
+		writeJSON(w, 200, &store.Stats{})
+		return
+	}
+	stats, err := s.cfg.Store.GetStats()
+	if err != nil {
+		writeJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, 200, stats)
+}
+
 func (s *Server) handleUI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Write([]byte(adminHTML))
+}
+
+// saveExecution persists an execution result to the store.
+func (s *Server) saveExecution(intentStr string, result *executor.Result) {
+	exec := &store.Execution{
+		ID:           fmt.Sprintf("exec_%d", timeNowUnixMilli()),
+		Intent:       intentStr,
+		Service:      result.Service,
+		Action:       result.Action,
+		Method:       result.Method,
+		URL:          result.URL,
+		StatusCode:   result.StatusCode,
+		ResponseBody: result.RawResponse,
+		LatencyMs:    float64(result.LatencyMs),
+		Error:        result.Error,
+		CreatedAt:    timeNowUTC(),
+	}
+	if err := s.cfg.Store.SaveExecution(exec); err != nil {
+		log.Printf("Warning: failed to save execution: %v", err)
+	}
 }
 
 func writeJSON(w http.ResponseWriter, status int, data any) {
@@ -187,49 +321,3 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
 }
-
-const adminHTML = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Stockyard Morph</title>
-<style>
-:root{--bg:#1a1510;--bg2:#2a2318;--bg3:#3a3228;--fg:#f5f0e8;--fg2:#8a7e6e;--rust:#8b4513;--cream:#d4a574;--green:#66bb6a;--red:#ef5350;}
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:Georgia,serif;background:var(--bg);color:var(--fg);min-height:100vh}
-.header{background:var(--bg2);border-bottom:2px solid var(--rust);padding:1rem 2rem;display:flex;align-items:center;gap:1rem}
-.header h1{font-size:1.4rem;color:var(--cream)}.badge{background:var(--rust);color:var(--fg);font-size:.7rem;padding:.2rem .5rem;border-radius:3px;font-family:monospace}
-.container{max-width:800px;margin:0 auto;padding:2rem}
-h2{color:var(--cream);margin:2rem 0 1rem;border-bottom:1px solid var(--bg3);padding-bottom:.5rem}
-textarea{width:100%;background:var(--bg);border:1px solid var(--bg3);color:var(--fg);padding:.6rem;border-radius:4px;font-family:Georgia;font-size:1rem;resize:vertical;min-height:60px}
-.btn{background:var(--rust);color:var(--fg);border:none;padding:.6rem 1.2rem;border-radius:4px;cursor:pointer;font-family:Georgia;font-size:.95rem;margin-top:.5rem}
-pre{background:#111;padding:1rem;border-radius:4px;font-size:.8rem;color:#ccc;overflow-x:auto;margin:1rem 0;max-height:400px;overflow-y:auto}
-table{width:100%;border-collapse:collapse}th{background:var(--bg3);padding:.4rem .6rem;text-align:left;font-family:monospace;font-size:.75rem}
-td{padding:.4rem .6rem;border-bottom:1px solid var(--bg3);font-size:.85rem}
-.configured{color:var(--green)}.unconfigured{color:var(--fg2)}
-</style></head><body>
-<div class="header"><h1>🔀 Morph</h1><span class="badge">Universal API Translator</span></div>
-<div class="container">
-<h2>Do Something</h2>
-<textarea id="intent" placeholder="charge alice@example.com $49.99 for the Pro plan"></textarea>
-<br><button class="btn" onclick="doIt()">Execute</button>
-<pre id="result" style="display:none"></pre>
-
-<h2>Available Services</h2>
-<table><thead><tr><th>Service</th><th>Actions</th><th>Status</th></tr></thead>
-<tbody id="services"></tbody></table>
-</div>
-<script>
-const API=location.origin+'/api';
-async function doIt(){
-  const intent=document.getElementById('intent').value;
-  if(!intent)return;
-  const pre=document.getElementById('result');
-  pre.style.display='block';pre.textContent='Thinking...';
-  const r=await fetch(API+'/do',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({intent})});
-  const d=await r.json();pre.textContent=JSON.stringify(d,null,2);
-}
-async function load(){
-  const s=await(await fetch(API+'/services')).json();
-  document.getElementById('services').innerHTML=(s||[]).map(x=>
-    '<tr><td><strong>'+x.name+'</strong></td><td>'+x.actions.join(', ')+'</td><td class="'+(x.configured?'configured':'unconfigured')+'">'+(x.configured?'✓ Configured':'Not configured')+'</td></tr>'
-  ).join('');
-}
-load();
-</script></body></html>`

@@ -5,6 +5,7 @@
 // Usage:
 //
 //	morph do <intent>              Execute a natural language API request
+//	morph dry-run <intent>         Preview what would be sent without executing
 //	morph services                 List available services
 //	morph keys list                Show configured API keys
 //	morph keys set <svc> <key>     Set an API key for a service
@@ -14,6 +15,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -21,12 +23,15 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/morph/executor"
 	"github.com/stockyard-dev/stockyard/internal/morph/intent"
 	"github.com/stockyard-dev/stockyard/internal/morph/keyvault"
 	"github.com/stockyard-dev/stockyard/internal/morph/registry"
 	"github.com/stockyard-dev/stockyard/internal/morph/server"
+	"github.com/stockyard-dev/stockyard/internal/morph/store"
+	"github.com/stockyard-dev/stockyard/internal/morph/validate"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -45,6 +50,12 @@ func main() {
 			os.Exit(1)
 		}
 		cmdDo(strings.Join(os.Args[2:], " "))
+	case "dry-run":
+		if len(os.Args) < 3 {
+			fmt.Println("Usage: morph dry-run \"charge alice@example.com $50\"")
+			os.Exit(1)
+		}
+		cmdDryRun(strings.Join(os.Args[2:], " "))
 	case "services":
 		cmdServices()
 	case "keys":
@@ -101,18 +112,18 @@ func cmdDo(intentStr string) {
 
 	available := vault.ConfiguredServices()
 	if len(available) == 0 {
-		fmt.Println("  ⚠ No service API keys configured.")
+		fmt.Println("  No service API keys configured.")
 		fmt.Println("  Run 'morph keys set stripe sk_live_...' to add services.")
 		fmt.Println("  Or set environment variables (STRIPE_API_KEY, GITHUB_TOKEN, etc.)")
 		os.Exit(1)
 	}
 
-	fmt.Printf("\n  🔀 Resolving: %s\n\n", intentStr)
+	fmt.Printf("\n  Resolving: %s\n\n", intentStr)
 
 	// Resolve intent
 	op, err := resolver.Resolve(context.Background(), intentStr, "", available)
 	if err != nil {
-		fmt.Printf("  ✗ Could not resolve intent: %v\n", err)
+		fmt.Printf("  Error: Could not resolve intent: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -132,20 +143,101 @@ func cmdDo(intentStr string) {
 	fmt.Printf("  Executing...\n")
 	result, err := exec.Execute(context.Background(), op)
 	if err != nil && result == nil {
-		fmt.Printf("  ✗ Error: %v\n", err)
+		fmt.Printf("  Error: %v\n", err)
 		os.Exit(1)
 	}
 
 	if result.Success {
-		fmt.Printf("  ✓ %s %s → %d (%dms)\n", result.Method, result.URL, result.StatusCode, result.LatencyMs)
+		fmt.Printf("  OK %s %s -> %d (%dms)\n", result.Method, result.URL, result.StatusCode, result.LatencyMs)
 	} else {
-		fmt.Printf("  ✗ %s %s → %d (%dms)\n", result.Method, result.URL, result.StatusCode, result.LatencyMs)
+		fmt.Printf("  FAIL %s %s -> %d (%dms)\n", result.Method, result.URL, result.StatusCode, result.LatencyMs)
 		fmt.Printf("  Error: %s\n", result.Error)
 	}
 
 	if result.Response != nil {
 		data, _ := json.MarshalIndent(result.Response, "  ", "  ")
 		fmt.Printf("  Response:\n  %s\n", string(data))
+	}
+
+	// Save to store
+	historyStore := openStore()
+	if historyStore != nil {
+		defer historyStore.Close()
+		exec := &store.Execution{
+			ID:           fmt.Sprintf("exec_cli_%d", timeNowMilli()),
+			Intent:       intentStr,
+			Service:      result.Service,
+			Action:       result.Action,
+			Method:       result.Method,
+			URL:          result.URL,
+			StatusCode:   result.StatusCode,
+			ResponseBody: result.RawResponse,
+			LatencyMs:    float64(result.LatencyMs),
+			Error:        result.Error,
+			CreatedAt:    timeNowRFC3339(),
+		}
+		historyStore.SaveExecution(exec)
+	}
+
+	fmt.Println()
+}
+
+func cmdDryRun(intentStr string) {
+	vault := keyvault.New(morphDir())
+	reg := registry.New()
+
+	llmKey := resolveLLMKey()
+	if llmKey == "" {
+		fmt.Println("Error: Need an LLM API key for intent resolution.")
+		fmt.Println("Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or MORPH_LLM_KEY.")
+		os.Exit(1)
+	}
+
+	llm := provider.NewOpenAI(provider.ProviderConfig{APIKey: llmKey})
+	resolver := intent.New(llm, "gpt-4o-mini")
+
+	available := vault.ConfiguredServices()
+	if len(available) == 0 {
+		available = reg.ServiceNames()
+	}
+
+	fmt.Printf("\n  [DRY RUN] Resolving: %s\n\n", intentStr)
+
+	op, err := resolver.Resolve(context.Background(), intentStr, "", available)
+	if err != nil {
+		fmt.Printf("  Error: Could not resolve intent: %v\n", err)
+		os.Exit(1)
+	}
+
+	svc, action, err := reg.ResolveAction(op.Service, op.Action)
+	if err != nil {
+		fmt.Printf("  Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	result := validate.DryRun(op, svc, action)
+
+	fmt.Printf("  Service:    %s\n", op.Service)
+	fmt.Printf("  Action:     %s\n", op.Action)
+	fmt.Printf("  Confidence: %.0f%%\n", op.Confidence*100)
+	fmt.Println()
+	fmt.Printf("  Request Preview:\n")
+	fmt.Printf("    %s %s\n", result.Method, result.URL)
+	for k, v := range result.Headers {
+		fmt.Printf("    %s: %s\n", k, v)
+	}
+	if result.Body != "" {
+		fmt.Printf("    Body: %s\n", result.Body)
+	}
+	fmt.Println()
+
+	if len(result.Errors) > 0 {
+		fmt.Printf("  Validation Errors:\n")
+		for _, e := range result.Errors {
+			fmt.Printf("    - %s: %s\n", e.Field, e.Message)
+		}
+	} else {
+		fmt.Printf("  Validation: OK\n")
 	}
 	fmt.Println()
 }
@@ -161,16 +253,16 @@ func cmdServices() {
 
 	fmt.Println("\n  Available Services:")
 	fmt.Printf("  %-14s %-20s %-10s %s\n", "Service", "Actions", "Status", "Hint")
-	fmt.Printf("  %-14s %-20s %-10s %s\n", strings.Repeat("─", 14), strings.Repeat("─", 20), strings.Repeat("─", 10), strings.Repeat("─", 30))
+	fmt.Printf("  %-14s %-20s %-10s %s\n", strings.Repeat("-", 14), strings.Repeat("-", 20), strings.Repeat("-", 10), strings.Repeat("-", 30))
 
 	for _, svc := range reg.List() {
 		var actions []string
 		for name := range svc.Actions {
 			actions = append(actions, name)
 		}
-		status := "✗"
+		status := "x"
 		if configured[svc.ID] {
-			status = "✓"
+			status = "ok"
 		}
 		hint := ""
 		if !configured[svc.ID] {
@@ -204,7 +296,7 @@ func cmdKeysSet(service, key string) {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("  ✓ API key set for %s\n", service)
+	fmt.Printf("  API key set for %s\n", service)
 }
 
 func cmdKeysRm(service string) {
@@ -213,7 +305,7 @@ func cmdKeysRm(service string) {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("  ✓ API key removed for %s\n", service)
+	fmt.Printf("  API key removed for %s\n", service)
 }
 
 func cmdServe(args []string) {
@@ -232,7 +324,7 @@ func cmdServe(args []string) {
 
 	llmKey := resolveLLMKey()
 	if llmKey == "" {
-		fmt.Println("  ⚠ No LLM key. Intent resolution will fail.")
+		fmt.Println("  Warning: No LLM key. Intent resolution will fail.")
 		fmt.Println("  Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or MORPH_LLM_KEY.")
 	}
 
@@ -243,19 +335,30 @@ func cmdServe(args []string) {
 	}
 	exec := executor.New(reg, vault)
 
+	// Open history store
+	historyStore := openStore()
+	if historyStore != nil {
+		defer historyStore.Close()
+	}
+
 	configured := vault.ConfiguredServices()
 
-	fmt.Printf("\n  🔀 Stockyard Morph\n\n")
+	fmt.Printf("\n  Stockyard Morph\n\n")
 	fmt.Printf("    Port:       :%d\n", *port)
 	fmt.Printf("    Services:   %d available, %d configured\n", len(reg.List()), len(configured))
 	for _, svc := range configured {
-		fmt.Printf("      ✓ %s\n", svc)
+		fmt.Printf("      - %s\n", svc)
 	}
 	fmt.Printf("    Dashboard:  http://localhost:%d/ui\n", *port)
-	fmt.Printf("    API:        http://localhost:%d/api/do\n\n", *port)
+	fmt.Printf("    API:        http://localhost:%d/api/do\n", *port)
+	if historyStore != nil {
+		fmt.Printf("    History:    http://localhost:%d/api/history\n", *port)
+	}
+	fmt.Println()
 
 	srv := server.New(server.Config{
 		Port: *port, Resolver: resolver, Registry: reg, Executor: exec, Vault: vault,
+		Store: historyStore,
 	})
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -280,11 +383,30 @@ func resolveLLMKey() string {
 	return ""
 }
 
+func openStore() *store.Store {
+	dbPath := filepath.Join(morphDir(), "history.db")
+	os.MkdirAll(morphDir(), 0755)
+	s, err := store.New(dbPath)
+	if err != nil {
+		fmt.Printf("  Warning: could not open history store: %v\n", err)
+		return nil
+	}
+	return s
+}
+
 func truncate(s string, n int) string {
 	if len(s) > n {
 		return s[:n] + "..."
 	}
 	return s
+}
+
+func timeNowMilli() int64 {
+	return time.Now().UnixMilli()
+}
+
+func timeNowRFC3339() string {
+	return time.Now().UTC().Format(time.RFC3339)
 }
 
 func printUsage() {
@@ -296,6 +418,7 @@ func printUsage() {
 
   Usage:
     morph do <intent>              Execute a natural language API request
+    morph dry-run <intent>         Preview what would be sent (no execution)
     morph services                 List available services
     morph keys list                Show configured API keys
     morph keys set <svc> <key>     Set an API key
@@ -310,10 +433,11 @@ func printUsage() {
     SLACK_BOT_TOKEN     Slack bot token
     (+ SENDGRID, TWILIO, LINEAR, NOTION, JIRA, DISCORD, RESEND)
     MORPH_DATA_DIR      Data directory (default: ~/.morph)
+    MORPH_VAULT_PASS    Passphrase for encrypted key vault
 
   Examples:
     morph do "charge alice@example.com $49.99 for Pro plan"
-    morph do "create a GitHub issue titled 'Fix login bug' in stockyard-dev/proxy"
+    morph dry-run "create a GitHub issue titled 'Fix login bug'"
     morph do "send a Slack message to #engineering saying 'deploy complete'"
     morph do "send an email to bob@co.com with subject 'Invoice' via sendgrid"`)
 }

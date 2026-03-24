@@ -2,18 +2,44 @@
 package keyvault
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"golang.org/x/crypto/pbkdf2"
 )
+
+const (
+	// pbkdf2Iterations is the number of PBKDF2 iterations for key derivation.
+	pbkdf2Iterations = 100_000
+	// saltSize is the byte length of the random salt.
+	saltSize = 32
+	// nonceSize is the byte length of the AES-GCM nonce.
+	nonceSize = 12
+)
+
+// encryptedPayload is the on-disk encrypted format.
+type encryptedPayload struct {
+	Version int    `json:"version"`    // 1 = AES-256-GCM
+	Salt    string `json:"salt"`       // base64 encoded
+	Nonce   string `json:"nonce"`      // base64 encoded
+	Data    string `json:"ciphertext"` // base64 encoded
+}
 
 // Vault stores API keys for external services.
 type Vault struct {
 	mu   sync.RWMutex
 	keys map[string]string // service ID -> API key
 	path string            // file path for persistence
+	pass string            // passphrase for encryption (empty = no encryption)
 }
 
 // New creates or loads a vault.
@@ -21,6 +47,7 @@ func New(dataDir string) *Vault {
 	v := &Vault{
 		keys: map[string]string{},
 		path: filepath.Join(dataDir, "keys.json"),
+		pass: os.Getenv("MORPH_VAULT_PASS"),
 	}
 	v.load()
 	v.loadFromEnv()
@@ -76,23 +103,138 @@ func (v *Vault) ConfiguredServices() []string {
 	return out
 }
 
+// load reads keys from disk, handling both plaintext and encrypted formats.
 func (v *Vault) load() {
 	data, err := os.ReadFile(v.path)
 	if err != nil {
 		return // No file yet, that's fine
 	}
-	json.Unmarshal(data, &v.keys)
+
+	// Try plaintext JSON first (backward compat)
+	plainKeys := map[string]string{}
+	if err := json.Unmarshal(data, &plainKeys); err == nil {
+		// Check if it's actually our encrypted payload by looking for "version"
+		var probe map[string]json.RawMessage
+		json.Unmarshal(data, &probe)
+		if _, hasVersion := probe["version"]; hasVersion {
+			// This is an encrypted payload, try to decrypt
+			v.loadEncrypted(data)
+			return
+		}
+		// It's plaintext JSON — load and auto-migrate on next save
+		v.keys = plainKeys
+		// If we have a passphrase, auto-migrate to encrypted format
+		if v.pass != "" {
+			v.save()
+		}
+		return
+	}
+
+	// Try encrypted format
+	v.loadEncrypted(data)
 }
 
+// loadEncrypted decrypts an encrypted payload.
+func (v *Vault) loadEncrypted(data []byte) {
+	if v.pass == "" {
+		return // can't decrypt without a passphrase
+	}
+
+	var payload encryptedPayload
+	if err := json.Unmarshal(data, &payload); err != nil {
+		return
+	}
+	if payload.Version != 1 {
+		return
+	}
+
+	salt, err := base64.StdEncoding.DecodeString(payload.Salt)
+	if err != nil {
+		return
+	}
+	nonce, err := base64.StdEncoding.DecodeString(payload.Nonce)
+	if err != nil {
+		return
+	}
+	ciphertext, err := base64.StdEncoding.DecodeString(payload.Data)
+	if err != nil {
+		return
+	}
+
+	key := deriveKey(v.pass, salt)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return
+	}
+
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return
+	}
+
+	json.Unmarshal(plaintext, &v.keys)
+}
+
+// save persists keys to disk, encrypted if a passphrase is set.
 func (v *Vault) save() error {
 	v.mu.RLock()
-	data, err := json.MarshalIndent(v.keys, "", "  ")
+	plaintext, err := json.MarshalIndent(v.keys, "", "  ")
 	v.mu.RUnlock()
 	if err != nil {
 		return err
 	}
+
 	os.MkdirAll(filepath.Dir(v.path), 0755)
-	return os.WriteFile(v.path, data, 0600) // 0600 = owner read/write only
+
+	// If no passphrase, save plaintext (backward compat)
+	if v.pass == "" {
+		return os.WriteFile(v.path, plaintext, 0600)
+	}
+
+	// Encrypt with AES-256-GCM
+	salt := make([]byte, saltSize)
+	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+		return fmt.Errorf("generating salt: %w", err)
+	}
+
+	key := deriveKey(v.pass, salt)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return fmt.Errorf("creating cipher: %w", err)
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return fmt.Errorf("creating GCM: %w", err)
+	}
+
+	nonce := make([]byte, nonceSize)
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return fmt.Errorf("generating nonce: %w", err)
+	}
+
+	ciphertext := gcm.Seal(nil, nonce, plaintext, nil)
+
+	payload := encryptedPayload{
+		Version: 1,
+		Salt:    base64.StdEncoding.EncodeToString(salt),
+		Nonce:   base64.StdEncoding.EncodeToString(nonce),
+		Data:    base64.StdEncoding.EncodeToString(ciphertext),
+	}
+
+	data, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(v.path, data, 0600)
+}
+
+// deriveKey uses PBKDF2 to derive a 32-byte AES-256 key from a passphrase.
+func deriveKey(passphrase string, salt []byte) []byte {
+	return pbkdf2.Key([]byte(passphrase), salt, pbkdf2Iterations, 32, sha256.New)
 }
 
 // loadFromEnv loads API keys from environment variables.

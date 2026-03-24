@@ -28,6 +28,7 @@ type Result struct {
 	Success     bool           `json:"success"`
 	URL         string         `json:"url"`
 	Method      string         `json:"method"`
+	Retries     int            `json:"retries,omitempty"`
 }
 
 // MultiResult holds results from a multi-step workflow.
@@ -38,17 +39,21 @@ type MultiResult struct {
 
 // Executor runs API operations against real services.
 type Executor struct {
-	reg    *registry.Registry
-	vault  *keyvault.Vault
-	client *http.Client
+	reg        *registry.Registry
+	vault      *keyvault.Vault
+	client     *http.Client
+	retryCfg   *RetryConfig
+	rateLimits *rateLimits
 }
 
-// New creates an executor.
+// New creates an executor with default retry configuration.
 func New(reg *registry.Registry, vault *keyvault.Vault) *Executor {
 	return &Executor{
-		reg:    reg,
-		vault:  vault,
-		client: &http.Client{Timeout: 30 * time.Second},
+		reg:        reg,
+		vault:      vault,
+		client:     &http.Client{Timeout: 30 * time.Second},
+		retryCfg:   DefaultRetryConfig(),
+		rateLimits: newRateLimits(),
 	}
 }
 
@@ -69,17 +74,28 @@ func (e *Executor) Execute(ctx context.Context, op *intent.Operation) (*Result, 
 	url := svc.BaseURL + renderTemplate(action.Path, op.Parameters)
 
 	// Build body
-	var body io.Reader
+	var bodyBytes []byte
 	method := action.Method
 	if action.BodyTemplate != "" && (method == "POST" || method == "PUT" || method == "PATCH") {
 		rendered := renderTemplate(action.BodyTemplate, op.Parameters)
-		body = strings.NewReader(rendered)
+		bodyBytes = []byte(rendered)
 	}
 
 	// Create request
+	var body io.Reader
+	if bodyBytes != nil {
+		body = bytes.NewReader(bodyBytes)
+	}
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
+	}
+
+	// Make body re-readable for retries
+	if bodyBytes != nil {
+		req.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(bytes.NewReader(bodyBytes)), nil
+		}
 	}
 
 	// Set auth
@@ -93,7 +109,7 @@ func (e *Executor) Execute(ctx context.Context, op *intent.Operation) (*Result, 
 	}
 
 	// Set content type
-	if body != nil {
+	if bodyBytes != nil {
 		if strings.Contains(action.BodyTemplate, "=") {
 			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		} else {
@@ -113,9 +129,9 @@ func (e *Executor) Execute(ctx context.Context, op *intent.Operation) (*Result, 
 		req.Header.Set("Notion-Version", "2022-06-28")
 	}
 
-	// Execute
+	// Execute with retry
 	start := time.Now()
-	resp, err := e.client.Do(req)
+	resp, err := executeWithRetry(e.client, req, e.retryCfg, op.Service, e.rateLimits)
 	latency := int(time.Since(start).Milliseconds())
 
 	result := &Result{
