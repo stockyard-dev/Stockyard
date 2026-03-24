@@ -26,6 +26,7 @@ import (
 
 	"github.com/stockyard-dev/stockyard/internal/stampede/conversation"
 	"github.com/stockyard-dev/stockyard/internal/stampede/persona"
+	"github.com/stockyard-dev/stockyard/internal/stampede/regression"
 	"github.com/stockyard-dev/stockyard/internal/stampede/report"
 	"github.com/stockyard-dev/stockyard/internal/stampede/runner"
 	"github.com/stockyard-dev/stockyard/internal/stampede/server"
@@ -318,7 +319,13 @@ func cmdCompare(simA, simB string) {
 		os.Exit(1)
 	}
 
-	report.Compare(a, b)
+	result := regression.Compare(a, b)
+	regression.Terminal(result)
+
+	// Exit with non-zero code if regression detected (for CI/CD)
+	if result.Verdict == "regression" {
+		os.Exit(1)
+	}
 }
 
 func cmdServe(args []string) {

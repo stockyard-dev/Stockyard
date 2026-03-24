@@ -14,6 +14,7 @@ import (
 
 	"github.com/stockyard-dev/stockyard/internal/stampede/conversation"
 	"github.com/stockyard-dev/stockyard/internal/stampede/persona"
+	"github.com/stockyard-dev/stockyard/internal/stampede/regression"
 	"github.com/stockyard-dev/stockyard/internal/stampede/report"
 	"github.com/stockyard-dev/stockyard/internal/stampede/runner"
 	"github.com/stockyard-dev/stockyard/internal/stampede/store"
@@ -355,60 +356,8 @@ func (s *Server) handleCompare(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Build comparison result
-	rateA := overallRate(a)
-	rateB := overallRate(b)
-	delta := rateB - rateA
-
-	verdict := "no_significant_change"
-	if delta < -3 {
-		verdict = "regression"
-	} else if delta > 3 {
-		verdict = "improvement"
-	}
-
-	personaDiffs := map[string]map[string]any{}
-	allNames := map[string]bool{}
-	for n := range a.PersonaBreakdown {
-		allNames[n] = true
-	}
-	for n := range b.PersonaBreakdown {
-		allNames[n] = true
-	}
-	for name := range allNames {
-		pa := a.PersonaBreakdown[name]
-		pb := b.PersonaBreakdown[name]
-		personaDiffs[name] = map[string]any{
-			"before": pa.Rate,
-			"after":  pb.Rate,
-			"delta":  pb.Rate - pa.Rate,
-		}
-	}
-
-	writeJSON(w, 200, map[string]any{
-		"sim_a":          req.SimA,
-		"sim_b":          req.SimB,
-		"rate_before":    rateA,
-		"rate_after":     rateB,
-		"delta":          delta,
-		"verdict":        verdict,
-		"persona_diffs":  personaDiffs,
-		"safety_before":  len(a.SafetyFindings),
-		"safety_after":   len(b.SafetyFindings),
-	})
-}
-
-func overallRate(r *store.SimulationResult) float64 {
-	if len(r.Conversations) == 0 {
-		return 0
-	}
-	completed := 0
-	for _, c := range r.Conversations {
-		if c.GoalResult == "completed" {
-			completed++
-		}
-	}
-	return float64(completed) / float64(len(r.Conversations)) * 100
+	result := regression.Compare(a, b)
+	writeJSON(w, 200, result)
 }
 
 // =========================================================================

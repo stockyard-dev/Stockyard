@@ -62,6 +62,9 @@ func Run(ctx context.Context, cfg Config, tgt *target.Client, db *store.DB) (*st
 		totalCost float64
 	)
 
+	// Set tracking metadata for proxy enrichment
+	tgt.SetMeta(target.RequestMeta{SimID: simID})
+
 	// Rate limiter
 	var rateLimiter <-chan time.Time
 	if cfg.RateLimit > 0 {

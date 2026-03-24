@@ -29,11 +29,18 @@ type Config struct {
 	Timeout  time.Duration
 }
 
+// RequestMeta holds optional metadata for tracking through a proxy.
+type RequestMeta struct {
+	SimID          string
+	ConversationID string
+}
+
 // Client sends messages to a target AI application.
 type Client struct {
 	cfg        Config
 	httpClient *http.Client
 	detected   Format
+	meta       RequestMeta
 }
 
 // New creates a new target client.
@@ -51,6 +58,9 @@ func New(cfg Config) *Client {
 
 // URL returns the target URL.
 func (c *Client) URL() string { return c.cfg.URL }
+
+// SetMeta sets tracking metadata for proxy enrichment.
+func (c *Client) SetMeta(m RequestMeta) { c.meta = m }
 
 // Send sends a user message to the target and returns the response text.
 func (c *Client) Send(ctx context.Context, message string) (string, error) {
@@ -104,10 +114,7 @@ func (c *Client) sendOpenAI(ctx context.Context, message string) (string, error)
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
-
-	if c.cfg.ProxyURL != "" {
-		req.Header.Set("X-Stampede", "true")
-	}
+	c.addStampedeHeaders(req)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -146,6 +153,7 @@ func (c *Client) sendSimple(ctx context.Context, message string) (string, error)
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	c.addStampedeHeaders(req)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -190,4 +198,19 @@ func truncBody(b []byte) string {
 		return s[:200] + "..."
 	}
 	return s
+}
+
+// addStampedeHeaders adds tracking headers for proxy enrichment.
+func (c *Client) addStampedeHeaders(req *http.Request) {
+	req.Header.Set("X-Stampede", "true")
+	if c.meta.SimID != "" {
+		req.Header.Set("X-Stampede-Sim", c.meta.SimID)
+		req.Header.Set("X-Stockyard-Tags", "stampede_sim:"+c.meta.SimID)
+	}
+	if c.meta.ConversationID != "" {
+		req.Header.Set("X-Stampede-Conversation", c.meta.ConversationID)
+		if c.meta.SimID != "" {
+			req.Header.Set("X-Stockyard-Tags", "stampede_sim:"+c.meta.SimID+",stampede_conversation:"+c.meta.ConversationID)
+		}
+	}
 }
