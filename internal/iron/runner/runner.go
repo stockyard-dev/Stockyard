@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/spec/codegen"
-	"github.com/stockyard-dev/stockyard/internal/spec/parser"
-	"github.com/stockyard-dev/stockyard/internal/spec/testgen"
+	"github.com/stockyard-dev/stockyard/internal/iron/codegen"
+	"github.com/stockyard-dev/stockyard/internal/iron/parser"
+	"github.com/stockyard-dev/stockyard/internal/iron/testgen"
 )
 
 // Config holds build settings.

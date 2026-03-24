@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
-	"github.com/stockyard-dev/stockyard/internal/spec/parser"
+	"github.com/stockyard-dev/stockyard/internal/iron/parser"
 )
 
 // Config holds code generation settings.

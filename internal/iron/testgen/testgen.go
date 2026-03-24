@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/stockyard-dev/stockyard/internal/spec/parser"
+	"github.com/stockyard-dev/stockyard/internal/iron/parser"
 )
 
 // GeneratedTest holds a single generated test case.

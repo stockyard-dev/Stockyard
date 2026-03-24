@@ -1,13 +1,13 @@
-// Stockyard Spec — Software that writes itself from a specification.
+// Stockyard Iron — Software that writes itself from a specification.
 //
 // Usage:
 //
-//	spec build <dir|file>        Generate implementation from spec
-//	spec validate <dir|file>     Validate spec files without building
-//	spec tests <dir|file>        Generate tests only (preview what will be tested)
-//	spec stats <dir|file>        Show spec statistics
-//	spec init <dir>              Create an example spec file
-//	spec version                 Show version
+//	iron build <dir|file>        Generate implementation from spec
+//	iron validate <dir|file>     Validate spec files without building
+//	iron tests <dir|file>        Generate tests only (preview what will be tested)
+//	iron stats <dir|file>        Show spec statistics
+//	iron init <dir>              Create an example spec file
+//	iron version                 Show version
 package main
 
 import (
@@ -23,10 +23,10 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
-	"github.com/stockyard-dev/stockyard/internal/spec/codegen"
-	"github.com/stockyard-dev/stockyard/internal/spec/parser"
-	"github.com/stockyard-dev/stockyard/internal/spec/runner"
-	"github.com/stockyard-dev/stockyard/internal/spec/testgen"
+	"github.com/stockyard-dev/stockyard/internal/iron/codegen"
+	"github.com/stockyard-dev/stockyard/internal/iron/parser"
+	"github.com/stockyard-dev/stockyard/internal/iron/runner"
+	"github.com/stockyard-dev/stockyard/internal/iron/testgen"
 )
 
 var version = "dev"
@@ -42,19 +42,19 @@ func main() {
 		cmdBuild(os.Args[2:])
 	case "validate":
 		if len(os.Args) < 3 {
-			fmt.Println("Usage: spec validate <dir|file>")
+			fmt.Println("Usage: iron validate <dir|file>")
 			os.Exit(1)
 		}
 		cmdValidate(os.Args[2])
 	case "tests":
 		if len(os.Args) < 3 {
-			fmt.Println("Usage: spec tests <dir|file>")
+			fmt.Println("Usage: iron tests <dir|file>")
 			os.Exit(1)
 		}
 		cmdTests(os.Args[2])
 	case "stats":
 		if len(os.Args) < 3 {
-			fmt.Println("Usage: spec stats <dir|file>")
+			fmt.Println("Usage: iron stats <dir|file>")
 			os.Exit(1)
 		}
 		cmdStats(os.Args[2])
@@ -65,7 +65,7 @@ func main() {
 		}
 		cmdInit(dir)
 	case "version":
-		fmt.Printf("spec %s\n", version)
+		fmt.Printf("iron %s\n", version)
 	case "help", "--help", "-h":
 		printUsage()
 	default:
@@ -80,7 +80,7 @@ func cmdBuild(args []string) {
 	output := fs.String("output", "./output", "Output directory for generated code")
 	target := fs.String("target", "go", "Target language (go, python, typescript)")
 	model := fs.String("model", "", "LLM model (default: claude-sonnet-4-20250514)")
-	apiKey := fs.String("api-key", "", "API key (or set SPEC_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY)")
+	apiKey := fs.String("api-key", "", "API key (or set IRON_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY)")
 	providerName := fs.String("provider", "anthropic", "LLM provider (anthropic, openai)")
 	maxIters := fs.Int("max-iters", 3, "Max generate-test-fix iterations")
 	jsonOutput := fs.Bool("json", false, "Output result as JSON")
@@ -106,7 +106,7 @@ func cmdBuild(args []string) {
 	// Resolve API key
 	key := resolveAPIKey(*apiKey)
 	if key == "" {
-		fmt.Println("Error: No API key. Set --api-key, SPEC_API_KEY, ANTHROPIC_API_KEY, or OPENAI_API_KEY.")
+		fmt.Println("Error: No API key. Set --api-key, IRON_API_KEY, ANTHROPIC_API_KEY, or OPENAI_API_KEY.")
 		os.Exit(1)
 	}
 
@@ -148,7 +148,7 @@ func cmdBuild(args []string) {
 
 	if !*jsonOutput {
 		fmt.Println()
-		fmt.Printf("  ⚙ Stockyard Spec: Building %s\n\n", spec.Name)
+		fmt.Printf("  ⚙ Stockyard Iron: Building %s\n\n", spec.Name)
 		fmt.Printf("    Language:    %s\n", spec.Language)
 		fmt.Printf("    Features:    %d\n", stats.Features)
 		fmt.Printf("    Behaviors:   %d\n", stats.Behaviors)
@@ -250,7 +250,7 @@ func cmdInit(dir string) {
 		os.Exit(1)
 	}
 	fmt.Printf("  ✓ Created %s\n", path)
-	fmt.Printf("    Edit the spec, then run: spec build %s\n", dir)
+	fmt.Printf("    Edit the spec, then run: iron build %s\n", dir)
 }
 
 func loadSpec(path string) (*parser.Spec, error) {
@@ -268,7 +268,7 @@ func resolveAPIKey(explicit string) string {
 	if explicit != "" {
 		return explicit
 	}
-	for _, env := range []string{"SPEC_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"} {
+	for _, env := range []string{"IRON_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"} {
 		if k := os.Getenv(env); k != "" {
 			return k
 		}
@@ -278,41 +278,41 @@ func resolveAPIKey(explicit string) string {
 
 func printUsage() {
 	fmt.Println(`
-  Stockyard Spec — Software that writes itself from a specification.
+  Stockyard Iron — Software that writes itself from a specification.
 
   The spec is the source of truth. Code is a compiled artifact.
 
   Usage:
-    spec build <dir|file>        Generate implementation from spec
-    spec validate <dir|file>     Validate spec files
-    spec tests <dir|file>        Preview generated tests
-    spec stats <dir|file>        Show spec statistics
-    spec init [dir]              Create example spec file
-    spec version                 Show version
+    iron build <dir|file>        Generate implementation from spec
+    iron validate <dir|file>     Validate spec files
+    iron tests <dir|file>        Preview generated tests
+    iron stats <dir|file>        Show spec statistics
+    iron init [dir]              Create example spec file
+    iron version                 Show version
 
   Build flags:
     --output <dir>      Output directory (default: ./output)
     --target <lang>     Target language: go, python, typescript
     --model <model>     LLM model (default: claude-sonnet-4)
     --provider <p>      LLM provider: anthropic, openai (default: anthropic)
-    --api-key <key>     API key (or set SPEC_API_KEY)
+    --api-key <key>     API key (or set IRON_API_KEY)
     --max-iters <n>     Max generate-test-fix iterations (default: 3)
     --json              Output result as JSON
 
   Environment:
-    SPEC_API_KEY        API key for code generation
+    IRON_API_KEY        API key for code generation
     ANTHROPIC_API_KEY   Anthropic API key (fallback)
     OPENAI_API_KEY      OpenAI API key (fallback)
 
   Example:
-    spec init myapp
+    iron init myapp
     # edit myapp/app.spec.yaml
-    spec build myapp --output ./generated`)
+    iron build myapp --output ./generated`)
 }
 
-const exampleSpec = `# Stockyard Spec — Example Application
+const exampleSpec = `# Stockyard Iron — Example Application
 # Edit this file to define your application's behavior.
-# Then run: spec build .
+# Then run: iron build .
 
 name: todo-api
 description: A simple TODO API with CRUD operations
