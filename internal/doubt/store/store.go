@@ -21,6 +21,13 @@ type UnitData struct {
 	Latencies []float64
 }
 
+// FingerprintRecord tracks a fingerprint observed at a point in time.
+type FingerprintRecord struct {
+	UnitID      string    `json:"unit_id"`
+	Fingerprint string    `json:"fingerprint"`
+	ScannedAt   time.Time `json:"scanned_at"`
+}
+
 // DB wraps a SQLite database for Doubt persistence.
 type DB struct {
 	conn *sql.DB
@@ -69,6 +76,13 @@ func (db *DB) migrate() error {
 			last_seen DATETIME
 		)`,
 		`CREATE INDEX IF NOT EXISTS idx_unit_signals_unit ON unit_signals(unit_id)`,
+		`CREATE TABLE IF NOT EXISTS unit_fingerprints (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			unit_id TEXT NOT NULL,
+			fingerprint TEXT NOT NULL,
+			scanned_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE INDEX IF NOT EXISTS idx_unit_fingerprints_unit ON unit_fingerprints(unit_id)`,
 	}
 	for _, s := range stmts {
 		if _, err := db.conn.Exec(s); err != nil {
@@ -186,6 +200,95 @@ func (db *DB) ListUnits() (map[string]*UnitData, error) {
 	}
 
 	return out, nil
+}
+
+// RecordFingerprint stores a unit's fingerprint. Returns true if the fingerprint changed.
+func (db *DB) RecordFingerprint(unitID, fingerprint string) (bool, error) {
+	changed, err := db.HasChanged(unitID, fingerprint)
+	if err != nil {
+		return false, err
+	}
+
+	_, err = db.conn.Exec(
+		`INSERT INTO unit_fingerprints (unit_id, fingerprint) VALUES (?, ?)`,
+		unitID, fingerprint,
+	)
+	if err != nil {
+		return false, fmt.Errorf("insert fingerprint: %w", err)
+	}
+
+	return changed, nil
+}
+
+// HasChanged returns true if the unit's latest fingerprint differs from the given one.
+// Returns false if the unit has no previous fingerprints (first scan).
+func (db *DB) HasChanged(unitID, fingerprint string) (bool, error) {
+	var lastFP string
+	err := db.conn.QueryRow(
+		`SELECT fingerprint FROM unit_fingerprints
+		 WHERE unit_id = ? ORDER BY scanned_at DESC LIMIT 1`, unitID,
+	).Scan(&lastFP)
+	if err == sql.ErrNoRows {
+		return false, nil // first time seeing this unit
+	}
+	if err != nil {
+		return false, fmt.Errorf("query fingerprint: %w", err)
+	}
+	return lastFP != fingerprint, nil
+}
+
+// GetFingerprintHistory returns all fingerprint records for a unit, newest first.
+func (db *DB) GetFingerprintHistory(unitID string) ([]FingerprintRecord, error) {
+	rows, err := db.conn.Query(
+		`SELECT unit_id, fingerprint, scanned_at FROM unit_fingerprints
+		 WHERE unit_id = ? ORDER BY scanned_at DESC`, unitID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query fingerprint history: %w", err)
+	}
+	defer rows.Close()
+
+	var records []FingerprintRecord
+	for rows.Next() {
+		var r FingerprintRecord
+		if err := rows.Scan(&r.UnitID, &r.Fingerprint, &r.ScannedAt); err != nil {
+			return nil, fmt.Errorf("scan fingerprint: %w", err)
+		}
+		records = append(records, r)
+	}
+	return records, rows.Err()
+}
+
+// GetMostChurned returns units with the most fingerprint changes, limited to n results.
+func (db *DB) GetMostChurned(n int) ([]ChurnRecord, error) {
+	rows, err := db.conn.Query(`
+		SELECT unit_id, COUNT(DISTINCT fingerprint) as changes
+		FROM unit_fingerprints
+		GROUP BY unit_id
+		HAVING changes > 1
+		ORDER BY changes DESC
+		LIMIT ?`, n,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query churn: %w", err)
+	}
+	defer rows.Close()
+
+	var records []ChurnRecord
+	for rows.Next() {
+		var r ChurnRecord
+		if err := rows.Scan(&r.UnitID, &r.Changes); err != nil {
+			return nil, fmt.Errorf("scan churn: %w", err)
+		}
+		records = append(records, r)
+	}
+	return records, rows.Err()
+}
+
+// ChurnRecord holds churn data for a unit.
+type ChurnRecord struct {
+	UnitID  string `json:"unit_id"`
+	Changes int    `json:"changes"`
 }
 
 // GetLatencies returns the most recent latency signal values for a unit.

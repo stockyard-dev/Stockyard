@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	goast "github.com/stockyard-dev/stockyard/internal/doubt/ast"
 )
 
 // Unit is a scoreable piece of code: a function, endpoint, handler, or query.
@@ -56,7 +58,7 @@ func ScanDir(dir string) (*ScanResult, error) {
 		switch ext {
 		case ".go":
 			result.Language = "go"
-			units := scanGoFile(path, relPath)
+			units := scanGoFileAST(path, relPath)
 			result.Units = append(result.Units, units...)
 			result.Files++
 		case ".py":
@@ -81,8 +83,87 @@ func ScanDir(dir string) (*ScanResult, error) {
 }
 
 // =========================================================================
-// Go scanner
+// Go scanner (AST-based, with regex fallback)
 // =========================================================================
+
+// scanGoFileAST uses go/ast for accurate Go parsing. Falls back to regex on error.
+func scanGoFileAST(path, relPath string) []Unit {
+	astUnits, err := goast.ScanGoFile(path)
+	if err != nil {
+		// Fall back to regex-based scanning
+		return scanGoFile(path, relPath)
+	}
+
+	var units []Unit
+
+	// Read file for handler detection (AST handles functions, regex handles route registrations)
+	data, _ := os.ReadFile(path)
+	lines := strings.Split(string(data), "\n")
+	pkg := ""
+	for _, line := range lines {
+		if m := goPackageRegex.FindStringSubmatch(strings.TrimSpace(line)); m != nil {
+			pkg = m[1]
+			break
+		}
+	}
+
+	// Convert AST units to scanner units
+	for _, au := range astUnits {
+		unitType := "function"
+		name := au.Name
+
+		if strings.Contains(strings.ToLower(name), "handle") || strings.Contains(strings.ToLower(name), "handler") {
+			unitType = "handler"
+		}
+		if strings.Contains(strings.ToLower(name), "middleware") {
+			unitType = "middleware"
+		}
+		if au.IsInit {
+			unitType = "init"
+		}
+		if au.IsTest {
+			unitType = "test"
+		}
+
+		units = append(units, Unit{
+			ID:          fmt.Sprintf("%s:%s:%s", relPath, au.Package, name),
+			Name:        name,
+			Type:        unitType,
+			File:        relPath,
+			Line:        au.StartLine,
+			EndLine:     au.EndLine,
+			Package:     au.Package,
+			Signature:   au.Signature,
+			Fingerprint: au.Fingerprint,
+		})
+	}
+
+	// Also scan for HTTP handler registrations (AST doesn't catch these)
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if m := goHandlerRegex.FindStringSubmatch(trimmed); m != nil {
+			method := "ANY"
+			httpPath := m[2]
+			if parts := strings.SplitN(httpPath, " ", 2); len(parts) == 2 {
+				method = parts[0]
+				httpPath = parts[1]
+			}
+			units = append(units, Unit{
+				ID:          fmt.Sprintf("endpoint:%s:%s", method, httpPath),
+				Name:        fmt.Sprintf("%s %s", method, httpPath),
+				Type:        "endpoint",
+				File:        relPath,
+				Line:        i + 1,
+				Package:     pkg,
+				HTTPMethod:  method,
+				HTTPPath:    httpPath,
+				Fingerprint: fingerprint(trimmed),
+			})
+		}
+	}
+
+	return units
+}
 
 var (
 	goFuncRegex    = regexp.MustCompile(`^func\s+(\([^)]+\)\s+)?(\w+)\s*\(([^)]*)\)`)
@@ -90,6 +171,7 @@ var (
 	goPackageRegex = regexp.MustCompile(`^package\s+(\w+)`)
 )
 
+// scanGoFile is the regex-based fallback scanner for Go files.
 func scanGoFile(path, relPath string) []Unit {
 	data, err := os.ReadFile(path)
 	if err != nil {
