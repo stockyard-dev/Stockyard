@@ -58,36 +58,29 @@ func (g *Generator) EmbedAllDocuments(ctx context.Context, db *cstore.DB, chunkS
 		overlap = 64
 	}
 
-	// Get all documents that need chunking + embedding
-	// (simple approach: re-chunk everything; skip if chunk already exists)
-	existingChunks := db.CountChunks()
-	if existingChunks > 0 {
-		// Already have chunks — skip for now (incremental update would go here)
-		return nil
-	}
-
 	// Query all documents
-	type docRow struct {
-		ID      string
-		Content string
-		Title   string
-	}
-
 	rows, err := db.QueryDocuments()
 	if err != nil {
 		return fmt.Errorf("querying documents: %w", err)
 	}
 
-	// Chunk all documents
+	// Chunk all documents that don't already have chunks
 	type pendingChunk struct {
 		chunk cstore.Chunk
 		text  string
 	}
 	var pending []pendingChunk
+	existingChunks := db.CountChunks()
 
 	for i, doc := range rows {
 		if onProgress != nil {
 			onProgress(i+1, len(rows))
+		}
+
+		// Skip documents that already have chunks (incremental support)
+		chunkID := fmt.Sprintf("%s:chunk:0", doc.ID)
+		if existingChunks > 0 && db.ChunkExists(chunkID) {
+			continue
 		}
 
 		chunks := ingest.ChunkText(doc.Content, chunkSize, overlap)

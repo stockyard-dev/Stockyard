@@ -213,6 +213,13 @@ func (s *DB) CountChunks() int {
 	return count
 }
 
+// ChunkExists checks if a chunk with the given ID exists.
+func (s *DB) ChunkExists(chunkID string) bool {
+	var count int
+	s.db.QueryRow("SELECT COUNT(*) FROM chunks WHERE id = ?", chunkID).Scan(&count)
+	return count > 0
+}
+
 // =========================================================================
 // Chunk operations
 // =========================================================================
