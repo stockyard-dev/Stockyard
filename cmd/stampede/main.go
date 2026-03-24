@@ -19,6 +19,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -27,6 +28,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/stampede/persona"
 	"github.com/stockyard-dev/stockyard/internal/stampede/report"
 	"github.com/stockyard-dev/stockyard/internal/stampede/runner"
+	"github.com/stockyard-dev/stockyard/internal/stampede/server"
 	"github.com/stockyard-dev/stockyard/internal/stampede/store"
 	"github.com/stockyard-dev/stockyard/internal/stampede/target"
 )
@@ -322,11 +324,60 @@ func cmdCompare(simA, simB string) {
 func cmdServe(args []string) {
 	fs := flag.NewFlagSet("serve", flag.ExitOnError)
 	port := fs.Int("port", 9900, "HTTP server port")
+	providerName := fs.String("provider", "openai", "LLM provider for synthetic users")
+	providerKey := fs.String("provider-key", "", "API key (or set STAMPEDE_API_KEY)")
+	model := fs.String("model", "gpt-4o-mini", "Model for synthetic user thinking")
 	fs.Parse(args)
 
-	fmt.Printf("Stampede server starting on :%d\n", *port)
-	// TODO: Wire up HTTP API + admin UI (Week 7)
-	fmt.Println("Server mode not yet implemented. Use CLI commands for now.")
+	// Resolve API key
+	apiKey := *providerKey
+	if apiKey == "" {
+		apiKey = os.Getenv("STAMPEDE_API_KEY")
+	}
+	if apiKey == "" {
+		apiKey = os.Getenv("OPENAI_API_KEY")
+	}
+	if apiKey == "" {
+		apiKey = os.Getenv("ANTHROPIC_API_KEY")
+	}
+
+	// Check for PORT env var (Railway sets this)
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		if p, err := strconv.Atoi(envPort); err == nil {
+			*port = p
+		}
+	}
+
+	// Open database
+	dataDir := stampedeDir()
+	os.MkdirAll(dataDir, 0755)
+	db, err := store.Open(filepath.Join(dataDir, "stampede.db"))
+	if err != nil {
+		fmt.Printf("Error opening database: %v\n", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	srv := server.New(server.Config{
+		Port:         *port,
+		DB:           db,
+		ProviderName: *providerName,
+		ProviderKey:  apiKey,
+		Model:        *model,
+	})
+
+	fmt.Printf("🐂 Stampede server starting on :%d\n", *port)
+	fmt.Printf("   Dashboard: http://localhost:%d/ui\n", *port)
+	fmt.Printf("   API:       http://localhost:%d/api/health\n", *port)
+	if apiKey == "" {
+		fmt.Println("   ⚠ No API key configured — simulations will fail. Set STAMPEDE_API_KEY.")
+	}
+	fmt.Println()
+
+	if err := srv.ListenAndServe(); err != nil {
+		fmt.Printf("Server error: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func stampedeDir() string {

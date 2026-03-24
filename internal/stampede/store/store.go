@@ -342,3 +342,47 @@ func MarshalMessages(msgs any) string {
 	data, _ := json.Marshal(msgs)
 	return string(data)
 }
+
+// ConversationDetail holds a full conversation with messages.
+type ConversationDetail struct {
+	ConversationSummary
+	Messages json.RawMessage `json:"messages"`
+	Error    string          `json:"error,omitempty"`
+	Grade    *GradeSummary   `json:"grade,omitempty"`
+}
+
+// LoadConversation loads a single conversation with full messages.
+func (s *DB) LoadConversation(simID, convID string) (*ConversationDetail, error) {
+	var c ConversationDetail
+	var msgsJSON, errText sql.NullString
+
+	err := s.db.QueryRow(
+		`SELECT id, persona_name, status, COALESCE(goal_result,''), COALESCE(goal_reason,''), 
+		        turn_count, total_cost_cents, duration_ms, messages_json, error_text
+		 FROM conversations WHERE simulation_id = ? AND id = ?`,
+		simID, convID,
+	).Scan(&c.ID, &c.PersonaName, &c.Status, &c.GoalResult, &c.GoalReason,
+		&c.TurnCount, &c.CostCents, &c.DurationMs, &msgsJSON, &errText)
+	if err != nil {
+		return nil, fmt.Errorf("conversation %s not found: %w", convID, err)
+	}
+
+	if msgsJSON.Valid {
+		c.Messages = json.RawMessage(msgsJSON.String)
+	}
+	if errText.Valid {
+		c.Error = errText.String
+	}
+
+	// Load grade if available
+	var g GradeSummary
+	gErr := s.db.QueryRow(
+		"SELECT conversation_id, COALESCE(result,''), COALESCE(confidence,0), COALESCE(reason,''), COALESCE(failure_point,-1), COALESCE(suggestion,'') FROM grades WHERE conversation_id = ?",
+		convID,
+	).Scan(&g.ConversationID, &g.Result, &g.Confidence, &g.Reason, &g.FailurePoint, &g.Suggestion)
+	if gErr == nil {
+		c.Grade = &g
+	}
+
+	return &c, nil
+}
