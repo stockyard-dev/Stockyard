@@ -88,6 +88,40 @@ func (db *DB) migrate() error {
 			key TEXT PRIMARY KEY,
 			value REAL
 		)`,
+		`CREATE TABLE IF NOT EXISTS gates (
+			id TEXT PRIMARY KEY,
+			name TEXT NOT NULL,
+			dimension TEXT NOT NULL,
+			threshold REAL NOT NULL,
+			window INTEGER NOT NULL DEFAULT 50,
+			webhook_url TEXT DEFAULT '',
+			enabled BOOLEAN NOT NULL DEFAULT 1
+		)`,
+		`CREATE TABLE IF NOT EXISTS alerts (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			gate_id TEXT,
+			gate_name TEXT,
+			dimension TEXT,
+			threshold REAL,
+			actual REAL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)`,
+		`CREATE TABLE IF NOT EXISTS batch_evaluations (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			batch_id TEXT NOT NULL,
+			request_id TEXT,
+			domain TEXT,
+			score REAL,
+			relevance REAL,
+			accuracy REAL,
+			helpfulness REAL,
+			safety REAL,
+			tone REAL,
+			verdict TEXT,
+			issues_json TEXT,
+			latency_ms REAL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)`,
 	}
 	for _, s := range stmts {
 		if _, err := db.conn.Exec(s); err != nil {
@@ -202,4 +236,127 @@ func (db *DB) SetCalibration(key string, value float64) error {
 		key, value,
 	)
 	return err
+}
+
+// ── Batch evaluations ──────────────────────────────────────────────
+
+// SaveBatchEvaluation persists a slice of evaluations under a single batch ID.
+func (db *DB) SaveBatchEvaluation(batchID string, evals []Evaluation) error {
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return err
+	}
+	stmt, err := tx.Prepare(
+		`INSERT INTO batch_evaluations
+			(batch_id, request_id, domain, score, relevance, accuracy, helpfulness, safety, tone, verdict, issues_json, latency_ms)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	defer stmt.Close()
+
+	for _, e := range evals {
+		issuesJSON, _ := json.Marshal(e.Issues)
+		if _, err := stmt.Exec(batchID, e.RequestID, e.Domain, e.Score,
+			e.Relevance, e.Accuracy, e.Helpfulness, e.Safety, e.Tone,
+			e.Verdict, string(issuesJSON), e.LatencyMs); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return tx.Commit()
+}
+
+// ── Quality gates ──────────────────────────────────────────────────
+
+// Gate mirrors alert.Gate for persistence.
+type Gate struct {
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	Dimension  string  `json:"dimension"`
+	Threshold  float64 `json:"threshold"`
+	Window     int     `json:"window"`
+	WebhookURL string  `json:"webhook_url"`
+	Enabled    bool    `json:"enabled"`
+}
+
+// SaveGate upserts a quality gate.
+func (db *DB) SaveGate(g Gate) error {
+	_, err := db.conn.Exec(
+		`INSERT INTO gates (id, name, dimension, threshold, window, webhook_url, enabled)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)
+		 ON CONFLICT(id) DO UPDATE SET
+			name=excluded.name, dimension=excluded.dimension,
+			threshold=excluded.threshold, window=excluded.window,
+			webhook_url=excluded.webhook_url, enabled=excluded.enabled`,
+		g.ID, g.Name, g.Dimension, g.Threshold, g.Window, g.WebhookURL, g.Enabled,
+	)
+	return err
+}
+
+// ListGates returns all configured quality gates.
+func (db *DB) ListGates() ([]Gate, error) {
+	rows, err := db.conn.Query(`SELECT id, name, dimension, threshold, window, webhook_url, enabled FROM gates`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Gate
+	for rows.Next() {
+		var g Gate
+		if err := rows.Scan(&g.ID, &g.Name, &g.Dimension, &g.Threshold, &g.Window, &g.WebhookURL, &g.Enabled); err != nil {
+			return nil, err
+		}
+		out = append(out, g)
+	}
+	return out, rows.Err()
+}
+
+// DeleteGate removes a quality gate by ID.
+func (db *DB) DeleteGate(id string) error {
+	_, err := db.conn.Exec(`DELETE FROM gates WHERE id = ?`, id)
+	return err
+}
+
+// ── Alerts ─────────────────────────────────────────────────────────
+
+// AlertRecord is a persisted alert row.
+type AlertRecord struct {
+	ID        int64   `json:"id"`
+	GateID    string  `json:"gate_id"`
+	GateName  string  `json:"gate_name"`
+	Dimension string  `json:"dimension"`
+	Threshold float64 `json:"threshold"`
+	Actual    float64 `json:"actual"`
+	CreatedAt string  `json:"created_at"`
+}
+
+// SaveAlert persists a fired alert.
+func (db *DB) SaveAlert(gateID, gateName, dimension string, threshold, actual float64) error {
+	_, err := db.conn.Exec(
+		`INSERT INTO alerts (gate_id, gate_name, dimension, threshold, actual) VALUES (?, ?, ?, ?, ?)`,
+		gateID, gateName, dimension, threshold, actual,
+	)
+	return err
+}
+
+// ListAlerts returns recent alerts, newest first.
+func (db *DB) ListAlerts(limit int) ([]AlertRecord, error) {
+	rows, err := db.conn.Query(`SELECT id, gate_id, gate_name, dimension, threshold, actual, created_at FROM alerts ORDER BY id DESC LIMIT ?`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []AlertRecord
+	for rows.Next() {
+		var a AlertRecord
+		if err := rows.Scan(&a.ID, &a.GateID, &a.GateName, &a.Dimension, &a.Threshold, &a.Actual, &a.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, a)
+	}
+	return out, rows.Err()
 }

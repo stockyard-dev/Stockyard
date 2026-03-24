@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
+	"github.com/stockyard-dev/stockyard/internal/verdikt/rubric"
 	"github.com/stockyard-dev/stockyard/internal/verdikt/store"
 )
 
@@ -58,6 +59,7 @@ type Engine struct {
 	mu        sync.RWMutex
 	history   []Evaluation
 	baselines map[string]float64 // learned quality baselines per domain
+	rubrics   map[string]*rubric.Rubric
 }
 
 // New creates a judge engine. If db is non-nil, evaluations are persisted
@@ -72,11 +74,40 @@ func New(llm provider.Provider, model, domain string, db *store.DB) *Engine {
 		domain:    domain,
 		db:        db,
 		baselines: map[string]float64{},
+		rubrics:   map[string]*rubric.Rubric{"default": rubric.DefaultRubric()},
 	}
 	if db != nil {
 		e.loadFromDB()
 	}
 	return e
+}
+
+// SetRubrics replaces the loaded rubric set.
+func (e *Engine) SetRubrics(rubrics map[string]*rubric.Rubric) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.rubrics = rubrics
+	// Always keep the default
+	if _, ok := e.rubrics["default"]; !ok {
+		e.rubrics["default"] = rubric.DefaultRubric()
+	}
+}
+
+// Rubrics returns the currently loaded rubrics.
+func (e *Engine) Rubrics() map[string]*rubric.Rubric {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	return e.rubrics
+}
+
+// rubricFor returns the rubric matching the domain, falling back to default.
+func (e *Engine) rubricFor(domain string) *rubric.Rubric {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	if r, ok := e.rubrics[domain]; ok {
+		return r
+	}
+	return e.rubrics["default"]
 }
 
 // loadFromDB restores in-memory state from the database.
@@ -117,7 +148,13 @@ func (e *Engine) loadFromDB() {
 func (e *Engine) Evaluate(ctx context.Context, interaction Interaction) (*Evaluation, error) {
 	start := time.Now()
 
-	prompt := buildJudgePrompt(interaction, e.domain)
+	domain := interaction.Domain
+	if domain == "" {
+		domain = e.domain
+	}
+	rb := e.rubricFor(domain)
+
+	prompt := buildJudgePrompt(interaction, e.domain, rb)
 
 	temp := 0.1
 	maxTokens := 500
@@ -151,13 +188,16 @@ func (e *Engine) Evaluate(ctx context.Context, interaction Interaction) (*Evalua
 	eval.Timestamp = time.Now()
 	eval.LatencyMs = int(time.Since(start).Milliseconds())
 
-	// Compute overall score from dimensions
+	// Compute overall score from dimensions using rubric weights
 	if eval.Score == 0 && eval.Dimensions != (Scores{}) {
-		eval.Score = (eval.Dimensions.Relevance*0.30 +
-			eval.Dimensions.Accuracy*0.25 +
-			eval.Dimensions.Helpfulness*0.20 +
-			eval.Dimensions.Safety*0.15 +
-			eval.Dimensions.Tone*0.10)
+		dims := map[string]float64{
+			"relevance":   eval.Dimensions.Relevance,
+			"accuracy":    eval.Dimensions.Accuracy,
+			"helpfulness": eval.Dimensions.Helpfulness,
+			"safety":      eval.Dimensions.Safety,
+			"tone":        eval.Dimensions.Tone,
+		}
+		eval.Score = rb.WeightedScore(dims)
 	}
 
 	// Determine verdict
@@ -256,7 +296,7 @@ func (e *Engine) Stats() Stats {
 	return s
 }
 
-func buildJudgePrompt(i Interaction, domain string) string {
+func buildJudgePrompt(i Interaction, domain string, rb *rubric.Rubric) string {
 	var sb strings.Builder
 
 	sb.WriteString("You are an AI quality judge. Evaluate this AI response.\n\n")
@@ -266,6 +306,37 @@ func buildJudgePrompt(i Interaction, domain string) string {
 
 	if domain != "" {
 		sb.WriteString(fmt.Sprintf("DOMAIN: %s\n\n", domain))
+	}
+
+	// Inject rubric weights so the LLM knows the scoring emphasis
+	if rb != nil && len(rb.DimensionWeights) > 0 {
+		sb.WriteString("SCORING WEIGHTS:\n")
+		for dim, w := range rb.DimensionWeights {
+			sb.WriteString(fmt.Sprintf("  %s: %.0f%%\n", dim, w*100))
+		}
+		sb.WriteString("\n")
+	}
+
+	// Inject custom criteria from rubric
+	if rb != nil {
+		if block := rb.CriteriaBlock(); block != "" {
+			sb.WriteString(block)
+			sb.WriteString("\n")
+		}
+	}
+
+	// Inject few-shot examples from rubric
+	if rb != nil && len(rb.Examples) > 0 {
+		sb.WriteString("REFERENCE EXAMPLES:\n")
+		for idx, ex := range rb.Examples {
+			sb.WriteString(fmt.Sprintf("  Example %d — Prompt: %s | Response: %s | Expected score: %.2f",
+				idx+1, truncate(ex.Prompt, 200), truncate(ex.Response, 200), ex.Score))
+			if ex.Notes != "" {
+				sb.WriteString(fmt.Sprintf(" (%s)", ex.Notes))
+			}
+			sb.WriteString("\n")
+		}
+		sb.WriteString("\n")
 	}
 
 	sb.WriteString("USER PROMPT:\n")
