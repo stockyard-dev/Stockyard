@@ -16,6 +16,16 @@ type Spec struct {
 	Application AppSpec       `yaml:"application" json:"application"`
 	Objectives  ObjectiveSet  `yaml:"objectives" json:"objectives"`
 	Constraints []Constraint  `yaml:"constraints,omitempty" json:"constraints,omitempty"`
+	Targets     []Target      `yaml:"targets,omitempty" json:"targets,omitempty"`
+}
+
+// Target defines a monitored endpoint with its own URL and optional objectives override.
+type Target struct {
+	Name       string       `yaml:"name" json:"name"`
+	URL        string       `yaml:"url" json:"url"`
+	HealthPath string       `yaml:"health_path,omitempty" json:"health_path,omitempty"`
+	Prometheus string       `yaml:"prometheus,omitempty" json:"prometheus,omitempty"` // Prometheus endpoint for this target
+	Objectives *ObjectiveSet `yaml:"objectives,omitempty" json:"objectives,omitempty"` // override global objectives
 }
 
 // AppSpec describes the application to manage.
