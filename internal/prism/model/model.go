@@ -5,9 +5,12 @@ package model
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/prism/store"
 )
 
 // UserEvent is a behavioral signal from a user interaction.
@@ -60,21 +63,84 @@ type Engine struct {
 	events map[string][]UserEvent // userID -> events
 	maps   map[string]*CognitiveMap
 	allPaths map[string]int // all known paths in the app
+	db     *store.DB // optional persistence
 }
 
-// New creates a cognitive model engine.
-func New() *Engine {
-	return &Engine{
+// New creates a cognitive model engine. If db is non-nil, events are persisted
+// to SQLite and restored on startup.
+func New(db *store.DB) *Engine {
+	e := &Engine{
 		events:   map[string][]UserEvent{},
 		maps:     map[string]*CognitiveMap{},
 		allPaths: map[string]int{},
+		db:       db,
 	}
+	if db != nil {
+		e.loadFromStore()
+	}
+	return e
+}
+
+// loadFromStore restores path counts and per-user events from the database.
+func (e *Engine) loadFromStore() {
+	counts, err := e.db.GetAllPathCounts()
+	if err != nil {
+		log.Printf("prism: failed to load path counts: %v", err)
+		return
+	}
+	e.allPaths = counts
+
+	// Discover users by checking which user_ids have events.
+	// We iterate known paths (a proxy) — but we need user IDs.
+	// Instead, load events for each user. We'll find users via a count query.
+	// Since there's no ListUsers method, we add one or scan user_events.
+	userIDs, err := e.db.ListUserIDs()
+	if err != nil {
+		log.Printf("prism: failed to list users: %v", err)
+		return
+	}
+	for _, uid := range userIDs {
+		evts, err := e.db.GetUserEvents(uid, 5000)
+		if err != nil {
+			log.Printf("prism: failed to load events for user %s: %v", uid, err)
+			continue
+		}
+		for _, se := range evts {
+			e.events[uid] = append(e.events[uid], UserEvent{
+				UserID:    se.UserID,
+				EventType: se.EventType,
+				Path:      se.Path,
+				Element:   se.Element,
+				Duration:  se.Duration,
+				Timestamp: se.Timestamp,
+				Meta:      se.Meta,
+			})
+		}
+		e.rebuildMap(uid)
+	}
+	log.Printf("prism: loaded %d users, %d path entries from store", len(userIDs), len(counts))
 }
 
 // IngestEvent records a user behavioral event.
 func (e *Engine) IngestEvent(ev UserEvent) {
 	if ev.Timestamp.IsZero() {
 		ev.Timestamp = time.Now()
+	}
+
+	// Persist to SQLite if available.
+	if e.db != nil {
+		se := store.UserEvent{
+			UserID:    ev.UserID,
+			EventType: ev.EventType,
+			Path:      ev.Path,
+			Element:   ev.Element,
+			Duration:  ev.Duration,
+			Timestamp: ev.Timestamp,
+			Meta:      ev.Meta,
+		}
+		if err := e.db.SaveEvent(ev.UserID, se); err != nil {
+			log.Printf("prism: failed to persist event: %v", err)
+		}
 	}
 
 	e.mu.Lock()

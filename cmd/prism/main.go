@@ -31,13 +31,22 @@ func cmdServe(args []string) {
 	fs.Parse(args)
 	if p := os.Getenv("PORT"); p != "" { if n, err := strconv.Atoi(p); err == nil { *port = n } }
 
-	engine := model.New()
+	db, err := server.OpenStore()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "prism: open store: %v\n", err)
+		os.Exit(1)
+	}
+
+	engine := model.New(db)
 	fmt.Printf("\n  🔮 Prism — See Through Users' Eyes\n\n")
 	fmt.Printf("    Dashboard: http://localhost:%d/ui\n", *port)
 	fmt.Printf("    Ingest:    POST http://localhost:%d/api/events\n\n", *port)
 
-	srv := server.New(server.Config{Port: *port, Engine: engine})
-	srv.ListenAndServe()
+	srv := server.New(server.Config{Port: *port, Engine: engine, Store: db})
+	if err := srv.ListenAndServe(); err != nil {
+		fmt.Fprintf(os.Stderr, "prism: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func printUsage() {

@@ -1,17 +1,24 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"syscall"
 
 	"github.com/stockyard-dev/stockyard/internal/prism/model"
+	"github.com/stockyard-dev/stockyard/internal/prism/store"
 )
 
 type Config struct {
 	Port   int
 	Engine *model.Engine
+	Store  *store.DB
 }
 
 type Server struct {
@@ -39,7 +46,43 @@ func New(cfg Config) *Server {
 func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", s.cfg.Port)
 	log.Printf("Prism server listening on %s", addr)
-	return http.ListenAndServe(addr, s.mux)
+
+	srv := &http.Server{Addr: addr, Handler: s.mux}
+
+	// Graceful shutdown: close store on SIGINT/SIGTERM.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	go func() {
+		<-ctx.Done()
+		log.Println("prism: shutting down")
+		srv.Shutdown(context.Background())
+	}()
+
+	err := srv.ListenAndServe()
+	if err == http.ErrServerClosed {
+		err = nil
+	}
+	if s.cfg.Store != nil {
+		if cerr := s.cfg.Store.Close(); cerr != nil {
+			log.Printf("prism: store close error: %v", cerr)
+		}
+	}
+	return err
+}
+
+// OpenStore reads PRISM_DATA_DIR (default /tmp/prism), ensures the directory
+// exists, and opens the SQLite store.
+func OpenStore() (*store.DB, error) {
+	dir := os.Getenv("PRISM_DATA_DIR")
+	if dir == "" {
+		dir = "/tmp/prism"
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return nil, fmt.Errorf("create data dir: %w", err)
+	}
+	dbPath := filepath.Join(dir, "prism.db")
+	return store.Open(dbPath)
 }
 
 func (s *Server) handleIngest(w http.ResponseWriter, r *http.Request) {
