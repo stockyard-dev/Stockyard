@@ -1,0 +1,16 @@
+# Build stage
+FROM golang:1.22-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /fault ./cmd/fault/
+
+# Runtime stage
+FROM alpine:3.20
+RUN apk add --no-cache ca-certificates tzdata
+COPY --from=build /fault /usr/local/bin/fault
+EXPOSE 9450
+VOLUME /data
+ENV FAULT_DATA_DIR=/data PORT=9450
+ENTRYPOINT ["fault", "serve"]
