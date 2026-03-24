@@ -19,8 +19,10 @@ type App struct {
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
 
-func (a *App) Name() string        { return "marketing" }
-func (a *App) Description() string { return "Marketing ops, content calendar, Chrome agent control plane" }
+func (a *App) Name() string { return "marketing" }
+func (a *App) Description() string {
+	return "Marketing ops, content calendar, Chrome agent control plane"
+}
 
 func (a *App) SetBroadcaster(b any) {}
 
@@ -313,8 +315,8 @@ func (a *App) deleteTask(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) bulkStatus(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		FromStatus string `json:"from_status"`
-		ToStatus   string `json:"to_status"`
+		FromStatus string   `json:"from_status"`
+		ToStatus   string   `json:"to_status"`
 		IDs        []string `json:"ids"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -341,7 +343,7 @@ func (a *App) bulkStatus(w http.ResponseWriter, r *http.Request) {
 			req.ToStatus, now, req.FromStatus)
 		if err != nil {
 			log.Printf("[marketing] error: %v", err)
-		jsonErr(w, "internal error", 500)
+			jsonErr(w, "internal error", 500)
 			return
 		}
 		count, _ = res.RowsAffected()

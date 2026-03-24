@@ -15,7 +15,7 @@ func main() {
 		Product: "clustermode",
 		Version: version,
 		Features: engine.Features{
-			ClusterMode:     true,
+			ClusterMode:    true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

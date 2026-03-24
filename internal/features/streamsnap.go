@@ -16,19 +16,19 @@ import (
 
 // StreamCapture holds a captured stream with metadata.
 type StreamCapture struct {
-	ID            string    `json:"id"`
-	RequestID     string    `json:"request_id"`
-	Model         string    `json:"model"`
-	Provider      string    `json:"provider"`
-	Project       string    `json:"project"`
-	Timestamp     time.Time `json:"timestamp"`
-	TTFT          time.Duration `json:"ttft_ms"`          // time to first token
+	ID            string        `json:"id"`
+	RequestID     string        `json:"request_id"`
+	Model         string        `json:"model"`
+	Provider      string        `json:"provider"`
+	Project       string        `json:"project"`
+	Timestamp     time.Time     `json:"timestamp"`
+	TTFT          time.Duration `json:"ttft_ms"` // time to first token
 	TotalDuration time.Duration `json:"total_duration_ms"`
-	TokensOut     int       `json:"tokens_out"`
-	TPS           float64   `json:"tokens_per_second"`
-	Complete      bool      `json:"complete"` // false if stream was interrupted
-	FullResponse  string    `json:"full_response"`
-	ChunkCount    int       `json:"chunk_count"`
+	TokensOut     int           `json:"tokens_out"`
+	TPS           float64       `json:"tokens_per_second"`
+	Complete      bool          `json:"complete"` // false if stream was interrupted
+	FullResponse  string        `json:"full_response"`
+	ChunkCount    int           `json:"chunk_count"`
 }
 
 // StreamSnapper captures and analyzes SSE streams.
@@ -37,11 +37,11 @@ type StreamSnapper struct {
 	captures map[string]*StreamCapture // id → capture
 	cfg      config.StreamSnapConfig
 
-	totalStreams    atomic.Int64
-	totalCaptures  atomic.Int64
-	totalTokens    atomic.Int64
-	interrupted    atomic.Int64
-	avgTTFT        atomic.Int64 // stored as microseconds
+	totalStreams  atomic.Int64
+	totalCaptures atomic.Int64
+	totalTokens   atomic.Int64
+	interrupted   atomic.Int64
+	avgTTFT       atomic.Int64 // stored as microseconds
 }
 
 // NewStreamSnapper creates a new stream capture engine.
@@ -188,14 +188,14 @@ func (ss *StreamSnapper) Stats() map[string]any {
 
 // StreamCaptureSession tracks a single streaming request.
 type StreamCaptureSession struct {
-	snapper      *StreamSnapper
-	startTime    time.Time
-	firstToken   time.Time
-	capture      *StreamCapture
-	contentBuf   []byte
-	chunkCount   int
-	tokenCount   int
-	gotFirstTok  bool
+	snapper     *StreamSnapper
+	startTime   time.Time
+	firstToken  time.Time
+	capture     *StreamCapture
+	contentBuf  []byte
+	chunkCount  int
+	tokenCount  int
+	gotFirstTok bool
 }
 
 // OnChunk records a stream chunk.

@@ -12,13 +12,13 @@ import (
 
 // RateLimitConfig defines rate limiting settings.
 type RateLimitConfig struct {
-	Enabled           bool
-	RequestsPerMinute int
-	RequestsPerHour   int
-	Burst             int
-	PerIP             bool
-	PerUser           bool
-	AbuseDetection    bool
+	Enabled            bool
+	RequestsPerMinute  int
+	RequestsPerHour    int
+	Burst              int
+	PerIP              bool
+	PerUser            bool
+	AbuseDetection     bool
 	DuplicateThreshold int
 }
 

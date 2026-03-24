@@ -15,7 +15,7 @@ func main() {
 		Product: "maskmode",
 		Version: version,
 		Features: engine.Features{
-			MaskMode:     true,
+			MaskMode:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

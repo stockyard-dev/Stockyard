@@ -15,7 +15,7 @@ func main() {
 		Product: "encryptvault",
 		Version: version,
 		Features: engine.Features{
-			EncryptVault:     true,
+			EncryptVault:   true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

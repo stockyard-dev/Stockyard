@@ -15,9 +15,9 @@ type SpendStore interface {
 
 // Flusher periodically writes in-memory spend data to persistent storage.
 type Flusher struct {
-	counter  *SpendCounter
-	store    SpendStore
-	interval time.Duration
+	counter   *SpendCounter
+	store     SpendStore
+	interval  time.Duration
 	last      map[string]lastFlushed // last flushed values per project
 	lastUsers map[string]lastFlushed // last flushed values per user
 }

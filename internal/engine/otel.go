@@ -17,11 +17,11 @@ import (
 
 // OTELConfig holds OpenTelemetry export configuration.
 type OTELConfig struct {
-	Endpoint    string // OTEL collector endpoint (e.g., http://localhost:4318/v1/traces)
-	ServiceName string // Service name for traces (default: "stockyard")
-	Headers     map[string]string // Extra headers (e.g., auth tokens)
-	BatchSize   int    // Spans per batch (default: 100)
-	FlushInterval time.Duration // Flush interval (default: 5s)
+	Endpoint      string            // OTEL collector endpoint (e.g., http://localhost:4318/v1/traces)
+	ServiceName   string            // Service name for traces (default: "stockyard")
+	Headers       map[string]string // Extra headers (e.g., auth tokens)
+	BatchSize     int               // Spans per batch (default: 100)
+	FlushInterval time.Duration     // Flush interval (default: 5s)
 }
 
 // OTELExporter batches and exports spans to an OTLP-compatible endpoint.
@@ -34,14 +34,14 @@ type OTELExporter struct {
 }
 
 type otelSpan struct {
-	TraceID    string            `json:"traceId"`
-	SpanID     string            `json:"spanId"`
-	Name       string            `json:"name"`
-	Kind       int               `json:"kind"` // 3 = CLIENT
-	StartTime  int64             `json:"startTimeUnixNano"`
-	EndTime    int64             `json:"endTimeUnixNano"`
-	Attributes []otelAttribute   `json:"attributes"`
-	Status     otelStatus        `json:"status"`
+	TraceID    string          `json:"traceId"`
+	SpanID     string          `json:"spanId"`
+	Name       string          `json:"name"`
+	Kind       int             `json:"kind"` // 3 = CLIENT
+	StartTime  int64           `json:"startTimeUnixNano"`
+	EndTime    int64           `json:"endTimeUnixNano"`
+	Attributes []otelAttribute `json:"attributes"`
+	Status     otelStatus      `json:"status"`
 }
 
 type otelAttribute struct {
@@ -50,8 +50,8 @@ type otelAttribute struct {
 }
 
 type otelValue struct {
-	StringValue string `json:"stringValue,omitempty"`
-	IntValue    int64  `json:"intValue,omitempty"`
+	StringValue string  `json:"stringValue,omitempty"`
+	IntValue    int64   `json:"intValue,omitempty"`
 	DoubleValue float64 `json:"doubleValue,omitempty"`
 }
 

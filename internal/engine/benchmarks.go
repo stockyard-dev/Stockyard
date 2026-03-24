@@ -88,9 +88,9 @@ func handleLiveBenchmarks(conn *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"models": models,
-			"count":  len(models),
-			"period": "7d",
+			"models":       models,
+			"count":        len(models),
+			"period":       "7d",
 			"min_requests": 100,
 		})
 	}

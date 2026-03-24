@@ -11,9 +11,9 @@ import (
 // SpendConfig holds spend tracking configuration.
 type SpendConfig struct {
 	Counter     *tracker.SpendCounter
-	Alerter     *Alerter           // nil = no alerts
+	Alerter     *Alerter             // nil = no alerts
 	Caps        map[string]CapConfig // project → caps
-	Broadcaster EventBroadcaster    // nil = no dashboard events
+	Broadcaster EventBroadcaster     // nil = no dashboard events
 }
 
 // SpendMiddleware returns middleware that tracks per-request spend.

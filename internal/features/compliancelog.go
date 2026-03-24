@@ -20,33 +20,33 @@ import (
 
 // ComplianceEntry represents a single immutable audit log entry.
 type ComplianceEntry struct {
-	Sequence    int64     `json:"sequence"`
-	Timestamp   time.Time `json:"timestamp"`
-	Hash        string    `json:"hash"`         // SHA256 of this entry
-	PrevHash    string    `json:"prev_hash"`    // SHA256 of previous entry (chain)
-	RequestID   string    `json:"request_id"`
-	Model       string    `json:"model"`
-	Provider    string    `json:"provider"`
-	Project     string    `json:"project"`
-	UserID      string    `json:"user_id"`
-	InputTokens int       `json:"input_tokens"`
-	OutputTokens int      `json:"output_tokens"`
-	Latency     int64     `json:"latency_ms"`
-	Status      string    `json:"status"` // success, error
-	ErrorMsg    string    `json:"error_msg,omitempty"`
-	InputBody   string    `json:"input_body,omitempty"`
-	OutputBody  string    `json:"output_body,omitempty"`
+	Sequence     int64     `json:"sequence"`
+	Timestamp    time.Time `json:"timestamp"`
+	Hash         string    `json:"hash"`      // SHA256 of this entry
+	PrevHash     string    `json:"prev_hash"` // SHA256 of previous entry (chain)
+	RequestID    string    `json:"request_id"`
+	Model        string    `json:"model"`
+	Provider     string    `json:"provider"`
+	Project      string    `json:"project"`
+	UserID       string    `json:"user_id"`
+	InputTokens  int       `json:"input_tokens"`
+	OutputTokens int       `json:"output_tokens"`
+	Latency      int64     `json:"latency_ms"`
+	Status       string    `json:"status"` // success, error
+	ErrorMsg     string    `json:"error_msg,omitempty"`
+	InputBody    string    `json:"input_body,omitempty"`
+	OutputBody   string    `json:"output_body,omitempty"`
 }
 
 // ComplianceLogState holds runtime state for the compliance logger.
 type ComplianceLogState struct {
-	mu           sync.Mutex
-	cfg          config.ComplianceLogConfig
-	entries      []ComplianceEntry
-	maxEntries   int
-	lastHash     string
-	sequence     atomic.Int64
-	chainValid   atomic.Bool
+	mu         sync.Mutex
+	cfg        config.ComplianceLogConfig
+	entries    []ComplianceEntry
+	maxEntries int
+	lastHash   string
+	sequence   atomic.Int64
+	chainValid atomic.Bool
 
 	totalEntries atomic.Int64
 	totalErrors  atomic.Int64
@@ -231,17 +231,17 @@ func (cl *ComplianceLogState) ExportSOC2() map[string]any {
 	}
 
 	return map[string]any{
-		"report_type":      "SOC2 AI Interaction Audit",
-		"generated_at":     time.Now().UTC().Format(time.RFC3339),
-		"period_start":     earliest.UTC().Format(time.RFC3339),
-		"period_end":       latest.UTC().Format(time.RFC3339),
+		"report_type":        "SOC2 AI Interaction Audit",
+		"generated_at":       time.Now().UTC().Format(time.RFC3339),
+		"period_start":       earliest.UTC().Format(time.RFC3339),
+		"period_end":         latest.UTC().Format(time.RFC3339),
 		"total_interactions": total,
-		"successful":       successCount,
-		"errors":           errorCount,
-		"chain_integrity":  integrityStatus,
-		"verified_entries": valid,
-		"models_used":      models,
-		"providers_used":   providers,
+		"successful":         successCount,
+		"errors":             errorCount,
+		"chain_integrity":    integrityStatus,
+		"verified_entries":   valid,
+		"models_used":        models,
+		"providers_used":     providers,
 	}
 }
 
@@ -289,13 +289,13 @@ func ComplianceLogMiddleware(cl *ComplianceLogState) proxy.Middleware {
 
 			// Build the compliance entry
 			entry := ComplianceEntry{
-				Timestamp:   start,
-				RequestID:   generateRequestID(),
-				Model:       req.Model,
-				Project:     req.Project,
-				UserID:      req.UserID,
-				Latency:     latency.Milliseconds(),
-				InputBody:   inputBody,
+				Timestamp: start,
+				RequestID: generateRequestID(),
+				Model:     req.Model,
+				Project:   req.Project,
+				UserID:    req.UserID,
+				Latency:   latency.Milliseconds(),
+				InputBody: inputBody,
 			}
 
 			if err != nil {

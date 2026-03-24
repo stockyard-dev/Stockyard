@@ -24,12 +24,12 @@ type EncryptVaultEvent struct {
 }
 
 type EncryptVaultState struct {
-	mu           sync.Mutex
-	cfg          config.EncryptVaultConfig
-	gcm          cipher.AEAD
-	recentEvents []EncryptVaultEvent
-	fieldsEncrypted atomic.Int64
-	fieldsDecrypted atomic.Int64
+	mu                sync.Mutex
+	cfg               config.EncryptVaultConfig
+	gcm               cipher.AEAD
+	recentEvents      []EncryptVaultEvent
+	fieldsEncrypted   atomic.Int64
+	fieldsDecrypted   atomic.Int64
 	requestsProcessed atomic.Int64
 }
 
@@ -38,19 +38,27 @@ func NewEncryptVault(cfg config.EncryptVaultConfig) *EncryptVaultState {
 	// Initialize AES-GCM if key provided
 	if len(cfg.Key) >= 16 {
 		key := []byte(cfg.Key)
-		if len(key) > 32 { key = key[:32] }
-		if len(key) > 16 && len(key) < 32 { key = key[:16] }
+		if len(key) > 32 {
+			key = key[:32]
+		}
+		if len(key) > 16 && len(key) < 32 {
+			key = key[:16]
+		}
 		block, err := aes.NewCipher(key)
 		if err == nil {
 			gcm, err := cipher.NewGCM(block)
-			if err == nil { ev.gcm = gcm }
+			if err == nil {
+				ev.gcm = gcm
+			}
 		}
 	}
 	return ev
 }
 
 func (ev *EncryptVaultState) encrypt(plaintext string) string {
-	if ev.gcm == nil { return plaintext }
+	if ev.gcm == nil {
+		return plaintext
+	}
 	nonce := make([]byte, ev.gcm.NonceSize())
 	io.ReadFull(rand.Reader, nonce)
 	sealed := ev.gcm.Seal(nonce, nonce, []byte(plaintext), nil)

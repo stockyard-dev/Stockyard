@@ -9,9 +9,9 @@ import (
 
 // WASMPlugin represents a loaded WASM plugin.
 type WASMPlugin struct {
-	Name     string
-	Path     string
-	Enabled  bool
+	Name    string
+	Path    string
+	Enabled bool
 }
 
 // LoadWASMPlugins scans the plugins/ directory for .wasm files.

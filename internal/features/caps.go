@@ -15,16 +15,16 @@ import (
 
 // CapConfig defines spend cap settings.
 type CapConfig struct {
-	DailyCap  float64 // USD, 0 = unlimited
+	DailyCap   float64 // USD, 0 = unlimited
 	MonthlyCap float64 // USD, 0 = unlimited
 	SoftCap    bool    // If true, allow but alert; if false, hard block
 }
 
 // CapError is returned when a spend cap is exceeded.
 type CapError struct {
-	Cap     float64   `json:"cap"`
-	Spent   float64   `json:"spent"`
-	Period  string    `json:"period"` // "daily" or "monthly"
+	Cap      float64   `json:"cap"`
+	Spent    float64   `json:"spent"`
+	Period   string    `json:"period"` // "daily" or "monthly"
 	ResetsAt time.Time `json:"resets_at"`
 }
 

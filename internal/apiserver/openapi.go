@@ -59,8 +59,8 @@ func openAPIPaths() map[string]any {
 	return map[string]any{
 		// System
 		"/health":      map[string]any{"get": ep("Health check", "System", nil, ok)},
-		"/api/license":  map[string]any{"get": ep("License status and usage stats", "System", admin, ok)},
-		"/api/plans":    map[string]any{"get": ep("List pricing plans", "System", nil, ok)},
+		"/api/license": map[string]any{"get": ep("License status and usage stats", "System", admin, ok)},
+		"/api/plans":   map[string]any{"get": ep("List pricing plans", "System", nil, ok)},
 
 		// Proxy
 		"/v1/chat/completions": map[string]any{
@@ -77,12 +77,12 @@ func openAPIPaths() map[string]any {
 		},
 
 		// Observe
-		"/api/observe/overview":   map[string]any{"get": ep("Dashboard overview (traces, cost, alerts)", "Observe", admin, ok)},
-		"/api/observe/traces":     map[string]any{"get": ep("List recent traces", "Observe", admin, ok)},
+		"/api/observe/overview":    map[string]any{"get": ep("Dashboard overview (traces, cost, alerts)", "Observe", admin, ok)},
+		"/api/observe/traces":      map[string]any{"get": ep("List recent traces", "Observe", admin, ok)},
 		"/api/observe/traces/{id}": map[string]any{"get": ep("Get trace detail with metadata", "Observe", admin, ok)},
-		"/api/observe/timeseries": map[string]any{"get": ep("Time-bucketed metrics (period=24h|7d|30d)", "Observe", admin, ok)},
-		"/api/observe/costs":      map[string]any{"get": ep("Cost breakdown by provider and model", "Observe", admin, ok)},
-		"/api/observe/alerts":     map[string]any{
+		"/api/observe/timeseries":  map[string]any{"get": ep("Time-bucketed metrics (period=24h|7d|30d)", "Observe", admin, ok)},
+		"/api/observe/costs":       map[string]any{"get": ep("Cost breakdown by provider and model", "Observe", admin, ok)},
+		"/api/observe/alerts": map[string]any{
 			"get":  ep("List alert rules", "Observe", admin, ok),
 			"post": ep("Create alert rule", "Observe", admin, ok),
 		},
@@ -104,10 +104,10 @@ func openAPIPaths() map[string]any {
 
 		// Studio
 		"/api/studio/status":           map[string]any{"get": ep("Studio status (experiments, benchmarks, templates)", "Studio", admin, ok)},
-		"/api/studio/experiments/run":   map[string]any{"post": ep("Run A/B experiment across models", "Studio", admin, ok)},
-		"/api/studio/experiments/{id}":  map[string]any{"get": ep("Get experiment results", "Studio", admin, ok)},
-		"/api/studio/benchmarks/run":    map[string]any{"post": ep("Run benchmark suite", "Studio", admin, ok)},
-		"/api/studio/templates":         map[string]any{
+		"/api/studio/experiments/run":  map[string]any{"post": ep("Run A/B experiment across models", "Studio", admin, ok)},
+		"/api/studio/experiments/{id}": map[string]any{"get": ep("Get experiment results", "Studio", admin, ok)},
+		"/api/studio/benchmarks/run":   map[string]any{"post": ep("Run benchmark suite", "Studio", admin, ok)},
+		"/api/studio/templates": map[string]any{
 			"get":  ep("List prompt templates", "Studio", admin, ok),
 			"post": ep("Create prompt template", "Studio", admin, ok),
 		},
@@ -127,18 +127,18 @@ func openAPIPaths() map[string]any {
 
 		// Exchange
 		"/api/exchange/status": map[string]any{"get": ep("Exchange status", "Exchange", admin, ok)},
-		"/api/exchange/packs":  map[string]any{
+		"/api/exchange/packs": map[string]any{
 			"get":  ep("List available packs", "Exchange", admin, ok),
 			"post": ep("Create custom pack", "Exchange", admin, ok),
 		},
-		"/api/exchange/packs/{id}":         map[string]any{"get": ep("Get pack detail", "Exchange", admin, ok)},
-		"/api/exchange/packs/{id}/install":  map[string]any{"post": ep("Install pack", "Exchange", admin, ok)},
+		"/api/exchange/packs/{id}":           map[string]any{"get": ep("Get pack detail", "Exchange", admin, ok)},
+		"/api/exchange/packs/{id}/install":   map[string]any{"post": ep("Install pack", "Exchange", admin, ok)},
 		"/api/exchange/packs/{id}/uninstall": map[string]any{"post": ep("Uninstall pack", "Exchange", admin, ok)},
 
 		// Auth
-		"/api/auth/signup":                    map[string]any{"post": ep("Create user account + API key (public)", "Auth", nil, ok)},
-		"/api/auth/users":                     map[string]any{"get": ep("List users", "Auth", admin, ok)},
-		"/api/auth/users/{id}/keys":           map[string]any{
+		"/api/auth/signup": map[string]any{"post": ep("Create user account + API key (public)", "Auth", nil, ok)},
+		"/api/auth/users":  map[string]any{"get": ep("List users", "Auth", admin, ok)},
+		"/api/auth/users/{id}/keys": map[string]any{
 			"get":  ep("List user API keys", "Auth", admin, ok),
 			"post": ep("Generate API key for user", "Auth", admin, ok),
 		},
@@ -149,9 +149,9 @@ func openAPIPaths() map[string]any {
 			"put":    ep("Set provider API key for user", "Auth", admin, ok),
 			"delete": ep("Delete provider key for user", "Auth", admin, ok),
 		},
-		"/api/auth/me":                        map[string]any{"get": ep("Current user info (via API key)", "Auth", bearer, ok)},
-		"/api/auth/me/keys":                   map[string]any{"get": ep("List my API keys", "Auth", bearer, ok)},
-		"/api/auth/me/providers/{provider}":   map[string]any{
+		"/api/auth/me":      map[string]any{"get": ep("Current user info (via API key)", "Auth", bearer, ok)},
+		"/api/auth/me/keys": map[string]any{"get": ep("List my API keys", "Auth", bearer, ok)},
+		"/api/auth/me/providers/{provider}": map[string]any{
 			"put":    ep("Set my provider key", "Auth", bearer, ok),
 			"get":    ep("List my provider keys", "Auth", bearer, ok),
 			"delete": ep("Delete my provider key", "Auth", bearer, ok),
@@ -166,12 +166,12 @@ func openAPIPaths() map[string]any {
 		"/api/playground/share/{id}": map[string]any{"get": ep("Retrieve shared playground session", "Playground", nil, ok)},
 
 		// Webhooks
-		"/api/webhooks":      map[string]any{
+		"/api/webhooks": map[string]any{
 			"get":  ep("List registered webhooks", "Webhooks", admin, ok),
 			"post": ep("Register a webhook endpoint", "Webhooks", admin, ok),
 		},
-		"/api/webhooks/{id}":   map[string]any{"delete": ep("Delete a webhook", "Webhooks", admin, ok)},
-		"/api/webhooks/test":   map[string]any{"post": ep("Send test event to all webhooks", "Webhooks", admin, ok)},
+		"/api/webhooks/{id}": map[string]any{"delete": ep("Delete a webhook", "Webhooks", admin, ok)},
+		"/api/webhooks/test": map[string]any{"post": ep("Send test event to all webhooks", "Webhooks", admin, ok)},
 
 		// Status
 		"/api/status": map[string]any{"get": ep("System status, uptime, component health, request metrics", "System", nil, ok)},

@@ -17,8 +17,8 @@ type StatusCollector struct {
 	errorCount     atomic.Int64
 	totalLatencyNs atomic.Int64
 
-	mu          sync.RWMutex
-	lastChecks  map[string]healthCheck
+	mu         sync.RWMutex
+	lastChecks map[string]healthCheck
 }
 
 type healthCheck struct {
@@ -29,29 +29,29 @@ type healthCheck struct {
 
 // StatusResponse is the JSON shape for GET /api/status.
 type StatusResponse struct {
-	Status       string               `json:"status"` // healthy, degraded, down
-	Uptime       string               `json:"uptime"`
-	UptimeSeconds float64             `json:"uptime_seconds"`
-	Version      string               `json:"version"`
-	Go           string               `json:"go_version"`
-	Requests     int64                `json:"total_requests"`
-	Errors       int64                `json:"total_errors"`
-	ErrorRate    float64              `json:"error_rate"`
-	AvgLatencyMs float64             `json:"avg_latency_ms"`
-	Memory       memStats             `json:"memory"`
-	Goroutines   int                  `json:"goroutines"`
-	Components   map[string]compStatus `json:"components"`
+	Status        string                `json:"status"` // healthy, degraded, down
+	Uptime        string                `json:"uptime"`
+	UptimeSeconds float64               `json:"uptime_seconds"`
+	Version       string                `json:"version"`
+	Go            string                `json:"go_version"`
+	Requests      int64                 `json:"total_requests"`
+	Errors        int64                 `json:"total_errors"`
+	ErrorRate     float64               `json:"error_rate"`
+	AvgLatencyMs  float64               `json:"avg_latency_ms"`
+	Memory        memStats              `json:"memory"`
+	Goroutines    int                   `json:"goroutines"`
+	Components    map[string]compStatus `json:"components"`
 }
 
 type memStats struct {
-	AllocMB   float64 `json:"alloc_mb"`
-	SysMB     float64 `json:"sys_mb"`
-	NumGC     uint32  `json:"num_gc"`
+	AllocMB float64 `json:"alloc_mb"`
+	SysMB   float64 `json:"sys_mb"`
+	NumGC   uint32  `json:"num_gc"`
 }
 
 type compStatus struct {
-	Status  string `json:"status"`
-	Detail  string `json:"detail,omitempty"`
+	Status string `json:"status"`
+	Detail string `json:"detail,omitempty"`
 }
 
 func NewStatusCollector() *StatusCollector {
@@ -108,15 +108,15 @@ func RegisterStatusRoutes(mux *http.ServeMux, sc *StatusCollector, conn *sql.DB,
 		}
 
 		resp := StatusResponse{
-			Status:       overall,
-			Uptime:       formatDuration(uptime),
+			Status:        overall,
+			Uptime:        formatDuration(uptime),
 			UptimeSeconds: uptime.Seconds(),
-			Version:      version,
-			Go:           runtime.Version(),
-			Requests:     reqs,
-			Errors:       errs,
-			ErrorRate:    errRate,
-			AvgLatencyMs: avgLatency,
+			Version:       version,
+			Go:            runtime.Version(),
+			Requests:      reqs,
+			Errors:        errs,
+			ErrorRate:     errRate,
+			AvgLatencyMs:  avgLatency,
 			Memory: memStats{
 				AllocMB: float64(m.Alloc) / 1024 / 1024,
 				SysMB:   float64(m.Sys) / 1024 / 1024,

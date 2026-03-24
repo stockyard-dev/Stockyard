@@ -246,7 +246,7 @@ func PromptGuardMiddleware(guard *PromptGuardState, injectionEnabled bool) proxy
 					_ = redacted
 					if count > 0 {
 						guard.blockCount.Add(1)
-							reportSafety("pii_detected", "high", "pii", "block", req.Model, "", "", "", map[string]any{"count": count})
+						reportSafety("pii_detected", "high", "pii", "block", req.Model, "", "", "", map[string]any{"count": count})
 						return nil, fmt.Errorf("PII detected in request: %d patterns found, request blocked", count)
 					}
 					continue

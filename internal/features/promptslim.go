@@ -22,9 +22,9 @@ type PromptSlimEvent struct {
 }
 
 type PromptSlimState struct {
-	mu           sync.Mutex
-	cfg          config.PromptSlimConfig
-	recentEvents []PromptSlimEvent
+	mu                sync.Mutex
+	cfg               config.PromptSlimConfig
+	recentEvents      []PromptSlimEvent
 	requestsProcessed atomic.Int64
 	charsRemoved      atomic.Int64
 	tokensEstSaved    atomic.Int64
@@ -76,9 +76,13 @@ func PromptSlimMiddleware(ps *PromptSlimState) proxy.Middleware {
 				ps.charsRemoved.Add(int64(saved))
 				ps.tokensEstSaved.Add(int64(saved / 4))
 				pct := 0.0
-				if totalOriginal > 0 { pct = float64(saved) / float64(totalOriginal) * 100 }
+				if totalOriginal > 0 {
+					pct = float64(saved) / float64(totalOriginal) * 100
+				}
 				ps.mu.Lock()
-				if len(ps.recentEvents) >= 200 { ps.recentEvents = ps.recentEvents[1:] }
+				if len(ps.recentEvents) >= 200 {
+					ps.recentEvents = ps.recentEvents[1:]
+				}
 				ps.recentEvents = append(ps.recentEvents, PromptSlimEvent{
 					Timestamp: time.Now(), OriginalLen: totalOriginal, SlimmedLen: totalSlimmed,
 					SavedPct: pct, Model: req.Model,

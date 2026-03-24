@@ -11,9 +11,9 @@ type Plan struct {
 	Slug          string            `json:"slug"`
 	Name          string            `json:"name"`
 	Tagline       string            `json:"tagline"`
-	PriceCents    int               `json:"price_cents"` // 0 = free or custom
+	PriceCents    int               `json:"price_cents"`            // 0 = free or custom
 	AnnualCents   int               `json:"annual_cents,omitempty"` // annual price (2 months free)
-	Custom        bool              `json:"custom"`      // true = contact sales
+	Custom        bool              `json:"custom"`                 // true = contact sales
 	Features      []string          `json:"features"`
 	Limits        map[string]string `json:"limits"`
 	StripePriceID string            `json:"stripe_price_id,omitempty"`

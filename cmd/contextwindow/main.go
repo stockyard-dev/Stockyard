@@ -15,7 +15,7 @@ func main() {
 		Product: "contextwindow",
 		Version: version,
 		Features: engine.Features{
-			ContextWindow:     true,
+			ContextWindow:  true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

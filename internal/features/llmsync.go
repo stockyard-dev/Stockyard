@@ -19,10 +19,10 @@ type LLMSyncEvent struct {
 }
 
 type LLMSyncState struct {
-	mu           sync.Mutex
-	cfg          config.LLMSyncConfig
-	recentEvents []LLMSyncEvent
-	syncsPerformed atomic.Int64
+	mu              sync.Mutex
+	cfg             config.LLMSyncConfig
+	recentEvents    []LLMSyncEvent
+	syncsPerformed  atomic.Int64
 	requestsTracked atomic.Int64
 }
 

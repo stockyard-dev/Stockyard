@@ -15,10 +15,10 @@ import (
 
 // AdaptiveRateLimiter adjusts rate limits based on real-time provider health signals.
 type AdaptiveRateLimiter struct {
-	conn             *sql.DB
-	mu               sync.RWMutex
-	providerLimits   map[string]*providerLimit
-	baselineLat      map[string]float64 // baseline latency per provider
+	conn              *sql.DB
+	mu                sync.RWMutex
+	providerLimits    map[string]*providerLimit
+	baselineLat       map[string]float64 // baseline latency per provider
 	requestsThrottled atomic.Int64
 	requestsAllowed   atomic.Int64
 }
@@ -176,10 +176,8 @@ func (arl *AdaptiveRateLimiter) Stats() map[string]any {
 		}
 	}
 	return map[string]any{
-		"providers":          providers,
-		"total_throttled":    arl.requestsThrottled.Load(),
-		"total_allowed":      arl.requestsAllowed.Load(),
+		"providers":       providers,
+		"total_throttled": arl.requestsThrottled.Load(),
+		"total_allowed":   arl.requestsAllowed.Load(),
 	}
 }
-
-

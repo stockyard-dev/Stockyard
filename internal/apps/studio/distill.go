@@ -92,7 +92,7 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 
 				// Build JSONL training format.
 				trainingData = append(trainingData, map[string]any{
-					"model": model,
+					"model":    model,
 					"metadata": meta,
 				})
 				samples++

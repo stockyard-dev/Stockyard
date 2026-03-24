@@ -34,11 +34,11 @@ func TestGetPricing(t *testing.T) {
 
 func TestCalculateCost(t *testing.T) {
 	tests := []struct {
-		model    string
-		input    int
-		output   int
-		wantMin  float64
-		wantMax  float64
+		model   string
+		input   int
+		output  int
+		wantMin float64
+		wantMax float64
 	}{
 		// gpt-4o-mini: $0.15/1M input, $0.60/1M output
 		{"gpt-4o-mini", 1000, 500, 0.000_45, 0.000_46},

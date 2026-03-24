@@ -104,9 +104,9 @@ func TestConfigDiff(t *testing.T) {
 	diffCfg := ExportConfig{
 		Modules: []ModuleExport{
 			{Name: "costcap", Enabled: false},   // changed
-			{Name: "cache", Enabled: false},      // same
-			{Name: "rateshield", Enabled: true},   // same
-			{Name: "newmodule", Enabled: true},    // added
+			{Name: "cache", Enabled: false},     // same
+			{Name: "rateshield", Enabled: true}, // same
+			{Name: "newmodule", Enabled: true},  // added
 		},
 	}
 	body, _ := json.Marshal(diffCfg)

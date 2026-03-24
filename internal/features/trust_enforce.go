@@ -29,13 +29,13 @@ type TrustPolicy struct {
 
 // TrustPolicyConfig holds parsed policy configuration.
 type TrustPolicyConfig struct {
-	Description string `json:"description"`
-	Pattern     string `json:"pattern"`     // regex pattern for content matching
-	Target      string `json:"target"`      // "response" (default), "request", "both"
-	MaxTokens   int    `json:"max_tokens"`  // max tokens per request (0 = unlimited)
-	MaxCost     float64 `json:"max_cost"`   // max cost per request in USD (0 = unlimited)
-	Models      string `json:"models"`      // comma-separated allowed/denied model list
-	ModelsMode  string `json:"models_mode"` // "allow" or "deny"
+	Description string  `json:"description"`
+	Pattern     string  `json:"pattern"`     // regex pattern for content matching
+	Target      string  `json:"target"`      // "response" (default), "request", "both"
+	MaxTokens   int     `json:"max_tokens"`  // max tokens per request (0 = unlimited)
+	MaxCost     float64 `json:"max_cost"`    // max cost per request in USD (0 = unlimited)
+	Models      string  `json:"models"`      // comma-separated allowed/denied model list
+	ModelsMode  string  `json:"models_mode"` // "allow" or "deny"
 }
 
 // TrustEnforcer caches policies and enforces them on proxy requests.

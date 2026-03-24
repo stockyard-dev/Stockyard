@@ -13,14 +13,17 @@ import (
 
 type ToolShieldEvent struct {
 	Timestamp time.Time `json:"timestamp"`
-	Tool string `json:"tool"`
-	Action string `json:"action"`
-	Model string `json:"model"`
+	Tool      string    `json:"tool"`
+	Action    string    `json:"action"`
+	Model     string    `json:"model"`
 }
 
 type ToolShieldState struct {
-	mu sync.Mutex; cfg config.ToolShieldConfig; recentEvents []ToolShieldEvent
-	callsValidated atomic.Int64; callsBlocked atomic.Int64
+	mu             sync.Mutex
+	cfg            config.ToolShieldConfig
+	recentEvents   []ToolShieldEvent
+	callsValidated atomic.Int64
+	callsBlocked   atomic.Int64
 }
 
 func NewToolShield(cfg config.ToolShieldConfig) *ToolShieldState {
@@ -28,7 +31,10 @@ func NewToolShield(cfg config.ToolShieldConfig) *ToolShieldState {
 }
 
 func (t *ToolShieldState) Stats() map[string]any {
-	t.mu.Lock(); events := make([]ToolShieldEvent, len(t.recentEvents)); copy(events, t.recentEvents); t.mu.Unlock()
+	t.mu.Lock()
+	events := make([]ToolShieldEvent, len(t.recentEvents))
+	copy(events, t.recentEvents)
+	t.mu.Unlock()
 	return map[string]any{"calls_validated": t.callsValidated.Load(), "calls_blocked": t.callsBlocked.Load(), "recent_events": events}
 }
 

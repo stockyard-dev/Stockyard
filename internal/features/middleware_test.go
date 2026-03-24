@@ -14,8 +14,8 @@ func mockHandler() proxy.Handler {
 		return &provider.Response{
 			ID: "test-123", Object: "chat.completion", Model: req.Model,
 			Choices: []provider.Choice{{
-				Index:   0,
-				Message: provider.Message{Role: "assistant", Content: "Hello from mock!"},
+				Index:        0,
+				Message:      provider.Message{Role: "assistant", Content: "Hello from mock!"},
 				FinishReason: "stop",
 			}},
 			Usage:    provider.Usage{PromptTokens: 10, CompletionTokens: 5, TotalTokens: 15},

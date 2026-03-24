@@ -18,14 +18,14 @@ var (
 
 	// API key patterns that should never appear in responses.
 	apiKeyPatterns = []*regexp.Regexp{
-		regexp.MustCompile(`sk-[a-zA-Z0-9]{20,}`),                          // OpenAI
-		regexp.MustCompile(`sk-ant-[a-zA-Z0-9-]{20,}`),                     // Anthropic
-		regexp.MustCompile(`AIza[a-zA-Z0-9_-]{35}`),                        // Google
-		regexp.MustCompile(`ghp_[a-zA-Z0-9]{36}`),                          // GitHub
-		regexp.MustCompile(`gsk_[a-zA-Z0-9]{20,}`),                         // Groq
+		regexp.MustCompile(`sk-[a-zA-Z0-9]{20,}`),                         // OpenAI
+		regexp.MustCompile(`sk-ant-[a-zA-Z0-9-]{20,}`),                    // Anthropic
+		regexp.MustCompile(`AIza[a-zA-Z0-9_-]{35}`),                       // Google
+		regexp.MustCompile(`ghp_[a-zA-Z0-9]{36}`),                         // GitHub
+		regexp.MustCompile(`gsk_[a-zA-Z0-9]{20,}`),                        // Groq
 		regexp.MustCompile(`xoxb-[0-9]{10,}-[0-9]{10,}-[a-zA-Z0-9]{20,}`), // Slack bot
-		regexp.MustCompile(`xoxp-[0-9]{10,}`),                              // Slack user
-		regexp.MustCompile(`AKIA[0-9A-Z]{16}`),                             // AWS access key
+		regexp.MustCompile(`xoxp-[0-9]{10,}`),                             // Slack user
+		regexp.MustCompile(`AKIA[0-9A-Z]{16}`),                            // AWS access key
 		regexp.MustCompile(`(?i)Bearer\s+[a-zA-Z0-9._~+/=-]{20,}`),        // Bearer tokens
 	}
 
@@ -33,8 +33,8 @@ var (
 	sourceCodePatterns = []*regexp.Regexp{
 		regexp.MustCompile(`(?m)^(?:(?:public|private|protected)\s+)?(?:static\s+)?(?:void|int|string|boolean|class)\s+\w+\s*[({]`), // Java/C#
 		regexp.MustCompile(`(?m)^(?:def|class|import|from)\s+\w+`),                                                                  // Python
-		regexp.MustCompile(`(?m)^func\s+\w+\s*\(`),                                                                                   // Go
-		regexp.MustCompile(`(?m)^(?:const|let|var|function|export)\s+\w+`),                                                           // JavaScript
+		regexp.MustCompile(`(?m)^func\s+\w+\s*\(`),                                                                                  // Go
+		regexp.MustCompile(`(?m)^(?:const|let|var|function|export)\s+\w+`),                                                          // JavaScript
 	}
 
 	// Internal URL patterns (common internal domains).
@@ -141,5 +141,3 @@ func ScanDLP(text string) []string {
 
 	return issues
 }
-
-

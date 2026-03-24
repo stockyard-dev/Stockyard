@@ -4,12 +4,12 @@ import "time"
 
 // SpendRollup represents a daily spend summary.
 type SpendRollup struct {
-	Project       string  `json:"project"`
-	Date          string  `json:"date"`
-	TotalCost     float64 `json:"total_cost"`
-	TotalRequests int     `json:"total_requests"`
-	TotalTokensIn int     `json:"total_tokens_in"`
-	TotalTokensOut int    `json:"total_tokens_out"`
+	Project        string  `json:"project"`
+	Date           string  `json:"date"`
+	TotalCost      float64 `json:"total_cost"`
+	TotalRequests  int     `json:"total_requests"`
+	TotalTokensIn  int     `json:"total_tokens_in"`
+	TotalTokensOut int     `json:"total_tokens_out"`
 }
 
 // UpsertSpendRollup inserts or updates a daily spend rollup.

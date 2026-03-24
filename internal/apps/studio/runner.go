@@ -33,38 +33,38 @@ func NewRunner(conn *sql.DB, proxyPort int) *Runner {
 // RunExperimentRequest defines an experiment to run.
 type RunExperimentRequest struct {
 	Name    string   `json:"name"`
-	Prompt  string   `json:"prompt"`         // The user message to send
-	System  string   `json:"system"`         // Optional system message
-	Models  []string `json:"models"`         // Models to compare (e.g., ["gpt-4o", "claude-sonnet-4-5-20250929"])
-	Runs    int      `json:"runs"`           // Number of runs per model (default 1)
-	Eval    string   `json:"eval"`           // Evaluation method: "length", "contains", "manual", ""
-	EvalArg string   `json:"eval_arg"`       // Eval argument (e.g., substring for "contains")
-	APIKey  string   `json:"api_key"`        // Optional: Stockyard API key to use for requests
+	Prompt  string   `json:"prompt"`   // The user message to send
+	System  string   `json:"system"`   // Optional system message
+	Models  []string `json:"models"`   // Models to compare (e.g., ["gpt-4o", "claude-sonnet-4-5-20250929"])
+	Runs    int      `json:"runs"`     // Number of runs per model (default 1)
+	Eval    string   `json:"eval"`     // Evaluation method: "length", "contains", "manual", ""
+	EvalArg string   `json:"eval_arg"` // Eval argument (e.g., substring for "contains")
+	APIKey  string   `json:"api_key"`  // Optional: Stockyard API key to use for requests
 }
 
 // VariantResult holds results for a single model variant.
 type VariantResult struct {
-	Model       string     `json:"model"`
-	Provider    string     `json:"provider"`
-	Runs        []RunResult `json:"runs"`
-	AvgLatency  float64    `json:"avg_latency_ms"`
-	AvgTokensIn int        `json:"avg_tokens_in"`
-	AvgTokensOut int       `json:"avg_tokens_out"`
-	AvgCost     float64    `json:"avg_cost_usd"`
-	EvalScore   float64    `json:"eval_score"`
-	Errors      int        `json:"errors"`
+	Model        string      `json:"model"`
+	Provider     string      `json:"provider"`
+	Runs         []RunResult `json:"runs"`
+	AvgLatency   float64     `json:"avg_latency_ms"`
+	AvgTokensIn  int         `json:"avg_tokens_in"`
+	AvgTokensOut int         `json:"avg_tokens_out"`
+	AvgCost      float64     `json:"avg_cost_usd"`
+	EvalScore    float64     `json:"eval_score"`
+	Errors       int         `json:"errors"`
 }
 
 // RunResult holds the result of a single run.
 type RunResult struct {
-	Content     string  `json:"content"`
-	LatencyMs   float64 `json:"latency_ms"`
-	TokensIn    int     `json:"tokens_in"`
-	TokensOut   int     `json:"tokens_out"`
-	CostUSD     float64 `json:"cost_usd"`
-	Model       string  `json:"model"`
-	Error       string  `json:"error,omitempty"`
-	EvalScore   float64 `json:"eval_score"`
+	Content   string  `json:"content"`
+	LatencyMs float64 `json:"latency_ms"`
+	TokensIn  int     `json:"tokens_in"`
+	TokensOut int     `json:"tokens_out"`
+	CostUSD   float64 `json:"cost_usd"`
+	Model     string  `json:"model"`
+	Error     string  `json:"error,omitempty"`
+	EvalScore float64 `json:"eval_score"`
 }
 
 // ExperimentResult holds the full experiment results.
@@ -358,18 +358,18 @@ func estimateCost(model string, tokensIn, tokensOut int) float64 {
 	// Simple pricing lookup — uses same table as provider package
 	// This is a simplified version; the real cost comes from observe traces
 	prices := map[string][2]float64{
-		"gpt-4o":          {2.50, 10.00},
-		"gpt-4o-mini":     {0.15, 0.60},
-		"gpt-4-turbo":     {10.00, 30.00},
-		"gpt-4.1":         {2.00, 8.00},
-		"gpt-4.1-mini":    {0.40, 1.60},
+		"gpt-4o":                     {2.50, 10.00},
+		"gpt-4o-mini":                {0.15, 0.60},
+		"gpt-4-turbo":                {10.00, 30.00},
+		"gpt-4.1":                    {2.00, 8.00},
+		"gpt-4.1-mini":               {0.40, 1.60},
 		"claude-sonnet-4-5-20250929": {3.00, 15.00},
 		"claude-haiku-4-5-20251001":  {0.80, 4.00},
-		"gemini-2.0-flash":      {0.10, 0.40},
-		"gemini-2.5-flash":      {0.15, 0.60},
-		"deepseek-chat":         {0.14, 0.28},
-		"mistral-small-latest":  {0.20, 0.60},
-		"llama-3.3-70b-versatile": {0.59, 0.79},
+		"gemini-2.0-flash":           {0.10, 0.40},
+		"gemini-2.5-flash":           {0.15, 0.60},
+		"deepseek-chat":              {0.14, 0.28},
+		"mistral-small-latest":       {0.20, 0.60},
+		"llama-3.3-70b-versatile":    {0.59, 0.79},
 	}
 
 	for prefix, p := range prices {

@@ -15,7 +15,7 @@ func main() {
 		Product: "approvalgate",
 		Version: version,
 		Features: engine.Features{
-			ApprovalGate:     true,
+			ApprovalGate:   true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

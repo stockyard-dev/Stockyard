@@ -21,9 +21,9 @@ type DevProxyEvent struct {
 }
 
 type DevProxyState struct {
-	mu           sync.Mutex
-	cfg          config.DevProxyConfig
-	recentEvents []DevProxyEvent
+	mu                sync.Mutex
+	cfg               config.DevProxyConfig
+	recentEvents      []DevProxyEvent
 	requestsInspected atomic.Int64
 	totalLatency      atomic.Int64
 }
@@ -39,7 +39,13 @@ func (dp *DevProxyState) Stats() map[string]any {
 	dp.mu.Unlock()
 	return map[string]any{
 		"requests_inspected": dp.requestsInspected.Load(),
-		"avg_latency_ms": func() float64 { n := dp.requestsInspected.Load(); if n == 0 { return 0 }; return float64(dp.totalLatency.Load()) / float64(n) }(),
+		"avg_latency_ms": func() float64 {
+			n := dp.requestsInspected.Load()
+			if n == 0 {
+				return 0
+			}
+			return float64(dp.totalLatency.Load()) / float64(n)
+		}(),
 		"recent_events": events,
 	}
 }
@@ -57,10 +63,16 @@ func DevProxyMiddleware(dp *DevProxyState) proxy.Middleware {
 			dp.totalLatency.Add(latency.Milliseconds())
 			status := "ok"
 			tokens := 0
-			if err != nil { status = "error" }
-			if resp != nil { tokens = resp.Usage.TotalTokens }
+			if err != nil {
+				status = "error"
+			}
+			if resp != nil {
+				tokens = resp.Usage.TotalTokens
+			}
 			dp.mu.Lock()
-			if len(dp.recentEvents) >= 200 { dp.recentEvents = dp.recentEvents[1:] }
+			if len(dp.recentEvents) >= 200 {
+				dp.recentEvents = dp.recentEvents[1:]
+			}
 			dp.recentEvents = append(dp.recentEvents, DevProxyEvent{
 				Timestamp: time.Now(), Model: req.Model, Latency: float64(latency.Milliseconds()),
 				Tokens: tokens, Status: status,

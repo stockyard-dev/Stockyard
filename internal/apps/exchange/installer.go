@@ -13,14 +13,14 @@ import (
 // PackContent defines the structure of a pack's content_json.
 // Each section maps to a specific app/table in the system.
 type PackContent struct {
-	Providers []ProviderSpec  `json:"providers,omitempty"`
-	Routes    []RouteSpec     `json:"routes,omitempty"`
-	Modules   []ModuleSpec    `json:"modules,omitempty"`
-	Workflows []WorkflowSpec  `json:"workflows,omitempty"`
-	Tools     []ToolSpec      `json:"tools,omitempty"`
-	Templates []TemplateSpec  `json:"templates,omitempty"`
-	Policies  []PolicySpec    `json:"policies,omitempty"`
-	Alerts    []AlertSpec     `json:"alerts,omitempty"`
+	Providers []ProviderSpec `json:"providers,omitempty"`
+	Routes    []RouteSpec    `json:"routes,omitempty"`
+	Modules   []ModuleSpec   `json:"modules,omitempty"`
+	Workflows []WorkflowSpec `json:"workflows,omitempty"`
+	Tools     []ToolSpec     `json:"tools,omitempty"`
+	Templates []TemplateSpec `json:"templates,omitempty"`
+	Policies  []PolicySpec   `json:"policies,omitempty"`
+	Alerts    []AlertSpec    `json:"alerts,omitempty"`
 }
 
 type ProviderSpec struct {
@@ -28,7 +28,7 @@ type ProviderSpec struct {
 	BaseURL  string `json:"base_url"`
 	AuthType string `json:"auth_type"` // "bearer", "header", "none"
 	Priority int    `json:"priority"`
-	Models   string `json:"models"`    // comma-separated model list
+	Models   string `json:"models"` // comma-separated model list
 }
 
 type RouteSpec struct {
@@ -87,11 +87,11 @@ type AlertSpec struct {
 
 // InstallResult tracks what was installed.
 type InstallResult struct {
-	PackSlug   string           `json:"pack_slug"`
-	Version    string           `json:"version"`
-	Applied    map[string]int   `json:"applied"`    // section → count installed
-	Skipped    map[string]int   `json:"skipped"`    // section → count skipped (already existed)
-	Errors     map[string][]string `json:"errors,omitempty"`
+	PackSlug string              `json:"pack_slug"`
+	Version  string              `json:"version"`
+	Applied  map[string]int      `json:"applied"` // section → count installed
+	Skipped  map[string]int      `json:"skipped"` // section → count skipped (already existed)
+	Errors   map[string][]string `json:"errors,omitempty"`
 }
 
 // Install applies a pack's content to the system. This is the core installer.

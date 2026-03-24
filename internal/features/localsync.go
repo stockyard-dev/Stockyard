@@ -20,9 +20,9 @@ type LocalSyncEvent struct {
 }
 
 type LocalSyncState struct {
-	mu           sync.Mutex
-	cfg          config.LocalSyncConfig
-	recentEvents []LocalSyncEvent
+	mu                sync.Mutex
+	cfg               config.LocalSyncConfig
+	recentEvents      []LocalSyncEvent
 	requestsProcessed atomic.Int64
 	localRouted       atomic.Int64
 	cloudFallbacks    atomic.Int64

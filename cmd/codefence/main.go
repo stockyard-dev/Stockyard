@@ -15,7 +15,7 @@ func main() {
 		Product: "codefence",
 		Version: version,
 		Features: engine.Features{
-			CodeFence:     true,
+			CodeFence:      true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

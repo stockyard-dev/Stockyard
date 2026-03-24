@@ -12,19 +12,31 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
 
-type ModelAliasEvent struct { Timestamp time.Time `json:"timestamp"`; From string `json:"from"`; To string `json:"to"` }
+type ModelAliasEvent struct {
+	Timestamp time.Time `json:"timestamp"`
+	From      string    `json:"from"`
+	To        string    `json:"to"`
+}
 type ModelAliasState struct {
-	mu sync.Mutex; cfg config.ModelAliasConfig; recentEvents []ModelAliasEvent
-	aliases map[string]string; resolved atomic.Int64
+	mu           sync.Mutex
+	cfg          config.ModelAliasConfig
+	recentEvents []ModelAliasEvent
+	aliases      map[string]string
+	resolved     atomic.Int64
 }
 
 func NewModelAlias(cfg config.ModelAliasConfig) *ModelAliasState {
 	a := make(map[string]string)
-	for _, m := range cfg.Aliases { a[m.Alias] = m.Model }
+	for _, m := range cfg.Aliases {
+		a[m.Alias] = m.Model
+	}
 	return &ModelAliasState{cfg: cfg, aliases: a, recentEvents: make([]ModelAliasEvent, 0, 200)}
 }
 func (m *ModelAliasState) Stats() map[string]any {
-	m.mu.Lock(); events := make([]ModelAliasEvent, len(m.recentEvents)); copy(events, m.recentEvents); m.mu.Unlock()
+	m.mu.Lock()
+	events := make([]ModelAliasEvent, len(m.recentEvents))
+	copy(events, m.recentEvents)
+	m.mu.Unlock()
 	return map[string]any{"resolved": m.resolved.Load(), "aliases": len(m.aliases), "recent_events": events}
 }
 func ModelAliasMiddleware(m *ModelAliasState) proxy.Middleware {
@@ -34,7 +46,9 @@ func ModelAliasMiddleware(m *ModelAliasState) proxy.Middleware {
 			if real, ok := m.aliases[req.Model]; ok {
 				log.Printf("modelalias: %s → %s", req.Model, real)
 				m.resolved.Add(1)
-				if len(m.recentEvents) >= 200 { m.recentEvents = m.recentEvents[1:] }
+				if len(m.recentEvents) >= 200 {
+					m.recentEvents = m.recentEvents[1:]
+				}
 				m.recentEvents = append(m.recentEvents, ModelAliasEvent{Timestamp: time.Now(), From: req.Model, To: real})
 				req.Model = real
 			}

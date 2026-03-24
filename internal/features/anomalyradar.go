@@ -11,19 +11,33 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
 
-type AnomalyRadarEvent struct { Timestamp time.Time `json:"timestamp"`; Model string `json:"model"`; Action string `json:"action"` }
+type AnomalyRadarEvent struct {
+	Timestamp time.Time `json:"timestamp"`
+	Model     string    `json:"model"`
+	Action    string    `json:"action"`
+}
 type AnomalyRadarState struct {
-	mu sync.Mutex; cfg config.AnomalyRadarConfig; recentEvents []AnomalyRadarEvent
+	mu                sync.Mutex
+	cfg               config.AnomalyRadarConfig
+	recentEvents      []AnomalyRadarEvent
 	requestsProcessed atomic.Int64
 }
 
-func NewAnomalyRadar(cfg config.AnomalyRadarConfig) *AnomalyRadarState { return &AnomalyRadarState{cfg: cfg, recentEvents: make([]AnomalyRadarEvent, 0, 200)} }
+func NewAnomalyRadar(cfg config.AnomalyRadarConfig) *AnomalyRadarState {
+	return &AnomalyRadarState{cfg: cfg, recentEvents: make([]AnomalyRadarEvent, 0, 200)}
+}
 func (s *AnomalyRadarState) Stats() map[string]any {
-	s.mu.Lock(); events := make([]AnomalyRadarEvent, len(s.recentEvents)); copy(events, s.recentEvents); s.mu.Unlock()
+	s.mu.Lock()
+	events := make([]AnomalyRadarEvent, len(s.recentEvents))
+	copy(events, s.recentEvents)
+	s.mu.Unlock()
 	return map[string]any{"requests": s.requestsProcessed.Load(), "recent_events": events}
 }
 func AnomalyRadarMiddleware(s *AnomalyRadarState) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
-		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) { s.requestsProcessed.Add(1); return next(ctx, req) }
+		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
+			s.requestsProcessed.Add(1)
+			return next(ctx, req)
+		}
 	}
 }

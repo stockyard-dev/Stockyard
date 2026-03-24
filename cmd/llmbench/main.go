@@ -15,7 +15,7 @@ func main() {
 		Product: "llmbench",
 		Version: version,
 		Features: engine.Features{
-			LLMBench:     true,
+			LLMBench:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

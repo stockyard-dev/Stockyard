@@ -24,43 +24,43 @@ import (
 
 // Manifest is the declarative description of a deployment's desired state.
 type Manifest struct {
-	Name            string            `json:"name"`
-	Description     string            `json:"description,omitempty"`
-	Version         string            `json:"version,omitempty"`
-	Model           string            `json:"model"`
-	FallbackModels  []string          `json:"fallback_models,omitempty"`
-	Temperature     *float64          `json:"temperature,omitempty"`
-	MaxTokens       *int              `json:"max_tokens,omitempty"`
-	SystemPrompt    string            `json:"system_prompt,omitempty"`
-	TemplateID      string            `json:"prompt_template_id,omitempty"`
-	Modules         []string          `json:"modules,omitempty"`
-	ModuleConfig    map[string]any    `json:"module_config,omitempty"`
-	Routing         *RoutingConfig    `json:"routing,omitempty"`
-	Guardrails      []GuardrailConfig `json:"guardrails,omitempty"`
-	KnowledgeBases  []string          `json:"knowledge_bases,omitempty"`
-	Memory          *MemoryConfig     `json:"memory,omitempty"`
-	Billing         *BillingConfig    `json:"billing,omitempty"`
-	Consensus       *ConsensusConfig  `json:"consensus,omitempty"`
-	Compliance      []string          `json:"compliance,omitempty"`
-	Mesh            *MeshConfig       `json:"mesh,omitempty"`
-	Alerts          *AlertConfig      `json:"alerts,omitempty"`
-	DefaultTags     map[string]string `json:"default_tags,omitempty"`
-	Publish         *PublishConfig    `json:"publish,omitempty"`
-	Schedules       []ScheduleConfig  `json:"schedules,omitempty"`
-	Canary          *CanaryConfig     `json:"canary,omitempty"`
-	LocalOnly       bool              `json:"local_only,omitempty"`
-	ResponseHeaders bool              `json:"response_headers,omitempty"`
+	Name             string            `json:"name"`
+	Description      string            `json:"description,omitempty"`
+	Version          string            `json:"version,omitempty"`
+	Model            string            `json:"model"`
+	FallbackModels   []string          `json:"fallback_models,omitempty"`
+	Temperature      *float64          `json:"temperature,omitempty"`
+	MaxTokens        *int              `json:"max_tokens,omitempty"`
+	SystemPrompt     string            `json:"system_prompt,omitempty"`
+	TemplateID       string            `json:"prompt_template_id,omitempty"`
+	Modules          []string          `json:"modules,omitempty"`
+	ModuleConfig     map[string]any    `json:"module_config,omitempty"`
+	Routing          *RoutingConfig    `json:"routing,omitempty"`
+	Guardrails       []GuardrailConfig `json:"guardrails,omitempty"`
+	KnowledgeBases   []string          `json:"knowledge_bases,omitempty"`
+	Memory           *MemoryConfig     `json:"memory,omitempty"`
+	Billing          *BillingConfig    `json:"billing,omitempty"`
+	Consensus        *ConsensusConfig  `json:"consensus,omitempty"`
+	Compliance       []string          `json:"compliance,omitempty"`
+	Mesh             *MeshConfig       `json:"mesh,omitempty"`
+	Alerts           *AlertConfig      `json:"alerts,omitempty"`
+	DefaultTags      map[string]string `json:"default_tags,omitempty"`
+	Publish          *PublishConfig    `json:"publish,omitempty"`
+	Schedules        []ScheduleConfig  `json:"schedules,omitempty"`
+	Canary           *CanaryConfig     `json:"canary,omitempty"`
+	LocalOnly        bool              `json:"local_only,omitempty"`
+	ResponseHeaders  bool              `json:"response_headers,omitempty"`
 	StreamTransforms []TransformConfig `json:"stream_transforms,omitempty"`
-	AutoHeal        *bool             `json:"auto_heal,omitempty"`
+	AutoHeal         *bool             `json:"auto_heal,omitempty"`
 }
 
 // RoutingConfig describes traffic routing rules.
 type RoutingConfig struct {
-	Strategy       string            `json:"strategy,omitempty"` // round-robin, weighted, lowest-cost, fastest
-	Weights        map[string]int    `json:"weights,omitempty"`
-	FallbackChain  []string          `json:"fallback_chain,omitempty"`
-	RegionOverride string            `json:"region_override,omitempty"`
-	CustomRules    []RoutingRule     `json:"custom_rules,omitempty"`
+	Strategy       string         `json:"strategy,omitempty"` // round-robin, weighted, lowest-cost, fastest
+	Weights        map[string]int `json:"weights,omitempty"`
+	FallbackChain  []string       `json:"fallback_chain,omitempty"`
+	RegionOverride string         `json:"region_override,omitempty"`
+	CustomRules    []RoutingRule  `json:"custom_rules,omitempty"`
 }
 
 // RoutingRule is a single conditional routing rule.
@@ -72,23 +72,23 @@ type RoutingRule struct {
 
 // GuardrailConfig describes a single guardrail rule.
 type GuardrailConfig struct {
-	Type      string `json:"type"`      // regex, keyword, toxic, pii
-	Pattern   string `json:"pattern"`
-	Action    string `json:"action"`    // block, warn, redact
-	Severity  string `json:"severity"`  // low, medium, high, critical
+	Type     string `json:"type"` // regex, keyword, toxic, pii
+	Pattern  string `json:"pattern"`
+	Action   string `json:"action"`   // block, warn, redact
+	Severity string `json:"severity"` // low, medium, high, critical
 }
 
 // MemoryConfig controls the memory injection middleware.
 type MemoryConfig struct {
-	Enabled bool `json:"enabled"`
+	Enabled    bool `json:"enabled"`
 	MaxEntries int  `json:"max_entries,omitempty"`
 }
 
 // BillingConfig describes billing settings for a deployment.
 type BillingConfig struct {
-	PlanID      string `json:"plan_id,omitempty"`
-	CustomerID  string `json:"customer_id,omitempty"`
-	SpendCapCents int  `json:"spend_cap_cents,omitempty"`
+	PlanID        string `json:"plan_id,omitempty"`
+	CustomerID    string `json:"customer_id,omitempty"`
+	SpendCapCents int    `json:"spend_cap_cents,omitempty"`
 }
 
 // ConsensusConfig describes multi-model consensus settings.
@@ -117,10 +117,10 @@ type AlertConfig struct {
 
 // PublishConfig describes app store publishing settings.
 type PublishConfig struct {
-	Title       string `json:"title,omitempty"`
-	Category    string `json:"category,omitempty"`
-	PriceModel  string `json:"price_model,omitempty"` // free, per-use, subscription
-	PriceCents  int    `json:"price_cents,omitempty"`
+	Title      string `json:"title,omitempty"`
+	Category   string `json:"category,omitempty"`
+	PriceModel string `json:"price_model,omitempty"` // free, per-use, subscription
+	PriceCents int    `json:"price_cents,omitempty"`
 }
 
 // ScheduleConfig describes a scheduled execution.
@@ -131,15 +131,15 @@ type ScheduleConfig struct {
 
 // CanaryConfig describes canary deployment settings.
 type CanaryConfig struct {
-	Enabled    bool `json:"enabled"`
-	InitialPct int  `json:"initial_pct,omitempty"`
-	StepPct    int  `json:"step_pct,omitempty"`
+	Enabled    bool   `json:"enabled"`
+	InitialPct int    `json:"initial_pct,omitempty"`
+	StepPct    int    `json:"step_pct,omitempty"`
 	StepDelay  string `json:"step_delay,omitempty"` // e.g., "1h"
 }
 
 // TransformConfig describes a streaming transform.
 type TransformConfig struct {
-	Type   string         `json:"type"`   // pii_redact, disclaimer_append, brand_replace
+	Type   string         `json:"type"` // pii_redact, disclaimer_append, brand_replace
 	Config map[string]any `json:"config,omitempty"`
 }
 

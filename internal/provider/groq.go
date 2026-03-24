@@ -151,7 +151,9 @@ func (g *Groq) SendStream(ctx context.Context, req *Request) (<-chan StreamChunk
 				for _, c := range chunk.Choices {
 					if c.Delta.Content != "" {
 						t := len(c.Delta.Content) / 4
-						if t == 0 { t = 1 }
+						if t == 0 {
+							t = 1
+						}
 						tokensSoFar += t
 					}
 				}

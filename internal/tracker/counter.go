@@ -7,11 +7,11 @@ import (
 
 // ProjectSpend tracks cumulative spend for a project.
 type ProjectSpend struct {
-	Today    float64
-	Month    float64
+	Today     float64
+	Month     float64
 	TokensIn  int
 	TokensOut int
-	Updated  time.Time
+	Updated   time.Time
 }
 
 // SpendCounter maintains in-memory spend counters per project and per user.

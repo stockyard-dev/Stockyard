@@ -16,10 +16,10 @@ import (
 
 // LoggingConfig controls what gets logged.
 type LoggingConfig struct {
-	StoreBodies  bool
-	MaxBodySize  int
-	DB           *storage.DB
-	Broadcaster  EventBroadcaster
+	StoreBodies bool
+	MaxBodySize int
+	DB          *storage.DB
+	Broadcaster EventBroadcaster
 }
 
 // EventBroadcaster is an interface for sending real-time events to the dashboard.

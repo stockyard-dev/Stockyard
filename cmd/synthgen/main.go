@@ -15,7 +15,7 @@ func main() {
 		Product: "synthgen",
 		Version: version,
 		Features: engine.Features{
-			SynthGen:     true,
+			SynthGen:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

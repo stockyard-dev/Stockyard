@@ -132,10 +132,10 @@ func (m *MeterReporter) flush() {
 // sendMeterEvent posts a single event to the Stripe Billing Meter API.
 func sendMeterEvent(evt meterEvent) error {
 	params := url.Values{
-		"event_name":                    {evt.EventName},
-		"timestamp":                     {fmt.Sprintf("%d", evt.Timestamp)},
-		"payload[value]":                {fmt.Sprintf("%d", evt.Value)},
-		"payload[stripe_customer_id]":   {evt.CustomerID},
+		"event_name":                  {evt.EventName},
+		"timestamp":                   {fmt.Sprintf("%d", evt.Timestamp)},
+		"payload[value]":              {fmt.Sprintf("%d", evt.Value)},
+		"payload[stripe_customer_id]": {evt.CustomerID},
 	}
 
 	_, err := stripeRequest("POST", "/billing/meter_events", params)
@@ -164,13 +164,13 @@ func (a *App) handleMeteringStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{
-		"active":                  active,
-		"queue_size":              queueSize,
-		"stripe_configured":       stripeEnabled(),
-		"llm_meter":              os.Getenv("STRIPE_METER_LLM_USAGE") != "",
-		"marketplace_meter":       os.Getenv("STRIPE_METER_MARKETPLACE_FEE") != "",
-		"llm_price":              os.Getenv("STRIPE_PRICE_LLM_USAGE_METERED") != "",
-		"marketplace_price":       os.Getenv("STRIPE_PRICE_MARKETPLACE_METERED") != "",
+		"active":            active,
+		"queue_size":        queueSize,
+		"stripe_configured": stripeEnabled(),
+		"llm_meter":         os.Getenv("STRIPE_METER_LLM_USAGE") != "",
+		"marketplace_meter": os.Getenv("STRIPE_METER_MARKETPLACE_FEE") != "",
+		"llm_price":         os.Getenv("STRIPE_PRICE_LLM_USAGE_METERED") != "",
+		"marketplace_price": os.Getenv("STRIPE_PRICE_MARKETPLACE_METERED") != "",
 	})
 }
 

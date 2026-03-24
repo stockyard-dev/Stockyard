@@ -13,14 +13,17 @@ import (
 
 type DocParseEvent struct {
 	Timestamp time.Time `json:"timestamp"`
-	DocType string `json:"doc_type"`
-	Chunks int `json:"chunks"`
-	Model string `json:"model"`
+	DocType   string    `json:"doc_type"`
+	Chunks    int       `json:"chunks"`
+	Model     string    `json:"model"`
 }
 
 type DocParseState struct {
-	mu sync.Mutex; cfg config.DocParseConfig; recentEvents []DocParseEvent
-	docsProcessed atomic.Int64; chunksGenerated atomic.Int64
+	mu              sync.Mutex
+	cfg             config.DocParseConfig
+	recentEvents    []DocParseEvent
+	docsProcessed   atomic.Int64
+	chunksGenerated atomic.Int64
 }
 
 func NewDocParse(cfg config.DocParseConfig) *DocParseState {
@@ -28,7 +31,10 @@ func NewDocParse(cfg config.DocParseConfig) *DocParseState {
 }
 
 func (d *DocParseState) Stats() map[string]any {
-	d.mu.Lock(); events := make([]DocParseEvent, len(d.recentEvents)); copy(events, d.recentEvents); d.mu.Unlock()
+	d.mu.Lock()
+	events := make([]DocParseEvent, len(d.recentEvents))
+	copy(events, d.recentEvents)
+	d.mu.Unlock()
 	return map[string]any{"docs_processed": d.docsProcessed.Load(), "chunks_generated": d.chunksGenerated.Load(), "recent_events": events}
 }
 

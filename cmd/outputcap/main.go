@@ -15,7 +15,7 @@ func main() {
 		Product: "outputcap",
 		Version: version,
 		Features: engine.Features{
-			OutputCap:     true,
+			OutputCap:      true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

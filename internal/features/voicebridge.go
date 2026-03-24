@@ -21,9 +21,9 @@ type VoiceBridgeEvent struct {
 }
 
 type VoiceBridgeState struct {
-	mu           sync.Mutex
-	cfg          config.VoiceBridgeConfig
-	recentEvents []VoiceBridgeEvent
+	mu                 sync.Mutex
+	cfg                config.VoiceBridgeConfig
+	recentEvents       []VoiceBridgeEvent
 	responsesProcessed atomic.Int64
 	responsesCleaned   atomic.Int64
 	charsRemoved       atomic.Int64
@@ -81,7 +81,9 @@ func VoiceBridgeMiddleware(vb *VoiceBridgeState) proxy.Middleware {
 			}
 
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			vb.responsesProcessed.Add(1)
 			for i, choice := range resp.Choices {
 				original := choice.Message.Content
@@ -97,9 +99,13 @@ func VoiceBridgeMiddleware(vb *VoiceBridgeState) proxy.Middleware {
 					resp.Choices[i].Message.Content = cleaned
 					vb.responsesCleaned.Add(1)
 					removed := len(original) - len(cleaned)
-					if removed > 0 { vb.charsRemoved.Add(int64(removed)) }
+					if removed > 0 {
+						vb.charsRemoved.Add(int64(removed))
+					}
 					vb.mu.Lock()
-					if len(vb.recentEvents) >= 200 { vb.recentEvents = vb.recentEvents[1:] }
+					if len(vb.recentEvents) >= 200 {
+						vb.recentEvents = vb.recentEvents[1:]
+					}
 					vb.recentEvents = append(vb.recentEvents, VoiceBridgeEvent{
 						Timestamp: time.Now(), OriginalLen: len(original), CleanedLen: len(cleaned), Model: req.Model,
 					})

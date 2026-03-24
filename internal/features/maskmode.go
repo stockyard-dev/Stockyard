@@ -25,11 +25,11 @@ type MaskModeEvent struct {
 }
 
 type MaskModeState struct {
-	mu           sync.Mutex
-	cfg          config.MaskModeConfig
-	fakeNames    []string
-	fakeIdx      int
-	recentEvents []MaskModeEvent
+	mu               sync.Mutex
+	cfg              config.MaskModeConfig
+	fakeNames        []string
+	fakeIdx          int
+	recentEvents     []MaskModeEvent
 	requestsMasked   atomic.Int64
 	replacementsMade atomic.Int64
 }
@@ -61,13 +61,16 @@ func (mm *MaskModeState) nextFakeName() string {
 func mmMaskText(mm *MaskModeState, text string) (string, int) {
 	count := 0
 	result := mmNameRe.ReplaceAllStringFunc(text, func(s string) string {
-		count++; return mm.nextFakeName()
+		count++
+		return mm.nextFakeName()
 	})
 	result = mmEmailRe.ReplaceAllStringFunc(result, func(s string) string {
-		count++; return fmt.Sprintf("demo%d@example.com", count)
+		count++
+		return fmt.Sprintf("demo%d@example.com", count)
 	})
 	result = mmPhoneRe.ReplaceAllStringFunc(result, func(s string) string {
-		count++; return "555-0100"
+		count++
+		return "555-0100"
 	})
 	return result, count
 }
@@ -76,7 +79,9 @@ func MaskModeMiddleware(mm *MaskModeState) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			mm.requestsMasked.Add(1)
 			totalReplacements := 0
 			mm.mu.Lock()
@@ -91,7 +96,9 @@ func MaskModeMiddleware(mm *MaskModeState) proxy.Middleware {
 			if totalReplacements > 0 {
 				mm.replacementsMade.Add(int64(totalReplacements))
 				mm.mu.Lock()
-				if len(mm.recentEvents) >= 200 { mm.recentEvents = mm.recentEvents[1:] }
+				if len(mm.recentEvents) >= 200 {
+					mm.recentEvents = mm.recentEvents[1:]
+				}
 				mm.recentEvents = append(mm.recentEvents, MaskModeEvent{
 					Timestamp: time.Now(), Direction: "output", Replacements: totalReplacements, Model: req.Model,
 				})

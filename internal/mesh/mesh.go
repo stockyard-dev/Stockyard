@@ -185,9 +185,9 @@ func (m *Manager) handleListNodes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeMeshJSON(w, map[string]any{
-		"nodes":      nodes,
-		"count":      len(nodes),
-		"by_region":  byRegion,
+		"nodes":     nodes,
+		"count":     len(nodes),
+		"by_region": byRegion,
 	})
 }
 
@@ -225,8 +225,8 @@ func (m *Manager) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeMeshJSON(w, map[string]any{
-		"modules":    modules,
-		"synced_at":  time.Now().UTC().Format(time.RFC3339),
+		"modules":   modules,
+		"synced_at": time.Now().UTC().Format(time.RFC3339),
 	})
 }
 

@@ -65,14 +65,14 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 			}
 
 			var respBody string
-		if resp != nil && len(resp.Choices) > 0 {
-			respBody = resp.Choices[0].Message.Content
-			if len(respBody) > 10240 {
-				respBody = respBody[:10240]
+			if resp != nil && len(resp.Choices) > 0 {
+				respBody = resp.Choices[0].Message.Content
+				if len(respBody) > 10240 {
+					respBody = respBody[:10240]
+				}
 			}
-		}
-		source, _ := req.Extra["_source"].(string)
-		go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source)
+			source, _ := req.Extra["_source"].(string)
+			go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source)
 			// Trust ledger recording is handled by Trust app's broadcaster listener
 			// (mutex-protected hash chain via RecordEvent)
 
@@ -604,26 +604,26 @@ func seedExchangePacks(conn *sql.DB) {
 	compliancePacks := []pack{
 		{
 			slug: "compliance-hipaa", name: "HIPAA Compliance", author: "Stockyard",
-			desc: "HIPAA-aligned: PII redaction, PHI protection, access logging, encryption verification",
-			tags: `["compliance","hipaa","healthcare","security"]`,
+			desc:    "HIPAA-aligned: PII redaction, PHI protection, access logging, encryption verification",
+			tags:    `["compliance","hipaa","healthcare","security"]`,
 			content: `{"modules":[{"name":"promptguard","enabled":true,"config":{"sensitivity":"high","redact_pii":true}},{"name":"secretscan","enabled":true},{"name":"firewall","enabled":true,"config":{"block_threshold":70}},{"name":"compliancelog","enabled":true},{"name":"tenantwall","enabled":true}],"policies":[{"name":"hipaa-phi-block","type":"response","action":"block","rule":"{\"check\":\"pii\",\"categories\":[\"ssn\",\"phone\",\"email\"]}"}]}`,
 		},
 		{
 			slug: "compliance-sox", name: "SOX Compliance", author: "Stockyard",
-			desc: "SOX-aligned: complete audit trail, access controls, financial data protection",
-			tags: `["compliance","sox","financial","audit"]`,
+			desc:    "SOX-aligned: complete audit trail, access controls, financial data protection",
+			tags:    `["compliance","sox","financial","audit"]`,
 			content: `{"modules":[{"name":"compliancelog","enabled":true},{"name":"firewall","enabled":true,"config":{"block_threshold":75}},{"name":"secretscan","enabled":true},{"name":"tracelink","enabled":true}],"policies":[{"name":"sox-audit-trail","type":"request","action":"log","rule":"{\"log_all_requests\":true}"},{"name":"sox-financial-data","type":"response","action":"block","rule":"{\"check\":\"pii\",\"categories\":[\"ssn\",\"credit_card\"]}"}]}`,
 		},
 		{
 			slug: "compliance-gdpr", name: "GDPR Compliance", author: "Stockyard",
-			desc: "GDPR-aligned: PII redaction, consent tracking, data retention, right to deletion",
-			tags: `["compliance","gdpr","privacy","eu"]`,
+			desc:    "GDPR-aligned: PII redaction, consent tracking, data retention, right to deletion",
+			tags:    `["compliance","gdpr","privacy","eu"]`,
 			content: `{"modules":[{"name":"promptguard","enabled":true,"config":{"sensitivity":"high","redact_pii":true}},{"name":"firewall","enabled":true,"config":{"block_threshold":70}},{"name":"consentgate","enabled":true},{"name":"retentionwipe","enabled":true,"config":{"retention_days":90}}],"policies":[{"name":"gdpr-pii-redaction","type":"request","action":"redact","rule":"{\"redact_pii\":true}"},{"name":"gdpr-data-retention","type":"system","action":"enforce","rule":"{\"max_retention_days\":90}"}]}`,
 		},
 		{
 			slug: "compliance-euai", name: "EU AI Act Compliance", author: "Stockyard",
-			desc: "EU AI Act-aligned: AI transparency logging, human oversight, decision audit trail",
-			tags: `["compliance","eu-ai-act","transparency","governance"]`,
+			desc:    "EU AI Act-aligned: AI transparency logging, human oversight, decision audit trail",
+			tags:    `["compliance","eu-ai-act","transparency","governance"]`,
 			content: `{"modules":[{"name":"compliancelog","enabled":true},{"name":"firewall","enabled":true,"config":{"block_threshold":70}},{"name":"tracelink","enabled":true},{"name":"approvalgate","enabled":true},{"name":"llmtap","enabled":true}],"policies":[{"name":"euai-transparency","type":"request","action":"log","rule":"{\"log_model_used\":true,\"log_provider\":true}"},{"name":"euai-human-oversight","type":"system","action":"enforce","rule":"{\"require_approval_for_high_risk\":true}"}]}`,
 		},
 	}

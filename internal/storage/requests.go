@@ -8,23 +8,23 @@ import (
 
 // RequestLog represents a logged request in the database.
 type RequestLog struct {
-	ID             string        `json:"id"`
-	Timestamp      time.Time     `json:"timestamp"`
-	Project        string        `json:"project"`
-	UserID         string        `json:"user_id,omitempty"`
-	Provider       string        `json:"provider"`
-	Model          string        `json:"model"`
-	TokensIn       int           `json:"tokens_in"`
-	TokensOut      int           `json:"tokens_out"`
-	CostUSD        float64       `json:"cost_usd"`
-	LatencyMs      int64         `json:"latency_ms"`
-	Status         int           `json:"status"`
-	CacheHit       bool          `json:"cache_hit"`
-	ValidationPass *bool         `json:"validation_pass,omitempty"`
-	FailoverUsed   bool          `json:"failover_used"`
-	RequestBody    string        `json:"request_body,omitempty"`
-	ResponseBody   string        `json:"response_body,omitempty"`
-	Error          string        `json:"error,omitempty"`
+	ID             string    `json:"id"`
+	Timestamp      time.Time `json:"timestamp"`
+	Project        string    `json:"project"`
+	UserID         string    `json:"user_id,omitempty"`
+	Provider       string    `json:"provider"`
+	Model          string    `json:"model"`
+	TokensIn       int       `json:"tokens_in"`
+	TokensOut      int       `json:"tokens_out"`
+	CostUSD        float64   `json:"cost_usd"`
+	LatencyMs      int64     `json:"latency_ms"`
+	Status         int       `json:"status"`
+	CacheHit       bool      `json:"cache_hit"`
+	ValidationPass *bool     `json:"validation_pass,omitempty"`
+	FailoverUsed   bool      `json:"failover_used"`
+	RequestBody    string    `json:"request_body,omitempty"`
+	ResponseBody   string    `json:"response_body,omitempty"`
+	Error          string    `json:"error,omitempty"`
 }
 
 // InsertRequest logs a proxied request to the database.

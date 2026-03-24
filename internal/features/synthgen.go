@@ -19,9 +19,9 @@ type SynthGenEvent struct {
 }
 
 type SynthGenState struct {
-	mu           sync.Mutex
-	cfg          config.SynthGenConfig
-	recentEvents []SynthGenEvent
+	mu               sync.Mutex
+	cfg              config.SynthGenConfig
+	recentEvents     []SynthGenEvent
 	samplesGenerated atomic.Int64
 	batchesRun       atomic.Int64
 }
@@ -48,7 +48,9 @@ func SynthGenMiddleware(sg *SynthGenState) proxy.Middleware {
 			sg.batchesRun.Add(1)
 			resp, err := next(ctx, req)
 			sg.mu.Lock()
-			if len(sg.recentEvents) >= 200 { sg.recentEvents = sg.recentEvents[1:] }
+			if len(sg.recentEvents) >= 200 {
+				sg.recentEvents = sg.recentEvents[1:]
+			}
 			sg.recentEvents = append(sg.recentEvents, SynthGenEvent{
 				Timestamp: time.Now(), Template: "default", Count: 1, Model: req.Model,
 			})

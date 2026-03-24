@@ -148,16 +148,16 @@ func checkPermission(role, method, path string) bool {
 		}
 		// Developers can write to these app APIs
 		writeAllowed := []string{
-			"/api/proxy/",    // toggle modules, manage providers
-			"/api/observe/",  // create alerts, record traces
-			"/api/studio/",   // manage templates, run experiments
-			"/api/forge/",    // create/run workflows
-			"/api/exchange/", // install packs
-			"/api/memory/",   // store memories
+			"/api/proxy/",     // toggle modules, manage providers
+			"/api/observe/",   // create alerts, record traces
+			"/api/studio/",    // manage templates, run experiments
+			"/api/forge/",     // create/run workflows
+			"/api/exchange/",  // install packs
+			"/api/memory/",    // store memories
 			"/api/knowledge/", // add entries, query
-			"/api/copilot/",  // chat with copilot
-			"/api/recall/",   // create incidents
-			"/api/apps/",     // app builder
+			"/api/copilot/",   // chat with copilot
+			"/api/recall/",    // create incidents
+			"/api/apps/",      // app builder
 		}
 		for _, prefix := range writeAllowed {
 			if strings.HasPrefix(path, prefix) {

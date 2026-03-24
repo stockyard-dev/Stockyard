@@ -2,9 +2,10 @@
 // JSON output, log levels, context fields, and request tracing.
 //
 // Usage:
-//   slog.Init(slog.Config{Level: "info", Format: "json"})
-//   slog.Info("server started", "port", 8080, "mode", "production")
-//   slog.Error("request failed", "err", err, "trace_id", traceID)
+//
+//	slog.Init(slog.Config{Level: "info", Format: "json"})
+//	slog.Info("server started", "port", 8080, "mode", "production")
+//	slog.Error("request failed", "err", err, "trace_id", traceID)
 package slog
 
 import (

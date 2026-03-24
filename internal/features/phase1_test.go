@@ -181,7 +181,7 @@ func TestPromptGuardPIIRedaction(t *testing.T) {
 	})
 
 	tests := []struct {
-		input    string
+		input        string
 		hasRedaction bool
 	}{
 		{"Contact me at john@example.com", true},

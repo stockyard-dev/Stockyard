@@ -1165,15 +1165,15 @@ func (a *App) handleDrift(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type driftResult struct {
-		Model          string  `json:"model"`
-		LengthChange   float64 `json:"avg_length_change_pct"`
-		LatencyChange  float64 `json:"avg_latency_change_pct"`
-		CostChange     float64 `json:"avg_cost_change_pct"`
-		ErrorChange    float64 `json:"error_rate_change_pct"`
-		DriftDetected  bool    `json:"drift_detected"`
-		DriftFields    []string `json:"drift_fields,omitempty"`
-		ThisWeekCount  int     `json:"this_week_requests"`
-		LastWeekCount  int     `json:"last_week_requests"`
+		Model         string   `json:"model"`
+		LengthChange  float64  `json:"avg_length_change_pct"`
+		LatencyChange float64  `json:"avg_latency_change_pct"`
+		CostChange    float64  `json:"avg_cost_change_pct"`
+		ErrorChange   float64  `json:"error_rate_change_pct"`
+		DriftDetected bool     `json:"drift_detected"`
+		DriftFields   []string `json:"drift_fields,omitempty"`
+		ThisWeekCount int      `json:"this_week_requests"`
+		LastWeekCount int      `json:"last_week_requests"`
 	}
 
 	var results []driftResult

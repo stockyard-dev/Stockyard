@@ -23,11 +23,11 @@ type GuardRailEvent struct {
 }
 
 type GuardRailState struct {
-	mu           sync.Mutex
-	cfg          config.GuardRailConfig
-	allowedPats  []*regexp.Regexp
-	deniedPats   []*regexp.Regexp
-	recentEvents []GuardRailEvent
+	mu              sync.Mutex
+	cfg             config.GuardRailConfig
+	allowedPats     []*regexp.Regexp
+	deniedPats      []*regexp.Regexp
+	recentEvents    []GuardRailEvent
 	requestsChecked atomic.Int64
 	requestsBlocked atomic.Int64
 	topicViolations atomic.Int64
@@ -36,10 +36,14 @@ type GuardRailState struct {
 func NewGuardRail(cfg config.GuardRailConfig) *GuardRailState {
 	gr := &GuardRailState{cfg: cfg, recentEvents: make([]GuardRailEvent, 0, 200)}
 	for _, t := range cfg.AllowedTopics {
-		if re, err := regexp.Compile("(?i)" + regexp.QuoteMeta(t)); err == nil { gr.allowedPats = append(gr.allowedPats, re) }
+		if re, err := regexp.Compile("(?i)" + regexp.QuoteMeta(t)); err == nil {
+			gr.allowedPats = append(gr.allowedPats, re)
+		}
 	}
 	for _, t := range cfg.DeniedTopics {
-		if re, err := regexp.Compile("(?i)" + regexp.QuoteMeta(t)); err == nil { gr.deniedPats = append(gr.deniedPats, re) }
+		if re, err := regexp.Compile("(?i)" + regexp.QuoteMeta(t)); err == nil {
+			gr.deniedPats = append(gr.deniedPats, re)
+		}
 	}
 	return gr
 }
@@ -58,7 +62,9 @@ func (gr *GuardRailState) Stats() map[string]any {
 func (gr *GuardRailState) grRecordEvent(ev GuardRailEvent) {
 	gr.mu.Lock()
 	defer gr.mu.Unlock()
-	if len(gr.recentEvents) >= 200 { gr.recentEvents = gr.recentEvents[1:] }
+	if len(gr.recentEvents) >= 200 {
+		gr.recentEvents = gr.recentEvents[1:]
+	}
 	gr.recentEvents = append(gr.recentEvents, ev)
 }
 
@@ -75,7 +81,9 @@ func GuardRailMiddleware(gr *GuardRailState) proxy.Middleware {
 						gr.topicViolations.Add(1)
 						gr.grRecordEvent(GuardRailEvent{Timestamp: time.Now(), Topic: pat.String(), Action: "blocked", Direction: "input", Model: req.Model})
 						fallback := gr.cfg.FallbackMsg
-						if fallback == "" { fallback = "I can only help with topics within my designated scope." }
+						if fallback == "" {
+							fallback = "I can only help with topics within my designated scope."
+						}
 						return &provider.Response{
 							ID: "guardrail", Object: "chat.completion", Model: req.Model,
 							Choices: []provider.Choice{{Index: 0, Message: provider.Message{Role: "assistant", Content: fallback}, FinishReason: "stop"}},
@@ -84,7 +92,9 @@ func GuardRailMiddleware(gr *GuardRailState) proxy.Middleware {
 				}
 			}
 			resp, err := next(ctx, req)
-			if err != nil { return resp, err }
+			if err != nil {
+				return resp, err
+			}
 			// Check output against denied topics
 			if resp != nil {
 				for _, choice := range resp.Choices {
@@ -94,11 +104,13 @@ func GuardRailMiddleware(gr *GuardRailState) proxy.Middleware {
 							gr.topicViolations.Add(1)
 							gr.grRecordEvent(GuardRailEvent{Timestamp: time.Now(), Topic: pat.String(), Action: "filtered", Direction: "output", Model: req.Model})
 							fallback := gr.cfg.FallbackMsg
-							if fallback == "" { fallback = "I can only help with topics within my designated scope." }
+							if fallback == "" {
+								fallback = "I can only help with topics within my designated scope."
+							}
 							return &provider.Response{
 								ID: resp.ID, Object: resp.Object, Model: resp.Model,
 								Choices: []provider.Choice{{Index: 0, Message: provider.Message{Role: "assistant", Content: fallback}, FinishReason: "stop"}},
-								Usage: resp.Usage,
+								Usage:   resp.Usage,
 							}, nil
 						}
 					}

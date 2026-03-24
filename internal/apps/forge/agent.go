@@ -181,9 +181,9 @@ func handleAgentReplay(conn *sql.DB) http.HandlerFunc {
 			newID, workflowID, maxCost, string(initialTimeline), now)
 
 		writeAgentJSON(w, http.StatusCreated, map[string]any{
-			"id":            newID,
-			"replayed_from": id,
-			"status":        "running",
+			"id":             newID,
+			"replayed_from":  id,
+			"status":         "running",
 			"max_cost_cents": maxCost,
 		})
 	}
@@ -211,7 +211,7 @@ func handleListAgentRuns(conn *sql.DB) http.HandlerFunc {
 				"id": id, "workflow_id": workflowID, "status": status,
 				"max_cost_cents": maxCost, "current_cost_cents": currentCost,
 				"awaiting_approval": awaiting == 1,
-				"created_at": createdAt, "completed_at": completedAt.String,
+				"created_at":        createdAt, "completed_at": completedAt.String,
 			})
 		}
 		if runs == nil {

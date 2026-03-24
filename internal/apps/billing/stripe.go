@@ -142,7 +142,7 @@ func (a *App) handleStripeSyncCustomer(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			w.WriteHeader(502)
 			log.Printf("[billing/stripe] error: %v", err)
-		writeJSON(w, map[string]string{"error": "stripe operation failed"})
+			writeJSON(w, map[string]string{"error": "stripe operation failed"})
 			return
 		}
 
@@ -274,7 +274,7 @@ func (a *App) handleStripeCreateInvoice(w http.ResponseWriter, r *http.Request) 
 		"invoice_id":  invoiceID,
 		"stripe_id":   externalID,
 		"period":      req.Period,
-		"total_cents":  totalCents,
+		"total_cents": totalCents,
 		"status":      "draft",
 	})
 }

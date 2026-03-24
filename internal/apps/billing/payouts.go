@@ -107,8 +107,8 @@ func (a *App) handleConnectOnboard(w http.ResponseWriter, r *http.Request) {
 
 	// Create a new Express connected account
 	params := url.Values{
-		"type":    {"express"},
-		"country": {"US"},
+		"type":                               {"express"},
+		"country":                            {"US"},
 		"capabilities[transfers][requested]": {"true"},
 	}
 	if req.Email != "" {
@@ -228,13 +228,13 @@ func (a *App) handlePayoutBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{
-		"user_id":               userID,
-		"app_earnings_cents":    appEarnings,
-		"mesh_earnings_cents":   meshEarnings,
+		"user_id":                  userID,
+		"app_earnings_cents":       appEarnings,
+		"mesh_earnings_cents":      meshEarnings,
 		"knowledge_earnings_cents": knowledgeEarnings,
-		"total_earned_cents":    appEarnings + meshEarnings + knowledgeEarnings,
-		"paid_out_cents":        paidOut,
-		"available_cents":       available,
+		"total_earned_cents":       appEarnings + meshEarnings + knowledgeEarnings,
+		"paid_out_cents":           paidOut,
+		"available_cents":          available,
 	})
 }
 
@@ -293,11 +293,11 @@ func (a *App) handlePayoutRequest(w http.ResponseWriter, r *http.Request) {
 	var stripeTransferID string
 	if stripeEnabled() {
 		params := url.Values{
-			"amount":      {fmt.Sprintf("%d", amount)},
-			"currency":    {"usd"},
-			"destination": {acctID},
-			"metadata[payout_id]":  {payoutID},
-			"metadata[user_id]":    {req.UserID},
+			"amount":              {fmt.Sprintf("%d", amount)},
+			"currency":            {"usd"},
+			"destination":         {acctID},
+			"metadata[payout_id]": {payoutID},
+			"metadata[user_id]":   {req.UserID},
 		}
 		result, err := stripeRequest("POST", "/transfers", params)
 		if err != nil {

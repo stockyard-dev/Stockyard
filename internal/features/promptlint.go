@@ -24,11 +24,11 @@ type PromptLintEvent struct {
 }
 
 type PromptLintState struct {
-	mu           sync.Mutex
-	cfg          config.PromptLintConfig
-	recentEvents []PromptLintEvent
-	requestsLinted atomic.Int64
-	issuesFound    atomic.Int64
+	mu              sync.Mutex
+	cfg             config.PromptLintConfig
+	recentEvents    []PromptLintEvent
+	requestsLinted  atomic.Int64
+	issuesFound     atomic.Int64
 	requestsBlocked atomic.Int64
 }
 
@@ -73,7 +73,9 @@ func PromptLintMiddleware(pl *PromptLintState) proxy.Middleware {
 				pl.issuesFound.Add(int64(len(issues)))
 				pl.mu.Lock()
 				for _, issue := range issues {
-					if len(pl.recentEvents) >= 200 { pl.recentEvents = pl.recentEvents[1:] }
+					if len(pl.recentEvents) >= 200 {
+						pl.recentEvents = pl.recentEvents[1:]
+					}
 					pl.recentEvents = append(pl.recentEvents, issue)
 				}
 				pl.mu.Unlock()
@@ -91,5 +93,3 @@ func PromptLintMiddleware(pl *PromptLintState) proxy.Middleware {
 		}
 	}
 }
-
-

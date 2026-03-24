@@ -62,8 +62,8 @@ func DefaultConfig(product string) *Config {
 		base.Port = 4103
 		base.Logging.StoreBodies = false
 		base.Failover = FailoverConfig{
-			Enabled:  true,
-			Strategy: "priority",
+			Enabled:   true,
+			Strategy:  "priority",
 			Providers: []string{"openai", "anthropic", "groq"},
 			CircuitBreaker: CircuitBreakerConfig{
 				FailureThreshold: 5,
@@ -109,8 +109,8 @@ func DefaultConfig(product string) *Config {
 			Schemas:    make(map[string]any),
 		}
 		base.Failover = FailoverConfig{
-			Enabled:  true,
-			Strategy: "priority",
+			Enabled:   true,
+			Strategy:  "priority",
 			Providers: []string{"openai", "anthropic", "groq"},
 			CircuitBreaker: CircuitBreakerConfig{
 				FailureThreshold: 5,
@@ -471,7 +471,7 @@ func DefaultConfig(product string) *Config {
 				Enabled:       true,
 				AfterFailures: 2,
 				DowngradeMap: map[string]string{
-					"gpt-4o":           "gpt-4o-mini",
+					"gpt-4o":                   "gpt-4o-mini",
 					"claude-sonnet-4-20250514": "claude-haiku-4-5-20251001",
 				},
 			},

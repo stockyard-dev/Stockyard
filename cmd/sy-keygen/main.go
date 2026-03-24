@@ -102,17 +102,23 @@ func cmdIssue() {
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "--product":
-			i++; product = args[i]
+			i++
+			product = args[i]
 		case "--tier":
-			i++; tier = args[i]
+			i++
+			tier = args[i]
 		case "--customer":
-			i++; customer = args[i]
+			i++
+			customer = args[i]
 		case "--email":
-			i++; email = args[i]
+			i++
+			email = args[i]
 		case "--duration":
-			i++; fmt.Sscanf(args[i], "%d", &days)
+			i++
+			fmt.Sscanf(args[i], "%d", &days)
 		case "--seats":
-			i++; fmt.Sscanf(args[i], "%d", &seats)
+			i++
+			fmt.Sscanf(args[i], "%d", &seats)
 		default:
 			fatal("unknown flag: %s", args[i])
 		}
@@ -263,9 +269,15 @@ func cmdInfo() {
 	}
 
 	features := []string{}
-	if lim.EmailAlerts { features = append(features, "email-alerts") }
-	if lim.AutoBackups { features = append(features, "auto-backups") }
-	if lim.PrioritySupport { features = append(features, "priority-support") }
+	if lim.EmailAlerts {
+		features = append(features, "email-alerts")
+	}
+	if lim.AutoBackups {
+		features = append(features, "auto-backups")
+	}
+	if lim.PrioritySupport {
+		features = append(features, "priority-support")
+	}
 	fmt.Printf("  Features:   %s\n", strings.Join(features, ", "))
 }
 

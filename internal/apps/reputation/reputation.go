@@ -212,7 +212,7 @@ func (a *App) computeScores(userID string) map[string]any {
 		errorRate = float64(errorReqs) / float64(totalReqs)
 	}
 	// Score: low error rate = high score, more requests = bonus
-	opReliability := max(0, 100.0-errorRate*500) // 0% errors = 100, 20% errors = 0
+	opReliability := max(0, 100.0-errorRate*500)    // 0% errors = 100, 20% errors = 0
 	opVolume := min(float64(totalReqs)/100.0, 20.0) // up to 20 points for volume
 	opTrust := 0.0
 	if trustValid > 0 {
@@ -228,9 +228,9 @@ func (a *App) computeScores(userID string) map[string]any {
 	a.conn.QueryRow("SELECT COALESCE(SUM(use_count), 0) FROM published_apps").Scan(&totalUses)
 	a.conn.QueryRow("SELECT COALESCE(AVG(rating), 0) FROM published_apps WHERE rating > 0").Scan(&avgRating)
 
-	builderApps := min(float64(publishedApps)*10, 40.0)    // up to 40 for apps
-	builderUses := min(float64(totalUses)/10.0, 30.0)       // up to 30 for usage
-	builderRating := min(avgRating*6, 30.0)                  // up to 30 for ratings
+	builderApps := min(float64(publishedApps)*10, 40.0) // up to 40 for apps
+	builderUses := min(float64(totalUses)/10.0, 30.0)   // up to 30 for usage
+	builderRating := min(avgRating*6, 30.0)             // up to 30 for ratings
 	builderScore := min(builderApps+builderUses+builderRating, 100)
 
 	// === Contributor Score (0-100) ===

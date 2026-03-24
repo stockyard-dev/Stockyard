@@ -197,12 +197,12 @@ func handleFirewallScorecard(conn *sql.DB, fw *Firewall) http.HandlerFunc {
 		}
 
 		writeFWJSON(w, http.StatusOK, map[string]any{
-			"grade":          grade,
-			"score_pct":      pct,
-			"correct":        blocked,
-			"total":          total,
-			"pattern_count":  totalPatterns,
-			"test_results":   results,
+			"grade":         grade,
+			"score_pct":     pct,
+			"correct":       blocked,
+			"total":         total,
+			"pattern_count": totalPatterns,
+			"test_results":  results,
 		})
 	}
 }

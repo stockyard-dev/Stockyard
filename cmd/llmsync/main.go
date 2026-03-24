@@ -15,7 +15,7 @@ func main() {
 		Product: "llmsync",
 		Version: version,
 		Features: engine.Features{
-			LLMSync:     true,
+			LLMSync:        true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

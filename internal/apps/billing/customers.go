@@ -128,11 +128,11 @@ func (a *App) handleGetCustomer(w http.ResponseWriter, r *http.Request) {
 		"created_at": created, "updated_at": updated,
 		"current_plan": plan,
 		"current_period_usage": map[string]any{
-			"period":       monthStart,
-			"requests":     totalRequests,
-			"input_tokens": totalInputTokens,
+			"period":        monthStart,
+			"requests":      totalRequests,
+			"input_tokens":  totalInputTokens,
 			"output_tokens": totalOutputTokens,
-			"cost_cents":   totalCostCents,
+			"cost_cents":    totalCostCents,
 		},
 	})
 }

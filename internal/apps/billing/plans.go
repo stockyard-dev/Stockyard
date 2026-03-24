@@ -7,13 +7,13 @@ import (
 
 // PlanLimits defines the limits for a billing plan.
 type PlanLimits struct {
-	RequestsPerMonth   int      `json:"requests_per_month"`
-	SpendCapCents      int      `json:"spend_cap_cents"`
-	RateLimitRPM       int      `json:"rate_limit_rpm"`
-	AllowedModels      []string `json:"allowed_models"`
-	BlockedModels      []string `json:"blocked_models"`
-	MaxTokensPerReq    int      `json:"max_tokens_per_request"`
-	Overage            string   `json:"overage"` // "block", "alert", or "allow"
+	RequestsPerMonth int      `json:"requests_per_month"`
+	SpendCapCents    int      `json:"spend_cap_cents"`
+	RateLimitRPM     int      `json:"rate_limit_rpm"`
+	AllowedModels    []string `json:"allowed_models"`
+	BlockedModels    []string `json:"blocked_models"`
+	MaxTokensPerReq  int      `json:"max_tokens_per_request"`
+	Overage          string   `json:"overage"` // "block", "alert", or "allow"
 }
 
 func (a *App) handleCreatePlan(w http.ResponseWriter, r *http.Request) {

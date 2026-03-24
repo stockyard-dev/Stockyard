@@ -13,18 +13,18 @@ import (
 )
 
 type MirrorTestEvent struct {
-	Timestamp     time.Time `json:"timestamp"`
-	PrimaryModel  string    `json:"primary_model"`
-	ShadowModel   string    `json:"shadow_model"`
-	PrimaryLatency float64  `json:"primary_latency_ms"`
-	ShadowLatency  float64  `json:"shadow_latency_ms"`
-	Match         bool      `json:"match"`
+	Timestamp      time.Time `json:"timestamp"`
+	PrimaryModel   string    `json:"primary_model"`
+	ShadowModel    string    `json:"shadow_model"`
+	PrimaryLatency float64   `json:"primary_latency_ms"`
+	ShadowLatency  float64   `json:"shadow_latency_ms"`
+	Match          bool      `json:"match"`
 }
 
 type MirrorTestState struct {
-	mu           sync.Mutex
-	cfg          config.MirrorTestConfig
-	recentEvents []MirrorTestEvent
+	mu               sync.Mutex
+	cfg              config.MirrorTestConfig
+	recentEvents     []MirrorTestEvent
 	requestsMirrored atomic.Int64
 	shadowSuccess    atomic.Int64
 	shadowFailures   atomic.Int64
@@ -71,9 +71,15 @@ func MirrorTestMiddleware(mt *MirrorTestState, providers map[string]provider.Pro
 						shadowLatency = float64(time.Since(shadowStart).Milliseconds())
 						success = shadowErr == nil
 					}
-					if success { mt.shadowSuccess.Add(1) } else { mt.shadowFailures.Add(1) }
+					if success {
+						mt.shadowSuccess.Add(1)
+					} else {
+						mt.shadowFailures.Add(1)
+					}
 					mt.mu.Lock()
-					if len(mt.recentEvents) >= 200 { mt.recentEvents = mt.recentEvents[1:] }
+					if len(mt.recentEvents) >= 200 {
+						mt.recentEvents = mt.recentEvents[1:]
+					}
 					mt.recentEvents = append(mt.recentEvents, MirrorTestEvent{
 						Timestamp: time.Now(), PrimaryModel: req.Model, ShadowModel: mt.cfg.ShadowModel,
 						PrimaryLatency: primaryLatency, ShadowLatency: shadowLatency, Match: success,

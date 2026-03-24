@@ -18,12 +18,12 @@ import (
 
 // UsageRecord holds metered usage for a single dimension key.
 type UsageRecord struct {
-	Requests    int64
-	TokensIn    int64
-	TokensOut   int64
-	CostUSD     float64
-	FirstSeen   time.Time
-	LastSeen    time.Time
+	Requests  int64
+	TokensIn  int64
+	TokensOut int64
+	CostUSD   float64
+	FirstSeen time.Time
+	LastSeen  time.Time
 }
 
 // DimensionUsage holds all usage records for a single dimension.
@@ -35,7 +35,7 @@ type DimensionUsage struct {
 // UsagePulseManager manages multi-dimensional usage metering.
 type UsagePulseManager struct {
 	mu         sync.RWMutex
-	dimensions map[string]*DimensionUsage // dimension name → usage
+	dimensions map[string]*DimensionUsage     // dimension name → usage
 	caps       map[string]config.UsageCapRule // "dimension:key" → cap rule
 	enabled    []string
 	exportFmt  string

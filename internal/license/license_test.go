@@ -405,7 +405,10 @@ func TestKeyPairB64Roundtrip(t *testing.T) {
 }
 
 func TestTierFromString(t *testing.T) {
-	tests := []struct{ input string; want Tier }{
+	tests := []struct {
+		input string
+		want  Tier
+	}{
 		{"community", TierCommunity},
 		{"pro", TierPro},
 		{"Pro", TierPro},

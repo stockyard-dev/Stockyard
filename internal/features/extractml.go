@@ -19,8 +19,11 @@ type ExtractMLEvent struct {
 }
 
 type ExtractMLState struct {
-	mu sync.Mutex; cfg config.ExtractMLConfig; recentEvents []ExtractMLEvent
-	requestsProcessed atomic.Int64; extractionsForced atomic.Int64
+	mu                sync.Mutex
+	cfg               config.ExtractMLConfig
+	recentEvents      []ExtractMLEvent
+	requestsProcessed atomic.Int64
+	extractionsForced atomic.Int64
 }
 
 func NewExtractML(cfg config.ExtractMLConfig) *ExtractMLState {
@@ -28,7 +31,10 @@ func NewExtractML(cfg config.ExtractMLConfig) *ExtractMLState {
 }
 
 func (e *ExtractMLState) Stats() map[string]any {
-	e.mu.Lock(); events := make([]ExtractMLEvent, len(e.recentEvents)); copy(events, e.recentEvents); e.mu.Unlock()
+	e.mu.Lock()
+	events := make([]ExtractMLEvent, len(e.recentEvents))
+	copy(events, e.recentEvents)
+	e.mu.Unlock()
 	return map[string]any{"requests": e.requestsProcessed.Load(), "extractions_forced": e.extractionsForced.Load(), "recent_events": events}
 }
 
@@ -37,7 +43,9 @@ func ExtractMLMiddleware(e *ExtractMLState) proxy.Middleware {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			e.requestsProcessed.Add(1)
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			// Check if response is valid JSON; if not, flag for extraction
 			for _, c := range resp.Choices {
 				var js json.RawMessage
@@ -46,7 +54,9 @@ func ExtractMLMiddleware(e *ExtractMLState) proxy.Middleware {
 				}
 			}
 			e.mu.Lock()
-			if len(e.recentEvents) >= 200 { e.recentEvents = e.recentEvents[1:] }
+			if len(e.recentEvents) >= 200 {
+				e.recentEvents = e.recentEvents[1:]
+			}
 			e.recentEvents = append(e.recentEvents, ExtractMLEvent{Timestamp: time.Now(), Model: req.Model})
 			e.mu.Unlock()
 			return resp, nil

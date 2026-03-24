@@ -15,7 +15,7 @@ func main() {
 		Product: "tierdrop",
 		Version: version,
 		Features: engine.Features{
-			TierDrop:     true,
+			TierDrop:       true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

@@ -237,7 +237,9 @@ func semanticCacheKey(model string, messages []provider.Message) string {
 // NewSemanticCacheFromConfig creates a SemanticCache from config.
 func NewSemanticCacheFromConfig(cfg config.SemanticCacheConfig) *SemanticCache {
 	threshold := cfg.Threshold
-	if threshold == 0 { threshold = 0.92 }
+	if threshold == 0 {
+		threshold = 0.92
+	}
 	return NewSemanticCache(threshold, 1000, 5*time.Minute)
 }
 

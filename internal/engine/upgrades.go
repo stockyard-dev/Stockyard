@@ -181,14 +181,14 @@ func (uc *UsageCounters) Snapshot() map[string]any {
 	uc.mu.RLock()
 	defer uc.mu.RUnlock()
 	return map[string]any{
-		"month":            uc.month,
-		"requests":         uc.requestCount,
-		"cache_hits":       uc.cacheHits,
-		"cache_savings":    uc.cacheSavingsUSD,
-		"providers_used":   len(uc.providersUsed),
-		"providers_list":   uc.providersList(),
-		"modules_blocked":  uc.modulesBlocked,
-		"boot_count":       uc.bootCount,
+		"month":           uc.month,
+		"requests":        uc.requestCount,
+		"cache_hits":      uc.cacheHits,
+		"cache_savings":   uc.cacheSavingsUSD,
+		"providers_used":  len(uc.providersUsed),
+		"providers_list":  uc.providersList(),
+		"modules_blocked": uc.modulesBlocked,
+		"boot_count":      uc.bootCount,
 	}
 }
 

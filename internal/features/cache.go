@@ -15,20 +15,20 @@ import (
 // CacheConfig defines caching settings.
 type CacheConfig struct {
 	Enabled    bool
-	Strategy   string        // "exact" or "semantic"
+	Strategy   string // "exact" or "semantic"
 	TTL        time.Duration
 	MaxEntries int
 }
 
 // CacheEntry holds a cached response.
 type CacheEntry struct {
-	Response   *provider.Response
-	Model      string
+	Response    *provider.Response
+	Model       string
 	TokensSaved int
-	CostSaved  float64
-	Hits       int
-	CreatedAt  time.Time
-	ExpiresAt  time.Time
+	CostSaved   float64
+	Hits        int
+	CreatedAt   time.Time
+	ExpiresAt   time.Time
 }
 
 // Cache is an in-memory exact-match cache backed by SQLite.

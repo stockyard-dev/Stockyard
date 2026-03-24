@@ -440,11 +440,11 @@ func RegisterWebhookRoutes(mux *http.ServeMux, wm *WebhookManager) {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"total_deliveries":     total,
-			"successful":           successes,
-			"success_rate":         safeDiv(float64(successes), float64(total)),
-			"avg_latency_ms":       avgLatency,
-			"recent_failures_1h":   recentFailures,
+			"total_deliveries":   total,
+			"successful":         successes,
+			"success_rate":       safeDiv(float64(successes), float64(total)),
+			"avg_latency_ms":     avgLatency,
+			"recent_failures_1h": recentFailures,
 		})
 	})
 }

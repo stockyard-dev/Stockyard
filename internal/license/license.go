@@ -30,13 +30,13 @@ const (
 
 // Payload is the data embedded in a license key.
 type Payload struct {
-	Product    string `json:"p"`             // "stockyard" or "*"
-	Tier       Tier   `json:"t"`             // pricing tier
-	CustomerID string `json:"c"`             // Stripe customer ID or internal ID
-	Email      string `json:"e,omitempty"`   // customer email (optional, for display)
-	IssuedAt   int64  `json:"i"`             // unix timestamp
-	ExpiresAt  int64  `json:"x"`             // unix timestamp (0 = never)
-	MaxSeats   int    `json:"s,omitempty"`   // max users (0 = use tier default)
+	Product    string `json:"p"`           // "stockyard" or "*"
+	Tier       Tier   `json:"t"`           // pricing tier
+	CustomerID string `json:"c"`           // Stripe customer ID or internal ID
+	Email      string `json:"e,omitempty"` // customer email (optional, for display)
+	IssuedAt   int64  `json:"i"`           // unix timestamp
+	ExpiresAt  int64  `json:"x"`           // unix timestamp (0 = never)
+	MaxSeats   int    `json:"s,omitempty"` // max users (0 = use tier default)
 }
 
 // License is a validated license with parsed payload.

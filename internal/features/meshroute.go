@@ -20,7 +20,7 @@ import (
 
 // MeshRouteConfig controls mesh routing behavior.
 type MeshRouteConfig struct {
-	Mode           string   `json:"mode"`            // mesh-first, cloud-first, cheapest, fastest
+	Mode           string   `json:"mode"` // mesh-first, cloud-first, cheapest, fastest
 	MaxLatencyMs   int      `json:"max_latency_ms"`
 	MinReputation  float64  `json:"min_reputation"`
 	AllowedRegions []string `json:"allowed_regions"`

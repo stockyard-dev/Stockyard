@@ -82,80 +82,80 @@ type Config struct {
 	RegionRoute   RegionRouteConfig   `yaml:"regionroute" json:"regionroute"`
 
 	// Phase 3 P3 expansion features
-	ChainForge    ChainForgeConfig    `yaml:"chainforge" json:"chainforge"`
-	CronLLM       CronLLMConfig       `yaml:"cronllm" json:"cronllm"`
-	WebhookRelay  WebhookRelayConfig  `yaml:"webhookrelay" json:"webhookrelay"`
-	BillSync      BillSyncConfig      `yaml:"billsync" json:"billsync"`
-	WhiteLabel    WhiteLabelConfig    `yaml:"whitelabel" json:"whitelabel"`
-	TrainExport   TrainExportConfig   `yaml:"trainexport" json:"trainexport"`
-	SynthGen      SynthGenConfig      `yaml:"synthgen" json:"synthgen"`
-	DiffPrompt    DiffPromptConfig    `yaml:"diffprompt" json:"diffprompt"`
-	LLMBench      LLMBenchConfig      `yaml:"llmbench" json:"llmbench"`
-	MaskMode      MaskModeConfig      `yaml:"maskmode" json:"maskmode"`
-	TokenMarket   TokenMarketConfig   `yaml:"tokenmarket" json:"tokenmarket"`
-	LLMSync       LLMSyncConfig       `yaml:"llmsync" json:"llmsync"`
-	ClusterMode   ClusterModeConfig   `yaml:"clustermode" json:"clustermode"`
-	EncryptVault  EncryptVaultConfig  `yaml:"encryptvault" json:"encryptvault"`
-	MirrorTest    MirrorTestConfig    `yaml:"mirrortest" json:"mirrortest"`
+	ChainForge   ChainForgeConfig   `yaml:"chainforge" json:"chainforge"`
+	CronLLM      CronLLMConfig      `yaml:"cronllm" json:"cronllm"`
+	WebhookRelay WebhookRelayConfig `yaml:"webhookrelay" json:"webhookrelay"`
+	BillSync     BillSyncConfig     `yaml:"billsync" json:"billsync"`
+	WhiteLabel   WhiteLabelConfig   `yaml:"whitelabel" json:"whitelabel"`
+	TrainExport  TrainExportConfig  `yaml:"trainexport" json:"trainexport"`
+	SynthGen     SynthGenConfig     `yaml:"synthgen" json:"synthgen"`
+	DiffPrompt   DiffPromptConfig   `yaml:"diffprompt" json:"diffprompt"`
+	LLMBench     LLMBenchConfig     `yaml:"llmbench" json:"llmbench"`
+	MaskMode     MaskModeConfig     `yaml:"maskmode" json:"maskmode"`
+	TokenMarket  TokenMarketConfig  `yaml:"tokenmarket" json:"tokenmarket"`
+	LLMSync      LLMSyncConfig      `yaml:"llmsync" json:"llmsync"`
+	ClusterMode  ClusterModeConfig  `yaml:"clustermode" json:"clustermode"`
+	EncryptVault EncryptVaultConfig `yaml:"encryptvault" json:"encryptvault"`
+	MirrorTest   MirrorTestConfig   `yaml:"mirrortest" json:"mirrortest"`
 
 	// Phase 4 expansion features
-	ExtractML      ExtractMLConfig      `yaml:"extractml" json:"extractml"`
-	TableForge     TableForgeConfig     `yaml:"tableforge" json:"tableforge"`
-	ToolRouter     ToolRouterConfig     `yaml:"toolrouter" json:"toolrouter"`
-	ToolShield     ToolShieldConfig     `yaml:"toolshield" json:"toolshield"`
-	ToolMock       ToolMockConfig       `yaml:"toolmock" json:"toolmock"`
-	AuthGate       AuthGateConfig       `yaml:"authgate" json:"authgate"`
-	ScopeGuard     ScopeGuardConfig     `yaml:"scopeguard" json:"scopeguard"`
-	VisionProxy    VisionProxyConfig    `yaml:"visionproxy" json:"visionproxy"`
-	AudioProxy     AudioProxyConfig     `yaml:"audioproxy" json:"audioproxy"`
-	DocParse       DocParseConfig       `yaml:"docparse" json:"docparse"`
-	FrameGrab      FrameGrabConfig      `yaml:"framegrab" json:"framegrab"`
-	SessionStore   SessionStoreConfig   `yaml:"sessionstore" json:"sessionstore"`
-	ConvoFork      ConvoForkConfig      `yaml:"convofork" json:"convofork"`
-	SlotFill       SlotFillConfig       `yaml:"slotfill" json:"slotfill"`
-	SemanticCache  SemanticCacheConfig  `yaml:"semanticcache" json:"semanticcache"`
-	PartialCache   PartialCacheConfig   `yaml:"partialcache" json:"partialcache"`
-	StreamCache    StreamCacheConfig    `yaml:"streamcache" json:"streamcache"`
-	PromptChain    PromptChainConfig    `yaml:"promptchain" json:"promptchain"`
-	PromptFuzz     PromptFuzzConfig     `yaml:"promptfuzz" json:"promptfuzz"`
-	PromptMarket   PromptMarketConfig   `yaml:"promptmarket" json:"promptmarket"`
-	CostPredict    CostPredictConfig    `yaml:"costpredict" json:"costpredict"`
-	CostMap        CostMapConfig        `yaml:"costmap" json:"costmap"`
-	SpotPrice      SpotPriceConfig      `yaml:"spotprice" json:"spotprice"`
-	LoadForge      LoadForgeConfig      `yaml:"loadforge" json:"loadforge"`
-	SnapshotTest   SnapshotTestConfig   `yaml:"snapshottest" json:"snapshottest"`
-	ChaosLLM       ChaosLLMConfig       `yaml:"chaosllm" json:"chaosllm"`
-	DataMap        DataMapConfig        `yaml:"datamap" json:"datamap"`
-	ConsentGate    ConsentGateConfig    `yaml:"consentgate" json:"consentgate"`
-	RetentionWipe  RetentionWipeConfig  `yaml:"retentionwipe" json:"retentionwipe"`
-	PolicyEngine   PolicyEngineConfig   `yaml:"policyengine" json:"policyengine"`
-	StreamSplit    StreamSplitConfig    `yaml:"streamsplit" json:"streamsplit"`
-	StreamThrottle StreamThrottleConfig `yaml:"streamthrottle" json:"streamthrottle"`
+	ExtractML       ExtractMLConfig       `yaml:"extractml" json:"extractml"`
+	TableForge      TableForgeConfig      `yaml:"tableforge" json:"tableforge"`
+	ToolRouter      ToolRouterConfig      `yaml:"toolrouter" json:"toolrouter"`
+	ToolShield      ToolShieldConfig      `yaml:"toolshield" json:"toolshield"`
+	ToolMock        ToolMockConfig        `yaml:"toolmock" json:"toolmock"`
+	AuthGate        AuthGateConfig        `yaml:"authgate" json:"authgate"`
+	ScopeGuard      ScopeGuardConfig      `yaml:"scopeguard" json:"scopeguard"`
+	VisionProxy     VisionProxyConfig     `yaml:"visionproxy" json:"visionproxy"`
+	AudioProxy      AudioProxyConfig      `yaml:"audioproxy" json:"audioproxy"`
+	DocParse        DocParseConfig        `yaml:"docparse" json:"docparse"`
+	FrameGrab       FrameGrabConfig       `yaml:"framegrab" json:"framegrab"`
+	SessionStore    SessionStoreConfig    `yaml:"sessionstore" json:"sessionstore"`
+	ConvoFork       ConvoForkConfig       `yaml:"convofork" json:"convofork"`
+	SlotFill        SlotFillConfig        `yaml:"slotfill" json:"slotfill"`
+	SemanticCache   SemanticCacheConfig   `yaml:"semanticcache" json:"semanticcache"`
+	PartialCache    PartialCacheConfig    `yaml:"partialcache" json:"partialcache"`
+	StreamCache     StreamCacheConfig     `yaml:"streamcache" json:"streamcache"`
+	PromptChain     PromptChainConfig     `yaml:"promptchain" json:"promptchain"`
+	PromptFuzz      PromptFuzzConfig      `yaml:"promptfuzz" json:"promptfuzz"`
+	PromptMarket    PromptMarketConfig    `yaml:"promptmarket" json:"promptmarket"`
+	CostPredict     CostPredictConfig     `yaml:"costpredict" json:"costpredict"`
+	CostMap         CostMapConfig         `yaml:"costmap" json:"costmap"`
+	SpotPrice       SpotPriceConfig       `yaml:"spotprice" json:"spotprice"`
+	LoadForge       LoadForgeConfig       `yaml:"loadforge" json:"loadforge"`
+	SnapshotTest    SnapshotTestConfig    `yaml:"snapshottest" json:"snapshottest"`
+	ChaosLLM        ChaosLLMConfig        `yaml:"chaosllm" json:"chaosllm"`
+	DataMap         DataMapConfig         `yaml:"datamap" json:"datamap"`
+	ConsentGate     ConsentGateConfig     `yaml:"consentgate" json:"consentgate"`
+	RetentionWipe   RetentionWipeConfig   `yaml:"retentionwipe" json:"retentionwipe"`
+	PolicyEngine    PolicyEngineConfig    `yaml:"policyengine" json:"policyengine"`
+	StreamSplit     StreamSplitConfig     `yaml:"streamsplit" json:"streamsplit"`
+	StreamThrottle  StreamThrottleConfig  `yaml:"streamthrottle" json:"streamthrottle"`
 	StreamTransform StreamTransformConfig `yaml:"streamtransform" json:"streamtransform"`
-	ModelAlias     ModelAliasConfig     `yaml:"modelalias" json:"modelalias"`
-	ParamNorm      ParamNormConfig      `yaml:"paramnorm" json:"paramnorm"`
-	QuotaSync      QuotaSyncConfig      `yaml:"quotasync" json:"quotasync"`
-	ErrorNorm      ErrorNormConfig      `yaml:"errornorm" json:"errornorm"`
-	CohortTrack    CohortTrackConfig    `yaml:"cohorttrack" json:"cohorttrack"`
-	PromptRank     PromptRankConfig     `yaml:"promptrank" json:"promptrank"`
-	AnomalyRadar   AnomalyRadarConfig   `yaml:"anomalyradar" json:"anomalyradar"`
-	EnvSync        EnvSyncConfig        `yaml:"envsync" json:"envsync"`
-	ProxyLog       ProxyLogConfig       `yaml:"proxylog" json:"proxylog"`
-	CliDash        CliDashConfig        `yaml:"clidash" json:"clidash"`
-	EmbedRouter    EmbedRouterConfig    `yaml:"embedrouter" json:"embedrouter"`
-	FineTuneTrack  FineTuneTrackConfig  `yaml:"finetunetrack" json:"finetunetrack"`
-	AgentReplay    AgentReplayConfig    `yaml:"agentreplay" json:"agentreplay"`
-	SummarizeGate  SummarizeGateConfig  `yaml:"summarizegate" json:"summarizegate"`
-	CodeLang       CodeLangConfig       `yaml:"codelang" json:"codelang"`
-	PersonaSwitch  PersonaSwitchConfig  `yaml:"personaswitch" json:"personaswitch"`
-	WarmPool       WarmPoolConfig       `yaml:"warmpool" json:"warmpool"`
-	EdgeCache      EdgeCacheConfig      `yaml:"edgecache" json:"edgecache"`
-	QueuePriority  QueuePriorityConfig  `yaml:"queuepriority" json:"queuepriority"`
-	GeoPrice       GeoPriceConfig       `yaml:"geoprice" json:"geoprice"`
-	TokenAuction   TokenAuctionConfig   `yaml:"tokenauction" json:"tokenauction"`
-	CanaryDeploy   CanaryDeployConfig   `yaml:"canarydeploy" json:"canarydeploy"`
-	PlaybackStudio PlaybackStudioConfig `yaml:"playbackstudio" json:"playbackstudio"`
-	WebhookForge   WebhookForgeConfig   `yaml:"webhookforge" json:"webhookforge"`
+	ModelAlias      ModelAliasConfig      `yaml:"modelalias" json:"modelalias"`
+	ParamNorm       ParamNormConfig       `yaml:"paramnorm" json:"paramnorm"`
+	QuotaSync       QuotaSyncConfig       `yaml:"quotasync" json:"quotasync"`
+	ErrorNorm       ErrorNormConfig       `yaml:"errornorm" json:"errornorm"`
+	CohortTrack     CohortTrackConfig     `yaml:"cohorttrack" json:"cohorttrack"`
+	PromptRank      PromptRankConfig      `yaml:"promptrank" json:"promptrank"`
+	AnomalyRadar    AnomalyRadarConfig    `yaml:"anomalyradar" json:"anomalyradar"`
+	EnvSync         EnvSyncConfig         `yaml:"envsync" json:"envsync"`
+	ProxyLog        ProxyLogConfig        `yaml:"proxylog" json:"proxylog"`
+	CliDash         CliDashConfig         `yaml:"clidash" json:"clidash"`
+	EmbedRouter     EmbedRouterConfig     `yaml:"embedrouter" json:"embedrouter"`
+	FineTuneTrack   FineTuneTrackConfig   `yaml:"finetunetrack" json:"finetunetrack"`
+	AgentReplay     AgentReplayConfig     `yaml:"agentreplay" json:"agentreplay"`
+	SummarizeGate   SummarizeGateConfig   `yaml:"summarizegate" json:"summarizegate"`
+	CodeLang        CodeLangConfig        `yaml:"codelang" json:"codelang"`
+	PersonaSwitch   PersonaSwitchConfig   `yaml:"personaswitch" json:"personaswitch"`
+	WarmPool        WarmPoolConfig        `yaml:"warmpool" json:"warmpool"`
+	EdgeCache       EdgeCacheConfig       `yaml:"edgecache" json:"edgecache"`
+	QueuePriority   QueuePriorityConfig   `yaml:"queuepriority" json:"queuepriority"`
+	GeoPrice        GeoPriceConfig        `yaml:"geoprice" json:"geoprice"`
+	TokenAuction    TokenAuctionConfig    `yaml:"tokenauction" json:"tokenauction"`
+	CanaryDeploy    CanaryDeployConfig    `yaml:"canarydeploy" json:"canarydeploy"`
+	PlaybackStudio  PlaybackStudioConfig  `yaml:"playbackstudio" json:"playbackstudio"`
+	WebhookForge    WebhookForgeConfig    `yaml:"webhookforge" json:"webhookforge"`
 }
 
 // Duration is a time.Duration that can be unmarshaled from YAML strings like "30s", "5m", "1h".
@@ -192,9 +192,9 @@ type ProviderConfig struct {
 
 // ProjectConfig holds per-project settings.
 type ProjectConfig struct {
-	Provider string      `yaml:"provider" json:"provider"`
-	Model    string      `yaml:"model" json:"model"`
-	Caps     CapsConfig  `yaml:"caps" json:"caps"`
+	Provider string       `yaml:"provider" json:"provider"`
+	Model    string       `yaml:"model" json:"model"`
+	Caps     CapsConfig   `yaml:"caps" json:"caps"`
 	Alerts   AlertsConfig `yaml:"alerts" json:"alerts"`
 }
 
@@ -220,16 +220,16 @@ type CacheConfig struct {
 
 // ValidationConfig holds schema validation settings.
 type ValidationConfig struct {
-	Enabled    bool                `yaml:"enabled" json:"enabled"`
-	MaxRetries int                 `yaml:"max_retries" json:"max_retries"`
-	Schemas    map[string]any      `yaml:"schemas" json:"schemas"`
+	Enabled    bool           `yaml:"enabled" json:"enabled"`
+	MaxRetries int            `yaml:"max_retries" json:"max_retries"`
+	Schemas    map[string]any `yaml:"schemas" json:"schemas"`
 }
 
 // FailoverConfig holds failover routing settings.
 type FailoverConfig struct {
-	Enabled        bool           `yaml:"enabled" json:"enabled"`
-	Strategy       string         `yaml:"strategy" json:"strategy"`
-	Providers      []string       `yaml:"providers" json:"providers"`
+	Enabled        bool                 `yaml:"enabled" json:"enabled"`
+	Strategy       string               `yaml:"strategy" json:"strategy"`
+	Providers      []string             `yaml:"providers" json:"providers"`
 	CircuitBreaker CircuitBreakerConfig `yaml:"circuit_breaker" json:"circuit_breaker"`
 }
 
@@ -241,11 +241,11 @@ type CircuitBreakerConfig struct {
 
 // RateLimitConfig holds rate limiting settings.
 type RateLimitConfig struct {
-	Enabled   bool            `yaml:"enabled" json:"enabled"`
-	Default   RateLimitRule   `yaml:"default" json:"default"`
-	PerIP     bool            `yaml:"per_ip" json:"per_ip"`
-	PerUser   bool            `yaml:"per_user" json:"per_user"`
-	Abuse     AbuseConfig     `yaml:"abuse_detection" json:"abuse_detection"`
+	Enabled bool          `yaml:"enabled" json:"enabled"`
+	Default RateLimitRule `yaml:"default" json:"default"`
+	PerIP   bool          `yaml:"per_ip" json:"per_ip"`
+	PerUser bool          `yaml:"per_user" json:"per_user"`
+	Abuse   AbuseConfig   `yaml:"abuse_detection" json:"abuse_detection"`
 }
 
 // RateLimitRule holds a single rate limit rule.
@@ -286,15 +286,15 @@ type PooledKeyEntry struct {
 
 // PromptGuardConfig holds PII redaction and injection detection settings.
 type PromptGuardConfig struct {
-	Enabled   bool             `yaml:"enabled" json:"enabled"`
-	PII       PIIConfig        `yaml:"pii" json:"pii"`
-	Injection InjectionConfig  `yaml:"injection" json:"injection"`
+	Enabled   bool            `yaml:"enabled" json:"enabled"`
+	PII       PIIConfig       `yaml:"pii" json:"pii"`
+	Injection InjectionConfig `yaml:"injection" json:"injection"`
 }
 
 // PIIConfig holds PII detection settings.
 type PIIConfig struct {
-	Mode     string            `yaml:"mode" json:"mode"` // redact, redact-restore, block
-	Patterns []string          `yaml:"patterns" json:"patterns"`
+	Mode     string             `yaml:"mode" json:"mode"` // redact, redact-restore, block
+	Patterns []string           `yaml:"patterns" json:"patterns"`
 	Custom   []CustomPIIPattern `yaml:"custom" json:"custom"`
 }
 
@@ -313,27 +313,27 @@ type InjectionConfig struct {
 
 // ModelSwitchConfig holds smart model routing settings.
 type ModelSwitchConfig struct {
-	Enabled bool               `yaml:"enabled" json:"enabled"`
-	Rules   []ModelRouteRule   `yaml:"rules" json:"rules"`
-	Default string             `yaml:"default" json:"default"`
+	Enabled bool             `yaml:"enabled" json:"enabled"`
+	Rules   []ModelRouteRule `yaml:"rules" json:"rules"`
+	Default string           `yaml:"default" json:"default"`
 }
 
 // ModelRouteRule defines a single model routing rule.
 type ModelRouteRule struct {
-	Name       string `yaml:"name" json:"name"`
-	Condition  string `yaml:"condition" json:"condition"` // token_count, pattern, header, cost
-	Operator   string `yaml:"operator" json:"operator"`   // gt, lt, eq, contains, matches
-	Value      string `yaml:"value" json:"value"`
-	Model      string `yaml:"model" json:"model"`
-	Provider   string `yaml:"provider" json:"provider"`
-	Weight     int    `yaml:"weight" json:"weight"` // for A/B testing (0-100)
+	Name      string `yaml:"name" json:"name"`
+	Condition string `yaml:"condition" json:"condition"` // token_count, pattern, header, cost
+	Operator  string `yaml:"operator" json:"operator"`   // gt, lt, eq, contains, matches
+	Value     string `yaml:"value" json:"value"`
+	Model     string `yaml:"model" json:"model"`
+	Provider  string `yaml:"provider" json:"provider"`
+	Weight    int    `yaml:"weight" json:"weight"` // for A/B testing (0-100)
 }
 
 // EvalGateConfig holds response quality scoring settings.
 type EvalGateConfig struct {
-	Enabled    bool              `yaml:"enabled" json:"enabled"`
-	Validators []ValidatorConfig `yaml:"validators" json:"validators"`
-	RetryBudget int             `yaml:"retry_budget" json:"retry_budget"`
+	Enabled     bool              `yaml:"enabled" json:"enabled"`
+	Validators  []ValidatorConfig `yaml:"validators" json:"validators"`
+	RetryBudget int               `yaml:"retry_budget" json:"retry_budget"`
 }
 
 // ValidatorConfig defines a single response validator.
@@ -345,10 +345,10 @@ type ValidatorConfig struct {
 
 // UsagePulseConfig holds per-user/feature metering settings.
 type UsagePulseConfig struct {
-	Enabled    bool     `yaml:"enabled" json:"enabled"`
-	Dimensions []string `yaml:"dimensions" json:"dimensions"` // user, feature, team, project, custom
-	Caps       []UsageCapRule `yaml:"caps" json:"caps"`
-	ExportFormat string `yaml:"export_format" json:"export_format"` // csv, json
+	Enabled      bool           `yaml:"enabled" json:"enabled"`
+	Dimensions   []string       `yaml:"dimensions" json:"dimensions"` // user, feature, team, project, custom
+	Caps         []UsageCapRule `yaml:"caps" json:"caps"`
+	ExportFormat string         `yaml:"export_format" json:"export_format"` // csv, json
 }
 
 // UsageCapRule defines a spend cap for a dimension.
@@ -363,18 +363,18 @@ type UsageCapRule struct {
 
 // PromptPadConfig holds prompt template management settings.
 type PromptPadConfig struct {
-	Enabled   bool                `yaml:"enabled" json:"enabled"`
-	Templates []PromptTemplate    `yaml:"templates" json:"templates"`
-	Storage   string              `yaml:"storage" json:"storage"`
-	APIPrefix string              `yaml:"api_prefix" json:"api_prefix"`
+	Enabled   bool             `yaml:"enabled" json:"enabled"`
+	Templates []PromptTemplate `yaml:"templates" json:"templates"`
+	Storage   string           `yaml:"storage" json:"storage"`
+	APIPrefix string           `yaml:"api_prefix" json:"api_prefix"`
 }
 
 // PromptTemplate defines a versioned prompt template.
 type PromptTemplate struct {
-	Name     string           `yaml:"name" json:"name"`
-	Version  string           `yaml:"version" json:"version"`
-	Template string           `yaml:"template" json:"template"`
-	Variants []PromptVariant  `yaml:"variants" json:"variants"`
+	Name     string          `yaml:"name" json:"name"`
+	Version  string          `yaml:"version" json:"version"`
+	Template string          `yaml:"template" json:"template"`
+	Variants []PromptVariant `yaml:"variants" json:"variants"`
 }
 
 // PromptVariant defines an A/B test variant.
@@ -386,11 +386,11 @@ type PromptVariant struct {
 
 // TokenTrimConfig holds context window optimization settings.
 type TokenTrimConfig struct {
-	Enabled       bool                   `yaml:"enabled" json:"enabled"`
-	DefaultStrat  string                 `yaml:"default_strategy" json:"default_strategy"`
-	SafetyMargin  int                    `yaml:"safety_margin" json:"safety_margin"`
-	Models        map[string]TrimModel   `yaml:"models" json:"models"`
-	Protect       []string               `yaml:"protect" json:"protect"`
+	Enabled      bool                 `yaml:"enabled" json:"enabled"`
+	DefaultStrat string               `yaml:"default_strategy" json:"default_strategy"`
+	SafetyMargin int                  `yaml:"safety_margin" json:"safety_margin"`
+	Models       map[string]TrimModel `yaml:"models" json:"models"`
+	Protect      []string             `yaml:"protect" json:"protect"`
 }
 
 // TrimModel defines per-model trim settings.
@@ -401,12 +401,12 @@ type TrimModel struct {
 
 // BatchQueueConfig holds async batching settings.
 type BatchQueueConfig struct {
-	Enabled     bool              `yaml:"enabled" json:"enabled"`
-	Concurrency BatchConcurrency  `yaml:"concurrency" json:"concurrency"`
-	Retry       BatchRetryConfig  `yaml:"retry" json:"retry"`
-	Delivery    BatchDelivery     `yaml:"delivery" json:"delivery"`
-	Priorities  []string          `yaml:"priority_levels" json:"priority_levels"`
-	Retention   Duration          `yaml:"retention" json:"retention"`
+	Enabled     bool             `yaml:"enabled" json:"enabled"`
+	Concurrency BatchConcurrency `yaml:"concurrency" json:"concurrency"`
+	Retry       BatchRetryConfig `yaml:"retry" json:"retry"`
+	Delivery    BatchDelivery    `yaml:"delivery" json:"delivery"`
+	Priorities  []string         `yaml:"priority_levels" json:"priority_levels"`
+	Retention   Duration         `yaml:"retention" json:"retention"`
 }
 
 // BatchConcurrency holds concurrency limits.
@@ -424,9 +424,9 @@ type BatchRetryConfig struct {
 
 // BatchDelivery holds result delivery settings.
 type BatchDelivery struct {
-	Mode        string `yaml:"mode" json:"mode"`
-	WebhookURL  string `yaml:"webhook_url" json:"webhook_url"`
-	WebhookRetry int   `yaml:"webhook_retry" json:"webhook_retry"`
+	Mode         string `yaml:"mode" json:"mode"`
+	WebhookURL   string `yaml:"webhook_url" json:"webhook_url"`
+	WebhookRetry int    `yaml:"webhook_retry" json:"webhook_retry"`
 }
 
 // MultiCallConfig holds multi-model consensus settings.
@@ -448,11 +448,11 @@ type MultiCallRoute struct {
 
 // StreamSnapConfig holds SSE capture settings.
 type StreamSnapConfig struct {
-	Enabled   bool             `yaml:"enabled" json:"enabled"`
-	Retention Duration         `yaml:"retention" json:"retention"`
-	MaxSize   string           `yaml:"max_size" json:"max_size"`
-	Metrics   StreamMetrics    `yaml:"metrics" json:"metrics"`
-	Replay    StreamReplay     `yaml:"replay" json:"replay"`
+	Enabled   bool          `yaml:"enabled" json:"enabled"`
+	Retention Duration      `yaml:"retention" json:"retention"`
+	MaxSize   string        `yaml:"max_size" json:"max_size"`
+	Metrics   StreamMetrics `yaml:"metrics" json:"metrics"`
+	Replay    StreamReplay  `yaml:"replay" json:"replay"`
 }
 
 // StreamMetrics defines which stream metrics to capture.
@@ -470,12 +470,12 @@ type StreamReplay struct {
 
 // LLMTapConfig holds analytics portal settings.
 type LLMTapConfig struct {
-	Enabled    bool          `yaml:"enabled" json:"enabled"`
-	Percentiles []int        `yaml:"latency_percentiles" json:"latency_percentiles"`
-	Granularity string       `yaml:"cost_granularity" json:"cost_granularity"`
-	Retention   Duration     `yaml:"retention" json:"retention"`
-	Alerts      []TapAlert   `yaml:"alerts" json:"alerts"`
-	Embed       TapEmbed     `yaml:"embed" json:"embed"`
+	Enabled     bool       `yaml:"enabled" json:"enabled"`
+	Percentiles []int      `yaml:"latency_percentiles" json:"latency_percentiles"`
+	Granularity string     `yaml:"cost_granularity" json:"cost_granularity"`
+	Retention   Duration   `yaml:"retention" json:"retention"`
+	Alerts      []TapAlert `yaml:"alerts" json:"alerts"`
+	Embed       TapEmbed   `yaml:"embed" json:"embed"`
 }
 
 // TapAlert defines an analytics alert.
@@ -488,15 +488,15 @@ type TapAlert struct {
 
 // TapEmbed defines embeddable chart settings.
 type TapEmbed struct {
-	Enabled       bool     `yaml:"enabled" json:"enabled"`
+	Enabled        bool     `yaml:"enabled" json:"enabled"`
 	AllowedOrigins []string `yaml:"allowed_origins" json:"allowed_origins"`
 }
 
 // ContextPackConfig holds RAG-without-vector-DB settings.
 type ContextPackConfig struct {
-	Enabled   bool                  `yaml:"enabled" json:"enabled"`
-	Sources   []ContextSource       `yaml:"sources" json:"sources"`
-	Injection ContextInjection      `yaml:"injection" json:"injection"`
+	Enabled   bool             `yaml:"enabled" json:"enabled"`
+	Sources   []ContextSource  `yaml:"sources" json:"sources"`
+	Injection ContextInjection `yaml:"injection" json:"injection"`
 }
 
 // ContextSource defines a context data source.
@@ -523,16 +523,16 @@ type ContextInjection struct {
 
 // RetryPilotConfig holds intelligent retry settings.
 type RetryPilotConfig struct {
-	Enabled        bool                  `yaml:"enabled" json:"enabled"`
-	MaxRetries     int                   `yaml:"max_retries" json:"max_retries"`
-	Backoff        string                `yaml:"backoff" json:"backoff"`
-	BaseDelay      Duration              `yaml:"base_delay" json:"base_delay"`
-	MaxDelay       Duration              `yaml:"max_delay" json:"max_delay"`
-	Jitter         string                `yaml:"jitter" json:"jitter"`
-	CircuitBreaker RetryCircuitBreaker   `yaml:"circuit_breaker" json:"circuit_breaker"`
-	Deadline       RetryDeadline         `yaml:"deadline" json:"deadline"`
-	Downgrade      RetryDowngrade        `yaml:"downgrade" json:"downgrade"`
-	Budget         RetryBudget           `yaml:"budget" json:"budget"`
+	Enabled        bool                `yaml:"enabled" json:"enabled"`
+	MaxRetries     int                 `yaml:"max_retries" json:"max_retries"`
+	Backoff        string              `yaml:"backoff" json:"backoff"`
+	BaseDelay      Duration            `yaml:"base_delay" json:"base_delay"`
+	MaxDelay       Duration            `yaml:"max_delay" json:"max_delay"`
+	Jitter         string              `yaml:"jitter" json:"jitter"`
+	CircuitBreaker RetryCircuitBreaker `yaml:"circuit_breaker" json:"circuit_breaker"`
+	Deadline       RetryDeadline       `yaml:"deadline" json:"deadline"`
+	Downgrade      RetryDowngrade      `yaml:"downgrade" json:"downgrade"`
+	Budget         RetryBudget         `yaml:"budget" json:"budget"`
 }
 
 // RetryCircuitBreaker holds circuit breaker settings for RetryPilot.
@@ -564,13 +564,13 @@ type RetryBudget struct {
 
 // ToxicFilterConfig holds content moderation settings.
 type ToxicFilterConfig struct {
-	Enabled    bool                `yaml:"enabled" json:"enabled"`
-	ScanInput  bool                `yaml:"scan_input" json:"scan_input"`
-	ScanOutput bool                `yaml:"scan_output" json:"scan_output"`
-	Action     string              `yaml:"action" json:"action"` // block, redact, flag
-	Categories []ToxicCategory     `yaml:"categories" json:"categories"`
-	Custom     []ToxicCustomRule   `yaml:"custom" json:"custom"`
-	Webhook    string              `yaml:"webhook" json:"webhook"`
+	Enabled    bool              `yaml:"enabled" json:"enabled"`
+	ScanInput  bool              `yaml:"scan_input" json:"scan_input"`
+	ScanOutput bool              `yaml:"scan_output" json:"scan_output"`
+	Action     string            `yaml:"action" json:"action"` // block, redact, flag
+	Categories []ToxicCategory   `yaml:"categories" json:"categories"`
+	Custom     []ToxicCustomRule `yaml:"custom" json:"custom"`
+	Webhook    string            `yaml:"webhook" json:"webhook"`
 }
 
 // ToxicCategory defines a built-in moderation category.
@@ -601,14 +601,14 @@ type ComplianceLogConfig struct {
 
 // SecretScanConfig holds secret detection settings.
 type SecretScanConfig struct {
-	Enabled      bool                `yaml:"enabled" json:"enabled"`
-	ScanInput    bool                `yaml:"scan_input" json:"scan_input"`
-	ScanOutput   bool                `yaml:"scan_output" json:"scan_output"`
-	Action       string              `yaml:"action" json:"action"` // block, redact, alert
-	Patterns     []string            `yaml:"patterns" json:"patterns"` // builtin pattern names
-	Custom       []SecretCustomRule  `yaml:"custom" json:"custom"`
-	MaskPreview  bool                `yaml:"mask_preview" json:"mask_preview"` // show first4+last4
-	Webhook      string              `yaml:"webhook" json:"webhook"`
+	Enabled     bool               `yaml:"enabled" json:"enabled"`
+	ScanInput   bool               `yaml:"scan_input" json:"scan_input"`
+	ScanOutput  bool               `yaml:"scan_output" json:"scan_output"`
+	Action      string             `yaml:"action" json:"action"`     // block, redact, alert
+	Patterns    []string           `yaml:"patterns" json:"patterns"` // builtin pattern names
+	Custom      []SecretCustomRule `yaml:"custom" json:"custom"`
+	MaskPreview bool               `yaml:"mask_preview" json:"mask_preview"` // show first4+last4
+	Webhook     string             `yaml:"webhook" json:"webhook"`
 }
 
 // SecretCustomRule defines a custom secret detection pattern.
@@ -630,14 +630,14 @@ type TraceLinkConfig struct {
 
 // IPFenceConfig holds IP allowlisting and geofencing settings.
 type IPFenceConfig struct {
-	Enabled   bool     `yaml:"enabled" json:"enabled"`
-	Mode      string   `yaml:"mode" json:"mode"`           // allowlist, denylist, mixed
-	Action    string   `yaml:"action" json:"action"`       // block, log, warn
-	Allowlist []string `yaml:"allowlist" json:"allowlist"`  // IPs, CIDR ranges
-	Denylist  []string `yaml:"denylist" json:"denylist"`    // IPs, CIDR ranges
-	TrustProxy bool   `yaml:"trust_proxy" json:"trust_proxy"` // trust X-Forwarded-For
-	LogBlocked bool   `yaml:"log_blocked" json:"log_blocked"`
-	Webhook    string  `yaml:"webhook" json:"webhook"`
+	Enabled    bool     `yaml:"enabled" json:"enabled"`
+	Mode       string   `yaml:"mode" json:"mode"`               // allowlist, denylist, mixed
+	Action     string   `yaml:"action" json:"action"`           // block, log, warn
+	Allowlist  []string `yaml:"allowlist" json:"allowlist"`     // IPs, CIDR ranges
+	Denylist   []string `yaml:"denylist" json:"denylist"`       // IPs, CIDR ranges
+	TrustProxy bool     `yaml:"trust_proxy" json:"trust_proxy"` // trust X-Forwarded-For
+	LogBlocked bool     `yaml:"log_blocked" json:"log_blocked"`
+	Webhook    string   `yaml:"webhook" json:"webhook"`
 }
 
 // EmbedCacheConfig holds embedding response caching settings.
@@ -650,12 +650,12 @@ type EmbedCacheConfig struct {
 
 // AnthroFitConfig holds Anthropic deep-compatibility settings.
 type AnthroFitConfig struct {
-	Enabled           bool   `yaml:"enabled" json:"enabled"`
-	SystemPromptMode  string `yaml:"system_prompt_mode" json:"system_prompt_mode"`   // separate, merge, auto
-	ToolTranslation   bool   `yaml:"tool_translation" json:"tool_translation"`       // translate tool schemas
-	StreamNormalize   bool   `yaml:"stream_normalize" json:"stream_normalize"`       // normalize SSE format
-	MaxTokensDefault  int    `yaml:"max_tokens_default" json:"max_tokens_default"`   // default max_tokens for Anthropic
-	CacheControl      bool   `yaml:"cache_control" json:"cache_control"`             // enable prompt caching headers
+	Enabled          bool   `yaml:"enabled" json:"enabled"`
+	SystemPromptMode string `yaml:"system_prompt_mode" json:"system_prompt_mode"` // separate, merge, auto
+	ToolTranslation  bool   `yaml:"tool_translation" json:"tool_translation"`     // translate tool schemas
+	StreamNormalize  bool   `yaml:"stream_normalize" json:"stream_normalize"`     // normalize SSE format
+	MaxTokensDefault int    `yaml:"max_tokens_default" json:"max_tokens_default"` // default max_tokens for Anthropic
+	CacheControl     bool   `yaml:"cache_control" json:"cache_control"`           // enable prompt caching headers
 }
 
 // AlertPulseConfig holds alerting engine settings.
@@ -670,9 +670,9 @@ type AlertPulseConfig struct {
 // AlertRule defines a single alerting rule with metric, threshold, and channel.
 type AlertRule struct {
 	Name       string  `yaml:"name" json:"name"`
-	Metric     string  `yaml:"metric" json:"metric"`         // error_rate, latency_p95, latency_p50, cost_per_min
+	Metric     string  `yaml:"metric" json:"metric"` // error_rate, latency_p95, latency_p50, cost_per_min
 	Threshold  float64 `yaml:"threshold" json:"threshold"`
-	Channel    string  `yaml:"channel" json:"channel"`       // webhook, log
+	Channel    string  `yaml:"channel" json:"channel"` // webhook, log
 	WebhookURL string  `yaml:"webhook_url" json:"webhook_url"`
 }
 
@@ -728,14 +728,14 @@ type TenantConfig struct {
 
 // IdleKillConfig holds runaway request termination settings.
 type IdleKillConfig struct {
-	Enabled            bool     `yaml:"enabled" json:"enabled"`
-	MaxDuration        Duration `yaml:"max_duration" json:"max_duration"`                 // max request duration before kill
-	MaxTokensPerRequest int     `yaml:"max_tokens_per_request" json:"max_tokens_per_request"` // max tokens before kill
-	MaxCostPerRequest  float64  `yaml:"max_cost_per_request" json:"max_cost_per_request"` // max estimated cost before kill
-	LoopDetection      bool     `yaml:"loop_detection" json:"loop_detection"`             // detect repeated identical requests
-	LoopWindow         Duration `yaml:"loop_window" json:"loop_window"`                   // time window for loop detection
-	LoopThreshold      int      `yaml:"loop_threshold" json:"loop_threshold"`             // repeated requests to trigger kill
-	WebhookURL         string   `yaml:"webhook_url" json:"webhook_url"`                   // alert on kill events
+	Enabled             bool     `yaml:"enabled" json:"enabled"`
+	MaxDuration         Duration `yaml:"max_duration" json:"max_duration"`                     // max request duration before kill
+	MaxTokensPerRequest int      `yaml:"max_tokens_per_request" json:"max_tokens_per_request"` // max tokens before kill
+	MaxCostPerRequest   float64  `yaml:"max_cost_per_request" json:"max_cost_per_request"`     // max estimated cost before kill
+	LoopDetection       bool     `yaml:"loop_detection" json:"loop_detection"`                 // detect repeated identical requests
+	LoopWindow          Duration `yaml:"loop_window" json:"loop_window"`                       // time window for loop detection
+	LoopThreshold       int      `yaml:"loop_threshold" json:"loop_threshold"`                 // repeated requests to trigger kill
+	WebhookURL          string   `yaml:"webhook_url" json:"webhook_url"`                       // alert on kill events
 }
 
 // AgentGuardConfig holds agent session safety rail settings.
@@ -905,8 +905,8 @@ type RegionRouteDef struct {
 
 // ChainForgeConfig holds multi-step LLM pipeline settings.
 type ChainForgeConfig struct {
-	Enabled    bool              `yaml:"enabled" json:"enabled"`
-	Pipelines  []ChainForgePipe  `yaml:"pipelines" json:"pipelines"`
+	Enabled   bool             `yaml:"enabled" json:"enabled"`
+	Pipelines []ChainForgePipe `yaml:"pipelines" json:"pipelines"`
 }
 
 // ChainForgePipe defines a named pipeline with steps.
@@ -917,8 +917,8 @@ type ChainForgePipe struct {
 
 // CronLLMConfig holds scheduled LLM task settings.
 type CronLLMConfig struct {
-	Enabled bool          `yaml:"enabled" json:"enabled"`
-	Jobs    []CronLLMJob  `yaml:"jobs" json:"jobs"`
+	Enabled bool         `yaml:"enabled" json:"enabled"`
+	Jobs    []CronLLMJob `yaml:"jobs" json:"jobs"`
 }
 
 // CronLLMJob defines a scheduled LLM task.
@@ -931,22 +931,22 @@ type CronLLMJob struct {
 
 // WebhookRelayConfig holds webhook-to-LLM relay settings.
 type WebhookRelayConfig struct {
-	Enabled  bool                `yaml:"enabled" json:"enabled"`
-	Triggers []WebhookTrigger    `yaml:"triggers" json:"triggers"`
+	Enabled  bool             `yaml:"enabled" json:"enabled"`
+	Triggers []WebhookTrigger `yaml:"triggers" json:"triggers"`
 }
 
 // WebhookTrigger defines a webhook trigger mapping.
 type WebhookTrigger struct {
-	Path     string `yaml:"path" json:"path"`
-	Prompt   string `yaml:"prompt" json:"prompt"`
-	Model    string `yaml:"model" json:"model"`
+	Path   string `yaml:"path" json:"path"`
+	Prompt string `yaml:"prompt" json:"prompt"`
+	Model  string `yaml:"model" json:"model"`
 }
 
 // BillSyncConfig holds per-customer billing settings.
 type BillSyncConfig struct {
-	Enabled    bool    `yaml:"enabled" json:"enabled"`
-	MarkupPct  float64 `yaml:"markup_pct" json:"markup_pct"`
-	Currency   string  `yaml:"currency" json:"currency"`
+	Enabled   bool    `yaml:"enabled" json:"enabled"`
+	MarkupPct float64 `yaml:"markup_pct" json:"markup_pct"`
+	Currency  string  `yaml:"currency" json:"currency"`
 }
 
 // WhiteLabelConfig holds custom branding settings.
@@ -966,8 +966,8 @@ type TrainExportConfig struct {
 
 // SynthGenConfig holds synthetic data generation settings.
 type SynthGenConfig struct {
-	Enabled    bool   `yaml:"enabled" json:"enabled"`
-	BatchSize  int    `yaml:"batch_size" json:"batch_size"`
+	Enabled   bool `yaml:"enabled" json:"enabled"`
+	BatchSize int  `yaml:"batch_size" json:"batch_size"`
 }
 
 // DiffPromptConfig holds prompt diff settings.
@@ -1008,9 +1008,9 @@ type LLMSyncConfig struct {
 
 // ClusterModeConfig holds multi-instance settings.
 type ClusterModeConfig struct {
-	Enabled  bool   `yaml:"enabled" json:"enabled"`
-	NodeID   string `yaml:"node_id" json:"node_id"`
-	Peers    []string `yaml:"peers" json:"peers"`
+	Enabled bool     `yaml:"enabled" json:"enabled"`
+	NodeID  string   `yaml:"node_id" json:"node_id"`
+	Peers   []string `yaml:"peers" json:"peers"`
 }
 
 // EncryptVaultConfig holds encryption settings.

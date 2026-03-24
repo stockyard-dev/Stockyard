@@ -15,7 +15,7 @@ func main() {
 		Product: "voicebridge",
 		Version: version,
 		Features: engine.Features{
-			VoiceBridge:     true,
+			VoiceBridge:    true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

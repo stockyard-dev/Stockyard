@@ -20,10 +20,10 @@ type LangBridgeEvent struct {
 }
 
 type LangBridgeState struct {
-	mu           sync.Mutex
-	cfg          config.LangBridgeConfig
-	recentEvents []LangBridgeEvent
-	requestsProcessed  atomic.Int64
+	mu                  sync.Mutex
+	cfg                 config.LangBridgeConfig
+	recentEvents        []LangBridgeEvent
+	requestsProcessed   atomic.Int64
 	translationsApplied atomic.Int64
 }
 
@@ -50,7 +50,9 @@ func LangBridgeMiddleware(lb *LangBridgeState) proxy.Middleware {
 			// For now, pass through and log
 			log.Printf("langbridge: processing request for model %s", req.Model)
 			lb.mu.Lock()
-			if len(lb.recentEvents) >= 200 { lb.recentEvents = lb.recentEvents[1:] }
+			if len(lb.recentEvents) >= 200 {
+				lb.recentEvents = lb.recentEvents[1:]
+			}
 			lb.recentEvents = append(lb.recentEvents, LangBridgeEvent{
 				Timestamp: time.Now(), DetectedLang: "en", Action: "passthrough", Model: req.Model,
 			})

@@ -15,7 +15,7 @@ func main() {
 		Product: "webhookrelay",
 		Version: version,
 		Features: engine.Features{
-			WebhookRelay:     true,
+			WebhookRelay:   true,
 			RequestLogging: true,
 			FullBodyLog:    true,
 		},

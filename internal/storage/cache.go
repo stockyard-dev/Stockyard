@@ -2,9 +2,9 @@ package storage
 
 // CacheStats holds aggregate cache statistics.
 type CacheStats struct {
-	Entries   int     `json:"entries"`
-	HitRate   float64 `json:"hit_rate"`
-	SizeBytes int64   `json:"size_bytes"`
+	Entries    int     `json:"entries"`
+	HitRate    float64 `json:"hit_rate"`
+	SizeBytes  int64   `json:"size_bytes"`
 	SavingsUSD float64 `json:"savings_usd"`
 }
 

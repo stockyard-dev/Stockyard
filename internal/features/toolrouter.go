@@ -13,14 +13,17 @@ import (
 
 type ToolRouterEvent struct {
 	Timestamp time.Time `json:"timestamp"`
-	Tool string `json:"tool"`
-	Version string `json:"version"`
-	Model string `json:"model"`
+	Tool      string    `json:"tool"`
+	Version   string    `json:"version"`
+	Model     string    `json:"model"`
 }
 
 type ToolRouterState struct {
-	mu sync.Mutex; cfg config.ToolRouterConfig; recentEvents []ToolRouterEvent
-	callsRouted atomic.Int64; toolsRegistered atomic.Int64
+	mu              sync.Mutex
+	cfg             config.ToolRouterConfig
+	recentEvents    []ToolRouterEvent
+	callsRouted     atomic.Int64
+	toolsRegistered atomic.Int64
 }
 
 func NewToolRouter(cfg config.ToolRouterConfig) *ToolRouterState {
@@ -30,7 +33,10 @@ func NewToolRouter(cfg config.ToolRouterConfig) *ToolRouterState {
 }
 
 func (t *ToolRouterState) Stats() map[string]any {
-	t.mu.Lock(); events := make([]ToolRouterEvent, len(t.recentEvents)); copy(events, t.recentEvents); t.mu.Unlock()
+	t.mu.Lock()
+	events := make([]ToolRouterEvent, len(t.recentEvents))
+	copy(events, t.recentEvents)
+	t.mu.Unlock()
 	return map[string]any{"calls_routed": t.callsRouted.Load(), "tools_registered": t.toolsRegistered.Load(), "recent_events": events}
 }
 

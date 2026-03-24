@@ -35,8 +35,10 @@ func (a *App) auditEvent(action, resource string, detail any) {
 	}
 }
 
-func (a *App) Name() string        { return "forge" }
-func (a *App) Description() string { return "Workflow engine, tool registry, triggers, sessions, batch" }
+func (a *App) Name() string { return "forge" }
+func (a *App) Description() string {
+	return "Workflow engine, tool registry, triggers, sessions, batch"
+}
 
 func (a *App) Migrate(conn *sql.DB) error {
 	a.conn = conn

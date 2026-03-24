@@ -19,10 +19,10 @@ type TrainExportEvent struct {
 }
 
 type TrainExportState struct {
-	mu           sync.Mutex
-	cfg          config.TrainExportConfig
-	pairs        []trainingPair
-	recentEvents []TrainExportEvent
+	mu             sync.Mutex
+	cfg            config.TrainExportConfig
+	pairs          []trainingPair
+	recentEvents   []TrainExportEvent
 	pairsCollected atomic.Int64
 	exportsRun     atomic.Int64
 }
@@ -53,11 +53,16 @@ func TrainExportMiddleware(te *TrainExportState) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			resp, err := next(ctx, req)
-			if err != nil || resp == nil { return resp, err }
+			if err != nil || resp == nil {
+				return resp, err
+			}
 			// Collect training pair from last user message + assistant response
 			var userMsg string
 			for i := len(req.Messages) - 1; i >= 0; i-- {
-				if req.Messages[i].Role == "user" { userMsg = req.Messages[i].Content; break }
+				if req.Messages[i].Role == "user" {
+					userMsg = req.Messages[i].Content
+					break
+				}
 			}
 			if userMsg != "" && len(resp.Choices) > 0 {
 				te.pairsCollected.Add(1)

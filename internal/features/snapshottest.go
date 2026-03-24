@@ -11,19 +11,33 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
 
-type SnapshotTestEvent struct { Timestamp time.Time `json:"timestamp"`; Model string `json:"model"`; Action string `json:"action"` }
+type SnapshotTestEvent struct {
+	Timestamp time.Time `json:"timestamp"`
+	Model     string    `json:"model"`
+	Action    string    `json:"action"`
+}
 type SnapshotTestState struct {
-	mu sync.Mutex; cfg config.SnapshotTestConfig; recentEvents []SnapshotTestEvent
+	mu                sync.Mutex
+	cfg               config.SnapshotTestConfig
+	recentEvents      []SnapshotTestEvent
 	requestsProcessed atomic.Int64
 }
 
-func NewSnapshotTest(cfg config.SnapshotTestConfig) *SnapshotTestState { return &SnapshotTestState{cfg: cfg, recentEvents: make([]SnapshotTestEvent, 0, 200)} }
+func NewSnapshotTest(cfg config.SnapshotTestConfig) *SnapshotTestState {
+	return &SnapshotTestState{cfg: cfg, recentEvents: make([]SnapshotTestEvent, 0, 200)}
+}
 func (s *SnapshotTestState) Stats() map[string]any {
-	s.mu.Lock(); events := make([]SnapshotTestEvent, len(s.recentEvents)); copy(events, s.recentEvents); s.mu.Unlock()
+	s.mu.Lock()
+	events := make([]SnapshotTestEvent, len(s.recentEvents))
+	copy(events, s.recentEvents)
+	s.mu.Unlock()
 	return map[string]any{"requests": s.requestsProcessed.Load(), "recent_events": events}
 }
 func SnapshotTestMiddleware(s *SnapshotTestState) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
-		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) { s.requestsProcessed.Add(1); return next(ctx, req) }
+		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
+			s.requestsProcessed.Add(1)
+			return next(ctx, req)
+		}
 	}
 }

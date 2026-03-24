@@ -21,9 +21,9 @@ type WebhookRelayEvent struct {
 }
 
 type WebhookRelayState struct {
-	mu           sync.Mutex
-	cfg          config.WebhookRelayConfig
-	recentEvents []WebhookRelayEvent
+	mu               sync.Mutex
+	cfg              config.WebhookRelayConfig
+	recentEvents     []WebhookRelayEvent
 	webhooksReceived atomic.Int64
 	callsTriggered   atomic.Int64
 	callsFailed      atomic.Int64
@@ -50,12 +50,21 @@ func WebhookRelayMiddleware(wr *WebhookRelayState) proxy.Middleware {
 			wr.webhooksReceived.Add(1)
 			wr.callsTriggered.Add(1)
 			resp, err := next(ctx, req)
-			if err != nil { wr.callsFailed.Add(1) }
+			if err != nil {
+				wr.callsFailed.Add(1)
+			}
 			wr.mu.Lock()
-			if len(wr.recentEvents) >= 200 { wr.recentEvents = wr.recentEvents[1:] }
+			if len(wr.recentEvents) >= 200 {
+				wr.recentEvents = wr.recentEvents[1:]
+			}
 			wr.recentEvents = append(wr.recentEvents, WebhookRelayEvent{
-				Timestamp: time.Now(), Source: "webhook", Action: "relay", 
-				Status: func() string { if err != nil { return "error" }; return "ok" }(), Model: req.Model,
+				Timestamp: time.Now(), Source: "webhook", Action: "relay",
+				Status: func() string {
+					if err != nil {
+						return "error"
+					}
+					return "ok"
+				}(), Model: req.Model,
 			})
 			wr.mu.Unlock()
 			log.Printf("webhookrelay: relayed call to %s", req.Model)

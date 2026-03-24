@@ -55,8 +55,8 @@ func (a *App) handlePublishAnchor(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
-		"chain_hash":  chainHash,
-		"event_count": count,
+		"chain_hash":   chainHash,
+		"event_count":  count,
 		"published_at": now,
 	})
 }
@@ -78,9 +78,9 @@ func (a *App) handleVerifyExternal(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"verified":   false,
-			"hash":       hash,
-			"message":    "Hash not found in published anchors",
+			"verified": false,
+			"hash":     hash,
+			"message":  "Hash not found in published anchors",
 		})
 		return
 	}

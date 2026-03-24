@@ -237,9 +237,9 @@ func (a *API) handleUserSpend(w http.ResponseWriter, r *http.Request) {
 	userID := r.PathValue("id")
 	spend := a.counter.GetUser(userID)
 	writeJSON(w, map[string]any{
-		"user_id": userID,
-		"today":   spend.Today,
-		"month":   spend.Month,
+		"user_id":    userID,
+		"today":      spend.Today,
+		"month":      spend.Month,
 		"tokens_in":  spend.TokensIn,
 		"tokens_out": spend.TokensOut,
 	})
