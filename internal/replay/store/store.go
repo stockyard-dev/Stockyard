@@ -225,13 +225,15 @@ func (s *DB) Stats() Stats {
 	return st
 }
 
-// PurgeOlderThan removes deltas older than the given duration.
+// PurgeOlderThan removes deltas and snapshots older than the given duration.
 func (s *DB) PurgeOlderThan(retention time.Duration) (int64, error) {
 	cutoff := time.Now().Add(-retention).UTC()
 	result, err := s.db.Exec("DELETE FROM deltas WHERE timestamp < ?", cutoff)
 	if err != nil {
 		return 0, err
 	}
+	// Also clean orphaned snapshots
+	s.db.Exec("DELETE FROM snapshots WHERE timestamp < ?", cutoff)
 	return result.RowsAffected()
 }
 

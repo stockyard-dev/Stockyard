@@ -343,7 +343,7 @@ func (a *Agent) Middleware(next http.Handler) http.Handler {
 		}
 
 		// Wrap response writer to capture status and body
-		rw := &responseRecorder{ResponseWriter: w, statusCode: 200}
+		rw := &responseRecorder{ResponseWriter: w, statusCode: 200, maxCapture: a.maxBodySize}
 		next.ServeHTTP(rw, r)
 
 		latency := int(time.Since(start).Milliseconds())
@@ -370,11 +370,12 @@ func (a *Agent) flush() {
 	a.sink.Flush()
 }
 
-// responseRecorder captures HTTP response status and body.
+// responseRecorder captures HTTP response status and body (up to maxCapture bytes).
 type responseRecorder struct {
 	http.ResponseWriter
 	statusCode int
 	body       bytes.Buffer
+	maxCapture int
 }
 
 func (r *responseRecorder) WriteHeader(code int) {
@@ -383,7 +384,14 @@ func (r *responseRecorder) WriteHeader(code int) {
 }
 
 func (r *responseRecorder) Write(b []byte) (int, error) {
-	r.body.Write(b) // capture
+	if r.body.Len() < r.maxCapture {
+		remaining := r.maxCapture - r.body.Len()
+		if len(b) > remaining {
+			r.body.Write(b[:remaining])
+		} else {
+			r.body.Write(b)
+		}
+	}
 	return r.ResponseWriter.Write(b)
 }
 
