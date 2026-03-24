@@ -110,7 +110,7 @@ func cmdDo(intentStr string) {
 	fmt.Printf("\n  🔀 Resolving: %s\n\n", intentStr)
 
 	// Resolve intent
-	op, err := resolver.Resolve(nil, intentStr, "", available)
+	op, err := resolver.Resolve(context.Background(), intentStr, "", available)
 	if err != nil {
 		fmt.Printf("  ✗ Could not resolve intent: %v\n", err)
 		os.Exit(1)
@@ -130,7 +130,7 @@ func cmdDo(intentStr string) {
 
 	// Execute
 	fmt.Printf("  Executing...\n")
-	result, err := exec.Execute(nil, op)
+	result, err := exec.Execute(context.Background(), op)
 	if err != nil && result == nil {
 		fmt.Printf("  ✗ Error: %v\n", err)
 		os.Exit(1)
