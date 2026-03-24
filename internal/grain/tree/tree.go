@@ -27,6 +27,7 @@ type Decision struct {
 	Rules       []Rule            `yaml:"rules,omitempty" json:"rules,omitempty"`       // conditional rules
 	Tags        map[string]string `yaml:"tags,omitempty" json:"tags,omitempty"`
 	Locked      bool              `yaml:"locked,omitempty" json:"locked,omitempty"`     // prevent runtime changes
+	DependsOn   []string          `yaml:"depends_on,omitempty" json:"depends_on,omitempty"` // DAG edges
 }
 
 // Variant is an alternative outcome for A/B testing.
@@ -125,6 +126,7 @@ func decisionToStore(d Decision) store.Decision {
 		Rules:       rules,
 		Tags:        d.Tags,
 		Locked:      d.Locked,
+		DependsOn:   d.DependsOn,
 	}
 }
 
@@ -146,6 +148,7 @@ func storeToDecision(sd *store.Decision) Decision {
 		Rules:       rules,
 		Tags:        sd.Tags,
 		Locked:      sd.Locked,
+		DependsOn:   sd.DependsOn,
 	}
 }
 
@@ -198,15 +201,30 @@ func (r *Registry) Evaluate(ctx context.Context, decisionID string, ec *EvalCont
 
 // Override forces a decision to a specific value (hot-swap without deployment).
 func (r *Registry) Override(decisionID, value string) {
+	r.OverrideWithMeta(decisionID, value, "", "")
+}
+
+// OverrideWithMeta forces a decision to a specific value, recording who and why.
+func (r *Registry) OverrideWithMeta(decisionID, value, author, reason string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if d, ok := r.decisions[decisionID]; ok && d.Locked {
 		return // locked decisions can't be overridden
 	}
+	oldValue := r.overrides[decisionID]
 	r.overrides[decisionID] = value
 	if r.db != nil {
 		if err := r.db.SetOverride(decisionID, value); err != nil {
 			log.Printf("grain: saving override %s: %v", decisionID, err)
+		}
+		if err := r.db.SaveOverrideHistory(store.OverrideHistory{
+			DecisionID: decisionID,
+			OldValue:   oldValue,
+			NewValue:   value,
+			Author:     author,
+			Reason:     reason,
+		}); err != nil {
+			log.Printf("grain: saving override history %s: %v", decisionID, err)
 		}
 	}
 }

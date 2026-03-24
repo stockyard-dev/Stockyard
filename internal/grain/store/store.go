@@ -20,6 +20,7 @@ type Decision struct {
 	Rules       []Rule            `json:"rules,omitempty"`
 	Tags        map[string]string `json:"tags,omitempty"`
 	Locked      bool              `json:"locked,omitempty"`
+	DependsOn   []string          `json:"depends_on,omitempty"`
 }
 
 // Variant is an A/B test variant.
@@ -34,6 +35,28 @@ type Rule struct {
 	Condition string `json:"condition"`
 	Value     string `json:"value"`
 	Priority  int    `json:"priority,omitempty"`
+}
+
+// OverrideHistory records a single override change for auditing / rollback.
+type OverrideHistory struct {
+	ID         int64     `json:"id"`
+	DecisionID string    `json:"decision_id"`
+	OldValue   string    `json:"old_value"`
+	NewValue   string    `json:"new_value"`
+	Author     string    `json:"author"`
+	Reason     string    `json:"reason"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+// Outcome records a conversion/success/failure event tied to a decision evaluation.
+type Outcome struct {
+	ID         int64     `json:"id,omitempty"`
+	RequestID  string    `json:"request_id"`
+	DecisionID string    `json:"decision_id"`
+	Variant    string    `json:"variant"`
+	Outcome    string    `json:"outcome"` // "conversion", "success", "error", "failure"
+	Value      float64   `json:"value"`   // numeric metric (e.g. response time in ms)
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 // Entry is a single audit log entry.
@@ -104,6 +127,28 @@ func (db *DB) migrate() error {
 
 	CREATE INDEX IF NOT EXISTS idx_audit_decision ON audit_entries(decision_id);
 	CREATE INDEX IF NOT EXISTS idx_audit_request  ON audit_entries(request_id);
+
+	CREATE TABLE IF NOT EXISTS override_history (
+		id          INTEGER PRIMARY KEY AUTOINCREMENT,
+		decision_id TEXT NOT NULL,
+		old_value   TEXT,
+		new_value   TEXT,
+		author      TEXT,
+		reason      TEXT,
+		created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+	CREATE INDEX IF NOT EXISTS idx_oh_decision ON override_history(decision_id);
+
+	CREATE TABLE IF NOT EXISTS outcomes (
+		id          INTEGER PRIMARY KEY AUTOINCREMENT,
+		request_id  TEXT,
+		decision_id TEXT NOT NULL,
+		variant     TEXT,
+		outcome     TEXT,
+		value       REAL DEFAULT 0,
+		created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+	CREATE INDEX IF NOT EXISTS idx_outcomes_decision ON outcomes(decision_id);
 	`
 	_, err := db.Exec(schema)
 	return err
@@ -272,6 +317,85 @@ func scanEntries(rows *sql.Rows) ([]Entry, error) {
 			json.Unmarshal([]byte(ctxJSON), &e.Context)
 		}
 		out = append(out, e)
+	}
+	return out, rows.Err()
+}
+
+// ---------------------------------------------------------------------------
+// Override history
+// ---------------------------------------------------------------------------
+
+// SaveOverrideHistory records a single override change event.
+func (db *DB) SaveOverrideHistory(h OverrideHistory) error {
+	_, err := db.Exec(
+		`INSERT INTO override_history (decision_id, old_value, new_value, author, reason) VALUES (?, ?, ?, ?, ?)`,
+		h.DecisionID, h.OldValue, h.NewValue, h.Author, h.Reason,
+	)
+	return err
+}
+
+// ListOverrideHistory returns all override change records, newest first.
+func (db *DB) ListOverrideHistory(limit int) ([]OverrideHistory, error) {
+	rows, err := db.Query(`SELECT id, decision_id, old_value, new_value, author, reason, created_at FROM override_history ORDER BY id DESC LIMIT ?`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []OverrideHistory
+	for rows.Next() {
+		var h OverrideHistory
+		if err := rows.Scan(&h.ID, &h.DecisionID, &h.OldValue, &h.NewValue, &h.Author, &h.Reason, &h.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, h)
+	}
+	return out, rows.Err()
+}
+
+// GetOverrideAt returns the override history entry with the given ID.
+func (db *DB) GetOverrideAt(id int64) (*OverrideHistory, error) {
+	row := db.QueryRow(`SELECT id, decision_id, old_value, new_value, author, reason, created_at FROM override_history WHERE id = ?`, id)
+	var h OverrideHistory
+	err := row.Scan(&h.ID, &h.DecisionID, &h.OldValue, &h.NewValue, &h.Author, &h.Reason, &h.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &h, nil
+}
+
+// ---------------------------------------------------------------------------
+// Outcomes (experiment conversion tracking)
+// ---------------------------------------------------------------------------
+
+// SaveOutcome records an experiment outcome event.
+func (db *DB) SaveOutcome(o Outcome) error {
+	_, err := db.Exec(
+		`INSERT INTO outcomes (request_id, decision_id, variant, outcome, value) VALUES (?, ?, ?, ?, ?)`,
+		o.RequestID, o.DecisionID, o.Variant, o.Outcome, o.Value,
+	)
+	return err
+}
+
+// ListOutcomesByDecision returns outcomes for a given decision, newest first.
+func (db *DB) ListOutcomesByDecision(decisionID string, limit int) ([]Outcome, error) {
+	rows, err := db.Query(
+		`SELECT id, request_id, decision_id, variant, outcome, value, created_at FROM outcomes WHERE decision_id = ? ORDER BY id DESC LIMIT ?`,
+		decisionID, limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []Outcome
+	for rows.Next() {
+		var o Outcome
+		if err := rows.Scan(&o.ID, &o.RequestID, &o.DecisionID, &o.Variant, &o.Outcome, &o.Value, &o.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, o)
 	}
 	return out, rows.Err()
 }
