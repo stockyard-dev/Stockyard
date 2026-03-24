@@ -55,6 +55,16 @@ func (db *DB) Close() error {
 	return db.conn.Close()
 }
 
+// SourceRecord represents a dynamically managed data source.
+type SourceRecord struct {
+	ID         string `json:"id"`
+	Type       string `json:"type"`
+	Name       string `json:"name"`
+	ConfigJSON string `json:"config_json"`
+	Enabled    bool   `json:"enabled"`
+	CreatedAt  string `json:"created_at"`
+}
+
 // migrate creates tables if they do not already exist.
 func (db *DB) migrate() error {
 	const ddl = `
@@ -69,6 +79,15 @@ CREATE TABLE IF NOT EXISTS qa_history (
 CREATE TABLE IF NOT EXISTS sessions (
 	id         TEXT PRIMARY KEY,
 	started_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sources (
+	id          TEXT PRIMARY KEY,
+	type        TEXT NOT NULL,
+	name        TEXT NOT NULL,
+	config_json TEXT NOT NULL DEFAULT '{}',
+	enabled     BOOLEAN NOT NULL DEFAULT 1,
+	created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 `
 	_, err := db.conn.Exec(ddl)
@@ -129,5 +148,84 @@ func (db *DB) GetSession(id string) (*Session, error) {
 		return nil, err
 	}
 	s.StartedAt, _ = time.Parse("2006-01-02 15:04:05", ts)
+	return &s, nil
+}
+
+// =========================================================================
+// Source management
+// =========================================================================
+
+// SaveSource inserts or replaces a data source configuration.
+func (db *DB) SaveSource(src SourceRecord) error {
+	_, err := db.conn.Exec(
+		`INSERT OR REPLACE INTO sources (id, type, name, config_json, enabled) VALUES (?, ?, ?, ?, ?)`,
+		src.ID, src.Type, src.Name, src.ConfigJSON, src.Enabled,
+	)
+	return err
+}
+
+// ListSources returns all data source records.
+func (db *DB) ListSources() ([]SourceRecord, error) {
+	rows, err := db.conn.Query(
+		`SELECT id, type, name, config_json, enabled, created_at FROM sources ORDER BY created_at`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sources []SourceRecord
+	for rows.Next() {
+		var s SourceRecord
+		if err := rows.Scan(&s.ID, &s.Type, &s.Name, &s.ConfigJSON, &s.Enabled, &s.CreatedAt); err != nil {
+			return nil, err
+		}
+		sources = append(sources, s)
+	}
+	return sources, rows.Err()
+}
+
+// DeleteSource removes a data source by ID.
+func (db *DB) DeleteSource(id string) error {
+	result, err := db.conn.Exec(`DELETE FROM sources WHERE id = ?`, id)
+	if err != nil {
+		return err
+	}
+	n, _ := result.RowsAffected()
+	if n == 0 {
+		return fmt.Errorf("source %q not found", id)
+	}
+	return nil
+}
+
+// ToggleSource flips the enabled flag on a data source.
+func (db *DB) ToggleSource(id string) (bool, error) {
+	result, err := db.conn.Exec(`UPDATE sources SET enabled = NOT enabled WHERE id = ?`, id)
+	if err != nil {
+		return false, err
+	}
+	n, _ := result.RowsAffected()
+	if n == 0 {
+		return false, fmt.Errorf("source %q not found", id)
+	}
+
+	// Return the new state
+	var enabled bool
+	err = db.conn.QueryRow(`SELECT enabled FROM sources WHERE id = ?`, id).Scan(&enabled)
+	return enabled, err
+}
+
+// GetSource retrieves a single source by ID.
+func (db *DB) GetSource(id string) (*SourceRecord, error) {
+	var s SourceRecord
+	err := db.conn.QueryRow(
+		`SELECT id, type, name, config_json, enabled, created_at FROM sources WHERE id = ?`, id,
+	).Scan(&s.ID, &s.Type, &s.Name, &s.ConfigJSON, &s.Enabled, &s.CreatedAt)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
 	return &s, nil
 }
