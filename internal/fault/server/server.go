@@ -10,13 +10,15 @@ import (
 
 	"github.com/stockyard-dev/stockyard/internal/fault/detect"
 	"github.com/stockyard-dev/stockyard/internal/fault/diagnose"
+	"github.com/stockyard-dev/stockyard/internal/fault/store"
 )
 
 // Config holds server settings.
 type Config struct {
-	Port     int
-	Monitor  *detect.Monitor
+	Port      int
+	Monitor   *detect.Monitor
 	Diagnoser *diagnose.Engine
+	Store     *store.DB
 }
 
 // Server is the Fault HTTP API.
@@ -120,6 +122,28 @@ func (s *Server) handleDiagnose(w http.ResponseWriter, r *http.Request) {
 		s.diagnoses = s.diagnoses[len(s.diagnoses)-100:]
 	}
 	s.mu.Unlock()
+
+	// Persist diagnosis to SQLite if store is available
+	if s.cfg.Store != nil {
+		sd := store.Diagnosis{
+			ErrorFingerprint: diag.ErrorID,
+			RootCause:        diag.RootCause,
+			Hypothesis:       diag.Hypothesis,
+			Confidence:       diag.Confidence,
+			Severity:         diag.Severity,
+			AffectedCode:     diag.AffectedCode,
+			SuggestedFix:     diag.SuggestedFix,
+			CreatedAt:        diag.Timestamp,
+		}
+		if diag.Patch != nil {
+			if pj, err := json.Marshal(diag.Patch); err == nil {
+				sd.PatchJSON = pj
+			}
+		}
+		if err := s.cfg.Store.SaveDiagnosis(sd); err != nil {
+			log.Printf("[fault] store.SaveDiagnosis: %v", err)
+		}
+	}
 
 	writeJSON(w, 200, diag)
 }

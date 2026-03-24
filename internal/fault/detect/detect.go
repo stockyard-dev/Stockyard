@@ -6,10 +6,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/fault/store"
 )
 
 // Error represents a detected production error with full context.
@@ -40,6 +43,7 @@ type Monitor struct {
 	seen     map[string]*Error // dedup by fingerprint
 	handlers []ErrorHandler
 	maxErrs  int
+	db       *store.DB // optional SQLite persistence
 }
 
 // New creates an error monitor.
@@ -47,6 +51,15 @@ func New() *Monitor {
 	return &Monitor{
 		seen:    map[string]*Error{},
 		maxErrs: 1000,
+	}
+}
+
+// NewWithStore creates an error monitor backed by SQLite persistence.
+func NewWithStore(db *store.DB) *Monitor {
+	return &Monitor{
+		seen:    map[string]*Error{},
+		maxErrs: 1000,
+		db:      db,
 	}
 }
 
@@ -77,6 +90,12 @@ func (m *Monitor) RecordError(e Error) {
 		existing.Count++
 		existing.LastSeen = e.Timestamp
 		m.mu.Unlock()
+		// Persist the updated count to SQLite
+		if m.db != nil {
+			if err := m.db.SaveError(toStoreError(e, fp)); err != nil {
+				log.Printf("[fault] store.SaveError: %v", err)
+			}
+		}
 		return // not new, just increment count
 	}
 
@@ -90,6 +109,13 @@ func (m *Monitor) RecordError(e Error) {
 	handlers := make([]ErrorHandler, len(m.handlers))
 	copy(handlers, m.handlers)
 	m.mu.Unlock()
+
+	// Persist new error to SQLite
+	if m.db != nil {
+		if err := m.db.SaveError(toStoreError(e, fp)); err != nil {
+			log.Printf("[fault] store.SaveError: %v", err)
+		}
+	}
 
 	// Notify handlers (outside lock)
 	for _, h := range handlers {
@@ -197,4 +223,22 @@ func truncate(s string, n int) string {
 		return s[:n] + "..."
 	}
 	return s
+}
+
+func toStoreError(e Error, fp string) store.Error {
+	return store.Error{
+		Fingerprint:  fp,
+		Type:         e.Type,
+		Message:      e.Message,
+		Path:         e.Path,
+		Method:       e.Method,
+		StatusCode:   e.StatusCode,
+		RequestBody:  e.RequestBody,
+		ResponseBody: e.ResponseBody,
+		Headers:      e.Headers,
+		StackTrace:   e.StackTrace,
+		Count:        e.Count,
+		FirstSeen:    e.FirstSeen,
+		LastSeen:     e.LastSeen,
+	}
 }

@@ -21,12 +21,14 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/fault/detect"
 	"github.com/stockyard-dev/stockyard/internal/fault/diagnose"
 	"github.com/stockyard-dev/stockyard/internal/fault/server"
+	"github.com/stockyard-dev/stockyard/internal/fault/store"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -79,7 +81,17 @@ func cmdWatch(args []string) {
 		}
 	}
 
-	monitor := detect.New()
+	db := openStore()
+	if db != nil {
+		defer db.Close()
+	}
+
+	var monitor *detect.Monitor
+	if db != nil {
+		monitor = detect.NewWithStore(db)
+	} else {
+		monitor = detect.New()
+	}
 
 	var diagnoser *diagnose.Engine
 	llmKey := resolveLLMKey()
@@ -125,6 +137,7 @@ func cmdWatch(args []string) {
 		Port:      *port + 10, // dashboard on port+10
 		Monitor:   monitor,
 		Diagnoser: diagnoser,
+		Store:     db,
 	})
 	go srv.ListenAndServe()
 
@@ -203,7 +216,17 @@ func cmdServe(args []string) {
 		}
 	}
 
-	monitor := detect.New()
+	db := openStore()
+	if db != nil {
+		defer db.Close()
+	}
+
+	var monitor *detect.Monitor
+	if db != nil {
+		monitor = detect.NewWithStore(db)
+	} else {
+		monitor = detect.New()
+	}
 
 	var diagnoser *diagnose.Engine
 	llmKey := resolveLLMKey()
@@ -221,6 +244,7 @@ func cmdServe(args []string) {
 		Port:      *port,
 		Monitor:   monitor,
 		Diagnoser: diagnoser,
+		Store:     db,
 	})
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -235,6 +259,24 @@ func resolveLLMKey() string {
 		}
 	}
 	return ""
+}
+
+func openStore() *store.DB {
+	dataDir := os.Getenv("FAULT_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "/tmp/fault"
+	}
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		log.Printf("[fault] Cannot create data dir %s: %v (running without persistence)", dataDir, err)
+		return nil
+	}
+	db, err := store.Open(filepath.Join(dataDir, "fault.db"))
+	if err != nil {
+		log.Printf("[fault] Cannot open store: %v (running without persistence)", err)
+		return nil
+	}
+	log.Printf("[fault] SQLite store: %s/fault.db", dataDir)
+	return db
 }
 
 func printUsage() {
