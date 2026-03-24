@@ -6,9 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/stockyard-dev/stockyard/internal/seance/collector"
+	"github.com/stockyard-dev/stockyard/internal/seance/store"
 	"github.com/stockyard-dev/stockyard/internal/seance/synth"
 )
 
@@ -25,11 +29,47 @@ type Server struct {
 	mux     *http.ServeMux
 	history []synth.QAPair
 	mu      sync.Mutex
+	db      *store.DB
 }
 
-// New creates a Séance server.
+// New creates a Séance server. It opens a SQLite store under the directory
+// specified by SEANCE_DATA_DIR (default /tmp/seance) and loads recent
+// conversation history.
 func New(cfg Config) *Server {
 	s := &Server{cfg: cfg, mux: http.NewServeMux()}
+
+	dataDir := os.Getenv("SEANCE_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "/tmp/seance"
+	}
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		log.Printf("warning: cannot create data dir %s: %v", dataDir, err)
+	}
+
+	dbPath := filepath.Join(dataDir, "seance.db")
+	db, err := store.Open(dbPath)
+	if err != nil {
+		log.Printf("warning: could not open SQLite store at %s: %v", dbPath, err)
+	} else {
+		s.db = db
+		// Load recent history from SQLite on startup.
+		pairs, err := db.ListQA(20)
+		if err != nil {
+			log.Printf("warning: could not load history: %v", err)
+		} else if len(pairs) > 0 {
+			// ListQA returns newest-first; reverse to chronological order.
+			s.mu.Lock()
+			for i := len(pairs) - 1; i >= 0; i-- {
+				s.history = append(s.history, synth.QAPair{
+					Question: pairs[i].Question,
+					Answer:   pairs[i].Answer,
+				})
+			}
+			s.mu.Unlock()
+			log.Printf("loaded %d Q&A pairs from history", len(pairs))
+		}
+	}
+
 	s.routes()
 	return s
 }
@@ -38,6 +78,14 @@ func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", s.cfg.Port)
 	log.Printf("Séance server listening on %s", addr)
 	return http.ListenAndServe(addr, s.mux)
+}
+
+// Close releases resources held by the server, including the SQLite store.
+func (s *Server) Close() error {
+	if s.db != nil {
+		return s.db.Close()
+	}
+	return nil
 }
 
 func (s *Server) routes() {
@@ -100,6 +148,17 @@ func (s *Server) handleAsk(w http.ResponseWriter, r *http.Request) {
 		s.history = s.history[len(s.history)-20:]
 	}
 	s.mu.Unlock()
+
+	// Persist to SQLite
+	if s.db != nil {
+		sourcesJSON := "[]"
+		if len(answer.SourcesUsed) > 0 {
+			sourcesJSON = `["` + strings.Join(answer.SourcesUsed, `","`) + `"]`
+		}
+		if err := s.db.SaveQA(req.Question, answer.Response, sourcesJSON); err != nil {
+			log.Printf("warning: failed to persist Q&A: %v", err)
+		}
+	}
 
 	writeJSON(w, 200, answer)
 }
