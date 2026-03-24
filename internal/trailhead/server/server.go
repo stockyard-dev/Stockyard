@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/cortex/cstore"
-	"github.com/stockyard-dev/stockyard/internal/cortex/embed"
-	"github.com/stockyard-dev/stockyard/internal/cortex/ingest"
-	"github.com/stockyard-dev/stockyard/internal/cortex/query"
-	"github.com/stockyard-dev/stockyard/internal/cortex/source"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/cstore"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/embed"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/ingest"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/query"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/source"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -28,7 +28,7 @@ type Config struct {
 	Model       string
 }
 
-// Server is the Cortex HTTP API server.
+// Server is the Trailhead HTTP API server.
 type Server struct {
 	cfg      Config
 	db       *cstore.DB
@@ -38,7 +38,7 @@ type Server struct {
 	mux      *http.ServeMux
 }
 
-// New creates a new Cortex server.
+// New creates a new Trailhead server.
 func New(cfg Config) *Server {
 	if cfg.Model == "" {
 		cfg.Model = "gpt-4o-mini"
@@ -63,7 +63,7 @@ func New(cfg Config) *Server {
 // ListenAndServe starts the HTTP server.
 func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", s.cfg.Port)
-	log.Printf("Cortex server listening on %s", addr)
+	log.Printf("Trailhead server listening on %s", addr)
 	return http.ListenAndServe(addr, s.mux)
 }
 
@@ -87,7 +87,7 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	stats := s.db.Stats()
 	writeJSON(w, 200, map[string]any{
 		"status":    "ok",
-		"product":   "cortex",
+		"product":   "trailhead",
 		"version":   "dev",
 		"documents": stats.Documents,
 		"chunks":    stats.Chunks,

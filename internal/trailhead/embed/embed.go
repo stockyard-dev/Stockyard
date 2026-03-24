@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/cortex/cstore"
-	"github.com/stockyard-dev/stockyard/internal/cortex/ingest"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/cstore"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/ingest"
 )
 
 // Config holds embedding settings.

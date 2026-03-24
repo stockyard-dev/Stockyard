@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/cortex/cstore"
-	"github.com/stockyard-dev/stockyard/internal/cortex/source"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/cstore"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/source"
 )
 
 // Config holds ingestion settings.

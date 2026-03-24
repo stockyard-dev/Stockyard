@@ -1,13 +1,13 @@
-// Stockyard Cortex — A second brain for your codebase.
+// Stockyard Trailhead — A second brain for your codebase.
 //
 // Usage:
 //
-//	cortex index github <owner/repo>    Index a GitHub repository
-//	cortex ask <question>               Ask a question about your codebase
-//	cortex sources                      List indexed sources
-//	cortex stats                        Show knowledge base statistics
-//	cortex serve [flags]                Start HTTP API
-//	cortex version                      Show version
+//	trailhead index github <owner/repo>    Index a GitHub repository
+//	trailhead ask <question>               Ask a question about your codebase
+//	trailhead sources                      List indexed sources
+//	trailhead stats                        Show knowledge base statistics
+//	trailhead serve [flags]                Start HTTP API
+//	trailhead version                      Show version
 package main
 
 import (
@@ -22,12 +22,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/cortex/cstore"
-	"github.com/stockyard-dev/stockyard/internal/cortex/embed"
-	"github.com/stockyard-dev/stockyard/internal/cortex/ingest"
-	"github.com/stockyard-dev/stockyard/internal/cortex/query"
-	"github.com/stockyard-dev/stockyard/internal/cortex/server"
-	"github.com/stockyard-dev/stockyard/internal/cortex/source"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/cstore"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/embed"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/ingest"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/query"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/server"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/source"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 
@@ -47,7 +47,7 @@ func main() {
 		cmdIndex(os.Args[2:])
 	case "ask":
 		if len(os.Args) < 3 {
-			fmt.Println("Usage: cortex ask <question>")
+			fmt.Println("Usage: trailhead ask <question>")
 			os.Exit(1)
 		}
 		cmdAsk(strings.Join(os.Args[2:], " "))
@@ -58,7 +58,7 @@ func main() {
 	case "serve":
 		cmdServe(os.Args[2:])
 	case "version":
-		fmt.Printf("cortex %s\n", version)
+		fmt.Printf("trailhead %s\n", version)
 	case "help", "--help", "-h":
 		printUsage()
 	default:
@@ -70,8 +70,8 @@ func main() {
 
 func cmdIndex(args []string) {
 	if len(args) < 2 {
-		fmt.Println("Usage: cortex index github <owner/repo>")
-		fmt.Println("       cortex index github stockyard-dev/Stockyard")
+		fmt.Println("Usage: trailhead index github <owner/repo>")
+		fmt.Println("       trailhead index github stockyard-dev/Stockyard")
 		os.Exit(1)
 	}
 
@@ -105,7 +105,7 @@ func cmdIndex(args []string) {
 	}
 
 	// Open database
-	db, err := cstore.Open(filepath.Join(cortexDir(), "cortex.db"))
+	db, err := cstore.Open(filepath.Join(cortexDir(), "trailhead.db"))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
@@ -154,8 +154,8 @@ func cmdIndex(args []string) {
 	apiKey := resolveAPIKey()
 	if apiKey == "" {
 		fmt.Println("\n  ⚠ No API key found. Skipping embedding generation.")
-		fmt.Println("    Set OPENAI_API_KEY or CORTEX_API_KEY to enable semantic search.")
-		fmt.Println("    Run 'cortex index github " + repo + "' again after setting the key.")
+		fmt.Println("    Set OPENAI_API_KEY or TRAILHEAD_API_KEY to enable semantic search.")
+		fmt.Println("    Run 'trailhead index github " + repo + "' again after setting the key.")
 		return
 	}
 
@@ -178,11 +178,11 @@ func cmdIndex(args []string) {
 	fmt.Printf("    Chunks:        %d\n", stats.Chunks)
 	fmt.Printf("    Entities:      %d\n", stats.Entities)
 	fmt.Printf("    Relationships: %d\n", stats.Relationships)
-	fmt.Printf("\n  Ready. Ask questions with: cortex ask \"why do we use SQLite?\"\n\n")
+	fmt.Printf("\n  Ready. Ask questions with: trailhead ask \"why do we use SQLite?\"\n\n")
 }
 
 func cmdAsk(question string) {
-	db, err := cstore.Open(filepath.Join(cortexDir(), "cortex.db"))
+	db, err := cstore.Open(filepath.Join(cortexDir(), "trailhead.db"))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
@@ -191,25 +191,25 @@ func cmdAsk(question string) {
 
 	stats := db.Stats()
 	if stats.Documents == 0 {
-		fmt.Println("  No documents indexed. Run 'cortex index github <owner/repo>' first.")
+		fmt.Println("  No documents indexed. Run 'trailhead index github <owner/repo>' first.")
 		os.Exit(1)
 	}
 	if stats.Chunks == 0 {
 		fmt.Println("  Documents indexed but no embeddings generated.")
-		fmt.Println("  Set OPENAI_API_KEY and re-run 'cortex index' to generate embeddings.")
+		fmt.Println("  Set OPENAI_API_KEY and re-run 'trailhead index' to generate embeddings.")
 		os.Exit(1)
 	}
 
 	apiKey := resolveAPIKey()
 	if apiKey == "" {
-		fmt.Println("  Error: No API key. Set OPENAI_API_KEY or CORTEX_API_KEY.")
+		fmt.Println("  Error: No API key. Set OPENAI_API_KEY or TRAILHEAD_API_KEY.")
 		os.Exit(1)
 	}
 
 	embedder := embed.New(embed.Config{APIKey: apiKey})
 	llm := provider.NewOpenAI(provider.ProviderConfig{APIKey: apiKey})
 
-	model := os.Getenv("CORTEX_MODEL")
+	model := os.Getenv("TRAILHEAD_MODEL")
 	if model == "" {
 		model = "gpt-4o-mini"
 	}
@@ -248,7 +248,7 @@ func cmdAsk(question string) {
 }
 
 func cmdSources() {
-	db, err := cstore.Open(filepath.Join(cortexDir(), "cortex.db"))
+	db, err := cstore.Open(filepath.Join(cortexDir(), "trailhead.db"))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
@@ -262,7 +262,7 @@ func cmdSources() {
 	}
 
 	if len(sources) == 0 {
-		fmt.Println("\n  No sources indexed. Run 'cortex index github <owner/repo>' to start.\n")
+		fmt.Println("\n  No sources indexed. Run 'trailhead index github <owner/repo>' to start.\n")
 		return
 	}
 
@@ -279,7 +279,7 @@ func cmdSources() {
 }
 
 func cmdStats() {
-	db, err := cstore.Open(filepath.Join(cortexDir(), "cortex.db"))
+	db, err := cstore.Open(filepath.Join(cortexDir(), "trailhead.db"))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
@@ -314,13 +314,13 @@ func cmdServe(args []string) {
 	ghToken := os.Getenv("GITHUB_TOKEN")
 	mdl := *model
 	if mdl == "" {
-		mdl = os.Getenv("CORTEX_MODEL")
+		mdl = os.Getenv("TRAILHEAD_MODEL")
 	}
 	if mdl == "" {
 		mdl = "gpt-4o-mini"
 	}
 
-	db, err := cstore.Open(filepath.Join(cortexDir(), "cortex.db"))
+	db, err := cstore.Open(filepath.Join(cortexDir(), "trailhead.db"))
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
@@ -341,7 +341,7 @@ func cmdServe(args []string) {
 	stats := db.Stats()
 	fmt.Printf("   Knowledge: %d docs, %d chunks, %d entities\n", stats.Documents, stats.Chunks, stats.Entities)
 	if apiKey == "" {
-		fmt.Println("   ⚠ No API key — queries will fail. Set OPENAI_API_KEY or CORTEX_API_KEY.")
+		fmt.Println("   ⚠ No API key — queries will fail. Set OPENAI_API_KEY or TRAILHEAD_API_KEY.")
 	}
 	fmt.Println()
 
@@ -352,15 +352,15 @@ func cmdServe(args []string) {
 }
 
 func cortexDir() string {
-	if d := os.Getenv("CORTEX_DATA_DIR"); d != "" {
+	if d := os.Getenv("TRAILHEAD_DATA_DIR"); d != "" {
 		return d
 	}
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".cortex")
+	return filepath.Join(home, ".trailhead")
 }
 
 func resolveAPIKey() string {
-	if k := os.Getenv("CORTEX_API_KEY"); k != "" {
+	if k := os.Getenv("TRAILHEAD_API_KEY"); k != "" {
 		return k
 	}
 	if k := os.Getenv("OPENAI_API_KEY"); k != "" {
@@ -379,15 +379,15 @@ func truncate(s string, n int) string {
 
 func printUsage() {
 	fmt.Println(`
-  Stockyard Cortex — A second brain for your codebase.
+  Stockyard Trailhead — A second brain for your codebase.
 
   Usage:
-    cortex index github <owner/repo>   Index a GitHub repository
-    cortex ask <question>              Ask a question about your codebase
-    cortex sources                     List indexed sources
-    cortex stats                       Show knowledge base statistics
-    cortex serve [flags]               Start HTTP API
-    cortex version                     Show version
+    trailhead index github <owner/repo>   Index a GitHub repository
+    trailhead ask <question>              Ask a question about your codebase
+    trailhead sources                     List indexed sources
+    trailhead stats                       Show knowledge base statistics
+    trailhead serve [flags]               Start HTTP API
+    trailhead version                     Show version
 
   Index flags:
     --token <token>   GitHub token (or set GITHUB_TOKEN)
@@ -399,13 +399,13 @@ func printUsage() {
   Environment:
     GITHUB_TOKEN      GitHub personal access token
     OPENAI_API_KEY    OpenAI API key (for embeddings + synthesis)
-    CORTEX_API_KEY    Alternative API key env var
-    CORTEX_MODEL      LLM model for answers (default: gpt-4o-mini)
-    CORTEX_DATA_DIR   Data directory (default: ~/.cortex)
+    TRAILHEAD_API_KEY    Alternative API key env var
+    TRAILHEAD_MODEL      LLM model for answers (default: gpt-4o-mini)
+    TRAILHEAD_DATA_DIR   Data directory (default: ~/.trailhead)
 
   Examples:
-    cortex index github stockyard-dev/Stockyard
-    cortex ask "why do we use SQLite instead of PostgreSQL?"
-    cortex ask "who has worked on the middleware chain?"
-    cortex ask "what did we try for the dashboard screenshot problem?"`)
+    trailhead index github stockyard-dev/Stockyard
+    trailhead ask "why do we use SQLite instead of PostgreSQL?"
+    trailhead ask "who has worked on the middleware chain?"
+    trailhead ask "what did we try for the dashboard screenshot problem?"`)
 }

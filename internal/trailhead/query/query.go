@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/cortex/cstore"
-	"github.com/stockyard-dev/stockyard/internal/cortex/embed"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/cstore"
+	"github.com/stockyard-dev/stockyard/internal/trailhead/embed"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
 

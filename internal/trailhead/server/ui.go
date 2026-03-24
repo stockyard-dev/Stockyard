@@ -5,7 +5,7 @@ const adminHTML = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stockyard Cortex</title>
+<title>Stockyard Trailhead</title>
 <style>
 :root {
   --bg: #1a1510; --bg2: #2a2318; --bg3: #3a3228;
@@ -76,7 +76,7 @@ tr:hover td { background: var(--bg2); }
 <body>
 
 <div class="header">
-  <h1>🧠 Cortex</h1>
+  <h1>🧠 Trailhead</h1>
   <span class="badge">Codebase Intelligence</span>
 </div>
 
@@ -95,7 +95,7 @@ tr:hover td { background: var(--bg2); }
     <input type="text" class="ask-input" id="question-input"
       placeholder="Ask anything about your codebase..."
       onkeydown="if(event.key==='Enter')askQuestion()" />
-    <button class="ask-btn" id="ask-btn" onclick="askQuestion()">🧠 Ask Cortex</button>
+    <button class="ask-btn" id="ask-btn" onclick="askQuestion()">🧠 Ask Trailhead</button>
   </div>
   <div id="answer-area"></div>
 
@@ -205,7 +205,7 @@ async function askQuestion() {
     area.innerHTML = '<div class="answer-box" style="border-left-color:var(--rust)">Error: ' + e.message + '</div>';
   } finally {
     btn.disabled = false;
-    btn.textContent = '🧠 Ask Cortex';
+    btn.textContent = '🧠 Ask Trailhead';
   }
 }
 
