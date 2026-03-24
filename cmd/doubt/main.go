@@ -129,7 +129,7 @@ func cmdScore(dir string) {
 		os.Exit(1)
 	}
 
-	store := tracker.New()
+	store := tracker.New(nil)
 	loadSignals(store)
 
 	report := scorer.Compute(result.Units, store)
@@ -185,7 +185,7 @@ func cmdReport(dir string, jsonOut bool) {
 		os.Exit(1)
 	}
 
-	store := tracker.New()
+	store := tracker.New(nil)
 	loadSignals(store)
 
 	report := scorer.Compute(result.Units, store)
@@ -206,7 +206,7 @@ func cmdIngest(file string) {
 		os.Exit(1)
 	}
 
-	store := tracker.New()
+	store := tracker.New(nil)
 	count, err := store.IngestJSON(data)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -234,7 +234,7 @@ func cmdServe(dir string, args []string) {
 		os.Exit(1)
 	}
 
-	store := tracker.New()
+	store := tracker.New(nil)
 	loadSignals(store)
 
 	fmt.Printf("\n  🔍 Stockyard Doubt\n\n")

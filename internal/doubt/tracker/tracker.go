@@ -5,8 +5,11 @@ package tracker
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sync"
 	"time"
+
+	"github.com/stockyard-dev/stockyard/internal/doubt/store"
 )
 
 // Signal represents a production event tied to a code path.
@@ -36,6 +39,7 @@ type UnitStats struct {
 type Store struct {
 	mu      sync.RWMutex
 	units   map[string]*unitData
+	db      *store.DB
 }
 
 type unitData struct {
@@ -48,13 +52,48 @@ type unitData struct {
 	lastSeen  time.Time
 }
 
-// New creates a tracker store.
-func New() *Store {
-	return &Store{units: map[string]*unitData{}}
+// New creates a tracker store. If db is non-nil, signals are persisted to
+// SQLite and existing data is loaded on startup.
+func New(db *store.DB) *Store {
+	s := &Store{units: map[string]*unitData{}, db: db}
+	if db != nil {
+		s.loadFromDB()
+	}
+	return s
+}
+
+// loadFromDB populates the in-memory store from the SQLite database.
+func (s *Store) loadFromDB() {
+	all, err := s.db.ListUnits()
+	if err != nil {
+		log.Printf("doubt: failed to load from db: %v", err)
+		return
+	}
+	for id, ud := range all {
+		s.units[id] = &unitData{
+			requests:  ud.Requests,
+			errors:    ud.Errors,
+			panics:    ud.Panics,
+			timeouts:  ud.Timeouts,
+			latencies: ud.Latencies,
+			firstSeen: ud.FirstSeen,
+			lastSeen:  ud.LastSeen,
+		}
+	}
+	if len(all) > 0 {
+		log.Printf("doubt: loaded %d units from sqlite", len(all))
+	}
 }
 
 // Record ingests a production signal.
 func (s *Store) Record(sig Signal) {
+	// Persist to SQLite if available
+	if s.db != nil {
+		if err := s.db.RecordSignal(sig.UnitID, sig.Type, sig.Value); err != nil {
+			log.Printf("doubt: persist signal: %v", err)
+		}
+	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

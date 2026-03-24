@@ -7,9 +7,12 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/stockyard-dev/stockyard/internal/doubt/scanner"
 	"github.com/stockyard-dev/stockyard/internal/doubt/scorer"
+	"github.com/stockyard-dev/stockyard/internal/doubt/store"
 	"github.com/stockyard-dev/stockyard/internal/doubt/tracker"
 )
 
@@ -24,13 +27,42 @@ type Config struct {
 type Server struct {
 	cfg Config
 	mux *http.ServeMux
+	db  *store.DB
 }
 
-// New creates a Doubt server.
+// New creates a Doubt server. It opens a SQLite store in DOUBT_DATA_DIR
+// (default /tmp/doubt) and passes it to the tracker.
 func New(cfg Config) *Server {
-	s := &Server{cfg: cfg, mux: http.NewServeMux()}
+	dataDir := os.Getenv("DOUBT_DATA_DIR")
+	if dataDir == "" {
+		dataDir = "/tmp/doubt"
+	}
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		log.Printf("doubt: create data dir: %v", err)
+	}
+
+	dbPath := filepath.Join(dataDir, "doubt.db")
+	db, err := store.Open(dbPath)
+	if err != nil {
+		log.Printf("doubt: open sqlite %s: %v (running without persistence)", dbPath, err)
+	}
+
+	// Wire store into tracker if not already provided
+	if cfg.Tracker == nil {
+		cfg.Tracker = tracker.New(db)
+	}
+
+	s := &Server{cfg: cfg, mux: http.NewServeMux(), db: db}
 	s.routes()
 	return s
+}
+
+// Close shuts down the server's database connection.
+func (s *Server) Close() error {
+	if s.db != nil {
+		return s.db.Close()
+	}
+	return nil
 }
 
 func (s *Server) ListenAndServe() error {
