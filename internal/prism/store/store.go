@@ -66,6 +66,7 @@ func (db *DB) migrate() error {
 			count INTEGER DEFAULT 0
 		)`,
 		`CREATE INDEX IF NOT EXISTS idx_events_user ON user_events(user_id)`,
+		`CREATE INDEX IF NOT EXISTS idx_events_created ON user_events(created_at)`,
 	}
 	for _, s := range stmts {
 		if _, err := db.conn.Exec(s); err != nil {
@@ -196,4 +197,73 @@ func (db *DB) ListUserIDs() ([]string, error) {
 		ids = append(ids, id)
 	}
 	return ids, rows.Err()
+}
+
+// GetEventsSince returns all events across all users since the given time.
+func (db *DB) GetEventsSince(since time.Time) ([]UserEvent, error) {
+	rows, err := db.conn.Query(
+		`SELECT user_id, event_type, path, element, duration_ms, meta_json, created_at
+		 FROM user_events WHERE created_at >= ? ORDER BY created_at ASC`,
+		since,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query events since: %w", err)
+	}
+	defer rows.Close()
+
+	return scanEvents(rows)
+}
+
+// GetAllUserEvents returns events grouped by user_id, up to limit per user.
+func (db *DB) GetAllUserEvents(limit int) (map[string][]UserEvent, error) {
+	rows, err := db.conn.Query(
+		`SELECT user_id, event_type, path, element, duration_ms, meta_json, created_at
+		 FROM user_events ORDER BY user_id, created_at ASC`,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query all user events: %w", err)
+	}
+	defer rows.Close()
+
+	result := map[string][]UserEvent{}
+	for rows.Next() {
+		var e UserEvent
+		var metaJSON string
+		var createdAt time.Time
+		if err := rows.Scan(&e.UserID, &e.EventType, &e.Path, &e.Element, &e.Duration, &metaJSON, &createdAt); err != nil {
+			return nil, fmt.Errorf("scan event: %w", err)
+		}
+		e.Timestamp = createdAt
+		if metaJSON != "" {
+			if err := json.Unmarshal([]byte(metaJSON), &e.Meta); err != nil {
+				return nil, fmt.Errorf("unmarshal meta: %w", err)
+			}
+		}
+		if limit > 0 && len(result[e.UserID]) >= limit {
+			continue
+		}
+		result[e.UserID] = append(result[e.UserID], e)
+	}
+	return result, rows.Err()
+}
+
+// scanEvents is a helper that reads event rows into a slice.
+func scanEvents(rows *sql.Rows) ([]UserEvent, error) {
+	var events []UserEvent
+	for rows.Next() {
+		var e UserEvent
+		var metaJSON string
+		var createdAt time.Time
+		if err := rows.Scan(&e.UserID, &e.EventType, &e.Path, &e.Element, &e.Duration, &metaJSON, &createdAt); err != nil {
+			return nil, fmt.Errorf("scan event: %w", err)
+		}
+		e.Timestamp = createdAt
+		if metaJSON != "" {
+			if err := json.Unmarshal([]byte(metaJSON), &e.Meta); err != nil {
+				return nil, fmt.Errorf("unmarshal meta: %w", err)
+			}
+		}
+		events = append(events, e)
+	}
+	return events, rows.Err()
 }

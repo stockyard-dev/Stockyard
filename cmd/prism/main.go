@@ -18,6 +18,10 @@ func main() {
 	switch os.Args[1] {
 	case "serve":
 		cmdServe(os.Args[2:])
+	case "users":
+		cmdUsers()
+	case "confused":
+		cmdConfused()
 	case "version":
 		fmt.Printf("prism %s\n", version)
 	default:
@@ -49,6 +53,68 @@ func cmdServe(args []string) {
 	}
 }
 
+func cmdUsers() {
+	db, err := server.OpenStore()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "prism: open store: %v\n", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	engine := model.New(db)
+	maps := engine.AllMaps()
+	if len(maps) == 0 {
+		fmt.Println("No users tracked yet.")
+		return
+	}
+
+	fmt.Printf("%-20s  %6s  %9s  %10s  %5s\n", "USER", "EVENTS", "EXPERTISE", "CONFUSIONS", "RAGE")
+	fmt.Println("--------------------------------------------------------------")
+	for _, m := range maps {
+		fmt.Printf("%-20s  %6d  %8.0f%%  %10d  %5d\n",
+			truncate(m.UserID, 20),
+			m.EventCount,
+			m.Expertise*100,
+			len(m.Confusions),
+			m.RageClicks,
+		)
+	}
+}
+
+func cmdConfused() {
+	db, err := server.OpenStore()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "prism: open store: %v\n", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	engine := model.New(db)
+	heatmap := engine.ConfusionHeatmap()
+	if len(heatmap) == 0 {
+		fmt.Println("No confusion signals detected yet.")
+		return
+	}
+
+	fmt.Printf("%-30s  %5s  %5s  %5s  %5s  %5s\n", "PATH", "SCORE", "RAGE", "BACK", "HESIT", "ERROR")
+	fmt.Println("------------------------------------------------------------------------")
+	for _, h := range heatmap {
+		fmt.Printf("%-30s  %5d  %5d  %5d  %5d  %5d\n",
+			truncate(h.Path, 30),
+			h.ConfusionScore,
+			h.RageClicks,
+			h.Backtracks,
+			h.Hesitations,
+			h.Errors,
+		)
+	}
+}
+
+func truncate(s string, n int) string {
+	if len(s) <= n { return s }
+	return s[:n-1] + "…"
+}
+
 func printUsage() {
 	fmt.Println(`
   Stockyard Prism — See your system through users' eyes.
@@ -58,6 +124,8 @@ func printUsage() {
 
   Usage:
     prism serve [--port N]    Start server (ingest events via API)
+    prism users               List all tracked users with expertise scores
+    prism confused            Show most confused paths (confusion heatmap)
     prism version             Show version
 
   Ingest events:

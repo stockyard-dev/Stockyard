@@ -7,11 +7,14 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/prism/store"
 )
+
+const sessionGap = 30 * time.Minute
 
 // UserEvent is a behavioral signal from a user interaction.
 type UserEvent struct {
@@ -57,6 +60,37 @@ type Misunderstanding struct {
 	Severity string `json:"severity"`  // high, medium, low
 }
 
+// Session represents a contiguous period of user activity separated by
+// 30-minute inactivity gaps.
+type Session struct {
+	ID         string    `json:"id"`
+	UserID     string    `json:"user_id"`
+	StartedAt  time.Time `json:"started_at"`
+	EndedAt    time.Time `json:"ended_at"`
+	EventCount int       `json:"event_count"`
+	Paths      []string  `json:"paths"`
+}
+
+// HeatmapEntry represents confusion signals aggregated for a single path
+// across all users.
+type HeatmapEntry struct {
+	Path           string  `json:"path"`
+	ConfusionScore int     `json:"confusion_score"`
+	RageClicks     int     `json:"rage_clicks"`
+	Backtracks     int     `json:"backtracks"`
+	Hesitations    int     `json:"hesitations"`
+	Errors         int     `json:"errors"`
+}
+
+// CohortStats describes a group of users clustered by expertise level.
+type CohortStats struct {
+	Count        int     `json:"count"`
+	AvgConfusion float64 `json:"avg_confusion"`
+	AvgExpertise float64 `json:"avg_expertise"`
+	AvgEvents    float64 `json:"avg_events"`
+	UserIDs      []string `json:"user_ids"`
+}
+
 // Engine builds and maintains cognitive maps for all users.
 type Engine struct {
 	mu     sync.RWMutex
@@ -90,10 +124,6 @@ func (e *Engine) loadFromStore() {
 	}
 	e.allPaths = counts
 
-	// Discover users by checking which user_ids have events.
-	// We iterate known paths (a proxy) — but we need user IDs.
-	// Instead, load events for each user. We'll find users via a count query.
-	// Since there's no ListUsers method, we add one or scan user_events.
 	userIDs, err := e.db.ListUserIDs()
 	if err != nil {
 		log.Printf("prism: failed to list users: %v", err)
@@ -208,6 +238,9 @@ func (e *Engine) rebuildMap(userID string) {
 	// Deduplicate confusions by path+type
 	cm.Confusions = dedupeConfusions(cm.Confusions)
 
+	// Extract common navigation flows
+	cm.CommonFlows = extractCommonFlows(events)
+
 	e.maps[userID] = cm
 }
 
@@ -228,6 +261,24 @@ func (e *Engine) AllMaps() []CognitiveMap {
 	defer e.mu.RUnlock()
 	var out []CognitiveMap
 	for _, m := range e.maps {
+		out = append(out, *m)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Expertise < out[j].Expertise })
+	return out
+}
+
+// AllMapsSince returns cognitive maps for users active since the given time.
+func (e *Engine) AllMapsSince(since, until time.Time) []CognitiveMap {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	var out []CognitiveMap
+	for _, m := range e.maps {
+		if !since.IsZero() && m.LastSeen.Before(since) {
+			continue
+		}
+		if !until.IsZero() && m.LastSeen.After(until) {
+			continue
+		}
 		out = append(out, *m)
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Expertise < out[j].Expertise })
@@ -260,6 +311,246 @@ func (e *Engine) Stats() Stats {
 		if c > topCount { topCount = c; s.TopConfusion = p }
 	}
 	return s
+}
+
+// StatsSince returns aggregate statistics filtered by time window.
+func (e *Engine) StatsSince(since, until time.Time) Stats {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	s := Stats{}
+	confusionPaths := map[string]int{}
+	for _, m := range e.maps {
+		if !since.IsZero() && m.LastSeen.Before(since) {
+			continue
+		}
+		if !until.IsZero() && m.LastSeen.After(until) {
+			continue
+		}
+		s.Users++
+		s.TotalEvents += m.EventCount
+		s.AvgExpertise += m.Expertise
+		for _, c := range m.Confusions {
+			confusionPaths[c.Path]++
+		}
+	}
+	if s.Users > 0 { s.AvgExpertise /= float64(s.Users) }
+	topCount := 0
+	for p, c := range confusionPaths {
+		if c > topCount { topCount = c; s.TopConfusion = p }
+	}
+	return s
+}
+
+// GetUserSessions groups a user's events into sessions separated by 30-minute
+// inactivity gaps.
+func (e *Engine) GetUserSessions(userID string) []Session {
+	e.mu.RLock()
+	events := e.events[userID]
+	e.mu.RUnlock()
+
+	return buildSessions(userID, events)
+}
+
+// buildSessions creates sessions from a chronologically ordered list of events.
+func buildSessions(userID string, events []UserEvent) []Session {
+	if len(events) == 0 {
+		return nil
+	}
+
+	var sessions []Session
+	sessionIdx := 0
+	cur := Session{
+		UserID:    userID,
+		StartedAt: events[0].Timestamp,
+		EndedAt:   events[0].Timestamp,
+		Paths:     []string{events[0].Path},
+	}
+	cur.EventCount = 1
+
+	for i := 1; i < len(events); i++ {
+		gap := events[i].Timestamp.Sub(events[i-1].Timestamp)
+		if gap > sessionGap {
+			// Close current session and start new one.
+			cur.ID = fmt.Sprintf("%s-s%d", userID, sessionIdx)
+			cur.Paths = dedupePaths(cur.Paths)
+			sessions = append(sessions, cur)
+			sessionIdx++
+			cur = Session{
+				UserID:    userID,
+				StartedAt: events[i].Timestamp,
+				EndedAt:   events[i].Timestamp,
+				Paths:     []string{events[i].Path},
+			}
+			cur.EventCount = 1
+		} else {
+			cur.EndedAt = events[i].Timestamp
+			cur.EventCount++
+			cur.Paths = append(cur.Paths, events[i].Path)
+		}
+	}
+
+	// Close last session.
+	cur.ID = fmt.Sprintf("%s-s%d", userID, sessionIdx)
+	cur.Paths = dedupePaths(cur.Paths)
+	sessions = append(sessions, cur)
+
+	return sessions
+}
+
+// dedupePaths returns unique paths preserving first-seen order.
+func dedupePaths(paths []string) []string {
+	seen := map[string]bool{}
+	var out []string
+	for _, p := range paths {
+		if !seen[p] {
+			seen[p] = true
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// extractCommonFlows finds the most common 2-3 step navigation sequences
+// (n-grams) from the user's events grouped into sessions.
+func extractCommonFlows(events []UserEvent) [][]string {
+	if len(events) < 2 {
+		return nil
+	}
+
+	// Build sessions first
+	sessions := buildSessions("", events)
+
+	// Count n-grams (2 and 3) across sessions
+	ngrams := map[string]int{}
+	for _, sess := range sessions {
+		// Use full path sequence (not deduped) for this session
+		var paths []string
+		for _, p := range events {
+			if !p.Timestamp.Before(sess.StartedAt) && !p.Timestamp.After(sess.EndedAt) {
+				paths = append(paths, p.Path)
+			}
+		}
+
+		// 2-grams
+		for i := 0; i+1 < len(paths); i++ {
+			key := paths[i] + " -> " + paths[i+1]
+			ngrams[key]++
+		}
+		// 3-grams
+		for i := 0; i+2 < len(paths); i++ {
+			key := paths[i] + " -> " + paths[i+1] + " -> " + paths[i+2]
+			ngrams[key]++
+		}
+	}
+
+	// Sort by frequency, take top 5
+	type kv struct {
+		key   string
+		count int
+	}
+	var sorted []kv
+	for k, v := range ngrams {
+		if v >= 2 { // only include flows seen at least twice
+			sorted = append(sorted, kv{k, v})
+		}
+	}
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].count > sorted[j].count })
+
+	topN := 5
+	if len(sorted) < topN {
+		topN = len(sorted)
+	}
+
+	var flows [][]string
+	for i := 0; i < topN; i++ {
+		parts := strings.Split(sorted[i].key, " -> ")
+		flows = append(flows, parts)
+	}
+	return flows
+}
+
+// ConfusionHeatmap aggregates confusion signals across all users, returning
+// a ranked list of paths by confusion score.
+func (e *Engine) ConfusionHeatmap() []HeatmapEntry {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
+	pathData := map[string]*HeatmapEntry{}
+
+	for _, events := range e.events {
+		for _, ev := range events {
+			entry, ok := pathData[ev.Path]
+			if !ok {
+				entry = &HeatmapEntry{Path: ev.Path}
+				pathData[ev.Path] = entry
+			}
+			switch ev.EventType {
+			case "rage_click":
+				entry.RageClicks++
+				entry.ConfusionScore += 3
+			case "backtrack":
+				entry.Backtracks++
+				entry.ConfusionScore += 2
+			case "hesitate":
+				if ev.Duration > 10000 {
+					entry.Hesitations++
+					entry.ConfusionScore += 2
+				}
+			case "error":
+				entry.Errors++
+				entry.ConfusionScore += 3
+			}
+		}
+	}
+
+	var result []HeatmapEntry
+	for _, entry := range pathData {
+		if entry.ConfusionScore > 0 {
+			result = append(result, *entry)
+		}
+	}
+	sort.Slice(result, func(i, j int) bool { return result[i].ConfusionScore > result[j].ConfusionScore })
+	return result
+}
+
+// Cohorts clusters users into novice, intermediate, and expert groups.
+func (e *Engine) Cohorts() map[string]*CohortStats {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
+	cohorts := map[string]*CohortStats{
+		"novice":       {},
+		"intermediate": {},
+		"expert":       {},
+	}
+
+	for _, m := range e.maps {
+		var cohort string
+		switch {
+		case m.Expertise < 0.3:
+			cohort = "novice"
+		case m.Expertise <= 0.7:
+			cohort = "intermediate"
+		default:
+			cohort = "expert"
+		}
+		c := cohorts[cohort]
+		c.Count++
+		c.AvgConfusion += float64(len(m.Confusions))
+		c.AvgExpertise += m.Expertise
+		c.AvgEvents += float64(m.EventCount)
+		c.UserIDs = append(c.UserIDs, m.UserID)
+	}
+
+	for _, c := range cohorts {
+		if c.Count > 0 {
+			c.AvgConfusion /= float64(c.Count)
+			c.AvgExpertise /= float64(c.Count)
+			c.AvgEvents /= float64(c.Count)
+		}
+	}
+
+	return cohorts
 }
 
 func estimateExpertise(cm *CognitiveMap) float64 {
