@@ -15,7 +15,7 @@ cli:
 	@echo "Built dist/sy ($(VERSION))"
 
 # Sub-products
-PRODUCTS = bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt
+PRODUCTS = bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt relic breed fossilrec phantom feral tidepool crucible cortex mycelium spore molt
 
 # Build all binaries (unified + tools + CLI + products)
 build-all: build cli build-products

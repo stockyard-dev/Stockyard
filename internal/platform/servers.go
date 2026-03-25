@@ -48,6 +48,29 @@ import (
 	trailheadserver "github.com/stockyard-dev/stockyard/internal/trailhead/server"
 	verdiktserver "github.com/stockyard-dev/stockyard/internal/verdikt/server"
 
+	relicserver "github.com/stockyard-dev/stockyard/internal/relic/server"
+	relicstore "github.com/stockyard-dev/stockyard/internal/relic/store"
+	breedserver "github.com/stockyard-dev/stockyard/internal/breed/server"
+	breedstore "github.com/stockyard-dev/stockyard/internal/breed/store"
+	fossilrecserver "github.com/stockyard-dev/stockyard/internal/fossilrec/server"
+	fossilrecstore "github.com/stockyard-dev/stockyard/internal/fossilrec/store"
+	phantomserver "github.com/stockyard-dev/stockyard/internal/phantom/server"
+	phantomstore "github.com/stockyard-dev/stockyard/internal/phantom/store"
+	feralserver "github.com/stockyard-dev/stockyard/internal/feral/server"
+	feralstore "github.com/stockyard-dev/stockyard/internal/feral/store"
+	tidepoolserver "github.com/stockyard-dev/stockyard/internal/tidepool/server"
+	tidepoolstore "github.com/stockyard-dev/stockyard/internal/tidepool/store"
+	crucibleserver "github.com/stockyard-dev/stockyard/internal/crucible/server"
+	cruciblestore "github.com/stockyard-dev/stockyard/internal/crucible/store"
+	cortexserver "github.com/stockyard-dev/stockyard/internal/cortex/server"
+	cortexstore "github.com/stockyard-dev/stockyard/internal/cortex/store"
+	myceliumserver "github.com/stockyard-dev/stockyard/internal/mycelium/server"
+	myceliumstore "github.com/stockyard-dev/stockyard/internal/mycelium/store"
+	sporeserver "github.com/stockyard-dev/stockyard/internal/spore/server"
+	sporestore "github.com/stockyard-dev/stockyard/internal/spore/store"
+	moltserver "github.com/stockyard-dev/stockyard/internal/molt/server"
+	moltstore "github.com/stockyard-dev/stockyard/internal/molt/store"
+
 	"github.com/stockyard-dev/stockyard/internal/orchestrator/brain"
 	"github.com/stockyard-dev/stockyard/internal/orchestrator/bus"
 	"github.com/stockyard-dev/stockyard/internal/orchestrator/hub"
@@ -100,6 +123,23 @@ func (f *ServerFactory) BuildAll(tier Tier) []ProductServer {
 		// Enterprise
 		{"iron", TierEnterprise, f.buildIron},
 		{"orchestrator", TierEnterprise, f.buildOrchestrator},
+
+		// ── New Products ──
+		// Individual
+		{"relic", TierIndividual, f.buildRelic},
+		// Pro
+		{"breed", TierPro, f.buildBreed},
+		{"fossilrec", TierPro, f.buildFossilRec},
+		// Team
+		{"phantom", TierTeam, f.buildPhantom},
+		{"feral", TierTeam, f.buildFeral},
+		{"tidepool", TierTeam, f.buildTidePool},
+		{"crucible", TierTeam, f.buildCrucible},
+		// Enterprise
+		{"cortex", TierEnterprise, f.buildCortex},
+		{"mycelium", TierEnterprise, f.buildMycelium},
+		{"spore", TierEnterprise, f.buildSpore},
+		{"molt", TierEnterprise, f.buildMolt},
 	}
 
 	for _, b := range builders {
@@ -316,4 +356,72 @@ func (f *ServerFactory) buildOrchestrator() http.Handler {
 		Workflow: wf,
 		Brain:    br,
 	})
+}
+
+// ── New product builders ────────────────────────────────────────────
+
+func (f *ServerFactory) buildRelic() http.Handler {
+	dir := f.productDir("relic")
+	st, _ := relicstore.Open(filepath.Join(dir, "relic.db"))
+	return relicserver.New(relicserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildBreed() http.Handler {
+	dir := f.productDir("breed")
+	st, _ := breedstore.Open(filepath.Join(dir, "breed.db"))
+	return breedserver.New(breedserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildFossilRec() http.Handler {
+	dir := f.productDir("fossilrec")
+	st, _ := fossilrecstore.Open(filepath.Join(dir, "fossilrec.db"))
+	return fossilrecserver.New(fossilrecserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildPhantom() http.Handler {
+	dir := f.productDir("phantom")
+	st, _ := phantomstore.Open(filepath.Join(dir, "phantom.db"))
+	return phantomserver.New(phantomserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildFeral() http.Handler {
+	dir := f.productDir("feral")
+	st, _ := feralstore.Open(filepath.Join(dir, "feral.db"))
+	return feralserver.New(feralserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildTidePool() http.Handler {
+	dir := f.productDir("tidepool")
+	st, _ := tidepoolstore.Open(filepath.Join(dir, "tidepool.db"))
+	return tidepoolserver.New(tidepoolserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildCrucible() http.Handler {
+	dir := f.productDir("crucible")
+	st, _ := cruciblestore.Open(filepath.Join(dir, "crucible.db"))
+	return crucibleserver.New(crucibleserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildCortex() http.Handler {
+	dir := f.productDir("cortex")
+	st, _ := cortexstore.Open(filepath.Join(dir, "cortex.db"))
+	return cortexserver.New(cortexserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildMycelium() http.Handler {
+	dir := f.productDir("mycelium")
+	st, _ := myceliumstore.Open(filepath.Join(dir, "mycelium.db"))
+	return myceliumserver.New(myceliumserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildSpore() http.Handler {
+	dir := f.productDir("spore")
+	st, _ := sporestore.Open(filepath.Join(dir, "spore.db"))
+	return sporeserver.New(sporeserver.Config{Store: st})
+}
+
+func (f *ServerFactory) buildMolt() http.Handler {
+	dir := f.productDir("molt")
+	st, _ := moltstore.Open(filepath.Join(dir, "molt.db"))
+	return moltserver.New(moltserver.Config{Store: st})
 }

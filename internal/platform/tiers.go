@@ -42,6 +42,27 @@ var ProductTiers = map[string]Tier{
 	// Enterprise (custom)
 	"iron":         TierEnterprise,
 	"orchestrator": TierEnterprise,
+
+	// ── New Products ──
+
+	// Individual
+	"relic": TierIndividual,
+
+	// Pro
+	"breed":     TierPro,
+	"fossilrec": TierPro,
+
+	// Team
+	"phantom":  TierTeam,
+	"feral":    TierTeam,
+	"tidepool": TierTeam,
+	"crucible": TierTeam,
+
+	// Enterprise
+	"cortex":   TierEnterprise,
+	"mycelium": TierEnterprise,
+	"spore":    TierEnterprise,
+	"molt":     TierEnterprise,
 }
 
 // TierName returns the human-readable name for a tier.

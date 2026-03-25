@@ -66,6 +66,51 @@ const (
 	EventDeadCodeFound   EventType = "deadcode.found"
 	EventUserConfused    EventType = "user.confused"
 	EventStateRecorded   EventType = "state.recorded"
+
+	// ── New product events ──
+
+	// Relic
+	EventProvenanceCertified EventType = "provenance.certified"
+
+	// Breed
+	EventPromptEvolved EventType = "prompt.evolved"
+
+	// Fossil Record
+	EventModelDriftDetected  EventType = "model.drift.detected"
+	EventModelFingerprinted  EventType = "model.fingerprint.updated"
+
+	// Phantom
+	EventPhantomAnomaly EventType = "phantom.anomaly"
+	EventPhantomReport  EventType = "phantom.report"
+
+	// Feral
+	EventAttackDiscovered  EventType = "attack.discovered"
+	EventVulnerabilityFound EventType = "vulnerability.found"
+	EventGuardrailBlocked  EventType = "guardrail.blocked"
+
+	// Tide Pool
+	EventFeedbackLoopFound EventType = "feedback.loop.detected"
+	EventEmergentBehavior  EventType = "emergent.behavior.found"
+
+	// Crucible
+	EventSystemConfidence EventType = "system.confidence.scored"
+	EventPipelineDegraded EventType = "pipeline.degraded"
+
+	// Cortex
+	EventMemoryUpdated      EventType = "memory.updated"
+	EventMemoryConflict     EventType = "memory.conflict"
+	EventKnowledgePropagated EventType = "knowledge.propagated"
+
+	// Mycelium
+	EventNetworkInsight EventType = "network.insight"
+
+	// Spore
+	EventPatternCaptured  EventType = "pattern.captured"
+	EventPatternActivated EventType = "pattern.activated"
+
+	// Molt
+	EventComponentShed EventType = "component.shed"
+	EventWasteDetected EventType = "waste.detected"
 )
 
 // Event is a single occurrence in the system.

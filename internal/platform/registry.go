@@ -94,6 +94,19 @@ func (r *ProductRegistry) RegisterAll(activeTier Tier) {
 		{"trailhead", "Trailhead", "Codebase knowledge engine", "insight"},
 		{"iron", "Iron", "Burns specs into working code", "lifecycle"},
 		{"orchestrator", "Orchestrator", "Autonomous coordination brain", "lifecycle"},
+
+		// ── New Products ──
+		{"relic", "Relic", "Content provenance chain", "quality"},
+		{"breed", "Breed", "Genetic prompt evolution", "lifecycle"},
+		{"fossilrec", "Fossil Record", "Temporal model archaeology", "quality"},
+		{"phantom", "Phantom", "Persistent AI canaries", "quality"},
+		{"feral", "Feral", "Adversarial AI hunter", "quality"},
+		{"tidepool", "Tide Pool", "Emergent behavior detection", "insight"},
+		{"crucible", "Crucible", "System-level confidence scoring", "quality"},
+		{"cortex", "Cortex", "Shared AI memory substrate", "insight"},
+		{"mycelium", "Mycelium", "Cross-instance intelligence", "infra"},
+		{"spore", "Spore", "Self-replicating patterns", "infra"},
+		{"molt", "Molt", "Automatic architecture shedding", "infra"},
 	}
 
 	for _, d := range defs {

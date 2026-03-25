@@ -44,6 +44,19 @@ func printProducts() {
 		{"trailhead", "Trailhead", "Codebase knowledge engine", "insight", "Team", platform.TierTeam, false},
 		{"iron", "Iron", "Burns specs into working code", "lifecycle", "Enterprise", platform.TierEnterprise, false},
 		{"orchestrator", "Orchestrator", "Autonomous coordination brain", "lifecycle", "Enterprise", platform.TierEnterprise, false},
+
+		// ── New Products ──
+		{"relic", "Relic", "Content provenance chain", "quality", "Individual", platform.TierIndividual, false},
+		{"breed", "Breed", "Genetic prompt evolution", "lifecycle", "Pro", platform.TierPro, false},
+		{"fossilrec", "Fossil Record", "Temporal model archaeology", "quality", "Pro", platform.TierPro, false},
+		{"phantom", "Phantom", "Persistent AI canaries", "quality", "Team", platform.TierTeam, false},
+		{"feral", "Feral", "Adversarial AI hunter", "quality", "Team", platform.TierTeam, false},
+		{"tidepool", "Tide Pool", "Emergent behavior detection", "insight", "Team", platform.TierTeam, false},
+		{"crucible", "Crucible", "System-level confidence scoring", "quality", "Team", platform.TierTeam, false},
+		{"cortex", "Cortex", "Shared AI memory substrate", "insight", "Enterprise", platform.TierEnterprise, false},
+		{"mycelium", "Mycelium", "Cross-instance intelligence", "infra", "Enterprise", platform.TierEnterprise, false},
+		{"spore", "Spore", "Self-replicating patterns", "infra", "Enterprise", platform.TierEnterprise, false},
+		{"molt", "Molt", "Automatic architecture shedding", "infra", "Enterprise", platform.TierEnterprise, false},
 	}
 
 	// Mark active products
