@@ -136,3 +136,60 @@ func (db *DB) Stats() (map[string]any, error) {
 	db.conn.QueryRow(`SELECT COUNT(*) FROM phantom_anomalies`).Scan(&anomalies)
 	return map[string]any{"personas": personas, "total_sessions": sessions, "total_anomalies": anomalies}, nil
 }
+
+func (db *DB) CreateSession(s *Session) error {
+	_, err := db.conn.Exec(`INSERT INTO phantom_sessions (id,persona_id,started_at,status) VALUES (?,?,?,?)`,
+		s.ID, s.PersonaID, s.StartedAt, s.Status)
+	return err
+}
+
+func (db *DB) CompleteSession(id string, turns int, anomalies string) error {
+	_, err := db.conn.Exec(`UPDATE phantom_sessions SET completed_at=CURRENT_TIMESTAMP, turns=?, anomalies=?, status='completed' WHERE id=?`,
+		turns, anomalies, id)
+	return err
+}
+
+func (db *DB) FailSession(id string, reason string) error {
+	_, err := db.conn.Exec(`UPDATE phantom_sessions SET completed_at=CURRENT_TIMESTAMP, status='failed', anomalies=? WHERE id=?`,
+		reason, id)
+	return err
+}
+
+func (db *DB) CreateAnomaly(a *Anomaly) error {
+	_, err := db.conn.Exec(`INSERT INTO phantom_anomalies (id,persona_id,session_id,severity,category,description,expected,actual,evidence) VALUES (?,?,?,?,?,?,?,?,?)`,
+		a.ID, a.PersonaID, a.SessionID, a.Severity, a.Category, a.Description, a.Expected, a.Actual, a.Evidence)
+	return err
+}
+
+func (db *DB) IncrementPersonaSessions(id string, anomalyCount int) error {
+	_, err := db.conn.Exec(`UPDATE phantom_personas SET sessions_completed=sessions_completed+1, anomalies_detected=anomalies_detected+?, last_session_at=CURRENT_TIMESTAMP, status='idle' WHERE id=?`,
+		anomalyCount, id)
+	return err
+}
+
+func (db *DB) SetPersonaStatus(id string, status string) error {
+	_, err := db.conn.Exec(`UPDATE phantom_personas SET status=? WHERE id=?`, status, id)
+	return err
+}
+
+func (db *DB) ListSessions(personaID string, limit int) ([]Session, error) {
+	if limit <= 0 { limit = 50 }
+	rows, err := db.conn.Query(`SELECT id,persona_id,started_at,completed_at,turns,anomalies,status FROM phantom_sessions WHERE persona_id=? ORDER BY started_at DESC LIMIT ?`, personaID, limit)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var out []Session
+	for rows.Next() {
+		var s Session
+		rows.Scan(&s.ID, &s.PersonaID, &s.StartedAt, &s.CompletedAt, &s.Turns, &s.Anomalies, &s.Status)
+		out = append(out, s)
+	}
+	return out, nil
+}
+
+func (db *DB) GetSession(id string) (*Session, error) {
+	var s Session
+	err := db.conn.QueryRow(`SELECT id,persona_id,started_at,completed_at,turns,anomalies,status FROM phantom_sessions WHERE id=?`, id).Scan(
+		&s.ID, &s.PersonaID, &s.StartedAt, &s.CompletedAt, &s.Turns, &s.Anomalies, &s.Status)
+	if err != nil { return nil, err }
+	return &s, nil
+}

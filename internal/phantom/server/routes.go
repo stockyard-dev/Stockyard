@@ -61,19 +61,51 @@ func (s *Server) handleUpdatePersona(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleStart(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"id": r.PathValue("id"), "status": "started"})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+	id := r.PathValue("id")
+	p, err := s.cfg.Store.GetPersona(id)
+	if err != nil { writeJSON(w, 404, map[string]string{"error": "persona not found"}); return }
+
+	// API key from request body or default
+	var body struct {
+		APIKey string `json:"api_key"`
+	}
+	json.NewDecoder(r.Body).Decode(&body)
+	apiKey := body.APIKey
+	if apiKey == "" {
+		apiKey = r.Header.Get("X-Phantom-Key")
+	}
+	if apiKey == "" {
+		writeJSON(w, 400, map[string]string{"error": "api_key required in body or X-Phantom-Key header"})
+		return
+	}
+
+	// Run session asynchronously
+	go s.runSession(p, apiKey)
+
+	writeJSON(w, 200, map[string]any{"id": id, "status": "started", "persona": p.Name})
 }
 
 func (s *Server) handlePause(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"id": r.PathValue("id"), "status": "paused"})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+	id := r.PathValue("id")
+	s.cfg.Store.SetPersonaStatus(id, "paused")
+	writeJSON(w, 200, map[string]string{"id": id, "status": "paused"})
 }
 
 func (s *Server) handleSessions(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, []any{})
+	if s.cfg.Store == nil { writeJSON(w, 200, []any{}); return }
+	sessions, err := s.cfg.Store.ListSessions(r.PathValue("id"), 50)
+	if err != nil { writeJSON(w, 500, map[string]string{"error": err.Error()}); return }
+	if sessions == nil { sessions = []store.Session{} }
+	writeJSON(w, 200, sessions)
 }
 
 func (s *Server) handleSession(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"id": r.PathValue("id")})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+	sess, err := s.cfg.Store.GetSession(r.PathValue("id"))
+	if err != nil { writeJSON(w, 404, map[string]string{"error": "session not found"}); return }
+	writeJSON(w, 200, sess)
 }
 
 func (s *Server) handleListAnomalies(w http.ResponseWriter, r *http.Request) {
