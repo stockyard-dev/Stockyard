@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -40,6 +41,8 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 	relicstore "github.com/stockyard-dev/stockyard/internal/relic/store"
 	cruciblestore "github.com/stockyard-dev/stockyard/internal/crucible/store"
+	fossilrecstore "github.com/stockyard-dev/stockyard/internal/fossilrec/store"
+	cortexstore "github.com/stockyard-dev/stockyard/internal/cortex/store"
 	"github.com/stockyard-dev/stockyard/internal/site"
 	"github.com/stockyard-dev/stockyard/internal/slog"
 	"github.com/stockyard-dev/stockyard/internal/storage"
@@ -625,13 +628,33 @@ func Boot(pc ProductConfig) {
 			Registry: productRegistry,
 		}, productServers)
 
-		// Wire auto-feed: every proxy request auto-populates Relic + Crucible
+		// Wire auto-feed: every proxy request auto-populates platform products
 		if activeTier >= platform.TierIndividual {
 			relicDB, _ := relicstore.Open(filepath.Join(cfg.DataDir, "relic", "relic.db"))
 			var crucibleDB *cruciblestore.DB
+			var fossilrecDB *fossilrecstore.DB
+			var cortexDB *cortexstore.DB
+			if activeTier >= platform.TierPro {
+				fossilrecDB, _ = fossilrecstore.Open(filepath.Join(cfg.DataDir, "fossilrec", "fossilrec.db"))
+			}
 			if activeTier >= platform.TierTeam {
 				crucibleDB, _ = cruciblestore.Open(filepath.Join(cfg.DataDir, "crucible", "crucible.db"))
 			}
+			if activeTier >= platform.TierEnterprise {
+				cortexDB, _ = cortexstore.Open(filepath.Join(cfg.DataDir, "cortex", "cortex.db"))
+			}
+
+			// Fingerprint accumulator — batches trace data for periodic fingerprinting
+			type fpAccum struct {
+				count     int
+				totalLen  float64
+				totalLat  float64
+				refusals  int
+				totalTokE float64
+			}
+			fpData := make(map[string]*fpAccum) // key: model
+			var fpMu sync.Mutex
+
 			ProductAutoFeed = func(traceID string, req *provider.Request, resp *provider.Response, dur time.Duration) {
 				defer func() { recover() }()
 
@@ -640,7 +663,18 @@ func Boot(pc ProductConfig) {
 					content = resp.Choices[0].Message.Content
 				}
 
-				// Relic: certify every response
+				// ── Bus: emit request.completed event ──
+				eventBus.EmitSimple(bus.EventRequestComplete, "proxy", map[string]any{
+					"trace_id":  traceID,
+					"model":     resp.Model,
+					"provider":  resp.Provider,
+					"tokens_in": resp.Usage.PromptTokens,
+					"tokens_out": resp.Usage.CompletionTokens,
+					"latency_ms": dur.Milliseconds(),
+					"cost":      float64(resp.Usage.PromptTokens)*0.002/1000 + float64(resp.Usage.CompletionTokens)*0.006/1000,
+				})
+
+				// ── Relic: certify every response ──
 				if relicDB != nil {
 					promptJSON, _ := json.Marshal(req.Messages)
 					promptHash := fmt.Sprintf("%x", sha256.Sum256(promptJSON))
@@ -664,9 +698,9 @@ func Boot(pc ProductConfig) {
 					})
 				}
 
-				// Crucible: score system confidence
+				// ── Crucible: score system confidence ──
 				if crucibleDB != nil {
-					compound := 0.94 // base score
+					compound := 0.94
 					if dur > 5*time.Second {
 						compound -= 0.05
 					}
@@ -688,8 +722,65 @@ func Boot(pc ProductConfig) {
 						ScoredAt:            time.Now(),
 					})
 				}
+
+				// ── Fossil Record: accumulate for periodic fingerprinting ──
+				if fossilrecDB != nil {
+					model := resp.Model
+					fpMu.Lock()
+					acc, ok := fpData[model]
+					if !ok {
+						acc = &fpAccum{}
+						fpData[model] = acc
+					}
+					acc.count++
+					acc.totalLen += float64(len(content))
+					acc.totalLat += float64(dur.Milliseconds())
+					if resp.Usage.CompletionTokens == 0 {
+						acc.refusals++
+					}
+					count := acc.count
+					fpMu.Unlock()
+
+					// Save fingerprint every 25 requests per model
+					if count > 0 && count%25 == 0 {
+						fpMu.Lock()
+						a := *acc
+						fpMu.Unlock()
+						sig := fmt.Sprintf("%s:%s:%d:%.0f:%.4f",
+							model, resp.Provider, a.count, a.totalLat/float64(a.count), float64(a.refusals)/float64(a.count))
+						fossilrecDB.CreateFingerprint(&fossilrecstore.FingerprintRecord{
+							ID:                fmt.Sprintf("fp-auto-%s-%d", model[:min(12, len(model))], time.Now().Unix()),
+							Model:             model,
+							Provider:          resp.Provider,
+							SampleCount:       a.count,
+							AvgResponseLength: a.totalLen / float64(a.count),
+							AvgLatencyMs:      a.totalLat / float64(a.count),
+							RefusalRate:       float64(a.refusals) / float64(a.count),
+							Signature:         sig,
+							CreatedAt:         time.Now(),
+						})
+						log.Printf("[fossilrec] auto-fingerprint: model=%s samples=%d", model, a.count)
+					}
+				}
+
+				// ── Cortex: learn from high-cost or error patterns ──
+				if cortexDB != nil {
+					cost := float64(resp.Usage.PromptTokens)*0.002/1000 + float64(resp.Usage.CompletionTokens)*0.006/1000
+					if cost > 0.01 { // expensive request — worth remembering
+						cortexDB.CreateMemory(&cortexstore.Memory{
+							ID:         fmt.Sprintf("mem-auto-%s", traceID[3:15]),
+							Category:   "pattern",
+							Subject:    resp.Model,
+							Predicate:  "expensive_request",
+							Value:      fmt.Sprintf("$%.4f cost, %d tokens in, %d out, %dms latency", cost, resp.Usage.PromptTokens, resp.Usage.CompletionTokens, dur.Milliseconds()),
+							Confidence: 0.8,
+							CreatedAt:  time.Now(),
+							UpdatedAt:  time.Now(),
+						})
+					}
+				}
 			}
-			log.Printf("[platform] auto-feed: relic=%v crucible=%v", relicDB != nil, crucibleDB != nil)
+			log.Printf("[platform] auto-feed: relic=%v crucible=%v fossilrec=%v cortex=%v", relicDB != nil, crucibleDB != nil, fossilrecDB != nil, cortexDB != nil)
 		}
 	}
 
