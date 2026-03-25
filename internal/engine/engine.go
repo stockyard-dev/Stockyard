@@ -473,6 +473,56 @@ func Boot(pc ProductConfig) {
 		})
 	})
 
+	// Direct provider test — bypasses all middleware to isolate provider issues
+	srv.Mux().HandleFunc("POST /api/diag/test", func(w http.ResponseWriter, r *http.Request) {
+		var body struct {
+			Model    string `json:"model"`
+			Prompt   string `json:"prompt"`
+			Provider string `json:"provider"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+		pName := body.Provider
+		if pName == "" {
+			pName = provider.ProviderForModel(body.Model)
+		}
+		p, ok := providers[pName]
+		if !ok {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": "provider " + pName + " not found"})
+			return
+		}
+		maxTok := 20
+		req := &provider.Request{
+			Model:     body.Model,
+			Provider:  pName,
+			MaxTokens: &maxTok,
+			Messages:  []provider.Message{{Role: "user", Content: body.Prompt}},
+			Extra:     map[string]any{},
+		}
+		resp, err := p.Send(r.Context(), req)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{"error": err.Error(), "provider": pName, "model": body.Model})
+			return
+		}
+		content := ""
+		if len(resp.Choices) > 0 {
+			content = resp.Choices[0].Message.Content
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"content":  content,
+			"model":    resp.Model,
+			"provider": resp.Provider,
+			"tokens":   resp.Usage,
+			"latency":  resp.Latency.Milliseconds(),
+		})
+	})
+
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
