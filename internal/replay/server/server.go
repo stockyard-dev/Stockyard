@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/replay/capture"
 	"github.com/stockyard-dev/stockyard/internal/replay/reconstruct"
 	"github.com/stockyard-dev/stockyard/internal/replay/store"
 )
@@ -169,8 +170,7 @@ func (s *Server) handleUI(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(adminHTML))
 }
 
-func captureType(s string) captType { return captType(s) }
-type captType = string
+func captureType(s string) capture.DeltaType { return capture.DeltaType(s) }
 
 func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
