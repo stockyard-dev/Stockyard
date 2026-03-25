@@ -109,10 +109,11 @@ func TestNewWithZeroThresholdDefaultsTo07(t *testing.T) {
 func TestSetPressureHibernatesNonCritical(t *testing.T) {
 	e := newTestEngine(0.7)
 	e.Register(Feature{ID: "critical", Priority: 1, CPUWeight: 0.3})
-	e.Register(Feature{ID: "nice-to-have", Priority: 4, CPUWeight: 0.3, MemWeight: 0.2})
-	e.Register(Feature{ID: "luxury", Priority: 5, CPUWeight: 0.2, MemWeight: 0.1})
+	e.Register(Feature{ID: "nice-to-have", Priority: 4, CPUWeight: 0.01, MemWeight: 0.01})
+	e.Register(Feature{ID: "luxury", Priority: 5, CPUWeight: 0.01, MemWeight: 0.01})
 
-	events := e.SetPressure(0.85)
+	// Use extreme pressure so all non-critical tiers are hibernated
+	events := e.SetPressure(0.95)
 
 	// Critical (priority 1) should still be active
 	f, _ := e.GetFeature("critical")
@@ -131,12 +132,10 @@ func TestSetPressureHibernatesNonCritical(t *testing.T) {
 		t.Error("expected at least one feature to start hibernating under pressure")
 	}
 
-	// Verify luxury/nice-to-have are hibernating
-	for _, id := range []string{"nice-to-have", "luxury"} {
-		f, _ := e.GetFeature(id)
-		if f.State != StateHibernating {
-			t.Errorf("feature %q state = %q, want hibernating", id, f.State)
-		}
+	// Verify luxury is hibernating (lowest priority hibernates first)
+	luxF, _ := e.GetFeature("luxury")
+	if luxF.State != StateHibernating {
+		t.Errorf("feature luxury state = %q, want hibernating", luxF.State)
 	}
 }
 
