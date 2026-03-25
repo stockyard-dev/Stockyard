@@ -36,8 +36,22 @@ jobs:
             CGO_ENABLED=0 go build -ldflags="-s -w" -o /dev/null ./cmd/$p && echo "  $p: ok" || { echo "  $p: FAILED"; exit 1; }
           done
 
-      - name: Test
-        run: go test ./... -count=1 -timeout 120s
+      - name: Test with coverage
+        run: |
+          go test ./... -count=1 -timeout 120s -coverprofile=coverage.out -covermode=atomic 2>&1 | tee test-output.txt
+          echo ""
+          echo "--- Coverage Summary ---"
+          go tool cover -func=coverage.out | tail -1
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.out
+
+      - name: Race detection (sub-products)
+        run: go test ./internal/bid/... ./internal/doubt/... ./internal/fault/... ./internal/replay/... ./internal/stampede/... -race -count=1 -timeout 120s
 
       - name: Vet
         run: go vet ./...
