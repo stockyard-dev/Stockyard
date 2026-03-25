@@ -21,8 +21,13 @@ import (
 // appHooksMiddleware wraps every proxy request and writes:
 //   - A trace row into observe_traces + cost rollup into observe_cost_daily
 //   - An audit event into trust_ledger (append-only hash chain)
+//   - Auto-feeds Relic (provenance) and Crucible (confidence) via ProductAutoFeed
 //
 // This is the outermost middleware — it sees every request and response.
+
+// ProductAutoFeed is called after every successful proxy request to auto-populate
+// platform products. Set by the platform integration block in Boot().
+var ProductAutoFeed func(traceID string, req *provider.Request, resp *provider.Response, dur time.Duration)
 func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
@@ -73,6 +78,12 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 			}
 			source, _ := req.Extra["_source"].(string)
 			go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source)
+
+			// Auto-feed platform products (Relic, Crucible) from every request
+			if ProductAutoFeed != nil && resp != nil && err == nil {
+				go ProductAutoFeed(traceID, req, resp, duration)
+			}
+
 			// Trust ledger recording is handled by Trust app's broadcaster listener
 			// (mutex-protected hash chain via RecordEvent)
 
