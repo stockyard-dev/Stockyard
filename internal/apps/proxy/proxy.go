@@ -13,24 +13,17 @@ import (
 	"sync"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/features"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/toggle"
 )
-
-// FailoverControl is the interface for managing circuit breakers from the admin API.
-// Implemented by features.FailoverRouter.
-type FailoverControl interface {
-	ResetBreaker(name string) bool
-	ResetAll()
-	BreakerStates() map[string]map[string]any
-}
 
 // App implements platform.App for the Proxy application.
 type App struct {
 	conn     *sql.DB
 	toggle   *toggle.Registry
 	audit    func(string, string, string, string, any)
-	failover FailoverControl
+	failover *features.FailoverRouter
 }
 
 // New creates a new Proxy app instance.
@@ -49,8 +42,8 @@ func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 }
 
 // SetFailoverRouter connects the proxy app to the failover router for circuit breaker management.
-func (a *App) SetFailoverRouter(fc FailoverControl) {
-	a.failover = fc
+func (a *App) SetFailoverRouter(router *features.FailoverRouter) {
+	a.failover = router
 }
 
 func (a *App) auditEvent(action, resource string, detail any) {

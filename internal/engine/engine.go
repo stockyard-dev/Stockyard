@@ -579,11 +579,7 @@ func Boot(pc ProductConfig) {
 			// Wire failover router for circuit breaker admin API
 			if failoverRouter != nil {
 				if setter, ok := app.(interface {
-					SetFailoverRouter(interface {
-						ResetBreaker(string) bool
-						ResetAll()
-						BreakerStates() map[string]map[string]any
-					})
+					SetFailoverRouter(*features.FailoverRouter)
 				}); ok {
 					setter.SetFailoverRouter(failoverRouter)
 				}
