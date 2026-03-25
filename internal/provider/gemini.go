@@ -28,7 +28,7 @@ func NewGemini(cfg ProviderConfig) *Gemini {
 	}
 	return &Gemini{
 		config: cfg,
-		client: &http.Client{Timeout: cfg.Timeout},
+		client: NewProviderClient(cfg.Timeout),
 	}
 }
 
@@ -101,7 +101,7 @@ func (g *Gemini) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	streamClient := &http.Client{Timeout: 5 * time.Minute}
+	streamClient := NewStreamClient()
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("gemini: send stream request: %w", err)

@@ -29,7 +29,7 @@ func NewOpenAI(cfg ProviderConfig) *OpenAI {
 	}
 	return &OpenAI{
 		config: cfg,
-		client: &http.Client{Timeout: cfg.Timeout},
+		client: NewProviderClient(cfg.Timeout),
 	}
 }
 
@@ -111,7 +111,7 @@ func (o *OpenAI) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 
 	// Streaming client: generous timeout (5 min) to prevent indefinite hangs
 	// while allowing long-running completions to finish
-	streamClient := &http.Client{Timeout: 5 * time.Minute}
+	streamClient := NewStreamClient()
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("openai: send stream request: %w", err)

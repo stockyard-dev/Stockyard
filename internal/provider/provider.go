@@ -4,9 +4,48 @@ package provider
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"net"
+	"net/http"
 	"time"
 )
+
+// sharedTransport is a tuned HTTP transport shared across all provider clients.
+// Key settings vs Go defaults:
+//   - MaxIdleConnsPerHost: 16 (default 2) — prevents connection churn under load
+//   - MaxIdleConns: 64 (default 100) — reasonable for 16 providers
+//   - IdleConnTimeout: 120s (default 90s) — keep provider connections warm longer
+//   - TLS session resumption enabled by default
+var sharedTransport = &http.Transport{
+	DialContext: (&net.Dialer{
+		Timeout:   10 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}).DialContext,
+	TLSClientConfig:     &tls.Config{MinVersion: tls.VersionTLS12},
+	MaxIdleConns:        64,
+	MaxIdleConnsPerHost: 16,
+	IdleConnTimeout:     120 * time.Second,
+	ForceAttemptHTTP2:   true,
+}
+
+// NewProviderClient creates an http.Client using the shared transport with the given timeout.
+// All providers should use this instead of creating their own http.Client.
+func NewProviderClient(timeout time.Duration) *http.Client {
+	return &http.Client{
+		Transport: sharedTransport,
+		Timeout:   timeout,
+	}
+}
+
+// NewStreamClient creates an http.Client for streaming with a long timeout.
+// Uses the shared transport for connection reuse across stream requests.
+func NewStreamClient() *http.Client {
+	return &http.Client{
+		Transport: sharedTransport,
+		Timeout:   5 * time.Minute,
+	}
+}
 
 // Provider is the interface that all LLM provider adapters must implement.
 type Provider interface {

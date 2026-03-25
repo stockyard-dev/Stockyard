@@ -28,7 +28,7 @@ func NewAnthropic(cfg ProviderConfig) *Anthropic {
 	}
 	return &Anthropic{
 		config: cfg,
-		client: &http.Client{Timeout: cfg.Timeout},
+		client: NewProviderClient(cfg.Timeout),
 	}
 }
 
@@ -85,7 +85,7 @@ func (a *Anthropic) SendStream(ctx context.Context, req *Request) (<-chan Stream
 	}
 	a.setHeaders(httpReq)
 
-	streamClient := &http.Client{Timeout: 5 * time.Minute}
+	streamClient := NewStreamClient()
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("anthropic: send stream request: %w", err)

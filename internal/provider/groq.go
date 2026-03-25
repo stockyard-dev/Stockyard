@@ -28,7 +28,7 @@ func NewGroq(cfg ProviderConfig) *Groq {
 	}
 	return &Groq{
 		config: cfg,
-		client: &http.Client{Timeout: cfg.Timeout},
+		client: NewProviderClient(cfg.Timeout),
 	}
 }
 
@@ -106,7 +106,7 @@ func (g *Groq) SendStream(ctx context.Context, req *Request) (<-chan StreamChunk
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+g.config.APIKey)
 
-	streamClient := &http.Client{Timeout: 5 * time.Minute}
+	streamClient := NewStreamClient()
 	httpResp, err := streamClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("groq: send stream request: %w", err)

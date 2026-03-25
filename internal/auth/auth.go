@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -106,9 +107,17 @@ type ProviderKey struct {
 // ─── Store ─────────────────────────────────────────────────────────────────
 
 // Store manages users, API keys, and provider keys.
+// cachedKeyEntry stores a validated API key result for the hot path.
+type cachedKeyEntry struct {
+	user    *User
+	apiKey  *APIKey
+	expires time.Time
+}
+
 type Store struct {
-	db     *sql.DB
-	encKey []byte // AES-256 key for provider key encryption at rest
+	db       *sql.DB
+	encKey   []byte    // AES-256 key for provider key encryption at rest
+	keyCache sync.Map  // map[keyHash]cachedKeyEntry — validated key cache
 }
 
 // NewStore creates a new auth store and runs migrations.
@@ -288,6 +297,17 @@ func (s *Store) ValidateKey(key string) (*User, *APIKey, error) {
 	}
 
 	hash := hashKey(key)
+
+	// Cache hit — skip both DB queries on the hot path
+	if cached, ok := s.keyCache.Load(hash); ok {
+		entry := cached.(cachedKeyEntry)
+		if time.Now().Before(entry.expires) {
+			return entry.user, entry.apiKey, nil
+		}
+		s.keyCache.Delete(hash)
+	}
+
+	// Cache miss — hit the DB
 	var ak APIKey
 	var uid int64
 	var revokedAt sql.NullString
@@ -326,7 +346,30 @@ func (s *Store) ValidateKey(key string) (*User, *APIKey, error) {
 		return nil, nil, err
 	}
 
+	// Cache for 30 seconds — balances hot-path speed vs revocation latency
+	s.keyCache.Store(hash, cachedKeyEntry{
+		user:    user,
+		apiKey:  &ak,
+		expires: time.Now().Add(30 * time.Second),
+	})
+
 	return user, &ak, nil
+}
+
+// InvalidateKeyCache removes a key from the validation cache.
+// Called on key revocation to ensure revoked keys aren't served from cache.
+func (s *Store) InvalidateKeyCache(key string) {
+	if strings.HasPrefix(key, "sk-sy-") {
+		s.keyCache.Delete(hashKey(key))
+	}
+}
+
+// InvalidateAllKeyCache clears the entire key validation cache.
+func (s *Store) InvalidateAllKeyCache() {
+	s.keyCache.Range(func(k, v any) bool {
+		s.keyCache.Delete(k)
+		return true
+	})
 }
 
 // ListKeys returns all (non-revoked) API keys for a user.
@@ -369,6 +412,9 @@ func (s *Store) RevokeKey(userID int64, keyID int64) error {
 	if n == 0 {
 		return errors.New("key not found or already revoked")
 	}
+	// Flush validation cache — revoked key must not be served from cache.
+	// Full flush is fine since revocations are rare.
+	s.InvalidateAllKeyCache()
 	return nil
 }
 
