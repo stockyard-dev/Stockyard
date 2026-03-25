@@ -81,9 +81,7 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 
 			// Auto-feed platform products (Relic, Crucible) from every request
 			if ProductAutoFeed != nil && resp != nil && err == nil {
-				// TEMPORARILY DISABLED for debugging Anthropic 503
-				// go ProductAutoFeed(traceID, req, resp, duration)
-				_ = ProductAutoFeed
+				go ProductAutoFeed(traceID, req, resp, duration)
 			}
 
 			// Trust ledger recording is handled by Trust app's broadcaster listener

@@ -1637,12 +1637,14 @@ func makeSendHandler(providers map[string]provider.Provider, factory *auth.Provi
 			if p, err := factory.ResolveProvider(ctx, name); err == nil && p != nil {
 				resp, err := p.Send(ctx, req)
 				if err != nil {
-					return nil, err
+					// Log the error and fall through to global provider
+					log.Printf("[proxy] user provider %s failed: %v — falling through to global", name, err)
+				} else {
+					if resp.Provider == "" {
+						resp.Provider = name
+					}
+					return resp, nil
 				}
-				if resp.Provider == "" {
-					resp.Provider = name
-				}
-				return resp, nil
 			}
 		}
 
