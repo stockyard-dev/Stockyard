@@ -1,0 +1,16 @@
+# Build stage
+FROM golang:1.22-alpine AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /tide ./cmd/tide/
+
+# Runtime stage
+FROM alpine:3.20
+RUN apk add --no-cache ca-certificates tzdata
+COPY --from=build /tide /usr/local/bin/tide
+EXPOSE 9350
+VOLUME /data
+ENV TIDE_DATA_DIR=/data PORT=9350
+ENTRYPOINT ["tide", "serve"]
