@@ -138,6 +138,25 @@ func (db *DB) GetBestGenome(popID string) (*GenomeRecord, error) {
 	return &g, nil
 }
 
+func (db *DB) ListGenomes(popID string, generation int) ([]GenomeRecord, error) {
+	rows, err := db.conn.Query(`SELECT id,population_id,generation,parent_a,parent_b,system_prompt,few_shot_examples,constraints,temperature,max_tokens,fitness,latency_ms,cost,quality_score,mutations,created_at FROM breed_genomes WHERE population_id=? AND generation=? ORDER BY fitness DESC`, popID, generation)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var genomes []GenomeRecord
+	for rows.Next() {
+		var g GenomeRecord
+		rows.Scan(&g.ID, &g.PopulationID, &g.Generation, &g.ParentA, &g.ParentB, &g.SystemPrompt, &g.FewShot, &g.Constraints, &g.Temperature, &g.MaxTokens, &g.Fitness, &g.LatencyMs, &g.Cost, &g.QualityScore, &g.Mutations, &g.CreatedAt)
+		genomes = append(genomes, g)
+	}
+	return genomes, nil
+}
+
+func (db *DB) UpdatePopulation(id string, generation int, bestFitness float64, status string) error {
+	_, err := db.conn.Exec(`UPDATE breed_populations SET generation=?, best_fitness=?, status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`,
+		generation, bestFitness, status, id)
+	return err
+}
+
 func (db *DB) Stats() (map[string]any, error) {
 	var pops, genomes int
 	db.conn.QueryRow(`SELECT COUNT(*) FROM breed_populations`).Scan(&pops)
