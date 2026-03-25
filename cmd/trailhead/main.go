@@ -262,7 +262,7 @@ func cmdSources() {
 	}
 
 	if len(sources) == 0 {
-		fmt.Println("\n  No sources indexed. Run 'trailhead index github <owner/repo>' to start.\n")
+		fmt.Println("\n  No sources indexed. Run 'trailhead index github <owner/repo>' to start.")
 		return
 	}
 

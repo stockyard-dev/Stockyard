@@ -65,6 +65,12 @@ func (s *Server) ListenAndServe() error {
 	return s.httpServer.ListenAndServe()
 }
 
+// ServeHTTP implements http.Handler, allowing this server to be
+// mounted as a sub-handler in the Stockyard platform.
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.mux.ServeHTTP(w, r)
+}
+
 // registerRoutes sets up all HTTP routes using Go 1.22 method routing.
 func (s *Server) registerRoutes() {
 	// API endpoints

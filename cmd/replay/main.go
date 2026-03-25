@@ -225,7 +225,7 @@ func cmdDiff(beforeStr, afterStr string) {
 	fmt.Printf("\n  ⏪ Diff: %s → %s\n\n", before.Format(time.RFC3339), after.Format(time.RFC3339))
 
 	if diff.Summary.TotalDeltas == 0 {
-		fmt.Println("  No changes detected in this time range.\n")
+		fmt.Println("  No changes detected in this time range.")
 		return
 	}
 

@@ -54,6 +54,12 @@ func (s *Server) ListenAndServe() error {
 	return http.ListenAndServe(addr, s.mux)
 }
 
+// ServeHTTP implements http.Handler, allowing this server to be
+// mounted as a sub-handler in the Stockyard platform.
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.mux.ServeHTTP(w, r)
+}
+
 // Close releases resources held by the server, including the store.
 func (s *Server) Close() error {
 	if s.cfg.Store != nil {

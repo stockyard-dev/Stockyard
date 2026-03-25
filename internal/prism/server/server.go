@@ -71,6 +71,12 @@ func (s *Server) ListenAndServe() error {
 	return err
 }
 
+// ServeHTTP implements http.Handler, allowing this server to be
+// mounted as a sub-handler in the Stockyard platform.
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.mux.ServeHTTP(w, r)
+}
+
 // OpenStore reads PRISM_DATA_DIR (default /tmp/prism), ensures the directory
 // exists, and opens the SQLite store.
 func OpenStore() (*store.DB, error) {

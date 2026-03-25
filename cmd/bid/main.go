@@ -226,7 +226,7 @@ func cmdProviders() {
 	json.NewDecoder(resp.Body).Decode(&records)
 
 	if len(records) == 0 {
-		fmt.Println("\n  No provider quality data yet. Run some auctions first.\n")
+		fmt.Println("\n  No provider quality data yet. Run some auctions first.")
 		return
 	}
 

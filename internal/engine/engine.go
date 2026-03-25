@@ -31,6 +31,8 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/license"
 	"github.com/stockyard-dev/stockyard/internal/mcp"
 	"github.com/stockyard-dev/stockyard/internal/mesh"
+	"github.com/stockyard-dev/stockyard/internal/orchestrator/bus"
+	"github.com/stockyard-dev/stockyard/internal/orchestrator/hub"
 	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
@@ -570,6 +572,48 @@ func Boot(pc ProductConfig) {
 			})
 		})
 		log.Printf("  Apps:      %d registered (/api/apps)", len(pc.Apps))
+	}
+
+	// ── Platform product integration ──────────────────────────────────
+	// Mount all 18 platform products (Bid, Replay, Doubt, etc.) onto the
+	// main mux with tier-gated access. Products above the active license
+	// tier return 403 with upgrade info. Products at/below the tier get
+	// their full HTTP handler mounted at /{product}/.
+	{
+		// Create shared event bus and product hub
+		eventBus := bus.New()
+		productHub := hub.New()
+
+		// Resolve active tier from license + env override
+		activeTier := platform.ResolveTier(lic)
+
+		// Run platform schema migrations
+		if err := platform.MigrateSchema(db.Conn()); err != nil {
+			log.Printf("[platform] migration error: %v", err)
+		}
+
+		// Create product registry (backed by SQLite for toggle persistence)
+		productRegistry := platform.NewProductRegistry(db.Conn())
+
+		// Build product servers (only instantiates products the tier permits)
+		factory := &platform.ServerFactory{
+			DataDir:   cfg.DataDir,
+			DB:        db.Conn(),
+			Providers: providers,
+			EventBus:  eventBus,
+			Hub:       productHub,
+		}
+		productServers := factory.BuildAll(activeTier)
+
+		// Mount everything onto the main mux
+		platform.Mount(platform.MountConfig{
+			Mux:      srv.Mux(),
+			Tier:     activeTier,
+			DB:       db.Conn(),
+			EventBus: eventBus,
+			Hub:      productHub,
+			Registry: productRegistry,
+		}, productServers)
 	}
 
 	// Mount sy-api billing/licensing/cloud/exchange routes (if enabled)

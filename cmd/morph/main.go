@@ -279,7 +279,7 @@ func cmdKeysList() {
 
 	if len(keys) == 0 {
 		fmt.Println("\n  No API keys configured.")
-		fmt.Println("  Run 'morph keys set <service> <key>' or set environment variables.\n")
+		fmt.Println("  Run 'morph keys set <service> <key>' or set environment variables.")
 		return
 	}
 
