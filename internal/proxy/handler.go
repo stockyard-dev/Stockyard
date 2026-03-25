@@ -31,7 +31,14 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := s.config.Handler(r.Context(), req)
+	resp, err := func() (resp *provider.Response, err error) {
+		defer func() {
+			if r := recover(); r != nil {
+				err = fmt.Errorf("PANIC in middleware chain: %v", r)
+			}
+		}()
+		return s.config.Handler(r.Context(), req)
+	}()
 	if err != nil {
 		// Check for cap exceeded error
 		if capErr, ok := isCapError(err); ok {
