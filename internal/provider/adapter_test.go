@@ -152,7 +152,7 @@ func TestAnthropic_Send(t *testing.T) {
 		if r.Header.Get("x-api-key") != "ant-key" {
 			t.Errorf("x-api-key = %q", r.Header.Get("x-api-key"))
 		}
-		if r.Header.Get("anthropic-version") != "2024-10-22" {
+		if r.Header.Get("anthropic-version") != "2023-06-01" {
 			t.Errorf("anthropic-version = %q", r.Header.Get("anthropic-version"))
 		}
 		if r.URL.Path != "/v1/messages" {
