@@ -1,4 +1,4 @@
-.PHONY: all build cli test clean run dev check lint
+.PHONY: all build cli build-products build-all test clean run dev check lint
 
 VERSION ?= dev
 
@@ -14,11 +14,21 @@ cli:
 	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/sy ./cmd/sy
 	@echo "Built dist/sy ($(VERSION))"
 
-# Build all binaries (unified + tools + CLI)
-build-all: build cli
+# Sub-products
+PRODUCTS = bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt
+
+# Build all binaries (unified + tools + CLI + products)
+build-all: build cli build-products
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-api ./cmd/sy-api
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-keygen ./cmd/sy-keygen
-	@echo "Built 4 binaries in dist/"
+	@echo "Built all binaries in dist/"
+
+# Build all sub-product binaries
+build-products:
+	@for p in $(PRODUCTS); do \
+		CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/$$p ./cmd/$$p && echo "  $$p: ok" || echo "  $$p: FAILED"; \
+	done
+	@echo "Built $(words $(PRODUCTS)) product binaries"
 
 test:
 	go test ./... -count=1 -race -timeout 120s
