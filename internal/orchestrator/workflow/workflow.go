@@ -310,4 +310,76 @@ func RegisterDefaults(e *Engine) {
 			{ProductID: "doubt", Action: "score_new_code", EmitEvent: bus.EventConfidenceLow, Timeout: 10 * time.Second, Optional: true},
 		},
 	})
+
+	// ========= Model Drift → Investigate → Evolve =========
+	e.Register(Chain{
+		ID:          "drift-response",
+		Name:        "Model Drift Response",
+		Description: "When model behavior changes: fingerprint, check confidence, evolve prompts, notify",
+		Trigger:     bus.EventModelDriftDetected,
+		Steps: []Step{
+			{ProductID: "fossilrec", Action: "fingerprint", EmitEvent: bus.EventModelFingerprinted, Timeout: 10 * time.Second},
+			{ProductID: "crucible", Action: "rescore_baselines", EmitEvent: bus.EventSystemConfidence, Timeout: 15 * time.Second},
+			{ProductID: "breed", Action: "evolve_for_new_model", EmitEvent: bus.EventPromptEvolved, Timeout: 60 * time.Second, Optional: true},
+			{ProductID: "phantom", Action: "run_canaries", EmitEvent: bus.EventPhantomReport, Timeout: 120 * time.Second, Optional: true},
+			{ProductID: "cortex", Action: "store_drift_knowledge", EmitEvent: bus.EventMemoryUpdated, Timeout: 5 * time.Second, Optional: true},
+		},
+	})
+
+	// ========= Vulnerability Found → Patch → Evolve → Propagate =========
+	e.Register(Chain{
+		ID:          "immune-response",
+		Name:        "Immune Response",
+		Description: "When Feral finds a guardrail bypass: patch, evolve defense, propagate immunity",
+		Trigger:     bus.EventVulnerabilityFound,
+		Steps: []Step{
+			{ProductID: "fault", Action: "patch_guardrail", EmitEvent: bus.EventPatchApplied, Timeout: 30 * time.Second},
+			{ProductID: "breed", Action: "evolve_defense", EmitEvent: bus.EventPromptEvolved, Timeout: 60 * time.Second, Optional: true},
+			{ProductID: "phantom", Action: "verify_fix", EmitEvent: bus.EventPhantomReport, Timeout: 60 * time.Second, Optional: true},
+			{ProductID: "spore", Action: "capture_pattern", EmitEvent: bus.EventPatternCaptured, Timeout: 5 * time.Second, Optional: true},
+			{ProductID: "mycelium", Action: "propagate_defense", EmitEvent: bus.EventNetworkInsight, Timeout: 10 * time.Second, Optional: true},
+		},
+	})
+
+	// ========= Feedback Loop Detected → Analyze → Fix =========
+	e.Register(Chain{
+		ID:          "loop-breaker",
+		Name:        "Feedback Loop Breaker",
+		Description: "When Tide Pool detects a feedback loop: analyze, simulate fix, apply, verify",
+		Trigger:     bus.EventFeedbackLoopFound,
+		Steps: []Step{
+			{ProductID: "tidepool", Action: "analyze_loop", Timeout: 15 * time.Second},
+			{ProductID: "tidepool", Action: "simulate_fix", Timeout: 30 * time.Second},
+			{ProductID: "crucible", Action: "score_impact", EmitEvent: bus.EventSystemConfidence, Timeout: 10 * time.Second},
+			{ProductID: "cortex", Action: "store_learning", EmitEvent: bus.EventMemoryUpdated, Timeout: 5 * time.Second, Optional: true},
+		},
+	})
+
+	// ========= Phantom Anomaly → Diagnose → Alert =========
+	e.Register(Chain{
+		ID:          "canary-alert",
+		Name:        "Canary Alert Pipeline",
+		Description: "When a persistent canary detects an anomaly: diagnose, check system confidence, alert",
+		Trigger:     bus.EventPhantomAnomaly,
+		Steps: []Step{
+			{ProductID: "fault", Action: "diagnose", EmitEvent: bus.EventErrorDiagnosed, Timeout: 30 * time.Second},
+			{ProductID: "crucible", Action: "score_pipeline", EmitEvent: bus.EventPipelineDegraded, Timeout: 10 * time.Second},
+			{ProductID: "fossilrec", Action: "check_model_change", EmitEvent: bus.EventModelDriftDetected, Timeout: 10 * time.Second, Optional: true},
+			{ProductID: "cortex", Action: "store_anomaly", EmitEvent: bus.EventMemoryUpdated, Timeout: 5 * time.Second, Optional: true},
+		},
+	})
+
+	// ========= Waste Detected → Shed → Verify → Learn =========
+	e.Register(Chain{
+		ID:          "metabolism",
+		Name:        "Architecture Metabolism",
+		Description: "When Molt detects dead weight: shed it, verify no impact, learn from it",
+		Trigger:     bus.EventWasteDetected,
+		Steps: []Step{
+			{ProductID: "molt", Action: "shed_component", EmitEvent: bus.EventComponentShed, Timeout: 10 * time.Second},
+			{ProductID: "phantom", Action: "verify_no_regression", EmitEvent: bus.EventPhantomReport, Timeout: 60 * time.Second, Optional: true},
+			{ProductID: "crucible", Action: "score_after_shed", EmitEvent: bus.EventSystemConfidence, Timeout: 10 * time.Second, Optional: true},
+			{ProductID: "spore", Action: "capture_pattern", EmitEvent: bus.EventPatternCaptured, Timeout: 5 * time.Second, Optional: true},
+		},
+	})
 }

@@ -60,6 +60,29 @@ func Mount(cfg MountConfig, servers []ProductServer) {
 		cfg.Mux.HandleFunc("GET /api/platform/events", handleEventStream(cfg.EventBus))
 	}
 
+	// Workflow listing from orchestrator
+	if cfg.Hub != nil {
+		cfg.Mux.HandleFunc("GET /api/platform/workflows", func(w http.ResponseWriter, r *http.Request) {
+			graph := cfg.Hub.DependencyGraph()
+			summary := cfg.Hub.Summary()
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"products":    summary,
+				"edges":       graph,
+				"edge_count":  len(graph),
+			})
+		})
+	}
+
+	// Bus stats
+	if cfg.EventBus != nil {
+		cfg.Mux.HandleFunc("GET /api/platform/bus", func(w http.ResponseWriter, r *http.Request) {
+			stats := cfg.EventBus.Stats()
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(stats)
+		})
+	}
+
 	// Summary log
 	active := len(cfg.Registry.Active())
 	total := cfg.Registry.Count()
