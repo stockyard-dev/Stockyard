@@ -329,7 +329,7 @@ func Boot(pc ProductConfig) {
 	toggle.Global = toggleReg
 
 	// Build middleware chain based on product features
-	middlewares := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers)
+	middlewares, failoverRouter := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers)
 
 	// License enforcement — first in chain (prepend so it runs before everything)
 	lic := license.FromEnv()
@@ -574,6 +574,18 @@ func Boot(pc ProductConfig) {
 			if billing.GlobalMeter != nil {
 				if setter, ok := app.(interface{ SetMarketplaceMeter(func(string, int64)) }); ok {
 					setter.SetMarketplaceMeter(billing.GlobalMeter.ReportMarketplaceFee)
+				}
+			}
+			// Wire failover router for circuit breaker admin API
+			if failoverRouter != nil {
+				if setter, ok := app.(interface {
+					SetFailoverRouter(interface {
+						ResetBreaker(string) bool
+						ResetAll()
+						BreakerStates() map[string]map[string]any
+					})
+				}); ok {
+					setter.SetFailoverRouter(failoverRouter)
 				}
 			}
 		}
@@ -1682,8 +1694,9 @@ func buildMiddlewares(reg *toggle.Registry,
 	counter *tracker.SpendCounter,
 	broadcaster *dashboard.Broadcaster,
 	providers map[string]provider.Provider,
-) []proxy.Middleware {
+) ([]proxy.Middleware, *features.FailoverRouter) {
 	var mw []proxy.Middleware
+	var failoverRouter *features.FailoverRouter
 
 	add := func(name string, m proxy.Middleware) {
 		mw = append(mw, toggle.Wrap(name, reg, m))
@@ -1904,6 +1917,7 @@ func buildMiddlewares(reg *toggle.Registry,
 			})
 		}
 		add("failover", features.FailoverMiddleware(router))
+		failoverRouter = router
 	}
 
 	// EvalGate — quality scoring + auto-retry (after provider sends, before final return)
@@ -2246,7 +2260,7 @@ func buildMiddlewares(reg *toggle.Registry,
 	// ── Phase 4 middleware ──
 	mw = buildPhase4Middlewares(pc, cfg, providers, mw, db, reg)
 
-	return mw
+	return mw, failoverRouter
 }
 
 // buildCaps extracts cap configuration from the config.

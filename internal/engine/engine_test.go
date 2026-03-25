@@ -32,7 +32,7 @@ func TestBuildMiddlewares(t *testing.T) {
 			providers := map[string]provider.Provider{}
 			reg := toggle.New()
 
-			mw := buildMiddlewares(reg, pc, cfg, nil, counter, broadcaster, providers)
+			mw, _ := buildMiddlewares(reg, pc, cfg, nil, counter, broadcaster, providers)
 			if len(mw) == 0 {
 				t.Error("expected at least one middleware")
 			}
@@ -103,7 +103,7 @@ func TestLoggingMiddlewareNilDB(t *testing.T) {
 
 	// Pass nil DB — should not panic
 	reg := toggle.New()
-	mw := buildMiddlewares(reg, products[0], cfg, nil, counter, broadcaster, map[string]provider.Provider{})
+	mw, _ := buildMiddlewares(reg, products[0], cfg, nil, counter, broadcaster, map[string]provider.Provider{})
 	if len(mw) == 0 {
 		t.Error("expected middlewares even with nil DB")
 	}

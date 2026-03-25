@@ -17,11 +17,20 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/toggle"
 )
 
+// FailoverControl is the interface for managing circuit breakers from the admin API.
+// Implemented by features.FailoverRouter.
+type FailoverControl interface {
+	ResetBreaker(name string) bool
+	ResetAll()
+	BreakerStates() map[string]map[string]any
+}
+
 // App implements platform.App for the Proxy application.
 type App struct {
-	conn   *sql.DB
-	toggle *toggle.Registry
-	audit  func(string, string, string, string, any)
+	conn     *sql.DB
+	toggle   *toggle.Registry
+	audit    func(string, string, string, string, any)
+	failover FailoverControl
 }
 
 // New creates a new Proxy app instance.
@@ -37,6 +46,11 @@ func (a *App) SetToggleRegistry(reg *toggle.Registry) {
 // SetAuditor wires the trust audit function for recording admin actions.
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 	a.audit = fn
+}
+
+// SetFailoverRouter connects the proxy app to the failover router for circuit breaker management.
+func (a *App) SetFailoverRouter(fc FailoverControl) {
+	a.failover = fc
 }
 
 func (a *App) auditEvent(action, resource string, detail any) {
@@ -109,6 +123,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/proxy/pricing", a.handlePricing)
 	mux.HandleFunc("POST /api/proxy/estimate", a.handleEstimate)
 	mux.HandleFunc("GET /api/proxy/recommendations", a.handleRecommendations)
+	mux.HandleFunc("GET /api/proxy/breakers", a.handleBreakerStates)
+	mux.HandleFunc("POST /api/proxy/breakers/reset", a.handleResetAllBreakers)
+	mux.HandleFunc("POST /api/proxy/breakers/{name}/reset", a.handleResetBreaker)
 	log.Printf("[proxy] routes registered")
 }
 
@@ -741,4 +758,63 @@ func (a *App) handleRecommendations(w http.ResponseWriter, r *http.Request) {
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(v)
+}
+
+// handleBreakerStates returns the current state of all circuit breakers.
+// GET /api/proxy/breakers
+func (a *App) handleBreakerStates(w http.ResponseWriter, r *http.Request) {
+	if a.failover == nil {
+		writeJSON(w, map[string]any{
+			"enabled":  false,
+			"breakers": map[string]any{},
+			"message":  "failover module is not active",
+		})
+		return
+	}
+	states := a.failover.BreakerStates()
+	writeJSON(w, map[string]any{
+		"enabled":  true,
+		"breakers": states,
+		"count":    len(states),
+	})
+}
+
+// handleResetAllBreakers resets all circuit breakers to closed state.
+// POST /api/proxy/breakers/reset
+func (a *App) handleResetAllBreakers(w http.ResponseWriter, r *http.Request) {
+	if a.failover == nil {
+		http.Error(w, `{"error":"failover module is not active"}`, http.StatusServiceUnavailable)
+		return
+	}
+	a.failover.ResetAll()
+	a.auditEvent("reset_all_breakers", "failover", nil)
+	states := a.failover.BreakerStates()
+	writeJSON(w, map[string]any{
+		"reset":    true,
+		"breakers": states,
+	})
+}
+
+// handleResetBreaker resets a single provider's circuit breaker.
+// POST /api/proxy/breakers/{name}/reset
+func (a *App) handleResetBreaker(w http.ResponseWriter, r *http.Request) {
+	if a.failover == nil {
+		http.Error(w, `{"error":"failover module is not active"}`, http.StatusServiceUnavailable)
+		return
+	}
+	name := r.PathValue("name")
+	if name == "" {
+		http.Error(w, `{"error":"provider name required"}`, http.StatusBadRequest)
+		return
+	}
+	if !a.failover.ResetBreaker(name) {
+		http.Error(w, fmt.Sprintf(`{"error":"unknown provider: %s"}`, name), http.StatusNotFound)
+		return
+	}
+	a.auditEvent("reset_breaker", "failover/"+name, map[string]string{"provider": name})
+	states := a.failover.BreakerStates()
+	writeJSON(w, map[string]any{
+		"reset":    name,
+		"breakers": states,
+	})
 }
