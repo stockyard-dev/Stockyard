@@ -18,16 +18,21 @@ import (
 	faultmemory "github.com/stockyard-dev/stockyard/internal/fault/memory"
 	faultserver "github.com/stockyard-dev/stockyard/internal/fault/server"
 	faultstore "github.com/stockyard-dev/stockyard/internal/fault/store"
+	"github.com/stockyard-dev/stockyard/internal/fossil/excavate"
 	fossilserver "github.com/stockyard-dev/stockyard/internal/fossil/server"
 	fossilstore "github.com/stockyard-dev/stockyard/internal/fossil/store"
 	grainaudit "github.com/stockyard-dev/stockyard/internal/grain/audit"
 	grainserver "github.com/stockyard-dev/stockyard/internal/grain/server"
 	grainstore "github.com/stockyard-dev/stockyard/internal/grain/store"
 	graintree "github.com/stockyard-dev/stockyard/internal/grain/tree"
+	"github.com/stockyard-dev/stockyard/internal/hollow/gaps"
 	hollowserver "github.com/stockyard-dev/stockyard/internal/hollow/server"
 	hollowstore "github.com/stockyard-dev/stockyard/internal/hollow/store"
 	ironserver "github.com/stockyard-dev/stockyard/internal/iron/server"
 	ironstore "github.com/stockyard-dev/stockyard/internal/iron/store"
+	morphexecutor "github.com/stockyard-dev/stockyard/internal/morph/executor"
+	morphkeyvault "github.com/stockyard-dev/stockyard/internal/morph/keyvault"
+	morphregistry "github.com/stockyard-dev/stockyard/internal/morph/registry"
 	morphserver "github.com/stockyard-dev/stockyard/internal/morph/server"
 	morphstore "github.com/stockyard-dev/stockyard/internal/morph/store"
 	orchestratorserver "github.com/stockyard-dev/stockyard/internal/orchestrator/server"
@@ -37,16 +42,25 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	replayserver "github.com/stockyard-dev/stockyard/internal/replay/server"
 	replaystore "github.com/stockyard-dev/stockyard/internal/replay/store"
+	seancecollector "github.com/stockyard-dev/stockyard/internal/seance/collector"
 	seanceserver "github.com/stockyard-dev/stockyard/internal/seance/server"
+	spineact "github.com/stockyard-dev/stockyard/internal/spine/act"
+	spinedecide "github.com/stockyard-dev/stockyard/internal/spine/decide"
+	spineobjectves "github.com/stockyard-dev/stockyard/internal/spine/objectives"
+	spineobserve "github.com/stockyard-dev/stockyard/internal/spine/observe"
+	spinesafety "github.com/stockyard-dev/stockyard/internal/spine/safety"
 	spineserver "github.com/stockyard-dev/stockyard/internal/spine/server"
 	spinestore "github.com/stockyard-dev/stockyard/internal/spine/store"
 	stampedeserver "github.com/stockyard-dev/stockyard/internal/stampede/server"
 	stampedestore "github.com/stockyard-dev/stockyard/internal/stampede/store"
+	tidemetabolic "github.com/stockyard-dev/stockyard/internal/tide/metabolic"
 	tideserver "github.com/stockyard-dev/stockyard/internal/tide/server"
 	tidestore "github.com/stockyard-dev/stockyard/internal/tide/store"
 	trailheadcstore "github.com/stockyard-dev/stockyard/internal/trailhead/cstore"
 	trailheadserver "github.com/stockyard-dev/stockyard/internal/trailhead/server"
+	verdiktjudge "github.com/stockyard-dev/stockyard/internal/verdikt/judge"
 	verdiktserver "github.com/stockyard-dev/stockyard/internal/verdikt/server"
+	verdiktstore "github.com/stockyard-dev/stockyard/internal/verdikt/store"
 
 	relicserver "github.com/stockyard-dev/stockyard/internal/relic/server"
 	relicstore "github.com/stockyard-dev/stockyard/internal/relic/store"
@@ -219,7 +233,10 @@ func (f *ServerFactory) buildDoubt() http.Handler {
 }
 
 func (f *ServerFactory) buildVerdikt() http.Handler {
-	return verdiktserver.New(verdiktserver.Config{})
+	dir := f.productDir("verdikt")
+	st, _ := verdiktstore.Open(filepath.Join(dir, "verdikt.db"))
+	judge := verdiktjudge.New(f.firstProvider(), "", "", st)
+	return verdiktserver.New(verdiktserver.Config{Judge: judge, Store: st})
 }
 
 // ── Pro tier products ───────────────────────────────────────────────
@@ -253,19 +270,43 @@ func (f *ServerFactory) buildFault() http.Handler {
 func (f *ServerFactory) buildMorph() http.Handler {
 	dir := f.productDir("morph")
 	st, _ := morphstore.New(filepath.Join(dir, "morph.db"))
-	return morphserver.New(morphserver.Config{Store: st})
+	reg := morphregistry.New()
+	vault := morphkeyvault.New(dir)
+	exec := morphexecutor.New(reg, vault)
+	return morphserver.New(morphserver.Config{
+		Store:    st,
+		Registry: reg,
+		Vault:    vault,
+		Executor: exec,
+	})
 }
 
 func (f *ServerFactory) buildSpine() http.Handler {
 	dir := f.productDir("spine")
 	st, _ := spinestore.New(filepath.Join(dir, "spine.db"))
-	return spineserver.New(spineserver.Config{Store: st})
+	obs := spineobserve.New(spineobserve.Config{})
+	objSet := &spineobjectves.ObjectiveSet{}
+	spec := &spineobjectves.Spec{Objectives: *objSet}
+	dec := spinedecide.New(objSet)
+	exec := spineact.NewExecutor(spineact.Config{DryRun: true})
+	safety := spinesafety.NewPendingQueue(spinesafety.GuardRails{})
+	return spineserver.New(spineserver.Config{
+		Store:      st,
+		Observer:   obs,
+		Decider:    dec,
+		Executor:   exec,
+		Objectives: spec,
+		Safety:     safety,
+	})
 }
 
 func (f *ServerFactory) buildHollow() http.Handler {
 	dir := f.productDir("hollow")
 	st, _ := hollowstore.New(filepath.Join(dir, "hollow.db"))
-	return hollowserver.New(hollowserver.Config{Store: st})
+	return hollowserver.New(hollowserver.Config{
+		Store:  st,
+		Result: &gaps.AnalysisResult{},
+	})
 }
 
 // ── Team tier products ──────────────────────────────────────────────
@@ -273,8 +314,10 @@ func (f *ServerFactory) buildHollow() http.Handler {
 func (f *ServerFactory) buildSeance() http.Handler {
 	dir := f.productDir("seance")
 	os.Setenv("SEANCE_DATA_DIR", dir)
+	coll := seancecollector.New(0)
 	return seanceserver.New(seanceserver.Config{
-		LLM: f.firstProvider(),
+		LLM:       f.firstProvider(),
+		Collector: coll,
 	})
 }
 
@@ -299,13 +342,17 @@ func (f *ServerFactory) buildEcho() http.Handler {
 func (f *ServerFactory) buildTide() http.Handler {
 	dir := f.productDir("tide")
 	st, _ := tidestore.Open(filepath.Join(dir, "tide.db"))
-	return tideserver.New(tideserver.Config{Store: st})
+	eng := tidemetabolic.New(0.7, st)
+	return tideserver.New(tideserver.Config{Store: st, Engine: eng})
 }
 
 func (f *ServerFactory) buildFossil() http.Handler {
 	dir := f.productDir("fossil")
 	st, _ := fossilstore.Open(filepath.Join(dir, "fossil.db"))
-	return fossilserver.New(fossilserver.Config{Store: st})
+	return fossilserver.New(fossilserver.Config{
+		Store:  st,
+		Report: &excavate.Report{},
+	})
 }
 
 func (f *ServerFactory) buildPrism() http.Handler {
