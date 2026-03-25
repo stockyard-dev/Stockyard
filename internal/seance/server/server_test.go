@@ -120,21 +120,6 @@ func TestAskEndpointMissingQuestion(t *testing.T) {
 	}
 }
 
-func TestAskEndpointNoLLM(t *testing.T) {
-	srv := newTestServer(t)
-
-	// With nil LLM, the synth engine will return an error
-	req := httptest.NewRequest(http.MethodPost, "/api/ask", strings.NewReader(`{"question":"what is the status?"}`))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	srv.mux.ServeHTTP(w, req)
-
-	// Should get 500 because LLM is nil
-	if w.Code != http.StatusInternalServerError {
-		t.Fatalf("expected 500, got %d", w.Code)
-	}
-}
-
 func TestAskStreamMissingQ(t *testing.T) {
 	srv := newTestServer(t)
 

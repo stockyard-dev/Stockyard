@@ -146,6 +146,9 @@ func (e *Engine) loadFromDB() {
 
 // Evaluate judges a single AI interaction.
 func (e *Engine) Evaluate(ctx context.Context, interaction Interaction) (*Evaluation, error) {
+	if e.llm == nil {
+		return nil, fmt.Errorf("no LLM provider configured")
+	}
 	start := time.Now()
 
 	domain := interaction.Domain

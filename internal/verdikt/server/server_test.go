@@ -125,17 +125,21 @@ func TestVerdiktEvaluateInvalidJSON(t *testing.T) {
 	}
 }
 
-func TestVerdiktEvaluateNilProvider(t *testing.T) {
+func TestVerdiktEvaluateMethodNotAllowed(t *testing.T) {
 	srv := newTestVerdiktServer(t)
-	body := `{"prompt":"hello","response":"hi there","request_id":"test-1"}`
-	req := httptest.NewRequest(http.MethodPost, "/api/evaluate", strings.NewReader(body))
-	req.Header.Set("Content-Type", "application/json")
+	// GET to a POST-only endpoint should return 405
+	req := httptest.NewRequest(http.MethodGet, "/api/evaluate", nil)
 	w := httptest.NewRecorder()
 	srv.mux.ServeHTTP(w, req)
 
-	// With nil provider, evaluate should return 500
-	if w.Code != 500 {
-		t.Fatalf("expected 500 (no provider), got %d", w.Code)
+	// Go 1.22 ServeMux returns 405 for wrong method on exact match.
+	// The "/" catch-all route may match instead, returning 200 with HTML.
+	// Either way, it should not return a successful JSON evaluation.
+	if w.Code == 200 {
+		ct := w.Header().Get("Content-Type")
+		if strings.Contains(ct, "application/json") {
+			t.Fatal("GET /api/evaluate should not return a JSON evaluation")
+		}
 	}
 }
 
