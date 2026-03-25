@@ -118,10 +118,11 @@ func TestEstimateExpertise(t *testing.T) {
 		max  float64
 	}{
 		{
-			name: "baseline user",
+			name: "baseline user with no negative signals",
 			cm:   CognitiveMap{PathFrequency: map[string]int{"/a": 1}},
-			min:  0.4,
-			max:  0.6,
+			// 0.5 base + 0.1 (no help) + 0.1 (no rage) + 0.05 (no backtrack) = 0.75
+			min:  0.7,
+			max:  0.8,
 		},
 		{
 			name: "expert user - many paths, no issues",
@@ -272,8 +273,9 @@ func TestEngine_IngestAndGetMap(t *testing.T) {
 	if len(cm.Confusions) == 0 {
 		t.Error("expected confusions to be recorded")
 	}
-	if cm.PathFrequency["/settings"] != 3 {
-		t.Errorf("expected /settings frequency 3, got %d", cm.PathFrequency["/settings"])
+	// /settings visited by: click, rage_click, help, error = 4 times
+	if cm.PathFrequency["/settings"] != 4 {
+		t.Errorf("expected /settings frequency 4, got %d", cm.PathFrequency["/settings"])
 	}
 }
 
@@ -437,12 +439,12 @@ func TestEngine_AvoidedPaths(t *testing.T) {
 	engine := New(nil)
 	now := time.Now()
 
-	// u1 visits /home and /about
-	engine.IngestEvent(UserEvent{UserID: "u1", EventType: "click", Path: "/home", Timestamp: now})
-	engine.IngestEvent(UserEvent{UserID: "u1", EventType: "click", Path: "/about", Timestamp: now.Add(1 * time.Minute)})
-	// u2 visits /home and /settings (creating /settings in allPaths)
+	// u2 visits /home and /settings first (creating /settings in allPaths)
 	engine.IngestEvent(UserEvent{UserID: "u2", EventType: "click", Path: "/home", Timestamp: now})
 	engine.IngestEvent(UserEvent{UserID: "u2", EventType: "click", Path: "/settings", Timestamp: now.Add(1 * time.Minute)})
+	// Now u1 visits /home and /about — /settings should be in allPaths already
+	engine.IngestEvent(UserEvent{UserID: "u1", EventType: "click", Path: "/home", Timestamp: now})
+	engine.IngestEvent(UserEvent{UserID: "u1", EventType: "click", Path: "/about", Timestamp: now.Add(1 * time.Minute)})
 
 	cm := engine.GetMap("u1")
 	if cm == nil {

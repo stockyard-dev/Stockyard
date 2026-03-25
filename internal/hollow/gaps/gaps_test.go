@@ -272,8 +272,8 @@ func TestAnalyzePythonFile(t *testing.T) {
 			wantGap: "missing_error_handling",
 		},
 		{
-			name:    "python TODO",
-			code:    "# TODO: implement this\ndef f():\n    pass\n",
+			name:    "python TODO with // comment",
+			code:    "// TODO: implement this\ndef f():\n    pass\n",
 			wantGap: "uncovered_case",
 		},
 	}
@@ -316,6 +316,11 @@ func TestAnalyzeTSFile(t *testing.T) {
 			wantGap: "uncovered_case",
 		},
 		{
+			name:    "console.log in test file is OK",
+			code:    "function f() {\n  console.log(\"debug\");\n}\n",
+			wantGap: "", // no gap expected for test files
+		},
+		{
 			name:    "ts TODO",
 			code:    "// TODO: fix this\nconst x = 1;\n",
 			wantGap: "uncovered_case",
@@ -324,11 +329,21 @@ func TestAnalyzeTSFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dir := t.TempDir()
-			path := filepath.Join(dir, "test.ts")
+			relName := "app.ts"
+			if tt.wantGap == "" {
+				relName = "test_utils.ts" // contains "test" -> console.log skipped
+			}
+			path := filepath.Join(dir, relName)
 			if err := os.WriteFile(path, []byte(tt.code), 0644); err != nil {
 				t.Fatal(err)
 			}
-			gaps := analyzeTSFile(path, "test.ts")
+			gaps := analyzeTSFile(path, relName)
+			if tt.wantGap == "" {
+				if len(gaps) != 0 {
+					t.Errorf("expected no gaps, got %v", gaps)
+				}
+				return
+			}
 			found := false
 			for _, g := range gaps {
 				if g.Type == tt.wantGap {
