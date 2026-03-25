@@ -280,18 +280,12 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 
 // seedProxyProviders populates the proxy_providers table from configured providers.
 func seedProxyProviders(conn *sql.DB, providers map[string]provider.Provider) {
-	var count int
-	conn.QueryRow("SELECT COUNT(*) FROM proxy_providers").Scan(&count)
-	if count > 0 {
-		return
-	}
-
 	for name := range providers {
 		conn.Exec("INSERT OR IGNORE INTO proxy_providers (name, status) VALUES (?, 'active')", name)
 	}
 
 	if len(providers) > 0 {
-		log.Printf("[proxy] seeded %d providers into proxy_providers table", len(providers))
+		log.Printf("[proxy] seeded/updated %d providers into proxy_providers table", len(providers))
 	}
 }
 

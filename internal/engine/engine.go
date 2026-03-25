@@ -454,6 +454,25 @@ func Boot(pc ProductConfig) {
 	// Config export/import/diff
 	RegisterConfigRoutes(srv.Mux(), db.Conn())
 
+	// Provider diagnostic endpoint
+	srv.Mux().HandleFunc("GET /api/diag/providers", func(w http.ResponseWriter, r *http.Request) {
+		provList := make([]map[string]any, 0, len(providers))
+		for name, p := range providers {
+			provList = append(provList, map[string]any{
+				"name":    name,
+				"type":    fmt.Sprintf("%T", p),
+				"healthy": p != nil,
+			})
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"loaded_providers":    provList,
+			"count":              len(providers),
+			"anthropic_env_set":  os.Getenv("ANTHROPIC_API_KEY") != "",
+			"openai_env_set":     os.Getenv("OPENAI_API_KEY") != "",
+		})
+	})
+
 	mgmtAPI := api.New(db, counter, pc.Product)
 	mgmtAPI.SetHandler(handler) // Enable replay functionality
 	mgmtAPI.Register(srv.Mux())
@@ -2214,24 +2233,28 @@ func initProviders(cfg *config.Config) map[string]provider.Provider {
 		providers["openai"] = provider.NewOpenAI(provider.ProviderConfig{
 			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
 		})
+		log.Printf("  Provider: openai (from config)")
 	}
 	if p, ok := cfg.Providers["anthropic"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
 		providers["anthropic"] = provider.NewAnthropic(provider.ProviderConfig{
 			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
 		})
+		log.Printf("  Provider: anthropic (from config)")
 	}
 	if p, ok := cfg.Providers["groq"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
 		providers["groq"] = provider.NewGroq(provider.ProviderConfig{
 			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
 		})
+		log.Printf("  Provider: groq (from config)")
 	}
 	if p, ok := cfg.Providers["gemini"]; ok && p.APIKey != "" && !isTemplate(p.APIKey) {
 		providers["gemini"] = provider.NewGemini(provider.ProviderConfig{
 			APIKey: p.APIKey, BaseURL: p.BaseURL, Timeout: p.Timeout.Duration,
 		})
+		log.Printf("  Provider: gemini (from config)")
 	}
 
-	// Auto-detect providers from environment variables
+	// Force-load from environment variables (overrides config if env var is set)
 	envProviders := map[string]struct {
 		envKey  string
 		factory func(provider.ProviderConfig) provider.Provider
@@ -2252,10 +2275,8 @@ func initProviders(cfg *config.Config) map[string]provider.Provider {
 	}
 
 	for name, ep := range envProviders {
-		if _, exists := providers[name]; exists {
-			continue // Already configured
-		}
 		if key := os.Getenv(ep.envKey); key != "" {
+			// Env var always wins — overrides config-loaded providers too
 			providers[name] = ep.factory(provider.ProviderConfig{
 				APIKey:  key,
 				Timeout: 60 * time.Second,
