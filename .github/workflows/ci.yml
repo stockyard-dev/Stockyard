@@ -27,8 +27,14 @@ jobs:
       - name: Verify modules
         run: go mod verify
 
-      - name: Build
+      - name: Build core
         run: CGO_ENABLED=0 go build -ldflags="-s -w" -o stockyard ./cmd/stockyard/
+
+      - name: Build all sub-products
+        run: |
+          for p in bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt; do
+            CGO_ENABLED=0 go build -ldflags="-s -w" -o /dev/null ./cmd/$p && echo "  $p: ok" || { echo "  $p: FAILED"; exit 1; }
+          done
 
       - name: Test
         run: go test ./... -count=1 -timeout 120s
