@@ -56,14 +56,15 @@ func (cb *CircuitBreaker) Allow() bool {
 		return true
 	case "open":
 		if time.Since(cb.lastFailure) > cb.recoveryTimeout {
-			// Transition to half-open: allow ONE probe request
+			// Transition to half-open: allow probe requests through
 			cb.state = "half-open"
 			return true
 		}
 		return false
 	case "half-open":
-		// Already have a probe in flight, block additional requests
-		return false
+		// In half-open, allow requests through as probes. The next
+		// RecordSuccess or RecordFailure determines the transition.
+		return true
 	}
 	return true
 }
@@ -114,6 +115,32 @@ func (cb *CircuitBreaker) State() string {
 	return cb.state
 }
 
+// Failures returns the current failure count.
+func (cb *CircuitBreaker) Failures() int {
+	cb.mu.Lock()
+	defer cb.mu.Unlock()
+	return cb.failures
+}
+
+// Reset forces the circuit breaker back to closed state, clearing failures.
+func (cb *CircuitBreaker) Reset() {
+	cb.mu.Lock()
+	prevState := cb.state
+	cb.failures = 0
+	cb.state = "closed"
+	cb.lastFailure = time.Time{}
+	cb.mu.Unlock()
+
+	if prevState != "closed" && cb.name != "" {
+		fireWebhook("provider.health_changed", map[string]any{
+			"provider":   cb.name,
+			"state":      "closed",
+			"prev_state": prevState,
+			"reset":      true,
+		})
+	}
+}
+
 // FailoverRouter manages provider failover with circuit breakers.
 type FailoverRouter struct {
 	config   FailoverConfig
@@ -139,7 +166,38 @@ func (fr *FailoverRouter) RegisterSender(name string, handler proxy.Handler) {
 	fr.senders[name] = handler
 }
 
-// isRetryableError checks if an error should trigger failover.
+// ResetBreaker resets a single provider's circuit breaker.
+func (fr *FailoverRouter) ResetBreaker(name string) bool {
+	cb, ok := fr.breakers[name]
+	if !ok {
+		return false
+	}
+	cb.Reset()
+	log.Printf("failover: circuit breaker for %s manually reset", name)
+	return true
+}
+
+// ResetAll resets all circuit breakers.
+func (fr *FailoverRouter) ResetAll() {
+	for name, cb := range fr.breakers {
+		cb.Reset()
+		log.Printf("failover: circuit breaker for %s manually reset", name)
+	}
+}
+
+// BreakerStates returns the current state of all circuit breakers.
+func (fr *FailoverRouter) BreakerStates() map[string]map[string]any {
+	states := make(map[string]map[string]any, len(fr.breakers))
+	for name, cb := range fr.breakers {
+		states[name] = map[string]any{
+			"state":    cb.State(),
+			"failures": cb.Failures(),
+		}
+	}
+	return states
+}
+
+// isRetryableError checks if an error should trigger failover to the next provider.
 func isRetryableError(err error) bool {
 	if apiErr, ok := err.(*provider.ProviderAPIError); ok {
 		return apiErr.IsRetryable()
@@ -148,7 +206,44 @@ func isRetryableError(err error) bool {
 	return true
 }
 
+// isModelMismatchError checks if the error indicates the provider doesn't
+// support the requested model (e.g. sending a Claude model to OpenAI).
+// These errors should skip to the next provider WITHOUT penalizing the
+// circuit breaker — the provider is healthy, just wrong for this model.
+func isModelMismatchError(err error) bool {
+	apiErr, ok := err.(*provider.ProviderAPIError)
+	if !ok {
+		return false
+	}
+	// 404 = model not found, the primary signal for model mismatch.
+	// Some providers also return 400 with "model not found" style messages,
+	// but 404 is the reliable indicator across OpenAI, Anthropic, and Groq.
+	return apiErr.StatusCode == 404
+}
+
+// modelAwareProviderOrder reorders the failover chain so the natural provider
+// for the requested model goes first, followed by remaining configured providers.
+// This prevents wasting attempts on providers that can't handle the model.
+func modelAwareProviderOrder(model string, configuredProviders []string) []string {
+	natural := provider.ProviderForModel(model)
+
+	// Build reordered list: natural provider first (if in the chain),
+	// then the rest in their configured order.
+	ordered := make([]string, 0, len(configuredProviders))
+	for _, p := range configuredProviders {
+		if p == natural {
+			ordered = append([]string{p}, ordered...)
+		} else {
+			ordered = append(ordered, p)
+		}
+	}
+	return ordered
+}
+
 // FailoverMiddleware returns middleware that tries providers in priority order.
+// The provider order is model-aware: the natural provider for the requested model
+// is tried first, followed by the remaining failover chain.
+//
 // Note: failover retries requests on alternate providers, which is safe for
 // idempotent read-only completions. Streaming requests are handled separately
 // via the streaming failover path in proxy/streaming.go, not this middleware.
@@ -167,10 +262,13 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 				return next(ctx, req)
 			}
 
+			// Reorder providers so the natural one for this model goes first.
+			providers := modelAwareProviderOrder(req.Model, router.config.Providers)
+
 			var lastErr error
 			attempted := 0
 
-			for _, name := range router.config.Providers {
+			for _, name := range providers {
 				cb, ok := router.breakers[name]
 				if !ok || !cb.Allow() {
 					continue
@@ -190,11 +288,20 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 				attempted++
 
 				if err != nil {
+					// Model mismatch (e.g. Claude model sent to OpenAI → 404):
+					// skip to next provider, don't penalize the circuit breaker.
+					if isModelMismatchError(err) {
+						log.Printf("failover: %s does not support model %s, skipping", name, req.Model)
+						continue
+					}
+
 					if !isRetryableError(err) {
-						// Non-retryable (e.g. 400, 401) — don't failover, return immediately
-						cb.RecordSuccess() // provider is healthy, just bad request
+						// Non-retryable (e.g. 400, 401) — provider is healthy,
+						// the request itself is bad. Don't failover.
+						cb.RecordSuccess()
 						return nil, err
 					}
+
 					cb.RecordFailure()
 					lastErr = err
 					log.Printf("failover: %s failed (%v), trying next", name, err)
