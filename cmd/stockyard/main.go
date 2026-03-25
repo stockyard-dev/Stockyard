@@ -1,12 +1,14 @@
-// Stockyard — "Where LLM traffic gets sorted."
+// Stockyard — The operating system for AI software.
 //
-// Single binary shipping all 16 apps:
-//   - Proxy:    Core reverse-proxy, middleware chain, provider dispatch
-//   - Observe:  Analytics, traces, alerts, anomaly detection, cost attribution
-//   - Trust:    Audit ledger, compliance, evidence packs, replay lab
-//   - Studio:   Prompt templates, experiments, benchmarks, snapshot tests
-//   - Forge:    Workflow engine, tool registry, triggers, sessions, batch
-//   - Exchange: Pack marketplace, config sharing, environment sync
+// Single binary shipping the complete platform:
+//   - Proxy:        Core reverse-proxy, 66-module middleware chain, 16 providers
+//   - 6 Core Apps:  Observe, Trust, Studio, Forge, Exchange, Billing
+//   - 18 Products:  Bid, Replay, Doubt, Verdikt, Stampede, Fault, Morph, Spine,
+//                   Hollow, Séance, Grain, Echo, Tide, Fossil, Prism, Trailhead,
+//                   Iron, Orchestrator — tier-gated at Individual/Pro/Team/Enterprise
+//
+// One binary. One port. One deploy.
+// Products activate based on license tier and can be toggled from the dashboard.
 package main
 
 import (

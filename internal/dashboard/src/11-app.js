@@ -55,7 +55,7 @@ function App(){
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 16 apps \u00B7 350+ endpoints</span></div>
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 18 products \u00B7 360+ endpoints</span></div>
   </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));

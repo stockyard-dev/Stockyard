@@ -7,8 +7,9 @@ const APPS={
   studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts & experiments'},
   forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
   exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
+  products:{id:'products',name:'Products',icon:'\u2B22',desc:'Platform products'},
 };
-const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange'];
+const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','products'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
 async function api(path,opts={}){

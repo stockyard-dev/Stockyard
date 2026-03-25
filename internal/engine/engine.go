@@ -233,6 +233,12 @@ func Boot(pc ProductConfig) {
 		RunDoctor(pc)
 	}
 
+	// Handle products subcommand — list all platform products with tier info
+	if len(os.Args) > 1 && (os.Args[1] == "products" || os.Args[1] == "--products") {
+		printProducts()
+		os.Exit(0)
+	}
+
 	log.SetFlags(log.Ltime | log.Lshortfile)
 
 	// Initialize structured logging

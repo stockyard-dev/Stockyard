@@ -24,6 +24,7 @@ cat \
   "$SRC/07-studio.js" \
   "$SRC/08-forge.js" \
   "$SRC/09-exchange.js" \
+  "$SRC/09b-products.js" \
   "$SRC/10-settings.js" \
   "$SRC/11-app.js" \
   "$SRC/tail.html" \

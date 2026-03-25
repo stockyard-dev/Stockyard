@@ -79,6 +79,15 @@
 .upgrade-cta:hover{background:var(--rust-light,#e8753a)}
 .upgrade-dismiss,.upgrade-next{background:none;border:none;color:var(--cream-dim,#bfb5a3);cursor:pointer;font-size:0.9rem;padding:2px 6px;opacity:0.6}
 .upgrade-dismiss:hover,.upgrade-next:hover{opacity:1;color:var(--cream,#f0e6d3)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:16px}
+.product-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;transition:all 0.15s;display:flex;flex-direction:column;gap:8px}.product-card:hover{border-color:var(--leather)}
+.product-locked{opacity:0.55;border-style:dashed}.product-locked:hover{opacity:0.75;border-color:var(--cream-muted)}
+.product-card-head{display:flex;align-items:center;gap:10px;margin-bottom:2px}.product-card-icon{font-size:1.1rem;width:20px;text-align:center}.product-card-name{font-family:var(--font-mono);font-weight:600;font-size:0.88rem;letter-spacing:1px;color:var(--cream)}
+.product-card-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;flex:1;min-height:1.6em}
+.product-card-meta{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:0.72rem;flex-wrap:wrap}
+.product-tier-badge{border:1px solid;padding:1px 6px;font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.product-category{color:var(--cream-muted);text-transform:capitalize}.product-api{color:var(--cream-muted);font-size:0.68rem}
+.product-upgrade{color:var(--gold);text-decoration:none;font-size:0.72rem;font-family:var(--font-mono)}.product-upgrade:hover{color:var(--rust-light)}
 </style>
 </head>
 <body><div id="root"></div></body>
