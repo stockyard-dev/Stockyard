@@ -245,7 +245,7 @@ func (a *Anthropic) HealthCheck(ctx context.Context) error {
 func (a *Anthropic) setHeaders(r *http.Request) {
 	r.Header.Set("Content-Type", "application/json")
 	r.Header.Set("x-api-key", a.config.APIKey)
-	r.Header.Set("anthropic-version", "2024-10-22")
+	r.Header.Set("anthropic-version", "2023-06-01")
 }
 
 func (a *Anthropic) buildRequestBody(req *Request, stream bool) ([]byte, error) {
