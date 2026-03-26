@@ -197,73 +197,82 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   <div class="pricing-grid">
 
     <div class="tier">
-      <div class="tier-name">Free</div>
+      <div class="tier-name">Community</div>
       <div class="tier-price-free">Free</div>
       <div class="tier-period">self-hosted &middot; forever</div>
       <div class="tier-annual-note">&nbsp;</div>
       <ul class="tier-features">
-        <li>All 66 modules</li>
-        <li>All 16 apps</li>
+        <li>Full proxy + 66 modules</li>
         <li>All 16 providers</li>
         <li>Unlimited requests</li>
-        <li>Publish apps to marketplace</li>
-        <li>Contribute to mesh</li>
-        <li>Sell knowledge bases</li>
+        <li>MIT licensed</li>
         <li>Community support</li>
       </ul>
       <a href="https://github.com/stockyard-dev/stockyard" class="btn btn-secondary tier-cta">Download</a>
     </div>
 
+    <div class="tier">
+      <div class="tier-name">Individual</div>
+      <div class="tier-price" data-monthly="29.99" data-annual="299.90"><span class="dollar">$</span><span class="price-val">29.99</span></div>
+      <div class="tier-period"><span class="period-text">per month</span></div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$59.98/yr"></span>&nbsp;</div>
+      <ul class="tier-features">
+        <li>Everything in Community</li>
+        <li>Cache + rate limiting</li>
+        <li>Key pool rotation</li>
+        <li>Relic provenance</li>
+        <li>5 platform products</li>
+        <li>Email support</li>
+      </ul>
+      <button onclick="checkout('individual',event)" class="btn btn-rust tier-cta">Get Started</button>
+    </div>
+
     <div class="tier featured">
       <div class="tier-name">Pro</div>
-      <div class="tier-price" data-monthly="29" data-annual="290"><span class="dollar">$</span><span class="price-val">29</span></div>
+      <div class="tier-price" data-monthly="99.99" data-annual="999.90"><span class="dollar">$</span><span class="price-val">99.99</span></div>
       <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$58/yr"></span>&nbsp;</div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$199.98/yr"></span>&nbsp;</div>
       <ul class="tier-features">
-        <li>Everything in Free</li>
-        <li>Cloud managed &mdash; zero ops</li>
-        <li>Custom domain</li>
-        <li>90-day audit retention</li>
-        <li>Auto backups</li>
+        <li>Everything in Individual</li>
+        <li>Failover + circuit breakers</li>
+        <li>PromptGuard + SecretScan</li>
+        <li>Breed + Fossil Record</li>
+        <li>12 platform products</li>
         <li>Priority support</li>
-        <li>Marketplace seller access</li>
       </ul>
-      <button onclick="checkout('stockyard','pro',event)" class="btn btn-rust tier-cta">Go Pro</button>
+      <button onclick="checkout('pro',event)" class="btn btn-rust tier-cta">Go Pro</button>
     </div>
 
     <div class="tier">
       <div class="tier-name">Team</div>
-      <div class="tier-price" data-monthly="99" data-annual="990"><span class="dollar">$</span><span class="price-val">99</span></div>
+      <div class="tier-price" data-monthly="299.99" data-annual="2999.90"><span class="dollar">$</span><span class="price-val">299.99</span></div>
       <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$198/yr"></span>&nbsp;</div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$599.98/yr"></span>&nbsp;</div>
       <ul class="tier-features">
         <li>Everything in Pro</li>
-        <li>5 seats included (+$20/seat)</li>
-        <li>RBAC &amp; team invites</li>
-        <li>Per-member spend tracking</li>
-        <li>Governance tools</li>
-        <li>Compliance presets</li>
-        <li>1-year audit retention</li>
+        <li>Full safety suite</li>
+        <li>Phantom + Feral testing</li>
+        <li>Compliance + audit logs</li>
+        <li>22 platform products</li>
+        <li>RBAC + team seats</li>
       </ul>
-      <button onclick="checkout('stockyard','team',event)" class="btn btn-rust tier-cta">Start team</button>
+      <button onclick="checkout('team',event)" class="btn btn-rust tier-cta">Start Team</button>
     </div>
 
     <div class="tier">
       <div class="tier-name">Enterprise</div>
-      <div class="tier-price" data-monthly="299" data-annual="2,990"><span class="dollar">$</span><span class="price-val">299</span></div>
+      <div class="tier-price" data-monthly="499.99" data-annual="4999.90"><span class="dollar">$</span><span class="price-val">499.99</span></div>
       <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$598/yr"></span>&nbsp;</div>
+      <div class="tier-annual-note"><span class="annual-savings" data-save="$999.98/yr"></span>&nbsp;</div>
       <ul class="tier-features">
         <li>Everything in Team</li>
-        <li>Unlimited seats</li>
-        <li>SSO &amp; SAML</li>
-        <li>Trust federation</li>
-        <li>SLA &amp; compliance export</li>
-        <li>Safety certification</li>
-        <li>Unlimited retention</li>
-        <li>Dedicated support</li>
+        <li>Cortex + Mycelium + Spore</li>
+        <li>Orchestrator brain</li>
+        <li>All 29 products</li>
+        <li>SSO + federation</li>
+        <li>Dedicated support + SLA</li>
       </ul>
-      <a href="mailto:enterprise@stockyard.dev" class="btn btn-secondary tier-cta">Contact sales</a>
+      <button onclick="checkout('enterprise',event)" class="btn btn-rust tier-cta">Go Enterprise</button>
     </div>
 
   </div>
@@ -461,17 +470,17 @@ function toggleBilling() {
   setBilling(billingMode === 'monthly' ? 'annual' : 'monthly');
 }
 
-async function checkout(product, tier, e) {
+async function checkout(tier, e) {
   const btn = e ? e.target : document.activeElement;
   const originalText = btn.textContent;
   btn.textContent = 'Redirecting...';
   btn.disabled = true;
 
   try {
-    const res = await fetch(API_BASE + '/api/checkout', {
+    const res = await fetch(API_BASE + '/api/billing/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product, tier, interval: billingMode })
+      body: JSON.stringify({ tier: tier, period: billingMode })
     });
 
     if (!res.ok) {
@@ -480,14 +489,16 @@ async function checkout(product, tier, e) {
     }
 
     const data = await res.json();
-    if (data.url && (data.url.startsWith('https://checkout.stripe.com/') || data.url.startsWith('/'))) {
-      window.location.href = data.url;
+    if (data.checkout_url && data.checkout_url.startsWith('https://checkout.stripe.com/')) {
+      window.location.href = data.checkout_url;
     } else {
       throw new Error('No checkout URL returned');
     }
-  } catch (e) {
-    console.error('Checkout error:', e);
-    window.location.href = '/cloud/?plan=' + tier;
+  } catch (err) {
+    console.error('Checkout error:', err);
+    btn.textContent = 'Error — retry';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = originalText; }, 3000);
   }
 }
 </script>
