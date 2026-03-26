@@ -123,3 +123,22 @@ func (db *DB) Stats() (map[string]any, error) {
 	db.conn.QueryRow(`SELECT COUNT(*) FROM molt_analysis WHERE recommendation='shed'`).Scan(&shed)
 	return map[string]any{"total_analyses": analyses, "total_actions": actions, "shed_recommendations": shed}, nil
 }
+
+func (db *DB) CreateAction(a *Action) error {
+	_, err := db.conn.Exec(`INSERT INTO molt_actions (id,analysis_id,action,component_type,component_id,before_state,after_state) VALUES (?,?,?,?,?,?,?)`,
+		a.ID, a.AnalysisID, a.ActionType, a.ComponentType, a.ComponentID, a.BeforeState, a.AfterState)
+	return err
+}
+
+func (db *DB) GetAnalysis(id string) (*Analysis, error) {
+	var a Analysis
+	err := db.conn.QueryRow(`SELECT id,component_type,component_id,last_activity,activity_count,impact_score,recommendation,reason,auto_shed,analyzed_at FROM molt_analysis WHERE id=?`, id).Scan(
+		&a.ID, &a.ComponentType, &a.ComponentID, &a.LastActivity, &a.ActivityCount, &a.ImpactScore, &a.Recommendation, &a.Reason, &a.AutoShed, &a.AnalyzedAt)
+	if err != nil { return nil, err }
+	return &a, nil
+}
+
+func (db *DB) RevertAction(id string) error {
+	_, err := db.conn.Exec(`UPDATE molt_actions SET reverted=1 WHERE id=?`, id)
+	return err
+}

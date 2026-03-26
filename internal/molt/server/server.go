@@ -3,6 +3,7 @@ package server
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -13,8 +14,9 @@ import (
 )
 
 type Config struct {
-	Port  int
-	Store *store.DB
+	Port       int
+	Store      *store.DB
+	PlatformDB *sql.DB // shared platform DB for querying modules/traces
 }
 
 type Server struct {
@@ -35,6 +37,11 @@ func (s *Server) ListenAndServe() error {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) { s.mux.ServeHTTP(w, r) }
+
+// SetPlatformDB wires the shared platform database for cross-product analysis.
+func (s *Server) SetPlatformDB(db *sql.DB) {
+	s.cfg.PlatformDB = db
+}
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{"status": "ok", "product": "molt"})

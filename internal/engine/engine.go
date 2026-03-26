@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"crypto/subtle"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -719,9 +720,13 @@ func Boot(pc ProductConfig) {
 			}
 		}
 		// Wire event bus into products that support it (Spore pattern engine).
+		// Wire platform DB into products that need cross-product analysis (Molt).
 		for _, ps := range productServers {
 			if setter, ok := ps.Handler.(interface{ SetEventBus(*bus.Bus) }); ok {
 				setter.SetEventBus(eventBus)
+			}
+			if setter, ok := ps.Handler.(interface{ SetPlatformDB(*sql.DB) }); ok {
+				setter.SetPlatformDB(db.Conn())
 			}
 		}
 		// Wire auto-feed: every proxy request auto-populates platform products
