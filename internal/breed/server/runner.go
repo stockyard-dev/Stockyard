@@ -42,28 +42,38 @@ type genomeResult struct {
 	Fitness  float64 `json:"fitness"`
 }
 
-// seedPrompts are the diverse initial system prompts for generation 0.
+// seedPrompts v2: structurally diverse, product-aware seeds.
+// Each uses different prompt architecture (persona, analogy, constraint, fact-heavy,
+// emotion, competitive, minimal) and encodes specific Stockyard differentiators.
 var seedPrompts = []string{
-	"You write taglines for developer tools. Write a punchy tagline for Stockyard, an LLM proxy that ships as a single Go binary with 70 middleware modules. One line only.",
-	"You are a branding expert. Create a memorable tagline for Stockyard — a single-binary LLM infrastructure platform. Be concise and bold. One sentence max.",
-	"Write a developer-focused tagline for an LLM proxy called Stockyard. It handles caching, rate limiting, failover, cost tracking, and more in one binary. Keep it short and technical.",
-	"You craft headlines. Stockyard is the operating system for AI software — one binary, 29 products, zero dependencies. Write a tagline that makes developers want to try it. One line.",
-	"Generate a western-themed tagline for Stockyard, an LLM proxy platform. Think: cattle ranch meets cutting-edge AI infrastructure. Brief and catchy.",
-	"Write a tagline emphasizing simplicity. Stockyard replaces 10 different LLM tools with one Go binary. Focus on the 'one binary' angle. One sentence.",
-	"You are a copywriter for B2B SaaS. Write a tagline for Stockyard that appeals to CTOs evaluating LLM infrastructure. Professional but memorable.",
-	"Create a tagline for Stockyard that emphasizes its middleware chain — 70 modules processing every LLM request in 400 nanoseconds. Technical and impressive.",
-	"Write a tagline for Stockyard focusing on the cost-saving angle. It tracks, caches, and optimizes every LLM API call. Make it about ROI.",
-	"You write startup taglines. Stockyard: single binary, 16 LLM providers, MIT licensed. Write something that would work on a landing page hero section.",
-	"Create a tagline comparing Stockyard to nginx but for LLMs. One proxy to rule all your AI traffic. Keep it under 10 words.",
-	"Write a minimalist tagline for Stockyard. Less is more. Under 8 words. Make every word count.",
-	"You are a poet who writes for tech companies. Create an evocative tagline for Stockyard that captures the feeling of taming wild AI infrastructure.",
-	"Generate a tagline for Stockyard that emphasizes reliability — failover, circuit breakers, health checks for every LLM provider. One line.",
-	"Write a tagline for Stockyard targeting the open-source community. It's MIT licensed, self-hosted, no vendor lock-in. Appeal to freedom.",
-	"Create a provocative tagline that positions Stockyard against paying for multiple LLM tools. Why pay for 10 services when one binary does it all?",
-	"Write a tagline for Stockyard that a developer would put on a sticker. Short, punchy, memorable. Think: 'npm install happiness' energy.",
-	"You write elevator pitches. Stockyard sits between your app and every LLM provider. Tagline that explains the value in one breath.",
-	"Generate a tagline emphasizing Stockyard's speed — sub-microsecond middleware overhead, pure Go, no CGO. Performance-focused.",
-	"Write a tagline for Stockyard that would work as a tweet. Capture the essence: one binary proxy for all your LLM needs.",
+	// Persona-based
+	`You are the person who wrote "There's a computer science to advertising" for Cloudflare. Write a tagline for Stockyard: a single Go binary that replaces your entire LLM infrastructure stack (proxy, caching, rate limiting, failover, cost tracking, guardrails). One line, under 10 words.`,
+	`You are a developer who just replaced 8 separate LLM tools with one 25MB binary called Stockyard. Write the tagline you'd tweet about it. Raw, authentic, under 12 words.`,
+	`You are Paul Graham writing about a new kind of infrastructure tool. Stockyard is one binary that sits between apps and LLM providers with 70 middleware modules, 16 providers, 400ns overhead. Distill this into a tagline a YC founder would remember.`,
+	// Analogy-based
+	`nginx is to HTTP as Stockyard is to LLMs. Write a tagline that captures this analogy. Stockyard proxies every AI request through 70 configurable middleware modules in a single binary. Under 10 words.`,
+	`Stockyard is to LLM APIs what a cattle ranch foreman is to a herd: it routes, monitors, protects, and optimizes every request. Write a tagline that uses this western metaphor subtly. One sentence.`,
+	`Docker made "build once, run anywhere." Stockyard makes "one binary, every LLM." Write a tagline with that same structural clarity. Under 8 words.`,
+	// Constraint-focused
+	`Write a tagline for Stockyard. Rules: must be under 6 words, must contain a verb, must communicate that it's a single binary that handles all LLM infrastructure. No buzzwords.`,
+	`Write a Stockyard tagline that would fit on a laptop sticker (max 5 words). Stockyard is a Go binary that proxies LLM requests with caching, failover, cost tracking, and 70 middleware modules.`,
+	`Write exactly one sentence describing Stockyard for a developer who has never heard of it. It's a single binary LLM proxy with 29 products, 16 provider integrations, and sub-microsecond middleware overhead. Make them want to try it.`,
+	// Fact-heavy
+	`Stockyard facts: single Go binary (25MB), 70 middleware modules at 400ns per chain, 16 LLM providers, 29 products, MIT licensed, zero dependencies, sub-microsecond overhead. Write a tagline that makes the technical audience on Hacker News stop scrolling. One line.`,
+	`Stockyard runs between your app and OpenAI/Anthropic/Groq/etc. Every request gets: cost tracking, caching, rate limiting, guardrails, failover, provenance certificates, confidence scoring. All in one binary you deploy in 30 seconds. Tagline. One line.`,
+	`Before Stockyard: 8 SaaS subscriptions for LLM ops. After Stockyard: one binary, self-hosted, MIT licensed. Write a tagline about this transformation. Under 10 words.`,
+	// Output-style variants
+	`Write a hero section tagline for stockyard.dev. Format: "[Bold claim] -- [supporting detail]." Stockyard is a single Go binary with 70 middleware modules for proxying, caching, securing, and optimizing LLM traffic.`,
+	`Write a tagline for Stockyard in the style of a Unix man page one-liner: "stockyard - [description]". It's a reverse proxy for LLM APIs with middleware, failover, cost tracking, and 29 integrated products.`,
+	`Complete this sentence as a Stockyard tagline: "One binary to ___." Stockyard replaces your entire LLM infrastructure stack with a single Go executable.`,
+	// Emotion-based
+	`Write a tagline for Stockyard that makes a platform engineer feel relief. They're juggling 6 different LLM tools, worried about costs, fighting rate limits. Stockyard replaces all of it with one binary. Express that relief in under 10 words.`,
+	`Write a tagline that expresses the confidence of knowing every LLM request is logged, cached, rate-limited, validated, and tracked automatically. Stockyard: one binary, total control. Under 10 words.`,
+	// Competitive
+	`Most LLM proxies do one thing. Stockyard does 70 things in 400 nanoseconds. Write a tagline that positions it as absurdly comprehensive without being arrogant. Under 10 words.`,
+	`Everyone is building LLM wrappers. Stockyard built the infrastructure layer: proxy, middleware, 29 products, one binary. Write a tagline that says "we built the real thing." One line.`,
+	// Minimal
+	`Three words. Tagline. Stockyard is a single-binary LLM infrastructure platform. Go.`,
 }
 
 // runEvolution executes the genetic evolution loop for a population.
@@ -315,7 +325,7 @@ func (s *Server) evaluateGenome(g store.GenomeRecord, model, apiKey, endpoint st
 		"model": model,
 		"messages": []map[string]string{
 			{"role": "system", "content": g.SystemPrompt},
-			{"role": "user", "content": "Generate a tagline for Stockyard."},
+			{"role": "user", "content": "Generate a tagline for Stockyard. Output ONLY the tagline text, no quotes, no explanation."},
 		},
 		"max_tokens":  60,
 		"temperature": g.Temperature,
@@ -356,11 +366,13 @@ func (s *Server) scoreTagline(tagline, model, apiKey, endpoint string) float64 {
 		return 0
 	}
 
-	judgePrompt := fmt.Sprintf(`Score this tagline for an LLM proxy platform called Stockyard on a scale of 0 to 10. Consider:
-- Memorability (is it catchy?)
-- Clarity (does it communicate what the product does?)  
-- Brevity (shorter is better)
-- Developer appeal (would a developer be intrigued?)
+	judgePrompt := fmt.Sprintf(`Score this tagline for Stockyard, a single-binary LLM proxy platform, on a scale of 0 to 10.
+
+Scoring criteria (weighted):
+- Product accuracy (3 pts): Does it communicate what Stockyard does? (LLM proxy/infrastructure, single binary, middleware). Generic slogans that could apply to any product score 0 here.
+- Memorability (3 pts): Would a developer remember this tomorrow?
+- Brevity (2 pts): Shorter is better. Under 8 words = full marks. Over 15 = 0.
+- Developer appeal (2 pts): Would this make a developer on Hacker News click through?
 
 Tagline: "%s"
 
