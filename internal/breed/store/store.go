@@ -93,6 +93,25 @@ func (db *DB) migrate() error {
 			latency_ms REAL DEFAULT 0, cost REAL DEFAULT 0, quality_score REAL DEFAULT 0,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
+		CREATE TABLE IF NOT EXISTS breed_tournaments (
+			id TEXT PRIMARY KEY, name TEXT NOT NULL,
+			bracket_size INTEGER NOT NULL, status TEXT DEFAULT 'pending',
+			champion_id TEXT DEFAULT '', champion_output TEXT DEFAULT '',
+			rounds_completed INTEGER DEFAULT 0, total_rounds INTEGER DEFAULT 0,
+			model TEXT DEFAULT 'gpt-4o-mini',
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE TABLE IF NOT EXISTS breed_matches (
+			id TEXT PRIMARY KEY, tournament_id TEXT NOT NULL REFERENCES breed_tournaments(id),
+			round INTEGER NOT NULL, match_order INTEGER NOT NULL,
+			genome_a TEXT NOT NULL, genome_b TEXT NOT NULL,
+			output_a TEXT DEFAULT '', output_b TEXT DEFAULT '',
+			winner TEXT DEFAULT '', judgment TEXT DEFAULT '',
+			score_a REAL DEFAULT 0, score_b REAL DEFAULT 0,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_breed_matches_tourney ON breed_matches(tournament_id, round);
 	`)
 	return err
 }
@@ -164,10 +183,127 @@ func (db *DB) UpdateGenomeFitness(id string, fitness, qualityScore, latencyMs, c
 }
 
 func (db *DB) Stats() (map[string]any, error) {
-	var pops, genomes int
+	var pops, genomes, tournaments int
 	db.conn.QueryRow(`SELECT COUNT(*) FROM breed_populations`).Scan(&pops)
 	db.conn.QueryRow(`SELECT COUNT(*) FROM breed_genomes`).Scan(&genomes)
+	db.conn.QueryRow(`SELECT COUNT(*) FROM breed_tournaments`).Scan(&tournaments)
 	var bestFit float64
 	db.conn.QueryRow(`SELECT COALESCE(MAX(fitness),0) FROM breed_genomes`).Scan(&bestFit)
-	return map[string]any{"populations": pops, "total_genomes": genomes, "best_fitness": bestFit}, nil
+	return map[string]any{"populations": pops, "total_genomes": genomes, "best_fitness": bestFit, "tournaments": tournaments}, nil
+}
+
+// ── Tournament types ──
+
+type Tournament struct {
+	ID              string    `json:"id"`
+	Name            string    `json:"name"`
+	BracketSize     int       `json:"bracket_size"`
+	Status          string    `json:"status"`
+	ChampionID      string    `json:"champion_id"`
+	ChampionOutput  string    `json:"champion_output"`
+	RoundsCompleted int       `json:"rounds_completed"`
+	TotalRounds     int       `json:"total_rounds"`
+	Model           string    `json:"model"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type Match struct {
+	ID           string    `json:"id"`
+	TournamentID string    `json:"tournament_id"`
+	Round        int       `json:"round"`
+	MatchOrder   int       `json:"match_order"`
+	GenomeA      string    `json:"genome_a"`
+	GenomeB      string    `json:"genome_b"`
+	OutputA      string    `json:"output_a"`
+	OutputB      string    `json:"output_b"`
+	Winner       string    `json:"winner"`
+	Judgment     string    `json:"judgment"`
+	ScoreA       float64   `json:"score_a"`
+	ScoreB       float64   `json:"score_b"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+func (db *DB) CreateTournament(t *Tournament) error {
+	_, err := db.conn.Exec(`INSERT INTO breed_tournaments (id,name,bracket_size,status,total_rounds,model) VALUES (?,?,?,?,?,?)`,
+		t.ID, t.Name, t.BracketSize, t.Status, t.TotalRounds, t.Model)
+	return err
+}
+
+func (db *DB) GetTournament(id string) (*Tournament, error) {
+	var t Tournament
+	err := db.conn.QueryRow(`SELECT id,name,bracket_size,status,champion_id,champion_output,rounds_completed,total_rounds,model,created_at,updated_at FROM breed_tournaments WHERE id=?`, id).Scan(
+		&t.ID, &t.Name, &t.BracketSize, &t.Status, &t.ChampionID, &t.ChampionOutput, &t.RoundsCompleted, &t.TotalRounds, &t.Model, &t.CreatedAt, &t.UpdatedAt)
+	if err != nil { return nil, err }
+	return &t, nil
+}
+
+func (db *DB) ListTournaments() ([]Tournament, error) {
+	rows, err := db.conn.Query(`SELECT id,name,bracket_size,status,champion_id,champion_output,rounds_completed,total_rounds,model,created_at,updated_at FROM breed_tournaments ORDER BY created_at DESC`)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var out []Tournament
+	for rows.Next() {
+		var t Tournament
+		rows.Scan(&t.ID, &t.Name, &t.BracketSize, &t.Status, &t.ChampionID, &t.ChampionOutput, &t.RoundsCompleted, &t.TotalRounds, &t.Model, &t.CreatedAt, &t.UpdatedAt)
+		out = append(out, t)
+	}
+	return out, nil
+}
+
+func (db *DB) UpdateTournament(id, status, championID, championOutput string, roundsCompleted int) error {
+	_, err := db.conn.Exec(`UPDATE breed_tournaments SET status=?, champion_id=?, champion_output=?, rounds_completed=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`,
+		status, championID, championOutput, roundsCompleted, id)
+	return err
+}
+
+func (db *DB) CreateMatch(m *Match) error {
+	_, err := db.conn.Exec(`INSERT INTO breed_matches (id,tournament_id,round,match_order,genome_a,genome_b) VALUES (?,?,?,?,?,?)`,
+		m.ID, m.TournamentID, m.Round, m.MatchOrder, m.GenomeA, m.GenomeB)
+	return err
+}
+
+func (db *DB) UpdateMatch(id, outputA, outputB, winner, judgment string, scoreA, scoreB float64) error {
+	_, err := db.conn.Exec(`UPDATE breed_matches SET output_a=?, output_b=?, winner=?, judgment=?, score_a=?, score_b=? WHERE id=?`,
+		outputA, outputB, winner, judgment, scoreA, scoreB, id)
+	return err
+}
+
+func (db *DB) ListMatches(tournamentID string, round int) ([]Match, error) {
+	rows, err := db.conn.Query(`SELECT id,tournament_id,round,match_order,genome_a,genome_b,output_a,output_b,winner,judgment,score_a,score_b,created_at FROM breed_matches WHERE tournament_id=? AND round=? ORDER BY match_order`, tournamentID, round)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var out []Match
+	for rows.Next() {
+		var m Match
+		rows.Scan(&m.ID, &m.TournamentID, &m.Round, &m.MatchOrder, &m.GenomeA, &m.GenomeB, &m.OutputA, &m.OutputB, &m.Winner, &m.Judgment, &m.ScoreA, &m.ScoreB, &m.CreatedAt)
+		out = append(out, m)
+	}
+	return out, nil
+}
+
+func (db *DB) AllMatches(tournamentID string) ([]Match, error) {
+	rows, err := db.conn.Query(`SELECT id,tournament_id,round,match_order,genome_a,genome_b,output_a,output_b,winner,judgment,score_a,score_b,created_at FROM breed_matches WHERE tournament_id=? ORDER BY round, match_order`, tournamentID)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var out []Match
+	for rows.Next() {
+		var m Match
+		rows.Scan(&m.ID, &m.TournamentID, &m.Round, &m.MatchOrder, &m.GenomeA, &m.GenomeB, &m.OutputA, &m.OutputB, &m.Winner, &m.Judgment, &m.ScoreA, &m.ScoreB, &m.CreatedAt)
+		out = append(out, m)
+	}
+	return out, nil
+}
+
+func (db *DB) GetTopGenomesAcrossPopulations(limit int) ([]GenomeRecord, error) {
+	rows, err := db.conn.Query(`SELECT id,population_id,generation,parent_a,parent_b,system_prompt,few_shot_examples,constraints,temperature,max_tokens,fitness,latency_ms,cost,quality_score,mutations,created_at FROM breed_genomes WHERE fitness > 0 ORDER BY fitness DESC LIMIT ?`, limit)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var out []GenomeRecord
+	for rows.Next() {
+		var g GenomeRecord
+		rows.Scan(&g.ID, &g.PopulationID, &g.Generation, &g.ParentA, &g.ParentB, &g.SystemPrompt, &g.FewShot, &g.Constraints, &g.Temperature, &g.MaxTokens, &g.Fitness, &g.LatencyMs, &g.Cost, &g.QualityScore, &g.Mutations, &g.CreatedAt)
+		out = append(out, g)
+	}
+	return out, nil
 }
