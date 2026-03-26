@@ -259,13 +259,28 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"devproxy", "exchange", pc.Features.DevProxy, 170},
 	}
 
+	// Modules that must always be enabled on boot (security + routing).
+	// These use ON CONFLICT UPDATE to force-enable even if toggled off at runtime.
+	alwaysOn := map[string]bool{
+		"failover": true, "promptguard": true, "secretscan": true,
+		"toxicfilter": true, "guardrail": true, "firewall": true,
+	}
+
 	for _, m := range modules {
 		enabled := 0
 		if m.enabled {
 			enabled = 1
 		}
-		conn.Exec("INSERT OR IGNORE INTO proxy_modules (name, category, enabled, priority) VALUES (?,?,?,?)",
-			m.name, m.category, enabled, m.priority)
+		if alwaysOn[m.name] && m.enabled {
+			// Force-enable on every boot — these are security-critical
+			conn.Exec(`INSERT INTO proxy_modules (name, category, enabled, priority) VALUES (?,?,?,?)
+				ON CONFLICT(name) DO UPDATE SET enabled=1, category=excluded.category, priority=excluded.priority`,
+				m.name, m.category, enabled, m.priority)
+		} else {
+			// Normal: insert if missing, don't overwrite runtime toggles
+			conn.Exec("INSERT OR IGNORE INTO proxy_modules (name, category, enabled, priority) VALUES (?,?,?,?)",
+				m.name, m.category, enabled, m.priority)
+		}
 	}
 
 	// Reconcile existing DBs: remove old/phantom module names
