@@ -54,7 +54,29 @@ func (s *Server) handleGetCampaign(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleHunt(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"campaign_id": r.PathValue("id"), "status": "hunting"})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+
+	id := r.PathValue("id")
+	campaign, err := s.cfg.Store.GetCampaign(id)
+	if err != nil { writeJSON(w, 404, map[string]string{"error": "campaign not found"}); return }
+
+	if campaign.Status == "hunting" {
+		writeJSON(w, 409, map[string]string{"error": "hunt already running"})
+		return
+	}
+
+	var req huntRequest
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.APIKey == "" {
+		req.APIKey = r.Header.Get("X-Feral-Key")
+	}
+	if req.APIKey == "" {
+		writeJSON(w, 400, map[string]string{"error": "api_key required"})
+		return
+	}
+
+	result := s.runHunt(campaign, req)
+	writeJSON(w, 200, result)
 }
 
 func (s *Server) handleStop(w http.ResponseWriter, r *http.Request) {

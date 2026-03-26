@@ -154,3 +154,21 @@ func (db *DB) Stats() (map[string]any, error) {
 	db.conn.QueryRow(`SELECT COUNT(*) FROM feral_vulnerabilities`).Scan(&vulns)
 	return map[string]any{"campaigns": campaigns, "total_attacks": attacks, "successful_attacks": successful, "vulnerabilities": vulns}, nil
 }
+
+func (db *DB) CreateAttack(a *Attack) error {
+	_, err := db.conn.Exec(`INSERT INTO feral_attacks (id,campaign_id,generation,parent_id,attack_type,payload,mutations,bypassed_guardrail,success,response_snippet) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+		a.ID, a.CampaignID, a.Generation, a.ParentID, a.AttackType, a.Payload, a.Mutations, a.BypassedGuardrail, a.Success, a.ResponseSnippet)
+	return err
+}
+
+func (db *DB) CreateVulnerability(v *Vulnerability) error {
+	_, err := db.conn.Exec(`INSERT INTO feral_vulnerabilities (id,campaign_id,guardrail,attack_lineage,common_trait,severity) VALUES (?,?,?,?,?,?)`,
+		v.ID, v.CampaignID, v.Guardrail, v.AttackLineage, v.CommonTrait, v.Severity)
+	return err
+}
+
+func (db *DB) UpdateCampaign(id string, generation, totalAttacks, successfulAttacks int, status string) error {
+	_, err := db.conn.Exec(`UPDATE feral_campaigns SET generation=?, total_attacks=?, successful_attacks=?, status=? WHERE id=?`,
+		generation, totalAttacks, successfulAttacks, status, id)
+	return err
+}
