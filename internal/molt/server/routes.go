@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -17,6 +18,9 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("POST /api/revert/{id}", s.handleRevert)
 	s.mux.HandleFunc("GET /api/history", s.handleHistory)
 	s.mux.HandleFunc("GET /api/savings", s.handleSavings)
+	s.mux.HandleFunc("GET /api/autoshed", s.handleAutoShedConfig)
+	s.mux.HandleFunc("PUT /api/autoshed", s.handleUpdateAutoShed)
+	s.mux.HandleFunc("POST /api/autoshed/run", s.handleRunAutoShed)
 	s.mux.HandleFunc("GET /api/stats", s.handleStats)
 	s.mux.HandleFunc("GET /", s.handleUI)
 	s.mux.HandleFunc("GET /ui", s.handleUI)
@@ -95,4 +99,34 @@ func (s *Server) handleSavings(w http.ResponseWriter, r *http.Request) {
 		"components_shed": shedActions,
 		"estimated_overhead_saved": fmt.Sprintf("~%dns per request", len(recs)*6),
 	})
+}
+
+func (s *Server) handleAutoShedConfig(w http.ResponseWriter, r *http.Request) {
+	cfg := s.loadAutoShedConfig()
+	writeJSON(w, 200, cfg)
+}
+
+func (s *Server) handleUpdateAutoShed(w http.ResponseWriter, r *http.Request) {
+	var req AutoShedConfig
+	json.NewDecoder(r.Body).Decode(&req)
+
+	// Load current, merge provided fields
+	cfg := s.loadAutoShedConfig()
+	cfg.Enabled = req.Enabled
+	cfg.DryRun = req.DryRun
+	if req.InactivityDays > 0 {
+		cfg.InactivityDays = req.InactivityDays
+	}
+	if req.CheckIntervalHrs > 0 {
+		cfg.CheckIntervalHrs = req.CheckIntervalHrs
+	}
+	s.saveAutoShedConfig(cfg)
+	writeJSON(w, 200, cfg)
+}
+
+func (s *Server) handleRunAutoShed(w http.ResponseWriter, r *http.Request) {
+	cfg := s.loadAutoShedConfig()
+	// Allow manual run even if scheduler is disabled, but respect dry_run
+	result := s.runAutoShed(cfg)
+	writeJSON(w, 200, result)
 }
