@@ -14,6 +14,10 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/spore/store"
 )
 
+// maxActivePatterns is the global cap on active patterns.
+// Prevents runaway replication from exploding pattern count.
+const maxActivePatterns = 50
+
 // triggerCondition defines when a pattern should fire.
 type triggerCondition struct {
 	Event       string `json:"event"`                 // event type to match (e.g. "request.completed")
@@ -61,7 +65,10 @@ func (s *Server) SetEventBus(b *bus.Bus) {
 		engine.processEvent(evt)
 	})
 
-	log.Printf("[spore] engine started, watching event bus")
+	// Start the retirement loop to prevent pattern explosion
+	s.StartRetirementLoop()
+
+	log.Printf("[spore] engine started, watching event bus (cap=%d patterns)", maxActivePatterns)
 }
 
 // refreshPatterns reloads active patterns from the store.
@@ -223,15 +230,35 @@ func (e *patternEngine) firePattern(p store.Pattern, evt bus.Event) {
 		p.Name, newCount, action.Type)
 
 	// Auto-replicate on every 5th activation of a productive pattern
+	// but respect the global pattern cap to prevent explosion
 	if newCount > 0 && newCount%5 == 0 {
-		e.replicate(p, evt)
+		activeCount := e.activePatternCount()
+		if activeCount < maxActivePatterns {
+			e.replicate(p, evt)
+		} else {
+			log.Printf("[spore] replication suppressed for %s: at cap (%d/%d active patterns)",
+				p.Name, activeCount, maxActivePatterns)
+		}
 	}
+}
+
+// activePatternCount returns the number of currently active patterns.
+func (e *patternEngine) activePatternCount() int {
+	e.mu.RLock()
+	n := len(e.patterns)
+	e.mu.RUnlock()
+	return n
 }
 
 // replicate creates a child pattern that watches for a related scenario.
 // This is the "self-replicating" part of Spore — successful patterns spawn
 // children that extend coverage to adjacent event types and conditions.
 func (e *patternEngine) replicate(parent store.Pattern, triggerEvt bus.Event) {
+	// Global cap check — abort if at limit
+	if e.activePatternCount() >= maxActivePatterns {
+		log.Printf("[spore] replication blocked for %s: global cap reached (%d)", parent.Name, maxActivePatterns)
+		return
+	}
 	var tc triggerCondition
 	json.Unmarshal([]byte(parent.TriggerConditions), &tc)
 

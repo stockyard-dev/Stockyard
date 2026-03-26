@@ -150,3 +150,40 @@ func (db *DB) ListActivePatterns() ([]Pattern, error) {
 	}
 	return out, nil
 }
+
+// RetireInactivePatterns sets status='retired' on replicated patterns
+// that have zero activations and are older than the given age.
+func (db *DB) RetireInactivePatterns(maxAge time.Duration) (int, error) {
+	cutoff := time.Now().Add(-maxAge).Format(time.RFC3339)
+	result, err := db.conn.Exec(`UPDATE spore_patterns SET status='retired'
+		WHERE status='active' AND activations=0 AND source_event='spore-replication'
+		AND created_at < ?`, cutoff)
+	if err != nil { return 0, err }
+	n, _ := result.RowsAffected()
+	return int(n), nil
+}
+
+// DeleteRetiredPatterns removes retired patterns and their activations.
+func (db *DB) DeleteRetiredPatterns() (int, error) {
+	// Delete activations for retired patterns
+	db.conn.Exec(`DELETE FROM spore_activations WHERE pattern_id IN (SELECT id FROM spore_patterns WHERE status='retired')`)
+	result, err := db.conn.Exec(`DELETE FROM spore_patterns WHERE status='retired'`)
+	if err != nil { return 0, err }
+	n, _ := result.RowsAffected()
+	return int(n), nil
+}
+
+// CountByStatus returns pattern counts grouped by status.
+func (db *DB) CountByStatus() (map[string]int, error) {
+	rows, err := db.conn.Query(`SELECT status, COUNT(*) FROM spore_patterns GROUP BY status`)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	out := make(map[string]int)
+	for rows.Next() {
+		var status string
+		var count int
+		rows.Scan(&status, &count)
+		out[status] = count
+	}
+	return out, nil
+}
