@@ -54,7 +54,7 @@ export OPENAI_BASE_URL=http://localhost:4200/v1
 ## See It Work in 60 Seconds
 
 <p align="center">
-  <img src="marketing/toolkit/demo.svg" alt="Stockyard demo — install, start, and send a request through 66 middleware modules" width="800">
+  <img src="marketing/toolkit/demo.svg" alt="Stockyard demo — install, start, and send a request through 75 middleware modules" width="800">
 </p>
 
 ```bash
@@ -77,7 +77,7 @@ curl http://localhost:4200/v1/chat/completions \
   }'
 ```
 
-That request just flowed through 66 middleware modules — rate limiter, cost tracker, safety filter, cache check, audit logger — and back. No configuration. Check the results:
+That request just flowed through 75 middleware modules — rate limiter, cost tracker, safety filter, cache check, audit logger — and back. No configuration. Check the results:
 
 ```bash
 # See the trace (cost, latency, tokens, provider)
@@ -96,7 +96,7 @@ Or open `http://localhost:4200/ui` in your browser for the full dashboard.
 
 | Component | What it does |
 |-----------|-------------|
-| **Proxy** | OpenAI-compatible gateway with 66 middleware modules and 16 provider integrations |
+| **Proxy** | OpenAI-compatible gateway with 75 middleware modules and 16 provider integrations |
 | **Observe** | Automatic request tracing, per-model cost dashboards, anomaly detection, alerts |
 | **Trust** | SHA-256 hash-chained audit ledger, policy enforcement, compliance evidence export |
 | **Studio** | Versioned prompt templates, A/B experiments, model benchmarks |
@@ -121,7 +121,7 @@ Your App (OpenAI SDK)
         ▼
 ┌─── STOCKYARD (:4200) ───────────────────────┐
 │                                               │
-│  Request → [66 middleware modules] → Provider │
+│  Request → [75 middleware modules] → Provider │
 │            rate limit → cache → safety →      │
 │            cost cap → route → failover        │
 │                                               │
@@ -139,7 +139,7 @@ Your App (OpenAI SDK)
 
 - **Single binary**, single port, single process. No orchestration.
 - **Embedded SQLite** with WAL mode. No external database.
-- **66 middleware modules**, each toggleable at runtime via `PUT /api/proxy/modules/{name}`.
+- **75 middleware modules**, each toggleable at runtime via `PUT /api/proxy/modules/{name}`.
 - **16 LLM providers**: OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Ollama, VLLM, AWS Bedrock, Azure OpenAI, Cohere, Together AI, Fireworks, Replicate, Perplexity, Hugging Face.
 - **AES-256-GCM encryption** for all provider keys at rest.
 - **400ns chain traversal overhead** across the full 66-module middleware chain ([benchmarks](https://stockyard.dev/benchmarks)). Total per-request overhead including module logic is <5ms.
@@ -231,7 +231,7 @@ docker compose up
 
 ## Pricing
 
-Self-hosted is free forever — all 66 modules, all 16 providers, all 16 apps, unlimited requests. Cloud-managed starts at $29/mo (Pro), $99/mo (Team), $299/mo (Enterprise).
+Self-hosted is free forever — all 75 modules, all 16 providers, all 16 apps, unlimited requests. Cloud-managed starts at $29/mo (Pro), $99/mo (Team), $299/mo (Enterprise).
 
 See [stockyard.dev/pricing](https://stockyard.dev/pricing) for details.
 

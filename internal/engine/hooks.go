@@ -257,6 +257,22 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 		{"mockllm", "forge", pc.Features.MockLLM, 161},
 		// Exchange
 		{"devproxy", "exchange", pc.Features.DevProxy, 170},
+		// Phase 3 P3 — automation & advanced
+		{"chainforge", "automation", pc.Features.ChainForge, 180},
+		{"cronllm", "automation", pc.Features.CronLLM, 181},
+		{"webhookrelay", "automation", pc.Features.WebhookRelay, 182},
+		{"billsync", "billing", pc.Features.BillSync, 183},
+		{"whitelabel", "customize", pc.Features.WhiteLabel, 184},
+		{"trainexport", "data", pc.Features.TrainExport, 185},
+		{"synthgen", "data", pc.Features.SynthGen, 186},
+		{"diffprompt", "studio", pc.Features.DiffPrompt, 187},
+		{"llmbench", "validate", pc.Features.LLMBench, 188},
+		{"tokenmarket", "cost", pc.Features.TokenMarket, 190},
+		{"llmsync", "infra", pc.Features.LLMSync, 191},
+		{"clustermode", "infra", pc.Features.ClusterMode, 192},
+		{"encryptvault", "safety", pc.Features.EncryptVault, 193},
+		{"mirrortest", "validate", pc.Features.MirrorTest, 194},
+		{"contextwindow", "transform", pc.Features.ContextWindow, 195},
 	}
 
 	// Modules that must always be enabled on boot (security + routing).
@@ -284,7 +300,13 @@ func seedProxyModules(conn *sql.DB, pc ProductConfig) {
 	}
 
 	// Reconcile existing DBs: remove old/phantom module names
-	for _, old := range []string{"fallbackrouter", "cachelayer", "costcap", "rateshield", "batchqueue", "semanticcache", "structuredshield"} {
+	// Includes legacy Exchange pack aliases that map to current module names:
+	//   pii_redactor → promptguard, content_filter → toxicfilter,
+	//   prompt_injection → promptguard, toxicity_filter → toxicfilter, cost_cap → caps
+	for _, old := range []string{
+		"fallbackrouter", "cachelayer", "costcap", "rateshield", "batchqueue", "semanticcache", "structuredshield",
+		"pii_redactor", "content_filter", "prompt_injection", "toxicity_filter", "cost_cap",
+	} {
 		conn.Exec("DELETE FROM proxy_modules WHERE name = ?", old)
 	}
 
