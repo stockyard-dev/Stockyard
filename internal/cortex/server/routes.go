@@ -20,6 +20,7 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/stats", s.handleStats)
 	s.mux.HandleFunc("POST /api/enrich", s.handleEnrich)
 	s.mux.HandleFunc("GET /api/enrich/status", s.handleEnrichStatus)
+	s.mux.HandleFunc("POST /api/refresh", s.handleLiveRefresh)
 	s.mux.HandleFunc("GET /", s.handleUI)
 	s.mux.HandleFunc("GET /ui", s.handleUI)
 }
@@ -125,4 +126,13 @@ func (s *Server) handleEnrichStatus(w http.ResponseWriter, r *http.Request) {
 		status["memory_stats"] = stats
 	}
 	writeJSON(w, 200, status)
+}
+
+func (s *Server) handleLiveRefresh(w http.ResponseWriter, r *http.Request) {
+	if s.platformDB == nil {
+		writeJSON(w, 503, map[string]string{"error": "platform DB not wired"})
+		return
+	}
+	result := s.runLiveRefresh()
+	writeJSON(w, 200, result)
 }

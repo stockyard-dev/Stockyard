@@ -34,15 +34,17 @@ func (s *Server) StartScheduler() {
 		// First run after brief startup delay
 		time.Sleep(45 * time.Second)
 		s.runEnrichment()
+		s.runLiveRefresh()
 
 		// Then every 10 minutes
 		ticker := time.NewTicker(10 * time.Minute)
 		defer ticker.Stop()
 		for range ticker.C {
 			s.runEnrichment()
+			s.runLiveRefresh()
 		}
 	}()
-	log.Printf("[cortex] enrichment scheduler started (every 10min)")
+	log.Printf("[cortex] enrichment + live refresh scheduler started (every 10min)")
 }
 
 // enrichResult tracks what was extracted in a single run.
