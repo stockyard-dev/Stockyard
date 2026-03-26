@@ -126,6 +126,14 @@ CREATE TABLE IF NOT EXISTS billing_waitlist (
     email TEXT PRIMARY KEY,
     created_at TEXT DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS platform_tier_state (
+    id TEXT PRIMARY KEY DEFAULT 'active',
+    tier INTEGER NOT NULL DEFAULT 0,
+    tier_name TEXT NOT NULL DEFAULT 'community',
+    subscription_id TEXT DEFAULT '',
+    updated_at TEXT DEFAULT (datetime('now'))
+);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
@@ -179,6 +187,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Stripe integration
 	a.registerStripeRoutes(mux)
+	a.registerStripeSubscriptionRoutes(mux)
 
 	// Payouts, revenue dashboard, seat billing
 	a.registerPayoutRoutes(mux)

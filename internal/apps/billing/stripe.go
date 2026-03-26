@@ -349,6 +349,18 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[billing/stripe] webhook: %s", event.Type)
 
 	switch event.Type {
+	case "customer.subscription.deleted":
+		// Subscription cancelled — downgrade to community
+		if obj, ok := event.Data["object"].(map[string]any); ok {
+			custID, _ := obj["customer"].(string)
+			var localID string
+			a.conn.QueryRow("SELECT id FROM billing_customers WHERE external_id = ?", custID).Scan(&localID)
+			if localID != "" {
+				a.conn.Exec("UPDATE billing_customers SET metadata = json_set(COALESCE(metadata,'{}'), '$.tier', 'community'), updated_at = ? WHERE id = ?",
+					nowRFC3339(), localID)
+				log.Printf("[billing/stripe] subscription cancelled: customer=%s → community", localID)
+			}
+		}
 	case "payment_intent.succeeded":
 		// Credit purchase completed — add credits to customer balance
 		if obj, ok := event.Data["object"].(map[string]any); ok {
@@ -384,6 +396,44 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 		}
 	case "invoice.payment_failed":
 		log.Printf("[billing/stripe] payment failed for invoice in event data")
+	case "checkout.session.completed":
+		// Subscription checkout completed — upgrade tier
+		if obj, ok := event.Data["object"].(map[string]any); ok {
+			tier := ""
+			customerID := ""
+			if meta, ok := obj["metadata"].(map[string]any); ok {
+				tier, _ = meta["tier"].(string)
+				customerID, _ = meta["stockyard_customer"].(string)
+			}
+			stripeCustomer, _ := obj["customer"].(string)
+			subscriptionID, _ := obj["subscription"].(string)
+
+			log.Printf("[billing/stripe] checkout complete: tier=%s customer=%s stripe_customer=%s subscription=%s",
+				tier, customerID, stripeCustomer, subscriptionID)
+
+			// Store Stripe customer ID if we have a local customer
+			if customerID != "" && stripeCustomer != "" {
+				a.conn.Exec("UPDATE billing_customers SET external_id = ?, updated_at = ? WHERE id = ?",
+					stripeCustomer, nowRFC3339(), customerID)
+			}
+
+			// Update tier in license/platform
+			if tier != "" {
+				log.Printf("[billing/stripe] TIER UPGRADE: %s → tier=%s", customerID, tier)
+				// Map tier name to numeric value and persist
+				tierMap := map[string]int{
+					"individual": 1, "pro": 2, "team": 3, "enterprise": 4,
+				}
+				if tierNum, ok := tierMap[tier]; ok {
+					// Update platform product state to reflect new tier
+					a.conn.Exec(`INSERT INTO platform_tier_state (id, tier, tier_name, subscription_id, updated_at) 
+						VALUES ('active', ?, ?, ?, ?)
+						ON CONFLICT(id) DO UPDATE SET tier=excluded.tier, tier_name=excluded.tier_name, subscription_id=excluded.subscription_id, updated_at=excluded.updated_at`,
+						tierNum, tier, subscriptionID, nowRFC3339())
+					log.Printf("[billing/stripe] platform tier updated to %s (%d)", tier, tierNum)
+				}
+			}
+		}
 	}
 
 	w.WriteHeader(200)
