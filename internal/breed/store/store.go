@@ -157,6 +157,12 @@ func (db *DB) UpdatePopulation(id string, generation int, bestFitness float64, s
 	return err
 }
 
+func (db *DB) UpdateGenomeFitness(id string, fitness, qualityScore, latencyMs, cost float64) error {
+	_, err := db.conn.Exec(`UPDATE breed_genomes SET fitness=?, quality_score=?, latency_ms=?, cost=? WHERE id=?`,
+		fitness, qualityScore, latencyMs, cost, id)
+	return err
+}
+
 func (db *DB) Stats() (map[string]any, error) {
 	var pops, genomes int
 	db.conn.QueryRow(`SELECT COUNT(*) FROM breed_populations`).Scan(&pops)

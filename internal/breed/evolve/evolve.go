@@ -6,26 +6,57 @@ import (
 	"strings"
 )
 
-// Mutate applies random mutations to a prompt string.
+// Mutate applies prompt-aware mutations to a system prompt.
+// Instead of random word swaps (which create gibberish), mutations
+// add, remove, or rephrase instructions while keeping the core intact.
 func Mutate(prompt string, rate float64) (string, []string) {
 	var mutations []string
-	words := strings.Fields(prompt)
-	if len(words) == 0 {
-		return prompt, nil
-	}
-	for i := range words {
-		if rand.Float64() < rate {
-			synonyms := []string{"effective", "optimal", "precise", "thorough", "concise"}
-			words[i] = synonyms[rand.Intn(len(synonyms))]
-			mutations = append(mutations, "word_swap")
-		}
-	}
+
+	// Tone shifts — prepend a tone modifier
 	if rand.Float64() < rate {
-		additions := []string{"Be specific.", "Think step by step.", "Provide examples."}
-		words = append(words, additions[rand.Intn(len(additions))])
-		mutations = append(mutations, "append_instruction")
+		tones := []string{
+			"Be extremely concise. ",
+			"Use vivid language. ",
+			"Be direct and punchy. ",
+			"Channel confidence. ",
+			"Think like a developer. ",
+		}
+		prompt = tones[rand.Intn(len(tones))] + prompt
+		mutations = append(mutations, "tone_shift")
 	}
-	return strings.Join(words, " "), mutations
+
+	// Constraint injection — append a constraint
+	if rand.Float64() < rate {
+		constraints := []string{
+			" Keep it under 8 words.",
+			" Make it sound like a Unix philosophy.",
+			" Use an action verb to start.",
+			" Include a metaphor.",
+			" Make it rhyme or have rhythm.",
+			" Focus on the single-binary angle.",
+		}
+		prompt += constraints[rand.Intn(len(constraints))]
+		mutations = append(mutations, "constraint_add")
+	}
+
+	// Sentence shuffle — reorder sentences if multiple exist
+	sentences := strings.Split(prompt, ". ")
+	if len(sentences) > 2 && rand.Float64() < rate {
+		i := rand.Intn(len(sentences) - 1)
+		sentences[i], sentences[i+1] = sentences[i+1], sentences[i]
+		prompt = strings.Join(sentences, ". ")
+		mutations = append(mutations, "sentence_shuffle")
+	}
+
+	// Trimming — remove a random sentence to keep prompts from bloating
+	if len(sentences) > 3 && rand.Float64() < rate*0.5 {
+		remove := 1 + rand.Intn(len(sentences)-2) // don't remove first or last
+		sentences = append(sentences[:remove], sentences[remove+1:]...)
+		prompt = strings.Join(sentences, ". ")
+		mutations = append(mutations, "trim")
+	}
+
+	return prompt, mutations
 }
 
 // Select picks the top N genomes by fitness from a scored list.

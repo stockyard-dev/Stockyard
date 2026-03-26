@@ -92,6 +92,13 @@ func (s *Server) runEvolution(pop *Population, req evolveRequest) evolveResult {
 	}
 
 	// Run evolution loop
+	type evaluated struct {
+		genome  store.GenomeRecord
+		output  string
+		latency time.Duration
+		cost    float64
+	}
+	var lastResults []evaluated // track last evaluated generation for results
 	for g := 0; g < generations; g++ {
 		currentGen++
 		log.Printf("[breed] === generation %d ===", currentGen)
@@ -110,12 +117,6 @@ func (s *Server) runEvolution(pop *Population, req evolveRequest) evolveResult {
 		}
 
 		// Phase 1: Evaluate — send each genome's prompt through proxy, get tagline
-		type evaluated struct {
-			genome  store.GenomeRecord
-			output  string
-			latency time.Duration
-			cost    float64
-		}
 		var results []evaluated
 
 		for _, g := range genomes {
@@ -134,10 +135,22 @@ func (s *Server) runEvolution(pop *Population, req evolveRequest) evolveResult {
 			costNorm := 1.0 / (1.0 + results[i].genome.Cost)
 			results[i].genome.Fitness = 0.7*quality + 0.2*latNorm + 0.1*costNorm
 
+			// Persist fitness back to the genome record
+			s.cfg.Store.UpdateGenomeFitness(
+				results[i].genome.ID,
+				results[i].genome.Fitness,
+				quality,
+				results[i].genome.LatencyMs,
+				results[i].genome.Cost,
+			)
+
 			log.Printf("[breed] gen%d genome %s: fitness=%.3f quality=%.3f latency=%dms output=%q",
 				currentGen, results[i].genome.ID[:16], results[i].genome.Fitness,
 				quality, results[i].latency.Milliseconds(), truncate(results[i].output, 60))
 		}
+
+		// Save for final results
+		lastResults = results
 
 		// Phase 3: Select — pick top performers
 		fitnesses := make([]float64, len(results))
@@ -228,33 +241,47 @@ func (s *Server) runEvolution(pop *Population, req evolveRequest) evolveResult {
 		s.cfg.Store.UpdatePopulation(popID, currentGen, bestFit, "evolving")
 	}
 
-	// Final: get best genome
-	s.cfg.Store.UpdatePopulation(popID, currentGen, pop.BestFitness, "idle")
+	// Final: update population status
+	bestFitOverall := 0.0
+	for _, r := range lastResults {
+		if r.genome.Fitness > bestFitOverall {
+			bestFitOverall = r.genome.Fitness
+		}
+	}
+	s.cfg.Store.UpdatePopulation(popID, currentGen, bestFitOverall, "idle")
 
-	best, err := s.cfg.Store.GetBestGenome(popID)
 	result := evolveResult{
 		PopulationID: popID,
 		Generations:  generations,
 		FinalGen:     currentGen,
-	}
-	if err == nil && best != nil {
-		result.BestFitness = best.Fitness
-		result.BestPrompt = best.SystemPrompt
-
-		// Re-evaluate best to get its output
-		output, _, _ := s.evaluateGenome(*best, model, req.APIKey, pop.TargetEndpoint)
-		result.BestTagline = output
+		BestFitness:  bestFitOverall,
 	}
 
-	// Top 5 from last generation
-	lastGenomes, _ := s.cfg.Store.ListGenomes(popID, currentGen-1)
-	for i, g := range lastGenomes {
+	// Build top genomes from the last evaluated generation (already scored)
+	// Sort by fitness descending
+	sortedResults := make([]evaluated, len(lastResults))
+	copy(sortedResults, lastResults)
+	for i := range sortedResults {
+		for j := i + 1; j < len(sortedResults); j++ {
+			if sortedResults[j].genome.Fitness > sortedResults[i].genome.Fitness {
+				sortedResults[i], sortedResults[j] = sortedResults[j], sortedResults[i]
+			}
+		}
+	}
+
+	for i, r := range sortedResults {
 		if i >= 5 { break }
-		output, _, _ := s.evaluateGenome(g, model, req.APIKey, pop.TargetEndpoint)
 		result.TopGenomes = append(result.TopGenomes, genomeResult{
-			ID: g.ID, Prompt: truncate(g.SystemPrompt, 100),
-			Output: output, Fitness: g.Fitness,
+			ID:      r.genome.ID,
+			Prompt:  truncate(r.genome.SystemPrompt, 100),
+			Output:  r.output,
+			Fitness: r.genome.Fitness,
 		})
+	}
+
+	if len(sortedResults) > 0 {
+		result.BestTagline = sortedResults[0].output
+		result.BestPrompt = sortedResults[0].genome.SystemPrompt
 	}
 
 	log.Printf("[breed] evolution complete: %d generations, best_fitness=%.3f", generations, result.BestFitness)
