@@ -3,6 +3,7 @@ package server
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -18,14 +19,20 @@ type Config struct {
 }
 
 type Server struct {
-	cfg Config
-	mux *http.ServeMux
+	cfg        Config
+	mux        *http.ServeMux
+	platformDB *sql.DB
 }
 
 func New(cfg Config) *Server {
 	s := &Server{cfg: cfg, mux: http.NewServeMux()}
 	s.routes()
 	return s
+}
+
+// SetPlatformDB wires the shared DB for telemetry extraction.
+func (s *Server) SetPlatformDB(db *sql.DB) {
+	s.platformDB = db
 }
 
 func (s *Server) ListenAndServe() error {

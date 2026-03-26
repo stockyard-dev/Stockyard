@@ -720,13 +720,17 @@ func Boot(pc ProductConfig) {
 			}
 		}
 		// Wire event bus into products that support it (Spore pattern engine).
-		// Wire platform DB into products that need cross-product analysis (Molt).
+		// Wire platform DB into products that need cross-product analysis (Molt, Mycelium).
+		// Start no-arg schedulers (Mycelium extraction loop).
 		for _, ps := range productServers {
 			if setter, ok := ps.Handler.(interface{ SetEventBus(*bus.Bus) }); ok {
 				setter.SetEventBus(eventBus)
 			}
 			if setter, ok := ps.Handler.(interface{ SetPlatformDB(*sql.DB) }); ok {
 				setter.SetPlatformDB(db.Conn())
+			}
+			if sched, ok := ps.Handler.(interface{ StartScheduler() }); ok {
+				sched.StartScheduler()
 			}
 		}
 		// Wire auto-feed: every proxy request auto-populates platform products

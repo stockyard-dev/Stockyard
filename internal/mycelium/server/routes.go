@@ -63,9 +63,29 @@ func (s *Server) handleCreatePeer(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleExchange(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"peer_id": r.PathValue("peer_id"), "status": "exchange_triggered"})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+	peerID := r.PathValue("peer_id")
+	result, err := s.runExchange(peerID)
+	if err != nil {
+		writeJSON(w, 400, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, 200, result)
 }
 
 func (s *Server) handleNetworkStats(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]any{"peers": 0, "insights_shared": 0})
+	if s.cfg.Store == nil { writeJSON(w, 200, map[string]any{"peers": 0}); return }
+	peers, _ := s.cfg.Store.ListPeers()
+	insights, _ := s.cfg.Store.ListInsights("", "", 1000)
+
+	byType := map[string]int{}
+	for _, i := range insights {
+		byType[i.InsightType]++
+	}
+
+	writeJSON(w, 200, map[string]any{
+		"peers":           len(peers),
+		"total_insights":  len(insights),
+		"insights_by_type": byType,
+	})
 }

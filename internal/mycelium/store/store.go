@@ -130,3 +130,23 @@ func (db *DB) Stats() (map[string]any, error) {
 	db.conn.QueryRow(`SELECT COUNT(*) FROM mycelium_exchanges`).Scan(&exchanges)
 	return map[string]any{"total_insights": insights, "connected_peers": peers, "total_exchanges": exchanges}, nil
 }
+
+func (db *DB) CreateExchange(e *Exchange) error {
+	_, err := db.conn.Exec(`INSERT INTO mycelium_exchanges (id,peer_id,direction,insight_count) VALUES (?,?,?,?)`,
+		e.ID, e.PeerID, e.Direction, e.InsightCount)
+	return err
+}
+
+func (db *DB) UpdatePeerExchange(id string, sent, received int) error {
+	_, err := db.conn.Exec(`UPDATE mycelium_peers SET last_exchange=CURRENT_TIMESTAMP, insights_sent=insights_sent+?, insights_received=insights_received+?, status='connected' WHERE id=?`,
+		sent, received, id)
+	return err
+}
+
+func (db *DB) GetPeer(id string) (*Peer, error) {
+	var p Peer
+	err := db.conn.QueryRow(`SELECT id,endpoint,instance_id,last_exchange,insights_received,insights_sent,trust_score,status FROM mycelium_peers WHERE id=?`, id).Scan(
+		&p.ID, &p.Endpoint, &p.InstanceID, &p.LastExchange, &p.InsightsReceived, &p.InsightsSent, &p.TrustScore, &p.Status)
+	if err != nil { return nil, err }
+	return &p, nil
+}
