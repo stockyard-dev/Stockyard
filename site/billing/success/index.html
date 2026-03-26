@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription Confirmed — Stockyard</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--rust:#c45d2c;--cream:#f0e6d3;--cream-dim:#bfb5a3;--green:#4a8c5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.card{background:var(--bg2);border:1px solid var(--green);border-radius:12px;padding:3rem;max-width:520px;text-align:center}
+.icon{font-size:3rem;margin-bottom:1rem}
+h1{font-size:1.6rem;margin-bottom:0.75rem}
+p{color:var(--cream-dim);line-height:1.6;margin-bottom:1.5rem}
+.cta{display:inline-block;background:var(--rust);color:var(--cream);padding:0.75rem 2rem;border-radius:6px;text-decoration:none;font-family:var(--font-mono);font-size:0.85rem;transition:opacity 0.2s}
+.cta:hover{opacity:0.85}
+.note{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);margin-top:1.5rem}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="icon">✓</div>
+<h1>Subscription Confirmed</h1>
+<p>Your plan is now active. The middleware chain has been upgraded — new modules are available immediately, no redeploy needed.</p>
+<a href="/ui" class="cta">Open Console →</a>
+<div class="note">Questions? <a href="mailto:support@stockyard.dev" style="color:var(--rust)">support@stockyard.dev</a></div>
+</div>
+</body>
+</html>

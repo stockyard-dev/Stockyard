@@ -87,6 +87,8 @@ func Register(mux *http.ServeMux) {
 		"/knowledge/",
 		"/copilot/",
 		"/billing/",
+		"/billing/success/",
+		"/billing/cancel/",
 		"/governance/",
 		"/appbuilder/",
 		"/apps/",

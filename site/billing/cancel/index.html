@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout Cancelled — Stockyard</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--rust:#c45d2c;--cream:#f0e6d3;--cream-dim:#bfb5a3;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.card{background:var(--bg2);border:1px solid #3a3228;border-radius:12px;padding:3rem;max-width:520px;text-align:center}
+h1{font-size:1.6rem;margin-bottom:0.75rem}
+p{color:var(--cream-dim);line-height:1.6;margin-bottom:1.5rem}
+.buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta{display:inline-block;background:var(--rust);color:var(--cream);padding:0.75rem 2rem;border-radius:6px;text-decoration:none;font-family:var(--font-mono);font-size:0.85rem;transition:opacity 0.2s}
+.cta:hover{opacity:0.85}
+.secondary{background:transparent;border:1px solid var(--cream-dim)}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Checkout Cancelled</h1>
+<p>No charges were made. The Community tier remains active with full proxy access and 66 middleware modules.</p>
+<div class="buttons">
+<a href="/pricing/" class="cta">View Plans</a>
+<a href="/ui" class="cta secondary">Back to Console</a>
+</div>
+</div>
+</body>
+</html>
