@@ -1785,6 +1785,16 @@ func buildMiddlewares(reg *toggle.Registry,
 		log.Printf("contextpack: %d sources configured", len(cfg.ContextPack.Sources))
 	}
 
+	// CortexInject — retrieval-augmented context from organizational memory
+	// Opens its own Cortex DB connection for memory queries.
+	{
+		cortexPath := filepath.Join(cfg.DataDir, "cortex", "cortex.db")
+		if cortexInjectDB, err := cortexstore.Open(cortexPath); err == nil {
+			add("memoryinject", features.CortexInjectMiddleware(cortexInjectDB, 3))
+			log.Printf("cortex-inject: RAG from organizational memory (max 3 memories per request)")
+		}
+	}
+
 	// ChatMem — inject conversation memory (after context, before prompt template)
 	if pc.Features.ChatMem && cfg.ChatMem.Enabled {
 		mem := features.NewChatMem(cfg.ChatMem)

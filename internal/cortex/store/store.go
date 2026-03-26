@@ -145,3 +145,62 @@ func (db *DB) Stats() (map[string]any, error) {
 	db.conn.QueryRow(`SELECT COALESCE(AVG(confidence),0) FROM cortex_memories`).Scan(&avgConf)
 	return map[string]any{"total_memories": memories, "unresolved_conflicts": conflicts, "propagations": propagations, "avg_confidence": avgConf}, nil
 }
+
+// SearchMemories finds memories matching any of the given keywords across
+// subject, predicate, and value fields. Returns up to limit results
+// ordered by confidence. Updates access_count for returned memories.
+func (db *DB) SearchMemories(keywords []string, limit int) ([]Memory, error) {
+	if len(keywords) == 0 || limit <= 0 {
+		return nil, nil
+	}
+	if limit > 20 {
+		limit = 20
+	}
+
+	// Build OR conditions for keyword matching
+	var conditions []string
+	var args []any
+	for _, kw := range keywords {
+		like := "%" + kw + "%"
+		conditions = append(conditions, "(subject LIKE ? OR predicate LIKE ? OR value LIKE ?)")
+		args = append(args, like, like, like)
+	}
+
+	q := `SELECT id,category,subject,predicate,value,confidence,source_trace,source_model,access_count,last_accessed,decay_rate,created_at,updated_at
+		FROM cortex_memories WHERE (` + joinOr(conditions) + `) AND confidence > 0.3
+		ORDER BY confidence DESC LIMIT ?`
+	args = append(args, limit)
+
+	rows, err := db.conn.Query(q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Memory
+	var ids []string
+	for rows.Next() {
+		var m Memory
+		rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt)
+		out = append(out, m)
+		ids = append(ids, m.ID)
+	}
+
+	// Update access counts
+	for _, id := range ids {
+		db.conn.Exec(`UPDATE cortex_memories SET access_count=access_count+1, last_accessed=CURRENT_TIMESTAMP WHERE id=?`, id)
+	}
+
+	return out, nil
+}
+
+func joinOr(parts []string) string {
+	if len(parts) == 0 {
+		return "1=1"
+	}
+	result := parts[0]
+	for _, p := range parts[1:] {
+		result += " OR " + p
+	}
+	return result
+}
