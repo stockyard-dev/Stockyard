@@ -705,6 +705,19 @@ func Boot(pc ProductConfig) {
 			Registry: productRegistry,
 		}, productServers)
 
+		// Start background schedulers for products that support them.
+		// Phantom canaries run on schedule (hourly/daily/continuous).
+		phantomKey := os.Getenv("STOCKYARD_PHANTOM_KEY")
+		if phantomKey == "" {
+			phantomKey = os.Getenv("STOCKYARD_DEV_KEY")
+		}
+		if phantomKey != "" {
+			for _, ps := range productServers {
+				if sched, ok := ps.Handler.(interface{ StartScheduler(string) }); ok {
+					sched.StartScheduler(phantomKey)
+				}
+			}
+		}
 		// Wire auto-feed: every proxy request auto-populates platform products
 		if activeTier >= platform.TierIndividual {
 			relicDB, _ := relicstore.Open(filepath.Join(cfg.DataDir, "relic", "relic.db"))
