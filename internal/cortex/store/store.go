@@ -148,7 +148,8 @@ func (db *DB) Stats() (map[string]any, error) {
 
 // SearchMemories finds memories matching any of the given keywords across
 // subject, predicate, and value fields. Returns up to limit results
-// ordered by confidence. Updates access_count for returned memories.
+// ranked by number of keyword matches (more matches = more relevant),
+// then by confidence. Updates access_count for returned memories.
 func (db *DB) SearchMemories(keywords []string, limit int) ([]Memory, error) {
 	if len(keywords) == 0 || limit <= 0 {
 		return nil, nil
@@ -157,18 +158,27 @@ func (db *DB) SearchMemories(keywords []string, limit int) ([]Memory, error) {
 		limit = 20
 	}
 
-	// Build OR conditions for keyword matching
-	var conditions []string
+	// Build a relevance scoring query — count how many keywords match each memory.
+	// SQLite doesn't have full-text search, so we use SUM(CASE WHEN ... THEN 1 END).
+	var scoreParts []string
 	var args []any
 	for _, kw := range keywords {
 		like := "%" + kw + "%"
-		conditions = append(conditions, "(subject LIKE ? OR predicate LIKE ? OR value LIKE ?)")
+		scoreParts = append(scoreParts,
+			"(CASE WHEN subject LIKE ? OR predicate LIKE ? OR value LIKE ? THEN 1 ELSE 0 END)")
 		args = append(args, like, like, like)
 	}
 
-	q := `SELECT id,category,subject,predicate,value,confidence,source_trace,source_model,access_count,last_accessed,decay_rate,created_at,updated_at
-		FROM cortex_memories WHERE (` + joinOr(conditions) + `) AND confidence > 0.3
-		ORDER BY confidence DESC LIMIT ?`
+	scoreExpr := "(" + joinPlus(scoreParts) + ")"
+
+	q := `SELECT id,category,subject,predicate,value,confidence,source_trace,source_model,access_count,last_accessed,decay_rate,created_at,updated_at,
+		` + scoreExpr + ` AS relevance
+		FROM cortex_memories
+		WHERE confidence > 0.3
+		GROUP BY id
+		HAVING relevance > 0
+		ORDER BY relevance DESC, confidence DESC
+		LIMIT ?`
 	args = append(args, limit)
 
 	rows, err := db.conn.Query(q, args...)
@@ -181,7 +191,8 @@ func (db *DB) SearchMemories(keywords []string, limit int) ([]Memory, error) {
 	var ids []string
 	for rows.Next() {
 		var m Memory
-		rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt)
+		var relevance int
+		rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt, &relevance)
 		out = append(out, m)
 		ids = append(ids, m.ID)
 	}
@@ -201,6 +212,17 @@ func joinOr(parts []string) string {
 	result := parts[0]
 	for _, p := range parts[1:] {
 		result += " OR " + p
+	}
+	return result
+}
+
+func joinPlus(parts []string) string {
+	if len(parts) == 0 {
+		return "0"
+	}
+	result := parts[0]
+	for _, p := range parts[1:] {
+		result += " + " + p
 	}
 	return result
 }
