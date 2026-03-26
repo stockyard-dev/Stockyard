@@ -213,17 +213,16 @@ func (e *patternEngine) firePattern(p store.Pattern, evt bus.Event) {
 	// Update activation outcome
 	e.store.UpdateActivationOutcome(activationID, outcome)
 
-	// Update pattern stats
-	newCount := p.Activations + 1
-	// Simple success rate: all activations that reach here are "successes"
-	// (failures would be caught in action execution)
-	successRate := float64(newCount) / float64(newCount) // simplified for now
+	// Get actual activation count from DB (cached p.Activations is stale)
+	acts, _ := e.store.ListActivations(p.ID, 1000)
+	newCount := len(acts)
+	successRate := 1.0
 	e.store.UpdatePatternStats(p.ID, newCount, successRate)
 
 	log.Printf("[spore] pattern %s activated (%d total), action=%s",
 		p.Name, newCount, action.Type)
 
-	// Auto-replicate on successful activation if pattern is productive
+	// Auto-replicate on every 5th activation of a productive pattern
 	if newCount > 0 && newCount%5 == 0 {
 		e.replicate(p, evt)
 	}
