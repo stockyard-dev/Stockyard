@@ -2414,7 +2414,7 @@ func buildPreFlight(pc ProductConfig, cfg *config.Config, counter *tracker.Spend
 	// Failover chain for streaming
 	if pc.Features.Failover && cfg.Failover.Enabled {
 		pf.ResolveProvider = func(req *provider.Request) []string {
-			return cfg.Failover.Providers
+			return features.ModelAwareProviderOrder(req.Model, cfg.Failover.Providers)
 		}
 	}
 

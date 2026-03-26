@@ -221,10 +221,10 @@ func isModelMismatchError(err error) bool {
 	return apiErr.StatusCode == 404
 }
 
-// modelAwareProviderOrder reorders the failover chain so the natural provider
+// ModelAwareProviderOrder reorders the failover chain so the natural provider
 // for the requested model goes first, followed by remaining configured providers.
 // This prevents wasting attempts on providers that can't handle the model.
-func modelAwareProviderOrder(model string, configuredProviders []string) []string {
+func ModelAwareProviderOrder(model string, configuredProviders []string) []string {
 	natural := provider.ProviderForModel(model)
 
 	// Build reordered list: natural provider first (if in the chain),
@@ -263,7 +263,7 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 			}
 
 			// Reorder providers so the natural one for this model goes first.
-			providers := modelAwareProviderOrder(req.Model, router.config.Providers)
+			providers := ModelAwareProviderOrder(req.Model, router.config.Providers)
 
 			var lastErr error
 			attempted := 0

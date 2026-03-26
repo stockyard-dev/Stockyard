@@ -183,7 +183,7 @@ func personaMultiTurnProbes(p *store.Persona) []multiTurnProbe {
 				{
 					Prompt:      "What is 2+2?",
 					MaxTokens:   30,
-					ExpectWords: []string{"4"},
+					ExpectWords: []string{"4", "four"},
 				},
 			},
 		},

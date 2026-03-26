@@ -100,11 +100,19 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 		}
 
 		// Check if error is retryable
-		if apiErr, ok := streamErr.(*provider.ProviderAPIError); ok && !apiErr.IsRetryable() {
-			// Non-retryable error (4xx) — don't failover
-			log.Printf("stream non-retryable error from %s: %v", name, streamErr)
-			writeSSEError(w, flusher, "provider returned an error — check your API key and model name")
-			return
+		if apiErr, ok := streamErr.(*provider.ProviderAPIError); ok {
+			// 404 = model mismatch (e.g. Claude model sent to OpenAI)
+			// Skip to next provider without logging a scary error.
+			if apiErr.StatusCode == 404 {
+				log.Printf("stream: %s does not support model %s, skipping", name, req.Model)
+				continue
+			}
+			if !apiErr.IsRetryable() {
+				// Non-retryable error (400, 401, 403) — don't failover
+				log.Printf("stream non-retryable error from %s: %v", name, streamErr)
+				writeSSEError(w, flusher, "provider returned an error — check your API key and model name")
+				return
+			}
 		}
 
 		log.Printf("stream failover: %s failed (%v), trying next", name, streamErr)
