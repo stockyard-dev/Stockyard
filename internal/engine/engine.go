@@ -334,8 +334,14 @@ func Boot(pc ProductConfig) {
 	lic := license.FromEnv()
 	activeTier := platform.ResolveTier(lic)
 
+	// TierWatcher enables hot tier upgrades: Stripe webhook writes to
+	// platform_tier_state, the watcher polls every 30s and tier-gated
+	// middleware checks CurrentTier() on every request. No redeploy needed.
+	tierWatcher := platform.NewTierWatcher(db.Conn(), activeTier)
+	tierWatcher.Start(30 * time.Second)
+
 	// Build middleware chain based on product features + tier
-	middlewares, failoverRouter := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers, activeTier)
+	middlewares, failoverRouter := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers, tierWatcher)
 
 	// License enforcement — first in chain (prepend so it runs before everything)
 	licEnforcer := license.NewEnforcer(lic)
@@ -588,6 +594,10 @@ func Boot(pc ProductConfig) {
 				}); ok {
 					setter.SetFailoverRouter(failoverRouter)
 				}
+			}
+			// Wire tier watcher refresh so Stripe webhook activates tier instantly
+			if setter, ok := app.(interface{ SetTierRefresh(func()) }); ok {
+				setter.SetTierRefresh(tierWatcher.Refresh)
 			}
 		}
 
@@ -935,6 +945,30 @@ func Boot(pc ProductConfig) {
 		json.NewEncoder(w).Encode(licEnforcer.Stats())
 	})
 	log.Printf("  License:   tier=%s valid=%v", licEnforcer.Tier(), lic.Valid)
+
+	// Live tier status — reflects Stripe upgrades without redeploy
+	srv.Mux().HandleFunc("GET /api/tier", func(w http.ResponseWriter, r *http.Request) {
+		current := tierWatcher.CurrentTier()
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"tier":      int(current),
+			"tier_name": platform.TierName(current),
+			"boot_tier": platform.TierName(activeTier),
+			"hot_reload": current != activeTier,
+		})
+	})
+	srv.Mux().HandleFunc("POST /api/tier/refresh", func(w http.ResponseWriter, r *http.Request) {
+		before := tierWatcher.CurrentTier()
+		tierWatcher.Refresh()
+		after := tierWatcher.CurrentTier()
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"before":  platform.TierName(before),
+			"after":   platform.TierName(after),
+			"changed": before != after,
+		})
+	})
+	log.Printf("  Tier:      %s (hot-reload enabled, poll=30s)", platform.TierName(activeTier))
 
 	// Usage counters + upgrade triggers
 	GlobalUsageCounters = NewUsageCounters(db.Conn())
@@ -1644,6 +1678,8 @@ func Boot(pc ProductConfig) {
 	// Now cancel the flusher — triggers a final flush of remaining data
 	flushCancel()
 
+	tierWatcher.Stop()
+
 	if otelExp != nil {
 		otelExp.Close()
 	}
@@ -1723,7 +1759,7 @@ func buildMiddlewares(reg *toggle.Registry,
 	counter *tracker.SpendCounter,
 	broadcaster *dashboard.Broadcaster,
 	providers map[string]provider.Provider,
-	tier platform.Tier,
+	tierWatcher *platform.TierWatcher,
 ) ([]proxy.Middleware, *features.FailoverRouter) {
 	var mw []proxy.Middleware
 	var failoverRouter *features.FailoverRouter
@@ -1756,12 +1792,14 @@ func buildMiddlewares(reg *toggle.Registry,
 	}
 
 	// add wraps a middleware with toggle + tier gating.
-	// If the module has a tier requirement higher than the active tier, skip it entirely.
+	// Tier-gated modules are always in the chain but checked at request time
+	// so Stripe tier upgrades take effect immediately without redeploy.
 	add := func(name string, m proxy.Middleware) {
-		if minTier, ok := moduleTiers[name]; ok && tier < minTier {
-			return // tier too low, don't add to chain
+		wrapped := toggle.Wrap(name, reg, m)
+		if minTier, ok := moduleTiers[name]; ok {
+			wrapped = platform.TierWrap(name, minTier, tierWatcher, wrapped)
 		}
-		mw = append(mw, toggle.Wrap(name, reg, m))
+		mw = append(mw, wrapped)
 	}
 
 	// IPFence — block unauthorized IPs before any processing (outermost)

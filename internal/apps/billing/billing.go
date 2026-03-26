@@ -13,10 +13,17 @@ import (
 )
 
 type App struct {
-	conn *sql.DB
+	conn        *sql.DB
+	tierRefresh func() // called after tier upgrade to activate immediately
 }
 
 func New(conn *sql.DB) *App { return &App{conn: conn} }
+
+// SetTierRefresh wires the TierWatcher.Refresh callback so Stripe
+// webhook tier upgrades take effect instantly without waiting for poll.
+func (a *App) SetTierRefresh(fn func()) {
+	a.tierRefresh = fn
+}
 
 func (a *App) Name() string        { return "billing" }
 func (a *App) Description() string { return "Usage metering, per-customer billing, plans & limits" }

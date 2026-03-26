@@ -3,6 +3,7 @@ module github.com/stockyard-dev/stockyard
 go 1.22
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/sashabaranov/go-openai v1.41.2
 	golang.org/x/crypto v0.31.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -11,7 +12,6 @@ require (
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect

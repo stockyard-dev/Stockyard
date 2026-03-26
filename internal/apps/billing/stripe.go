@@ -358,7 +358,15 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 			if localID != "" {
 				a.conn.Exec("UPDATE billing_customers SET metadata = json_set(COALESCE(metadata,'{}'), '$.tier', 'community'), updated_at = ? WHERE id = ?",
 					nowRFC3339(), localID)
-				log.Printf("[billing/stripe] subscription cancelled: customer=%s → community", localID)
+				// Downgrade platform tier to community
+				a.conn.Exec(`INSERT INTO platform_tier_state (id, tier, tier_name, subscription_id, updated_at)
+					VALUES ('active', 0, 'community', '', ?)
+					ON CONFLICT(id) DO UPDATE SET tier=0, tier_name='community', subscription_id='', updated_at=excluded.updated_at`,
+					nowRFC3339())
+				if a.tierRefresh != nil {
+					a.tierRefresh()
+				}
+				log.Printf("[billing/stripe] subscription cancelled: customer=%s → community (tier downgraded)", localID)
 			}
 		}
 	case "payment_intent.succeeded":
@@ -431,6 +439,12 @@ func (a *App) handleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 						ON CONFLICT(id) DO UPDATE SET tier=excluded.tier, tier_name=excluded.tier_name, subscription_id=excluded.subscription_id, updated_at=excluded.updated_at`,
 						tierNum, tier, subscriptionID, nowRFC3339())
 					log.Printf("[billing/stripe] platform tier updated to %s (%d)", tier, tierNum)
+
+					// Trigger immediate tier activation — don't wait for next poll cycle
+					if a.tierRefresh != nil {
+						a.tierRefresh()
+						log.Printf("[billing/stripe] tier watcher refreshed — middleware chain updated instantly")
+					}
 				}
 			}
 		}
