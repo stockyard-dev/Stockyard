@@ -718,6 +718,12 @@ func Boot(pc ProductConfig) {
 				}
 			}
 		}
+		// Wire event bus into products that support it (Spore pattern engine).
+		for _, ps := range productServers {
+			if setter, ok := ps.Handler.(interface{ SetEventBus(*bus.Bus) }); ok {
+				setter.SetEventBus(eventBus)
+			}
+		}
 		// Wire auto-feed: every proxy request auto-populates platform products
 		if activeTier >= platform.TierIndividual {
 			relicDB, _ := relicstore.Open(filepath.Join(cfg.DataDir, "relic", "relic.db"))

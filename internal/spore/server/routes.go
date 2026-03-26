@@ -51,11 +51,30 @@ func (s *Server) handleGetPattern(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleActivate(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"id": r.PathValue("id"), "status": "activated"})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+	id := r.PathValue("id")
+	if err := s.cfg.Store.UpdatePatternStatus(id, "active"); err != nil {
+		writeJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	// Refresh engine cache so it picks up the newly active pattern
+	if s.engine != nil {
+		s.engine.refreshPatterns()
+	}
+	writeJSON(w, 200, map[string]string{"id": id, "status": "active"})
 }
 
 func (s *Server) handleRetire(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"id": r.PathValue("id"), "status": "retired"})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+	id := r.PathValue("id")
+	if err := s.cfg.Store.UpdatePatternStatus(id, "retired"); err != nil {
+		writeJSON(w, 500, map[string]string{"error": err.Error()})
+		return
+	}
+	if s.engine != nil {
+		s.engine.refreshPatterns()
+	}
+	writeJSON(w, 200, map[string]string{"id": id, "status": "retired"})
 }
 
 func (s *Server) handleActivations(w http.ResponseWriter, r *http.Request) {

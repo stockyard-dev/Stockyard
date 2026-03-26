@@ -18,8 +18,9 @@ type Config struct {
 }
 
 type Server struct {
-	cfg Config
-	mux *http.ServeMux
+	cfg    Config
+	mux    *http.ServeMux
+	engine *patternEngine
 }
 
 func New(cfg Config) *Server {

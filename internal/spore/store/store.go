@@ -115,3 +115,38 @@ func (db *DB) Stats() (map[string]any, error) {
 	db.conn.QueryRow(`SELECT COUNT(*) FROM spore_patterns WHERE status='active'`).Scan(&active)
 	return map[string]any{"total_patterns": patterns, "active_patterns": active, "total_activations": activations}, nil
 }
+
+func (db *DB) CreateActivation(a *Activation) error {
+	_, err := db.conn.Exec(`INSERT INTO spore_activations (id,pattern_id,environment,trigger_data,outcome) VALUES (?,?,?,?,?)`,
+		a.ID, a.PatternID, a.Environment, a.TriggerData, a.Outcome)
+	return err
+}
+
+func (db *DB) UpdateActivationOutcome(id, outcome string) error {
+	_, err := db.conn.Exec(`UPDATE spore_activations SET outcome=? WHERE id=?`, outcome, id)
+	return err
+}
+
+func (db *DB) UpdatePatternStats(id string, activations int, successRate float64) error {
+	_, err := db.conn.Exec(`UPDATE spore_patterns SET activations=?, success_rate=? WHERE id=?`,
+		activations, successRate, id)
+	return err
+}
+
+func (db *DB) UpdatePatternStatus(id, status string) error {
+	_, err := db.conn.Exec(`UPDATE spore_patterns SET status=? WHERE id=?`, status, id)
+	return err
+}
+
+func (db *DB) ListActivePatterns() ([]Pattern, error) {
+	rows, err := db.conn.Query(`SELECT id,name,description,trigger_conditions,actions,source_event,activations,success_rate,environments,status,created_at FROM spore_patterns WHERE status='active' ORDER BY created_at`)
+	if err != nil { return nil, err }
+	defer rows.Close()
+	var out []Pattern
+	for rows.Next() {
+		var p Pattern
+		rows.Scan(&p.ID, &p.Name, &p.Description, &p.TriggerConditions, &p.Actions, &p.SourceEvent, &p.Activations, &p.SuccessRate, &p.Environments, &p.Status, &p.CreatedAt)
+		out = append(out, p)
+	}
+	return out, nil
+}
