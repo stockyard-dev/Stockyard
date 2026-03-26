@@ -422,14 +422,16 @@ func isValidTagValue(v string) bool {
 func classifyError(err error) int {
 	msg := err.Error()
 	switch {
+	case strings.Contains(msg, "injection detected") || strings.Contains(msg, "PII detected"):
+		return http.StatusBadRequest // 400 — request content blocked by guardrail
 	case strings.Contains(msg, "model not found"):
 		return http.StatusBadRequest // 400
 	case strings.Contains(msg, "license"):
 		return http.StatusPaymentRequired // 402
 	case strings.Contains(msg, "no providers configured"):
-		return http.StatusBadGateway // 502 (not 503 — Railway intercepts 503)
+		return 422 // Unprocessable — can't route without providers
 	case strings.Contains(msg, "circuit open") || strings.Contains(msg, "circuit breakers open"):
-		return http.StatusBadGateway // 502 (not 503 — Railway intercepts 503)
+		return 422 // Unprocessable — providers temporarily unavailable
 	case strings.Contains(msg, "rate limit") || strings.Contains(msg, "status 429"):
 		return http.StatusTooManyRequests // 429
 	case strings.Contains(msg, "status 401") || strings.Contains(msg, "invalid API key"):
@@ -437,7 +439,9 @@ func classifyError(err error) int {
 	case strings.Contains(msg, "status 403"):
 		return http.StatusForbidden // 403
 	default:
-		return http.StatusBadGateway // 502
+		// Use 500 instead of 502/503 — Railway intercepts 502/503
+		// and replaces the JSON body with plain text "Service Unavailable"
+		return http.StatusInternalServerError // 500
 	}
 }
 
