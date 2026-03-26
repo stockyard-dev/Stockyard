@@ -75,6 +75,8 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 	var stream <-chan provider.StreamChunk
 	var streamErr error
 	var usedProvider string
+	modelSkipped := 0
+	attempted := 0
 
 	for _, name := range providerChain {
 		// Try user-specific provider first (via resolver)
@@ -93,6 +95,7 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 			}
 		}
 
+		attempted++
 		stream, streamErr = p.SendStream(r.Context(), req)
 		if streamErr == nil {
 			usedProvider = name
@@ -105,6 +108,7 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 			// Skip to next provider without logging a scary error.
 			if apiErr.StatusCode == 404 {
 				log.Printf("stream: %s does not support model %s, skipping", name, req.Model)
+				modelSkipped++
 				continue
 			}
 			if !apiErr.IsRetryable() {
@@ -119,8 +123,13 @@ func (s *Server) handleStream(w http.ResponseWriter, r *http.Request, req *provi
 	}
 
 	if streamErr != nil {
-		log.Printf("stream: all providers failed: %v", streamErr)
-		writeSSEError(w, flusher, "all providers failed — check API keys and provider status")
+		if modelSkipped == attempted {
+			log.Printf("stream: no provider supports model %s", req.Model)
+			writeSSEError(w, flusher, fmt.Sprintf("model not found: no provider supports model %q", req.Model))
+		} else {
+			log.Printf("stream: all providers failed: %v", streamErr)
+			writeSSEError(w, flusher, "all providers failed — check API keys and provider status")
+		}
 		return
 	}
 

@@ -267,6 +267,7 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 
 			var lastErr error
 			attempted := 0
+			modelSkipped := 0
 
 			for _, name := range providers {
 				cb, ok := router.breakers[name]
@@ -292,6 +293,7 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 					// skip to next provider, don't penalize the circuit breaker.
 					if isModelMismatchError(err) {
 						log.Printf("failover: %s does not support model %s, skipping", name, req.Model)
+						modelSkipped++
 						continue
 					}
 
@@ -320,6 +322,9 @@ func FailoverMiddleware(router *FailoverRouter) proxy.Middleware {
 
 			if attempted == 0 {
 				return nil, fmt.Errorf("all providers unavailable (circuit breakers open)")
+			}
+			if modelSkipped == attempted {
+				return nil, fmt.Errorf("model not found: no provider supports model %q", req.Model)
 			}
 			return nil, fmt.Errorf("all providers failed, last error: %w", lastErr)
 		}

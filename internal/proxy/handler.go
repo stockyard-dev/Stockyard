@@ -422,12 +422,14 @@ func isValidTagValue(v string) bool {
 func classifyError(err error) int {
 	msg := err.Error()
 	switch {
+	case strings.Contains(msg, "model not found"):
+		return http.StatusBadRequest // 400
 	case strings.Contains(msg, "license"):
 		return http.StatusPaymentRequired // 402
 	case strings.Contains(msg, "no providers configured"):
-		return http.StatusServiceUnavailable // 503
-	case strings.Contains(msg, "circuit open"):
-		return http.StatusServiceUnavailable // 503
+		return http.StatusBadGateway // 502 (not 503 — Railway intercepts 503)
+	case strings.Contains(msg, "circuit open") || strings.Contains(msg, "circuit breakers open"):
+		return http.StatusBadGateway // 502 (not 503 — Railway intercepts 503)
 	case strings.Contains(msg, "rate limit") || strings.Contains(msg, "status 429"):
 		return http.StatusTooManyRequests // 429
 	case strings.Contains(msg, "status 401") || strings.Contains(msg, "invalid API key"):
