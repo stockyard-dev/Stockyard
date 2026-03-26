@@ -32,7 +32,7 @@ func (s *Server) runLiveRefresh() refreshResult {
 
 	// ── Platform product count ──
 	var productCount, activeCount int
-	s.platformDB.QueryRow("SELECT COUNT(*), SUM(CASE WHEN enabled=1 THEN 1 ELSE 0 END) FROM platform_product_state").Scan(&productCount, &activeCount)
+	s.platformDB.QueryRow("SELECT COUNT(*), COALESCE(SUM(CASE WHEN enabled=1 THEN 1 ELSE 0 END),0) FROM platform_product_state").Scan(&productCount, &activeCount)
 	if productCount > 0 {
 		memories = append(memories, mem{"fact", "stockyard", "product_count",
 			fmt.Sprintf("%d products (%d active) across 5 tiers", productCount, activeCount), 1.0})

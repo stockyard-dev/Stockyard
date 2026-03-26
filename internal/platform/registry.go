@@ -130,6 +130,18 @@ func (r *ProductRegistry) RegisterAll(activeTier Tier) {
 			APIURL:      "/" + d.id + "/api",
 			UIURL:       "/" + d.id + "/ui",
 		})
+
+		// Seed platform_product_state so Cortex/Molt can query product counts
+		if r.db != nil {
+			enabledInt := 0
+			if active {
+				enabledInt = 1
+			}
+			r.db.Exec(`INSERT INTO platform_product_state (product_id, enabled, updated_at)
+				VALUES (?, ?, CURRENT_TIMESTAMP)
+				ON CONFLICT(product_id) DO NOTHING`,
+				d.id, enabledInt)
+		}
 	}
 }
 
