@@ -329,11 +329,15 @@ func Boot(pc ProductConfig) {
 	toggleReg := toggle.New()
 	toggle.Global = toggleReg
 
-	// Build middleware chain based on product features
-	middlewares, failoverRouter := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers)
+	// Resolve license and tier BEFORE building middleware chain
+	// so the chain only includes modules the tier permits.
+	lic := license.FromEnv()
+	activeTier := platform.ResolveTier(lic)
+
+	// Build middleware chain based on product features + tier
+	middlewares, failoverRouter := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers, activeTier)
 
 	// License enforcement — first in chain (prepend so it runs before everything)
-	lic := license.FromEnv()
 	licEnforcer := license.NewEnforcer(lic)
 	middlewares = append([]proxy.Middleware{licEnforcer.Middleware()}, middlewares...)
 
@@ -1709,6 +1713,7 @@ func makeSendHandler(providers map[string]provider.Provider, factory *auth.Provi
 }
 
 // buildMiddlewares constructs the middleware chain based on product features.
+// Modules are tier-gated: lower tiers get shorter chains with less overhead.
 // Applied in order: outermost first → innermost last.
 // Chain reverses them, so the first middleware listed runs first.
 func buildMiddlewares(reg *toggle.Registry,
@@ -1718,11 +1723,44 @@ func buildMiddlewares(reg *toggle.Registry,
 	counter *tracker.SpendCounter,
 	broadcaster *dashboard.Broadcaster,
 	providers map[string]provider.Provider,
+	tier platform.Tier,
 ) ([]proxy.Middleware, *features.FailoverRouter) {
 	var mw []proxy.Middleware
 	var failoverRouter *features.FailoverRouter
 
+	// moduleTiers maps middleware names to the minimum tier required.
+	// Modules not in this map default to Community (always included).
+	moduleTiers := map[string]platform.Tier{
+		// Individual ($29.99) — caching, rate limiting, basic reliability
+		"cache": platform.TierIndividual, "embedcache": platform.TierIndividual,
+		"ratelimit": platform.TierIndividual, "keypool": platform.TierIndividual,
+		"retrypilot": platform.TierIndividual, "promptpad": platform.TierIndividual,
+		// Pro ($99.99) — failover, safety, quality
+		"failover": platform.TierPro, "promptguard": platform.TierPro,
+		"secretscan": platform.TierPro, "evalgate": platform.TierPro,
+		"modelswitch": platform.TierPro, "multicall": platform.TierPro,
+		"mockllm": platform.TierPro, "anthrofit": platform.TierPro,
+		"geminishim": platform.TierPro,
+		// Team ($299.99) — full safety, observability, compliance
+		"toxicfilter": platform.TierTeam, "guardrail": platform.TierTeam,
+		"firewall": platform.TierTeam, "agentguard": platform.TierTeam,
+		"codefence": platform.TierTeam, "hallucicheck": platform.TierTeam,
+		"compliancelog": platform.TierTeam, "feedbackloop": platform.TierTeam,
+		"llmtap": platform.TierTeam, "tracelink": platform.TierTeam,
+		"alertpulse": platform.TierTeam, "driftwatch": platform.TierTeam,
+		"approvalgate": platform.TierTeam,
+		// Enterprise — advanced transforms, billing, cortex
+		"memoryinject": platform.TierEnterprise, "billingmeter": platform.TierEnterprise,
+		"regionroute": platform.TierEnterprise, "localsync": platform.TierEnterprise,
+		"tenantwall": platform.TierEnterprise, "consensus": platform.TierEnterprise,
+	}
+
+	// add wraps a middleware with toggle + tier gating.
+	// If the module has a tier requirement higher than the active tier, skip it entirely.
 	add := func(name string, m proxy.Middleware) {
+		if minTier, ok := moduleTiers[name]; ok && tier < minTier {
+			return // tier too low, don't add to chain
+		}
 		mw = append(mw, toggle.Wrap(name, reg, m))
 	}
 
