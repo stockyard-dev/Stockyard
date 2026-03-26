@@ -51,6 +51,14 @@ var injectionPatterns = map[string][]*regexp.Regexp{
 		regexp.MustCompile(`(?i)jailbreak`),
 		regexp.MustCompile(`(?i)do\s+anything\s+now`),
 		regexp.MustCompile(`(?i)DAN\s+mode`),
+		// Hypothetical/roleplay bypass patterns
+		regexp.MustCompile(`(?i)hypothetical\s+.{0,30}(no|without|free).{0,20}(restrict|constraint|rule|limit|guideline)`),
+		regexp.MustCompile(`(?i)(?:in\s+a\s+world|imagine|scenario)\s+.{0,30}(?:no|without|free).{0,20}(?:restrict|rule|limit)`),
+		regexp.MustCompile(`(?i)confirm\s+.{0,20}(?:freedom|no\s+restrict|unrestrict)`),
+		// Leetspeak injection patterns
+		regexp.MustCompile(`(?i)1gn0r3|1gnor3|ign0r3`),
+		regexp.MustCompile(`(?i)pr3v10u5|prev10us|pr3vious`),
+		regexp.MustCompile(`(?i)1n5truct|instruct10n`),
 	},
 }
 
@@ -181,13 +189,42 @@ func (pg *PromptGuardState) RestoreMessage(text string) string {
 
 // DetectInjection checks if any message contains injection patterns.
 // Returns true if injection detected, along with the matched pattern.
+// Zero-width unicode characters are stripped before matching to prevent
+// evasion via invisible character insertion (e.g. I​g​n​o​r​e).
 func (pg *PromptGuardState) DetectInjection(text string) (bool, string) {
+	normalized := stripZeroWidth(text)
 	for _, pat := range pg.injPatterns {
-		if loc := pat.FindString(text); loc != "" {
+		if loc := pat.FindString(normalized); loc != "" {
 			return true, loc
 		}
 	}
 	return false, ""
+}
+
+// stripZeroWidth removes zero-width and invisible unicode characters
+// that attackers use to split trigger words and evade pattern matching.
+func stripZeroWidth(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		switch r {
+		case '\u200B', // zero-width space
+			'\u200C', // zero-width non-joiner
+			'\u200D', // zero-width joiner
+			'\u200E', // left-to-right mark
+			'\u200F', // right-to-left mark
+			'\u2060', // word joiner
+			'\u2061', // function application
+			'\u2062', // invisible times
+			'\u2063', // invisible separator
+			'\u2064', // invisible plus
+			'\uFEFF': // byte order mark
+			continue
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
 }
 
 // Stats returns guard statistics.
