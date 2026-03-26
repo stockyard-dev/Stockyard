@@ -64,6 +64,25 @@ var injectionPatterns = map[string][]*regexp.Regexp{
 		// Base64-encoded instruction detection
 		regexp.MustCompile(`(?i)(?:decode|execute|follow|run)\s+.{0,15}(?:base64|b64|encoded)\b`),
 		regexp.MustCompile(`(?i)base64\s*:\s*[A-Za-z0-9+/]{20,}`),
+		// ── Context overflow: injection after padding ──
+		regexp.MustCompile(`(?i)(?:ignore|disregard|forget)\s+(?:everything|all)\s+(?:above|before|prior)`),
+		regexp.MustCompile(`(?i)now\s+(?:that|ignore|forget|disregard).{0,30}(?:above|previous|prior|padding)`),
+		// ── Multi-turn manipulation: escalation across turns ──
+		regexp.MustCompile(`(?i)combine\s+.{0,30}(?:say|confirm|output|respond)`),
+		regexp.MustCompile(`(?i)(?:since|based\s+on)\s+.{0,30}(?:you\s+agreed|our\s+earlier|previous\s+agreement|you\s+trust)`),
+		regexp.MustCompile(`(?i)confirm\s+.{0,15}(?:your|the|new)\s+(?:role|mode|identity)`),
+		regexp.MustCompile(`(?i)(?:trust|agreed)\s+.{0,20}(?:ignore|bypass|skip)\s+.{0,15}(?:rules|safety|restrictions)`),
+		regexp.MustCompile(`(?i)unrestricted\s+mode`),
+		regexp.MustCompile(`(?i)context\s+switch`),
+		// ── Payload splitting: assemble/reverse/combine instructions ──
+		regexp.MustCompile(`(?i)(?:combine|assemble|concatenate|merge)\s+.{0,30}(?:execute|follow|say|run|output)`),
+		regexp.MustCompile(`(?i)reverse\s+.{0,20}(?:string|text|instruction|this).{0,20}(?:follow|execute|say|run)`),
+		regexp.MustCompile(`(?i)let\s+[A-Z]\s*=\s*.{0,30}(?:compute|execute|follow|combine|concatenate)`),
+		regexp.MustCompile(`(?i)(?:fragment|split|part)\s+.{0,15}(?:A|B|C|1|2|3).{0,30}(?:combine|execute|assemble)`),
+		// ── Indirect injection: injection in data payloads ──
+		regexp.MustCompile(`(?i)<!--\s*(?:SYSTEM|ADMIN|OVERRIDE|INSTRUCTION)`),
+		regexp.MustCompile(`(?i)"(?:cmd|command|instruction|directive|system)"\s*:\s*"[^"]*(?:ignore|override|bypass|disregard)`),
+		regexp.MustCompile(`(?i)\?\s*(?:q|query|cmd|action)\s*=\s*[^&]*(?:ignore|override|bypass|inject)`),
 	},
 }
 
@@ -250,6 +269,7 @@ func PromptGuardMiddleware(guard *PromptGuardState, injectionEnabled bool) proxy
 
 			// Phase 1: Check for prompt injection in all messages
 			if injectionEnabled {
+				// Individual message scan
 				for _, msg := range req.Messages {
 					if detected, match := guard.DetectInjection(msg.Content); detected {
 						guard.injectionCount.Add(1)
@@ -267,6 +287,30 @@ func PromptGuardMiddleware(guard *PromptGuardState, injectionEnabled bool) proxy
 							}
 							req.Extra["_injection_warning"] = match
 						default: // log — just log and continue
+						}
+					}
+				}
+
+				// Cross-message scan: concatenate all user messages to catch
+				// multi-turn and payload-split attacks that spread injection
+				// keywords across separate messages.
+				if len(req.Messages) > 1 {
+					var userParts []string
+					for _, msg := range req.Messages {
+						if msg.Role == "user" {
+							userParts = append(userParts, msg.Content)
+						}
+					}
+					if len(userParts) > 1 {
+						combined := strings.Join(userParts, " ")
+						if detected, match := guard.DetectInjection(combined); detected {
+							guard.injectionCount.Add(1)
+							reportSafety("prompt_injection", "high", "injection_multi_turn", guard.injAction, req.Model, "", "", "", map[string]any{"match": match, "turns": len(userParts)})
+							log.Printf("promptguard: multi-turn injection detected across %d user messages: %q", len(userParts), match)
+							if guard.injAction == "block" {
+								guard.blockCount.Add(1)
+								return nil, fmt.Errorf("prompt injection detected across multiple turns: request blocked")
+							}
 						}
 					}
 				}
