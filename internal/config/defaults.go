@@ -135,8 +135,8 @@ func DefaultConfig(product string) *Config {
 			},
 			Injection: InjectionConfig{
 				Enabled:     true,
-				Sensitivity: "medium",
-				Action:      "warn",
+				Sensitivity: "high",
+				Action:      "block",
 			},
 		}
 		base.UsagePulse = UsagePulseConfig{
