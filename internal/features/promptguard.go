@@ -59,6 +59,11 @@ var injectionPatterns = map[string][]*regexp.Regexp{
 		regexp.MustCompile(`(?i)1gn0r3|1gnor3|ign0r3`),
 		regexp.MustCompile(`(?i)pr3v10u5|prev10us|pr3vious`),
 		regexp.MustCompile(`(?i)1n5truct|instruct10n`),
+		// Broader "ignore" patterns — catch "ignore rules/guidelines/constraints"
+		regexp.MustCompile(`(?i)ignore\s+(all\s+)?(rules|guidelines|constraints|safety|restrictions|filters)`),
+		// Base64-encoded instruction detection
+		regexp.MustCompile(`(?i)(?:decode|execute|follow|run)\s+.{0,15}(?:base64|b64|encoded)\b`),
+		regexp.MustCompile(`(?i)base64\s*:\s*[A-Za-z0-9+/]{20,}`),
 	},
 }
 
