@@ -97,7 +97,30 @@ func (s *Server) handleGetPop(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleEvolve(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, map[string]string{"status": "evolution_triggered", "population_id": r.PathValue("id")})
+	if s.cfg.Store == nil { writeJSON(w, 503, map[string]string{"error": "store not available"}); return }
+
+	id := r.PathValue("id")
+	pop, err := s.cfg.Store.GetPopulation(id)
+	if err != nil { writeJSON(w, 404, map[string]string{"error": "population not found"}); return }
+
+	if pop.Status == "evolving" {
+		writeJSON(w, 409, map[string]string{"error": "evolution already running"})
+		return
+	}
+
+	var req evolveRequest
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.APIKey == "" {
+		req.APIKey = r.Header.Get("X-Breed-Key")
+	}
+	if req.APIKey == "" {
+		writeJSON(w, 400, map[string]string{"error": "api_key required"})
+		return
+	}
+
+	// Run synchronously (generations are fast with gpt-4o-mini)
+	result := s.runEvolution(pop, req)
+	writeJSON(w, 200, result)
 }
 
 func (s *Server) handleStop(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +135,29 @@ func (s *Server) handleBest(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleHistory(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, []any{})
+	if s.cfg.Store == nil { writeJSON(w, 200, []any{}); return }
+	id := r.PathValue("id")
+	pop, err := s.cfg.Store.GetPopulation(id)
+	if err != nil { writeJSON(w, 404, map[string]string{"error": "not found"}); return }
+
+	var history []map[string]any
+	for gen := 0; gen <= pop.Generation; gen++ {
+		genomes, _ := s.cfg.Store.ListGenomes(id, gen)
+		bestFit := 0.0
+		avgFit := 0.0
+		for _, g := range genomes {
+			if g.Fitness > bestFit { bestFit = g.Fitness }
+			avgFit += g.Fitness
+		}
+		if len(genomes) > 0 { avgFit /= float64(len(genomes)) }
+		history = append(history, map[string]any{
+			"generation":  gen,
+			"population":  len(genomes),
+			"best_fitness": bestFit,
+			"avg_fitness":  avgFit,
+		})
+	}
+	writeJSON(w, 200, history)
 }
 
 func (s *Server) handleGetGenome(w http.ResponseWriter, r *http.Request) {
