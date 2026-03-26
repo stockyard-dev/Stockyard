@@ -18,6 +18,8 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("POST /api/conflicts/{id}/resolve", s.handleResolve)
 	s.mux.HandleFunc("GET /api/graph", s.handleGraph)
 	s.mux.HandleFunc("GET /api/stats", s.handleStats)
+	s.mux.HandleFunc("POST /api/enrich", s.handleEnrich)
+	s.mux.HandleFunc("GET /api/enrich/status", s.handleEnrichStatus)
 	s.mux.HandleFunc("GET /", s.handleUI)
 	s.mux.HandleFunc("GET /ui", s.handleUI)
 }
@@ -86,4 +88,41 @@ func (s *Server) handleResolve(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleGraph(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{"nodes": []any{}, "edges": []any{}})
+}
+
+func (s *Server) handleEnrich(w http.ResponseWriter, r *http.Request) {
+	if s.platformDB == nil {
+		writeJSON(w, 503, map[string]string{"error": "platform DB not wired — enrichment unavailable"})
+		return
+	}
+	result := s.runEnrichment()
+	writeJSON(w, 200, result)
+}
+
+func (s *Server) handleEnrichStatus(w http.ResponseWriter, r *http.Request) {
+	status := map[string]any{
+		"platform_db_wired": s.platformDB != nil,
+		"store_available":   s.cfg.Store != nil,
+	}
+	if s.platformDB != nil {
+		var lastTraceTime, lastRun string
+		var totalCreated int
+		s.platformDB.QueryRow("SELECT COALESCE(last_trace_time,'never'), COALESCE(last_run,'never'), COALESCE(memories_created,0) FROM cortex_enrichment_state WHERE id = 'enricher'").Scan(&lastTraceTime, &lastRun, &totalCreated)
+		status["last_trace_time"] = lastTraceTime
+		status["last_run"] = lastRun
+		status["total_memories_created"] = totalCreated
+
+		var traceCount int
+		s.platformDB.QueryRow("SELECT COUNT(*) FROM observe_traces").Scan(&traceCount)
+		status["total_traces"] = traceCount
+
+		var pendingTraces int
+		s.platformDB.QueryRow("SELECT COUNT(*) FROM observe_traces WHERE created_at > COALESCE((SELECT last_trace_time FROM cortex_enrichment_state WHERE id='enricher'), '2000-01-01')").Scan(&pendingTraces)
+		status["pending_traces"] = pendingTraces
+	}
+	if s.cfg.Store != nil {
+		stats, _ := s.cfg.Store.Stats()
+		status["memory_stats"] = stats
+	}
+	writeJSON(w, 200, status)
 }

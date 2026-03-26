@@ -226,3 +226,14 @@ func joinPlus(parts []string) string {
 	}
 	return result
 }
+
+// QueryRow exposes the underlying DB for enrichment queries.
+func (db *DB) QueryRow(query string, args ...any) *sql.Row {
+	return db.conn.QueryRow(query, args...)
+}
+
+// Exec exposes the underlying DB for enrichment writes.
+func (db *DB) Exec(query string, args ...any) (sql.Result, error) {
+	return db.conn.Exec(query, args...)
+}
+

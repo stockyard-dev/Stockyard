@@ -3,6 +3,7 @@ package server
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -18,8 +19,9 @@ type Config struct {
 }
 
 type Server struct {
-	cfg Config
-	mux *http.ServeMux
+	cfg        Config
+	mux        *http.ServeMux
+	platformDB *sql.DB
 }
 
 func New(cfg Config) *Server {
