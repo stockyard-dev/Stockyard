@@ -132,6 +132,39 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <div class="release">
   <div class="release-header">
+    <span class="release-version">v1.6.0</span>
+    <span class="release-date">March 26, 2026</span>
+    <span class="release-tag tag-new">New</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Lasso &mdash; Request Replay</div>
+    <div class="change-item"><code>POST /api/replay</code> &mdash; replay any traced request against a different model. Compares cost, latency, and output.</div>
+    <div class="change-item"><code>POST /api/replay/batch</code> &mdash; replay against up to 5 models in a single call with winner analysis.</div>
+    <div class="change-item"><code>GET /api/replay/compare/{id}</code> &mdash; side-by-side comparison with cost, speed, and efficiency winners.</div>
+    <div class="change-item"><code>GET /api/replay/stats</code> &mdash; aggregate stats and model leaderboard across all replays.</div>
+    <div class="change-item">Request bodies are now stored on all new traces, making them replayable. Added <code>request_body</code> column to <code>observe_traces</code>.</div>
+    <div class="change-item">Lasso is available on the Individual tier ($29.99/mo). <a href="/lasso/">Learn more &rarr;</a></div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Drover &mdash; Autopilot Routing</div>
+    <div class="change-item"><code>POST /api/autopilot/calibrate</code> &mdash; score candidate models by replaying real traces against a reference model.</div>
+    <div class="change-item">Three trigger keywords: <code>model=autopilot</code>, <code>model=auto</code>, or the reference model name for transparent downgrade.</div>
+    <div class="change-item">Three routing modes: <strong>cost</strong> (cheapest), <strong>speed</strong> (fastest), <strong>balanced</strong> (weighted). Configurable via <code>PUT /api/autopilot</code>.</div>
+    <div class="change-item">Every routing decision is logged with estimated savings. Query via <code>GET /api/autopilot/decisions</code>.</div>
+    <div class="change-item">Live calibration: 3 models scored, quality threshold 0.80, up to 25x cost reduction measured.</div>
+    <div class="change-item">Drover is available on the Pro tier ($99.99/mo). <a href="/drover/">Learn more &rarr;</a></div>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Platform</div>
+    <div class="change-item">License changed from MIT to Business Source License 1.1 (source-available, no competing products).</div>
+    <div class="change-item">Module count: 76 (up from 66). New modules across safety, transform, validate, and automation categories.</div>
+    <div class="change-item">Products page rebuilt &mdash; organized by tier with named products. Rename map applied: Proxy&rarr;Chute, Observe&rarr;Lookout, Trust&rarr;Brand, Studio&rarr;Tack Room, Exchange&rarr;Trading Post, Orchestrator&rarr;Ramrod, Bid&rarr;Auction.</div>
+    <div class="change-item">Pricing updated to 5 tiers: Community (free), Individual ($29.99), Pro ($99.99), Team ($299.99), Enterprise ($499.99).</div>
+  </div>
+</div>
+
+<div class="release">
+  <div class="release-header">
     <span class="release-version">v1.4.0</span>
     <span class="release-date">March 18, 2026</span>
     <span class="release-tag tag-new">New</span>
