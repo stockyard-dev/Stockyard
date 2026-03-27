@@ -173,9 +173,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
   <div class="cta-group">
     <a href="/guide/" class="btn btn-primary">Start Free</a>
-    <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+    <a href="#demo" class="btn btn-secondary">See it work</a>
   </div>
-  <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1rem">No credit card required &middot; <a href="/pricing/" style="color:var(--leather-light)">See pricing</a></p>
   <div class="install-cmd" style="margin-top:1.5rem" onclick="copyInstall()" title="Click to copy">
     <span>curl -fsSL stockyard.dev/install.sh | sh</span>
     <span style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem" id="copy-hint">click to copy</span>
@@ -298,12 +297,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
     <!-- CTA -->
     <div style="text-align:center;margin-top:2.5rem">
-      <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:1.5rem">That trace is real. Every module fired in <span id="demo-cta-time">410ns</span>. Now try it with your own prompts.</p>
+      <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:1.5rem">That trace is real. Every module fired in <span id="demo-cta-time">410ns</span>. Now try it with your own data.</p>
       <div class="cta-group">
-        <a href="/playground/" class="btn btn-primary">Open Playground</a>
-        <a href="/guide/" class="btn btn-secondary">Install &amp; Run</a>
+        <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
       </div>
-      <p style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1rem">curl -fsSL stockyard.dev/install.sh | sh &nbsp;&middot;&nbsp; ~25MB &nbsp;&middot;&nbsp; zero dependencies</p>
+      <p style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1rem">~25MB &nbsp;&middot;&nbsp; zero dependencies &nbsp;&middot;&nbsp; or <a href="/playground/" style="color:var(--leather-light)">try the playground</a> first</p>
     </div>
   </div>
 </section>
@@ -487,8 +485,7 @@ pickPrompt(0);
       <div class="upgrade-highlight">Feral, Phantom, Crucible + 8 more</div>
     </div>
   </div>
-  <p style="text-align:center;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">Enterprise ($499.99/mo): all 29 products + Cortex, Mycelium, Spore, Molt, SSO, SLA</p>
-  <p style="text-align:center;margin-top:1.5rem"><a href="/pricing/" class="btn btn-primary" style="font-size:0.8rem;padding:0.6rem 1.5rem">View full pricing &rarr;</a></p>
+  <p style="text-align:center;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">Enterprise ($499.99/mo): all 29 products + Cortex, Mycelium, Spore, Molt, SSO, SLA &middot; <a href="/pricing/" style="color:var(--leather-light)">Full pricing details</a></p>
 </div>
 
 <!-- All 29 products -->
@@ -588,31 +585,20 @@ pickPrompt(0);
   </div>
 </section>
 
-<!-- Explore -->
-<div class="section">
-  <h2 class="section-label leather">Explore</h2>
-  <div class="explore-grid">
-    <a href="/architecture/" class="explore-card"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Architecture</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Animated request flow through 76 modules</span></a>
-    <a href="/benchmarks/" class="explore-card"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Benchmarks</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Transparent performance data on real hardware</span></a>
-    <a href="/blog/" class="explore-card"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Blog</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Building in the open &mdash; architecture decisions, war stories</span></a>
-    <a href="/docs/api/" class="explore-card"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">API Reference</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">360+ endpoints across 29 products</span></a>
-  </div>
-</div>
-
 <!-- CTA -->
 <section class="footer-cta">
-  <h2>Start free. Upgrade when you&rsquo;re ready.</h2>
-  <p>76 modules, 16 providers, full tracing and audit &mdash; free to start. When you need autopilot routing, red-team testing, or prompt evolution, your upgrade is one click away.</p>
+  <h2>One binary. Five minutes. Done.</h2>
+  <p>Install Stockyard, send your first request, and watch the trace appear. 76 modules, 16 providers, full audit trail &mdash; free from the first request.</p>
   <div class="cta-group">
-    <a href="/pricing/" class="btn btn-primary">See Plans</a>
-    <a href="/guide/" class="btn btn-secondary">Start Free</a>
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+    <a href="/pricing/" class="btn btn-secondary">See Pricing</a>
   </div>
   <div style="display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">
-    <span>74,000 lines of Go</span>
-    <span>360+ API endpoints</span>
-    <span>Source Available</span>
+    <a href="/docs/api/" style="color:var(--leather-light)">API Reference</a>
+    <a href="/benchmarks/" style="color:var(--leather-light)">Benchmarks</a>
+    <a href="/blog/" style="color:var(--leather-light)">Blog</a>
+    <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--leather-light)">GitHub</a>
   </div>
-  <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1rem">Built by <a href="/about/" style="color:var(--leather-light)">one developer</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--leather-light)">View Source on GitHub</a></p>
 </section>
 
 <footer><p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/security/">Security</a> &middot; <a href="/changelog/">Changelog</a></p></footer>
