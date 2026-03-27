@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Ship Safer — Red-Team and Harden Your LLM Stack &mdash; Stockyard</title>
+<meta name="description" content="Adversarial red-team testing, PII detection, prompt injection blocking, and system prompt leak prevention. Free quickscan.">
+<meta property="og:title" content="Ship Safer — Red-Team and Harden Your LLM Stack">
+<meta property="og:description" content="Adversarial red-team testing, PII detection, prompt injection blocking, and system prompt leak prevention. Free quickscan.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/ship-safer/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/ship-safer/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--red:#d44a4a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.hero{max-width:720px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1.5rem}.hero h1 .accent{color:var(--red)}
+.hero .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto 2rem}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.step{display:flex;gap:1.5rem;margin-bottom:2.5rem;align-items:flex-start}
+.step-num{font-family:var(--font-mono);font-size:2rem;color:var(--red);font-weight:700;min-width:2.5rem;text-align:center}
+.step-body h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}.step-body p{font-size:0.9rem;color:var(--cream-dim)}
+.step-products{font-family:var(--font-mono);font-size:0.72rem;color:var(--leather-light);margin-top:0.5rem}
+.product-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
+@media(max-width:600px){.product-row{grid-template-columns:1fr}}
+.prod-card{padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);position:relative}
+.prod-card:hover{border-color:var(--rust)}
+.prod-name{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.3rem}
+.prod-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:0.5rem}
+.prod-tier{font-family:var(--font-mono);font-size:0.6rem;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
+.prod-free{color:var(--green-light)}
+.workflow-link{display:block;padding:1rem 1.5rem;border:1px solid var(--bg3);margin-bottom:0.8rem;transition:border-color 0.2s}
+.workflow-link:hover{border-color:var(--rust)}
+.workflow-link .wf-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
+.workflow-link .wf-desc{font-size:0.78rem;color:var(--cream-dim);margin-top:0.2rem}
+.workflow-link.active{border-color:var(--red);background:rgba(196,93,44,0.05)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:5rem 1.5rem 3rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--red:#c43030}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section style="padding:2rem 2rem 0;max-width:800px;margin:0 auto">
+  <div style="font-family:var(--font-mono);font-size:0.65rem;text-align:center;color:var(--cream-muted);margin-bottom:1rem;letter-spacing:2px;text-transform:uppercase">Workflows</div>
+  <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+    <a href="/ship-cheaper/" class="wf-pill">Ship Cheaper</a>
+    <a href="/ship-safer/" class="wf-pill active">Ship Safer</a>
+    <a href="/ship-faster/" class="wf-pill">Ship Faster</a>
+    <a href="/ship-compliant/" class="wf-pill">Ship Compliant</a>
+    <a href="/ship-better/" class="wf-pill">Ship Better</a>
+  </div>
+</section>
+<style>.wf-pill{font-family:var(--font-mono);font-size:0.7rem;padding:0.4rem 1rem;border:1px solid var(--bg3);color:var(--cream-muted);transition:all 0.2s}.wf-pill:hover{border-color:var(--rust);color:var(--cream)}.wf-pill.active{border-color:var(--rust-light);color:var(--rust-light);background:rgba(232,117,58,0.08)}</style>
+
+
+<section class="hero">
+  <div class="eyebrow">Workflow &middot; Security &amp; Safety</div>
+  <h1>Find vulnerabilities <span class="accent">before attackers do.</span></h1>
+  <p class="sub">Most LLM stacks have zero adversarial testing. Stockyard runs automated attacks against your proxy, detects PII in prompts, and blocks injection attempts in real time.</p>
+  <div class="cta-group">
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+  </div>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">The workflow</h2>
+  <div class="step">
+    <span class="step-num">1</span>
+    <div class="step-body"><h3>Scan</h3><p>Run a free 5-probe quickscan. Get a security grade (A&ndash;F) in 10 seconds. No API key sharing, no setup.</p><div class="step-products">Feral quickscan (free)</div></div>
+  </div>
+  <div class="step">
+    <span class="step-num">2</span>
+    <div class="step-body"><h3>Block</h3><p>Enable prompt guard, secret scan, and code fence modules. Injection attempts, PII, and system prompt leaks are caught in the middleware chain.</p><div class="step-products">Prompt Guard &bull; Secret Scan &bull; Code Fence</div></div>
+  </div>
+  <div class="step">
+    <span class="step-num">3</span>
+    <div class="step-body"><h3>Hunt</h3><p>Run the full 29-probe red-team suite. Attacks that bypass defenses are mutated and retried across generations to find deeper weaknesses.</p><div class="step-products">Feral campaigns &bull; Phantom personas</div></div>
+  </div>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Products involved</h2>
+  <div class="product-row">
+    <a href="/feral/" class="prod-card">
+      <div class="prod-name">Feral</div>
+      <div class="prod-desc">Red-team engine. Free 5-probe quickscan. Full 29-probe suite with evolutionary mutation on Team.</div>
+      <div class="prod-tier prod-free">Quickscan: Free &bull; Full: Team</div>
+    </a>
+    <a href="/products/" class="prod-card">
+      <div class="prod-name">Phantom</div>
+      <div class="prod-desc">Persona-based testing. Synthetic users probe your system for weaknesses around the clock.</div>
+      <div class="prod-tier ">Team &bull; $299.99/mo</div>
+    </a>
+    <a href="/guide/" class="prod-card">
+      <div class="prod-name">Prompt Guard</div>
+      <div class="prod-desc">Real-time injection detection. Blocks prompt override attempts before they reach the model.</div>
+      <div class="prod-tier prod-free">Free &bull; built-in module</div>
+    </a>
+    <a href="/guide/" class="prod-card">
+      <div class="prod-name">Secret Scan</div>
+      <div class="prod-desc">PII and credential detection. Flags emails, credit cards, SSNs, API keys in prompts.</div>
+      <div class="prod-tier prod-free">Free &bull; built-in module</div>
+    </a>
+    <a href="/guide/" class="prod-card">
+      <div class="prod-name">Code Fence</div>
+      <div class="prod-desc">Code execution prevention. Blocks tool-use exploitation and function hijacking.</div>
+      <div class="prod-tier prod-free">Free &bull; built-in module</div>
+    </a>
+    <a href="/guide/" class="prod-card">
+      <div class="prod-name">Agent Guard</div>
+      <div class="prod-desc">Agent safety. Prevents unauthorized tool calls and chain escapes.</div>
+      <div class="prod-tier prod-free">Free &bull; built-in module</div>
+    </a>
+  </div>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner" style="text-align:center">
+    <h2 class="section-label">Proof from real data</h2>
+    <p style="color:var(--cream-dim);font-size:0.95rem;max-width:600px;margin:0 auto 1.5rem;line-height:1.8">Auto-insights detected PII in 12 of 100 recent requests &mdash; email addresses, credit card numbers, and names being sent to third-party providers.</p>
+    <a href="/feral/" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light)">See the data &rarr;</a>
+  </div>
+</section>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Five minutes to your first trace.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard, send a request, watch it flow through the middleware chain. Everything on this page starts working immediately.</p>
+  <div class="cta-group">
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+    <a href="/pricing/" class="btn btn-secondary">See Pricing</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/security/">Security</a> &middot; <a href="/changelog/">Changelog</a></p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>
