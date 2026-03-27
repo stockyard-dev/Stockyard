@@ -1,11 +1,12 @@
-// Stockyard — The operating system for AI software.
+// Stockyard — The LLM infrastructure platform for teams that ship.
 //
 // Single binary shipping the complete platform:
-//   - Proxy:        Core reverse-proxy, 66-module middleware chain, 16 providers
-//   - 6 Core Apps:  Observe, Trust, Studio, Forge, Exchange, Billing
-//   - 18 Products:  Bid, Replay, Doubt, Verdikt, Stampede, Fault, Morph, Spine,
+//   - Chute:        Core reverse-proxy, 76-module middleware chain, 16 providers
+//   - 6 Core Apps:  Lookout, Brand, Tack Room, Forge, Trading Post, Billing
+//   - 29 Products:  Auction, Lasso, Doubt, Verdikt, Stampede, Fault, Morph, Spine,
 //                   Hollow, Séance, Grain, Echo, Tide, Fossil, Prism, Trailhead,
-//                   Iron, Orchestrator — tier-gated at Individual/Pro/Team/Enterprise
+//                   Iron, Ramrod, Relic, Breed, Fossil Record, Phantom, Feral,
+//                   Tide Pool, Crucible, Cortex, Mycelium, Spore, Molt
 //
 // One binary. One port. One deploy.
 // Products activate based on license tier and can be toggled from the dashboard.

@@ -130,12 +130,12 @@ type Product struct {
 func Catalog() []Product {
 	return []Product{
 		// Core apps
-		{Slug: "proxy", Name: "Proxy", Tagline: "Core reverse-proxy, middleware chain, provider dispatch.", Category: "app"},
-		{Slug: "observe", Name: "Observe", Tagline: "Tracing, cost attribution, alerts & anomaly detection.", Category: "app"},
-		{Slug: "trust", Name: "Trust", Tagline: "Policy engine, audit ledger & compliance evidence.", Category: "app"},
-		{Slug: "studio", Name: "Studio", Tagline: "Prompt templates, experiments & benchmarks.", Category: "app"},
+		{Slug: "proxy", Name: "Chute", Tagline: "The proxy. 76 middleware modules, 16 providers, 400ns overhead.", Category: "app"},
+		{Slug: "observe", Name: "Lookout", Tagline: "Request tracing, cost dashboards, anomaly detection.", Category: "app"},
+		{Slug: "trust", Name: "Brand", Tagline: "Hash-chained audit ledger, policy engine, compliance evidence.", Category: "app"},
+		{Slug: "studio", Name: "Tack Room", Tagline: "Prompt versioning, A/B testing, experiments, benchmarks.", Category: "app"},
 		{Slug: "forge", Name: "Forge", Tagline: "DAG workflow engine, tools & sessions.", Category: "app"},
-		{Slug: "exchange", Name: "Exchange", Tagline: "Config pack marketplace & environment sync.", Category: "app"},
+		{Slug: "exchange", Name: "Trading Post", Tagline: "Config pack marketplace & environment sync.", Category: "app"},
 		// Platform apps
 		{Slug: "billing", Name: "Billing", Tagline: "Usage metering, per-customer billing, Stripe integration.", Category: "app"},
 		{Slug: "team", Name: "Team", Tagline: "Multi-seat workspaces, RBAC, shared configs.", Category: "app"},

@@ -689,7 +689,7 @@ func Boot(pc ProductConfig) {
 	}
 
 	// ── Platform product integration ──────────────────────────────────
-	// Mount all 18 platform products (Bid, Replay, Doubt, etc.) onto the
+	// Mount all 29 platform products (Auction, Lasso, Doubt, etc.) onto the
 	// main mux with tier-gated access. Products above the active license
 	// tier return 403 with upgrade info. Products at/below the tier get
 	// their full HTTP handler mounted at /{product}/.
@@ -1639,6 +1639,28 @@ func Boot(pc ProductConfig) {
 		notFound(w, r)
 	})
 
+	// ── Route aliases (rename map) ──────────────────────────────────
+	// New product names get aliases to old API routes.
+	// Old routes still work — no breaking changes.
+	{
+		mux := srv.Mux()
+		aliases := map[string]string{
+			"/api/chute/":        "/api/proxy/",
+			"/api/lookout/":      "/api/observe/",
+			"/api/brand/":        "/api/trust/",
+			"/api/tack-room/":    "/api/studio/",
+			"/api/trading-post/": "/api/exchange/",
+		}
+		for newPrefix, oldPrefix := range aliases {
+			np, op := newPrefix, oldPrefix // capture for closure
+			mux.HandleFunc(np, func(w http.ResponseWriter, r *http.Request) {
+				r.URL.Path = op + strings.TrimPrefix(r.URL.Path, np)
+				mux.ServeHTTP(w, r)
+			})
+		}
+		log.Printf("  Aliases:   %d route prefixes (chute→proxy, lookout→observe, brand→trust, tack-room→studio, trading-post→exchange)", len(aliases))
+	}
+
 	// Graceful shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -1653,7 +1675,7 @@ func Boot(pc ProductConfig) {
 	log.Printf("  ╔══════════════════════════════════════════════╗")
 	log.Printf("  ║  %s %s                          ║", pc.Name, pc.Version)
 	log.Printf("  ╠══════════════════════════════════════════════╣")
-	log.Printf("  ║  Proxy:     http://localhost:%d/v1           ║", cfg.Port)
+	log.Printf("  ║  Chute:     http://localhost:%d/v1           ║", cfg.Port)
 	log.Printf("  ║  Console:   http://localhost:%d/ui           ║", cfg.Port)
 	log.Printf("  ║  Playground: http://localhost:%d/playground  ║", cfg.Port)
 	log.Printf("  ╚══════════════════════════════════════════════╝")

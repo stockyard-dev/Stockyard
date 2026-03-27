@@ -70,43 +70,43 @@ func (r *ProductRegistry) Register(ps ProductState) {
 	}
 }
 
-// RegisterAll populates the registry with all 18 platform products.
+// RegisterAll populates the registry with all 29 platform products.
 func (r *ProductRegistry) RegisterAll(activeTier Tier) {
 	type productDef struct {
 		id, name, desc, category string
 	}
 	defs := []productDef{
-		{"bid", "Bid", "Real-time LLM model exchange", "runtime"},
-		{"replay", "Replay", "Time-travel debugging", "infra"},
-		{"doubt", "Doubt", "Confidence scores for code", "quality"},
-		{"verdikt", "Verdikt", "AI output quality judge", "lifecycle"},
-		{"stampede", "Stampede", "AI synthetic user testing", "lifecycle"},
-		{"fault", "Fault", "Self-healing errors", "quality"},
-		{"morph", "Morph", "Universal API translator", "runtime"},
-		{"spine", "Spine", "Self-operating infrastructure", "infra"},
-		{"hollow", "Hollow", "Negative space analysis", "quality"},
-		{"seance", "Séance", "Talk to production", "insight"},
-		{"grain", "Grain", "Decisions as first-class objects", "runtime"},
-		{"echo", "Echo", "Evolutionary code memory", "insight"},
-		{"tide", "Tide", "Metabolic feature control", "infra"},
-		{"fossil", "Fossil", "Dead code archaeology", "insight"},
-		{"prism", "Prism", "User cognitive mapping", "insight"},
-		{"trailhead", "Trailhead", "Codebase knowledge engine", "insight"},
-		{"iron", "Iron", "Burns specs into working code", "lifecycle"},
-		{"orchestrator", "Orchestrator", "Autonomous coordination brain", "lifecycle"},
+		{"bid", "Auction", "Dynamic model bidding — providers compete on price", "range"},
+		{"replay", "Lasso", "Request replay — re-run traces against different models", "fence"},
+		{"doubt", "Doubt", "Hallucination detection — flag uncertain outputs", "herd"},
+		{"verdikt", "Verdikt", "Quality gates — block bad responses before they ship", "trail"},
+		{"stampede", "Stampede", "Load testing — flood your stack with synthetic traffic", "trail"},
+		{"fault", "Fault", "Chaos engineering — inject latency, errors, rate limits", "herd"},
+		{"morph", "Morph", "Request transformation — rewrite, augment, reshape in flight", "range"},
+		{"spine", "Spine", "Health probes, readiness checks, platform diagnostics", "fence"},
+		{"hollow", "Hollow", "Shadow testing — compare models silently", "herd"},
+		{"seance", "Séance", "Resurrect and replay historical conversations", "scout"},
+		{"grain", "Grain", "Fine-grained access control — per-key, per-model permissions", "range"},
+		{"echo", "Echo", "Response monitoring — track output changes across versions", "scout"},
+		{"tide", "Tide", "Schema migration and platform lifecycle management", "fence"},
+		{"fossil", "Fossil", "Deep archival with compression and retrieval", "scout"},
+		{"prism", "Prism", "Multi-angle analysis — cost, quality, speed perspectives", "scout"},
+		{"trailhead", "Trailhead", "Onboarding intelligence — optimize the first experience", "scout"},
+		{"iron", "Iron", "Hardening and compliance — security policies platform-wide", "trail"},
+		{"orchestrator", "Ramrod", "Orchestration — coordinate workflows across products", "trail"},
 
 		// ── New Products ──
-		{"relic", "Relic", "Content provenance chain", "quality"},
-		{"breed", "Breed", "Genetic prompt evolution", "lifecycle"},
-		{"fossilrec", "Fossil Record", "Temporal model archaeology", "quality"},
-		{"phantom", "Phantom", "Persistent AI canaries", "quality"},
-		{"feral", "Feral", "Adversarial AI hunter", "quality"},
-		{"tidepool", "Tide Pool", "Emergent behavior detection", "insight"},
-		{"crucible", "Crucible", "System-level confidence scoring", "quality"},
-		{"cortex", "Cortex", "Shared AI memory substrate", "insight"},
-		{"mycelium", "Mycelium", "Cross-instance intelligence", "infra"},
-		{"spore", "Spore", "Self-replicating patterns", "infra"},
-		{"molt", "Molt", "Automatic architecture shedding", "infra"},
+		{"relic", "Relic", "Provenance tracking — full lineage from prompt to response", "herd"},
+		{"breed", "Breed", "Genetic prompt optimization — evolve, crossover, tournament", "trail"},
+		{"fossilrec", "Fossil Record", "Historical analysis — model and cost trends over time", "herd"},
+		{"phantom", "Phantom", "Persona-based testing — synthetic users probe for weaknesses", "herd"},
+		{"feral", "Feral", "Red-team engine — 29 attack probes, 9 categories", "herd"},
+		{"tidepool", "Tide Pool", "Micro-analytics — small-scale pattern detection", "scout"},
+		{"crucible", "Crucible", "Confidence scoring — track model certainty over time", "herd"},
+		{"cortex", "Cortex", "Platform memory — live stats, trace enrichment, institutional knowledge", "scout"},
+		{"mycelium", "Mycelium", "Insight extraction — cross-instance pattern surfacing", "fence"},
+		{"spore", "Spore", "Pattern replication with cap and retirement", "fence"},
+		{"molt", "Molt", "Auto-shed unused modules — prune dead weight", "fence"},
 	}
 
 	for _, d := range defs {
