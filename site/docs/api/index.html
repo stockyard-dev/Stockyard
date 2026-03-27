@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="API Reference — Stockyard">
-<meta property="og:description" content="Complete REST API reference for Stockyard — 350+ endpoints.">
+<meta property="og:description" content="Complete REST API reference for Stockyard — 360+ endpoints.">
 <meta property="og:url" content="https://stockyard.dev/docs/api/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>API Reference — Stockyard</title>
-<meta name="description" content="Complete REST API reference for Stockyard — 350+ endpoints.">
+<meta name="description" content="Complete REST API reference for Stockyard — 360+ endpoints.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -168,6 +168,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Features</div>
+      <a href="/docs/api/#lasso-api">Lasso (Replay)</a>
+      <a href="/docs/api/#drover-api">Drover (Autopilot)</a>
       <a href="/docs/api/#guardrails-api">Guardrails</a>
       <a href="/docs/api/#webhooks-api">Webhooks</a>
       <a href="/docs/api/#user-spend-api">User Spend</a>
@@ -187,7 +189,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>API Reference</h1>
-    <p class="subtitle">350+ REST endpoints. All served on a single port. OpenAPI 3.1 spec included.</p>
+    <p class="subtitle">360+ REST endpoints. All served on a single port. OpenAPI 3.1 spec included.</p>
 
     <h2 id="overview">Overview</h2>
     <p>All endpoints are served on the same port as the proxy. Full <a href="/api/openapi.json" style="color:var(--rust-light)">OpenAPI 3.1 spec</a> available at <code>/api/openapi.json</code>.</p>
@@ -458,6 +460,56 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/users/{id}/spend/cap</td><td>Get user spend cap configuration</td></tr>
       <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/users/{id}/spend/cap</td><td>Set user daily/monthly spend caps</td></tr>
     </table>
+
+    <h2 id="lasso-api">Lasso &mdash; Request Replay (6 endpoints)</h2>
+    <p>Re-run any traced request against a different model. Compare cost, latency, and output. Batch replay against up to 5 models in a single call. Requires <strong>Individual tier</strong> ($29.99/mo). <a href="/lasso/">Learn more &rarr;</a></p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/replay</td><td>Replay a single trace against a target model</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/replay/batch</td><td>Replay a trace against up to 5 models at once</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/runs</td><td>List replay history with optional model filter</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/runs/{id}</td><td>Full replay detail including request body</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/compare/{id}</td><td>Side-by-side comparison with winner analysis (cost, speed, efficiency)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/stats</td><td>Aggregate stats, model leaderboard, available providers</td></tr>
+    </table>
+    <pre>
+<span class="comment"># Replay a trace against Claude</span>
+<span class="cmd">curl -X POST /api/replay \
+  -H "X-Admin-Key: $KEY" \
+  -d '{"trace_id":"tr_5213e8a4...","target_model":"claude-sonnet-4-20250514"}'</span>
+
+<span class="comment"># Batch: same prompt → 3 models</span>
+<span class="cmd">curl -X POST /api/replay/batch \
+  -d '{"trace_id":"tr_5213...","target_models":["gpt-4o","claude-sonnet-4-20250514","gpt-4o-mini"]}'</span>
+
+<span class="comment"># Compare results</span>
+<span class="cmd">curl /api/replay/compare/rpl_0ae37547...</span>
+    </pre>
+
+    <h2 id="drover-api">Drover &mdash; Autopilot Routing (7 endpoints)</h2>
+    <p>Calibrate models on real traffic, set a quality threshold, and Drover routes every request to the cheapest qualifying model. Three modes: cost, speed, balanced. Three trigger keywords: <code>model=autopilot</code>, <code>model=auto</code>, or the reference model name for transparent downgrade. Requires <strong>Pro tier</strong> ($99.99/mo). <a href="/drover/">Learn more &rarr;</a></p>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot</td><td>Current config, state, scores, and active route</td></tr>
+      <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/autopilot</td><td>Update threshold, candidate models, mode, enable/disable</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/autopilot/calibrate</td><td>Run calibration &mdash; replays traces against all candidates, scores quality</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/scores</td><td>Model quality leaderboard with cost, latency, success rate</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/decisions</td><td>Routing decision history with per-request savings</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/stats</td><td>Aggregate savings, route distribution, calibration count</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/calibration-log</td><td>Per-trace calibration detail with quality scores</td></tr>
+    </table>
+    <pre>
+<span class="comment"># Calibrate 3 models against real traffic</span>
+<span class="cmd">curl -X POST /api/autopilot/calibrate -H "X-Admin-Key: $KEY"</span>
+
+<span class="comment"># Send a request with autopilot routing</span>
+<span class="cmd">curl /v1/chat/completions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{"model":"auto","messages":[{"role":"user","content":"hello"}]}'</span>
+
+<span class="comment"># Check what Drover chose and how much you saved</span>
+<span class="cmd">curl /api/autopilot/decisions?limit=5</span>
+    </pre>
 
     <h2 id="system-api">System (12 endpoints)</h2>
     <p>Health checks, license info, spending, upgrade triggers, and cache management.</p>
