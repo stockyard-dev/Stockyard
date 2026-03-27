@@ -153,7 +153,6 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
     {"@type": "Question", "name": "What's the difference between tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Each tier unlocks more products. Individual ($29.99/mo) adds Lasso, Doubt, Verdikt, Auction, Relic. Pro ($99.99/mo) adds Drover autopilot, Breed, Stampede, and more. Team ($299.99/mo) adds Feral red-team, Phantom, and more. Enterprise ($499.99/mo) unlocks all 29 products."}},
     {"@type": "Question", "name": "Can I save with annual billing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr, Team $2,999.90/yr, Enterprise $4,999.90/yr."}},
     {"@type": "Question", "name": "How does Team pricing work for more than 5 people?", "acceptedAnswer": {"@type": "Answer", "text": "Team includes 5 seats. Additional seats are $20/seat/month. A 10-person team is $299.99 + (5 × $20) = $399.99/month."}},
-    {"@type": "Question", "name": "How do I earn money on the platform?", "acceptedAnswer": {"@type": "Answer", "text": "Publish AI apps to the marketplace and earn 80% of every transaction. Contribute GPU compute to the mesh and earn 88% of inference fees. Sell knowledge bases and earn 80% of query royalties."}},
     {"@type": "Question", "name": "What providers are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box."}},
     {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}},
     {"@type": "Question", "name": "What does Enterprise include beyond Team?", "acceptedAnswer": {"@type": "Answer", "text": "All 29 products including Cortex, Mycelium, Spore, Molt, Ramrod, and Iron. Plus SSO/SAML, SLA with uptime guarantees, compliance export, and dedicated support."}}
@@ -181,7 +180,7 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
 <section class="page-header">
   <div class="eyebrow">Pricing</div>
   <h1>Simple pricing. <span class="accent">Powerful products.</span></h1>
-  <p class="sub">76 modules and 16 providers, free. Paid tiers unlock 29 products that nobody else has.</p>
+  <p class="sub">76 modules and 16 providers, free. Paid tiers unlock 29 products as your needs grow.</p>
 </section>
 
 <div class="billing-toggle">
@@ -284,32 +283,6 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   </div>
 </section>
 
-<section style="padding:3rem 2rem;max-width:960px;margin:0 auto">
-  <div style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);margin-bottom:2rem;text-align:center">Earn on the Platform</div>
-  <p style="color:var(--cream-dim);text-align:center;max-width:550px;margin:0 auto 2rem;font-size:1rem">Every tier &mdash; including Free &mdash; can earn money on the platform. Stockyard takes a small fee and the rest is yours.</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem">
-    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
-      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">80%</div>
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">App Revenue</div>
-      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Publish AI apps. Set your price. Earn 80% of every transaction.</div>
-    </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
-      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">88%</div>
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">Mesh Earnings</div>
-      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Contribute GPU compute. Earn 88% of every inference fee.</div>
-    </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
-      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">80%</div>
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">Knowledge Royalties</div>
-      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Sell domain expertise. Earn 80% of every query against your data.</div>
-    </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);text-align:center">
-      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--cream);font-weight:700">97.5%</div>
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:2px;text-transform:uppercase;margin-top:0.3rem">Billing Pass-Through</div>
-      <div style="font-size:0.8rem;color:var(--cream-dim);margin-top:0.5rem">Bill your customers through Stockyard. 2.5% platform fee + Stripe fees.</div>
-    </div>
-  </div>
-</section>
 
 <section class="compare">
   <div class="compare-label">Compare plans</div>
@@ -392,12 +365,8 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
     <div class="faq-a">Team includes 5 seats. Additional seats are $20/seat/month. So a 10-person team is $299.99 + (5 &times; $20) = $399.99/month.</div>
   </div>
   <div class="faq-item">
-    <div class="faq-q">How do I earn money on the platform?</div>
-    <div class="faq-a">Three ways. Publish AI apps to the marketplace and earn 80% of every transaction. Contribute GPU compute to the mesh and earn 88% of inference fees. Sell knowledge bases and earn 80% of query royalties. All three work on every tier including Free.</div>
-  </div>
-  <div class="faq-item">
     <div class="faq-q">What providers are supported?</div>
-    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box. Plus the distributed mesh for open-source model inference.</div>
+    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">Do I need to change my application code?</div>
