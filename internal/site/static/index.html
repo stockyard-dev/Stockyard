@@ -259,59 +259,99 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
     <p style="text-align:center;font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1.2rem">Or run all five at once: <code style="color:var(--leather-light)">POST /api/optimize</code> &mdash; one endpoint, full stack review, ordered recommendations.</p>
   </div>
 </section>
+<!-- Interactive Demo — Dashboard Replica -->
 <section class="section-alt" id="demo">
   <div class="section-alt-inner">
-    <h2 class="section-label">See it work</h2>
-    <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:2rem;max-width:540px;margin-left:auto;margin-right:auto">Pick a prompt. Watch it flow through Stockyard's middleware chain. Real data, real modules, real savings &mdash; no API key needed.</p>
+    <h2 class="section-label">This is what you get</h2>
+    <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem;max-width:540px;margin-left:auto;margin-right:auto">This is the real Stockyard console. Pick a prompt and watch the trace appear.</p>
 
-    <!-- Prompt picker -->
-    <div id="demo-tabs" style="display:flex;gap:0;justify-content:center;flex-wrap:wrap;margin-bottom:0">
-      <button class="demo-tab active" onclick="pickPrompt(0)">Summarize earnings</button>
-      <button class="demo-tab" onclick="pickPrompt(1)">Draft customer email</button>
-      <button class="demo-tab" onclick="pickPrompt(2)">Write a SQL query</button>
-      <button class="demo-tab" onclick="pickPrompt(3)">Translate copy</button>
-    </div>
+    <!-- Dashboard frame -->
+    <div class="dx-shell">
+      <!-- Sidebar -->
+      <div class="dx-nav">
+        <div class="dx-brand">&#9612;&#9612;&#9612; STOCKYARD</div>
+        <div class="dx-nav-sep"></div>
+        <div class="dx-nav-sec">Core</div>
+        <div class="dx-nav-item">&#9656; Overview</div>
+        <div class="dx-nav-item">&#8942; Chute</div>
+        <div class="dx-nav-item dx-active">&#9673; Lookout</div>
+        <div class="dx-nav-item">&#9670; Brand</div>
+        <div class="dx-nav-sep"></div>
+        <div class="dx-nav-sec">Products</div>
+        <div class="dx-nav-item">&#10138; Drover</div>
+        <div class="dx-nav-item">&#8635; Lasso</div>
+        <div class="dx-nav-item">&#9760; Feral</div>
+        <div class="dx-nav-item">&#9733; Breed</div>
+        <div class="dx-nav-sep"></div>
+        <div class="dx-nav-ver">v1.7.0 &middot; Dev</div>
+      </div>
 
-    <!-- Trace viewer -->
-    <div id="demo-trace" style="background:var(--bg);border:1px solid var(--bg3);max-width:720px;margin:0 auto;overflow:hidden">
-
-      <!-- Request -->
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
-          <span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)">Request</span>
-          <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)" id="demo-model">gpt-5.4 → gpt-5.4-mini → Chute proxy</span>
+      <!-- Content -->
+      <div class="dx-content">
+        <!-- Page head -->
+        <div class="dx-page-head">
+          <div class="dx-eyebrow">&#9135; Lookout</div>
+          <div class="dx-h2">Analytics &amp; Traces</div>
         </div>
-        <div style="font-size:0.88rem;color:var(--cream);line-height:1.6" id="demo-prompt">Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M. CEO Jane Chen said "Our mid-market expansion is accelerating faster than our most optimistic projections."</div>
-      </div>
 
-      <!-- Module chain -->
-      <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Module chain <span style="color:var(--cream-muted)" id="demo-chain-time">· 410ns</span></div>
-        <div id="demo-modules" style="display:flex;flex-wrap:wrap;gap:0.4rem"></div>
-      </div>
+        <!-- Stats row -->
+        <div class="dx-stats">
+          <div class="dx-stat"><div class="dx-stat-label">Today&rsquo;s Requests</div><div class="dx-stat-val dx-accent" id="dx-reqs">12</div></div>
+          <div class="dx-stat"><div class="dx-stat-label">Today&rsquo;s Cost</div><div class="dx-stat-val" id="dx-cost-total">$0.038</div></div>
+          <div class="dx-stat"><div class="dx-stat-label">Total Traces</div><div class="dx-stat-val">279</div></div>
+          <div class="dx-stat"><div class="dx-stat-label">Live Feed</div><div class="dx-stat-val"><span class="dx-dot dx-dot-green"></span> connected</div></div>
+        </div>
 
-      <!-- Response -->
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Response</div>
-        <div style="font-size:0.85rem;color:var(--cream-dim);line-height:1.7" id="demo-response">Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR. CEO Jane Chen pointed to accelerating mid-market expansion as the primary growth driver, calling it ahead of even their most optimistic internal projections.</div>
-      </div>
+        <!-- Tab bar -->
+        <div class="dx-tabs">
+          <div class="dx-tab dx-tab-active">&#9679; live</div>
+          <div class="dx-tab">dashboard</div>
+          <div class="dx-tab">traces</div>
+          <div class="dx-tab">costs</div>
+          <div class="dx-tab">alerts</div>
+          <div class="dx-tab">safety</div>
+        </div>
 
-      <!-- Trace metrics -->
-      <div style="padding:1rem 1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;border-bottom:1px solid var(--bg3)" id="demo-metrics">
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-latency">624ms</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Latency</span></div>
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-tokens">298</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Tokens</span></div>
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-cost">$0.0018</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Cost</span></div>
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;display:block" id="demo-status" style="color:var(--green-light)">✓ OK</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Status</span></div>
-      </div>
+        <!-- Prompt picker (as "send request" UI) -->
+        <div class="dx-send">
+          <span class="dx-send-label">Send request:</span>
+          <button class="dx-send-btn dx-send-active" onclick="dxPick(0)">Earnings</button>
+          <button class="dx-send-btn" onclick="dxPick(1)">Email (PII)</button>
+          <button class="dx-send-btn" onclick="dxPick(2)">SQL query</button>
+          <button class="dx-send-btn" onclick="dxPick(3)">Translation</button>
+        </div>
 
-      <!-- Insights banner -->
-      <div id="demo-insights" style="padding:1rem 1.5rem">
+        <!-- Live feed -->
+        <div class="dx-feed" id="dx-feed">
+          <!-- Traces injected by JS -->
+        </div>
+
+        <!-- Trace detail (shown on click) -->
+        <div class="dx-detail" id="dx-detail" style="display:none">
+          <div class="dx-detail-head">
+            <span class="dx-detail-title">Trace Detail</span>
+            <button class="dx-detail-close" onclick="dxCloseDetail()">&#10005;</button>
+          </div>
+          <div class="dx-detail-body">
+            <div class="dx-td-row"><span class="dx-td-label">Trace ID</span><span class="dx-mono" id="dx-d-id">tr_a8f21c4e</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Model</span><span class="dx-mono" id="dx-d-model">gpt-5.4-mini</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Provider</span><span class="dx-mono" id="dx-d-prov">openai</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Tokens</span><span class="dx-mono" id="dx-d-tok">142 in / 156 out</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Latency</span><span class="dx-mono" id="dx-d-lat">624ms</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Cost</span><span class="dx-mono dx-gold" id="dx-d-cost">$0.0018</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Status</span><span class="dx-mono" id="dx-d-status">ok</span></div>
+            <div class="dx-td-row" id="dx-d-drover-row" style="display:none"><span class="dx-td-label">Drover</span><span class="dx-mono dx-gold" id="dx-d-drover"></span></div>
+            <div class="dx-td-section"><div class="dx-td-label">Request</div><pre class="dx-td-pre" id="dx-d-req"></pre></div>
+            <div class="dx-td-section"><div class="dx-td-label">Response</div><pre class="dx-td-pre" id="dx-d-resp"></pre></div>
+            <div id="dx-d-insights"></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- CTA -->
     <div style="text-align:center;margin-top:2.5rem">
-      <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:1.5rem">That trace is real. Every module fired in <span id="demo-cta-time">410ns</span>. Now try it with your own data.</p>
+      <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:1.5rem">This is the actual console. Install Stockyard and it looks exactly like this.</p>
       <div class="cta-group">
         <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
       </div>
@@ -321,152 +361,181 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </section>
 
 <style>
-.demo-tab{font-family:var(--font-mono);font-size:0.72rem;padding:0.6rem 1.2rem;background:var(--bg);border:1px solid var(--bg3);border-bottom:none;color:var(--cream-muted);cursor:pointer;transition:all 0.2s}
-.demo-tab:hover{color:var(--cream);background:var(--bg2)}
-.demo-tab.active{color:var(--cream);background:var(--bg);border-bottom:2px solid var(--rust-light);color:var(--rust-light)}
-.mod-pill{font-family:var(--font-mono);font-size:0.62rem;padding:0.2rem 0.5rem;border:1px solid var(--bg3);color:var(--cream-muted);display:inline-flex;align-items:center;gap:0.3rem;transition:all 0.3s}
-.mod-pill.pass{border-color:var(--green-light);color:var(--green-light)}
-.mod-pill.warn{border-color:var(--gold);color:var(--gold)}
-.mod-pill.block{border-color:#d44a4a;color:#d44a4a}
-.mod-pill.skip{border-color:var(--bg3);color:var(--cream-muted);opacity:0.5}
-.insight-box{padding:0.8rem 1rem;border-left:3px solid var(--gold);background:rgba(212,168,67,0.06);margin-bottom:0.6rem}
-.insight-box.warn{border-left-color:#d44a4a;background:rgba(212,74,74,0.06)}
-.insight-box .ins-title{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream);margin-bottom:0.2rem}
-.insight-box .ins-detail{font-size:0.78rem;color:var(--cream-dim)}
-.insight-box .ins-cta{font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);margin-top:0.3rem;display:inline-block}
-.insight-box .ins-cta:hover{color:var(--gold)}
-@media(max-width:600px){.demo-tab{font-size:0.6rem;padding:0.4rem 0.6rem}#demo-metrics{grid-template-columns:repeat(2,1fr)}}
+/* Dashboard replica — uses same design tokens as real /ui, scoped with dx- prefix */
+.dx-shell{display:flex;border:1px solid var(--bg3);max-width:960px;margin:0 auto;height:520px;overflow:hidden;background:var(--bg)}
+.dx-nav{width:180px;min-width:180px;background:var(--bg2);border-right:1px solid var(--bg3);padding:14px 10px;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.dx-brand{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;color:var(--leather-light);padding:4px 8px 12px}
+.dx-nav-sep{height:1px;background:var(--bg3);margin:4px 0}
+.dx-nav-sec{font-family:var(--font-mono);font-size:0.55rem;text-transform:uppercase;letter-spacing:3px;color:var(--cream-muted);padding:10px 8px 4px}
+.dx-nav-item{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);padding:6px 8px;cursor:default;display:flex;align-items:center;gap:8px}
+.dx-nav-item:hover{color:var(--cream);background:var(--bg3)}
+.dx-active{color:var(--rust-light)!important;background:rgba(196,93,44,0.08);border-left:2px solid var(--rust);padding-left:6px}
+.dx-nav-ver{font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);padding:8px;margin-top:auto;border-top:1px solid var(--bg3)}
+.dx-content{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.dx-page-head{margin-bottom:0}
+.dx-eyebrow{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:4px;text-transform:uppercase;color:var(--rust);margin-bottom:4px}
+.dx-h2{font-size:1.3rem;font-weight:700;line-height:1.2}
+.dx-stats{display:flex;gap:8px}
+.dx-stat{flex:1;background:var(--bg2);border:1px solid var(--bg3);padding:12px 14px}
+.dx-stat-label{font-family:var(--font-mono);font-size:0.55rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);margin-bottom:4px}
+.dx-stat-val{font-family:var(--font-mono);font-size:1.2rem;font-weight:600;color:var(--cream);line-height:1.1}
+.dx-accent{color:var(--rust-light)!important}
+.dx-gold{color:var(--gold)!important}
+.dx-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+.dx-dot-green{background:#5a9a4a;animation:dxpulse 2s infinite}
+@keyframes dxpulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.dx-tabs{display:flex;gap:0;border-bottom:1px solid var(--bg3)}
+.dx-tab{padding:6px 14px;font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-dim);cursor:default;border-bottom:2px solid transparent;text-transform:capitalize}
+.dx-tab-active{color:var(--rust-light);border-bottom-color:var(--rust)}
+.dx-send{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dx-send-label{font-family:var(--font-mono);font-size:0.62rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}
+.dx-send-btn{padding:3px 10px;border:1px solid var(--bg3);background:var(--bg2);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.68rem;cursor:pointer;transition:all 0.15s}
+.dx-send-btn:hover{color:var(--cream);border-color:var(--leather)}
+.dx-send-active{background:var(--rust)!important;color:var(--cream)!important;border-color:var(--rust)!important}
+.dx-feed{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto}
+.dx-event{background:var(--bg);border:1px solid var(--bg3);border-left:3px solid #5a9a4a;padding:6px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer;transition:background 0.1s;animation:dxfade 0.3s ease-out}
+.dx-event:hover{background:rgba(196,93,44,0.06)}
+.dx-event:first-child{border-color:var(--leather-light);border-left-color:#5a9a4a}
+.dx-event-warn{border-left-color:var(--gold)!important}
+@keyframes dxfade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.dx-mono{font-family:var(--font-mono);font-size:0.72rem}
+.dx-badge{display:inline-block;padding:1px 6px;font-family:var(--font-mono);font-size:0.58rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.dx-badge-ok{background:rgba(90,154,74,0.15);color:#5a9a4a}
+.dx-badge-warn{background:rgba(212,168,67,0.15);color:var(--gold)}
+.dx-badge-err{background:rgba(196,74,58,0.15);color:#c44a3a}
+.dx-detail{background:var(--bg2);border:1px solid var(--bg3);margin-top:4px;animation:dxfade 0.2s}
+.dx-detail-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bg3)}
+.dx-detail-title{font-family:var(--font-mono);font-size:0.78rem;letter-spacing:1px;color:var(--cream)}
+.dx-detail-close{background:none;border:none;color:var(--cream-muted);font-size:1rem;cursor:pointer;padding:2px 6px}
+.dx-detail-close:hover{color:var(--cream)}
+.dx-detail-body{padding:14px;display:flex;flex-direction:column;gap:6px}
+.dx-td-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bg3)}
+.dx-td-label{font-family:var(--font-mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--cream-muted)}
+.dx-td-section{margin-top:8px}
+.dx-td-pre{background:var(--bg);border:1px solid var(--bg3);padding:8px;font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-dim);overflow-x:auto;max-height:120px;overflow-y:auto;margin-top:3px;white-space:pre-wrap;word-break:break-all}
+.dx-insight{padding:6px 8px;border-left:3px solid var(--gold);background:rgba(212,168,67,0.06);margin-top:6px}
+.dx-insight.dx-ins-warn{border-left-color:#c44a3a;background:rgba(196,74,58,0.06)}
+.dx-insight-title{font-family:var(--font-mono);font-size:0.65rem;color:var(--cream)}
+.dx-insight-desc{font-size:0.68rem;color:var(--cream-dim);margin-top:2px}
+@media(max-width:768px){.dx-nav{display:none}.dx-shell{height:auto;max-height:600px}.dx-stats{flex-wrap:wrap}.dx-stats .dx-stat{min-width:45%}.dx-tabs{overflow-x:auto}.dx-send{flex-wrap:wrap}}
 </style>
 
 <script>
-var demos = [
+var dxDemos = [
   {
-    prompt: 'Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M. CEO Jane Chen said "Our mid-market expansion is accelerating faster than our most optimistic projections."',
-    model: 'gpt-5.4',
-    routed: 'gpt-5.4-mini',
-    response: 'Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR. CEO Jane Chen pointed to accelerating mid-market expansion as the primary growth driver, calling it ahead of even their most optimistic internal projections.',
-    latency: '624ms', tokens: '298', cost: '$0.0018',
-    modules: [
-      {name:'ratelimit', status:'pass'},
-      {name:'promptguard', status:'pass'},
-      {name:'tokentrim', status:'pass'},
-      {name:'cachelayer', status:'skip', note:'miss'},
-      {name:'secretscan', status:'pass'},
-      {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'warn', note:'routed→5.4-mini'},
-      {name:'costtrack', status:'pass'},
-    ],
-    chainTime: '410ns',
-    insights: [
-      {type:'save', title:'Drover routed gpt-5.4 → gpt-5.4-mini', detail:'Quality 0.91 (above 0.80 threshold). This request cost $0.0018 instead of $0.0119 — 6.6x cheaper. Over 1,000 requests/day, that\'s ~$300/mo saved.', cta:'Try Drover free (100/day)', url:'/drover/'},
-      {type:'info', title:'Similar prompt seen 14 times this week', detail:'"Summarize...earnings" appears across multiple traces with minor variations. A Tack Room template could standardize output and save tokens.', cta:'Explore Tack Room', url:'/studio/'},
+    id:'tr_a8f21c4e',model:'gpt-5.4',routed:'gpt-5.4-mini',provider:'openai',
+    tokIn:142,tokOut:156,latency:'624',cost:'0.0018',status:'ok',
+    drover:'gpt-5.4 → gpt-5.4-mini (quality 0.91, 6.6x cheaper)',
+    prompt:'Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M.',
+    response:'Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR.',
+    insights:[
+      {type:'save',title:'Drover routed gpt-5.4 → gpt-5.4-mini',desc:'Quality 0.91 — 6.6x cheaper. ~$300/mo saved at 1K req/day.'},
     ]
   },
   {
-    prompt: 'Draft a professional email to sarah.martinez@acmecorp.com regarding her refund request #RF-4821 for $2,340. Her credit card ending in 4242 was charged twice on March 15. Apologize and confirm the refund will appear in 5-7 business days.',
-    model: 'claude-sonnet-4-6',
-    routed: 'gpt-5.4-nano',
-    response: 'Subject: Refund Confirmation — Request #RF-4821\n\nDear Sarah,\n\nThank you for bringing the duplicate charge to our attention. We sincerely apologize for the inconvenience. We\'ve processed your refund of $2,340, and it will appear on your statement within 5–7 business days.\n\nPlease don\'t hesitate to reach out if you have any further questions.\n\nBest regards,\nCustomer Support Team',
-    latency: '890ms', tokens: '462', cost: '$0.0008',
-    modules: [
-      {name:'ratelimit', status:'pass'},
-      {name:'promptguard', status:'pass'},
-      {name:'tokentrim', status:'pass'},
-      {name:'secretscan', status:'warn', note:'PII found'},
-      {name:'cachelayer', status:'skip', note:'miss'},
-      {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'warn', note:'routed→5.4-nano'},
-      {name:'costtrack', status:'pass'},
-    ],
-    chainTime: '380ns',
-    insights: [
-      {type:'warn', title:'PII detected in prompt', detail:'Found: email address, credit card (ending 4242), dollar amount, name. This data is being sent to a third-party LLM provider.', cta:'Unlock PII redaction with Team ($299.99/mo)', url:'/pricing/'},
-      {type:'save', title:'Drover cross-provider routed to gpt-5.4-nano', detail:'Requested claude-sonnet-4-6 ($0.018/req avg), routed to gpt-5.4-nano ($0.0008/req). Quality 0.88 for email drafting. 22x cost reduction.', cta:'Try Drover free (100/day)', url:'/drover/'},
+    id:'tr_c3d94b1f',model:'claude-sonnet-4-6',routed:'gpt-5.4-nano',provider:'anthropic→openai',
+    tokIn:186,tokOut:276,latency:'890',cost:'0.0008',status:'ok',warn:true,
+    drover:'claude-sonnet-4-6 → gpt-5.4-nano (cross-provider, 22x cheaper)',
+    prompt:'Draft a professional email to sarah.martinez@acmecorp.com regarding her refund request #RF-4821 for $2,340. Her credit card ending in 4242 was charged twice.',
+    response:'Subject: Refund Confirmation — Request #RF-4821\n\nDear Sarah,\n\nWe sincerely apologize for the duplicate charge. Your refund of $2,340 has been processed and will appear within 5–7 business days.\n\nBest regards,\nCustomer Support',
+    insights:[
+      {type:'warn',title:'PII detected in prompt',desc:'email, credit card (4242), name, dollar amount — sent to third-party provider.'},
+      {type:'save',title:'Cross-provider routed to gpt-5.4-nano',desc:'22x cost reduction. Quality 0.88 for email drafting.'},
     ]
   },
   {
-    prompt: 'Write a PostgreSQL query to find all users who signed up in the last 90 days, made at least one purchase, but haven\'t logged in for 30 days. Include their email, last login date, total spend, and days since last activity. Order by total spend descending.',
-    model: 'gpt-5.4',
-    routed: 'gpt-5.4',
-    response: 'SELECT\n  u.email,\n  u.last_login_at,\n  SUM(o.total_amount) AS total_spend,\n  EXTRACT(DAY FROM NOW() - u.last_login_at) AS days_inactive\nFROM users u\nJOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= NOW() - INTERVAL \'90 days\'\n  AND u.last_login_at < NOW() - INTERVAL \'30 days\'\nGROUP BY u.id, u.email, u.last_login_at\nHAVING COUNT(o.id) >= 1\nORDER BY total_spend DESC;',
-    latency: '1,340ms', tokens: '547', cost: '$0.0119',
-    modules: [
-      {name:'ratelimit', status:'pass'},
-      {name:'promptguard', status:'pass'},
-      {name:'codefence', status:'pass'},
-      {name:'tokentrim', status:'pass'},
-      {name:'cachelayer', status:'skip', note:'miss'},
-      {name:'secretscan', status:'pass'},
-      {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'skip', note:'kept gpt-5.4'},
-      {name:'costtrack', status:'pass'},
-    ],
-    chainTime: '450ns',
-    insights: [
-      {type:'info', title:'Drover kept gpt-5.4 for this request', detail:'Code generation tasks score 0.71 on gpt-5.4-mini and 0.58 on nano — both below the 0.80 threshold. Drover correctly kept the flagship model for code quality.', cta:'See calibration scores', url:'/drover/'},
-      {type:'save', title:'This prompt is a template candidate', detail:'Churn analysis queries appear 8 times this week with different column names. A parameterized template in Tack Room would ensure consistent output.', cta:'Explore Tack Room', url:'/studio/'},
+    id:'tr_e7b35a02',model:'gpt-5.4',routed:'gpt-5.4',provider:'openai',
+    tokIn:98,tokOut:449,latency:'1340',cost:'0.0119',status:'ok',
+    drover:null,
+    prompt:'Write a PostgreSQL query: users signed up last 90 days, made a purchase, haven\'t logged in for 30 days. Include email, last login, total spend, days inactive.',
+    response:'SELECT u.email, u.last_login_at,\n  SUM(o.total_amount) AS total_spend,\n  EXTRACT(DAY FROM NOW() - u.last_login_at) AS days_inactive\nFROM users u JOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= NOW() - INTERVAL \'90 days\'\n  AND u.last_login_at < NOW() - INTERVAL \'30 days\'\nGROUP BY u.id, u.email, u.last_login_at\nHAVING COUNT(o.id) >= 1\nORDER BY total_spend DESC;',
+    insights:[
+      {type:'save',title:'Drover kept gpt-5.4',desc:'Code tasks score 0.71 on mini, 0.58 on nano — below threshold. Correctly kept flagship.'},
     ]
   },
   {
-    prompt: 'Translate this product description to Spanish, French, and Japanese. Keep the brand voice casual and energetic:\n\n"The new Surface Pro 11 — laptop power that detaches into a tablet. 22-hour battery, AI-accelerated workflows, and a screen so vivid it makes color jealous."',
-    model: 'claude-opus-4-6',
-    routed: 'gpt-5.4-mini',
-    response: 'Spanish: La nueva Surface Pro 11 — potencia de laptop que se convierte en tablet. 22 horas de batería, flujos de trabajo acelerados por IA y una pantalla tan vívida que le da envidia al color.\n\nFrench: Le nouveau Surface Pro 11 — la puissance d\'un laptop qui se détache en tablette. 22 heures d\'autonomie, workflows accélérés par l\'IA et un écran si éclatant qu\'il rend les couleurs jalouses.\n\nJapanese: 新しいSurface Pro 11 — タブレットに変身するノートPCパワー。22時間バッテリー、AIで加速するワークフロー、色が嫉妬するほど鮮やかなスクリーン。',
-    latency: '1,780ms', tokens: '692', cost: '$0.0042',
-    modules: [
-      {name:'ratelimit', status:'pass'},
-      {name:'promptguard', status:'pass'},
-      {name:'tokentrim', status:'pass'},
-      {name:'cachelayer', status:'skip', note:'miss'},
-      {name:'secretscan', status:'pass'},
-      {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'warn', note:'routed→5.4-mini'},
-      {name:'costtrack', status:'pass'},
-    ],
-    chainTime: '395ns',
-    insights: [
-      {type:'save', title:'Drover cross-provider saved $0.093 on this request', detail:'Requested claude-opus-4-6 ($0.097/req), routed to gpt-5.4-mini ($0.0042/req). Quality score 0.86 — fluent and accurate across all 3 languages. 23x cheaper.', cta:'Try Drover free (100/day)', url:'/drover/'},
-      {type:'info', title:'Consider Lasso for translation QA', detail:'Replay this prompt against Claude Sonnet 4.6 and gpt-5.4 to compare translation fluency. Lasso runs side-by-side comparisons with cost and quality scoring.', cta:'See Lasso', url:'/lasso/'},
+    id:'tr_91d48fc6',model:'claude-opus-4-6',routed:'gpt-5.4-mini',provider:'anthropic→openai',
+    tokIn:112,tokOut:580,latency:'1780',cost:'0.0042',status:'ok',
+    drover:'claude-opus-4-6 → gpt-5.4-mini (cross-provider, 23x cheaper)',
+    prompt:'Translate to Spanish, French, Japanese. Casual brand voice:\n"The new Surface Pro 11 — laptop power that detaches into a tablet. 22-hour battery, AI-accelerated workflows."',
+    response:'ES: La nueva Surface Pro 11 — potencia de laptop que se convierte en tablet.\nFR: Le nouveau Surface Pro 11 — la puissance d\'un laptop qui se détache en tablette.\nJA: 新しいSurface Pro 11 — タブレットに変身するノートPCパワー。',
+    insights:[
+      {type:'save',title:'Cross-provider saved $0.093',desc:'claude-opus-4-6 ($0.097/req) → gpt-5.4-mini ($0.004/req). Quality 0.86 across 3 languages.'},
     ]
   }
 ];
 
-function pickPrompt(idx) {
-  var d = demos[idx];
-  document.querySelectorAll('.demo-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
-  document.getElementById('demo-prompt').textContent = d.prompt;
-  document.getElementById('demo-model').textContent = d.model + (d.routed !== d.model ? ' → ' + d.routed : '') + ' → Chute proxy';
-  document.getElementById('demo-response').innerHTML = d.response.replace(/\n/g,'<br>');
-  document.getElementById('demo-latency').textContent = d.latency;
-  document.getElementById('demo-tokens').textContent = d.tokens;
-  document.getElementById('demo-cost').textContent = d.cost;
-  document.getElementById('demo-status').textContent = '✓ OK';
-  document.getElementById('demo-status').style.color = '#5ba86e';
-  document.getElementById('demo-chain-time').textContent = '· ' + d.chainTime;
-  document.getElementById('demo-cta-time').textContent = d.chainTime;
+function dxPick(idx) {
+  var d = dxDemos[idx];
+  document.querySelectorAll('.dx-send-btn').forEach(function(b,i){b.classList.toggle('dx-send-active',i===idx)});
 
-  // Modules
-  var mc = document.getElementById('demo-modules');
-  mc.innerHTML = '';
-  d.modules.forEach(function(m){
-    var pill = document.createElement('span');
-    pill.className = 'mod-pill ' + m.status;
-    var icon = m.status === 'pass' ? '✓' : m.status === 'warn' ? '⚡' : m.status === 'block' ? '✗' : '·';
-    pill.innerHTML = icon + ' ' + m.name + (m.note ? ' <span style="opacity:0.7">(' + m.note + ')</span>' : '');
-    mc.appendChild(pill);
-  });
+  var feed = document.getElementById('dx-feed');
+  var time = new Date().toLocaleTimeString();
 
-  // Insights
-  var ic = document.getElementById('demo-insights');
-  ic.innerHTML = '';
+  // Build live event row
+  var evt = document.createElement('div');
+  evt.className = 'dx-event' + (d.warn ? ' dx-event-warn' : '');
+  evt.onclick = function(){ dxShowDetail(idx); };
+  var modelDisplay = d.routed !== d.model ? d.routed : d.model;
+  evt.innerHTML = '<span class="dx-dot dx-dot-green"></span>' +
+    '<span class="dx-mono" style="color:var(--cream)">request</span>' +
+    '<span class="dx-mono">' + modelDisplay + '</span>' +
+    '<span class="dx-mono" style="color:var(--cream-muted)">' + (d.tokIn+d.tokOut) + ' tok</span>' +
+    '<span class="dx-mono dx-gold">$' + d.cost + '</span>' +
+    '<span class="dx-mono" style="color:var(--cream-muted)">' + d.latency + 'ms</span>' +
+    (d.warn ? '<span class="dx-badge dx-badge-warn">PII</span>' : '') +
+    (d.routed !== d.model ? '<span class="dx-badge dx-badge-ok">drover</span>' : '') +
+    '<span class="dx-badge dx-badge-ok">ok</span>' +
+    '<span class="dx-mono" style="color:var(--cream-muted);margin-left:auto;font-size:0.62rem">' + time + '</span>';
+
+  feed.insertBefore(evt, feed.firstChild);
+
+  // Update stats
+  var reqEl = document.getElementById('dx-reqs');
+  reqEl.textContent = parseInt(reqEl.textContent) + 1;
+
+  // Auto-show detail
+  dxShowDetail(idx);
+}
+
+function dxShowDetail(idx) {
+  var d = dxDemos[idx];
+  document.getElementById('dx-detail').style.display = '';
+  document.getElementById('dx-d-id').textContent = d.id;
+  document.getElementById('dx-d-model').textContent = d.routed;
+  document.getElementById('dx-d-prov').textContent = d.provider;
+  document.getElementById('dx-d-tok').textContent = d.tokIn + ' in / ' + d.tokOut + ' out';
+  document.getElementById('dx-d-lat').textContent = d.latency + 'ms';
+  document.getElementById('dx-d-cost').textContent = '$' + d.cost;
+  document.getElementById('dx-d-status').textContent = d.status;
+
+  var droverRow = document.getElementById('dx-d-drover-row');
+  if (d.drover) {
+    droverRow.style.display = '';
+    document.getElementById('dx-d-drover').textContent = d.drover;
+  } else {
+    droverRow.style.display = 'none';
+  }
+
+  document.getElementById('dx-d-req').textContent = JSON.stringify({model:d.model,messages:[{role:'user',content:d.prompt}]},null,2);
+  document.getElementById('dx-d-resp').textContent = d.response;
+
+  var insC = document.getElementById('dx-d-insights');
+  insC.innerHTML = '';
   d.insights.forEach(function(ins){
-    var box = document.createElement('div');
-    box.className = 'insight-box' + (ins.type === 'warn' ? ' warn' : '');
-    box.innerHTML = '<div class="ins-title">' + ins.title + '</div><div class="ins-detail">' + ins.detail + '</div><a class="ins-cta" href="' + ins.url + '">' + ins.cta + ' →</a>';
-    ic.appendChild(box);
+    var div = document.createElement('div');
+    div.className = 'dx-insight' + (ins.type === 'warn' ? ' dx-ins-warn' : '');
+    div.innerHTML = '<div class="dx-insight-title">' + ins.title + '</div><div class="dx-insight-desc">' + ins.desc + '</div>';
+    insC.appendChild(div);
   });
 }
-pickPrompt(0);
+
+function dxCloseDetail() {
+  document.getElementById('dx-detail').style.display = 'none';
+}
+
+// Auto-fire first demo
+dxPick(0);
 </script>
 
 <!-- Upgrade path visual -->
