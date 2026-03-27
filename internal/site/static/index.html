@@ -7,10 +7,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Stockyard — Replace Your LLM Middleware Stack</title>
-<meta name="description" content="76 middleware modules, 16 providers, one ~25MB Go binary, zero dependencies. Proxy, observability, cost tracking, audit ledger, caching, guardrails. MIT licensed.">
-<meta property="og:title" content="Stockyard — Replace Your LLM Middleware Stack">
-<meta property="og:description" content="76 middleware modules, 16 providers, one ~25MB Go binary, zero dependencies. Open source, MIT licensed.">
+<title>Stockyard — Your Entire LLM Infrastructure in One Binary</title>
+<meta name="description" content="29 products, 76 middleware modules, 360+ API endpoints, 16 providers. Proxy, observability, security, cost optimization, audit — one ~25MB Go binary. MIT licensed.">
+<meta property="og:title" content="Stockyard — Your Entire LLM Infrastructure in One Binary">
+<meta property="og:description" content="29 products, 76 middleware modules, 360+ API endpoints. One ~25MB Go binary, zero dependencies. MIT licensed.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -18,10 +18,10 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="preload" as="image" type="image/webp" href="/site-assets/assets/screenshots/console-overview.webp">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -29,7 +29,7 @@
   --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
   --leather:#a0845c;--leather-light:#c4a87a;
   --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
-  --gold:#d4a843;--green-light:#5ba86e;
+  --gold:#d4a843;--green-light:#5ba86e;--blue:#5b8fb9;
   --font-serif:'Libre Baskerville',Georgia,serif;
   --font-mono:'JetBrains Mono',monospace;
 }
@@ -39,222 +39,116 @@
     --rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;
     --leather:#7a6544;--leather-light:#8b7355;
     --cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;
-    --gold:#b08a28;
+    --gold:#b08a28;--green-light:#3a8a4e;--blue:#4a7a9a;
   }
 }
 .skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
-a{color:var(--rust-light);text-decoration:none}
-a:hover{color:var(--gold)}
-
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
-.nav-links a{color:var(--cream-dim)}
-.nav-links a:hover{color:var(--rust-light)}
-
-.hero{max-width:900px;margin:0 auto;padding:8rem 2rem 5rem;text-align:center}
-.hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
-.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
-.hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.15;margin-bottom:1.5rem;color:var(--cream)}
-.hero h1 .accent{color:var(--rust-light)}
-.hero-sub{font-size:1.15rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto 3rem}
-.hero-stats{display:flex;gap:3rem;justify-content:center;margin-bottom:3rem;flex-wrap:wrap}
-.stat{text-align:center}
-.stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--cream);display:block}
-.stat-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)}
-
-.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
-.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
-.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
-.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
-.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
-.install-cmd{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);background:var(--bg2);padding:0.5rem 1.5rem;display:inline-block;border:1px solid var(--bg3)}
-
-.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
-.section-label.gold{color:var(--gold)}
-.section-label.leather{color:var(--leather-light)}
-
-.problem{background:var(--bg2);padding:5rem 2rem;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.problem-inner{max-width:700px;margin:0 auto}
-.problem-text{font-size:1.1rem;color:var(--cream-dim);line-height:1.9}
-.solution{padding:5rem 2rem;max-width:700px;margin:0 auto}
-.solution-text{font-size:1.05rem;color:var(--cream);line-height:1.9}
-
-.apps{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.apps-inner{max-width:960px;margin:0 auto}
-.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:2rem}
-.app-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.2s}
-.app-card:hover{border-color:var(--rust)}
-.app-card a{text-decoration:none;display:block}
-.app-num{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;color:var(--leather);text-transform:uppercase;display:block;margin-bottom:0.4rem}
-.app-name{font-family:var(--font-mono);font-size:1rem;letter-spacing:1px;color:var(--cream);margin-bottom:0.5rem;display:block}
-.app-tagline{font-size:0.85rem;color:var(--cream-dim);font-style:italic;display:block;margin-bottom:0.6rem}
-.app-features{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather-light);line-height:1.7}
-
-.how{padding:5rem 2rem}
-.how-inner{max-width:700px;margin:0 auto}
-.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.8;margin-top:1.5rem}
-.code-block .comment{color:#5a5040}
-.code-block .cmd{color:var(--cream)}
-
-.modules{padding:5rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.modules-inner{max-width:700px;margin:0 auto}
-.module-row{display:flex;justify-content:space-between;align-items:center;padding:0.7rem 0;border-bottom:1px solid var(--bg3)}
-.module-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
-.module-cat{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);letter-spacing:1px;text-transform:uppercase}
-
-.compare{padding:5rem 2rem;max-width:700px;margin:0 auto}
-.compare-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:0.85rem}
-.compare-table th,.compare-table td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
-.compare-table th{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
-.compare-table .us{color:var(--cream);font-weight:700}
-.compare-table .them{color:var(--cream-dim)}
-
-.pricing-teaser{padding:5rem 2rem;text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
-.tier-row{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;max-width:1100px;margin-left:auto;margin-right:auto}
-.tier{flex:1;min-width:180px;max-width:220px;padding:1.5rem 1.2rem;border:1px solid var(--bg3);text-align:center}
-.tier-name{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:0.8rem}
-.tier-price{font-size:2.5rem;font-weight:700;color:var(--cream)}
-.tier-price.has-dollar::before{content:'$';font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
-.tier-period{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem}
-.tier-desc{font-size:0.8rem;color:var(--cream-dim);font-style:italic;margin-top:0.8rem}
-.tier-highlight{border-color:var(--rust)}
-
-.footer-cta{padding:6rem 2rem;text-align:center;max-width:600px;margin:0 auto}
-.footer-cta h2{font-size:2rem;margin-bottom:1rem}
-.footer-cta p{color:var(--cream-dim);margin-bottom:2rem;font-style:italic}
-
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
-footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-
-@media(max-width:600px){
-  .hero{padding:5rem 1.5rem 3rem}
-  .hero-stats{gap:1.5rem}
-  .app-grid{grid-template-columns:1fr}
-  .cta-group{flex-direction:column;align-items:center}
-  .compare-table{font-size:0.75rem}
-  .tier-row{flex-direction:column;align-items:center}
-}
-.console-preview{padding:4rem 2rem;max-width:1200px;margin:0 auto;text-align:center}
-.console-preview .section-label{margin-bottom:0.5rem}
-.console-preview p{color:var(--cream-dim);font-size:0.95rem;margin-bottom:2rem}
-.console-tabs{display:flex;justify-content:center;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--bg3)}
-.console-tab{padding:0.5rem 1.2rem;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;color:var(--cream-dim);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;text-transform:capitalize;transition:all 0.15s}
-.console-tab:hover{color:var(--cream)}.console-tab.active{color:var(--rust-light);border-bottom-color:var(--rust)}
-.console-gallery{position:relative;border:1px solid var(--bg3);background:var(--bg2);overflow:hidden;border-radius:0}
-.console-gallery img{width:100%;display:block;transition:opacity 0.3s}
-.console-gallery img.hidden{display:none}
-
-/* ===== MOBILE NAV ===== */
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
 .nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
 .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .nav-toggle.open span:nth-child(2){opacity:0}
 .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .nav-overlay{display:none}
+.hero{max-width:940px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);line-height:1.15;margin-bottom:1.5rem;color:var(--cream)}
+.hero h1 .accent{color:var(--rust-light)}
+.hero-sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:640px;margin:0 auto 2.5rem}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;margin-bottom:2.5rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--cream);display:block}
+.stat-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.install-cmd{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);background:var(--bg2);padding:0.5rem 1.5rem;display:inline-block;border:1px solid var(--bg3);cursor:pointer;transition:border-color 0.2s}
+.install-cmd:hover{border-color:var(--rust)}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.gold{color:var(--gold)}.section-label.leather{color:var(--leather-light)}
+.spotlights{padding:4rem 2rem;max-width:960px;margin:0 auto}
+.spotlight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.spotlight{padding:2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);transition:border-color 0.3s}
+.spotlight:hover{border-color:var(--rust)}
+.spotlight-badge{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:inline-block;margin-bottom:0.8rem;padding:0.2rem 0.5rem;border:1px solid var(--gold);opacity:0.9}
+.spotlight-name{font-family:var(--font-mono);font-size:1.1rem;color:var(--cream);margin-bottom:0.6rem;letter-spacing:0.5px}
+.spotlight-desc{font-size:0.88rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem}
+.spotlight-stat{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather-light)}
+.spotlight-stat strong{color:var(--cream);font-weight:600}
+.platform{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.platform-inner{max-width:960px;margin:0 auto}
+.cat-row{margin-bottom:2rem}
+.cat-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem;display:flex;align-items:center;gap:0.8rem}
+.cat-label::after{content:'';flex:1;height:1px;background:var(--bg3)}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:0.6rem}
+.prod-chip{padding:0.5rem 0.8rem;border:1px solid var(--bg3);background:var(--bg);font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);transition:all 0.2s;display:flex;align-items:center;gap:0.5rem}
+.prod-chip:hover{border-color:var(--rust);color:var(--cream)}
+.prod-dot{width:6px;height:6px;border-radius:50%;background:var(--green-light);flex-shrink:0}
+.demo{padding:4rem 2rem}
+.demo-inner{max-width:720px;margin:0 auto}
+.demo pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);line-height:1.8;overflow-x:auto}
+.compare{padding:4rem 2rem;max-width:900px;margin:0 auto}
+.compare-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.75rem;margin-top:1.5rem}
+.compare-table th{text-align:left;padding:0.5rem 0.8rem;border-bottom:2px solid var(--bg3);font-weight:600;color:var(--cream-muted)}
+.compare-table td{padding:0.5rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+.compare-table .us{color:var(--green-light);font-weight:600}
+.compare-table .them{color:var(--cream-muted)}
+.pricing-teaser{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);text-align:center}
+.tier-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;max-width:960px;margin:2rem auto 0}
+.tier{padding:1.5rem 1rem;border:1px solid var(--bg3);background:var(--bg);text-align:center}
+.tier-hl{border-color:var(--rust);background:var(--bg2)}
+.tier-name{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--leather-light);margin-bottom:0.6rem}
+.tier-price{font-size:2rem;font-weight:700;color:var(--cream);margin-bottom:0.3rem;line-height:1}
+.tier-period{font-family:var(--font-mono);font-size:0.6rem;color:var(--leather);margin-bottom:0.8rem}
+.tier-desc{font-size:0.78rem;color:var(--cream-dim);line-height:1.6}
+.explore{padding:4rem 2rem;max-width:900px;margin:0 auto}
+.explore-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem}
+.explore-card{display:block;padding:1.2rem;border:1px solid var(--bg3);transition:border-color 0.2s}
+.explore-card:hover{border-color:var(--rust)}
+.explore-label{font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:0.3rem}
+.explore-desc{font-size:0.85rem;color:var(--cream-dim)}
+.footer-cta{padding:5rem 2rem;text-align:center}
+.footer-cta h2{font-size:2rem;color:var(--cream);margin-bottom:0.8rem}
+.footer-cta p{color:var(--cream-dim);font-style:italic;max-width:500px;margin:0 auto 2rem}
+.email-section{max-width:600px;margin:0 auto;padding:3rem 2rem;text-align:center}
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--rust-light)}
+footer .sig{font-family:var(--font-serif);font-size:1.3rem;color:var(--leather-light);font-style:italic}
 @media(max-width:768px){
   .nav{padding:0.8rem 1.2rem}
   .nav-toggle{display:block}
-  .nav-links{
-    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
-    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
-    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
-  }
+  .nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}
   .nav-links.open{display:flex;font-family:var(--font-serif)}
   .nav-links a{font-size:1.05rem;padding:0.4rem 0}
   .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
   .nav-overlay.open{display:block}
+  .hero{padding:4rem 1.5rem 3rem}
+  .hero-stats{gap:1.5rem}
+  .spotlight-grid{grid-template-columns:1fr}
+  .tier-row{grid-template-columns:1fr 1fr}
+  .tier-row .tier:last-child{grid-column:span 2}
+  .explore-grid{grid-template-columns:1fr}
+  .demo pre{font-size:0.7rem;padding:1rem}
 }
-
-
-/* ===== GLOBAL MOBILE FIXES ===== */
-@media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:nowrap;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:none;white-space:nowrap;text-align:center}
+@media(max-width:480px){
+  .hero h1{font-size:1.8rem}
+  .stat-num{font-size:1.5rem}
+  .tier-row{grid-template-columns:1fr}
+  .tier-row .tier:last-child{grid-column:span 1}
 }
-
 </style>
-<link rel="canonical" href="https://stockyard.dev/">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "name": "Stockyard",
-      "url": "https://stockyard.dev",
-      "logo": "https://stockyard.dev/site-assets/assets/brand/favicon-192.png",
-      "description": "Open-source LLM gateway. 76 middleware modules, 16 providers, one binary, zero dependencies. MIT licensed.",
-      "sameAs": [
-        "https://github.com/stockyard-dev/stockyard"
-      ]
-    },
-    {
-      "@type": "SoftwareApplication",
-      "name": "Stockyard",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Linux, macOS, Windows",
-      "description": "Open-source LLM gateway and proxy platform with 76 middleware modules, 16 providers, and an embedded web console. Single Go binary, zero external dependencies.",
-      "url": "https://stockyard.dev",
-      "downloadUrl": "https://stockyard.dev/docs/quickstart/",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Free",
-          "price": "0",
-          "priceCurrency": "USD",
-          "description": "Self-hosted, all modules, all apps, unlimited requests, forever"
-        },
-        {
-          "@type": "Offer",
-          "name": "Pro",
-          "price": "29",
-          "priceCurrency": "USD",
-          "billingIncrement": "Monthly",
-          "description": "Cloud managed, custom domain, priority support"
-        },
-        {
-          "@type": "Offer",
-          "name": "Team",
-          "price": "99",
-          "priceCurrency": "USD",
-          "billingIncrement": "Monthly",
-          "description": "5 seats, RBAC, governance, compliance"
-        },
-        {
-          "@type": "Offer",
-          "name": "Enterprise",
-          "price": "299",
-          "priceCurrency": "USD",
-          "billingIncrement": "Monthly",
-          "description": "Unlimited seats, SSO, SLA, federation"
-        }
-      ],
-      "featureList": [
-        "76 middleware modules",
-        "16 LLM providers",
-        "Cost tracking and anomaly detection",
-        "Hash-chained audit ledger",
-        "Prompt versioning and A/B testing",
-        "DAG workflow engine",
-        "Config marketplace"
-      ]
-    }
-  ]
-}
-</script>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-overlay" onclick="toggleNav()"></div>
@@ -270,256 +164,233 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </nav>
 
 <section class="hero" id="main">
-  <div class="hero-eyebrow">Open Source &middot; MIT Licensed &middot; 74K Lines of Go</div>
-  <h1>Replace your LLM middleware stack <span class="accent">with a single binary.</span></h1>
-  <p class="hero-sub">Proxy, observability, cost tracking, audit ledger, prompt management, workflows, caching, guardrails &mdash; 76 modules, one ~25MB binary, zero dependencies.</p>
-
+  <div class="hero-eyebrow">Open Source &middot; MIT Licensed &middot; Single Binary</div>
+  <h1>Your entire LLM infrastructure. <span class="accent">One binary.</span></h1>
+  <p class="hero-sub">29 products. 76 middleware modules. 360+ API endpoints. 16 providers. Proxy, security, cost optimization, observability, genetic prompt evolution, red-team testing &mdash; a ~25MB Go binary with zero dependencies.</p>
   <div class="hero-stats">
+    <div class="stat"><span class="stat-num">29</span><span class="stat-label">Products</span></div>
     <div class="stat"><span class="stat-num">76</span><span class="stat-label">Modules</span></div>
-    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
-    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Chain Overhead</span></div>
-    <div class="stat"><span class="stat-num">~25MB</span><span class="stat-label">Binary</span></div>
+    <div class="stat"><span class="stat-num">360+</span><span class="stat-label">Endpoints</span></div>
+    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></div>
   </div>
-
   <div class="cta-group">
     <a href="/guide/" class="btn btn-primary">Get Started Free</a>
     <a href="https://github.com/stockyard-dev/Stockyard" class="btn btn-secondary">View Source</a>
   </div>
-
   <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.8rem">Free forever for self-hosted &middot; MIT Licensed &middot; No credit card</p>
-
-  <div class="install-cmd" style="margin-top:1.5rem;cursor:pointer;position:relative" onclick="copyInstall(this)" title="Click to copy">
+  <div class="install-cmd" style="margin-top:1.5rem" onclick="copyInstall(this)" title="Click to copy">
     <span>curl -fsSL stockyard.dev/install.sh | sh</span>
     <span style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem" id="copy-hint">click to copy</span>
   </div>
-
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
     <a href="/playground/" style="color:var(--cream-dim)">Try the Playground &rarr;</a>
     <a href="/benchmarks/" style="color:var(--cream-dim)">Benchmarks &rarr;</a>
-    <a href="/docs/api/" style="color:var(--cream-dim)">350+ API Endpoints &rarr;</a>
-    <a href="/changelog/" style="color:var(--cream-dim)">Changelog &rarr;</a>
+    <a href="/docs/api/" style="color:var(--cream-dim)">API Docs &rarr;</a>
+  </div>
+</section>
+
+<section class="spotlights">
+  <h2 class="section-label gold" style="text-align:center">What makes Stockyard different</h2>
+  <div class="spotlight-grid">
+    <div class="spotlight">
+      <span class="spotlight-badge">New</span>
+      <div class="spotlight-name">Autopilot Router</div>
+      <p class="spotlight-desc">Send <code style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);background:var(--bg);padding:0.1rem 0.3rem">model: "autopilot"</code> and Stockyard routes to the cheapest model that meets your quality threshold. Calibrated with real replay data.</p>
+      <div class="spotlight-stat">Calibration found <strong>96% cost savings</strong> at 88% quality</div>
+    </div>
+    <div class="spotlight">
+      <span class="spotlight-badge">New</span>
+      <div class="spotlight-name">Replay Mode</div>
+      <p class="spotlight-desc">Re-send any logged request to a different model with one API call. Compare cost, latency, and output side-by-side. Batch-compare up to 5 models at once.</p>
+      <div class="spotlight-stat"><strong>Every trace is replayable</strong> &mdash; request bodies stored automatically</div>
+    </div>
+    <div class="spotlight">
+      <span class="spotlight-badge">Security</span>
+      <div class="spotlight-name">Feral Red Team</div>
+      <p class="spotlight-desc">29 attack probes across 9 categories: injection, jailbreak, encoding, tool abuse, multi-turn attacks, payload splitting. Automated adversarial testing.</p>
+      <div class="spotlight-stat">Latest run: <strong>100% block rate</strong> &mdash; 29/29 probes stopped</div>
+    </div>
+  </div>
+</section>
+
+<section class="platform" id="platform">
+  <div class="platform-inner">
+    <h2 class="section-label leather" style="text-align:center">29 products, all in one binary</h2>
+    <p style="text-align:center;color:var(--cream-dim);max-width:600px;margin:0 auto 2.5rem;font-size:0.95rem">Every product shares the same SQLite database and communicates over function calls &mdash; not HTTP. No containers, no message queues, no infrastructure.</p>
+    <div class="cat-row">
+      <div class="cat-label">Quality &mdash; 8 products</div>
+      <div class="prod-grid">
+        <div class="prod-chip"><span class="prod-dot"></span>Feral</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Phantom</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Crucible</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Doubt</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Hollow</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Fault</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Fossil Record</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Relic</div>
+      </div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-label">Insight &mdash; 7 products</div>
+      <div class="prod-grid">
+        <div class="prod-chip"><span class="prod-dot"></span>Cortex</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Trailhead</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Prism</div>
+        <div class="prod-chip"><span class="prod-dot"></span>S&eacute;ance</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Fossil</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Tide Pool</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Echo</div>
+      </div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-label">Infrastructure &mdash; 6 products</div>
+      <div class="prod-grid">
+        <div class="prod-chip"><span class="prod-dot"></span>Tide</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Molt</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Mycelium</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Spore</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Spine</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Replay</div>
+      </div>
+    </div>
+    <div class="cat-row">
+      <div class="cat-label">Lifecycle &mdash; 5 products</div>
+      <div class="prod-grid">
+        <div class="prod-chip"><span class="prod-dot"></span>Stampede</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Breed</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Iron</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Orchestrator</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Verdikt</div>
+      </div>
+    </div>
+    <div class="cat-row" style="margin-bottom:0">
+      <div class="cat-label">Runtime &mdash; 3 products</div>
+      <div class="prod-grid">
+        <div class="prod-chip"><span class="prod-dot"></span>Morph</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Bid</div>
+        <div class="prod-chip"><span class="prod-dot"></span>Grain</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="/products/" class="btn btn-secondary" style="font-size:0.8rem;padding:0.6rem 1.5rem">Explore all 29 products &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section class="demo">
+  <div class="demo-inner">
+    <h2 class="section-label gold" style="text-align:center">See it work</h2>
+    <pre><span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl -fsSL stockyard.dev/install.sh | sh</span>
+<span style="color:var(--green-light)">&#10003; Stockyard installed (~25MB)</span>
+
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">stockyard</span>
+<span style="color:var(--green-light)">29 products active &middot; 76 modules &middot; http://localhost:4200</span>
+
+<span style="color:var(--leather)"># Send a request through the proxy</span>
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/v1/chat/completions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
+<span style="color:var(--green-light)">{"choices":[{"message":{"content":"Hello! How can I help?"}}]}</span>
+
+<span style="color:var(--leather)"># Replay that request against a different model</span>
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl -X POST localhost:4200/api/replay \
+  -d '{"trace_id":"tr_82a0da...","target_model":"claude-sonnet-4-20250514"}'</span>
+<span style="color:var(--gold)">&#8594; GPT-4o-mini: 454ms, $0.000006  |  Claude: 1,227ms, $0.000048</span>
+
+<span style="color:var(--leather)"># Or let Autopilot pick the best model</span>
+<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/v1/chat/completions \
+  -d '{"model":"autopilot","messages":[{"role":"user","content":"hello"}]}'</span>
+<span style="color:var(--gold)">&#8594; Routed to gpt-4o-mini (quality=0.88, 96% cheaper than gpt-4o)</span></pre>
+    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">No Redis. No Postgres. No Docker. <a href="/playground/" style="color:var(--rust-light)">Try the playground</a> without installing.</p>
   </div>
 </section>
 
 <section class="compare">
-  <h2 class="section-label">How Stockyard compares</h2>
+  <h2 class="section-label" style="text-align:center">How Stockyard compares</h2>
   <table class="compare-table">
     <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th><th>Helicone</th></tr>
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
     <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip + Redis + Postgres</td><td class="them">Managed SaaS</td></tr>
     <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td><td class="them">Cloud only</td></tr>
-    <tr><td>Platform</td><td class="us">16 integrated apps</td><td class="them">One proxy</td><td class="them">Observability</td></tr>
+    <tr><td>Products</td><td class="us">29 integrated products</td><td class="them">One proxy</td><td class="them">Observability</td></tr>
     <tr><td>Middleware</td><td class="us">76 toggleable modules</td><td class="them">Limited callbacks</td><td class="them">N/A</td></tr>
+    <tr><td>Smart routing</td><td class="us">Autopilot, calibrated</td><td class="them">Basic fallback</td><td class="them">No</td></tr>
+    <tr><td>Red team</td><td class="us">29 probes, 9 categories</td><td class="them">No</td><td class="them">No</td></tr>
+    <tr><td>Request replay</td><td class="us">Any trace, any model</td><td class="them">No</td><td class="them">No</td></tr>
+    <tr><td>Audit ledger</td><td class="us">Hash-chained, built-in</td><td class="them">No</td><td class="them">No</td></tr>
     <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td><td class="them">Cloud</td></tr>
     <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds</td><td class="them">N/A</td></tr>
-    <tr><td>Self-hosted</td><td class="us">Free, unlimited</td><td class="them">Free, limited</td><td class="them">No</td></tr>
-    <tr><td>Audit ledger</td><td class="us">Hash-chained, built-in</td><td class="them">No</td><td class="them">No</td></tr>
     <tr><td>License</td><td class="us">MIT</td><td class="them">MIT</td><td class="them">Proprietary</td></tr>
   </table>
-  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">Detailed comparison &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a></p>
-</section>
-
-<section class="solution">
-  <h2 class="section-label gold">See it work</h2>
-  <div style="max-width:700px;margin:0 auto">
-    <pre style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);line-height:1.7;overflow-x:auto"><span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl -fsSL stockyard.dev/install.sh | sh</span>
-<span style="color:var(--green-light)">✓ Stockyard installed (~25MB)</span>
-
-<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">stockyard</span>
-<span style="color:var(--green-light)">Proxy:   http://localhost:4200/v1   ✓ 76 modules active
-Console: http://localhost:4200/ui</span>
-
-<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/v1/chat/completions \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
-<span style="color:var(--green-light)">{"choices":[{"message":{"content":"Hello! How can I help?"}}], ...}</span>
-
-<span style="color:var(--leather)"># That request just hit 76 modules. Check what happened:</span>
-
-<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/observe/traces?limit=1</span>
-<span style="color:var(--gold)">→ model: gpt-4o-mini | cost: $0.00014 | latency: 1,204ms | cached: false</span>
-
-<span style="color:var(--leather)">$</span> <span style="color:var(--cream)">curl localhost:4200/api/trust/ledger?limit=1</span>
-<span style="color:var(--gold)">→ hash: 6b69ef01... | prev: 0378b55a... | chain: intact</span></pre>
-    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">No Redis. No Postgres. No Docker. Open <a href="/playground/" style="color:var(--rust-light)">the playground</a> to try without installing.</p>
-  </div>
-</section>
-
-<section class="console-preview">
-  <h2 class="section-label leather">The Console</h2>
-  <p>A full management dashboard. Cloud users get it instantly at their endpoint. Self-hosted users access it locally.</p>
-  <div class="console-tabs">
-    <button class="console-tab active" onclick="showConsole('overview')">Overview</button>
-    <button class="console-tab" onclick="showConsole('proxy')">Proxy</button>
-    <button class="console-tab" onclick="showConsole('observe')">Observe</button>
-    <button class="console-tab" onclick="showConsole('trust')">Trust</button>
-    <button class="console-tab" onclick="showConsole('studio')">Studio</button>
-    <button class="console-tab" onclick="showConsole('forge')">Forge</button>
-    <button class="console-tab" onclick="showConsole('exchange')">Exchange</button>
-    <button class="console-tab" onclick="showConsole('billing')">Billing</button>
-    <button class="console-tab" onclick="showConsole('team')">Team</button>
-    <button class="console-tab" onclick="showConsole('memory')">Memory</button>
-    <button class="console-tab" onclick="showConsole('recall')">Recall</button>
-    <button class="console-tab" onclick="showConsole('copilot')">Copilot</button>
-    <button class="console-tab" onclick="showConsole('appbuilder')">Apps</button>
-    <button class="console-tab" onclick="showConsole('knowledge')">Knowledge</button>
-    <button class="console-tab" onclick="showConsole('reputation')">Reputation</button>
-    <button class="console-tab" onclick="showConsole('governance')">Governance</button>
-  </div>
-  <div class="console-gallery">
-    <picture><source srcset="/site-assets/assets/screenshots/console-overview.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-overview.png" id="cs-overview"  alt="Stockyard console — system overview showing all 16 apps running" loading="eager" fetchpriority="high"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-proxy.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-proxy.png" id="cs-proxy"  alt="Proxy middleware chain — 76 modules with runtime toggles" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" id="cs-observe"  alt="Observe dashboard — traces, costs, latency across providers" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-trust.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-trust.png" id="cs-trust"  alt="Trust — tamper-evident hash-chained audit ledger" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-studio.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-studio.png" id="cs-studio"  alt="Studio — prompt templates, A/B experiments, evaluations" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-forge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-forge.png" id="cs-forge"  alt="Forge — workflow DAGs, tool registry, multi-step pipelines" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-exchange.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-exchange.png" id="cs-exchange"  alt="Exchange — config pack marketplace with one-click installs" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-billing.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-billing.png" id="cs-billing"  alt="Billing — per-customer metering, usage tracking, invoices" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-team.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-team.png" id="cs-team"  alt="Team — RBAC, members, invites, per-member spend tracking" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-memory.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-memory.png" id="cs-memory"  alt="Memory — conversation threads with relevance search" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-recall.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-recall.png" id="cs-recall"  alt="Recall — incident response for problematic LLM outputs" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-copilot.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-copilot.png" id="cs-copilot"  alt="Copilot — natural language platform configuration" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-appbuilder.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-appbuilder.png" id="cs-appbuilder"  alt="App Builder — no-code AI app store and marketplace" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-knowledge.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-knowledge.png" id="cs-knowledge"  alt="Knowledge — document bases with search and RAG" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-reputation.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-reputation.png" id="cs-reputation"  alt="Reputation — scoring, certifications, leaderboard" class="hidden" loading="lazy"></picture>
-    <picture><source srcset="/site-assets/assets/screenshots/console-governance.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-governance.png" id="cs-governance"  alt="Governance — proposals, votes, disputes, compliance" class="hidden" loading="lazy"></picture>
-  </div>
-</section>
-<script>
-function showConsole(name){
-  document.querySelectorAll('.console-gallery img').forEach(i=>i.classList.add('hidden'));
-  document.getElementById('cs-'+name).classList.remove('hidden');
-  document.querySelectorAll('.console-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.console-tab[onclick*="\''+name+'\'"]').classList.add('active');
-}
-</script>
-
-<section class="apps" id="apps">
-  <div class="apps-inner">
-    <h2 class="section-label leather">What&rsquo;s inside the binary</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin-bottom:2rem;font-size:0.95rem">16 integrated apps. Every LLM request flows through 76 middleware modules with tracing, cost tracking, and an immutable audit trail.</p>
-
-    <div class="app-grid">
-      <div class="app-card"><a href="/products/">
-        <span class="app-num">Core</span>
-        <h3 class="app-name">Proxy</h3>
-        <span class="app-tagline">76 middleware modules. 16 providers. 400ns overhead.</span>
-      </a></div>
-      <div class="app-card"><a href="/observe/">
-        <span class="app-num">Core</span>
-        <h3 class="app-name">Observe</h3>
-        <span class="app-tagline">Request tracing, cost dashboards, and anomaly detection.</span>
-      </a></div>
-      <div class="app-card"><a href="/trust/">
-        <span class="app-num">Core</span>
-        <h3 class="app-name">Trust</h3>
-        <span class="app-tagline">Hash-chained audit ledger. Tamper-evident. Compliance-ready.</span>
-      </a></div>
-      <div class="app-card"><a href="/studio/">
-        <span class="app-num">Creation</span>
-        <h3 class="app-name">Studio</h3>
-        <span class="app-tagline">Prompt versioning, A/B testing, and benchmarks.</span>
-      </a></div>
-      <div class="app-card"><a href="/forge/">
-        <span class="app-num">Creation</span>
-        <h3 class="app-name">Forge</h3>
-        <span class="app-tagline">DAG workflow engine. Chain LLM calls with dependencies.</span>
-      </a></div>
-      <div class="app-card"><a href="/exchange/">
-        <span class="app-num">Marketplace</span>
-        <h3 class="app-name">Exchange</h3>
-        <span class="app-tagline">Config packs and app marketplace. One-click install.</span>
-      </a></div>
-    </div>
-
-    <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.8rem"><a href="/products/">See all 16 apps &rarr;</a></p>
-    <p style="text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:0.5rem">Plus: Billing, Team, Memory, Recall, Copilot, App Builder, Knowledge, Reputation, Governance, Marketing</p>
-  </div>
-</section>
-
-<section class="modules">
-  <div class="modules-inner">
-    <h2 class="section-label leather">76 middleware modules</h2>
-    <p style="color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.95rem">Every module toggleable at runtime via API. <a href="/benchmarks/" style="color:var(--rust-light)">400ns chain overhead</a>, measured on real hardware.</p>
-    <div class="module-row"><span class="module-name">rateshield</span><span class="module-cat">Cost</span></div>
-    <div class="module-row"><span class="module-name">costcap</span><span class="module-cat">Cost</span></div>
-    <div class="module-row"><span class="module-name">cache</span><span class="module-cat">Performance</span></div>
-    <div class="module-row"><span class="module-name">failover</span><span class="module-cat">Reliability</span></div>
-    <div class="module-row"><span class="module-name">piiredactor</span><span class="module-cat">Security</span></div>
-    <div class="module-row"><span class="module-name">contentfilter</span><span class="module-cat">Safety</span></div>
-    <div class="module-row"><span class="module-name">promptguard</span><span class="module-cat">Safety</span></div>
-    <div class="module-row"><span class="module-name">circuitbreaker</span><span class="module-cat">Reliability</span></div>
-    <div class="module-row"><span class="module-name">retry</span><span class="module-cat">Reliability</span></div>
-    <div class="module-row"><span class="module-name">tokenbudget</span><span class="module-cat">Cost</span></div>
-    <p style="text-align:center;margin-top:1.5rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">See all 76 modules &rarr;</a></p>
-  </div>
+  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">vs LiteLLM &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a></p>
 </section>
 
 <section class="pricing-teaser">
   <h2 class="section-label gold">Pricing</h2>
   <div class="tier-row">
     <div class="tier">
-      <div class="tier-name">Free</div>
+      <div class="tier-name">Community</div>
       <div class="tier-price">Free</div>
       <div class="tier-period">self-hosted &middot; forever</div>
-      <div class="tier-desc">All 76 modules. All 16 apps. Unlimited requests. Earn on the marketplace.</div>
-      <a href="/guide/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Get the binary</a>
+      <div class="tier-desc">All 76 modules. 29 products. Unlimited requests.</div>
     </div>
-    <div class="tier tier-highlight">
+    <div class="tier">
+      <div class="tier-name">Individual</div>
+      <div class="tier-price"><span style="font-size:1rem;vertical-align:super;color:var(--leather-light)">$</span>29<span style="font-size:0.9rem;color:var(--cream-dim)">.99</span></div>
+      <div class="tier-period">per month</div>
+      <div class="tier-desc">Cloud managed. Caching. Rate limiting.</div>
+    </div>
+    <div class="tier tier-hl">
       <div class="tier-name">Pro</div>
-      <div class="tier-price has-dollar">29</div>
-      <div class="tier-period">per month &middot; cloud managed</div>
-      <div class="tier-desc">Zero ops. Custom domain. Priority support. Marketplace seller.</div>
-      <a href="/cloud/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream);background:var(--rust);padding:0.4rem 0;text-align:center">Go Pro</a>
+      <div class="tier-price"><span style="font-size:1rem;vertical-align:super;color:var(--leather-light)">$</span>99<span style="font-size:0.9rem;color:var(--cream-dim)">.99</span></div>
+      <div class="tier-period">per month</div>
+      <div class="tier-desc">Failover. Promptguard. Autopilot routing.</div>
     </div>
     <div class="tier">
       <div class="tier-name">Team</div>
-      <div class="tier-price has-dollar">99</div>
-      <div class="tier-period">per month &middot; 5 seats</div>
-      <div class="tier-desc">RBAC. Governance. Compliance presets. 1-year retention.</div>
-      <a href="/pricing/" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Start team</a>
+      <div class="tier-price"><span style="font-size:1rem;vertical-align:super;color:var(--leather-light)">$</span>299<span style="font-size:0.9rem;color:var(--cream-dim)">.99</span></div>
+      <div class="tier-period">per month</div>
+      <div class="tier-desc">RBAC. Governance. Breed tournaments.</div>
     </div>
     <div class="tier">
       <div class="tier-name">Enterprise</div>
-      <div class="tier-price has-dollar">299</div>
+      <div class="tier-price"><span style="font-size:1rem;vertical-align:super;color:var(--leather-light)">$</span>499<span style="font-size:0.9rem;color:var(--cream-dim)">.99</span></div>
       <div class="tier-period">per month</div>
-      <div class="tier-desc">Federation. SSO. SLA. Safety certification. Dedicated support.</div>
-      <a href="mailto:enterprise@stockyard.dev" style="display:block;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-dim);border:1px solid var(--bg3);padding:0.4rem 0;text-align:center">Contact sales</a>
+      <div class="tier-desc">Full platform. Priority support. SSO.</div>
     </div>
   </div>
   <div class="cta-group" style="margin-top:2rem">
-    <a href="/pricing/" class="btn btn-primary">See pricing</a>
+    <a href="/pricing/" class="btn btn-primary">See full pricing</a>
   </div>
-  <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1.5rem;max-width:600px;margin-left:auto;margin-right:auto">App builders earn 80% of revenue. Mesh operators earn 88% of inference fees. Knowledge contributors earn 80% of query royalties. Stockyard makes money when you make money.</p>
 </section>
 
-<section class="compare" style="margin-top:0">
-  <h2 class="section-label" style="color:var(--leather-light)">Explore</h2>
-  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;max-width:900px;margin:0 auto">
-    <a href="/architecture/" style="display:block;padding:1rem;border:1px solid var(--bg3);transition:border-color 0.2s"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Architecture</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Animated request flow diagram</span></a>
-    <a href="/benchmarks/" style="display:block;padding:1rem;border:1px solid var(--bg3);transition:border-color 0.2s"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Benchmarks</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Transparent performance data</span></a>
-    <a href="/blog/" style="display:block;padding:1rem;border:1px solid var(--bg3);transition:border-color 0.2s"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Blog</span><br><span style="font-size:0.85rem;color:var(--cream-dim)">Building in the open</span></a>
-    <div style="display:block;padding:1rem;border:1px solid var(--bg3)"><span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--rust-light);letter-spacing:1px;text-transform:uppercase">Compare</span><br><a href="/vs/litellm/" style="font-size:0.85rem;color:var(--cream-dim)">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/" style="font-size:0.85rem;color:var(--cream-dim)">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/" style="font-size:0.85rem;color:var(--cream-dim)">vs Portkey</a></div>
+<section class="explore">
+  <h2 class="section-label leather" style="text-align:center">Explore</h2>
+  <div class="explore-grid">
+    <a href="/architecture/" class="explore-card"><span class="explore-label">Architecture</span><span class="explore-desc">Animated request flow through 76 modules</span></a>
+    <a href="/benchmarks/" class="explore-card"><span class="explore-label">Benchmarks</span><span class="explore-desc">Transparent performance data on Xeon Platinum</span></a>
+    <a href="/docs/api/" class="explore-card"><span class="explore-label">API Reference</span><span class="explore-desc">360+ endpoints across 29 products</span></a>
+    <a href="/blog/" class="explore-card"><span class="explore-label">Blog</span><span class="explore-desc">Architecture decisions, benchmarks, and launch notes</span></a>
   </div>
 </section>
 
 <section class="footer-cta">
   <h2>Try it in 30 seconds.</h2>
-  <p>One curl. One binary. Every LLM call observed, audited, and controlled.</p>
+  <p>One curl. One binary. Every LLM call observed, audited, optimized, and controlled.</p>
   <div class="cta-group">
     <a href="/guide/" class="btn btn-primary">Get Started Free</a>
     <a href="/playground/" class="btn btn-secondary">Try the Playground</a>
   </div>
   <div style="display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">
-    <span>74,000 lines of Go</span>
-    <span>360 API endpoints</span>
-    <span>7 blog posts</span>
+    <span>29 products</span>
+    <span>76 modules</span>
+    <span>360+ endpoints</span>
     <span>MIT Licensed</span>
   </div>
   <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1rem">Built by <a href="/about/" style="color:var(--leather-light)">one developer</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--leather-light)">View Source on GitHub</a></p>
 </section>
 
-<section style="max-width:600px;margin:0 auto;padding:3rem 2rem;text-align:center">
+<section class="email-section">
   <p style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Stay in the loop</p>
   <p style="color:var(--cream-dim);font-size:0.9rem;margin-bottom:1.2rem">Product updates, benchmark data, and LLM infrastructure insights. No spam.</p>
   <div id="email-form" style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
@@ -533,10 +404,8 @@ function showConsole(name){
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
   <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.3rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/fabric/" style="color:var(--cream-muted)">Fabric</a> &middot; <a href="/copilot/" style="color:var(--cream-muted)">Copilot</a> &middot; <a href="/recall/" style="color:var(--cream-muted)">Recall</a> &middot; <a href="/appbuilder/" style="color:var(--cream-muted)">App Builder</a> &middot; <a href="/node/" style="color:var(--cream-muted)">Mesh</a> &middot; <a href="/knowledge/" style="color:var(--cream-muted)">Knowledge</a> &middot; <a href="/protocol/" style="color:var(--cream-muted)">Protocol</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/about/" style="color:var(--cream-muted)">About</a> &middot; <a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem"><a href="/about/">About</a> &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/security/">Security</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
-
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
@@ -544,6 +413,5 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 function captureEmail(){var input=document.getElementById('email-input');var status=document.getElementById('email-status');var email=input.value.trim();if(!email||!email.includes('@')){status.textContent='Please enter a valid email';status.style.color='var(--rust)';status.style.display='block';return;}fetch('/api/exchange/gate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})}).then(function(r){return r.json()}).then(function(){status.textContent="You're in. We'll keep you posted.";status.style.color='var(--green-light)';status.style.display='block';input.value='';}).catch(function(){status.textContent='Something went wrong. Try again.';status.style.color='var(--rust)';status.style.display='block';});}
 function copyInstall(el){navigator.clipboard.writeText('curl -fsSL stockyard.dev/install.sh | sh').then(function(){var h=document.getElementById('copy-hint');if(h){h.textContent='copied!';h.style.opacity='1';h.style.color='var(--green-light)';setTimeout(function(){h.textContent='click to copy';h.style.opacity='0.4';h.style.color='';},2000);}});}
 </script>
-
 </body>
 </html>
