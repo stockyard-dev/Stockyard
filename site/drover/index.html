@@ -7,9 +7,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>Drover — Autopilot LLM Routing — Stockyard</title>
-<meta name="description" content="Autopilot routing for LLMs. Calibrate models on quality, set a threshold, and Drover picks the cheapest model that clears it. 96% cost reduction measured.">
+<meta name="description" content="Autopilot routing for LLMs. Calibrate models on quality, set a threshold, and Drover picks the cheapest model that clears it. Up to 25x cheaper.">
 <meta property="og:title" content="Drover — Autopilot LLM Routing">
-<meta property="og:description" content="Set a quality threshold. Drover picks the cheapest model that clears it. 96% cost reduction measured live.">
+<meta property="og:description" content="Set a quality threshold. Drover picks the cheapest model that clears it. Up to 25x cheaper on real traffic.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/drover/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -70,10 +70,10 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <section class="hero">
   <div class="eyebrow">Drover &middot; Pro Tier</div>
-  <h1>Your LLM costs just dropped <span class="accent">96%.</span></h1>
+  <h1>Same quality. <span class="accent">Up to 25x cheaper.</span></h1>
   <p class="sub">Drover calibrates models on real traffic, sets a quality floor, and routes every request to the cheapest model that clears it. Automatically.</p>
   <div class="stats-row">
-    <div class="stat"><span class="stat-num">96%</span><span class="stat-label">Cost Reduction</span></div>
+    <div class="stat"><span class="stat-num">25x</span><span class="stat-label">Cost Reduction</span></div>
     <div class="stat"><span class="stat-num">0.885</span><span class="stat-label">Quality Score</span></div>
     <div class="stat"><span class="stat-num">3</span><span class="stat-label">Models Calibrated</span></div>
     <div class="stat"><span class="stat-num">7</span><span class="stat-label">Calibrations Run</span></div>
@@ -148,7 +148,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <span class="c"># Or: transparent downgrade from gpt-4o</span>
 <span class="cmd">$ curl https://stockyard.dev/v1/chat/completions \
   -d '{"model":"gpt-4o","messages":[{"role":"user","content":"hello"}]}'</span>
-<span class="val">→ Drover intercepted → gpt-4o-mini (96% cheaper, same quality tier)</span></div>
+<span class="val">→ Drover intercepted → gpt-4o-mini (25x cheaper, same quality tier)</span></div>
   </div>
 </section>
 
@@ -159,7 +159,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
     <thead><tr><th>Model</th><th>Quality</th><th>Avg Cost</th><th>Avg Latency</th><th>Verdict</th></tr></thead>
     <tbody>
       <tr><td class="model">gpt-4o</td><td>1.000</td><td>$0.000150</td><td>756ms</td><td style="color:var(--cream-muted)">Reference</td></tr>
-      <tr><td class="model">gpt-4o-mini</td><td>0.885</td><td>$0.000006</td><td>700ms</td><td class="winner">&#10003; Routed (96% cheaper)</td></tr>
+      <tr><td class="model">gpt-4o-mini</td><td>0.885</td><td>$0.000006</td><td>700ms</td><td class="winner">&#10003; Routed (25x cheaper)</td></tr>
       <tr><td class="model">claude-sonnet-4</td><td>0.818</td><td>$0.000092</td><td>1,088ms</td><td style="color:var(--cream-dim)">Eligible</td></tr>
     </tbody>
   </table>

@@ -225,7 +225,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
       <div class="flagship-name">Drover</div>
       <div class="flagship-tagline">Autopilot routing. Every request hits the cheapest model that maintains quality.</div>
       <div class="flagship-detail">Calibrate via replay &bull; Set quality threshold &bull; Drover picks the cheapest that clears it &bull; Three modes: cost, speed, balanced</div>
-      <div class="flagship-stat">96% cost reduction measured in live calibration</div>
+      <div class="flagship-stat">Up to 25x cheaper with automatic model downgrade</div>
     </div>
     <div class="flagship">
       <span class="flagship-badge badge-team">Team &middot; $299.99/mo</span>
@@ -272,7 +272,7 @@ Console: http://localhost:4200/ui   &#10003; ready</span>
 <span class="c"># Let Drover pick the cheapest model automatically (Pro tier):</span>
 <span class="cmd">$ curl localhost:4200/v1/chat/completions \
   -d '{"model":"auto","messages":[{"role":"user","content":"hello"}]}'</span>
-<span class="val">&rarr; Drover routed to gpt-4o-mini (96% cheaper than gpt-4o)</span></pre>
+<span class="val">&rarr; Drover routed to gpt-4o-mini (up to 25x cheaper than gpt-4o)</span></pre>
     <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">No Redis. No Postgres. No Docker. <a href="/playground/" style="color:var(--rust-light)">Try the playground</a> without installing.</p>
   </div>
 </section>
