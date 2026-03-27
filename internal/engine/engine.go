@@ -391,6 +391,9 @@ func Boot(pc ProductConfig) {
 	GlobalProviders = providers
 	RegisterReplayRoutes(srv.Mux(), db.Conn())
 
+	// Lasso Share: shareable comparison URLs
+	RegisterLassoShareRoutes(srv.Mux(), db.Conn())
+
 	// Autopilot Router: automatic cost-optimized model routing
 	if GlobalAutopilot != nil {
 		RegisterAutopilotRoutes(srv.Mux(), db.Conn(), GlobalAutopilot)

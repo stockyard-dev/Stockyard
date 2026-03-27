@@ -455,8 +455,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--gold)">PUT</td><td>/api/users/{id}/spend/cap</td><td>Set user daily/monthly spend caps</td></tr>
     </table>
 
-    <h2 id="lasso-api">Lasso &mdash; Request Replay (6 endpoints)</h2>
-    <p>Re-run any traced request against a different model. Compare cost, latency, and output. Batch replay against up to 5 models in a single call. Requires <strong>Individual tier</strong> ($29.99/mo). <a href="/lasso/">Learn more &rarr;</a></p>
+    <h2 id="lasso-api">Lasso &mdash; Request Replay (10 endpoints)</h2>
+    <p>Re-run any traced request against a different model. Compare cost, latency, and output. Batch replay against up to 5 models in a single call. Share comparisons as public URLs. Requires <strong>Individual tier</strong> ($29.99/mo). <a href="/lasso/">Learn more &rarr;</a></p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/replay</td><td>Replay a single trace against a target model</td></tr>
@@ -465,19 +465,28 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/runs/{id}</td><td>Full replay detail including request body</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/compare/{id}</td><td>Side-by-side comparison with winner analysis (cost, speed, efficiency)</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/replay/stats</td><td>Aggregate stats, model leaderboard, available providers</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/lasso/share</td><td>Create shareable URL from a replay run ID</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/lasso/share/custom</td><td>Create shareable URL from raw comparison data</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/lasso/share/{id}</td><td>Retrieve shared comparison data (JSON)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/compare/{id}</td><td>Public comparison page (HTML, shareable)</td></tr>
     </table>
     <pre>
 <span class="comment"># Replay a trace against Claude</span>
 <span class="cmd">curl -X POST /api/replay \
   -H "X-Admin-Key: $KEY" \
-  -d '{"trace_id":"tr_5213e8a4...","target_model":"claude-sonnet-4-20250514"}'</span>
+  -d '{"trace_id":"tr_5213e8a4...","target_model":"claude-sonnet-4-6"}'</span>
 
 <span class="comment"># Batch: same prompt → 3 models</span>
 <span class="cmd">curl -X POST /api/replay/batch \
-  -d '{"trace_id":"tr_5213...","target_models":["gpt-4o","claude-sonnet-4-20250514","gpt-4o-mini"]}'</span>
+  -d '{"trace_id":"tr_5213...","target_models":["gpt-5.4","claude-sonnet-4-6","gpt-5.4-mini"]}'</span>
 
 <span class="comment"># Compare results</span>
 <span class="cmd">curl /api/replay/compare/rpl_0ae37547...</span>
+
+<span class="comment"># Share the comparison — returns stockyard.dev/compare/{id}</span>
+<span class="cmd">curl -X POST /api/lasso/share \
+  -d '{"replay_id":"rpl_0ae37547..."}'</span>
+<span class="comment"># → {"id":"a1b2c3d4e5f6","url":"/compare/a1b2c3d4e5f6","full_url":"https://stockyard.dev/compare/a1b2c3d4e5f6"}</span>
     </pre>
 
     <h2 id="drover-api">Drover &mdash; Autopilot Routing (7 endpoints)</h2>

@@ -166,6 +166,13 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Cooldown deduplication prevents event spam (1h for cap/bypass, 6h for PII/errors, 24h for milestones/savings).</div>
     <div class="change-item">Register a webhook at <code>POST /api/webhooks</code> with <code>events: "upgrade.*"</code> to receive all conversion events.</div>
   </div>
+  <div class="change-group">
+    <div class="change-group-label">Lasso &mdash; Shareable Comparison URLs</div>
+    <div class="change-item"><code>POST /api/lasso/share</code> &mdash; snapshot any replay comparison into a shareable URL at <code>stockyard.dev/compare/{id}</code>.</div>
+    <div class="change-item"><code>POST /api/lasso/share/custom</code> &mdash; create shares from raw data (no replay run needed). Dashboard and playground can use this.</div>
+    <div class="change-item">Public <code>/compare/{id}</code> page: side-by-side responses, cost/latency/tokens with winner highlighting, "Share on X" button, view counter.</div>
+    <div class="change-item">Shares expire after 30 days. View count tracked. Every shared comparison is a free ad for Stockyard.</div>
+  </div>
 </div>
 
 <div class="release">

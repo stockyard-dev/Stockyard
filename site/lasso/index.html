@@ -143,7 +143,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </section>
 
 <div class="section">
-  <h2 class="section-label">6 API endpoints</h2>
+  <h2 class="section-label">8 API endpoints</h2>
   <div style="font-family:var(--font-mono);font-size:0.8rem;line-height:2.2">
     <div><span style="color:var(--green-light)">POST</span> <span style="color:var(--cream-dim)">/api/replay</span> &mdash; replay single trace</div>
     <div><span style="color:var(--green-light)">POST</span> <span style="color:var(--cream-dim)">/api/replay/batch</span> &mdash; replay against up to 5 models</div>
@@ -151,7 +151,10 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/replay/runs/{id}</span> &mdash; full replay detail</div>
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/replay/compare/{id}</span> &mdash; side-by-side winner analysis</div>
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/replay/stats</span> &mdash; aggregate stats + model leaderboard</div>
+    <div><span style="color:var(--green-light)">POST</span> <span style="color:var(--cream-dim)">/api/lasso/share</span> &mdash; create shareable comparison URL</div>
+    <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/lasso/share/{id}</span> &mdash; retrieve shared comparison data</div>
   </div>
+  <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem;text-align:center">Every comparison generates a shareable URL at <code>stockyard.dev/compare/{id}</code> &mdash; share on X, Slack, or embed anywhere.</p>
 </div>
 
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">

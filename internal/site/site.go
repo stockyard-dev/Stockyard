@@ -77,6 +77,7 @@ func Register(mux *http.ServeMux) {
 		"/lasso/",
 		"/drover/",
 		"/feral/",
+		"/compare/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
@@ -106,6 +107,16 @@ func Register(mux *http.ServeMux) {
 			servePage(w, data, "public, max-age=300")
 		})
 	}
+
+	// /compare/{id} — serve compare page for any share ID (wildcard)
+	mux.HandleFunc("GET /compare/{id}", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "compare/index.html")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		servePage(w, data, "public, max-age=60")
+	})
 
 	// Serve install script
 	mux.HandleFunc("GET /install.sh", func(w http.ResponseWriter, r *http.Request) {
