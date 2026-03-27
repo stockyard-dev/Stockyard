@@ -6,10 +6,10 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Ship Cheaper — Cut LLM Costs Without Cutting Quality &mdash; Stockyard</title>
-<meta name="description" content="Reduce LLM spend by up to 25x with autopilot routing, dynamic bidding, caching, and token compression. Start free.">
-<meta property="og:title" content="Ship Cheaper — Cut LLM Costs Without Cutting Quality">
-<meta property="og:description" content="Reduce LLM spend by up to 25x with autopilot routing, dynamic bidding, caching, and token compression. Start free.">
+<title>Ship Cheaper — Cut LLM Costs Without Cutting Quality — Stockyard</title>
+<meta name="description" content="Reduce LLM costs up to 25x with autopilot routing, caching, token compression, and real-time cost tracking. See savings before you pay.">
+<meta property="og:title" content="Ship Cheaper — Stockyard">
+<meta property="og:description" content="Reduce LLM costs up to 25x. Drover routes to the cheapest model that maintains quality. 100 free requests/day.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/ship-cheaper/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -19,7 +19,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--red:#d44a4a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
@@ -28,37 +28,27 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
 .btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
 .btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
-.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-.hero{max-width:720px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
 .hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
 .hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
-.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1.5rem}.hero h1 .accent{color:var(--green-light)}
-.hero .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto 2rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
 .section{padding:4rem 2rem;max-width:800px;margin:0 auto}
 .section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
 .section-alt-inner{max-width:800px;margin:0 auto}
 .section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
 .step{display:flex;gap:1.5rem;margin-bottom:2.5rem;align-items:flex-start}
-.step-num{font-family:var(--font-mono);font-size:2rem;color:var(--green-light);font-weight:700;min-width:2.5rem;text-align:center}
+.step-num{font-family:var(--font-mono);font-size:1.8rem;color:var(--rust);font-weight:700;min-width:2.5rem;text-align:center}
 .step-body h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}.step-body p{font-size:0.9rem;color:var(--cream-dim)}
-.step-products{font-family:var(--font-mono);font-size:0.72rem;color:var(--leather-light);margin-top:0.5rem}
-.product-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
-@media(max-width:600px){.product-row{grid-template-columns:1fr}}
-.prod-card{padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);position:relative}
-.prod-card:hover{border-color:var(--rust)}
-.prod-name{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.3rem}
-.prod-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:0.5rem}
-.prod-tier{font-family:var(--font-mono);font-size:0.6rem;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
-.prod-free{color:var(--green-light)}
-.workflow-link{display:block;padding:1rem 1.5rem;border:1px solid var(--bg3);margin-bottom:0.8rem;transition:border-color 0.2s}
-.workflow-link:hover{border-color:var(--rust)}
-.workflow-link .wf-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
-.workflow-link .wf-desc{font-size:0.78rem;color:var(--cream-dim);margin-top:0.2rem}
-.workflow-link.active{border-color:var(--green-light);background:rgba(196,93,44,0.05)}
+.step-free{font-family:var(--font-mono);font-size:0.62rem;color:var(--green-light);border:1px solid var(--green-light);padding:0.1rem 0.4rem;display:inline-block;margin-top:0.4rem}
+.step-paid{font-family:var(--font-mono);font-size:0.62rem;color:var(--gold);border:1px solid var(--gold);padding:0.1rem 0.4rem;display:inline-block;margin-top:0.4rem}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem}
+.prod{padding:1.2rem;border:1px solid var(--bg3)}.prod-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.3rem}.prod-desc{font-size:0.8rem;color:var(--cream-dim)}.prod-tier{font-family:var(--font-mono);font-size:0.6rem;margin-top:0.4rem;display:inline-block;padding:0.1rem 0.4rem}
+.tier-free{color:var(--green-light);border:1px solid var(--green-light)}.tier-paid{color:var(--gold);border:1px solid var(--gold)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
-@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:5rem 1.5rem 3rem}}
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--red:#c43030}}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
 </head>
 <body>
@@ -69,102 +59,73 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
 </nav>
 
-<section style="padding:2rem 2rem 0;max-width:800px;margin:0 auto">
-  <div style="font-family:var(--font-mono);font-size:0.65rem;text-align:center;color:var(--cream-muted);margin-bottom:1rem;letter-spacing:2px;text-transform:uppercase">Workflows</div>
-  <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
-    <a href="/ship-cheaper/" class="wf-pill active">Ship Cheaper</a>
-    <a href="/ship-safer/" class="wf-pill">Ship Safer</a>
-    <a href="/ship-faster/" class="wf-pill">Ship Faster</a>
-    <a href="/ship-compliant/" class="wf-pill">Ship Compliant</a>
-    <a href="/ship-better/" class="wf-pill">Ship Better</a>
-  </div>
-</section>
-<style>.wf-pill{font-family:var(--font-mono);font-size:0.7rem;padding:0.4rem 1rem;border:1px solid var(--bg3);color:var(--cream-muted);transition:all 0.2s}.wf-pill:hover{border-color:var(--rust);color:var(--cream)}.wf-pill.active{border-color:var(--rust-light);color:var(--rust-light);background:rgba(232,117,58,0.08)}</style>
-
-
 <section class="hero">
-  <div class="eyebrow">Workflow &middot; Cost Optimization</div>
-  <h1>Same quality. <span class="accent">Fraction of the cost.</span></h1>
-  <p class="sub">Stockyard analyzes your traffic, finds cheaper models that meet your quality bar, and routes automatically. Most teams save 5&ndash;25x on their first week.</p>
-  <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
-  </div>
-</section>
-
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">The workflow</h2>
-  <div class="step">
-    <span class="step-num">1</span>
-    <div class="step-body"><h3>Calibrate</h3><p>Send traffic through Stockyard. Drover replays your real prompts against cheaper models and scores quality automatically.</p><div class="step-products">Drover calibration &bull; Lasso replay</div></div>
-  </div>
-  <div class="step">
-    <span class="step-num">2</span>
-    <div class="step-body"><h3>Route</h3><p>Set a quality threshold (e.g. 0.85). Drover routes every request to the cheapest model that clears it &mdash; across providers.</p><div class="step-products">Drover autopilot &bull; Auction bidding</div></div>
-  </div>
-  <div class="step">
-    <span class="step-num">3</span>
-    <div class="step-body"><h3>Compound</h3><p>Enable caching and token compression. Repeated prompts hit the cache. Long prompts get trimmed. Savings stack.</p><div class="step-products">Cache Layer &bull; Token Trim &bull; Cost Track</div></div>
-  </div>
-  </div>
+  <div class="eyebrow">Workflow &middot; Ship Cheaper</div>
+  <h1>Cut LLM costs up to 25x <span class="accent">without cutting quality.</span></h1>
+  <p class="sub">Most teams overspend on every LLM request because they hardcode the most expensive model. Stockyard proves cheaper options work — then routes automatically.</p>
 </section>
 
 <div class="section">
-  <h2 class="section-label">Products involved</h2>
-  <div class="product-row">
-    <a href="/drover/" class="prod-card">
-      <div class="prod-name">Drover</div>
-      <div class="prod-desc">Autopilot routing. Calibrate models, set quality floor, route to cheapest. 100 free requests/day.</div>
-      <div class="prod-tier prod-free">Free (100/day) &bull; Unlimited on Pro</div>
-    </a>
-    <a href="/products/" class="prod-card">
-      <div class="prod-name">Auction</div>
-      <div class="prod-desc">Dynamic bidding. Providers compete on price for each request in real time.</div>
-      <div class="prod-tier ">Individual &bull; $29.99/mo</div>
-    </a>
-    <a href="/lasso/" class="prod-card">
-      <div class="prod-name">Lasso</div>
-      <div class="prod-desc">Replay any request against different models. Compare cost, latency, quality side by side.</div>
-      <div class="prod-tier ">Individual &bull; $29.99/mo</div>
-    </a>
-    <a href="/guide/" class="prod-card">
-      <div class="prod-name">Cache Layer</div>
-      <div class="prod-desc">Response caching. Identical prompts return cached responses instantly at zero cost.</div>
-      <div class="prod-tier prod-free">Free &bull; built-in module</div>
-    </a>
-    <a href="/guide/" class="prod-card">
-      <div class="prod-name">Token Trim</div>
-      <div class="prod-desc">Prompt compression. Remove redundant tokens before they reach the model.</div>
-      <div class="prod-tier prod-free">Free &bull; built-in module</div>
-    </a>
-    <a href="/guide/" class="prod-card">
-      <div class="prod-name">Cost Track</div>
-      <div class="prod-desc">Real-time spend tracking per model, provider, and API key.</div>
-      <div class="prod-tier prod-free">Free &bull; built-in module</div>
-    </a>
+  <h2 class="section-label">The path</h2>
+
+  <div class="step">
+    <span class="step-num">1</span>
+    <div class="step-body">
+      <h3>See what you're spending</h3>
+      <p>Install Stockyard and send traffic through it. Lookout traces every request with cost, latency, and token count. The auto-insights engine analyzes your traces and tells you exactly where you're overspending.</p>
+      <span class="step-free">Free — Lookout + Insights</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span>
+    <div class="step-body">
+      <h3>Prove cheaper models work</h3>
+      <p>Lasso replays your real requests against cheaper models and scores quality side-by-side. Drover calibrates candidates automatically. You see the exact quality-cost tradeoff on your actual traffic — not benchmarks, your data.</p>
+      <span class="step-free">Free — Drover (100/day)</span>
+      <span class="step-paid">Individual $29.99 — Lasso</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span>
+    <div class="step-body">
+      <h3>Route automatically</h3>
+      <p>Enable Drover and every request gets routed to the cheapest model above your quality threshold. Three modes: cost (cheapest), speed (fastest), balanced. Cross-provider routing works out of the box — gpt-5.4 requests can land on gpt-5.4-nano if quality holds.</p>
+      <span class="step-paid">Pro $99.99 — Unlimited Drover</span>
+    </div>
   </div>
 </div>
 
 <section class="section-alt">
-  <div class="section-alt-inner" style="text-align:center">
-    <h2 class="section-label">Proof from real data</h2>
-    <p style="color:var(--cream-dim);font-size:0.95rem;max-width:600px;margin:0 auto 1.5rem;line-height:1.8">Drover saved $0.093 on a single translation request by routing claude-opus-4-6 to gpt-5.4-mini. Quality score 0.86 &mdash; above threshold. 23x cost reduction.</p>
-    <a href="/drover/" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--rust-light)">See the data &rarr;</a>
+  <div class="section-alt-inner">
+    <h2 class="section-label">Products in this workflow</h2>
+    <div class="products">
+      <div class="prod"><div class="prod-name">Lookout</div><div class="prod-desc">Traces every request with cost, latency, tokens. The foundation of cost visibility.</div><span class="prod-tier tier-free">Free</span></div>
+      <div class="prod"><div class="prod-name">Auto-Insights</div><div class="prod-desc">Analyzes traces, finds expensive models with cheaper alternatives, shows $ savings.</div><span class="prod-tier tier-free">Free</span></div>
+      <div class="prod"><div class="prod-name">Cache</div><div class="prod-desc">Identical requests return cached responses instantly. Zero cost, zero latency.</div><span class="prod-tier tier-free">Free module</span></div>
+      <div class="prod"><div class="prod-name">Token Trim</div><div class="prod-desc">Compresses prompts before sending. Fewer tokens = lower cost on every request.</div><span class="prod-tier tier-free">Free module</span></div>
+      <div class="prod"><div class="prod-name">Drover</div><div class="prod-desc">Autopilot routing. Calibrate, set threshold, route to cheapest qualifying model.</div><span class="prod-tier tier-free">Free 100/day</span></div>
+      <div class="prod"><div class="prod-name">Lasso</div><div class="prod-desc">Replay any request against cheaper models. Side-by-side cost and quality comparison.</div><span class="prod-tier tier-paid">Individual $29.99</span></div>
+      <div class="prod"><div class="prod-name">Auction</div><div class="prod-desc">Dynamic model bidding. Providers compete on price for your requests in real time.</div><span class="prod-tier tier-paid">Individual $29.99</span></div>
+    </div>
   </div>
 </section>
 
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
-  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Five minutes to your first trace.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard, send a request, watch it flow through the middleware chain. Everything on this page starts working immediately.</p>
-  <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
-    <a href="/pricing/" class="btn btn-secondary">See Pricing</a>
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Start saving on your first request.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard. Send traffic. See your costs. Drover gives you 100 free optimized routes per day — no credit card needed.</p>
+  <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem">
+    <a href="/ship-safer/" style="color:var(--cream-muted)">Ship Safer →</a>
+    <a href="/ship-faster/" style="color:var(--cream-muted)">Ship Faster →</a>
+    <a href="/ship-compliant/" style="color:var(--cream-muted)">Ship Compliant →</a>
+    <a href="/ship-better/" style="color:var(--cream-muted)">Ship Better →</a>
   </div>
 </section>
 
 <footer>
-  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/security/">Security</a> &middot; <a href="/changelog/">Changelog</a></p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 </body>
