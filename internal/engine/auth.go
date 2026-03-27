@@ -188,7 +188,8 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			path == "/install" ||
 			path == "/sitemap.xml" ||
 			path == "/robots.txt" ||
-			path == "/api/license" {
+			path == "/api/license" ||
+			path == "/api/version" {
 			next.ServeHTTP(w, r)
 			return
 		}

@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Studio Docs — Stockyard">
-<meta property="og:description" content="Stockyard Studio: prompt templates, A/B experiments, benchmarks, and snapshot tests.">
+<meta property="og:title" content="Tack Room Docs — Stockyard">
+<meta property="og:description" content="Stockyard Tack Room: prompt templates, A/B experiments, benchmarks, and snapshot tests.">
 <meta property="og:url" content="https://stockyard.dev/docs/studio/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Tack Room (Studio) Docs — Stockyard</title>
-<meta name="description" content="Stockyard Studio: prompt templates, A/B experiments, benchmarks, and snapshot tests.">
+<meta name="description" content="Stockyard Tack Room: prompt templates, A/B experiments, benchmarks, and snapshot tests.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -286,7 +286,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   }'</span>
 </pre>
 
-    <h2 id="studio-config">Studio Configuration</h2>
+    <h2 id="studio-config">Tack Room Configuration</h2>
     <pre>
 <span class="comment"># stockyard.yaml</span>
 apps:
@@ -297,7 +297,7 @@ apps:
 </pre>
     <div class="note"><strong>Tip:</strong> Use the <code>promptlint</code> module to automatically validate prompt templates against common anti-patterns before they reach the LLM.</div>
 
-    <h2 id="studio-status">Studio Status</h2>
+    <h2 id="studio-status">Tack Room Status</h2>
     <pre>
 <span class="cmd">curl http://localhost:4200/api/studio/status \
   -H "Authorization: Bearer sy_admin_..."</span>
@@ -332,8 +332,8 @@ apps:
     <div class="note"><strong>Cost control:</strong> Use <code>mockllm</code> during prompt development to test template rendering and workflow logic without making real API calls.</div>
 
 
-    <h2 id="studio-workflow">Typical Studio Workflow</h2>
-    <p>A typical prompt engineering workflow with Studio:</p>
+    <h2 id="studio-workflow">Typical Tack Room Workflow</h2>
+    <p>A typical prompt engineering workflow with Tack Room:</p>
     <table class="endpoint-table">
       <tr><th>Step</th><th>Action</th><th>API</th></tr>
       <tr><td>1. Draft</td><td>Create a prompt template with variables</td><td><code>POST /api/studio/templates</code></td></tr>
@@ -343,7 +343,7 @@ apps:
       <tr><td>5. Benchmark</td><td>Measure latency and cost across providers</td><td><code>POST /api/studio/benchmarks/run</code></td></tr>
       <tr><td>6. Deploy</td><td>Pin the winning template version in production</td><td><code>PUT /api/proxy/modules/promptpad</code></td></tr>
     </table>
-    <div class="note"><strong>Integration:</strong> Studio templates can be referenced in Forge workflows, enabling versioned prompt management across complex multi-step pipelines.</div>
+    <div class="note"><strong>Integration:</strong> Tack Room templates can be referenced in Forge workflows, enabling versioned prompt management across complex multi-step pipelines.</div>
 
     <h2 id="studio-api-summary">API Summary</h2>
     <table class="endpoint-table">
@@ -355,24 +355,24 @@ apps:
       <tr><td>GET</td><td><code>/api/studio/experiments/{id}</code></td><td>Get experiment results and scores</td></tr>
       <tr><td>POST</td><td><code>/api/studio/benchmarks/run</code></td><td>Benchmark models on a prompt set</td></tr>
     </table>
-    <p>All Studio endpoints require admin authentication. Templates created via the API are immediately available for use through the <code>promptpad</code> proxy module.</p>
+    <p>All Tack Room endpoints require admin authentication. Templates created via the API are immediately available for use through the <code>promptpad</code> proxy module.</p>
     <div class="note"><strong>Playground:</strong> The built-in <a href="/playground/">playground</a> at <code>/playground</code> provides a visual interface for testing templates and running experiments without curl commands.</div>
 
     <h2 id="studio-prompt-tips">Prompt Engineering Tips</h2>
-    <p>When creating templates in Studio, keep these best practices in mind:</p>
+    <p>When creating templates in Tack Room, keep these best practices in mind:</p>
     <table class="endpoint-table">
       <tr><th>Practice</th><th>Why It Matters</th></tr>
       <tr><td>Use system prompts for role</td><td>More consistent behavior across models</td></tr>
       <tr><td>Keep variables focused</td><td>Smaller variable surface = fewer edge cases</td></tr>
       <tr><td>Test with multiple models</td><td>Prompts that work on GPT-4o may need tweaks for Claude</td></tr>
-      <tr><td>Version every change</td><td>Studio auto-versions; never edit in place</td></tr>
+      <tr><td>Version every change</td><td>Tack Room auto-versions; never edit in place</td></tr>
       <tr><td>Run experiments before deploy</td><td>A/B test catches regressions that manual review misses</td></tr>
     </table>
-    <p>For the full Studio API reference, see <a href="/docs/api/#studio-api">API Reference: Studio</a>.</p>
+    <p>For the full Tack Room API reference, see <a href="/docs/api/#studio-api">API Reference: Tack Room</a>.</p>
 
     <p>The <a href="/playground/">playground</a> provides an interactive UI for quick prompt experimentation without writing API calls.</p>
 
-    <div class="pn"><a href="/docs/trust/">&larr; Trust</a><a href="/docs/forge/" class="next">Forge &rarr;</a></div>
+    <div class="pn"><a href="/docs/trust/">&larr; Brand</a><a href="/docs/forge/" class="next">Forge &rarr;</a></div>
   </main>
 </div>
 

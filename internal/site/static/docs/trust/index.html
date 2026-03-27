@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Trust Docs: Audit Ledger &amp; Policies — Stockyard">
-<meta property="og:description" content="Stockyard Trust: hash-chained audit ledger, policies, and evidence packs.">
+<meta property="og:title" content="Brand Docs: Audit Ledger &amp; Policies — Stockyard">
+<meta property="og:description" content="Stockyard Brand: hash-chained audit ledger, policies, and evidence packs.">
 <meta property="og:url" content="https://stockyard.dev/docs/trust/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Brand (Trust) Docs: Audit Ledger &amp; Policies — Stockyard</title>
-<meta name="description" content="Stockyard Trust: hash-chained audit ledger, policies, and evidence packs.">
+<meta name="description" content="Stockyard Brand: hash-chained audit ledger, policies, and evidence packs.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -169,7 +169,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p class="subtitle">Hash-chained. Append-only. Tamper-evident.</p>
 
     <h2 id="overview">Overview</h2>
-    <p>Trust maintains a hash-chained audit ledger. Every proxy request gets an entry with a SHA-256 hash linking it to the previous entry. This creates a tamper-evident log that proves no entries have been modified or deleted.</p>
+    <p>Brand maintains a hash-chained audit ledger. Every proxy request gets an entry with a SHA-256 hash linking it to the previous entry. This creates a tamper-evident log that proves no entries have been modified or deleted.</p>
 
     <h2 id="ledger">Audit Ledger</h2>
     <pre>
@@ -200,7 +200,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 
     <h2 id="ledger">Audit Ledger</h2>
-    <p>Trust maintains a hash-chained, append-only ledger of every LLM interaction. Each entry is linked to the previous via SHA-256, making tampering detectable:</p>
+    <p>Brand maintains a hash-chained, append-only ledger of every LLM interaction. Each entry is linked to the previous via SHA-256, making tampering detectable:</p>
     <pre>
 <span class="cmd">curl "http://localhost:4200/api/trust/ledger?limit=5" \
   -H "Authorization: Bearer sy_admin_..."</span>
@@ -223,7 +223,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 }
 </pre>
 
-    <h2 id="policies">Trust Policies</h2>
+    <h2 id="policies">Brand Policies</h2>
     <p>Create policies that block, warn, or log based on content rules:</p>
     <pre>
 <span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
@@ -310,7 +310,7 @@ entry[n].hash = SHA256(entry[n].data + entry[n-1].hash)
 </pre>
 
     <h2 id="regulatory">Regulatory Compliance</h2>
-    <p>Trust is designed for regulated environments requiring audit trails:</p>
+    <p>Brand is designed for regulated environments requiring audit trails:</p>
     <table class="endpoint-table">
       <tr><th>Requirement</th><th>How Stockyard Helps</th></tr>
       <tr><td>SOC 2 audit trail</td><td>Hash-chained ledger with immutable entries</td></tr>
@@ -323,7 +323,7 @@ entry[n].hash = SHA256(entry[n].data + entry[n-1].hash)
 
     <h2 id="trust-config-yaml">Full Configuration Example</h2>
     <pre>
-<span class="comment"># stockyard.yaml — full Trust configuration</span>
+<span class="comment"># stockyard.yaml — full Brand configuration</span>
 apps:
   trust:
     enabled: true
@@ -368,11 +368,11 @@ modules:
   -H "Authorization: Bearer sy_admin_..." > audit-export.json</span>
 </pre>
     <p>The exported data includes full hash chain information, allowing independent verification of chain integrity by auditors or compliance tools.</p>
-    <p>For automated compliance workflows, combine Trust exports with Observe cost data and Exchange config snapshots to build a complete audit package.</p>
+    <p>For automated compliance workflows, combine Brand exports with Lookout cost data and Trading Post config snapshots to build a complete audit package.</p>
 
-    <p>For the full Trust API reference, see <a href="/docs/api/#trust-api">API Reference: Trust</a>.</p>
+    <p>For the full Brand API reference, see <a href="/docs/api/#trust-api">API Reference: Brand</a>.</p>
 
-    <div class="pn"><a href="/docs/observe/">&larr; Observe</a><a href="/docs/studio/" class="next">Studio &rarr;</a></div>
+    <div class="pn"><a href="/docs/observe/">&larr; Lookout</a><a href="/docs/studio/" class="next">Tack Room &rarr;</a></div>
   </main>
 </div>
 

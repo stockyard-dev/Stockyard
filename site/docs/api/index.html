@@ -314,7 +314,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/safety</td><td>Safety event log</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/safety/summary</td><td>Safety stats summary</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/live</td><td>Live request stream (SSE)</td></tr>
-      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/status</td><td>Observe subsystem status</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/status</td><td>Lookout subsystem status</td></tr>
     </table>
 
     <h2 id="trust-api">Brand — Trust (12 endpoints)</h2>
@@ -332,7 +332,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/feedback</td><td>Submit feedback on a response</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/replays</td><td>List replay records</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/trust/replays</td><td>Create a replay record</td></tr>
-      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/status</td><td>Trust subsystem status</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/status</td><td>Brand subsystem status</td></tr>
     </table>
 
     <h2 id="studio-api">Tack Room — Studio (17 endpoints)</h2>
@@ -354,8 +354,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/benchmarks</td><td>List LLM benchmarks</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/benchmarks</td><td>Create a benchmark suite</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/benchmarks/run</td><td>Run benchmark suite</td></tr>
-      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/playground</td><td>Studio playground (send test request)</td></tr>
-      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/status</td><td>Studio subsystem status</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/studio/playground</td><td>Tack Room playground (send test request)</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/studio/status</td><td>Tack Room subsystem status</td></tr>
     </table>
 
     <h2 id="forge-api">Forge (18 endpoints)</h2>
@@ -398,7 +398,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/environments</td><td>Create an environment</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/exchange/environments/{name}/sync</td><td>Sync config to an environment</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/sync-log</td><td>View sync history</td></tr>
-      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/status</td><td>Exchange subsystem status</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/exchange/status</td><td>Trading Post subsystem status</td></tr>
     </table>
 
     <h2 id="config-api">Configuration (5 endpoints)</h2>

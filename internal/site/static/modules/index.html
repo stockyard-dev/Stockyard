@@ -197,7 +197,7 @@ const MODULES = [
   {name:"abrouter",cat:"routing",pri:14,desc:"A/B test traffic splits across providers or model versions."},
   {name:"embedcache",cat:"caching",pri:21,desc:"Cache embedding requests. Identical inputs return cached vectors instantly."},
   {name:"cache",cat:"caching",pri:22,desc:"General response cache with configurable TTL and key strategies."},
-  {name:"spend",cat:"cost",pri:30,desc:"Track per-request cost by model and provider. Feeds Observe dashboards."},
+  {name:"spend",cat:"cost",pri:30,desc:"Track per-request cost by model and provider. Feeds Lookout dashboards."},
   {name:"tierdrop",cat:"cost",pri:31,desc:"Downgrade model tier (e.g. GPT-4→GPT-3.5) when budget thresholds are hit."},
   {name:"caps",cat:"cost",pri:31,desc:"Hard spending caps per user, team, or API key. Blocks requests that exceed budget."},
   {name:"idlekill",cat:"cost",pri:32,desc:"Terminate long-running idle connections to prevent wasted spend."},
@@ -241,13 +241,13 @@ const MODULES = [
   {name:"alertpulse",cat:"observe",pri:132,desc:"Real-time alerting on anomalies — latency spikes, error rates, cost surges."},
   {name:"driftwatch",cat:"observe",pri:133,desc:"Detect model behavior drift over time by comparing output distributions."},
   {name:"compliancelog",cat:"trust",pri:140,desc:"Immutable compliance audit trail — hash-chained, tamper-evident."},
-  {name:"feedbackloop",cat:"trust",pri:141,desc:"Collect user feedback on responses and route to Trust for review."},
-  {name:"promptpad",cat:"studio",pri:150,desc:"Inject versioned prompt templates from Studio into requests."},
+  {name:"feedbackloop",cat:"trust",pri:141,desc:"Collect user feedback on responses and route to Brand for review."},
+  {name:"promptpad",cat:"studio",pri:150,desc:"Inject versioned prompt templates from Tack Room into requests."},
   {name:"promptlint",cat:"studio",pri:151,desc:"Lint prompts for common issues — ambiguity, injection risk, token waste."},
   {name:"approvalgate",cat:"studio",pri:152,desc:"Require human approval for certain prompt templates before deployment."},
   {name:"multicall",cat:"forge",pri:161,desc:"Execute multi-step LLM workflows defined in Forge DAGs."},
   {name:"mockllm",cat:"forge",pri:162,desc:"Return mock responses for testing workflows without hitting real providers."},
-  {name:"devproxy",cat:"exchange",pri:170,desc:"Development proxy with hot-reload for Exchange pack development."}
+  {name:"devproxy",cat:"exchange",pri:170,desc:"Development proxy with hot-reload for Trading Post pack development."}
 ];
 
 const CATEGORIES = {
@@ -258,16 +258,16 @@ const CATEGORIES = {
   transform:  {color:"#9b72cf",label:"Transform"},
   validate:   {color:"#cf7272",label:"Validate"},
   safety:     {color:"#e05555",label:"Safety"},
-  trust:      {color:"#c4a87a",label:"Trust"},
+  trust:      {color:"#c4a87a",label:"Brand"},
   shims:      {color:"#72a5cf",label:"Shims"},
   stream:     {color:"#72cfb5",label:"Stream"},
   reliability:{color:"#8bc472",label:"Reliability"},
   multimodal: {color:"#cf72a5",label:"Multimodal"},
   tenant:     {color:"#a08060",label:"Tenant"},
-  observe:    {color:"#5ba0d4",label:"Observe"},
-  studio:     {color:"#cfb572",label:"Studio"},
+  observe:    {color:"#5ba0d4",label:"Lookout"},
+  studio:     {color:"#cfb572",label:"Tack Room"},
   forge:      {color:"#72cfa5",label:"Forge"},
-  exchange:   {color:"#a572cf",label:"Exchange"}
+  exchange:   {color:"#a572cf",label:"Trading Post"}
 };
 
 // Define relationships: pairs well with
