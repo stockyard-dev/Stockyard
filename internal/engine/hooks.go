@@ -28,6 +28,9 @@ import (
 // ProductAutoFeed is called after every successful proxy request to auto-populate
 // platform products. Set by the platform integration block in Boot().
 var ProductAutoFeed func(traceID string, req *provider.Request, resp *provider.Response, dur time.Duration)
+
+// GlobalProviders holds the provider map, set at boot for replay/re-send.
+var GlobalProviders map[string]provider.Provider
 func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
@@ -148,12 +151,37 @@ func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, res
 		}
 	}
 
+	// Serialize request body for replay capability
+	requestBody := ""
+	if rawBody, ok := req.Extra["_raw_body"].(string); ok && len(rawBody) <= 32768 {
+		requestBody = rawBody
+	} else if len(req.Messages) > 0 {
+		type msgSlim struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		}
+		msgs := make([]msgSlim, len(req.Messages))
+		for i, m := range req.Messages {
+			msgs[i] = msgSlim{Role: m.Role, Content: m.Content}
+		}
+		reqObj := map[string]any{"model": req.Model, "messages": msgs}
+		if req.Temperature != nil {
+			reqObj["temperature"] = *req.Temperature
+		}
+		if req.MaxTokens != nil {
+			reqObj["max_tokens"] = *req.MaxTokens
+		}
+		if b, err := json.Marshal(reqObj); err == nil {
+			requestBody = string(b)
+		}
+	}
+
 	now := time.Now().UTC().Format(time.RFC3339)
 	_, err := conn.Exec(`INSERT INTO observe_traces
-		(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source, request_body)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		traceID, traceID, "proxy", "chat.completion", prov, model, status,
-		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now, responseBody, tagsJSON, source)
+		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now, responseBody, tagsJSON, source, requestBody)
 	if err != nil {
 		// Table might not exist if apps aren't registered — silent skip
 		return

@@ -387,6 +387,11 @@ func Boot(pc ProductConfig) {
 	dashboard.Register(srv.Mux(), pc.Product)
 	broadcaster.RegisterSSE(srv.Mux())
 
+	// Replay Mode: re-send any trace to a different model for comparison
+	GlobalProviders = providers
+	MigrateReplayMode(db.Conn())
+	RegisterReplayRoutes(srv.Mux(), db.Conn())
+
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 
