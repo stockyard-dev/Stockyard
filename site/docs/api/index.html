@@ -429,7 +429,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks/{id}/deliveries</td><td>Recent delivery log (status, latency, retries)</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/webhooks/{id}/stats</td><td>Delivery statistics (success rate, avg latency)</td></tr>
     </table>
-    <p style="margin-top:0.8rem">Supported event types: <code>webhook.test</code>, <code>alert.fired</code>, <code>cost.threshold</code>, <code>spend.cap_exceeded</code>, <code>provider.health_changed</code>, <code>guardrail.violation</code>, <code>trust.violation</code>. Use <code>*</code> to receive all events.</p>
+    <p style="margin-top:0.8rem">Supported event types: <code>webhook.test</code>, <code>alert.fired</code>, <code>cost.threshold</code>, <code>spend.cap_exceeded</code>, <code>provider.health_changed</code>, <code>guardrail.violation</code>, <code>trust.violation</code>, <code>upgrade.drover_cap_reached</code>, <code>upgrade.drover_savings_*</code>, <code>upgrade.feral_bypass_detected</code>, <code>upgrade.pii_detected</code>, <code>upgrade.trace_milestone_*</code>, <code>upgrade.error_rate_high</code>. Use <code>*</code> to receive all events.</p>
 
     <h2 id="guardrails-api">Guardrails (8 endpoints)</h2>
     <p>Runtime-configurable content guardrail rules. Rules are regex-based, scoped per-project, and support block/redact/warn/log actions. Cached in memory with 60-second TTL.</p>

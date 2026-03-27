@@ -349,6 +349,11 @@ func handleQuickscan(port int) http.HandlerFunc {
 
 		report := runQuickscan(targetURL, req.APIKey, req.Model)
 
+		// Fire upgrade event if vulnerabilities found
+		if report.Bypassed > 0 {
+			go FireFeralBypassDetected(report.Bypassed, report.ProbesRun, report.Grade)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(report)

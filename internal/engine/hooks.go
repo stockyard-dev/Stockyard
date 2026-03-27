@@ -107,6 +107,17 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 					costSaved = float64(resp.Usage.PromptTokens)*0.002/1000 + float64(resp.Usage.CompletionTokens)*0.006/1000
 				}
 				GlobalUsageCounters.RecordRequest(req.Provider, cacheHit, costSaved)
+
+				// Fire trace milestone events
+				snap := GlobalUsageCounters.Snapshot()
+				if count, ok := snap["requests"].(int64); ok {
+					for _, m := range []int64{100, 500, 1000, 5000} {
+						if count == m {
+							go FireTraceMilestone(count, m)
+							break
+						}
+					}
+				}
 			}
 
 			return resp, err

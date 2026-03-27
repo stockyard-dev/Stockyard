@@ -415,6 +415,10 @@ func Boot(pc ProductConfig) {
 	webhookMgr.SetBroadcaster(broadcaster)
 	RegisterWebhookRoutes(srv.Mux(), webhookMgr)
 
+	// Set package-level refs for upgrade event firing from anywhere
+	GlobalWebhookMgr = webhookMgr
+	GlobalSSEBroadcaster = broadcaster
+
 	// Integrations (Slack, Discord, PagerDuty) + webhook templates
 	integrations.MigrateAndSeed(db.Conn())
 	integrationMgr := integrations.NewManager(db.Conn())

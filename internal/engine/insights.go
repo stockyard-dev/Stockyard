@@ -249,6 +249,9 @@ func analyzePII(conn *sql.DB, window string) []Insight {
 			},
 			CreatedAt: time.Now().UTC().Format(time.RFC3339),
 		})
+
+		// Fire upgrade event for PII detection
+		go FirePIIDetected(affectedTraces, totalScanned, piiCounts)
 	}
 
 	return insights
@@ -388,6 +391,11 @@ func analyzeErrorRate(conn *sql.DB, window string) []Insight {
 			},
 			CreatedAt: time.Now().UTC().Format(time.RFC3339),
 		})
+
+		// Fire upgrade event for high error rate
+		if errorRate >= 10.0 {
+			go FireErrorRateHigh(errorRate, errors, total, worstProvider)
+		}
 	}
 
 	return insights

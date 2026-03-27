@@ -361,6 +361,7 @@ func AutopilotMiddleware(ap *Autopilot) proxy.Middleware {
 						"Drover saved you $%.2f today. Upgrade to Pro for unlimited autopilot routing.",
 						savingsUSD)
 					log.Printf("[autopilot] free-tier cap reached (%d/%d), passing through", count, FreeTierDailyLimit)
+					go FireDroverCapReached(count, savingsUSD)
 					return next(ctx, req)
 				}
 			}
@@ -386,6 +387,15 @@ func AutopilotMiddleware(ap *Autopilot) proxy.Middleware {
 			// Increment daily counter + savings tracker
 			ap.dailyCount.Add(1)
 			ap.dailySavings.Add(int64(savings * 1e6))
+
+			// Check savings milestones (fire upgrade events)
+			totalSavingsUSD := float64(ap.dailySavings.Load()) / 1e6
+			for _, milestone := range []float64{1.0, 5.0, 10.0, 50.0} {
+				if totalSavingsUSD >= milestone {
+					go FireDroverSavingsMilestone(totalSavingsUSD, milestone)
+					break // only fire highest applicable milestone
+				}
+			}
 
 			// Log the decision asynchronously
 			go func() {

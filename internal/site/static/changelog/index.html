@@ -159,6 +159,13 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Each insight includes severity, evidence from your data, affected product, and upgrade CTA with tier and price.</div>
     <div class="change-item">Free on all tiers. Requires 10+ traces for analysis. Dashboard can poll this endpoint for upgrade banners.</div>
   </div>
+  <div class="change-group">
+    <div class="change-group-label">Webhook Upgrade Triggers</div>
+    <div class="change-item">6 new webhook event types fire at natural conversion boundaries: Drover cap reached, savings milestones ($1/$5/$10/$50), Feral bypass detected, PII found in traces, trace milestones (100/500/1K/5K), and high error rate.</div>
+    <div class="change-item">Events fire via existing webhook infrastructure (HMAC-signed, retried, logged) and broadcast via SSE for real-time in-app notifications.</div>
+    <div class="change-item">Cooldown deduplication prevents event spam (1h for cap/bypass, 6h for PII/errors, 24h for milestones/savings).</div>
+    <div class="change-item">Register a webhook at <code>POST /api/webhooks</code> with <code>events: "upgrade.*"</code> to receive all conversion events.</div>
+  </div>
 </div>
 
 <div class="release">
