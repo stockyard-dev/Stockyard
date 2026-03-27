@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:url" content="https://stockyard.dev/products/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<title>Products: 75 LLM Middleware Modules — Stockyard</title>
+<meta name="description" content="76 middleware modules, 29 products, 360+ API endpoints. One Go binary, zero dependencies.">
+<meta property="og:title" content="Stockyard Products">
+<meta property="og:description" content="76 middleware modules, 29 products, 360+ API endpoints. One Go binary, zero dependencies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem}
+.section-label.leather{color:var(--leather-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}
+.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
+.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+.page-hero{max-width:700px;margin:0 auto;padding:7rem 2rem 3rem;text-align:center}
+.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.page-hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1.5rem}
+.page-hero h1 .accent{color:var(--rust-light)}
+.page-hero .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto 2rem}
+
+/* App sections */
+.app-section{padding:3rem 2rem;max-width:900px;margin:0 auto;border-bottom:1px solid var(--bg3)}
+.app-section:nth-child(even){background:var(--bg2)}
+.app-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:0.3rem}
+.app-number{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;color:var(--leather);text-transform:uppercase}
+.app-title{font-family:var(--font-mono);font-size:1.1rem;color:var(--cream);letter-spacing:1px}
+.app-desc{font-size:0.9rem;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem}
+
+/* Module grid */
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0.8rem}
+.mod-card{padding:0.8rem 1rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.15s;display:flex;align-items:center;gap:0.8rem}
+.mod-card:hover{border-color:var(--rust)}
+.mod-dot{width:6px;height:6px;border-radius:50%;background:var(--green-light);flex-shrink:0}
+.mod-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
+.mod-desc{font-size:0.7rem;color:var(--cream-dim);margin-left:auto;flex-shrink:0}
+
+/* Category chips */
+.cat-bar{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem}
+.cat-chip{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:0.3rem 0.7rem;border:1px solid var(--bg3);color:var(--leather-light);cursor:pointer;transition:all 0.15s}
+.cat-chip:hover,.cat-chip.active{border-color:var(--rust);color:var(--cream)}
+
+/* Endpoints summary */
+.endpoints{padding:3rem 2rem 5rem;max-width:900px;margin:0 auto}
+.endpoint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.5rem;margin-top:1rem}
+.endpoint-row{font-family:var(--font-mono);font-size:0.72rem;padding:0.4rem 0.8rem;border-bottom:1px solid var(--bg3);display:flex;gap:0.8rem}
+.endpoint-method{color:var(--green-light);width:40px;flex-shrink:0}
+.endpoint-path{color:var(--cream-dim)}
+
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+
+/* Capability cards for Apps 02-06 (distinct from middleware modules) */
+.cap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0.8rem}
+.cap-card{padding:0.8rem 1rem;border:1px solid var(--bg3);background:var(--bg);transition:border-color 0.15s;display:flex;align-items:center;gap:0.8rem}
+.cap-card:hover{border-color:var(--leather)}
+.cap-dot{width:6px;height:6px;border-radius:50%;background:var(--leather-light);flex-shrink:0}
+.cap-name{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream)}
+.cap-desc{font-size:0.7rem;color:var(--cream-dim);margin-left:auto;flex-shrink:0}
+
+@media(max-width:600px){
+  .page-hero{padding:5rem 1.5rem 2rem}
+  .mod-grid{grid-template-columns:1fr}
+  .cap-grid{grid-template-columns:1fr}
+  .endpoint-grid{grid-template-columns:1fr}
+  .mod-desc,.cap-desc{display:none}
+}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex;font-family:var(--font-serif)}
+  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+  .console-preview{padding:2rem 1rem}
+  .console-gallery{max-width:100%}
+  .console-tabs{flex-wrap:wrap;gap:0}
+  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
+}
+
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+<link rel="canonical" href="https://stockyard.dev/products/">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <a href="/products/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="/benchmarks/">Benchmarks</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/playground/">Playground</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section class="page-hero" id="main">
+  <div class="eyebrow">The Platform</div>
+  <h1>76 modules. <span class="accent">29 products.</span> One platform.</h1>
+  <p class="sub">From LLM proxy to app store to compute network. Every module toggleable at runtime. Four tiers from free to enterprise.</p>
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem">
+    <a href="/for/startups/" style="color:var(--cream-dim)">For Startups &rarr;</a>
+    <a href="/for/enterprise/" style="color:var(--cream-dim)">For Enterprise &rarr;</a>
+    <a href="/for/developers/" style="color:var(--cream-dim)">For Developers &rarr;</a>
+    <a href="/for/gpu-owners/" style="color:var(--cream-dim)">For GPU Owners &rarr;</a>
+    <a href="/for/experts/" style="color:var(--cream-dim)">For Experts &rarr;</a>
+    <a href="/for/builders/" style="color:var(--cream-dim)">For Builders &rarr;</a>
+  </div>
+  <div class="cta-group" style="margin-top:2rem">
+    <a href="/guide/" class="btn btn-primary">Get Started</a>
+    <a href="/exchange/" class="btn btn-secondary">Browse packs</a>
+  </div>
+</section>
+
+<div style="max-width:960px;margin:3rem auto 0;padding:0 2rem">
+  <div class="section-label leather">Tier 1 &mdash; Core Infrastructure</div>
+  <p style="color:var(--cream-dim);font-style:italic;font-size:0.95rem">The foundation. Every LLM request flows through 76 middleware modules with tracing, cost tracking, and an immutable audit trail.</p>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 01</span><span class="app-title">Proxy</span></div>
+  <div class="app-desc">The gateway. 76 middleware modules in a chain, every one toggleable at runtime via API.</div>
+
+  <div class="cat-bar">
+    <span class="cat-chip active" onclick="filterCat(this,'all')">All 66</span>
+    <span class="cat-chip" onclick="filterCat(this,'routing')">Routing</span>
+    <span class="cat-chip" onclick="filterCat(this,'reliability')">Reliability</span>
+    <span class="cat-chip" onclick="filterCat(this,'caching')">Caching</span>
+    <span class="cat-chip" onclick="filterCat(this,'cost')">Cost</span>
+    <span class="cat-chip" onclick="filterCat(this,'safety')">Safety</span>
+    <span class="cat-chip" onclick="filterCat(this,'transform')">Transform</span>
+    <span class="cat-chip" onclick="filterCat(this,'validate')">Validate</span>
+    <span class="cat-chip" onclick="filterCat(this,'observe')">Observe</span>
+    <span class="cat-chip" onclick="filterCat(this,'shims')">Shims</span>
+    <span class="cat-chip" onclick="filterCat(this,'trust')">Trust</span>
+    <span class="cat-chip" onclick="filterCat(this,'studio')">Studio</span>
+    <span class="cat-chip" onclick="filterCat(this,'forge')">Forge</span>
+    <span class="cat-chip" onclick="filterCat(this,'other')">Other</span>
+  </div>
+
+  <div class="mod-grid" id="mod-grid">
+    <!-- routing (5) -->
+    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">failover</span><span class="mod-desc">Provider failover</span></div>
+    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">modelswitch</span><span class="mod-desc">Model aliasing</span></div>
+    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">regionroute</span><span class="mod-desc">Geo-based routing</span></div>
+    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">localsync</span><span class="mod-desc">Local model sync</span></div>
+    <div class="mod-card" data-cat="routing"><span class="mod-dot"></span><span class="mod-name">abrouter</span><span class="mod-desc">A/B traffic splits</span></div>
+
+    <!-- reliability (3) -->
+    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">retry</span><span class="mod-desc">Exponential backoff</span></div>
+    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">retrypilot</span><span class="mod-desc">Smart retry logic</span></div>
+    <div class="mod-card" data-cat="reliability"><span class="mod-dot"></span><span class="mod-name">ratelimit</span><span class="mod-desc">Rate limiting</span></div>
+
+    <!-- caching (2) -->
+    <div class="mod-card" data-cat="caching"><span class="mod-dot"></span><span class="mod-name">cache</span><span class="mod-desc">Response caching</span></div>
+    <div class="mod-card" data-cat="caching"><span class="mod-dot"></span><span class="mod-name">embedcache</span><span class="mod-desc">Embedding cache</span></div>
+
+    <!-- cost (8) -->
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">spend</span><span class="mod-desc">Spend tracking</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">tierdrop</span><span class="mod-desc">Auto-downgrade models</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">caps</span><span class="mod-desc">Budget caps</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">cost_cap</span><span class="mod-desc">Spending limits</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">idlekill</span><span class="mod-desc">Kill idle requests</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">outputcap</span><span class="mod-desc">Max output tokens</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">usagepulse</span><span class="mod-desc">Usage reporting</span></div>
+    <div class="mod-card" data-cat="cost"><span class="mod-dot"></span><span class="mod-name">keypool</span><span class="mod-desc">API key rotation</span></div>
+
+    <!-- transform (6) -->
+    <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">promptslim</span><span class="mod-desc">Prompt compression</span></div>
+    <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">tokentrim</span><span class="mod-desc">Token trimming</span></div>
+    <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">contextpack</span><span class="mod-desc">Context packing</span></div>
+    <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">chatmem</span><span class="mod-desc">Conversation memory</span></div>
+    <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">langbridge</span><span class="mod-desc">Language detection</span></div>
+    <div class="mod-card" data-cat="transform"><span class="mod-dot"></span><span class="mod-name">voicebridge</span><span class="mod-desc">Audio transcription</span></div>
+
+    <!-- validate (2) -->
+    <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">evalgate</span><span class="mod-desc">Quality gating</span></div>
+    <div class="mod-card" data-cat="validate"><span class="mod-dot"></span><span class="mod-name">codefence</span><span class="mod-desc">Code validation</span></div>
+
+    <!-- safety (12) -->
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">promptguard</span><span class="mod-desc">Injection detection</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">toxicfilter</span><span class="mod-desc">Content moderation</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">guardrail</span><span class="mod-desc">Topic fencing</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">agegate</span><span class="mod-desc">Age-appropriate filter</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">hallucicheck</span><span class="mod-desc">Hallucination detect</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">secretscan</span><span class="mod-desc">Secret detection</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">agentguard</span><span class="mod-desc">Agent safety</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">maskmode</span><span class="mod-desc">PII masking</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">pii_redactor</span><span class="mod-desc">PII redaction</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">content_filter</span><span class="mod-desc">Content filtering</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">prompt_injection</span><span class="mod-desc">Injection blocking</span></div>
+    <div class="mod-card" data-cat="safety"><span class="mod-dot"></span><span class="mod-name">toxicity_filter</span><span class="mod-desc">Toxicity screening</span></div>
+
+    <!-- observe (6) -->
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">llmtap</span><span class="mod-desc">Request logging</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">logging</span><span class="mod-desc">Structured logging</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">tracelink</span><span class="mod-desc">Distributed tracing</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">alertpulse</span><span class="mod-desc">Real-time alerts</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">driftwatch</span><span class="mod-desc">Model drift detection</span></div>
+    <div class="mod-card" data-cat="observe"><span class="mod-dot"></span><span class="mod-name">streamsnap</span><span class="mod-desc">Stream capture</span></div>
+
+    <!-- shims (2) -->
+    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">anthrofit</span><span class="mod-desc">Claude via OpenAI SDK</span></div>
+    <div class="mod-card" data-cat="shims"><span class="mod-dot"></span><span class="mod-name">geminishim</span><span class="mod-desc">Gemini via OpenAI SDK</span></div>
+
+    <!-- trust (3) -->
+    <div class="mod-card" data-cat="trust"><span class="mod-dot"></span><span class="mod-name">compliancelog</span><span class="mod-desc">Audit logging</span></div>
+    <div class="mod-card" data-cat="trust"><span class="mod-dot"></span><span class="mod-name">feedbackloop</span><span class="mod-desc">User feedback</span></div>
+    <div class="mod-card" data-cat="trust"><span class="mod-dot"></span><span class="mod-name">trust_enforce</span><span class="mod-desc">Policy enforcement</span></div>
+
+    <!-- studio (3) -->
+    <div class="mod-card" data-cat="studio"><span class="mod-dot"></span><span class="mod-name">promptpad</span><span class="mod-desc">Prompt management</span></div>
+    <div class="mod-card" data-cat="studio"><span class="mod-dot"></span><span class="mod-name">promptlint</span><span class="mod-desc">Prompt validation</span></div>
+    <div class="mod-card" data-cat="studio"><span class="mod-dot"></span><span class="mod-name">approvalgate</span><span class="mod-desc">Human approval</span></div>
+
+    <!-- forge (2) -->
+    <div class="mod-card" data-cat="forge"><span class="mod-dot"></span><span class="mod-name">multicall</span><span class="mod-desc">Parallel fan-out</span></div>
+    <div class="mod-card" data-cat="forge"><span class="mod-dot"></span><span class="mod-name">mockllm</span><span class="mod-desc">Deterministic mock</span></div>
+
+    <!-- other (4) -->
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">imageproxy</span><span class="mod-desc">Vision/image proxy</span></div>
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">tenantwall</span><span class="mod-desc">Multi-tenant isolation</span></div>
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">ipfence</span><span class="mod-desc">IP allowlist</span></div>
+    <div class="mod-card" data-cat="other"><span class="mod-dot"></span><span class="mod-name">devproxy</span><span class="mod-desc">Dev/staging proxy</span></div>
+  </div>
+</div>
+
+<div class="app-section" style="background:var(--bg2)">
+  <div class="app-header"><span class="app-number">App 02</span><span class="app-title">Observe</span></div>
+  <div class="app-desc">Automatic tracing, cost dashboards, alerts, and anomaly detection for every LLM request.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Trace explorer</span><span class="cap-desc">Full request logging</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Cost dashboard</span><span class="cap-desc">Daily cost rollups</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Alert rules</span><span class="cap-desc">Threshold alerting</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Anomaly detection</span><span class="cap-desc">Drift &amp; outlier alerts</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 03</span><span class="app-title">Trust</span></div>
+  <div class="app-desc">Append-only audit ledger with hash-chain integrity, evidence packs, and policy enforcement.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Audit ledger</span><span class="cap-desc">Hash-chained audit trail</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Evidence packs</span><span class="cap-desc">Exportable compliance bundles</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Policy engine</span><span class="cap-desc">Block/warn/log rules</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Feedback capture</span><span class="cap-desc">User feedback collection</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Replay lab</span><span class="cap-desc">Request replay</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Encryption</span><span class="cap-desc">AES-256-GCM at rest</span></div>
+  </div>
+</div>
+
+<div style="max-width:960px;margin:3rem auto 0;padding:0 2rem">
+  <div class="section-label">Tier 2 &mdash; Creation Tools</div>
+  <p style="color:var(--cream-dim);font-style:italic;font-size:0.95rem">Build AI applications without code. Prompt engineering, workflow orchestration, natural language control.</p>
+</div>
+
+<div class="app-section" style="background:var(--bg2)">
+  <div class="app-header"><span class="app-number">App 04</span><span class="app-title">Studio</span></div>
+  <div class="app-desc">Versioned prompt templates, A/B experiments, benchmarks, and snapshot comparison.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Prompt templates</span><span class="cap-desc">Versioned prompts</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Experiments</span><span class="cap-desc">A/B testing</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Benchmarks</span><span class="cap-desc">Model comparisons</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Snapshots</span><span class="cap-desc">Point-in-time saves</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 05</span><span class="app-title">Forge</span></div>
+  <div class="app-desc">DAG workflow engine. Chain LLM calls, transforms, and tool calls with dependency ordering.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Workflow DAGs</span><span class="cap-desc">DAG definitions</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Run tracker</span><span class="cap-desc">Execution tracking</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Tool registry</span><span class="cap-desc">External tool calls</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Sessions</span><span class="cap-desc">Stateful chat</span></div>
+  </div>
+</div>
+
+<div style="max-width:960px;margin:3rem auto 0;padding:0 2rem">
+  <div class="section-label gold">Tier 3 &mdash; The Economy</div>
+  <p style="color:var(--cream-dim);font-style:italic;font-size:0.95rem">A marketplace where apps, knowledge, and compute are created, shared, and monetized.</p>
+</div>
+
+<div class="app-section" style="background:var(--bg2)">
+  <div class="app-header"><span class="app-number">App 06</span><span class="app-title">Exchange</span></div>
+  <div class="app-desc">Config pack marketplace. Install providers, modules, routes, workflows, and alerts in one click.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Pack marketplace</span><span class="cap-desc">Browse &amp; install packs</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Installer</span><span class="cap-desc">One-click apply</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Environments</span><span class="cap-desc">Env sync</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Config sync</span><span class="cap-desc">Push/pull configs</span></div>
+  </div>
+</div>
+
+<div style="max-width:960px;margin:3rem auto 0;padding:0 2rem">
+  <div class="section-label leather">Tier 4 &mdash; Business Operations</div>
+  <p style="color:var(--cream-dim);font-style:italic;font-size:0.95rem">Usage metering, incident response, declarative deployment, and conversational memory.</p>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 07</span><span class="app-title">Bill</span></div>
+  <div class="app-desc">Usage metering, per-customer billing, and Stripe integration for AI products.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot" ></span><span class="cap-name">Per-customer metering</span><span class="cap-desc">Attribute every token</span></div>
+    <div class="cap-card"><span class="cap-dot" ></span><span class="cap-name">Plans &amp; limits</span><span class="cap-desc">Spending caps &amp; rate limits</span></div>
+    <div class="cap-card"><span class="cap-dot" ></span><span class="cap-name">Usage queries</span><span class="cap-desc">By customer, model, period</span></div>
+    <div class="cap-card"><span class="cap-dot" ></span><span class="cap-name">Stripe sync</span><span class="cap-desc">One-click invoicing</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 08</span><span class="app-title">Team</span></div>
+  <div class="app-desc">RBAC, team member management, invites, and per-member spend tracking.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Role-based access</span><span class="cap-desc">Admin, Developer, Viewer, Auditor</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Email invites</span><span class="cap-desc">Token-based invite flow</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Per-member spend</span><span class="cap-desc">Track costs per team member</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Audit integration</span><span class="cap-desc">All actions logged to Trust</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 09</span><span class="app-title">Memory</span></div>
+  <div class="app-desc">Per-user conversation memory with semantic retrieval and auto-summarization.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Store &amp; retrieve</span><span class="cap-desc">Per-user memory entries</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Semantic relevance</span><span class="cap-desc">Query by similarity</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Auto-summarize</span><span class="cap-desc">Compress old memories</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">TTL expiry</span><span class="cap-desc">Automatic cleanup</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 10</span><span class="app-title">Recall</span></div>
+  <div class="app-desc">AI incident response. Find every affected response, notify customers, resolve fast.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Incident tracking</span><span class="cap-desc">Create and manage incidents</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Affected traces</span><span class="cap-desc">Find every bad response</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Notifications</span><span class="cap-desc">One-click customer alerts</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Re-scan</span><span class="cap-desc">Continuously find new matches</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 11</span><span class="app-title">Copilot</span></div>
+  <div class="app-desc">Natural language platform configuration. Ask questions, get instant setup.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Natural language</span><span class="cap-desc">Configure with plain English</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Session memory</span><span class="cap-desc">Context-aware conversations</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Smart suggestions</span><span class="cap-desc">Proactive recommendations</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Instant setup</span><span class="cap-desc">Zero to production in one chat</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 12</span><span class="app-title">AppBuilder</span></div>
+  <div class="app-desc">No-code AI app builder. Create, publish, and monetize LLM applications.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Visual builder</span><span class="cap-desc">Drag-and-drop app creation</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">App marketplace</span><span class="cap-desc">Publish and distribute</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Revenue sharing</span><span class="cap-desc">Earn from every app use</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">A/B testing</span><span class="cap-desc">Optimize app performance</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 13</span><span class="app-title">Knowledge</span></div>
+  <div class="app-desc">Knowledge base marketplace. Publish, subscribe, and query verified knowledge.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Marketplace</span><span class="cap-desc">Browse &amp; subscribe to bases</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Verification</span><span class="cap-desc">Crowdsourced fact checking</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Embeddings</span><span class="cap-desc">Vector-powered search</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Watch &amp; notify</span><span class="cap-desc">Track changes to bases</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 14</span><span class="app-title">Reputation</span></div>
+  <div class="app-desc">Trust scores, certifications, and gamified leaderboards for the AI economy.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Trust scores</span><span class="cap-desc">Composite reputation metrics</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Certifications</span><span class="cap-desc">Verified skill assessments</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Leaderboards</span><span class="cap-desc">Seasonal competitions</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Karma &amp; stories</span><span class="cap-desc">Community recognition</span></div>
+  </div>
+</div>
+
+<div class="app-section">
+  <div class="app-header"><span class="app-number">App 15</span><span class="app-title">Governance</span></div>
+  <div class="app-desc">Decentralized platform governance. Proposals, voting, and dispute resolution.</div>
+  <div class="cap-grid">
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Proposals &amp; voting</span><span class="cap-desc">Community-driven changes</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Dispute resolution</span><span class="cap-desc">Structured arbitration</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Safety certs</span><span class="cap-desc">App safety verification</span></div>
+    <div class="cap-card"><span class="cap-dot"></span><span class="cap-name">Compliance engine</span><span class="cap-desc">Automated rule checking</span></div>
+  </div>
+</div>
+
+<section class="endpoints">
+  <div class="section-label">API endpoints</div>
+  <p style="color:var(--cream-dim);font-size:0.9rem;margin-bottom:0.5rem">360+ REST endpoints across 29 products. Full programmatic control over everything.</p>
+  <div class="endpoint-grid">
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/apps</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/proxy/modules</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">PUT</span><span class="endpoint-path">/api/proxy/modules/{name}</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/proxy/providers</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/proxy/routes</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/v1/chat/completions</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/observe/traces</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/observe/costs</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/observe/alerts</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/trust/ledger</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/trust/policies</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/studio/templates</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/forge/workflows</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/forge/workflows/{slug}/run</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/forge/runs/{id}</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/exchange/packs</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/exchange/packs/{slug}/install</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">DELETE</span><span class="endpoint-path">/api/exchange/installed/{id}</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/copilot/chat</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/apps/builder/create</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/apps/store</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/knowledge/marketplace</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/reputation/{user_id}</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/governance/proposals</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">POST</span><span class="endpoint-path">/api/recall/incidents</span></div>
+    <div class="endpoint-row"><span class="endpoint-method">GET</span><span class="endpoint-path">/api/billing/usage</span></div>
+  </div>
+  <p style="text-align:center;margin-top:1.5rem"><a href="/docs/" style="font-family:var(--font-mono);font-size:0.8rem">Full API reference &rarr;</a></p>
+</section>
+
+<footer>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.7rem;color:var(--cream-muted)"><a href="/fabric/" style="color:var(--cream-muted)">Fabric</a> &middot; <a href="/copilot/" style="color:var(--cream-muted)">Copilot</a> &middot; <a href="/recall/" style="color:var(--cream-muted)">Recall</a> &middot; <a href="/appbuilder/" style="color:var(--cream-muted)">App Builder</a> &middot; <a href="/node/" style="color:var(--cream-muted)">Mesh</a> &middot; <a href="/knowledge/" style="color:var(--cream-muted)">Knowledge</a> &middot; <a href="/protocol/" style="color:var(--cream-muted)">Protocol</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
+</footer>
+
+<script>
+function filterCat(chip, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  document.querySelectorAll('#mod-grid .mod-card').forEach(card => {
+    card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+  });
+}
+</script>
+
+
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
+</script>
+
+</body>
+</html>
