@@ -49,21 +49,21 @@ var seedPrompts = []string{
 	// Persona-based
 	`You are the person who wrote "There's a computer science to advertising" for Cloudflare. Write a tagline for Stockyard: a single Go binary that replaces your entire LLM infrastructure stack (proxy, caching, rate limiting, failover, cost tracking, guardrails). One line, under 10 words.`,
 	`You are a developer who just replaced 8 separate LLM tools with one 25MB binary called Stockyard. Write the tagline you'd tweet about it. Raw, authentic, under 12 words.`,
-	`You are Paul Graham writing about a new kind of infrastructure tool. Stockyard is one binary that sits between apps and LLM providers with 70 middleware modules, 16 providers, 400ns overhead. Distill this into a tagline a YC founder would remember.`,
+	`You are Paul Graham writing about a new kind of infrastructure tool. Stockyard is one binary that sits between apps and LLM providers with 76 middleware modules, 16 providers, 400ns overhead. Distill this into a tagline a YC founder would remember.`,
 	// Analogy-based
 	`nginx is to HTTP as Stockyard is to LLMs. Write a tagline that captures this analogy. Stockyard proxies every AI request through 70 configurable middleware modules in a single binary. Under 10 words.`,
 	`Stockyard is to LLM APIs what a cattle ranch foreman is to a herd: it routes, monitors, protects, and optimizes every request. Write a tagline that uses this western metaphor subtly. One sentence.`,
 	`Docker made "build once, run anywhere." Stockyard makes "one binary, every LLM." Write a tagline with that same structural clarity. Under 8 words.`,
 	// Constraint-focused
 	`Write a tagline for Stockyard. Rules: must be under 6 words, must contain a verb, must communicate that it's a single binary that handles all LLM infrastructure. No buzzwords.`,
-	`Write a Stockyard tagline that would fit on a laptop sticker (max 5 words). Stockyard is a Go binary that proxies LLM requests with caching, failover, cost tracking, and 70 middleware modules.`,
+	`Write a Stockyard tagline that would fit on a laptop sticker (max 5 words). Stockyard is a Go binary that proxies LLM requests with caching, failover, cost tracking, and 76 middleware modules.`,
 	`Write exactly one sentence describing Stockyard for a developer who has never heard of it. It's a single binary LLM proxy with 29 products, 16 provider integrations, and sub-microsecond middleware overhead. Make them want to try it.`,
 	// Fact-heavy
-	`Stockyard facts: single Go binary (25MB), 70 middleware modules at 400ns per chain, 16 LLM providers, 29 products, MIT licensed, zero dependencies, sub-microsecond overhead. Write a tagline that makes the technical audience on Hacker News stop scrolling. One line.`,
+	`Stockyard facts: single Go binary (25MB), 76 middleware modules at 400ns per chain, 16 LLM providers, 29 products, source-available, zero dependencies, sub-microsecond overhead. Write a tagline that makes the technical audience on Hacker News stop scrolling. One line.`,
 	`Stockyard runs between your app and OpenAI/Anthropic/Groq/etc. Every request gets: cost tracking, caching, rate limiting, guardrails, failover, provenance certificates, confidence scoring. All in one binary you deploy in 30 seconds. Tagline. One line.`,
-	`Before Stockyard: 8 SaaS subscriptions for LLM ops. After Stockyard: one binary, self-hosted, MIT licensed. Write a tagline about this transformation. Under 10 words.`,
+	`Before Stockyard: 8 SaaS subscriptions for LLM ops. After Stockyard: one binary, self-hosted, source-available. Write a tagline about this transformation. Under 10 words.`,
 	// Output-style variants
-	`Write a hero section tagline for stockyard.dev. Format: "[Bold claim] -- [supporting detail]." Stockyard is a single Go binary with 70 middleware modules for proxying, caching, securing, and optimizing LLM traffic.`,
+	`Write a hero section tagline for stockyard.dev. Format: "[Bold claim] -- [supporting detail]." Stockyard is a single Go binary with 76 middleware modules for proxying, caching, securing, and optimizing LLM traffic.`,
 	`Write a tagline for Stockyard in the style of a Unix man page one-liner: "stockyard - [description]". It's a reverse proxy for LLM APIs with middleware, failover, cost tracking, and 29 integrated products.`,
 	`Complete this sentence as a Stockyard tagline: "One binary to ___." Stockyard replaces your entire LLM infrastructure stack with a single Go executable.`,
 	// Emotion-based
