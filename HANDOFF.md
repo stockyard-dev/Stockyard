@@ -6,15 +6,8 @@
 ## Credentials
 
 ```
-GitHub PAT:        [set in environment]
-Railway Token:     REDACTED_RAILWAY_TOKEN
-  Project:         cab0be2e-abb0-4725-a9bf-8c426fe7d520
-  Service:         becc02a7-e7e8-4185-a965-37b1967a6862
-  Env:             8d071eac-46f7-47db-946a-de1d0514ef8d
-Admin Key:         REDACTED_ADMIN_KEY
-Dev API Key:       REDACTED_DEV_KEY
-Stripe Live:       [set in STRIPE_SECRET_KEY env var]
-Stripe Webhook:    REDACTED_WEBHOOK_SECRET
+All credentials stored in environment variables and local .env file (not committed).
+See Railway dashboard for token/project/service/env IDs.
 ```
 
 Railway env vars set: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STOCKYARD_BASE_URL`, `STOCKYARD_DEV_KEY`
@@ -157,7 +150,7 @@ echo "nameserver 8.8.8.8" > /etc/resolv.conf
 export PATH=$PATH:/home/claude/go/bin && export GOPATH=/home/claude/gopath
 no_proxy=localhost,127.0.0.1 NO_PROXY=localhost,127.0.0.1 CGO_ENABLED=0 go build -o /dev/null ./cmd/stockyard/
 git push origin main && sleep 60
-curl -s -H "X-Admin-Key: REDACTED_ADMIN_KEY" https://stockyard.dev/api/platform/health
+curl -s -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" https://stockyard.dev/api/platform/health
 ```
 
 ## Session Pattern

@@ -4,7 +4,7 @@
 # Refreshes every 60 seconds. Press Ctrl+C to stop.
 
 HOST="https://stockyard.dev"
-AUTH="Authorization: Bearer ${STOCKYARD_ADMIN_KEY:-REDACTED_ADMIN_KEY}"
+AUTH="Authorization: Bearer ${STOCKYARD_ADMIN_KEY:-YOUR_ADMIN_KEY}"
 
 while true; do
   clear
