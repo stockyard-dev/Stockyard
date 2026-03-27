@@ -6,19 +6,19 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard">
-<meta property="og:description" content="We put 66 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.">
+<meta property="og:title" content="76 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard">
+<meta property="og:description" content="We put 76 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.">
 <meta property="og:url" content="https://stockyard.dev/blog/76-modules-400ns/">
 <meta property="og:type" content="article">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard</title>
+<title>76 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard</title>
 <link rel="canonical" href="https://stockyard.dev/blog/76-modules-400ns/">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain","author":{"@type":"Person","name":"Michael"},"datePublished":"2026-03-22","publisher":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"},"description":"We put 66 middleware modules between our app and OpenAI. The entire chain adds 400ns. Here's the architecture.","url":"https://stockyard.dev/blog/76-modules-400ns/","image":"https://stockyard.dev/site-assets/assets/marketing/og-card.png"}
+{"@context":"https://schema.org","@type":"Article","headline":"76 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain","author":{"@type":"Person","name":"Michael"},"datePublished":"2026-03-22","publisher":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"},"description":"We put 76 middleware modules between our app and OpenAI. The entire chain adds 400ns. Here's the architecture.","url":"https://stockyard.dev/blog/76-modules-400ns/","image":"https://stockyard.dev/site-assets/assets/marketing/og-card.png"}
 </script>
 <link rel="alternate" type="application/rss+xml" title="Stockyard Blog" href="/blog/feed.xml">
-<meta name="description" content="We put 66 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.">
+<meta name="description" content="We put 76 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -85,14 +85,14 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <div class="post-layout" id="content">
   <a href="/blog/" class="back">&larr; Back to blog</a>
 
-  <h1>66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain</h1>
+  <h1>76 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain</h1>
   <div class="post-meta"><time datetime="2026-03-22">March 22, 2026</time> &middot; Michael &middot; 8 min read</div>
 
-  <p>I put 66 middleware modules between my application and OpenAI. PII redaction, cost caps, caching, rate limiting, prompt injection detection, audit logging, content filtering, circuit breaking, billing metering &mdash; the full production stack. Then I measured the overhead.</p>
+  <p>I put 76 middleware modules between my application and OpenAI. PII redaction, cost caps, caching, rate limiting, prompt injection detection, audit logging, content filtering, circuit breaking, billing metering &mdash; the full production stack. Then I measured the overhead.</p>
 
   <div class="highlight-box"><strong>400 nanoseconds.</strong> That&rsquo;s 0.0004 milliseconds. A typical OpenAI API call takes 500&ndash;3,000ms. The middleware chain adds 0.00001% overhead.</div>
 
-  <p>This isn&rsquo;t a synthetic micro-benchmark on a toy module. This is the actual chain Stockyard runs in production: 66 real modules with real logic, executing on every single request. Here&rsquo;s how it works, and why the numbers look the way they do.</p>
+  <p>This isn&rsquo;t a synthetic micro-benchmark on a toy module. This is the actual chain Stockyard runs in production: 76 real modules with real logic, executing on every single request. Here&rsquo;s how it works, and why the numbers look the way they do.</p>
 
   <h2>The Test Setup</h2>
 
@@ -107,11 +107,11 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
     <tr><td>Registry lookup</td><td>Finding a module by name in the registry</td><td class="num fast">23.1ns</td></tr>
   </table>
 
-  <p>The difference between 400ns and 1.56&mu;s is interesting. The toggle-aware chain checks a boolean flag for each module before executing it. That check plus the branch prediction miss costs ~17ns per module &times; 66 = ~1.1&mu;s additional. The raw chain skips the check entirely.</p>
+  <p>The difference between 400ns and 1.56&mu;s is interesting. The toggle-aware chain checks a boolean flag for each module before executing it. That check plus the branch prediction miss costs ~17ns per module &times; 76 = ~1.1&mu;s additional. The raw chain skips the check entirely.</p>
 
   <p>In practice you use the toggle-aware chain because you want to enable and disable modules at runtime. 1.56 microseconds is still nothing compared to a 1-second LLM call.</p>
 
-  <h2>What 66 Modules Actually Do</h2>
+  <h2>What 76 Modules Actually Do</h2>
 
   <p>These aren&rsquo;t stubs. Each module runs real logic on every request or response. Here&rsquo;s the breakdown by category:</p>
 
@@ -135,7 +135,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <h2>1. Function Composition, Not Interfaces</h2>
 
-  <p>Each middleware is a <code>func(next Handler) Handler</code>. The chain is built once at startup by composing all 66 functions into a single nested closure. At runtime, calling the chain is a sequence of function pointer dereferences &mdash; no virtual dispatch, no interface lookups, no reflection.</p>
+  <p>Each middleware is a <code>func(next Handler) Handler</code>. The chain is built once at startup by composing all 76 functions into a single nested closure. At runtime, calling the chain is a sequence of function pointer dereferences &mdash; no virtual dispatch, no interface lookups, no reflection.</p>
 
   <pre>
 <span class="comment">// The chain is composed once at boot. After that, it's just function calls.</span>

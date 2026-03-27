@@ -214,7 +214,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2>The middleware chain</h2>
 
-    <p>Stockyard has 66 middleware modules. Each one implements a simple interface: receive the request context, optionally modify it, call next. The chain runs synchronously &mdash; no event loops, no message queues.</p>
+    <p>Stockyard has 76 middleware modules. Each one implements a simple interface: receive the request context, optionally modify it, call next. The chain runs synchronously &mdash; no event loops, no message queues.</p>
 
     <p>Every module is toggleable at runtime via a PUT to <code>/api/proxy/modules/{name}</code>. This is stored in SQLite and checked on each request. The overhead of checking 76 module states is negligible (it&rsquo;s an in-memory map lookup with periodic SQLite refresh).</p>
 
