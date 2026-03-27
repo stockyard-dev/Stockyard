@@ -152,6 +152,13 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Returns letter grade (A&ndash;F), per-probe results with severity, verdict, and upgrade CTA for the full 29-probe suite.</div>
     <div class="change-item">Full Feral suite (29 probes, 9 categories, evolutionary mutation) remains on Team tier. <a href="/feral/">Learn more &rarr;</a></div>
   </div>
+  <div class="change-group">
+    <div class="change-group-label">Auto-Insights &mdash; Data-Backed Upgrade Prompts</div>
+    <div class="change-item"><code>GET /api/insights</code> &mdash; analyzes your trace data and surfaces actionable findings with product-specific CTAs.</div>
+    <div class="change-item">5 analyzers: cost waste detection (Drover upsell), PII in prompts (Brand upsell), prompt duplication (Tack Room upsell), error rate (failover upsell), model concentration (vendor lock-in warning).</div>
+    <div class="change-item">Each insight includes severity, evidence from your data, affected product, and upgrade CTA with tier and price.</div>
+    <div class="change-item">Free on all tiers. Requires 10+ traces for analysis. Dashboard can poll this endpoint for upgrade banners.</div>
+  </div>
 </div>
 
 <div class="release">

@@ -540,8 +540,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   -d '{"api_key":"$OPENAI_API_KEY","generations":3}'</span>
     </pre>
 
-    <h2 id="system-api">System (12 endpoints)</h2>
-    <p>Health checks, license info, spending, upgrade triggers, and cache management.</p>
+    <h2 id="system-api">System (13 endpoints)</h2>
+    <p>Health checks, license info, spending, upgrade triggers, insights, and cache management.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/apps</td><td>List registered apps</td></tr>
@@ -553,6 +553,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/spend</td><td>Current spending summary</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/spend/history</td><td>Spending history</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/upgrade-prompts</td><td>Active upgrade triggers</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/insights</td><td>Auto-insights &mdash; analyzes traces for cost waste, PII, prompt duplication, errors</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/cache/stats</td><td>Cache hit/miss statistics</td></tr>
       <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/cache</td><td>Clear the response cache</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/products</td><td>Product catalog</td></tr>

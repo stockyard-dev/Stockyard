@@ -399,6 +399,9 @@ func Boot(pc ProductConfig) {
 	// Feral Quickscan: free 5-probe security audit (no tier gating)
 	RegisterQuickscanRoutes(srv.Mux(), cfg.Port)
 
+	// Auto-Insights: analyze traces and surface product-specific upgrade CTAs
+	RegisterInsightsRoutes(srv.Mux(), db.Conn())
+
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 
