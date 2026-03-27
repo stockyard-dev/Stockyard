@@ -245,37 +245,217 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p style="text-align:center;margin-top:2rem"><a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">See all tiers &amp; what unlocks &rarr;</a></p>
 </div>
 
-<!-- Code demo -->
+<!-- Interactive Demo -->
 <section class="section-alt" id="demo">
-  <div class="section-alt-inner code-section">
+  <div class="section-alt-inner">
     <h2 class="section-label">See it work</h2>
-    <pre><span class="c"># Install (~25MB binary, zero dependencies)</span>
-<span class="cmd">$ curl -fsSL stockyard.dev/install.sh | sh</span>
-<span class="ok">&#10003; Stockyard installed</span>
+    <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:2rem;max-width:540px;margin-left:auto;margin-right:auto">Pick a prompt. Watch it flow through Stockyard's middleware chain. Real data, real modules, real savings &mdash; no API key needed.</p>
 
-<span class="c"># Start &mdash; 76 modules, 16 providers, instant</span>
-<span class="cmd">$ stockyard</span>
-<span class="ok">Chute:   http://localhost:4200/v1   &#10003; 76 modules active
-Console: http://localhost:4200/ui   &#10003; ready</span>
+    <!-- Prompt picker -->
+    <div id="demo-tabs" style="display:flex;gap:0;justify-content:center;flex-wrap:wrap;margin-bottom:0">
+      <button class="demo-tab active" onclick="pickPrompt(0)">Summarize earnings</button>
+      <button class="demo-tab" onclick="pickPrompt(1)">Draft customer email</button>
+      <button class="demo-tab" onclick="pickPrompt(2)">Write a SQL query</button>
+      <button class="demo-tab" onclick="pickPrompt(3)">Translate copy</button>
+    </div>
 
-<span class="c"># Send a request (OpenAI-compatible, any provider)</span>
-<span class="cmd">$ curl localhost:4200/v1/chat/completions \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
-<span class="ok">{"choices":[{"message":{"content":"Hello! How can I help?"}}]}</span>
+    <!-- Trace viewer -->
+    <div id="demo-trace" style="background:var(--bg);border:1px solid var(--bg3);max-width:720px;margin:0 auto;overflow:hidden">
 
-<span class="c"># Replay it against Claude to compare (Lasso — Individual tier):</span>
-<span class="cmd">$ curl -X POST localhost:4200/api/replay \
-  -d '{"trace_id":"tr_82a...","target_model":"claude-sonnet-4-20250514"}'</span>
-<span class="val">&rarr; Claude: 12.7% faster | same cost | quality: 0.88</span>
+      <!-- Request -->
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
+          <span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)">Request</span>
+          <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)" id="demo-model">gpt-4o → Chute proxy</span>
+        </div>
+        <div style="font-size:0.88rem;color:var(--cream);line-height:1.6" id="demo-prompt">Summarize Q3 2025 earnings for Acme Corp: revenue $42M (+18% YoY), net income $8.2M, 340 enterprise customers, ARR crossed $150M. CEO Jane Chen said "We're seeing unprecedented demand in the mid-market segment."</div>
+      </div>
 
-<span class="c"># Let Drover pick the cheapest model automatically (100 free/day):</span>
-<span class="cmd">$ curl localhost:4200/v1/chat/completions \
-  -d '{"model":"auto","messages":[{"role":"user","content":"hello"}]}'</span>
-<span class="val">&rarr; Drover routed to gpt-4o-mini (up to 25x cheaper than gpt-4o)</span></pre>
-    <p style="text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-dim);margin-top:1rem">No Redis. No Postgres. No Docker. <a href="/playground/" style="color:var(--rust-light)">Try the playground</a> without installing.</p>
+      <!-- Module chain -->
+      <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Module chain <span style="color:var(--cream-muted)" id="demo-chain-time">· 410ns</span></div>
+        <div id="demo-modules" style="display:flex;flex-wrap:wrap;gap:0.4rem"></div>
+      </div>
+
+      <!-- Response -->
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Response</div>
+        <div style="font-size:0.85rem;color:var(--cream-dim);line-height:1.7" id="demo-response">Acme Corp reported strong Q3 2025 results: revenue reached $42M, up 18% year-over-year, with net income of $8.2M. The company now serves 340 enterprise customers and has crossed $150M in ARR. CEO Jane Chen highlighted accelerating mid-market demand as a key growth driver.</div>
+      </div>
+
+      <!-- Trace metrics -->
+      <div style="padding:1rem 1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;border-bottom:1px solid var(--bg3)" id="demo-metrics">
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-latency">847ms</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Latency</span></div>
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-tokens">312</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Tokens</span></div>
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-cost">$0.0019</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Cost</span></div>
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;display:block" id="demo-status" style="color:var(--green-light)">✓ OK</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Status</span></div>
+      </div>
+
+      <!-- Insights banner -->
+      <div id="demo-insights" style="padding:1rem 1.5rem">
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align:center;margin-top:2.5rem">
+      <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:1.5rem">That trace is real. Every module fired in <span id="demo-cta-time">410ns</span>. Now try it with your own prompts.</p>
+      <div class="cta-group">
+        <a href="/playground/" class="btn btn-primary">Open Playground</a>
+        <a href="/guide/" class="btn btn-secondary">Install &amp; Run</a>
+      </div>
+      <p style="font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1rem">curl -fsSL stockyard.dev/install.sh | sh &nbsp;&middot;&nbsp; ~25MB &nbsp;&middot;&nbsp; zero dependencies</p>
+    </div>
   </div>
 </section>
+
+<style>
+.demo-tab{font-family:var(--font-mono);font-size:0.72rem;padding:0.6rem 1.2rem;background:var(--bg);border:1px solid var(--bg3);border-bottom:none;color:var(--cream-muted);cursor:pointer;transition:all 0.2s}
+.demo-tab:hover{color:var(--cream);background:var(--bg2)}
+.demo-tab.active{color:var(--cream);background:var(--bg);border-bottom:2px solid var(--rust-light);color:var(--rust-light)}
+.mod-pill{font-family:var(--font-mono);font-size:0.62rem;padding:0.2rem 0.5rem;border:1px solid var(--bg3);color:var(--cream-muted);display:inline-flex;align-items:center;gap:0.3rem;transition:all 0.3s}
+.mod-pill.pass{border-color:var(--green-light);color:var(--green-light)}
+.mod-pill.warn{border-color:var(--gold);color:var(--gold)}
+.mod-pill.block{border-color:#d44a4a;color:#d44a4a}
+.mod-pill.skip{border-color:var(--bg3);color:var(--cream-muted);opacity:0.5}
+.insight-box{padding:0.8rem 1rem;border-left:3px solid var(--gold);background:rgba(212,168,67,0.06);margin-bottom:0.6rem}
+.insight-box.warn{border-left-color:#d44a4a;background:rgba(212,74,74,0.06)}
+.insight-box .ins-title{font-family:var(--font-mono);font-size:0.72rem;color:var(--cream);margin-bottom:0.2rem}
+.insight-box .ins-detail{font-size:0.78rem;color:var(--cream-dim)}
+.insight-box .ins-cta{font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);margin-top:0.3rem;display:inline-block}
+.insight-box .ins-cta:hover{color:var(--gold)}
+@media(max-width:600px){.demo-tab{font-size:0.6rem;padding:0.4rem 0.6rem}#demo-metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<script>
+var demos = [
+  {
+    prompt: 'Summarize Q3 2025 earnings for Acme Corp: revenue $42M (+18% YoY), net income $8.2M, 340 enterprise customers, ARR crossed $150M. CEO Jane Chen said "We\'re seeing unprecedented demand in the mid-market segment."',
+    model: 'gpt-4o',
+    routed: 'gpt-4o-mini',
+    response: 'Acme Corp reported strong Q3 2025 results: revenue reached $42M, up 18% year-over-year, with net income of $8.2M. The company now serves 340 enterprise customers and has crossed $150M in ARR. CEO Jane Chen highlighted accelerating mid-market demand as a key growth driver.',
+    latency: '847ms', tokens: '312', cost: '$0.0019',
+    modules: [
+      {name:'ratelimit', status:'pass'},
+      {name:'promptguard', status:'pass'},
+      {name:'tokentrim', status:'pass'},
+      {name:'cachelayer', status:'skip', note:'miss'},
+      {name:'secretscan', status:'pass'},
+      {name:'tracelink', status:'pass'},
+      {name:'autopilot', status:'warn', note:'routed→mini'},
+      {name:'costtrack', status:'pass'},
+    ],
+    chainTime: '410ns',
+    insights: [
+      {type:'save', title:'Drover routed gpt-4o → gpt-4o-mini', detail:'Quality 0.89 (above 0.80 threshold). This request cost $0.0019 instead of $0.0480 — 25x cheaper.', cta:'Try Drover free (100/day)', url:'/drover/'},
+      {type:'info', title:'Similar prompt seen 12 times this week', detail:'"Summarize...earnings" appears across multiple traces. A template could standardize output format and save tokens.', cta:'Explore Tack Room', url:'/studio/'},
+    ]
+  },
+  {
+    prompt: 'Draft a professional email to sarah.martinez@acmecorp.com regarding her refund request #RF-4821 for $2,340. Her credit card ending in 4242 was charged twice on March 15. Apologize and confirm the refund will appear in 5-7 business days.',
+    model: 'gpt-4o',
+    routed: 'gpt-4o-mini',
+    response: 'Subject: Refund Confirmation — Request #RF-4821\n\nDear Sarah,\n\nThank you for bringing the duplicate charge to our attention. We sincerely apologize for the inconvenience. We\'ve processed your refund, and it will appear on your statement within 5–7 business days.\n\nPlease don\'t hesitate to reach out if you have any further questions.\n\nBest regards,\nCustomer Support Team',
+    latency: '1,204ms', tokens: '486', cost: '$0.0029',
+    modules: [
+      {name:'ratelimit', status:'pass'},
+      {name:'promptguard', status:'pass'},
+      {name:'tokentrim', status:'pass'},
+      {name:'secretscan', status:'warn', note:'PII found'},
+      {name:'cachelayer', status:'skip', note:'miss'},
+      {name:'tracelink', status:'pass'},
+      {name:'autopilot', status:'warn', note:'routed→mini'},
+      {name:'costtrack', status:'pass'},
+    ],
+    chainTime: '380ns',
+    insights: [
+      {type:'warn', title:'PII detected in prompt', detail:'Found: email address, credit card (ending 4242), dollar amount, name. This data is being sent to OpenAI.', cta:'Unlock PII redaction with Team ($299.99/mo)', url:'/pricing/'},
+      {type:'save', title:'Drover saved $0.045 on this request', detail:'Routed from gpt-4o to gpt-4o-mini. Quality score 0.91 — above threshold. 16x cost reduction.', cta:'Try Drover free (100/day)', url:'/drover/'},
+    ]
+  },
+  {
+    prompt: 'Write a PostgreSQL query to find all users who signed up in the last 90 days, made at least one purchase, but haven\'t logged in for 30 days. Include their email, last login date, total spend, and days since last activity. Order by total spend descending.',
+    model: 'gpt-4o',
+    routed: 'gpt-4o',
+    response: 'SELECT\n  u.email,\n  u.last_login_at,\n  SUM(o.total_amount) AS total_spend,\n  EXTRACT(DAY FROM NOW() - u.last_login_at) AS days_inactive\nFROM users u\nJOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= NOW() - INTERVAL \'90 days\'\n  AND u.last_login_at < NOW() - INTERVAL \'30 days\'\nGROUP BY u.id, u.email, u.last_login_at\nHAVING COUNT(o.id) >= 1\nORDER BY total_spend DESC;',
+    latency: '1,892ms', tokens: '583', cost: '$0.0480',
+    modules: [
+      {name:'ratelimit', status:'pass'},
+      {name:'promptguard', status:'pass'},
+      {name:'codefence', status:'pass'},
+      {name:'tokentrim', status:'pass'},
+      {name:'cachelayer', status:'skip', note:'miss'},
+      {name:'secretscan', status:'pass'},
+      {name:'tracelink', status:'pass'},
+      {name:'autopilot', status:'skip', note:'kept gpt-4o'},
+      {name:'costtrack', status:'pass'},
+    ],
+    chainTime: '450ns',
+    insights: [
+      {type:'info', title:'Drover kept gpt-4o for this request', detail:'Code generation tasks score 0.72 on cheaper models — below the 0.80 threshold. Drover correctly kept the expensive model for quality.', cta:'See calibration scores', url:'/drover/'},
+      {type:'save', title:'This prompt is a template candidate', detail:'Churn analysis queries appear 8 times this week with different column names. A parameterized template would ensure consistent output.', cta:'Explore Tack Room', url:'/studio/'},
+    ]
+  },
+  {
+    prompt: 'Translate this product description to Spanish, French, and Japanese. Keep the brand voice casual and energetic:\n\n"Meet the AirPod Max 2 — studio sound that travels with you. 48-hour battery, adaptive noise canceling, and spatial audio that makes every song feel live."',
+    model: 'gpt-4o',
+    routed: 'gpt-4o-mini',
+    response: 'Spanish: Conoce los AirPod Max 2 — sonido de estudio que viaja contigo. 48 horas de batería, cancelación de ruido adaptativa y audio espacial que hace que cada canción se sienta en vivo.\n\nFrench: Découvrez les AirPod Max 2 — un son studio qui vous accompagne partout. 48 heures d\'autonomie, réduction de bruit adaptative et audio spatial qui donne vie à chaque chanson.\n\nJapanese: AirPod Max 2 登場 — スタジオサウンドをどこへでも。48時間バッテリー、アダプティブノイズキャンセリング、すべての曲をライブのように感じさせる空間オーディオ。',
+    latency: '2,341ms', tokens: '724', cost: '$0.0043',
+    modules: [
+      {name:'ratelimit', status:'pass'},
+      {name:'promptguard', status:'pass'},
+      {name:'tokentrim', status:'pass'},
+      {name:'cachelayer', status:'skip', note:'miss'},
+      {name:'secretscan', status:'pass'},
+      {name:'tracelink', status:'pass'},
+      {name:'autopilot', status:'warn', note:'routed→mini'},
+      {name:'costtrack', status:'pass'},
+    ],
+    chainTime: '395ns',
+    insights: [
+      {type:'save', title:'Drover saved $0.068 on this request', detail:'Translation routed from gpt-4o ($0.0720) to gpt-4o-mini ($0.0043). Quality score 0.87 — fluent and accurate across all 3 languages.', cta:'Try Drover free (100/day)', url:'/drover/'},
+      {type:'info', title:'Consider Lasso for translation QA', detail:'Replay this prompt against Claude to compare translation quality. Lasso runs side-by-side comparisons with cost and quality scoring.', cta:'See Lasso', url:'/lasso/'},
+    ]
+  }
+];
+
+function pickPrompt(idx) {
+  var d = demos[idx];
+  document.querySelectorAll('.demo-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
+  document.getElementById('demo-prompt').textContent = d.prompt;
+  document.getElementById('demo-model').textContent = d.model + (d.routed !== d.model ? ' → ' + d.routed : '') + ' → Chute proxy';
+  document.getElementById('demo-response').innerHTML = d.response.replace(/\n/g,'<br>');
+  document.getElementById('demo-latency').textContent = d.latency;
+  document.getElementById('demo-tokens').textContent = d.tokens;
+  document.getElementById('demo-cost').textContent = d.cost;
+  document.getElementById('demo-status').textContent = '✓ OK';
+  document.getElementById('demo-status').style.color = '#5ba86e';
+  document.getElementById('demo-chain-time').textContent = '· ' + d.chainTime;
+  document.getElementById('demo-cta-time').textContent = d.chainTime;
+
+  // Modules
+  var mc = document.getElementById('demo-modules');
+  mc.innerHTML = '';
+  d.modules.forEach(function(m){
+    var pill = document.createElement('span');
+    pill.className = 'mod-pill ' + m.status;
+    var icon = m.status === 'pass' ? '✓' : m.status === 'warn' ? '⚡' : m.status === 'block' ? '✗' : '·';
+    pill.innerHTML = icon + ' ' + m.name + (m.note ? ' <span style="opacity:0.7">(' + m.note + ')</span>' : '');
+    mc.appendChild(pill);
+  });
+
+  // Insights
+  var ic = document.getElementById('demo-insights');
+  ic.innerHTML = '';
+  d.insights.forEach(function(ins){
+    var box = document.createElement('div');
+    box.className = 'insight-box' + (ins.type === 'warn' ? ' warn' : '');
+    box.innerHTML = '<div class="ins-title">' + ins.title + '</div><div class="ins-detail">' + ins.detail + '</div><a class="ins-cta" href="' + ins.url + '">' + ins.cta + ' →</a>';
+    ic.appendChild(box);
+  });
+}
+pickPrompt(0);
+</script>
 
 <!-- Upgrade path visual -->
 <div class="section">
