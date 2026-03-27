@@ -266,9 +266,9 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
       <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
           <span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)">Request</span>
-          <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)" id="demo-model">gpt-4o → Chute proxy</span>
+          <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted)" id="demo-model">gpt-5.4 → gpt-5.4-mini → Chute proxy</span>
         </div>
-        <div style="font-size:0.88rem;color:var(--cream);line-height:1.6" id="demo-prompt">Summarize Q3 2025 earnings for Acme Corp: revenue $42M (+18% YoY), net income $8.2M, 340 enterprise customers, ARR crossed $150M. CEO Jane Chen said "We're seeing unprecedented demand in the mid-market segment."</div>
+        <div style="font-size:0.88rem;color:var(--cream);line-height:1.6" id="demo-prompt">Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M. CEO Jane Chen said "Our mid-market expansion is accelerating faster than our most optimistic projections."</div>
       </div>
 
       <!-- Module chain -->
@@ -280,14 +280,14 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
       <!-- Response -->
       <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
         <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Response</div>
-        <div style="font-size:0.85rem;color:var(--cream-dim);line-height:1.7" id="demo-response">Acme Corp reported strong Q3 2025 results: revenue reached $42M, up 18% year-over-year, with net income of $8.2M. The company now serves 340 enterprise customers and has crossed $150M in ARR. CEO Jane Chen highlighted accelerating mid-market demand as a key growth driver.</div>
+        <div style="font-size:0.85rem;color:var(--cream-dim);line-height:1.7" id="demo-response">Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR. CEO Jane Chen pointed to accelerating mid-market expansion as the primary growth driver, calling it ahead of even their most optimistic internal projections.</div>
       </div>
 
       <!-- Trace metrics -->
       <div style="padding:1rem 1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;border-bottom:1px solid var(--bg3)" id="demo-metrics">
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-latency">847ms</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Latency</span></div>
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-tokens">312</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Tokens</span></div>
-        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-cost">$0.0019</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Cost</span></div>
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-latency">624ms</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Latency</span></div>
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-tokens">298</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Tokens</span></div>
+        <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--cream);display:block" id="demo-cost">$0.0018</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Cost</span></div>
         <div style="text-align:center"><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;display:block" id="demo-status" style="color:var(--green-light)">✓ OK</span><span style="font-family:var(--font-mono);font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather)">Status</span></div>
       </div>
 
@@ -329,11 +329,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <script>
 var demos = [
   {
-    prompt: 'Summarize Q3 2025 earnings for Acme Corp: revenue $42M (+18% YoY), net income $8.2M, 340 enterprise customers, ARR crossed $150M. CEO Jane Chen said "We\'re seeing unprecedented demand in the mid-market segment."',
-    model: 'gpt-4o',
-    routed: 'gpt-4o-mini',
-    response: 'Acme Corp reported strong Q3 2025 results: revenue reached $42M, up 18% year-over-year, with net income of $8.2M. The company now serves 340 enterprise customers and has crossed $150M in ARR. CEO Jane Chen highlighted accelerating mid-market demand as a key growth driver.',
-    latency: '847ms', tokens: '312', cost: '$0.0019',
+    prompt: 'Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M. CEO Jane Chen said "Our mid-market expansion is accelerating faster than our most optimistic projections."',
+    model: 'gpt-5.4',
+    routed: 'gpt-5.4-mini',
+    response: 'Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR. CEO Jane Chen pointed to accelerating mid-market expansion as the primary growth driver, calling it ahead of even their most optimistic internal projections.',
+    latency: '624ms', tokens: '298', cost: '$0.0018',
     modules: [
       {name:'ratelimit', status:'pass'},
       {name:'promptguard', status:'pass'},
@@ -341,21 +341,21 @@ var demos = [
       {name:'cachelayer', status:'skip', note:'miss'},
       {name:'secretscan', status:'pass'},
       {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'warn', note:'routed→mini'},
+      {name:'autopilot', status:'warn', note:'routed→5.4-mini'},
       {name:'costtrack', status:'pass'},
     ],
     chainTime: '410ns',
     insights: [
-      {type:'save', title:'Drover routed gpt-4o → gpt-4o-mini', detail:'Quality 0.89 (above 0.80 threshold). This request cost $0.0019 instead of $0.0480 — 25x cheaper.', cta:'Try Drover free (100/day)', url:'/drover/'},
-      {type:'info', title:'Similar prompt seen 12 times this week', detail:'"Summarize...earnings" appears across multiple traces. A template could standardize output format and save tokens.', cta:'Explore Tack Room', url:'/studio/'},
+      {type:'save', title:'Drover routed gpt-5.4 → gpt-5.4-mini', detail:'Quality 0.91 (above 0.80 threshold). This request cost $0.0018 instead of $0.0119 — 6.6x cheaper. Over 1,000 requests/day, that\'s ~$300/mo saved.', cta:'Try Drover free (100/day)', url:'/drover/'},
+      {type:'info', title:'Similar prompt seen 14 times this week', detail:'"Summarize...earnings" appears across multiple traces with minor variations. A Tack Room template could standardize output and save tokens.', cta:'Explore Tack Room', url:'/studio/'},
     ]
   },
   {
     prompt: 'Draft a professional email to sarah.martinez@acmecorp.com regarding her refund request #RF-4821 for $2,340. Her credit card ending in 4242 was charged twice on March 15. Apologize and confirm the refund will appear in 5-7 business days.',
-    model: 'gpt-4o',
-    routed: 'gpt-4o-mini',
-    response: 'Subject: Refund Confirmation — Request #RF-4821\n\nDear Sarah,\n\nThank you for bringing the duplicate charge to our attention. We sincerely apologize for the inconvenience. We\'ve processed your refund, and it will appear on your statement within 5–7 business days.\n\nPlease don\'t hesitate to reach out if you have any further questions.\n\nBest regards,\nCustomer Support Team',
-    latency: '1,204ms', tokens: '486', cost: '$0.0029',
+    model: 'claude-sonnet-4-6',
+    routed: 'gpt-5.4-nano',
+    response: 'Subject: Refund Confirmation — Request #RF-4821\n\nDear Sarah,\n\nThank you for bringing the duplicate charge to our attention. We sincerely apologize for the inconvenience. We\'ve processed your refund of $2,340, and it will appear on your statement within 5–7 business days.\n\nPlease don\'t hesitate to reach out if you have any further questions.\n\nBest regards,\nCustomer Support Team',
+    latency: '890ms', tokens: '462', cost: '$0.0008',
     modules: [
       {name:'ratelimit', status:'pass'},
       {name:'promptguard', status:'pass'},
@@ -363,21 +363,21 @@ var demos = [
       {name:'secretscan', status:'warn', note:'PII found'},
       {name:'cachelayer', status:'skip', note:'miss'},
       {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'warn', note:'routed→mini'},
+      {name:'autopilot', status:'warn', note:'routed→5.4-nano'},
       {name:'costtrack', status:'pass'},
     ],
     chainTime: '380ns',
     insights: [
-      {type:'warn', title:'PII detected in prompt', detail:'Found: email address, credit card (ending 4242), dollar amount, name. This data is being sent to OpenAI.', cta:'Unlock PII redaction with Team ($299.99/mo)', url:'/pricing/'},
-      {type:'save', title:'Drover saved $0.045 on this request', detail:'Routed from gpt-4o to gpt-4o-mini. Quality score 0.91 — above threshold. 16x cost reduction.', cta:'Try Drover free (100/day)', url:'/drover/'},
+      {type:'warn', title:'PII detected in prompt', detail:'Found: email address, credit card (ending 4242), dollar amount, name. This data is being sent to a third-party LLM provider.', cta:'Unlock PII redaction with Team ($299.99/mo)', url:'/pricing/'},
+      {type:'save', title:'Drover cross-provider routed to gpt-5.4-nano', detail:'Requested claude-sonnet-4-6 ($0.018/req avg), routed to gpt-5.4-nano ($0.0008/req). Quality 0.88 for email drafting. 22x cost reduction.', cta:'Try Drover free (100/day)', url:'/drover/'},
     ]
   },
   {
     prompt: 'Write a PostgreSQL query to find all users who signed up in the last 90 days, made at least one purchase, but haven\'t logged in for 30 days. Include their email, last login date, total spend, and days since last activity. Order by total spend descending.',
-    model: 'gpt-4o',
-    routed: 'gpt-4o',
+    model: 'gpt-5.4',
+    routed: 'gpt-5.4',
     response: 'SELECT\n  u.email,\n  u.last_login_at,\n  SUM(o.total_amount) AS total_spend,\n  EXTRACT(DAY FROM NOW() - u.last_login_at) AS days_inactive\nFROM users u\nJOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= NOW() - INTERVAL \'90 days\'\n  AND u.last_login_at < NOW() - INTERVAL \'30 days\'\nGROUP BY u.id, u.email, u.last_login_at\nHAVING COUNT(o.id) >= 1\nORDER BY total_spend DESC;',
-    latency: '1,892ms', tokens: '583', cost: '$0.0480',
+    latency: '1,340ms', tokens: '547', cost: '$0.0119',
     modules: [
       {name:'ratelimit', status:'pass'},
       {name:'promptguard', status:'pass'},
@@ -386,21 +386,21 @@ var demos = [
       {name:'cachelayer', status:'skip', note:'miss'},
       {name:'secretscan', status:'pass'},
       {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'skip', note:'kept gpt-4o'},
+      {name:'autopilot', status:'skip', note:'kept gpt-5.4'},
       {name:'costtrack', status:'pass'},
     ],
     chainTime: '450ns',
     insights: [
-      {type:'info', title:'Drover kept gpt-4o for this request', detail:'Code generation tasks score 0.72 on cheaper models — below the 0.80 threshold. Drover correctly kept the expensive model for quality.', cta:'See calibration scores', url:'/drover/'},
-      {type:'save', title:'This prompt is a template candidate', detail:'Churn analysis queries appear 8 times this week with different column names. A parameterized template would ensure consistent output.', cta:'Explore Tack Room', url:'/studio/'},
+      {type:'info', title:'Drover kept gpt-5.4 for this request', detail:'Code generation tasks score 0.71 on gpt-5.4-mini and 0.58 on nano — both below the 0.80 threshold. Drover correctly kept the flagship model for code quality.', cta:'See calibration scores', url:'/drover/'},
+      {type:'save', title:'This prompt is a template candidate', detail:'Churn analysis queries appear 8 times this week with different column names. A parameterized template in Tack Room would ensure consistent output.', cta:'Explore Tack Room', url:'/studio/'},
     ]
   },
   {
-    prompt: 'Translate this product description to Spanish, French, and Japanese. Keep the brand voice casual and energetic:\n\n"Meet the AirPod Max 2 — studio sound that travels with you. 48-hour battery, adaptive noise canceling, and spatial audio that makes every song feel live."',
-    model: 'gpt-4o',
-    routed: 'gpt-4o-mini',
-    response: 'Spanish: Conoce los AirPod Max 2 — sonido de estudio que viaja contigo. 48 horas de batería, cancelación de ruido adaptativa y audio espacial que hace que cada canción se sienta en vivo.\n\nFrench: Découvrez les AirPod Max 2 — un son studio qui vous accompagne partout. 48 heures d\'autonomie, réduction de bruit adaptative et audio spatial qui donne vie à chaque chanson.\n\nJapanese: AirPod Max 2 登場 — スタジオサウンドをどこへでも。48時間バッテリー、アダプティブノイズキャンセリング、すべての曲をライブのように感じさせる空間オーディオ。',
-    latency: '2,341ms', tokens: '724', cost: '$0.0043',
+    prompt: 'Translate this product description to Spanish, French, and Japanese. Keep the brand voice casual and energetic:\n\n"The new Surface Pro 11 — laptop power that detaches into a tablet. 22-hour battery, AI-accelerated workflows, and a screen so vivid it makes color jealous."',
+    model: 'claude-opus-4-6',
+    routed: 'gpt-5.4-mini',
+    response: 'Spanish: La nueva Surface Pro 11 — potencia de laptop que se convierte en tablet. 22 horas de batería, flujos de trabajo acelerados por IA y una pantalla tan vívida que le da envidia al color.\n\nFrench: Le nouveau Surface Pro 11 — la puissance d\'un laptop qui se détache en tablette. 22 heures d\'autonomie, workflows accélérés par l\'IA et un écran si éclatant qu\'il rend les couleurs jalouses.\n\nJapanese: 新しいSurface Pro 11 — タブレットに変身するノートPCパワー。22時間バッテリー、AIで加速するワークフロー、色が嫉妬するほど鮮やかなスクリーン。',
+    latency: '1,780ms', tokens: '692', cost: '$0.0042',
     modules: [
       {name:'ratelimit', status:'pass'},
       {name:'promptguard', status:'pass'},
@@ -408,13 +408,13 @@ var demos = [
       {name:'cachelayer', status:'skip', note:'miss'},
       {name:'secretscan', status:'pass'},
       {name:'tracelink', status:'pass'},
-      {name:'autopilot', status:'warn', note:'routed→mini'},
+      {name:'autopilot', status:'warn', note:'routed→5.4-mini'},
       {name:'costtrack', status:'pass'},
     ],
     chainTime: '395ns',
     insights: [
-      {type:'save', title:'Drover saved $0.068 on this request', detail:'Translation routed from gpt-4o ($0.0720) to gpt-4o-mini ($0.0043). Quality score 0.87 — fluent and accurate across all 3 languages.', cta:'Try Drover free (100/day)', url:'/drover/'},
-      {type:'info', title:'Consider Lasso for translation QA', detail:'Replay this prompt against Claude to compare translation quality. Lasso runs side-by-side comparisons with cost and quality scoring.', cta:'See Lasso', url:'/lasso/'},
+      {type:'save', title:'Drover cross-provider saved $0.093 on this request', detail:'Requested claude-opus-4-6 ($0.097/req), routed to gpt-5.4-mini ($0.0042/req). Quality score 0.86 — fluent and accurate across all 3 languages. 23x cheaper.', cta:'Try Drover free (100/day)', url:'/drover/'},
+      {type:'info', title:'Consider Lasso for translation QA', detail:'Replay this prompt against Claude Sonnet 4.6 and gpt-5.4 to compare translation fluency. Lasso runs side-by-side comparisons with cost and quality scoring.', cta:'See Lasso', url:'/lasso/'},
     ]
   }
 ];
