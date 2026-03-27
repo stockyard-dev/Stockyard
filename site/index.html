@@ -7,10 +7,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Stockyard — The LLM Infrastructure Platform for Teams That Ship</title>
-<meta name="description" content="76 middleware modules, free to start. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products as your stack grows. One Go binary, zero dependencies.">
-<meta property="og:title" content="Stockyard — The LLM Infrastructure Platform for Teams That Ship">
-<meta property="og:description" content="76 middleware modules, free to start. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products as you grow.">
+<title>Stockyard — Self-Hosted LLM Proxy, Tracing &amp; Security in One Binary</title>
+<meta name="description" content="Self-hosted LLM proxy with tracing, red-team testing, and autopilot routing. One Go binary, zero dependencies. Route to 16 providers, cut costs up to 25x. Free to start.">
+<meta property="og:title" content="Stockyard — Self-Hosted LLM Proxy, Tracing &amp; Security in One Binary">
+<meta property="og:description" content="Route to 16 providers, trace every request, red-team your stack, cut costs up to 25x. One binary, five minutes, free to start.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -143,6 +143,8 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 footer{text-align:center;padding:2rem;font-size:0.7rem;color:var(--cream-muted);font-family:var(--font-mono);border-top:1px solid var(--bg3)}
 footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 @media(max-width:600px){.hero{padding:5rem 1.5rem 3rem}.hero-stats{gap:1.5rem}.compare-table{font-size:0.7rem;display:block;overflow-x:auto}.code-section pre{font-size:0.7rem;padding:0.8rem}}
+.outcomes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto}
+@media(max-width:768px){.outcomes-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -163,13 +165,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <section class="hero" id="main">
   <div class="hero-eyebrow">One Binary &middot; Zero Dependencies &middot; Source Available</div>
-  <h1>The LLM infrastructure platform <span class="accent">for teams that ship.</span></h1>
-  <p class="hero-sub">76 middleware modules, free to start. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products as your stack grows.</p>
+  <h1>Self-hosted LLM proxy, tracing, and security <span class="accent">in one binary.</span></h1>
+  <p class="hero-sub">Route to 16 providers, trace every request, red-team your stack, and cut costs up to 25x. Install in five minutes. Free to start, unlockable as you grow.</p>
   <div class="hero-stats">
-    <div class="stat"><span class="stat-num">76</span><span class="stat-label">Free Modules</span></div>
-    <div class="stat"><span class="stat-num">29</span><span class="stat-label">Unlockable Products</span></div>
+    <div class="stat"><span class="stat-num">~25MB</span><span class="stat-label">Single Binary</span></div>
     <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
     <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></div>
+    <div class="stat"><span class="stat-num">5 min</span><span class="stat-label">To First Trace</span></div>
   </div>
   <div class="cta-group">
     <a href="/guide/" class="btn btn-primary">Start Free</a>
@@ -178,6 +180,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <div class="install-cmd" style="margin-top:1.5rem" onclick="copyInstall()" title="Click to copy">
     <span>curl -fsSL stockyard.dev/install.sh | sh</span>
     <span style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem" id="copy-hint">click to copy</span>
+  </div>
+</section>
+
+<!-- Buyer outcomes — answer the three questions before showing catalog -->
+<section class="section">
+  <div class="outcomes-grid">
+    <div style="padding:2rem 1.5rem;border:1px solid var(--bg3);border-top:3px solid var(--green-light)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--green-light);margin-bottom:0.8rem">Save money</div>
+      <div style="font-size:1rem;color:var(--cream);margin-bottom:0.6rem;font-weight:700">Cut LLM costs up to 25x</div>
+      <p style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem">Drover &mdash; automatic model routing &mdash; sends each request to the cheapest model that maintains quality. 100 free routing decisions per day. Calibrate with Lasso &mdash; request replay &mdash; to prove it.</p>
+      <a href="/ship-cheaper/" style="font-family:var(--font-mono);font-size:0.72rem">See the savings path &rarr;</a>
+    </div>
+    <div style="padding:2rem 1.5rem;border:1px solid var(--bg3);border-top:3px solid var(--rust-light)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:0.8rem">Ship safer</div>
+      <div style="font-size:1rem;color:var(--cream);margin-bottom:0.6rem;font-weight:700">Red-team your stack in 10 seconds</div>
+      <p style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem">Feral &mdash; adversarial testing &mdash; throws 5 attack probes for free and grades your defenses A&ndash;F. Catch injection, jailbreak, and PII exfiltration before your users do.</p>
+      <a href="/ship-safer/" style="font-family:var(--font-mono);font-size:0.72rem">See the safety path &rarr;</a>
+    </div>
+    <div style="padding:2rem 1.5rem;border:1px solid var(--bg3);border-top:3px solid var(--gold)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem">Install in 5 minutes</div>
+      <div style="font-size:1rem;color:var(--cream);margin-bottom:0.6rem;font-weight:700">One binary, zero dependencies</div>
+      <p style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem">~25MB static Go binary. No Redis, no Postgres, no Docker compose. Bring your existing API keys, point your code at Stockyard, and see the first trace appear in minutes.</p>
+      <a href="/guide/" style="font-family:var(--font-mono);font-size:0.72rem">Install now &rarr;</a>
+    </div>
   </div>
 </section>
 
@@ -460,11 +486,27 @@ function dxCloseDetail() {
 dxPick(0);
 </script>
 
+<!-- What do you need? — goal-oriented, moved above catalog -->
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What do you need?</h2>
+    <p style="color:var(--cream-dim);font-style:italic;text-align:center;max-width:560px;margin:0 auto 2rem">Don&rsquo;t browse 29 products. Pick a goal.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.8rem">
+      <a href="/ship-cheaper/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green-light);display:block;margin-bottom:0.3rem">Ship Cheaper</span><span style="font-size:0.75rem;color:var(--cream-dim)">Cut costs 5&ndash;25x without losing quality</span></a>
+      <a href="/ship-safer/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--rust-light);display:block;margin-bottom:0.3rem">Ship Safer</span><span style="font-size:0.75rem;color:var(--cream-dim)">Red-team, block injections, catch PII</span></a>
+      <a href="/ship-faster/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--gold);display:block;margin-bottom:0.3rem">Ship Faster</span><span style="font-size:0.75rem;color:var(--cream-dim)">Failover, caching, load testing</span></a>
+      <a href="/ship-compliant/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);display:block;margin-bottom:0.3rem">Ship Compliant</span><span style="font-size:0.75rem;color:var(--cream-dim)">Audit trail, provenance, governance</span></a>
+      <a href="/ship-better/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);display:block;margin-bottom:0.3rem">Ship Better</span><span style="font-size:0.75rem;color:var(--cream-dim)">Replay, evolve, gate quality</span></a>
+    </div>
+    <p style="text-align:center;font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1.2rem">Or run all five at once: <code style="color:var(--leather-light)">POST /api/optimize</code> &mdash; one endpoint, full stack review.</p>
+  </div>
+</section>
+
 <!-- What you get free -->
 <section class="section-alt">
   <div class="section-alt-inner">
     <h2 class="section-label green">What you get free</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">The most capable free LLM proxy available. Production-ready from day one.</p>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">A production-ready LLM proxy from your first request. No limits, no credit card.</p>
     <div class="free-grid">
       <div class="free-card">
         <span class="free-num">76</span>
@@ -489,7 +531,7 @@ dxPick(0);
 <!-- What you unlock -->
 <div class="section">
   <h2 class="section-label gold">What you unlock</h2>
-  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">29 products nobody else has. Each one unlocks at the tier where it earns its keep.</p>
+  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">29 products that unlock as your needs grow. Each one gated at the tier where it earns its keep.</p>
   <div class="flagships">
     <div class="flagship">
       <span class="flagship-badge badge-individual">Individual &middot; $29.99/mo</span>
@@ -523,27 +565,11 @@ dxPick(0);
   <p style="text-align:center;margin-top:2rem"><a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">See all tiers &amp; what unlocks &rarr;</a></p>
 </div>
 
-<!-- Workflow bundles -->
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">What do you need?</h2>
-    <p style="color:var(--cream-dim);font-style:italic;text-align:center;max-width:560px;margin:0 auto 2rem">Don&rsquo;t browse 29 products. Tell us the goal. We&rsquo;ll show you which products to use, in what order.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.8rem">
-      <a href="/ship-cheaper/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green-light);display:block;margin-bottom:0.3rem">Ship Cheaper</span><span style="font-size:0.75rem;color:var(--cream-dim)">Cut costs 5&ndash;25x without losing quality</span></a>
-      <a href="/ship-safer/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--red);display:block;margin-bottom:0.3rem">Ship Safer</span><span style="font-size:0.75rem;color:var(--cream-dim)">Red-team, block injections, catch PII</span></a>
-      <a href="/ship-faster/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--gold);display:block;margin-bottom:0.3rem">Ship Faster</span><span style="font-size:0.75rem;color:var(--cream-dim)">Failover, caching, load testing</span></a>
-      <a href="/ship-compliant/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);display:block;margin-bottom:0.3rem">Ship Compliant</span><span style="font-size:0.75rem;color:var(--cream-dim)">Audit trail, provenance, governance</span></a>
-      <a href="/ship-better/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--rust-light);display:block;margin-bottom:0.3rem">Ship Better</span><span style="font-size:0.75rem;color:var(--cream-dim)">Replay, evolve, gate quality</span></a>
-    </div>
-    <p style="text-align:center;font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1.2rem">Or run all five at once: <code style="color:var(--leather-light)">POST /api/optimize</code> &mdash; one endpoint, full stack review, ordered recommendations.</p>
-  </div>
-</section>
-
 
 <!-- Upgrade path visual -->
 <div class="section">
   <h2 class="section-label">The upgrade path</h2>
-  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Start with the best free proxy on earth. Unlock products as your needs grow.</p>
+  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Start free with a full-featured proxy. Unlock products as your needs grow.</p>
   <div class="upgrade-path">
     <div class="upgrade-step">
       <div class="upgrade-tier" style="color:var(--green-light)">Free</div>
@@ -573,7 +599,26 @@ dxPick(0);
   <p style="text-align:center;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">Enterprise ($499.99/mo): all 29 products + Cortex, Mycelium, Spore, Molt, SSO, SLA &middot; <a href="/pricing/" style="color:var(--leather-light)">Full pricing details</a></p>
 </div>
 
-<!-- All 29 products -->
+<!-- Comparison — proof before catalog -->
+<section class="compare">
+  <h2 class="section-label">How Stockyard compares</h2>
+  <table class="compare-table">
+    <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th><th>Helicone</th></tr>
+    <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
+    <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip + Redis + Postgres</td><td class="them">Managed SaaS</td></tr>
+    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td><td class="them">Cloud only</td></tr>
+    <tr><td>Free tier</td><td class="us">76 modules, Drover, Feral scan, insights</td><td class="them">Open source proxy</td><td class="them">Limited requests</td></tr>
+    <tr><td>Auto-routing</td><td class="us">Built-in (Drover)</td><td class="them">Basic fallback</td><td class="them">No</td></tr>
+    <tr><td>Red-team</td><td class="us">Built-in (Feral)</td><td class="them">No</td><td class="them">No</td></tr>
+    <tr><td>Request replay</td><td class="us">Built-in (Lasso)</td><td class="them">No</td><td class="them">No</td></tr>
+    <tr><td>Audit ledger</td><td class="us">Hash-chained (Brand)</td><td class="them">No</td><td class="them">No</td></tr>
+    <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td><td class="them">Cloud</td></tr>
+    <tr><td>License</td><td class="us">Source-available (BSL)</td><td class="them">MIT</td><td class="them">Proprietary</td></tr>
+  </table>
+  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">vs LiteLLM &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a> &nbsp;&middot;&nbsp; <a href="/benchmarks/">Benchmarks &rarr;</a></p>
+</section>
+
+<!-- All 29 products — deep catalog, after proof -->
 <section class="section-alt">
   <div class="section-alt-inner">
     <h2 class="section-label leather">All 29 products</h2>
@@ -595,64 +640,42 @@ dxPick(0);
     </div>
     <div class="product-grid" id="all-products">
       <!-- Fence (infra) -->
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-team">Team</span><span class="product-cat">Fence</span><span class="product-name">Tide</span><span class="product-desc">Schema migration and platform lifecycle management.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Molt</span><span class="product-desc">Auto-shed unused modules. Detect zero-activity, prune dead weight.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Mycelium</span><span class="product-desc">Insight extraction. The underground network that surfaces patterns.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Spore</span><span class="product-desc">Pattern replication with cap and retirement. Evolving defenses.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Fence</span><span class="product-name">Spine</span><span class="product-desc">Structural backbone. Health probes, readiness checks, diagnostics.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Fence</span><span class="product-name">Lasso</span><span class="product-desc">Request replay. Re-run any trace against different models and compare.</span></div>
+      <div class="product-card" data-cat="fence"><span class="product-tier badge-team">Team</span><span class="product-cat">Fence</span><span class="product-name">Tide <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; migrations</span></span><span class="product-desc">Schema migration and platform lifecycle management.</span></div>
+      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Molt <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; dead-weight cleanup</span></span><span class="product-desc">Auto-shed unused modules. Detect zero-activity, prune dead weight.</span></div>
+      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Mycelium <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; cross-instance insights</span></span><span class="product-desc">Insight extraction across instances. Surfaces patterns you wouldn&rsquo;t find alone.</span></div>
+      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Spore <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; adaptive patterns</span></span><span class="product-desc">Self-replicating event patterns with cap and retirement. Evolving defenses.</span></div>
+      <div class="product-card" data-cat="fence"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Fence</span><span class="product-name">Spine <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; health checks</span></span><span class="product-desc">Health probes, readiness checks, and diagnostics for your stack.</span></div>
+      <div class="product-card" data-cat="fence"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Fence</span><span class="product-name">Lasso <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; request replay</span></span><span class="product-desc">Re-run any trace against different models and compare cost, latency, quality.</span></div>
       <!-- Herd (quality) -->
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Phantom</span><span class="product-desc">Persona-based testing. Synthetic users probe your system for weaknesses.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Feral</span><span class="product-desc">Red-team engine. Free 5-probe quickscan. Full 29-probe suite on Team.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Crucible</span><span class="product-desc">Confidence scoring. How certain is the model? Track over time.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Fault</span><span class="product-desc">Chaos engineering for LLMs. Inject latency, errors, rate limits.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Fossil Record</span><span class="product-desc">Historical analysis. How have your models and costs changed?</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Herd</span><span class="product-name">Doubt</span><span class="product-desc">Hallucination detection. Flag uncertain or fabricated outputs.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Hollow</span><span class="product-desc">Shadow testing. Run requests through shadow models silently.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Herd</span><span class="product-name">Relic</span><span class="product-desc">Provenance tracking. Where did this output come from? Full lineage.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Phantom <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; synthetic users</span></span><span class="product-desc">Persona-based testing. Synthetic users probe your system for weaknesses.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Feral <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; red-team testing</span></span><span class="product-desc">Free 5-probe quickscan. Full 29-probe adversarial suite on Team.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Crucible <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; confidence scoring</span></span><span class="product-desc">How certain is the model? Track confidence over time.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Fault <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; chaos engineering</span></span><span class="product-desc">Inject latency, errors, and rate limits to stress-test your LLM stack.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Fossil Record <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; trend analysis</span></span><span class="product-desc">How have your models, costs, and quality changed over time?</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Herd</span><span class="product-name">Doubt <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; hallucination detection</span></span><span class="product-desc">Flag uncertain or fabricated outputs before they reach users.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Hollow <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; shadow testing</span></span><span class="product-desc">Run requests through shadow models silently. Compare without shipping.</span></div>
+      <div class="product-card" data-cat="herd"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Herd</span><span class="product-name">Relic <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; provenance tracking</span></span><span class="product-desc">Where did this output come from? Full lineage and certificates.</span></div>
       <!-- Scout (insight) -->
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Scout</span><span class="product-name">Cortex</span><span class="product-desc">Platform memory. Live stat refresh, trace enrichment, institutional knowledge.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Trailhead</span><span class="product-desc">Onboarding intelligence. What do new users need?</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Prism</span><span class="product-desc">Multi-angle analysis. Cost, quality, and speed perspectives.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">S&eacute;ance</span><span class="product-desc">Resurrect and replay historical conversations.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Fossil</span><span class="product-desc">Deep archival. Long-term storage with compression and retrieval.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Tide Pool</span><span class="product-desc">Micro-analytics. Small-scale pattern detection in request pools.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Echo</span><span class="product-desc">Response monitoring. Track how outputs change across versions.</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Scout</span><span class="product-name">Cortex <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; platform memory</span></span><span class="product-desc">Live stat refresh, trace enrichment, institutional knowledge.</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Trailhead <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; onboarding</span></span><span class="product-desc">Onboarding intelligence. What do new users need?</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Prism <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; multi-angle analysis</span></span><span class="product-desc">Cost, quality, and speed perspectives on every request.</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">S&eacute;ance <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; conversation replay</span></span><span class="product-desc">Resurrect and replay historical conversations.</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Fossil <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; deep archival</span></span><span class="product-desc">Long-term storage with compression and retrieval.</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Tide Pool <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; micro-analytics</span></span><span class="product-desc">Small-scale pattern detection in request pools.</span></div>
+      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Echo <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; response drift</span></span><span class="product-desc">Track how model outputs change across versions and time.</span></div>
       <!-- Trail (lifecycle) -->
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Trail</span><span class="product-name">Stampede</span><span class="product-desc">Load testing. Flood your stack with synthetic traffic.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Trail</span><span class="product-name">Breed</span><span class="product-desc">Genetic prompt optimization. Evolve, crossover, mutate, tournament.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Trail</span><span class="product-name">Iron</span><span class="product-desc">Hardening and compliance. Security policies enforced platform-wide.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Trail</span><span class="product-name">Ramrod</span><span class="product-desc">Orchestration. Coordinate multi-step workflows across products.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Trail</span><span class="product-name">Verdikt</span><span class="product-desc">Final evaluation. Quality gates before responses reach users.</span></div>
+      <div class="product-card" data-cat="trail"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Trail</span><span class="product-name">Stampede <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; load testing</span></span><span class="product-desc">Flood your stack with synthetic traffic. Find limits before users do.</span></div>
+      <div class="product-card" data-cat="trail"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Trail</span><span class="product-name">Breed <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; prompt evolution</span></span><span class="product-desc">Genetic optimization. Evolve, crossover, mutate, tournament.</span></div>
+      <div class="product-card" data-cat="trail"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Trail</span><span class="product-name">Iron <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; compliance hardening</span></span><span class="product-desc">Security policies enforced platform-wide.</span></div>
+      <div class="product-card" data-cat="trail"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Trail</span><span class="product-name">Ramrod <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; orchestration</span></span><span class="product-desc">Coordinate multi-step workflows across products.</span></div>
+      <div class="product-card" data-cat="trail"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Trail</span><span class="product-name">Verdikt <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; quality gates</span></span><span class="product-desc">Final evaluation before responses reach users.</span></div>
       <!-- Range (runtime) -->
-      <div class="product-card" data-cat="range"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Range</span><span class="product-name">Morph</span><span class="product-desc">Request transformation. Rewrite, augment, reshape in flight.</span></div>
-      <div class="product-card" data-cat="range"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Range</span><span class="product-name">Auction</span><span class="product-desc">Dynamic model bidding. Providers compete on price for your requests.</span></div>
-      <div class="product-card" data-cat="range"><span class="product-tier badge-team">Team</span><span class="product-cat">Range</span><span class="product-name">Grain</span><span class="product-desc">Fine-grained access control. Per-key, per-model permissions.</span></div>
+      <div class="product-card" data-cat="range"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Range</span><span class="product-name">Morph <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; request transformation</span></span><span class="product-desc">Rewrite, augment, reshape requests in flight.</span></div>
+      <div class="product-card" data-cat="range"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Range</span><span class="product-name">Auction <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; model bidding</span></span><span class="product-desc">Providers compete on price for your requests.</span></div>
+      <div class="product-card" data-cat="range"><span class="product-tier badge-team">Team</span><span class="product-cat">Range</span><span class="product-name">Grain <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; access control</span></span><span class="product-desc">Per-key, per-model permissions. Fine-grained control over who uses what.</span></div>
     </div>
     <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.8rem"><a href="/products/">Full product details &rarr;</a></p>
   </div>
-</section>
-
-<!-- Comparison -->
-<section class="compare">
-  <h2 class="section-label">How Stockyard compares</h2>
-  <table class="compare-table">
-    <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th><th>Helicone</th></tr>
-    <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
-    <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip + Redis + Postgres</td><td class="them">Managed SaaS</td></tr>
-    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td><td class="them">Cloud only</td></tr>
-    <tr><td>Free tier</td><td class="us">76 modules, Drover, Feral scan, insights</td><td class="them">Open source proxy</td><td class="them">Limited requests</td></tr>
-    <tr><td>Paid products</td><td class="us">29 unlockable</td><td class="them">One proxy</td><td class="them">Observability</td></tr>
-    <tr><td>Auto-insights</td><td class="us">Built-in (free)</td><td class="them">No</td><td class="them">Dashboards only</td></tr>
-    <tr><td>Red-team</td><td class="us">Built-in (Feral)</td><td class="them">No</td><td class="them">No</td></tr>
-    <tr><td>Auto-routing</td><td class="us">Built-in (Drover)</td><td class="them">Basic fallback</td><td class="them">No</td></tr>
-    <tr><td>Request replay</td><td class="us">Built-in (Lasso)</td><td class="them">No</td><td class="them">No</td></tr>
-    <tr><td>Prompt evolution</td><td class="us">Built-in (Breed)</td><td class="them">No</td><td class="them">No</td></tr>
-    <tr><td>Audit ledger</td><td class="us">Hash-chained (Brand)</td><td class="them">No</td><td class="them">No</td></tr>
-    <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td><td class="them">Cloud</td></tr>
-    <tr><td>License</td><td class="us">Source-available (BSL)</td><td class="them">MIT</td><td class="them">Proprietary</td></tr>
-  </table>
-  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">vs LiteLLM &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a></p>
 </section>
 
 <!-- Pricing -->
