@@ -188,9 +188,9 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <p><strong>Static binary.</strong> <code>CGO_ENABLED=0 go build</code> produces a ~25MB binary with zero runtime dependencies. No virtualenv, no pip, no system Python version conflicts. Copy the binary to a server and run it.</p>
 
-    <p><strong>Goroutine-per-request.</strong> Each proxied request gets its own goroutine. The 66-module middleware chain runs synchronously within that goroutine &mdash; no callback spaghetti, no async/await coloring. The runtime handles scheduling across cores.</p>
+    <p><strong>Goroutine-per-request.</strong> Each proxied request gets its own goroutine. The 76-module middleware chain runs synchronously within that goroutine &mdash; no callback spaghetti, no async/await coloring. The runtime handles scheduling across cores.</p>
 
-    <p><strong>Predictable performance.</strong> The full 66-module middleware chain adds ~400ns of overhead per request (benchmarked with <code>go test -bench</code> on Xeon Platinum). That&rsquo;s noise compared to the 1&ndash;5 second LLM provider latency. No GC pauses that matter at this scale.</p>
+    <p><strong>Predictable performance.</strong> The full 76-module middleware chain adds ~400ns of overhead per request (benchmarked with <code>go test -bench</code> on Xeon Platinum). That&rsquo;s noise compared to the 1&ndash;5 second LLM provider latency. No GC pauses that matter at this scale.</p>
 
     <p><strong>Single-port serving.</strong> Go&rsquo;s <code>net/http</code> serves the proxy endpoint (<code>/v1/*</code>), the REST API (<code>/api/*</code>), the dashboard (<code>/ui</code>), and the marketing site (<code>/</code>) all on one port from one process. No nginx, no reverse proxy, no port mapping.</p>
 
@@ -216,7 +216,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <p>Stockyard has 66 middleware modules. Each one implements a simple interface: receive the request context, optionally modify it, call next. The chain runs synchronously &mdash; no event loops, no message queues.</p>
 
-    <p>Every module is toggleable at runtime via a PUT to <code>/api/proxy/modules/{name}</code>. This is stored in SQLite and checked on each request. The overhead of checking 66 module states is negligible (it&rsquo;s an in-memory map lookup with periodic SQLite refresh).</p>
+    <p>Every module is toggleable at runtime via a PUT to <code>/api/proxy/modules/{name}</code>. This is stored in SQLite and checked on each request. The overhead of checking 76 module states is negligible (it&rsquo;s an in-memory map lookup with periodic SQLite refresh).</p>
 
     <p>Some modules people ask about:</p>
 
@@ -261,7 +261,7 @@ curl localhost:4200/v1/chat/completions \
 curl localhost:4200/api/observe/traces?limit=1
 curl localhost:4200/api/trust/ledger?limit=1</code></pre>
 
-    <p>MIT licensed. Source on <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>.</p>
+    <p>Source-available. Code on <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>.</p>
 
     <div class="more-posts">
     <div class="mp-title">More posts</div>

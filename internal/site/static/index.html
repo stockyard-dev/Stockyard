@@ -7,10 +7,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Stockyard — The LLM Infrastructure Platform</title>
-<meta name="description" content="76 middleware modules free. 29 products unlock as you grow. Autopilot routing, red-team testing, request replay, genetic prompt optimization. One Go binary, zero dependencies.">
-<meta property="og:title" content="Stockyard — 76 Modules Free. 29 Products As You Grow.">
-<meta property="og:description" content="The complete LLM infrastructure platform. Free proxy with 76 modules. Unlock Lasso, Drover, Feral, Breed, and 25 more products as you scale.">
+<title>Stockyard — The LLM Infrastructure Platform for Teams That Ship</title>
+<meta name="description" content="76 middleware modules, free to start. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products as your stack grows. One Go binary, zero dependencies.">
+<meta property="og:title" content="Stockyard — The LLM Infrastructure Platform for Teams That Ship">
+<meta property="og:description" content="76 middleware modules, free to start. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products as you grow.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -162,19 +162,20 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </nav>
 
 <section class="hero" id="main">
-  <div class="hero-eyebrow">Open Source &middot; MIT Licensed &middot; One Binary</div>
-  <h1>76 modules free. <span class="accent">29 products as you grow.</span></h1>
-  <p class="hero-sub">A ~25MB Go binary with the most complete LLM middleware on earth &mdash; free. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products when you&rsquo;re ready.</p>
+  <div class="hero-eyebrow">One Binary &middot; Zero Dependencies &middot; Source Available</div>
+  <h1>The LLM infrastructure platform <span class="accent">for teams that ship.</span></h1>
+  <p class="hero-sub">76 middleware modules, free to start. Unlock autopilot routing, red-team testing, prompt evolution, and 25 more products as your stack grows.</p>
   <div class="hero-stats">
-    <div class="stat"><span class="stat-num">76</span><span class="stat-label">Modules Free</span></div>
-    <div class="stat"><span class="stat-num">29</span><span class="stat-label">Products</span></div>
+    <div class="stat"><span class="stat-num">76</span><span class="stat-label">Free Modules</span></div>
+    <div class="stat"><span class="stat-num">29</span><span class="stat-label">Unlockable Products</span></div>
     <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
     <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></div>
   </div>
   <div class="cta-group">
-    <a href="/pricing/" class="btn btn-primary">See Plans</a>
-    <a href="/guide/" class="btn btn-secondary">Start Free</a>
+    <a href="/guide/" class="btn btn-primary">Start Free</a>
+    <a href="#demo" class="btn btn-secondary">Watch Demo</a>
   </div>
+  <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1rem">No credit card required &middot; <a href="/pricing/" style="color:var(--leather-light)">See pricing</a></p>
   <div class="install-cmd" style="margin-top:1.5rem" onclick="copyInstall()" title="Click to copy">
     <span>curl -fsSL stockyard.dev/install.sh | sh</span>
     <span style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem" id="copy-hint">click to copy</span>
@@ -185,7 +186,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <section class="section-alt">
   <div class="section-alt-inner">
     <h2 class="section-label green">What you get free</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">The most capable free LLM proxy available. No limits. No catch.</p>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">The most capable free LLM proxy available. Production-ready from day one.</p>
     <div class="free-grid">
       <div class="free-card">
         <span class="free-num">76</span>
@@ -203,7 +204,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
         <span class="free-detail">Proxy, tracing, audit ledger, prompt studio, workflows, billing, teams, memory &mdash; the full infrastructure layer.</span>
       </div>
     </div>
-    <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather)">Self-hosted &middot; MIT licensed &middot; Unlimited requests &middot; Forever</p>
+    <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather)">Self-hosted &middot; Source available &middot; Unlimited requests</p>
   </div>
 </section>
 
@@ -245,7 +246,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 <!-- Code demo -->
-<section class="section-alt">
+<section class="section-alt" id="demo">
   <div class="section-alt-inner code-section">
     <h2 class="section-label">See it work</h2>
     <pre><span class="c"># Install (~25MB binary, zero dependencies)</span>
@@ -386,7 +387,7 @@ Console: http://localhost:4200/ui   &#10003; ready</span>
     <tr><td>Prompt evolution</td><td class="us">Built-in (Breed)</td><td class="them">No</td><td class="them">No</td></tr>
     <tr><td>Audit ledger</td><td class="us">Hash-chained (Brand)</td><td class="them">No</td><td class="them">No</td></tr>
     <tr><td>Memory</td><td class="us">~12MB</td><td class="them">~200MB+</td><td class="them">Cloud</td></tr>
-    <tr><td>License</td><td class="us">MIT</td><td class="them">MIT</td><td class="them">Proprietary</td></tr>
+    <tr><td>License</td><td class="us">Source-available (BSL)</td><td class="them">MIT</td><td class="them">Proprietary</td></tr>
   </table>
   <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">vs LiteLLM &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a></p>
 </section>
@@ -396,7 +397,7 @@ Console: http://localhost:4200/ui   &#10003; ready</span>
   <div class="section-alt-inner">
     <h2 class="section-label gold">Pricing</h2>
     <div class="tier-row">
-      <div class="tier"><div class="t-name">Community</div><div class="t-price-free">Free</div><div class="t-period">self-hosted &middot; forever</div><div class="t-unlock" style="color:var(--green-light)">76 modules + 16 apps</div><div class="t-desc">The full proxy, tracing, audit, and infrastructure layer. Unlimited.</div><a href="/guide/" class="t-cta">Get the binary</a></div>
+      <div class="tier"><div class="t-name">Community</div><div class="t-price-free">Free</div><div class="t-period">self-hosted</div><div class="t-unlock" style="color:var(--green-light)">76 modules + 16 apps</div><div class="t-desc">The full proxy, tracing, audit, and infrastructure layer. Unlimited.</div><a href="/guide/" class="t-cta">Start free</a></div>
       <div class="tier"><div class="t-name">Individual</div><div class="t-price">$29.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 5 products</div><div class="t-desc">Lasso replay, Auction bidding, Doubt, Verdikt, Relic provenance.</div><a href="/pricing/" class="t-cta">Start Individual</a></div>
       <div class="tier tier-highlight"><div class="t-name">Pro</div><div class="t-price">$99.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 12 products</div><div class="t-desc">Drover autopilot, Breed evolution, Stampede load testing, Fault chaos.</div><a href="/pricing/" class="t-cta">Go Pro</a></div>
       <div class="tier"><div class="t-name">Team</div><div class="t-price">$299.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 23 products</div><div class="t-desc">Feral red-team, Phantom personas, Crucible scoring, full analytics.</div><a href="/pricing/" class="t-cta">Start Team</a></div>
@@ -420,7 +421,7 @@ Console: http://localhost:4200/ui   &#10003; ready</span>
 <!-- CTA -->
 <section class="footer-cta">
   <h2>Start free. Upgrade when you&rsquo;re ready.</h2>
-  <p>76 modules, 16 providers, full tracing and audit &mdash; free forever. When you need autopilot routing, red-team testing, or prompt evolution, your upgrade is one click away.</p>
+  <p>76 modules, 16 providers, full tracing and audit &mdash; free to start. When you need autopilot routing, red-team testing, or prompt evolution, your upgrade is one click away.</p>
   <div class="cta-group">
     <a href="/pricing/" class="btn btn-primary">See Plans</a>
     <a href="/guide/" class="btn btn-secondary">Start Free</a>
@@ -428,7 +429,7 @@ Console: http://localhost:4200/ui   &#10003; ready</span>
   <div style="display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">
     <span>74,000 lines of Go</span>
     <span>360+ API endpoints</span>
-    <span>MIT Licensed</span>
+    <span>Source Available</span>
   </div>
   <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:1rem">Built by <a href="/about/" style="color:var(--leather-light)">one developer</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--leather-light)">View Source on GitHub</a></p>
 </section>

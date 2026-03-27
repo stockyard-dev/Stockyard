@@ -8,14 +8,14 @@
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard">
 <meta property="og:description" content="We put 66 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.">
-<meta property="og:url" content="https://stockyard.dev/blog/66-modules-400ns/">
+<meta property="og:url" content="https://stockyard.dev/blog/76-modules-400ns/">
 <meta property="og:type" content="article">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard</title>
-<link rel="canonical" href="https://stockyard.dev/blog/66-modules-400ns/">
+<link rel="canonical" href="https://stockyard.dev/blog/76-modules-400ns/">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain","author":{"@type":"Person","name":"Michael"},"datePublished":"2026-03-22","publisher":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"},"description":"We put 66 middleware modules between our app and OpenAI. The entire chain adds 400ns. Here's the architecture.","url":"https://stockyard.dev/blog/66-modules-400ns/","image":"https://stockyard.dev/site-assets/assets/marketing/og-card.png"}
+{"@context":"https://schema.org","@type":"Article","headline":"66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain","author":{"@type":"Person","name":"Michael"},"datePublished":"2026-03-22","publisher":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"},"description":"We put 66 middleware modules between our app and OpenAI. The entire chain adds 400ns. Here's the architecture.","url":"https://stockyard.dev/blog/76-modules-400ns/","image":"https://stockyard.dev/site-assets/assets/marketing/og-card.png"}
 </script>
 <link rel="alternate" type="application/rss+xml" title="Stockyard Blog" href="/blog/feed.xml">
 <meta name="description" content="We put 66 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.">
@@ -102,7 +102,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <table class="bench-table">
     <tr><th>Benchmark</th><th>What It Measures</th><th class="num">Result</th></tr>
-    <tr><td>Full chain execution</td><td>All 66 modules firing in sequence</td><td class="num fast">400ns</td></tr>
+    <tr><td>Full chain execution</td><td>All 76 modules firing in sequence</td><td class="num fast">400ns</td></tr>
     <tr><td>Toggle-aware chain</td><td>Chain with per-module enable/disable checks</td><td class="num fast">1.56&mu;s</td></tr>
     <tr><td>Registry lookup</td><td>Finding a module by name in the registry</td><td class="num fast">23.1ns</td></tr>
   </table>
@@ -156,13 +156,13 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <span class="cmd">    return next.Handle(ctx, req)  // skip this module</span>
 <span class="cmd">}</span></pre>
 
-  <p>The toggle array fits in a single cache line for up to 64 modules. At 66 modules we spill into a second line, but the CPU prefetcher handles this predictably. This is why the registry lookup benchmarks at 23.1ns &mdash; it&rsquo;s a single cache-line read.</p>
+  <p>The toggle array fits in a single cache line for up to 64 modules. At 76 modules we spill into a second line, but the CPU prefetcher handles this predictably. This is why the registry lookup benchmarks at 23.1ns &mdash; it&rsquo;s a single cache-line read.</p>
 
   <h2>3. No Allocations in the Hot Path</h2>
 
   <p>The request context is passed by pointer. Modules that need to attach metadata use <code>context.WithValue</code>, which allocates, but we minimize this by batching metadata into a single struct allocated once per request. Modules that don&rsquo;t modify the context pass the pointer through unchanged.</p>
 
-  <p>We verified this with <code>go test -benchmem</code>: the full 66-module chain allocates 0 bytes per operation when all modules are enabled but no module triggers a side effect (the &ldquo;passthrough&rdquo; case). Real requests do allocate &mdash; PII redaction needs to copy and modify strings, caching needs to serialize &mdash; but the chain overhead itself is allocation-free.</p>
+  <p>We verified this with <code>go test -benchmem</code>: the full 76-module chain allocates 0 bytes per operation when all modules are enabled but no module triggers a side effect (the &ldquo;passthrough&rdquo; case). Real requests do allocate &mdash; PII redaction needs to copy and modify strings, caching needs to serialize &mdash; but the chain overhead itself is allocation-free.</p>
 
   <h2>Real World Numbers</h2>
 
@@ -181,9 +181,9 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <p>If you&rsquo;re building on LLMs, you need most of these modules. Cost caps alone save money. Caching reduces latency by 10-100x for repeated queries. PII redaction is a legal requirement in many jurisdictions. Rate limiting prevents runaway bills.</p>
 
-  <p>The traditional approach is to add each concern as a separate service: a proxy here, an observability tool there, a billing webhook somewhere else. Each hop adds 1-10ms of network latency. Four separate services in the request path add 4-40ms &mdash; orders of magnitude more than running all 66 modules in-process.</p>
+  <p>The traditional approach is to add each concern as a separate service: a proxy here, an observability tool there, a billing webhook somewhere else. Each hop adds 1-10ms of network latency. Four separate services in the request path add 4-40ms &mdash; orders of magnitude more than running all 76 modules in-process.</p>
 
-  <p>That&rsquo;s the core argument for a monolithic middleware chain: <strong>66 modules in-process at 400ns beats 4 services over the network at 4-40ms.</strong> You get more functionality with less latency.</p>
+  <p>That&rsquo;s the core argument for a monolithic middleware chain: <strong>76 modules in-process at 400ns beats 4 services over the network at 4-40ms.</strong> You get more functionality with less latency.</p>
 
   <h2>The Tradeoffs</h2>
 
@@ -199,7 +199,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <h2>Try It</h2>
 
-  <p>Stockyard is open source (MIT). The entire platform &mdash; all 66 modules, all 16 apps, all 16 provider integrations &mdash; is free for self-hosted use.</p>
+  <p>Stockyard is source-available. The entire platform &mdash; all 76 modules, 29 products, all 16 provider integrations &mdash; has a generous free tier.</p>
 
   <pre>
 <span class="cmd">curl -sSL https://stockyard.dev/install.sh | sh</span>

@@ -173,7 +173,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>Proxy</h1>
-    <p class="subtitle">The gateway layer. 66 modules, 16 providers, runtime toggles.</p>
+    <p class="subtitle">The gateway layer. 76 modules, 16 providers, runtime toggles.</p>
 
     <h2 id="overview">Overview</h2>
     <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 66 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
@@ -372,7 +372,7 @@ for module in promptguard toxicfilter guardrail secretscan agentguard; do
     -d '{"enabled": true}'</span>
 done
 </pre>
-    <div class="note"><strong>Performance:</strong> The full 66-module chain adds ~4ms of overhead. Safety modules are the heaviest at 0.06&ndash;0.35ms each, but still negligible compared to LLM provider latency (500ms&ndash;3s).</div>
+    <div class="note"><strong>Performance:</strong> The full 76-module chain adds ~4ms of overhead. Safety modules are the heaviest at 0.06&ndash;0.35ms each, but still negligible compared to LLM provider latency (500ms&ndash;3s).</div>
 
 
     <h2 id="rate-limiting">Rate Limiting</h2>
