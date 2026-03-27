@@ -15,11 +15,16 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/platform"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 )
+
+// FreeTierDailyLimit is the max autopilot routing decisions per day on Community tier.
+const FreeTierDailyLimit = 100
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -121,13 +126,96 @@ type Autopilot struct {
 	conn   *sql.DB
 	config AutopilotConfig
 	scores map[string]ModelScore // keyed by model name
+
+	// Free-tier daily cap
+	tierWatcher  *platform.TierWatcher
+	dailyCount   atomic.Int64
+	dailyDate    atomic.Value // stores string "2006-01-02"
+	dailySavings atomic.Int64 // stores savings in micro-dollars (x1e6) for precision
 }
 
 // NewAutopilot creates and loads an Autopilot from the database.
-func NewAutopilot(conn *sql.DB) *Autopilot {
-	ap := &Autopilot{conn: conn, scores: make(map[string]ModelScore)}
+func NewAutopilot(conn *sql.DB, tw *platform.TierWatcher) *Autopilot {
+	ap := &Autopilot{conn: conn, scores: make(map[string]ModelScore), tierWatcher: tw}
 	ap.reload()
+
+	// Seed daily counter from existing decisions today
+	today := time.Now().UTC().Format("2006-01-02")
+	ap.dailyDate.Store(today)
+	var count int64
+	var savings float64
+	conn.QueryRow(`SELECT COUNT(*), COALESCE(SUM(estimated_savings),0) FROM autopilot_decisions WHERE created_at >= ?`, today+"T00:00:00Z").Scan(&count, &savings)
+	ap.dailyCount.Store(count)
+	ap.dailySavings.Store(int64(savings * 1e6))
+	log.Printf("[autopilot] free-tier cap: %d/%d used today, savings=$%.4f", count, FreeTierDailyLimit, savings)
+
 	return ap
+}
+
+// resetDailyIfNeeded checks if the date has rolled over and resets counters.
+func (ap *Autopilot) resetDailyIfNeeded() {
+	today := time.Now().UTC().Format("2006-01-02")
+	stored, _ := ap.dailyDate.Load().(string)
+	if stored != today {
+		ap.dailyCount.Store(0)
+		ap.dailySavings.Store(0)
+		ap.dailyDate.Store(today)
+		log.Printf("[autopilot] daily cap reset for %s", today)
+	}
+}
+
+// DailyCapStatus returns current free-tier cap usage.
+func (ap *Autopilot) DailyCapStatus() map[string]any {
+	ap.resetDailyIfNeeded()
+
+	tier := platform.TierCommunity
+	if ap.tierWatcher != nil {
+		tier = ap.tierWatcher.CurrentTier()
+	}
+
+	used := ap.dailyCount.Load()
+	savingsMicro := ap.dailySavings.Load()
+	savingsUSD := float64(savingsMicro) / 1e6
+	capped := tier <= platform.TierCommunity && used >= FreeTierDailyLimit
+
+	result := map[string]any{
+		"tier":          platform.TierName(tier),
+		"used_today":    used,
+		"savings_today": savingsUSD,
+		"capped":        capped,
+	}
+
+	if tier <= platform.TierCommunity {
+		result["limit"] = FreeTierDailyLimit
+		result["remaining"] = max(0, FreeTierDailyLimit-int(used))
+		if capped {
+			result["upgrade_cta"] = map[string]any{
+				"message": fmt.Sprintf("Drover saved you $%.2f today. Upgrade to Pro for unlimited autopilot routing.", savingsUSD),
+				"tier":    "Pro",
+				"price":   "$99.99/mo",
+				"url":     "/pricing/",
+			}
+		} else if used > 0 {
+			result["progress_cta"] = map[string]any{
+				"message": fmt.Sprintf("Drover has saved you $%.2f today (%d/%d free requests used).", savingsUSD, used, FreeTierDailyLimit),
+				"tier":    "Pro",
+				"price":   "$99.99/mo",
+				"url":     "/pricing/",
+			}
+		}
+	} else {
+		result["limit"] = "unlimited"
+		result["remaining"] = "unlimited"
+	}
+
+	return result
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func (ap *Autopilot) reload() {
@@ -248,12 +336,33 @@ func (ap *Autopilot) pickModel(requestedModel string) (string, string, string, f
 // ---------------------------------------------------------------------------
 
 // AutopilotMiddleware returns a middleware that auto-routes to the optimal model.
+// On Community tier, routing is capped at FreeTierDailyLimit per day.
+// When capped, requests pass through un-routed (no error, just no savings).
 func AutopilotMiddleware(ap *Autopilot) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {
 			model, prov, reason, quality, savings := ap.pickModel(req.Model)
 			if model == "" {
 				return next(ctx, req)
+			}
+
+			// Free-tier daily cap enforcement
+			ap.resetDailyIfNeeded()
+			if ap.tierWatcher != nil && ap.tierWatcher.CurrentTier() <= platform.TierCommunity {
+				count := ap.dailyCount.Load()
+				if count >= FreeTierDailyLimit {
+					// Cap reached — pass through without routing
+					if req.Extra == nil {
+						req.Extra = make(map[string]any)
+					}
+					savingsUSD := float64(ap.dailySavings.Load()) / 1e6
+					req.Extra["_autopilot_cap_reached"] = true
+					req.Extra["_autopilot_cap_message"] = fmt.Sprintf(
+						"Drover saved you $%.2f today. Upgrade to Pro for unlimited autopilot routing.",
+						savingsUSD)
+					log.Printf("[autopilot] free-tier cap reached (%d/%d), passing through", count, FreeTierDailyLimit)
+					return next(ctx, req)
+				}
 			}
 
 			if req.Extra == nil {
@@ -273,6 +382,10 @@ func AutopilotMiddleware(ap *Autopilot) proxy.Middleware {
 				req.Extra["_autopilot_original_model"], model, reason, quality, savings)
 
 			resp, err := next(ctx, req)
+
+			// Increment daily counter + savings tracker
+			ap.dailyCount.Add(1)
+			ap.dailySavings.Add(int64(savings * 1e6))
 
 			// Log the decision asynchronously
 			go func() {
@@ -633,6 +746,11 @@ func RegisterAutopilotRoutes(mux *http.ServeMux, conn *sql.DB, ap *Autopilot) {
 	mux.HandleFunc("GET /api/autopilot/decisions", handleAutopilotDecisions(conn))
 	mux.HandleFunc("GET /api/autopilot/stats", handleAutopilotStats(conn, ap))
 	mux.HandleFunc("GET /api/autopilot/calibration-log", handleAutopilotCalibrationLog(conn))
+	mux.HandleFunc("GET /api/autopilot/cap", handleAutopilotCap(ap))
+
+	// Drover route aliases
+	mux.HandleFunc("GET /api/drover/cap", handleAutopilotCap(ap))
+	mux.HandleFunc("GET /api/drover/stats", handleAutopilotStats(conn, ap))
 }
 
 func handleAutopilotGet(ap *Autopilot) http.HandlerFunc {
@@ -854,6 +972,7 @@ func handleAutopilotStats(conn *sql.DB, ap *Autopilot) http.HandlerFunc {
 			"today_savings_usd":  todaySavings,
 			"route_distribution": dist,
 			"calibrations_run":   totalCalibrations,
+			"daily_cap":          ap.DailyCapStatus(),
 		})
 	}
 }
@@ -914,6 +1033,12 @@ func handleAutopilotCalibrationLog(conn *sql.DB) http.HandlerFunc {
 // Suppress unused import warning — strings is used in pickModel comments but
 // keeping the import for future model name matching.
 var _ = strings.Contains
+
+func handleAutopilotCap(ap *Autopilot) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		apJSON(w, 200, ap.DailyCapStatus())
+	}
+}
 
 func apJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")

@@ -132,6 +132,23 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <div class="release">
   <div class="release-header">
+    <span class="release-version">v1.7.0</span>
+    <span class="release-date">March 26, 2026</span>
+    <span class="release-tag tag-new">New</span>
+  </div>
+  <div class="change-group">
+    <div class="change-group-label">Drover &mdash; Free Tier (100 requests/day)</div>
+    <div class="change-item">Drover autopilot routing now works on the free Community tier &mdash; 100 routed requests per day, no credit card required.</div>
+    <div class="change-item">Daily cap counter resets at midnight UTC. Tracks usage, savings, and remaining quota in real time.</div>
+    <div class="change-item">When capped, requests pass through un-routed (no errors, no data loss). Savings accumulate in the dashboard with upgrade CTA.</div>
+    <div class="change-item"><code>GET /api/autopilot/cap</code> &mdash; free-tier usage: used today, remaining, savings, capped status, and upgrade prompt.</div>
+    <div class="change-item"><code>GET /api/drover/cap</code> and <code>GET /api/drover/stats</code> &mdash; new Drover route aliases.</div>
+    <div class="change-item">Pro tier and above get unlimited autopilot routing. <a href="/drover/">Learn more &rarr;</a></div>
+  </div>
+</div>
+
+<div class="release">
+  <div class="release-header">
     <span class="release-version">v1.6.0</span>
     <span class="release-date">March 26, 2026</span>
     <span class="release-tag tag-new">New</span>
@@ -152,7 +169,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Three routing modes: <strong>cost</strong> (cheapest), <strong>speed</strong> (fastest), <strong>balanced</strong> (weighted). Configurable via <code>PUT /api/autopilot</code>.</div>
     <div class="change-item">Every routing decision is logged with estimated savings. Query via <code>GET /api/autopilot/decisions</code>.</div>
     <div class="change-item">Live calibration: 3 models scored, quality threshold 0.80, up to 25x cost reduction measured.</div>
-    <div class="change-item">Drover is available on the Pro tier ($99.99/mo). <a href="/drover/">Learn more &rarr;</a></div>
+    <div class="change-item">Drover launched on Pro tier ($99.99/mo). Now also available free at 100 requests/day &mdash; see v1.7.0. <a href="/drover/">Learn more &rarr;</a></div>
   </div>
   <div class="change-group">
     <div class="change-group-label">Platform</div>

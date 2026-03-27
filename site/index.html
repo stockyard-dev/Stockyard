@@ -224,7 +224,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
       <span class="flagship-badge badge-pro">Pro &middot; $99.99/mo</span>
       <div class="flagship-name">Drover</div>
       <div class="flagship-tagline">Autopilot routing. Every request hits the cheapest model that maintains quality.</div>
-      <div class="flagship-detail">Calibrate via replay &bull; Set quality threshold &bull; Drover picks the cheapest that clears it &bull; Three modes: cost, speed, balanced</div>
+      <div class="flagship-detail">100 free requests/day &bull; Calibrate via replay &bull; Set quality threshold &bull; Three modes: cost, speed, balanced</div>
       <div class="flagship-stat">Up to 25x cheaper with automatic model downgrade</div>
     </div>
     <div class="flagship">
@@ -269,7 +269,7 @@ Console: http://localhost:4200/ui   &#10003; ready</span>
   -d '{"trace_id":"tr_82a...","target_model":"claude-sonnet-4-20250514"}'</span>
 <span class="val">&rarr; Claude: 12.7% faster | same cost | quality: 0.88</span>
 
-<span class="c"># Let Drover pick the cheapest model automatically (Pro tier):</span>
+<span class="c"># Let Drover pick the cheapest model automatically (100 free/day):</span>
 <span class="cmd">$ curl localhost:4200/v1/chat/completions \
   -d '{"model":"auto","messages":[{"role":"user","content":"hello"}]}'</span>
 <span class="val">&rarr; Drover routed to gpt-4o-mini (up to 25x cheaper than gpt-4o)</span></pre>

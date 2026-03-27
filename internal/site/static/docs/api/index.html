@@ -490,6 +490,9 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/decisions</td><td>Routing decision history with per-request savings</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/stats</td><td>Aggregate savings, route distribution, calibration count</td></tr>
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/calibration-log</td><td>Per-trace calibration detail with quality scores</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/autopilot/cap</td><td>Free-tier daily cap: used, remaining, savings, upgrade CTA</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/drover/cap</td><td>Alias &mdash; same as /api/autopilot/cap</td></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/drover/stats</td><td>Alias &mdash; same as /api/autopilot/stats</td></tr>
     </table>
     <pre>
 <span class="comment"># Calibrate 3 models against real traffic</span>
@@ -499,6 +502,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">curl /v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{"model":"auto","messages":[{"role":"user","content":"hello"}]}'</span>
+
+<span class="comment"># Check free-tier cap status and savings</span>
+<span class="cmd">curl /api/drover/cap</span>
+<span class="comment"># → {"used_today":47,"limit":100,"remaining":53,"savings_today":3.20,"capped":false}</span>
 
 <span class="comment"># Check what Drover chose and how much you saved</span>
 <span class="cmd">curl /api/autopilot/decisions?limit=5</span>

@@ -69,18 +69,26 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </nav>
 
 <section class="hero">
-  <div class="eyebrow">Drover &middot; Pro Tier</div>
+  <div class="eyebrow">Drover &middot; Free to try</div>
   <h1>Same quality. <span class="accent">Up to 25x cheaper.</span></h1>
   <p class="sub">Drover calibrates models on real traffic, sets a quality floor, and routes every request to the cheapest model that clears it. Automatically.</p>
   <div class="stats-row">
     <div class="stat"><span class="stat-num">25x</span><span class="stat-label">Cost Reduction</span></div>
     <div class="stat"><span class="stat-num">0.885</span><span class="stat-label">Quality Score</span></div>
-    <div class="stat"><span class="stat-num">3</span><span class="stat-label">Models Calibrated</span></div>
+    <div class="stat"><span class="stat-num">100</span><span class="stat-label">Free Requests/Day</span></div>
     <div class="stat"><span class="stat-num">7</span><span class="stat-label">Calibrations Run</span></div>
   </div>
   <div class="cta-group">
-    <a href="/pricing/" class="btn btn-primary">Unlock Drover &mdash; $99.99/mo</a>
+    <a href="/guide/" class="btn btn-primary">Try Drover Free</a>
     <a href="/docs/api/" class="btn btn-secondary">API Reference</a>
+  </div>
+</section>
+
+<section style="padding:2.5rem 2rem 0;max-width:720px;margin:0 auto">
+  <div style="border:1px solid var(--gold);background:linear-gradient(135deg,rgba(212,168,67,0.06),rgba(196,93,44,0.06));padding:1.5rem 2rem;text-align:center">
+    <div style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);margin-bottom:0.8rem">Try before you buy</div>
+    <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:0.6rem">Every Stockyard account gets <strong style="color:var(--cream)">100 free Drover requests per day</strong>. No credit card required. See your real savings accumulate in the dashboard.</p>
+    <p style="font-size:0.85rem;color:var(--cream-muted)">On request 101, you&rsquo;ll see exactly how much you saved &mdash; and one click unlocks unlimited routing.</p>
   </div>
 </section>
 
@@ -187,25 +195,28 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </section>
 
 <div class="section">
-  <h2 class="section-label">7 API endpoints</h2>
+  <h2 class="section-label">9 API endpoints</h2>
   <div style="font-family:var(--font-mono);font-size:0.8rem;line-height:2.2">
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot</span> &mdash; config + current state + scores</div>
     <div><span style="color:var(--green-light)">PUT</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot</span> &mdash; update threshold, candidates, mode</div>
     <div><span style="color:var(--green-light)">POST</span> <span style="color:var(--cream-dim)">/api/autopilot/calibrate</span> &mdash; run calibration</div>
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot/scores</span> &mdash; model quality leaderboard</div>
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot/decisions</span> &mdash; routing history + savings</div>
-    <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot/stats</span> &mdash; aggregate savings + distribution</div>
+    <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot/stats</span> &mdash; aggregate savings + daily cap status</div>
     <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot/calibration-log</span> &mdash; per-trace calibration details</div>
+    <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/autopilot/cap</span> &mdash; free-tier usage: used, remaining, savings, upgrade CTA</div>
+    <div><span style="color:var(--green-light)">GET</span>&nbsp; <span style="color:var(--cream-dim)">/api/drover/cap</span> &mdash; alias for cap endpoint</div>
   </div>
 </div>
 
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem">Stop overpaying for every request.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:0.5rem">Drover is part of the Pro tier.</p>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:1rem">Start with 100 free requests/day. See your savings. Then decide.</p>
+  <p style="color:var(--cream-muted);font-size:0.9rem;margin-bottom:0.5rem">Need unlimited routing?</p>
   <span class="tier-badge">Pro &middot; $99.99/mo</span>
   <div class="cta-group" style="margin-top:2rem">
-    <a href="/pricing/" class="btn btn-primary">Unlock Drover</a>
-    <a href="/lasso/" class="btn btn-secondary">See Lasso (replay)</a>
+    <a href="/guide/" class="btn btn-primary">Try Drover Free</a>
+    <a href="/pricing/" class="btn btn-secondary">See Pro Pricing</a>
   </div>
 </section>
 
