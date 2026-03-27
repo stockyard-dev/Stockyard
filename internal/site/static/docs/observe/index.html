@@ -174,40 +174,40 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="traces">Traces</h2>
     <pre>
 <span class="comment"># Get recent traces</span>
-<span class="cmd">curl http://localhost:4200/api/observe/traces?limit=20</span>
+<span class="cmd">curl http://localhost:7749/api/observe/traces?limit=20</span>
 
 <span class="comment"># Filter by source (real requests only)</span>
-<span class="cmd">curl http://localhost:4200/api/observe/traces?source=real</span>
+<span class="cmd">curl http://localhost:7749/api/observe/traces?source=real</span>
 </pre>
     <p>Each trace includes: model, provider, status, latency (ms), tokens in/out, cost (USD), timestamp, and a unique trace ID.</p>
 
     <h2 id="costs">Cost Tracking</h2>
     <pre>
 <span class="comment"># Daily cost breakdown</span>
-<span class="cmd">curl http://localhost:4200/api/observe/costs</span>
+<span class="cmd">curl http://localhost:7749/api/observe/costs</span>
 
 <span class="comment"># Time-series data for charts</span>
-<span class="cmd">curl http://localhost:4200/api/observe/timeseries?period=7d</span>
+<span class="cmd">curl http://localhost:7749/api/observe/timeseries?period=7d</span>
 </pre>
     <p>Cost data is broken down by provider and model, so you can see exactly where your spend is going.</p>
 
     <h2 id="alerts">Alerts &amp; Anomalies</h2>
     <pre>
 <span class="comment"># Create an alert rule</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/observe/alerts \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/observe/alerts \</span>
 <span class="cmd">  -d '{"name":"cost-spike","metric":"cost","condition":"gt","threshold":10}'</span>
 
 <span class="comment"># View detected anomalies</span>
-<span class="cmd">curl http://localhost:4200/api/observe/anomalies</span>
+<span class="cmd">curl http://localhost:7749/api/observe/anomalies</span>
 </pre>
 
     <h2 id="safety">Safety Monitoring</h2>
     <pre>
 <span class="comment"># Safety summary (score, events by category)</span>
-<span class="cmd">curl http://localhost:4200/api/observe/safety/summary</span>
+<span class="cmd">curl http://localhost:7749/api/observe/safety/summary</span>
 
 <span class="comment"># Recent safety events</span>
-<span class="cmd">curl http://localhost:4200/api/observe/safety?limit=50</span>
+<span class="cmd">curl http://localhost:7749/api/observe/safety?limit=50</span>
 </pre>
     <p>See the <a href="/observe/">Observe product page</a> for screenshots of the dashboard.</p>
 
@@ -215,7 +215,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="traces">Traces</h2>
     <p>Every request through the proxy creates a trace. Query recent traces:</p>
     <pre>
-<span class="cmd">curl "http://localhost:4200/api/observe/traces?limit=10" \
+<span class="cmd">curl "http://localhost:7749/api/observe/traces?limit=10" \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <p>Response:</p>
@@ -242,14 +242,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="trace-detail">Trace Detail</h2>
     <p>Get full detail for a single trace including the module chain execution:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/observe/traces/tr_abc123 \
+<span class="cmd">curl http://localhost:7749/api/observe/traces/tr_abc123 \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="costs">Cost Tracking</h2>
     <p>View cost rollups aggregated by day, provider, or model:</p>
     <pre>
-<span class="cmd">curl "http://localhost:4200/api/observe/costs?group_by=provider&days=7" \
+<span class="cmd">curl "http://localhost:7749/api/observe/costs?group_by=provider&days=7" \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -267,14 +267,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="timeseries">Time-Series Data</h2>
     <p>Fetch time-series metrics for charting:</p>
     <pre>
-<span class="cmd">curl "http://localhost:4200/api/observe/timeseries?metric=latency&interval=1h&days=1" \
+<span class="cmd">curl "http://localhost:7749/api/observe/timeseries?metric=latency&interval=1h&days=1" \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="alerts">Alert Rules</h2>
     <p>Create alerts that trigger when thresholds are breached:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/observe/alerts \
+<span class="cmd">curl -X POST http://localhost:7749/api/observe/alerts \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -289,20 +289,20 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Alerts can trigger webhooks, email notifications, or both. Update or delete alerts by ID:</p>
     <pre>
 <span class="comment"># Update an alert threshold</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/observe/alerts/alert_id \
+<span class="cmd">curl -X PUT http://localhost:7749/api/observe/alerts/alert_id \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"threshold": 100.00}'</span>
 
 <span class="comment"># Delete an alert</span>
-<span class="cmd">curl -X DELETE http://localhost:4200/api/observe/alerts/alert_id \
+<span class="cmd">curl -X DELETE http://localhost:7749/api/observe/alerts/alert_id \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="dashboard">Dashboard Overview</h2>
     <p>The <code>/api/observe/overview</code> endpoint returns a dashboard summary suitable for building custom UIs:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/observe/overview \
+<span class="cmd">curl http://localhost:7749/api/observe/overview \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -336,15 +336,15 @@ apps:
     <p>Filter traces by model, provider, status, or date range:</p>
     <pre>
 <span class="comment"># Traces for a specific model</span>
-<span class="cmd">curl "http://localhost:4200/api/observe/traces?model=gpt-4o&limit=20" \
+<span class="cmd">curl "http://localhost:7749/api/observe/traces?model=gpt-4o&limit=20" \
   -H "Authorization: Bearer sy_admin_..."</span>
 
 <span class="comment"># Failed requests only</span>
-<span class="cmd">curl "http://localhost:4200/api/observe/traces?status=error&limit=50" \
+<span class="cmd">curl "http://localhost:7749/api/observe/traces?status=error&limit=50" \
   -H "Authorization: Bearer sy_admin_..."</span>
 
 <span class="comment"># Costs grouped by model for the last 30 days</span>
-<span class="cmd">curl "http://localhost:4200/api/observe/costs?group_by=model&days=30" \
+<span class="cmd">curl "http://localhost:7749/api/observe/costs?group_by=model&days=30" \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 

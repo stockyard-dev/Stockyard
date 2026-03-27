@@ -188,7 +188,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="invites">Inviting Members</h2>
     <pre>
 <span class="comment"># Invite a developer</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/team/members \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/team/members \</span>
 <span class="cmd">  -H "Authorization: Bearer $STOCKYARD_ADMIN_KEY" \</span>
 <span class="cmd">  -d '{"email":"alice@acme.co", "name":"Alice", "role":"developer"}'</span>
 
@@ -200,7 +200,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="spend">Spend Tracking</h2>
     <pre>
 <span class="comment"># Get per-member spend for the current month</span>
-<span class="cmd">curl http://localhost:4200/api/team/spend \</span>
+<span class="cmd">curl http://localhost:7749/api/team/spend \</span>
 <span class="cmd">  -H "Authorization: Bearer $STOCKYARD_ADMIN_KEY"</span>
 
 <span class="comment"># Returns request counts, cost, and token breakdown per member</span>

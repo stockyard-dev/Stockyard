@@ -267,10 +267,10 @@ footer a:hover{color:var(--rust-light)}
 <span class="comment"># Output:</span>
 <span class="comment"># Stockyard v1.0 — Where AI infrastructure gets sorted</span>
 <span class="comment"># ┌─────────────────────────────────────────────┐</span>
-<span class="comment"># │  Proxy      :4200/v1    ✓ 76 modules active │</span>
-<span class="comment"># │  Console    :4200/ui    ✓ 29 products        │</span>
-<span class="comment"># │  API        :4200/api   ✓ 350+ endpoints     │</span>
-<span class="comment"># │  Playground :4200/play  ✓ ready              │</span>
+<span class="comment"># │  Proxy      :7749/v1    ✓ 76 modules active │</span>
+<span class="comment"># │  Console    :7749/ui    ✓ 29 products        │</span>
+<span class="comment"># │  API        :7749/api   ✓ 350+ endpoints     │</span>
+<span class="comment"># │  Playground :7749/play  ✓ ready              │</span>
 <span class="comment"># └─────────────────────────────────────────────┘</span>
       </div>
       <div class="outcome">
@@ -282,11 +282,11 @@ footer a:hover{color:var(--rust-light)}
   <div class="step">
     <div class="step-num">3</div>
     <h3>Send your first request</h3>
-    <p class="step-sub">Point any OpenAI-compatible client at localhost:4200.</p>
+    <p class="step-sub">Point any OpenAI-compatible client at localhost:7749.</p>
     <div class="step-body">
       <div class="code-block">
 <span class="comment"># Just change the base URL — your API key stays yours</span>
-<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -H <span class="str">"Authorization: Bearer $OPENAI_API_KEY"</span> \</span>
 <span class="cmd">  -H <span class="str">"Content-Type: application/json"</span> \</span>
 <span class="cmd">  -d <span class="str">'{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</span></span>
@@ -297,7 +297,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="fn">client</span> = <span class="fn">OpenAI</span>()
 
 <span class="comment"># After — through Stockyard</span>
-<span class="fn">client</span> = <span class="fn">OpenAI</span>(<span class="kw">base_url</span>=<span class="str">"http://localhost:4200/v1"</span>)
+<span class="fn">client</span> = <span class="fn">OpenAI</span>(<span class="kw">base_url</span>=<span class="str">"http://localhost:7749/v1"</span>)
       </div>
       <div class="outcome">
         <strong>What just happened:</strong> Your request hit the proxy, flowed through 76 middleware modules (rate limiter, cost tracker, safety filter, semantic cache, etc.), reached OpenAI, and the response came back — with a trace logged in Lookout and an audit event written to Brand. You didn't configure any of that.
@@ -310,7 +310,7 @@ footer a:hover{color:var(--rust-light)}
     <h3>Open the console</h3>
     <p class="step-sub">See what just happened — traces, costs, live events.</p>
     <div class="step-body">
-      <p>Open <code style="background:var(--bg2);padding:2px 6px">http://localhost:4200/ui</code> in your browser.</p>
+      <p>Open <code style="background:var(--bg2);padding:2px 6px">http://localhost:7749/ui</code> in your browser.</p>
       <div class="screenshot-frame">
         <picture><source srcset="/site-assets/assets/screenshots/console-observe.webp" type="image/webp"><img src="/site-assets/assets/screenshots/console-observe.png" alt="Lookout dashboard showing request traces with model, provider, latency, tokens, cost, and time columns" loading="lazy"></picture>
         <div class="screenshot-caption">Lookout → Traces: every request logged with model, latency, tokens, and cost</div>
@@ -329,7 +329,7 @@ footer a:hover{color:var(--rust-light)}
       <p>Navigate to <strong>Proxy</strong> in the sidebar. You'll see all 76 modules with toggle switches.</p>
       <div class="code-block">
 <span class="comment"># Or via the API:</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cost-cap \</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cost-cap \</span>
 <span class="cmd">  -d <span class="str">'{"enabled": true}'</span></span>
       </div>
       <div class="outcome">
@@ -470,7 +470,7 @@ footer a:hover{color:var(--rust-light)}
 
 <span class="comment"># Your API key goes straight to the provider — Stockyard never stores it</span>
 <span class="fn">client</span> = OpenAI(
-    <span class="kw">base_url</span>=<span class="str">"http://localhost:4200/v1"</span>,  <span class="comment"># ← the only change</span>
+    <span class="kw">base_url</span>=<span class="str">"http://localhost:7749/v1"</span>,  <span class="comment"># ← the only change</span>
     <span class="kw">api_key</span>=<span class="str">"sk-your-key"</span>,
 )
 
@@ -486,7 +486,7 @@ footer a:hover{color:var(--rust-light)}
 <span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">"openai"</span>;
 
 <span class="kw">const</span> <span class="fn">client</span> = <span class="kw">new</span> OpenAI({
-  <span class="kw">baseURL</span>: <span class="str">"http://localhost:4200/v1"</span>,  <span class="comment">// ← the only change</span>
+  <span class="kw">baseURL</span>: <span class="str">"http://localhost:7749/v1"</span>,  <span class="comment">// ← the only change</span>
   <span class="kw">apiKey</span>: <span class="str">"sk-your-key"</span>,
 });
 
@@ -499,7 +499,7 @@ console.log(response.choices[0].message.content);
     </div>
     <div id="lang-curl" class="hidden">
       <div class="code-block">
-<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -H <span class="str">"Authorization: Bearer sk-your-key"</span> \</span>
 <span class="cmd">  -H <span class="str">"Content-Type: application/json"</span> \</span>
 <span class="cmd">  -d <span class="str">'{
@@ -511,7 +511,7 @@ console.log(response.choices[0].message.content);
     <div id="lang-env" class="hidden">
       <div class="code-block">
 <span class="comment"># Set once — every OpenAI SDK call in your app routes through Stockyard</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:7749/v1</span>
 
 <span class="comment"># Your existing code works unchanged</span>
 <span class="cmd">python app.py</span>

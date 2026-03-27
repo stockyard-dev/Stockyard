@@ -171,18 +171,18 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="templates">Prompt Templates</h2>
     <pre>
 <span class="comment"># Create a versioned prompt template</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/studio/templates \</span>
 <span class="cmd">  -d '{"slug":"summarizer","name":"Summarizer","content":"Summarize: {{text}}"}'</span>
 
 <span class="comment"># List all templates</span>
-<span class="cmd">curl http://localhost:4200/api/studio/templates</span>
+<span class="cmd">curl http://localhost:7749/api/studio/templates</span>
 </pre>
     <p>Templates support <code>{{variable}}</code> interpolation. Every edit creates a new version automatically.</p>
 
     <h2 id="experiments">A/B Experiments</h2>
     <pre>
 <span class="comment"># Run an A/B test across models</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/studio/experiments/run \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/studio/experiments/run \</span>
 <span class="cmd">  -d '{</span>
 <span class="cmd">    "name": "speed-vs-quality",</span>
 <span class="cmd">    "prompt": "Explain quantum computing in one paragraph",</span>
@@ -196,7 +196,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="benchmarks">Benchmarks</h2>
     <pre>
 <span class="comment"># Run a multi-prompt benchmark</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/studio/benchmarks/run \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/studio/benchmarks/run \</span>
 <span class="cmd">  -d '{</span>
 <span class="cmd">    "name": "model-eval-q1",</span>
 <span class="cmd">    "models": ["gpt-4o-mini","deepseek-chat"],</span>
@@ -213,7 +213,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="templates">Prompt Templates</h2>
     <p>Create versioned prompt templates for reuse and A/B testing:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \
+<span class="cmd">curl -X POST http://localhost:7749/api/studio/templates \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -235,7 +235,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="list-templates">Listing Templates</h2>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/studio/templates \
+<span class="cmd">curl http://localhost:7749/api/studio/templates \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -251,7 +251,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="experiments">A/B Experiments</h2>
     <p>Run experiments to compare prompts, models, or temperatures:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/studio/experiments/run \
+<span class="cmd">curl -X POST http://localhost:7749/api/studio/experiments/run \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -269,14 +269,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>Results include side-by-side comparisons and cost breakdowns:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/studio/experiments/exp_id \
+<span class="cmd">curl http://localhost:7749/api/studio/experiments/exp_id \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="benchmarks">Benchmark Runs</h2>
     <p>Run benchmark suites to compare model performance and cost:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/studio/benchmarks/run \
+<span class="cmd">curl -X POST http://localhost:7749/api/studio/benchmarks/run \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -299,7 +299,7 @@ apps:
 
     <h2 id="studio-status">Tack Room Status</h2>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/studio/status \
+<span class="cmd">curl http://localhost:7749/api/studio/status \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>

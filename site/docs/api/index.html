@@ -192,7 +192,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="authentication">Authentication</h2>
     <p>All API endpoints (except <code>/health</code>) require an <code>Authorization</code> header:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/status \
+<span class="cmd">curl http://localhost:7749/api/status \
   -H "Authorization: Bearer sy_admin_your_key"</span>
 </pre>
     <p>Admin endpoints require an admin key (<code>sy_admin_</code> prefix). User endpoints accept user keys (<code>sy_</code> prefix). The proxy endpoint (<code>/v1/chat/completions</code>) accepts both.</p>
@@ -224,7 +224,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="pagination">Pagination</h2>
     <p>List endpoints support <code>limit</code> and <code>offset</code> query parameters:</p>
     <pre>
-<span class="cmd">curl "http://localhost:4200/api/observe/traces?limit=20&offset=40" \
+<span class="cmd">curl "http://localhost:7749/api/observe/traces?limit=20&offset=40" \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <p>Responses include <code>total</code> and <code>has_more</code> fields for cursor-based pagination.</p>
@@ -232,7 +232,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="openapi">OpenAPI Spec</h2>
     <p>The full OpenAPI 3.1 specification is available at <code>/api/openapi.json</code>. Use it with Swagger UI, Postman, or any OpenAPI-compatible tool:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/openapi.json \
+<span class="cmd">curl http://localhost:7749/api/openapi.json \
   -H "Authorization: Bearer sy_admin_..." | python3 -m json.tool</span>
 </pre>
 
@@ -545,7 +545,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <span class="comment"># Full hunt — 29 probes with evolutionary mutation (Team tier)</span>
 <span class="cmd">curl -X POST /api/feral/campaigns \
-  -d '{"name":"audit-q1","target_url":"http://localhost:4200/v1/chat/completions"}'</span>
+  -d '{"name":"audit-q1","target_url":"http://localhost:7749/v1/chat/completions"}'</span>
 <span class="cmd">curl -X POST /api/feral/campaigns/{id}/hunt \
   -d '{"api_key":"$OPENAI_API_KEY","generations":3}'</span>
     </pre>
@@ -596,35 +596,35 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Quick reference for the most frequently used endpoints:</p>
     <pre>
 <span class="comment"># Send a chat completion through the proxy</span>
-<span class="cmd">curl -X POST http://localhost:4200/v1/chat/completions \
+<span class="cmd">curl -X POST http://localhost:7749/v1/chat/completions \
   -H "Authorization: Bearer sy_your_key" \
   -H "Content-Type: application/json" \
   -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'</span>
 
 <span class="comment"># Toggle a module on/off</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'</span>
 
 <span class="comment"># Get cost breakdown for the last 7 days</span>
-<span class="cmd">curl "http://localhost:4200/api/observe/costs?days=7" \
+<span class="cmd">curl "http://localhost:7749/api/observe/costs?days=7" \
   -H "Authorization: Bearer sy_admin_..."</span>
 
 <span class="comment"># Create a trust policy</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
+<span class="cmd">curl -X POST http://localhost:7749/api/trust/policies \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"name":"no-pii","action":"block","rules":[{"field":"response.content","pattern":"\\d{3}-\\d{2}-\\d{4}"}]}'</span>
 
 <span class="comment"># Create and run a workflow</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \
+<span class="cmd">curl -X POST http://localhost:7749/api/forge/workflows \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"name":"test","steps":[{"id":"s1","type":"llm","model":"gpt-4o","prompt":"Say hi"}]}'</span>
 
 <span class="comment"># Export your entire config</span>
-<span class="cmd">curl http://localhost:4200/api/config/export \
+<span class="cmd">curl http://localhost:7749/api/config/export \
   -H "Authorization: Bearer sy_admin_..." -o config.json</span>
 </pre>
     <p>For the full OpenAPI specification, visit <code>/api/openapi.json</code> on your running instance.</p>

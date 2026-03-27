@@ -172,7 +172,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Define multi-step workflows where each step can be an LLM call, a transform, or a tool call. Steps declare dependencies and execute in topological order.</p>
     <pre>
 <span class="comment"># Create a workflow</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/forge/workflows \</span>
 <span class="cmd">  -d '{</span>
 <span class="cmd">    "slug": "draft-and-critique",</span>
 <span class="cmd">    "name": "Draft + Critique",</span>
@@ -189,11 +189,11 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="running">Running Workflows</h2>
     <pre>
 <span class="comment"># Run it</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows/draft-and-critique/run \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/forge/workflows/draft-and-critique/run \</span>
 <span class="cmd">  -d '{"input": "the future of AI"}'</span>
 
 <span class="comment"># Check status</span>
-<span class="cmd">curl http://localhost:4200/api/forge/runs/{run_id}</span>
+<span class="cmd">curl http://localhost:7749/api/forge/runs/{run_id}</span>
 </pre>
 
     <h2 id="step-types">Step Types</h2>
@@ -203,7 +203,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="tools">Tool Registry</h2>
     <pre>
 <span class="comment"># List registered tools</span>
-<span class="cmd">curl http://localhost:4200/api/forge/tools</span>
+<span class="cmd">curl http://localhost:7749/api/forge/tools</span>
 </pre>
     <p>See the <a href="/forge/">Forge product page</a> and the <a href="/forge/">visual workflow builder</a>.</p>
 
@@ -211,7 +211,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="create-workflow">Creating Workflows</h2>
     <p>Forge uses DAG (directed acyclic graph) definitions to chain LLM calls, transforms, and tool invocations:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows \
+<span class="cmd">curl -X POST http://localhost:7749/api/forge/workflows \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -244,7 +244,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="run-workflow">Running Workflows</h2>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/forge/workflows/wf_abc123/run \
+<span class="cmd">curl -X POST http://localhost:7749/api/forge/workflows/wf_abc123/run \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"input": "The quarterly results showed a 15% increase in revenue..."}'</span>
@@ -265,13 +265,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="list-workflows">Listing Workflows</h2>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/forge/workflows \
+<span class="cmd">curl http://localhost:7749/api/forge/workflows \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="workflow-detail">Workflow Detail</h2>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/forge/workflows/wf_abc123 \
+<span class="cmd">curl http://localhost:7749/api/forge/workflows/wf_abc123 \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
@@ -293,7 +293,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="delete-workflow">Deleting Workflows</h2>
     <pre>
-<span class="cmd">curl -X DELETE http://localhost:4200/api/forge/workflows/wf_abc123 \
+<span class="cmd">curl -X DELETE http://localhost:7749/api/forge/workflows/wf_abc123 \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 

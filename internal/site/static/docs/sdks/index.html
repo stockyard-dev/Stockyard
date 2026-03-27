@@ -100,14 +100,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <span class="lang-tag">Python 3.8+</span>
 
   <h3>Option 1: Environment variable (zero code changes)</h3>
-  <div class="code-block"><span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+  <div class="code-block"><span class="cmd">export OPENAI_BASE_URL=http://localhost:7749/v1</span>
 <span class="cmd">python your_app.py</span></div>
 
   <h3>Option 2: Set base URL in code</h3>
   <div class="code-block"><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
 
 client = OpenAI(
-    base_url=<span class="str">"http://localhost:4200/v1"</span>,
+    base_url=<span class="str">"http://localhost:7749/v1"</span>,
     api_key=<span class="str">"sk-your-api-key"</span>  <span class="comment"># your real provider key</span>
 )
 
@@ -138,13 +138,13 @@ response = client.chat.completions.<span class="fn">create</span>(
     <span class="lang-tag">Node.js 18+</span>
 
     <h3>Option 1: Environment variable</h3>
-    <div class="code-block"><span class="cmd">OPENAI_BASE_URL=http://localhost:4200/v1 node your_app.js</span></div>
+    <div class="code-block"><span class="cmd">OPENAI_BASE_URL=http://localhost:7749/v1 node your_app.js</span></div>
 
     <h3>Option 2: Set base URL in code</h3>
     <div class="code-block"><span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'openai'</span>;
 
 <span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">OpenAI</span>({
-  baseURL: <span class="str">'http://localhost:4200/v1'</span>,
+  baseURL: <span class="str">'http://localhost:7749/v1'</span>,
   apiKey: <span class="str">'sk-your-api-key'</span>,
 });
 
@@ -188,7 +188,7 @@ console.<span class="fn">log</span>(response.choices[0].message.content);
 
 <span class="kw">func</span> <span class="fn">main</span>() {
     config := openai.<span class="fn">DefaultConfig</span>(<span class="str">"sk-your-api-key"</span>)
-    config.BaseURL = <span class="str">"http://localhost:4200/v1"</span>
+    config.BaseURL = <span class="str">"http://localhost:7749/v1"</span>
     client := openai.<span class="fn">NewClientWithConfig</span>(config)
 
     resp, err := client.<span class="fn">CreateChatCompletion</span>(
@@ -217,7 +217,7 @@ console.<span class="fn">log</span>(response.choices[0].message.content);
 
     <p>Stockyard is a standard HTTP proxy. Any language that can make HTTP requests works.</p>
 
-    <div class="code-block"><span class="cmd">curl http://localhost:4200/v1/chat/completions \
+    <div class="code-block"><span class="cmd">curl http://localhost:7749/v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -237,7 +237,7 @@ console.<span class="fn">log</span>(response.choices[0].message.content);
   <p>Stockyard supports 16 providers. For non-OpenAI providers, use the provider-specific path:</p>
 
   <div class="code-block"><span class="comment"># Anthropic</span>
-<span class="cmd">curl http://localhost:4200/v1/messages \
+<span class="cmd">curl http://localhost:7749/v1/messages \
   -H "x-api-key: $ANTHROPIC_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
   -d '{"model":"claude-sonnet-4-20250514","max_tokens":1024,"messages":[{"role":"user","content":"Hello"}]}'</span></div>

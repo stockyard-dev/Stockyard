@@ -172,16 +172,16 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Stockyard has a built-in auth system for multi-user deployments. Users get <code>sk-sy-</code> API keys that route requests through the proxy with per-user provider key resolution.</p>
     <pre>
 <span class="comment"># Create a user (returns an API key)</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/auth/signup \</span>
 <span class="cmd">  -d '{"email":"alice@example.com","name":"Alice"}'</span>
 
 <span class="comment"># Use the key to make requests</span>
-<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -H "Authorization: Bearer sk-sy-..." \</span>
 <span class="cmd">  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'</span>
 
 <span class="comment"># Add a provider key to your account</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/auth/me/providers/openai \</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/auth/me/providers/openai \</span>
 <span class="cmd">  -H "Authorization: Bearer sk-sy-..." \</span>
 <span class="cmd">  -d '{"api_key":"sk-proj-..."}'</span>
 </pre>
@@ -191,14 +191,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Stockyard works with zero configuration. All 76 middleware modules are registered on boot with sensible defaults. You can toggle modules on/off at runtime via the API:</p>
     <pre>
 <span class="comment"># List all modules</span>
-<span class="cmd">curl http://localhost:4200/api/proxy/modules</span>
+<span class="cmd">curl http://localhost:7749/api/proxy/modules</span>
 
 <span class="comment"># Disable a module</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/toxicfilter \</span>
 <span class="cmd">  -d '{"enabled": false}'</span>
 
 <span class="comment"># Re-enable it</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/toxicfilter \</span>
 <span class="cmd">  -d '{"enabled": true}'</span>
 </pre>
     <p>Module state persists in the embedded SQLite database. Changes take effect immediately &mdash; no restart needed.</p>
@@ -213,7 +213,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">stockyard</span>
 
 <span class="comment"># Verify your tier and usage</span>
-<span class="cmd">curl http://localhost:4200/api/license</span>
+<span class="cmd">curl http://localhost:7749/api/license</span>
 </pre>
     <p>License keys are available at <a href="/pricing/">stockyard.dev/pricing</a>. Pro and Enterprise keys unlock unlimited requests, unlimited users, and extended retention. All features and modules are available on every tier.</p>
 
@@ -229,7 +229,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="create-user">Creating Users</h2>
     <pre>
-<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \
+<span class="cmd">curl -X POST http://localhost:7749/api/auth/signup \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"email": "dev@example.com", "plan": "free"}'</span>
@@ -249,7 +249,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Users bring their own provider keys. Store them via the API:</p>
     <pre>
 <span class="comment"># Add an OpenAI key for the current user</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/auth/me/providers/openai \
+<span class="cmd">curl -X PUT http://localhost:7749/api/auth/me/providers/openai \
   -H "Authorization: Bearer sy_live_k8x..." \
   -H "Content-Type: application/json" \
   -d '{"api_key": "sk-proj-..."}'</span>
@@ -273,7 +273,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Rotate a user&rsquo;s API key without downtime:</p>
     <pre>
 <span class="comment"># Admin: rotate a user's key</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/auth/users/usr_abc123/keys/key_id/rotate \
+<span class="cmd">curl -X POST http://localhost:7749/api/auth/users/usr_abc123/keys/key_id/rotate \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <p>Response includes the new key. The old key is immediately revoked.</p>
@@ -305,7 +305,7 @@ providers:
     <h2 id="usage-tracking">Usage Tracking</h2>
     <p>Each user can check their own usage:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/auth/me/usage \
+<span class="cmd">curl http://localhost:7749/api/auth/me/usage \
   -H "Authorization: Bearer sy_live_k8x..."</span>
 </pre>
     <pre>
@@ -324,12 +324,12 @@ providers:
     <p>Run Stockyard for multiple teams or customers. Each user gets isolated usage tracking and provider keys:</p>
     <pre>
 <span class="comment"># Create users for different teams</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \
+<span class="cmd">curl -X POST http://localhost:7749/api/auth/signup \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"email": "team-a@example.com", "plan": "team"}'</span>
 
-<span class="cmd">curl -X POST http://localhost:4200/api/auth/signup \
+<span class="cmd">curl -X POST http://localhost:7749/api/auth/signup \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"email": "team-b@example.com", "plan": "team"}'</span>
@@ -340,15 +340,15 @@ providers:
     <p>Admins can list users and manage their keys:</p>
     <pre>
 <span class="comment"># List all users</span>
-<span class="cmd">curl http://localhost:4200/api/auth/users \
+<span class="cmd">curl http://localhost:7749/api/auth/users \
   -H "Authorization: Bearer sy_admin_..."</span>
 
 <span class="comment"># Create a new API key for a user</span>
-<span class="cmd">curl -X POST http://localhost:4200/api/auth/users/usr_abc/keys \
+<span class="cmd">curl -X POST http://localhost:7749/api/auth/users/usr_abc/keys \
   -H "Authorization: Bearer sy_admin_..."</span>
 
 <span class="comment"># Set a provider key on behalf of a user</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/auth/users/usr_abc/providers/openai \
+<span class="cmd">curl -X PUT http://localhost:7749/api/auth/users/usr_abc/providers/openai \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"api_key": "sk-proj-..."}'</span>
@@ -370,7 +370,7 @@ providers:
     <h2 id="plans">Plans &amp; Billing</h2>
     <p>Query available plans:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/api/plans</span>
+<span class="cmd">curl http://localhost:7749/api/plans</span>
 </pre>
     <pre>
 {

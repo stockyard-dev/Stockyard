@@ -173,19 +173,19 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="comment"># Install the binary</span>
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
 
-<span class="comment"># Start the platform (all products on port 4200)</span>
+<span class="comment"># Start the platform (all products on port 7749)</span>
 <span class="cmd">stockyard</span>
 
 <span class="comment"># Point your app at the proxy</span>
-<span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
+<span class="cmd">export OPENAI_BASE_URL=http://localhost:7749/v1</span>
 
 <span class="comment"># Make a request (goes through the full middleware chain)</span>
-<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -H "Authorization: Bearer $OPENAI_API_KEY" \</span>
 <span class="cmd">  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</span>
 </pre>
-    <p>Open <code>http://localhost:4200/ui</code> for the web console. Open <code>http://localhost:4200/api/apps</code> to see all registered apps.</p>
+    <p>Open <code>http://localhost:7749/ui</code> for the web console. Open <code>http://localhost:7749/api/apps</code> to see all registered apps.</p>
     <div class="note"><strong>Note</strong><br>Stockyard auto-detects your API key provider from its prefix (sk- &rarr; OpenAI, sk-ant- &rarr; Anthropic, gsk_ &rarr; Groq, etc.) and routes to the correct upstream. No extra configuration needed.</div>
 
     <h2 id="doctor">Doctor</h2>
@@ -235,7 +235,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>In another terminal, send a chat completion:</p>
     <pre>
-<span class="cmd">curl http://localhost:4200/v1/chat/completions \
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sy_your_api_key" \
   -d '{
@@ -262,7 +262,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Create a <code>stockyard.yaml</code> for persistent configuration:</p>
     <pre>
 <span class="comment"># stockyard.yaml</span>
-port: 4200
+port: 7749
 admin_key: "sy_admin_your_secret"
 
 providers:
@@ -290,15 +290,15 @@ modules:
     <p>Check that everything is running:</p>
     <pre>
 <span class="comment"># Health check</span>
-<span class="cmd">curl http://localhost:4200/health</span>
+<span class="cmd">curl http://localhost:7749/health</span>
 <span class="comment"># {"status":"ok","uptime":"2m30s"}</span>
 
 <span class="comment"># List active modules</span>
-<span class="cmd">curl http://localhost:4200/api/proxy/modules \
+<span class="cmd">curl http://localhost:7749/api/proxy/modules \
   -H "Authorization: Bearer sy_admin_your_secret"</span>
 
 <span class="comment"># Check system status</span>
-<span class="cmd">curl http://localhost:4200/api/status \
+<span class="cmd">curl http://localhost:7749/api/status \
   -H "Authorization: Bearer sy_admin_your_secret"</span>
 </pre>
 
@@ -306,7 +306,7 @@ modules:
     <p>Run with Docker for production deployments:</p>
     <pre>
 <span class="cmd">docker run -d \
-  -p 4200:4200 \
+  -p 7749:7749 \
   -e OPENAI_API_KEY=sk-... \
   -e STOCKYARD_ADMIN_KEY=sy_admin_... \
   -v stockyard-data:/data \
@@ -318,13 +318,13 @@ modules:
     <p>Enable caching and cost limits for a development workflow:</p>
     <pre>
 <span class="comment"># Enable LLM response caching (saves money during development)</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'</span>
 
 <span class="comment"># Set a daily spending cap of $5</span>
-<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/costcap \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"enabled": true, "config": {"daily_limit_usd": 5.0}}'</span>
@@ -338,7 +338,7 @@ modules:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:4200/v1",
+    base_url="http://localhost:7749/v1",
     api_key="sy_your_api_key"
 )
 
@@ -353,7 +353,7 @@ print(response.choices[0].message.content)
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'http://localhost:4200/v1',
+  baseURL: 'http://localhost:7749/v1',
   apiKey: 'sy_your_api_key'
 });
 
