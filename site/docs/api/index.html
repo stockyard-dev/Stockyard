@@ -164,6 +164,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/api/#lasso-api">Lasso (Replay)</a>
       <a href="/docs/api/#drover-api">Drover (Autopilot)</a>
       <a href="/docs/api/#feral-api">Feral (Red-Team)</a>
+      <a href="/docs/api/#optimize-api">Optimize (Full Loop)</a>
       <a href="/docs/api/#guardrails-api">Guardrails</a>
       <a href="/docs/api/#webhooks-api">Webhooks</a>
       <a href="/docs/api/#user-spend-api">User Spend</a>
@@ -547,6 +548,29 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   -d '{"name":"audit-q1","target_url":"http://localhost:4200/v1/chat/completions"}'</span>
 <span class="cmd">curl -X POST /api/feral/campaigns/{id}/hunt \
   -d '{"api_key":"$OPENAI_API_KEY","generations":3}'</span>
+    </pre>
+
+    <h2 id="optimize-api">Optimize &mdash; The Full Loop (2 endpoints)</h2>
+    <p>One endpoint that chains the entire Stockyard optimization loop: observe your traces &rarr; score model quality &rarr; analyze for cost waste, PII, and errors &rarr; recommend actions &rarr; optionally apply them &rarr; explain everything. This is the "make my stack better" button.</p>
+    <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--green-light);border:1px solid var(--green-light);padding:0.15rem 0.5rem;display:inline-block;margin-bottom:1rem">Free on all tiers</span>
+    <table class="endpoint-table">
+      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+      <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/optimize</td><td>Quick status: traces available, spend, calibration state</td></tr>
+      <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/optimize</td><td>Run the full optimization loop. Returns staged report with actions.</td></tr>
+    </table>
+    <pre>
+<span class="comment"># Check optimization readiness</span>
+<span class="cmd">curl /api/optimize</span>
+
+<span class="comment"># Run the full loop (analyze only)</span>
+<span class="cmd">curl -X POST /api/optimize</span>
+<span class="comment"># → stages: observe → score → analyze → recommend</span>
+<span class="comment"># → actions: [{enable_drover, priority:1}, {fix_pii, priority:2}, ...]</span>
+<span class="comment"># → summary: {grade:"B", projected_savings:"$12.40/mo", actions:4}</span>
+
+<span class="comment"># Run and auto-apply safe recommendations</span>
+<span class="cmd">curl -X POST /api/optimize -d '{"apply": true}'</span>
+<span class="comment"># → applied: ["Drover autopilot enabled", "SecretScan module enabled"]</span>
     </pre>
 
     <h2 id="system-api">System (13 endpoints)</h2>

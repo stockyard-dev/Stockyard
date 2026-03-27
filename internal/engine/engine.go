@@ -405,6 +405,9 @@ func Boot(pc ProductConfig) {
 	// Auto-Insights: analyze traces and surface product-specific upgrade CTAs
 	RegisterInsightsRoutes(srv.Mux(), db.Conn())
 
+	// Optimization Loop: observe → score → analyze → recommend → apply → explain
+	RegisterOptimizeRoutes(srv.Mux(), db.Conn(), GlobalAutopilot, cfg.Port)
+
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 

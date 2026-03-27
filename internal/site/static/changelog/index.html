@@ -173,6 +173,13 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <div class="change-item">Public <code>/compare/{id}</code> page: side-by-side responses, cost/latency/tokens with winner highlighting, "Share on X" button, view counter.</div>
     <div class="change-item">Shares expire after 30 days. View count tracked. Every shared comparison is a free ad for Stockyard.</div>
   </div>
+  <div class="change-group">
+    <div class="change-group-label">Optimization Loop &mdash; One Button, Full Stack Review</div>
+    <div class="change-item"><code>POST /api/optimize</code> &mdash; chains the full Stockyard loop: observe &rarr; score &rarr; analyze &rarr; recommend &rarr; apply &rarr; explain. One endpoint, complete stack optimization.</div>
+    <div class="change-item">Returns staged report with health grade (A&ndash;F), projected monthly savings, ordered actions with priority/impact/effort, and next steps.</div>
+    <div class="change-item">Pass <code>{"apply": true}</code> to auto-apply safe recommendations (enable Drover, toggle modules). Manual actions return clear instructions.</div>
+    <div class="change-item">Free on all tiers. Requires 10+ traces. Chains Lookout, Drover, Insights, and module state into one decision engine.</div>
+  </div>
 </div>
 
 <div class="release">
