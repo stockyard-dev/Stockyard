@@ -31,6 +31,9 @@ var ProductAutoFeed func(traceID string, req *provider.Request, resp *provider.R
 
 // GlobalProviders holds the provider map, set at boot for replay/re-send.
 var GlobalProviders map[string]provider.Provider
+
+// GlobalAutopilot holds the autopilot router, set during buildMiddlewares.
+var GlobalAutopilot *Autopilot
 func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 	return func(next proxy.Handler) proxy.Handler {
 		return func(ctx context.Context, req *provider.Request) (*provider.Response, error) {

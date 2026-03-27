@@ -391,6 +391,11 @@ func Boot(pc ProductConfig) {
 	GlobalProviders = providers
 	RegisterReplayRoutes(srv.Mux(), db.Conn())
 
+	// Autopilot Router: automatic cost-optimized model routing
+	if GlobalAutopilot != nil {
+		RegisterAutopilotRoutes(srv.Mux(), db.Conn(), GlobalAutopilot)
+	}
+
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 
@@ -1995,6 +2000,11 @@ func buildMiddlewares(reg *toggle.Registry,
 		add("modelswitch", features.ModelSwitchMiddleware(router, cfg.ModelSwitch.Default))
 		log.Printf("modelswitch: %d rules loaded", len(cfg.ModelSwitch.Rules))
 	}
+
+	// Autopilot — automatic cost-optimized routing (after modelswitch, before failover)
+	MigrateAutopilot(db.Conn())
+	GlobalAutopilot = NewAutopilot(db.Conn())
+	add("autopilot", AutopilotMiddleware(GlobalAutopilot))
 
 	// MultiCall — multi-model consensus (fans out to multiple models)
 	if pc.Features.MultiCall && cfg.MultiCall.Enabled {
