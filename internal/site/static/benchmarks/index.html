@@ -399,17 +399,17 @@ const BENCHMARKS = [
   {name:"ipfence",cat:"other",median:0.02,p95:0.04,p99:0.08,mem:180,note:"CIDR lookup"},
   {name:"keypool",cat:"other",median:0.02,p95:0.03,p99:0.06,mem:60,note:"Round-robin index"},
 
-  // Observe — logging + alerting
+  // Lookout — logging + alerting
   {name:"llmtap",cat:"observe",median:0.03,p95:0.06,p99:0.12,mem:200,note:"Channel write"},
   {name:"tracelink",cat:"observe",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Header injection"},
   {name:"alertpulse",cat:"observe",median:0.05,p95:0.10,p99:0.20,mem:350,note:"Threshold check"},
   {name:"driftwatch",cat:"observe",median:0.12,p95:0.24,p99:0.45,mem:1600,note:"Distribution compare"},
 
-  // Trust / compliance
+  // Brand / compliance
   {name:"compliancelog",cat:"trust",median:0.10,p95:0.22,p99:0.40,mem:800,note:"Hash chain append"},
   {name:"feedbackloop",cat:"trust",median:0.04,p95:0.08,p99:0.15,mem:200,note:"Queue enqueue"},
 
-  // Studio — prompt tooling
+  // Tack Room — prompt tooling
   {name:"promptpad",cat:"studio",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Template lookup"},
   {name:"promptlint",cat:"studio",median:0.15,p95:0.30,p99:0.55,mem:1200,note:"Lint rule engine"},
   {name:"approvalgate",cat:"studio",median:0.03,p95:0.06,p99:0.10,mem:150,note:"Status check"},
@@ -419,7 +419,7 @@ const BENCHMARKS = [
   {name:"multicall",cat:"forge",median:0.08,p95:0.16,p99:0.30,mem:600,note:"DAG scheduler"},
   {name:"mockllm",cat:"forge",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Mock lookup"},
 
-  // Exchange — dev tools
+  // Trading Post — dev tools
   {name:"devproxy",cat:"exchange",median:0.05,p95:0.10,p99:0.18,mem:300,note:"Hot-reload check"}
 ];
 

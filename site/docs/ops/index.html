@@ -136,18 +136,18 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/auth/">Auth &amp; Config</a>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-title">Proxy</div>
+      <div class="sidebar-title">Chute</div>
       <a href="/docs/proxy/">Modules &amp; Providers</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Apps</div>
-      <a href="/docs/observe/">Observe</a>
-      <a href="/docs/trust/">Trust</a>
-      <a href="/docs/studio/">Studio</a>
+      <a href="/docs/observe/">Lookout</a>
+      <a href="/docs/trust/">Brand</a>
+      <a href="/docs/studio/">Tack Room</a>
       <a href="/docs/forge/">Forge</a>
       <a href="/docs/team/">Team</a>
       <a href="/docs/memory/">Memory</a>
-      <a href="/docs/exchange/">Exchange</a>
+      <a href="/docs/exchange/">Trading Post</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
@@ -208,9 +208,9 @@ curl -X DELETE localhost:4200/api/webhooks/1</code></pre>
     <h3>Event Types</h3>
     <table class="endpoint-table">
       <tr><th>Event</th><th>Fired When</th></tr>
-      <tr><td><code>alert.fired</code></td><td>An Observe alert threshold is exceeded</td></tr>
+      <tr><td><code>alert.fired</code></td><td>A Lookout alert threshold is exceeded</td></tr>
       <tr><td><code>cost.threshold</code></td><td>Daily cost exceeds a configured limit</td></tr>
-      <tr><td><code>trust.violation</code></td><td>A Trust policy blocks or warns on a request</td></tr>
+      <tr><td><code>trust.violation</code></td><td>A Brand policy blocks or warns on a request</td></tr>
       <tr><td><code>error.spike</code></td><td>Error rate exceeds normal baseline</td></tr>
       <tr><td><code>webhook.test</code></td><td>Manual test via POST /api/webhooks/test</td></tr>
     </table>
@@ -395,7 +395,7 @@ PORT=4200
 </pre>
 
     <div class="pn">
-      <a href="/docs/exchange/">&larr; Exchange</a>
+      <a href="/docs/exchange/">&larr; Trading Post</a>
       <a href="/docs/api/">API Reference &rarr;</a>
     </div>
   </main>

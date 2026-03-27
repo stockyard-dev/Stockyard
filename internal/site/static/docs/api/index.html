@@ -146,18 +146,18 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <a href="/docs/auth/">Auth &amp; Config</a>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-title">Proxy</div>
+      <div class="sidebar-title">Chute</div>
       <a href="/docs/proxy/">Modules &amp; Providers</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Apps</div>
-      <a href="/docs/observe/">Observe</a>
-      <a href="/docs/trust/">Trust</a>
-      <a href="/docs/studio/">Studio</a>
+      <a href="/docs/observe/">Lookout</a>
+      <a href="/docs/trust/">Brand</a>
+      <a href="/docs/studio/">Tack Room</a>
       <a href="/docs/forge/">Forge</a>
       <a href="/docs/team/">Team</a>
       <a href="/docs/memory/">Memory</a>
-      <a href="/docs/exchange/">Exchange</a>
+      <a href="/docs/exchange/">Trading Post</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Features</div>
@@ -250,7 +250,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method">POST</td><td>/api/config/diff</td><td>Diff current config vs uploaded snapshot</td></tr>
     </table>
 
-    <h2 id="proxy-api">Proxy (12 endpoints)</h2>
+    <h2 id="proxy-api">Chute — Proxy (12 endpoints)</h2>
     <p>The proxy is the core request pipeline. All <code>/v1/*</code> routes are OpenAI-compatible and pass through the full middleware chain.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
@@ -294,7 +294,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--rust-light)">DELETE</td><td>/api/auth/users/{id}/providers/{provider}</td><td>Remove user provider key (admin)</td></tr>
     </table>
 
-    <h2 id="observe-api">Observe (17 endpoints)</h2>
+    <h2 id="observe-api">Lookout — Observe (17 endpoints)</h2>
     <p>Traces, cost tracking, alerting, anomaly detection, and live streaming. Engine hooks automatically populate traces for every proxy request.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
@@ -317,7 +317,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/observe/status</td><td>Observe subsystem status</td></tr>
     </table>
 
-    <h2 id="trust-api">Trust (12 endpoints)</h2>
+    <h2 id="trust-api">Brand — Trust (12 endpoints)</h2>
     <p>Immutable audit ledger with hash-chain verification, trust policies, evidence collection, and feedback loops for compliance and SOC 2 readiness.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
@@ -335,7 +335,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/trust/status</td><td>Trust subsystem status</td></tr>
     </table>
 
-    <h2 id="studio-api">Studio (17 endpoints)</h2>
+    <h2 id="studio-api">Tack Room — Studio (17 endpoints)</h2>
     <p>Prompt versioning, A/B experiments, benchmark suites, and snapshots. Templates support Mustache variables and version history.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
@@ -382,7 +382,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <tr><td class="method" style="color:var(--green-light)">GET</td><td>/api/forge/status</td><td>Forge subsystem status</td></tr>
     </table>
 
-    <h2 id="exchange-api">Exchange (13 endpoints)</h2>
+    <h2 id="exchange-api">Trading Post — Exchange (13 endpoints)</h2>
     <p>Config pack marketplace with versioning, environment sync, and one-click install. Packs bundle module configs, provider settings, and routing rules.</p>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
@@ -634,7 +634,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>API management endpoints are rate-limited to prevent abuse. The proxy endpoint (<code>/v1/chat/completions</code>) uses the <code>rateshield</code> module for configurable per-key rate limiting. Management endpoints allow 120 requests per minute per admin key.</p>
     <p>Rate-limited responses include <code>Retry-After</code> and <code>X-RateLimit-Remaining</code> headers.</p>
 
-    <div class="pn"><a href="/docs/exchange/">&larr; Exchange</a></div>
+    <div class="pn"><a href="/docs/exchange/">&larr; Trading Post</a></div>
   </main>
 </div>
 
