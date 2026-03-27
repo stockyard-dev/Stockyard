@@ -389,7 +389,6 @@ func Boot(pc ProductConfig) {
 
 	// Replay Mode: re-send any trace to a different model for comparison
 	GlobalProviders = providers
-	MigrateReplayMode(db.Conn())
 	RegisterReplayRoutes(srv.Mux(), db.Conn())
 
 	// Playground share endpoints
@@ -1257,6 +1256,9 @@ func Boot(pc ProductConfig) {
 
 	// 2. Debugger — per-middleware step recording
 	db.Conn().Exec(`ALTER TABLE observe_traces ADD COLUMN debug_steps TEXT DEFAULT '[]'`)
+
+	// 2b. Replay Mode — store request body for replay capability
+	MigrateReplayMode(db.Conn())
 
 	// 3. Contextual Billing — request complexity classification
 	db.Conn().Exec(`ALTER TABLE app_uses ADD COLUMN complexity TEXT DEFAULT 'simple'`)
