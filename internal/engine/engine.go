@@ -487,6 +487,24 @@ func Boot(pc ProductConfig) {
 	statusCollector := NewStatusCollector()
 	RegisterStatusRoutes(srv.Mux(), statusCollector, db.Conn(), pc.Version)
 
+	// Version endpoint
+	srv.Mux().HandleFunc("GET /api/version", func(w http.ResponseWriter, r *http.Request) {
+		v := pc.Version
+		if v == "" {
+			v = "dev"
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"version":  v,
+			"product":  pc.Product,
+			"go":       "1.22",
+			"modules":  76,
+			"providers": 16,
+			"products": 29,
+			"endpoints": "360+",
+		})
+	})
+
 	// Config export/import/diff
 	RegisterConfigRoutes(srv.Mux(), db.Conn())
 

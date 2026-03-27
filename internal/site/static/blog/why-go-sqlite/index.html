@@ -240,7 +240,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <p>If I were starting over:</p>
 
-    <p><strong>Fewer apps at launch.</strong> Stockyard ships with nine apps (Proxy, Observe, Trust, Studio, Forge, Exchange). Proxy, Observe, and Trust are the core. Studio, Forge, and Exchange are useful but less battle-tested. I should have launched with three and expanded.</p>
+    <p><strong>Fewer apps at launch.</strong> Stockyard ships with nine apps (Chute, Lookout, Brand, Tack Room, Forge, Trading Post). Chute, Lookout, and Brand are the core. Tack Room, Forge, and Trading Post are useful but less battle-tested. I should have launched with three and expanded.</p>
 
     <p><strong>Streaming from day one.</strong> SSE streaming through a reverse proxy has edge cases I underestimated. Non-streaming works perfectly; streaming needs more work on certain hosting platforms.</p>
 
@@ -258,8 +258,8 @@ curl localhost:4200/v1/chat/completions \
   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'
 
 # Check what happened
-curl localhost:4200/api/observe/traces?limit=1
-curl localhost:4200/api/trust/ledger?limit=1</code></pre>
+curl localhost:4200/api/lookout/traces?limit=1
+curl localhost:4200/api/brand/ledger?limit=1</code></pre>
 
     <p>Source-available. Code on <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>.</p>
 
@@ -278,8 +278,8 @@ curl localhost:4200/api/trust/ledger?limit=1</code></pre>
   <ul>
     <li><a href="/blog/architecture-decisions/">Architecture Decisions</a></li>
     <li><a href="/blog/why-i-built-stockyard/">Why I Built Stockyard</a></li>
-    <li><a href="/observe/">Observe</a></li>
-    <li><a href="/trust/">Trust</a></li>
+    <li><a href="/products/">Products</a></li>
+    <li><a href="/docs/">Docs</a></li>
     <li><a href="/benchmarks/">Benchmarks</a></li>
   </ul>
 </div>
