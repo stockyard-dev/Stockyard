@@ -76,6 +76,7 @@ func Register(mux *http.ServeMux) {
 		"/about/",
 		"/lasso/",
 		"/drover/",
+		"/feral/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

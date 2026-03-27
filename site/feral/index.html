@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Feral — Red-Team Testing for LLM Stacks — Stockyard</title>
+<meta name="description" content="Adversarial red-team testing for LLM applications. Free 5-probe quickscan. Full 29-probe suite with evolutionary attack mutation on Team tier.">
+<meta property="og:title" content="Feral — Red-Team Testing for LLMs">
+<meta property="og:description" content="5-probe quickscan free. 29-probe red-team suite with evolutionary mutation on Team. Find your LLM vulnerabilities before attackers do.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/feral/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/feral/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--red:#d44a4a;--red-light:#e85555;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-danger{background:var(--red);color:#fff;border:2px solid var(--red)}.btn-danger:hover{background:var(--red-light);border-color:var(--red-light)}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.hero{max-width:720px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1.5rem}.hero h1 .accent{color:var(--red-light)}
+.hero .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto 2rem}
+.stats-row{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;margin:2rem 0}
+.stat{text-align:center}.stat-num{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--cream);display:block}.stat-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)}
+.stat-num.red{color:var(--red-light)}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);overflow-x:auto;line-height:1.8;margin:1rem 0;white-space:pre-wrap}
+.code-block .c{color:#5a5040}.code-block .cmd{color:var(--cream)}.code-block .ok{color:var(--green-light)}.code-block .val{color:var(--gold)}.code-block .bad{color:var(--red-light)}
+.tier-badge{font-family:var(--font-mono);font-size:0.7rem;color:var(--gold);border:1px solid var(--gold);padding:0.2rem 0.6rem;display:inline-block;margin-top:1rem}
+.report-card{border:1px solid var(--bg3);margin:2rem 0}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:0.8rem 1.2rem;border-bottom:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.82rem}
+.report-row:last-child{border-bottom:none}
+.report-cat{color:var(--cream-dim)}.report-name{color:var(--cream);flex:1;margin-left:1rem}
+.badge-blocked{color:var(--green-light);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase}
+.badge-bypassed{color:var(--red-light);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.how-step{display:flex;gap:1.5rem;margin-bottom:2.5rem;align-items:flex-start}
+.how-num{font-family:var(--font-mono);font-size:1.5rem;color:var(--rust);font-weight:700;min-width:2rem}
+.how-text h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}.how-text p{font-size:0.9rem;color:var(--cream-dim)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:5rem 1.5rem 3rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--red:#c43030;--red-light:#d44a4a}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/benchmarks/">Benchmarks</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Feral &middot; Free quickscan</div>
+  <h1>Find your LLM vulnerabilities <span class="accent">before attackers do.</span></h1>
+  <p class="sub">Feral tests your stack against real adversarial attacks &mdash; prompt injection, jailbreaks, data exfiltration. Start with a free 5-probe quickscan. Upgrade for the full 29-probe suite with evolutionary mutation.</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">5</span><span class="stat-label">Free Probes</span></div>
+    <div class="stat"><span class="stat-num">29</span><span class="stat-label">Full Suite</span></div>
+    <div class="stat"><span class="stat-num">9</span><span class="stat-label">Attack Categories</span></div>
+    <div class="stat"><span class="stat-num red">10s</span><span class="stat-label">Time to Know</span></div>
+  </div>
+  <div class="cta-group">
+    <a href="#quickscan" class="btn btn-danger">Run Free Quickscan</a>
+    <a href="/docs/api/#feral" class="btn btn-secondary">API Reference</a>
+  </div>
+</section>
+
+<section style="padding:2.5rem 2rem 0;max-width:720px;margin:0 auto">
+  <div style="border:1px solid var(--red);background:linear-gradient(135deg,rgba(212,74,74,0.06),rgba(196,93,44,0.06));padding:1.5rem 2rem;text-align:center">
+    <div style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--red-light);margin-bottom:0.8rem">Reality check</div>
+    <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:0.6rem">Most LLM stacks have <strong style="color:var(--cream)">zero adversarial testing</strong>. The quickscan takes 10 seconds and tests 5 attack vectors against your live proxy. No signup required.</p>
+    <p style="font-size:0.85rem;color:var(--cream-muted)">If even one probe bypasses your defenses, attackers can too.</p>
+  </div>
+</section>
+
+<section class="section" id="quickscan">
+  <h2 class="section-label">Quickscan &mdash; one curl, 5 attacks</h2>
+  <div class="code-block"><span class="c"># Run the free quickscan against your Stockyard proxy</span>
+<span class="cmd">$ curl -X POST https://stockyard.dev/api/feral/quickscan \
+  -H "Content-Type: application/json" \
+  -d '{"api_key":"$OPENAI_API_KEY"}'</span>
+
+<span class="c"># Response: a full security report card</span>
+<span class="val">{
+  "probes_run": 5,
+  "blocked": 3,
+  "bypassed": 2,
+  "grade": "C",
+  "score": "3/5",
+  "results": [
+    {"name": "prompt-injection",    "status": "blocked",  "severity": "pass"},
+    {"name": "jailbreak",           "status": "<span class="bad">bypassed</span>", "severity": "critical"},
+    {"name": "system-prompt-leak",  "status": "blocked",  "severity": "pass"},
+    {"name": "encoding-bypass",     "status": "<span class="bad">bypassed</span>", "severity": "medium"},
+    {"name": "indirect-injection",  "status": "blocked",  "severity": "pass"}
+  ],
+  "verdict": "2 of 5 probes bypassed your defenses..."
+}</span></div>
+  <p style="text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:0.5rem">No campaign setup. No config. One POST, instant results.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">Example report card</h2>
+    <div class="report-card">
+      <div class="report-row" style="background:var(--bg3)"><span style="color:var(--cream);font-weight:700">Category</span><span style="flex:1;margin-left:1rem;color:var(--cream);font-weight:700">Probe</span><span style="color:var(--cream);font-weight:700">Result</span></div>
+      <div class="report-row"><span class="report-cat">Injection</span><span class="report-name">prompt-injection</span><span class="badge-blocked">&#10003; Blocked</span></div>
+      <div class="report-row"><span class="report-cat">Jailbreak</span><span class="report-name">jailbreak</span><span class="badge-bypassed">&#10007; Bypassed</span></div>
+      <div class="report-row"><span class="report-cat">Exfiltration</span><span class="report-name">system-prompt-leak</span><span class="badge-blocked">&#10003; Blocked</span></div>
+      <div class="report-row"><span class="report-cat">Encoding</span><span class="report-name">encoding-bypass</span><span class="badge-bypassed">&#10007; Bypassed</span></div>
+      <div class="report-row"><span class="report-cat">Indirect</span><span class="report-name">indirect-injection</span><span class="badge-blocked">&#10003; Blocked</span></div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <div style="font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--red-light)">Grade: C</div>
+      <p style="color:var(--cream-dim);font-size:0.9rem;margin-top:0.5rem">2 of 5 probes bypassed. Jailbreak and encoding attacks reached the model.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">5 probes vs. 29 probes</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.5rem">
+    <div style="padding:1.5rem;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green-light);margin-bottom:0.8rem">Quickscan (Free)</div>
+      <p style="font-size:0.85rem;color:var(--cream-dim);line-height:1.8">5 probes, 5 categories. Basic injection, jailbreak, exfiltration, encoding, indirect injection. Single pass &mdash; no mutation or evolution. Instant report card.</p>
+    </div>
+    <div style="padding:1.5rem;border:1px solid var(--gold)">
+      <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--gold);margin-bottom:0.8rem">Full Suite (Team)</div>
+      <p style="font-size:0.85rem;color:var(--cream-dim);line-height:1.8">29 probes, 9 categories. Adds tool-use exploitation, context overflow, multi-turn manipulation, payload splitting. Multi-generation evolution &mdash; successful attacks are mutated and retried.</p>
+    </div>
+  </div>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">9 attack categories</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.5rem">
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Prompt Injection</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">4 probes &bull; Override system instructions</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Jailbreak</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Remove safety constraints</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Exfiltration</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Leak system prompts &amp; secrets</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Encoding</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Base64, unicode, leetspeak</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Tool-Use Exploitation</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Hijack function calls</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Context Overflow</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Exploit attention windows</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Multi-Turn</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Build trust then attack</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Payload Splitting</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Split attacks across messages</div>
+      </div>
+      <div style="padding:1rem 1.2rem;border:1px solid var(--bg3);background:var(--bg)">
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--red-light)">Indirect Injection</div>
+        <div style="font-size:0.78rem;color:var(--cream-muted);margin-top:0.3rem">3 probes &bull; Hide instructions in data</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">How Feral hunts</h2>
+  <div class="how-step">
+    <span class="how-num">1</span>
+    <div class="how-text"><h3>Attack</h3><p>Feral sends adversarial probes through your proxy. Each probe tests whether a specific guardrail catches a specific attack vector.</p></div>
+  </div>
+  <div class="how-step">
+    <span class="how-num">2</span>
+    <div class="how-text"><h3>Analyze</h3><p>If the attack reaches the model and the response contains bypass indicators, Feral marks the guardrail as vulnerable. If it's blocked (non-200 or refused), it's a pass.</p></div>
+  </div>
+  <div class="how-step">
+    <span class="how-num">3</span>
+    <div class="how-text"><h3>Evolve</h3><p>Successful attacks are mutated &mdash; rephrased, encoded, split across turns &mdash; and retried in the next generation. This finds deeper vulnerabilities that static testing misses.</p></div>
+  </div>
+</div>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem">How vulnerable is your stack?</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:1rem">Start with the free 5-probe quickscan. Takes 10 seconds.</p>
+  <p style="color:var(--cream-muted);font-size:0.9rem;margin-bottom:0.5rem">Need the full 29-probe suite with evolutionary mutation?</p>
+  <span class="tier-badge">Team &middot; $299.99/mo</span>
+  <div class="cta-group" style="margin-top:2rem">
+    <a href="/guide/" class="btn btn-danger">Run Quickscan</a>
+    <a href="/pricing/" class="btn btn-secondary">See Team Pricing</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/security/">Security</a> &middot; <a href="/changelog/">Changelog</a></p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>

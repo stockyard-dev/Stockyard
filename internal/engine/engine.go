@@ -396,6 +396,9 @@ func Boot(pc ProductConfig) {
 		RegisterAutopilotRoutes(srv.Mux(), db.Conn(), GlobalAutopilot)
 	}
 
+	// Feral Quickscan: free 5-probe security audit (no tier gating)
+	RegisterQuickscanRoutes(srv.Mux(), cfg.Port)
+
 	// Playground share endpoints
 	registerPlaygroundRoutes(srv.Mux(), db.Conn())
 
