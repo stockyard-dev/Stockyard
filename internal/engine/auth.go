@@ -183,6 +183,7 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 			strings.HasPrefix(path, "/blog/") ||
 			strings.HasPrefix(path, "/vs/") ||
 			strings.HasPrefix(path, "/site-assets/") ||
+			strings.HasPrefix(path, "/compare/") ||
 			path == "/install.sh" ||
 			path == "/install" ||
 			path == "/sitemap.xml" ||
@@ -291,6 +292,10 @@ func isPublicRoute(method, path string) bool {
 			return true
 		case path == "/api/openapi.json":
 			return true
+		case strings.HasPrefix(path, "/api/lasso/share/"):
+			return true // Public share retrieval for /compare/{id} page
+		case strings.HasPrefix(path, "/api/replay/share/"):
+			return true // Alias for lasso share
 		}
 	}
 	// Cloud signup (POST /api/cloud/tenants)
