@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Self-Hosted vs SaaS LLM Proxy: How to Decide -- Stockyard</title>
+<link rel="alternate" type="application/rss+xml" title="Stockyard Blog" href="/blog/feed.xml">
+<meta name="description" content="Should you self-host your LLM proxy or use a managed SaaS? The tradeoffs are real on both sides. Here is a practical framework for deciding.">
+<meta property="og:title" content="Self-Hosted vs SaaS LLM Proxy: How to Decide">
+<meta property="og:description" content="Self-hosting gives you control and data residency. SaaS gives you zero ops overhead. The right choice depends on what you actually need.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://stockyard.dev/blog/self-hosted-vs-saas-llm-proxy/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/blog/self-hosted-vs-saas-llm-proxy/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.post-layout{max-width:700px;margin:0 auto;padding:4rem 2rem}
+.post-layout h1{font-size:2rem;line-height:1.3;margin-bottom:0.5rem}
+.post-meta{font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);margin-bottom:3rem}
+.post-layout h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:2.5rem;margin-bottom:1rem}
+.post-layout p{color:var(--cream-dim);line-height:1.9;margin-bottom:1.2rem}
+.post-layout strong{color:var(--cream)}
+.post-layout .sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3);font-style:italic}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}}
+@media(max-width:700px){.post-layout{padding:2rem 1.5rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Platform</a><a href="/docs/">Docs</a><a href="/benchmarks/">Benchmarks</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<div class="post-layout" id="main">
+  <h1>Self-hosted vs SaaS LLM proxy: how to decide</h1>
+  <div class="post-meta"><time datetime="2026-03-28">March 28, 2026</time> &middot; Michael</div>
+
+  <p>You need an LLM proxy. You have two options: run one yourself, or use a managed service. Both are legitimate choices with real tradeoffs. This post is a decision framework, not a pitch for one side.</p>
+
+  <h2>When to self-host</h2>
+
+  <p><strong>Data residency matters.</strong> If you cannot send prompts and responses through a third-party server, self-hosting is your only option. Regulated industries, government contracts, and privacy-conscious companies often have this requirement. With a self-hosted proxy, your LLM traffic stays on your network and only leaves to reach the LLM providers you configure.</p>
+
+  <p><strong>You want to control the upgrade cycle.</strong> SaaS products push updates on their schedule. If a breaking change ships, you absorb it immediately. Self-hosting lets you upgrade when you are ready, test changes in staging, and roll back if something breaks.</p>
+
+  <p><strong>Cost matters at scale.</strong> SaaS proxies typically charge per request or per event. At low volume, this is negligible. At high volume, the platform cost can become significant on top of your LLM API costs. A self-hosted proxy costs whatever your server costs, regardless of request volume.</p>
+
+  <p><strong>You want full visibility.</strong> With self-hosting, you can inspect every line of code, monitor every network connection, and audit every database query. There is no trust boundary between your application and your proxy.</p>
+
+  <h2>When to use SaaS</h2>
+
+  <p><strong>You do not want ops overhead.</strong> A managed proxy means someone else handles uptime, backups, scaling, and security patches. If you do not have the headcount or interest to maintain infrastructure, this is a real advantage.</p>
+
+  <p><strong>You need enterprise features now.</strong> SaaS providers like Portkey and Helicone have SOC 2 compliance, SSO, dedicated support, and SLAs. Building or buying those features for a self-hosted setup takes time and money.</p>
+
+  <p><strong>You want the best evaluation tools.</strong> Langfuse (SaaS or self-hosted) and Helicone have invested heavily in dashboards, LLM-as-a-judge evaluation, and experiment frameworks. If output quality measurement is your primary need, a purpose-built observability platform may serve you better than a proxy with built-in tracing.</p>
+
+  <p><strong>You are prototyping.</strong> If you are building a proof of concept and do not yet know your requirements, a SaaS proxy gets you started in minutes with no infrastructure to clean up later.</p>
+
+  <h2>The hybrid option</h2>
+
+  <p>These are not mutually exclusive. You can self-host your proxy for routing, caching, and guardrails, and export traces to a SaaS observability tool for deeper analysis. Stockyard exports OTEL spans, so you can send traces to Langfuse, Datadog, or Grafana while keeping the proxy on your own infrastructure.</p>
+
+  <h2>A practical checklist</h2>
+
+  <p>Choose self-hosted if two or more of these are true: your data cannot leave your network, you have someone who can maintain a server, cost-per-request pricing concerns you at your scale, or you want to audit the proxy source code.</p>
+
+  <p>Choose SaaS if two or more of these are true: you need SOC 2 or enterprise compliance today, nobody on the team wants to maintain infrastructure, you need deep evaluation and experiment tools, or you are still exploring and want zero commitment.</p>
+
+  <p>I built Stockyard as a self-hosted proxy because I needed data residency and did not want usage-based pricing for the platform itself. But I use SaaS products for other parts of the stack where the tradeoff makes sense. The right answer depends on your specific constraints, not on ideology.</p>
+
+  <div class="sig">
+    <p>&mdash; Michael</p>
+    <p style="margin-top:1rem"><a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/for/self-hosters/">For self-hosters</a> &middot; <a href="/vs/helicone/">vs Helicone</a> &middot; <a href="/vs/portkey/">vs Portkey</a></p>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
+</script>
+</body>
+</html>

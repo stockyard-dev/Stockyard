@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Deploy on Railway -- Stockyard</title>
+<meta name="description" content="Deploy Stockyard on Railway in under 5 minutes. GitHub auto-deploy, persistent SQLite volume, environment variables. We run on Railway ourselves.">
+<meta property="og:title" content="Deploy Stockyard on Railway">
+<meta property="og:description" content="Deploy your LLM proxy on Railway. Auto-deploy from GitHub, persistent volume for SQLite, zero Docker config needed.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/docs/railway-deploy/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/docs/railway-deploy/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content;max-height:100vh;overflow-y:auto}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0;transition:color 0.15s}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
+.content pre .comment{color:#5a5040}
+.content pre .cmd{color:var(--cream)}
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+.pn{display:flex;justify-content:space-between;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.pn a{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.pn a:hover{color:var(--rust-light)}
+.pn .next{margin-left:auto}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+@media(max-width:600px){pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Platform</a><a href="/docs/">Docs</a><a href="/benchmarks/">Benchmarks</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<div class="docs-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Getting Started</div>
+      <a href="/docs/quickstart/">Quickstart</a>
+      <a href="/docs/docker/">Docker</a>
+      <a href="/docs/railway-deploy/" class="active">Railway</a>
+      <a href="/docs/auth/">Auth &amp; Config</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Chute</div>
+      <a href="/docs/proxy/">Modules &amp; Providers</a>
+      <a href="/docs/aliasing/">Model Aliasing</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Reference</div>
+      <a href="/docs/api/">API Reference</a>
+      <a href="/docs/sdks/">SDK Wrappers</a>
+      <a href="/docs/cli/">CLI</a>
+    </div>
+  </aside>
+  <main class="content" id="main">
+    <h1>Deploy on Railway</h1>
+    <p class="subtitle">We run Stockyard on Railway ourselves. Here is how to set it up.</p>
+
+    <h2 id="setup">Create the service</h2>
+    <p>In your Railway project, create a new service from your GitHub repo (or from the Stockyard Docker image). Railway auto-detects the Dockerfile and builds the binary.</p>
+    <p>If deploying from the Docker image directly:</p>
+    <pre>
+<span class="comment"># Image reference for Railway</span>
+<span class="cmd">ghcr.io/stockyard-dev/stockyard:latest</span>
+</pre>
+
+    <h2 id="volume">Add a persistent volume</h2>
+    <p>Stockyard stores everything in SQLite at <code>/data/stockyard.db</code>. Without a persistent volume, your data is lost on every deploy.</p>
+    <p>In Railway: Service &rarr; Settings &rarr; Add Volume. Mount path: <code>/data</code>.</p>
+    <div class="note"><strong>Important</strong><br>The volume must be mounted at <code>/data</code>. This is where Stockyard writes the SQLite database by default. The volume survives deploys, restarts, and redeploys.</div>
+
+    <h2 id="env">Set environment variables</h2>
+    <p>Add your provider keys and admin key in Railway's Variables tab:</p>
+    <pre>
+<span class="cmd">OPENAI_API_KEY=sk-...</span>
+<span class="cmd">ANTHROPIC_API_KEY=sk-ant-...</span>
+<span class="cmd">STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
+</pre>
+    <p>Add as many provider keys as you want. Stockyard auto-detects the provider from each key's prefix.</p>
+
+    <h2 id="port">Port configuration</h2>
+    <p>Stockyard listens on port 7749 by default. Railway auto-detects the port from the running process, but you can set it explicitly in Variables: <code>PORT=7749</code>.</p>
+
+    <h2 id="deploy">Deploy</h2>
+    <p>Push to your main branch. Railway builds and deploys automatically. The deploy takes about 2-3 minutes for a Go binary build.</p>
+    <p>Once deployed, verify:</p>
+    <pre>
+<span class="cmd">curl https://your-service.up.railway.app/health</span>
+<span class="comment"># {"status":"ok"}</span>
+
+<span class="cmd">curl https://your-service.up.railway.app/api/platform/health \
+  -H "X-Admin-Key: sy_admin_your_secret"</span>
+<span class="comment"># {"status":"ok","products":29,"active":29,"healthy":29,...}</span>
+</pre>
+
+    <h2 id="auto-deploy">Auto-deploy from GitHub</h2>
+    <p>Connect your GitHub repo to the Railway service. Every push to the main branch triggers a build and deploy. The persistent volume at <code>/data</code> survives each deploy, so your traces, costs, and configs carry forward.</p>
+    <div class="note"><strong>Deploy timing</strong><br>Railway deploys typically take 2-3 minutes from push to live. The Go build runs in Railway's build environment with no special configuration needed.</div>
+
+    <h2 id="backups">Backups on Railway</h2>
+    <p>The persistent volume is not automatically backed up by Railway. Set up a scheduled backup by downloading the SQLite file periodically:</p>
+    <pre>
+<span class="comment"># From your local machine</span>
+<span class="cmd">railway run cp /data/stockyard.db ./backups/stockyard-$(date +%Y%m%d).db</span>
+</pre>
+    <p>Or use the Railway CLI to access the volume directly. For more on backups, see <a href="/how-stockyard-backups-work/">How Stockyard backups work</a>.</p>
+
+    <div class="pn"><a href="/docs/docker/">&larr; Docker</a><a href="/docs/auth/" class="next">Auth &amp; Configuration &rarr;</a></div>
+  </main>
+</div>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>LLM Guardrails -- PII Redaction, Prompt Injection Detection -- Stockyard</title>
+<meta name="description" content="Built-in LLM guardrails: PII redaction, prompt injection detection, and content filtering. All running in the proxy middleware chain, no external services.">
+<meta property="og:title" content="LLM Guardrails -- Built Into the Proxy">
+<meta property="og:description" content="PII redaction, prompt injection detection, and content filtering running in the middleware chain. No external guardrail service required.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/features/guardrails/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/features/guardrails/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.section p{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1.2rem;line-height:1.8}
+.section p strong{color:var(--cream)}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;white-space:pre-wrap;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}.code-block{font-size:0.7rem;padding:1rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Platform</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Feature</div>
+  <h1>Guardrails that run <span class="accent">in the proxy.</span></h1>
+  <p class="sub">PII redaction, prompt injection detection, and content filtering. Built into the middleware chain, not bolted on as a separate service.</p>
+</section>
+
+<div class="section">
+  <h2 class="section-label">The problem</h2>
+  <p>You are sending user data through an LLM API. Some of that data contains email addresses, phone numbers, or other personally identifiable information. Some users will try to manipulate the model with injection attacks. Some responses will contain content that should not reach your users.</p>
+  <p>The usual solution is to add a separate guardrail service between your app and the provider. That means another deployment, another failure mode, and another thing to monitor. Stockyard builds guardrails directly into the proxy middleware chain.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What is built in</h2>
+    <p><strong>PII redaction.</strong> Detects and redacts patterns for email addresses, phone numbers, and other common PII formats before prompts reach the LLM provider. Configurable per module.</p>
+    <p><strong>Prompt injection detection.</strong> Scans prompts for injection patterns using heuristic scoring. Requests are scored for risk, and you configure thresholds to block, warn, or allow.</p>
+    <p><strong>Content filtering.</strong> Configurable content policies that can block or flag requests and responses based on content type. Runs on both the input and output side of the proxy.</p>
+    <p><strong>Secret scanning.</strong> Detects API keys, passwords, and other secrets in prompts before they are sent to the provider.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Enable at runtime</h2>
+  <p>Each guardrail is a middleware module. Toggle them at runtime without restarting:</p>
+  <div class="code-block">
+<span class="comment"># Enable prompt injection detection</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/promptguard \
+  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'</span>
+
+<span class="comment"># Enable PII redaction</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/piiredact \
+  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'</span>
+  </div>
+  <p>Changes take effect on the next request. No restart, no config file edit.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What guardrails do not do</h2>
+    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto">Guardrails are pattern-based, not model-based. They catch known patterns and heuristic matches, not adversarial attacks designed to evade detection. For high-security environments, guardrails are one layer of defense, not a complete solution. They reduce risk but do not eliminate it.</p>
+  </div>
+</section>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Safety in the middleware chain.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">No external service. No SDK integration. Enable a module and every request is protected.</p>
+  <a href="/docs/quickstart/" class="btn btn-primary">Get started</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+    <a href="/security/" style="color:var(--cream-muted)">Security details &rarr;</a>
+    <a href="/features/llm-failover/" style="color:var(--cream-muted)">Failover &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>

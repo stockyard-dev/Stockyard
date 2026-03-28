@@ -102,6 +102,14 @@ func Register(mux *http.ServeMux) {
 		"/use-case/llm-cost-control/",
 		"/open-source-vs-bsl/",
 		"/how-stockyard-backups-work/",
+		"/features/guardrails/",
+		"/features/rate-limiting/",
+		"/features/prompt-logging/",
+		"/use-case/dev-team-llm-gateway/",
+		"/for/self-hosters/",
+		"/for/startups/",
+		"/docs/railway-deploy/",
+		"/blog/self-hosted-vs-saas-llm-proxy/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
