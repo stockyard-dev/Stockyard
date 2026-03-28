@@ -110,6 +110,8 @@ func Register(mux *http.ServeMux) {
 		"/for/startups/",
 		"/docs/railway-deploy/",
 		"/blog/self-hosted-vs-saas-llm-proxy/",
+		"/providers/",
+		"/docs/providers/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

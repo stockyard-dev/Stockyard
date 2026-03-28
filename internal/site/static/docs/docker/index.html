@@ -326,6 +326,27 @@ volumes:
 </pre>
     <p>Stockyard handles streaming (SSE) natively, so no special proxy buffering configuration is needed. If you use Nginx, set <code>proxy_buffering off</code> for the <code>/v1/</code> path.</p>
 
+    <h2 id="sample-env">Sample .env files</h2>
+    <p>Copy one of these as your starting <code>.env</code> file:</p>
+    <p><strong>OpenAI only:</strong></p>
+    <pre>
+<span class="cmd">OPENAI_API_KEY=sk-your-key-here
+STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
+</pre>
+    <p><strong>Multi-provider (OpenAI + Anthropic):</strong></p>
+    <pre>
+<span class="cmd">OPENAI_API_KEY=sk-your-key-here
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
+</pre>
+    <p><strong>Ollama local + cloud fallback:</strong></p>
+    <pre>
+<span class="cmd">OPENAI_API_KEY=sk-your-key-here
+STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
+<span class="comment"># Ollama is auto-detected at localhost:11434
+# Stockyard fails over to OpenAI if Ollama is unavailable</span>
+</pre>
+
     <h2 id="upgrading">Upgrading</h2>
     <p>Pull the new image and restart. The SQLite database migrates automatically on startup.</p>
     <pre>

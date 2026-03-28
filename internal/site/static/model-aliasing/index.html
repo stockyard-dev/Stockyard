@@ -135,10 +135,25 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   </div>
 </section>
 
+<div class="section">
+  <h2 class="section-label">Starter presets</h2>
+  <p style="font-size:0.95rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto 1.5rem">Common alias configurations to start with. Copy the YAML or set them through the API.</p>
+  <div class="code-block">
+<span class="comment"># stockyard.yaml — starter aliases</span>
+aliases:
+  primary-chat: "gpt-4o"           <span class="comment"># your main conversational model</span>
+  cheap-chat: "gpt-4o-mini"        <span class="comment"># low-cost for simple tasks</span>
+  reasoning: "claude-sonnet-4-5"   <span class="comment"># complex reasoning tasks</span>
+  fast-local: "llama-3.3-70b"      <span class="comment"># local via Ollama or Groq</span>
+  embeddings: "text-embedding-3-small"
+  </div>
+  <p style="font-size:0.85rem;color:var(--cream-muted);text-align:center">Your app calls <code>primary-chat</code>. When you want to try a new model, change one alias. No code change, no redeploy.</p>
+</div>
+
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Name your models. Control the mapping.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Aliasing is free on every tier. Set aliases in YAML or through the API — they persist across restarts.</p>
-  <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+  <a href="/docs/quickstart/" class="btn btn-primary">Install Stockyard</a>
   <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
     <a href="/docs/aliasing/" style="color:var(--cream-muted)">Aliasing Docs →</a>
     <a href="/proxy-only/" style="color:var(--cream-muted)">Proxy-Only Setup →</a>

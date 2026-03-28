@@ -9,7 +9,7 @@
 <title>Use Stockyard as Just a Proxy — Self-Hosted LLM Proxy</title>
 <meta name="description" content="Route all your LLM requests through one endpoint. One Go binary, embedded SQLite, no Redis, no Postgres, no Docker. Works with OpenAI, Anthropic, and 14 more providers.">
 <meta property="og:title" content="Use Stockyard as Just a Proxy">
-<meta property="og:description" content="One endpoint for 16 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
+<meta property="og:description" content="One endpoint for 40 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/proxy-only/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -88,7 +88,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div class="section-alt-inner">
     <h2 class="section-label">What you get on free tier</h2>
     <div class="fact-grid">
-      <div class="fact"><div class="fact-num">16</div><div class="fact-label">LLM providers</div></div>
+      <div class="fact"><div class="fact-num">40</div><div class="fact-label">LLM providers</div></div>
       <div class="fact"><div class="fact-num">76</div><div class="fact-label">middleware modules</div></div>
       <div class="fact"><div class="fact-num">~25</div><div class="fact-label">MB binary</div></div>
       <div class="fact"><div class="fact-num">0</div><div class="fact-label">external dependencies</div></div>
@@ -155,7 +155,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <div class="section">
   <h2 class="section-label">What you gain vs what you give up</h2>
-  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 16 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 40 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
   <p style="font-size:0.95rem;color:var(--cream-dim)"><strong style="color:var(--cream)">What you give up:</strong> roughly 200ms of added latency per request (the middleware chain). Your requests route through one more hop. If you need sub-millisecond proxy overhead or horizontal scaling across many nodes, a lighter proxy or direct provider calls may be a better fit.</p>
 </div>
 

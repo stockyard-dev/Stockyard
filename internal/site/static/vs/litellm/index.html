@@ -160,7 +160,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <tr><td>Guardrails</td><td class="us">PII redaction, content filtering, prompt injection detection</td><td class="them">Via external guardrail services</td></tr>
     <tr><td>Model aliasing</td><td class="us">Runtime API + YAML config</td><td class="them">Model mapping in config</td></tr>
     <tr><td>Failover</td><td class="us">Model-aware routing with circuit breakers</td><td class="them">Fallback model lists</td></tr>
-    <tr><td>Providers</td><td class="tie">16 with auto-detection</td><td class="tie">100+ via community adapters</td></tr>
+    <tr><td>Providers</td><td class="us">40 with auto-detection</td><td class="tie">100+ via community adapters</td></tr>
     <tr><td>Community</td><td class="tie">Early stage, small</td><td class="tie">Large, mature, many contributors</td></tr>
     <tr><td>License</td><td class="tie">BSL 1.1</td><td class="tie">Apache 2.0 (proxy) / proprietary (enterprise)</td></tr>
     <tr><td>Streaming</td><td class="tie">Full SSE pass-through</td><td class="tie">Full SSE pass-through</td></tr>
@@ -201,7 +201,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <p>Both get you a working proxy. The difference is how much infrastructure you manage alongside it.</p>
 
   <h2>Where LiteLLM wins</h2>
-  <p><strong style="color:var(--cream)">Provider coverage.</strong> LiteLLM supports 100+ providers through community-maintained adapters. Stockyard supports 16 with auto-detection from key prefixes. If you need a niche provider that Stockyard does not cover, LiteLLM probably has an adapter for it.</p>
+  <p><strong style="color:var(--cream)">Provider coverage.</strong> LiteLLM supports 100+ providers through community-maintained adapters. Stockyard supports 40 with auto-detection from environment variables. LiteLLM still covers more niche providers, but the gap has narrowed significantly.</p>
   <p><strong style="color:var(--cream)">Community and maturity.</strong> LiteLLM has been around longer, has more contributors, more GitHub stars, and more production deployments. There are more Stack Overflow answers, more blog posts, and more people who can help if you get stuck.</p>
   <p><strong style="color:var(--cream)">Python ecosystem.</strong> If your team already runs Python in production and has Postgres and Redis in your stack, LiteLLM fits into what you already have. Adding another Python service is not a big ask when everything else is Python too.</p>
   <p><strong style="color:var(--cream)">Apache 2.0 license (proxy).</strong> The core LiteLLM proxy is Apache-licensed. Stockyard uses BSL 1.1, which restricts commercial use of the source code as a competing hosted service. For most users deploying for their own use, BSL has no practical impact, but the license difference matters to some organizations.</p>
