@@ -76,7 +76,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <div class="section">
   <h2 class="section-label">What each trace records</h2>
-  <p>Every trace includes: the full prompt (messages array), the full response, the model name, the provider, input and output token counts, estimated cost in USD, latency in milliseconds, HTTP status code, which middleware modules ran, and a timestamp. The audit ledger (Brand) also records a hash-chained entry for tamper evidence.</p>
+  <p>Traces record: the prompt (messages array), the response, the model name, the provider, input and output token counts, estimated cost in USD, latency in milliseconds, HTTP status code, which middleware modules ran, and a timestamp. If PII redaction is enabled, redacted content is stored instead of the original. The audit ledger (Brand) also records a hash-chained entry for tamper evidence.</p>
 </div>
 
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">

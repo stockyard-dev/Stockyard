@@ -114,7 +114,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
     <p>Stockyard listens on port 7749 by default. Railway auto-detects the port from the running process, but you can set it explicitly in Variables: <code>PORT=7749</code>.</p>
 
     <h2 id="deploy">Deploy</h2>
-    <p>Push to your main branch. Railway builds and deploys automatically. The deploy takes about 2-3 minutes for a Go binary build.</p>
+    <p>Push to your main branch. Railway builds and deploys automatically. Deploy times depend on Railway's build queue but are typically a few minutes for a Go binary build.</p>
     <p>Once deployed, verify:</p>
     <pre>
 <span class="cmd">curl https://your-service.up.railway.app/health</span>
@@ -127,7 +127,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
     <h2 id="auto-deploy">Auto-deploy from GitHub</h2>
     <p>Connect your GitHub repo to the Railway service. Every push to the main branch triggers a build and deploy. The persistent volume at <code>/data</code> survives each deploy, so your traces, costs, and configs carry forward.</p>
-    <div class="note"><strong>Deploy timing</strong><br>Railway deploys typically take 2-3 minutes from push to live. The Go build runs in Railway's build environment with no special configuration needed.</div>
+    <div class="note"><strong>Deploy timing</strong><br>Railway deploys typically take a few minutes from push to live. The Go build runs in Railway's build environment with no special configuration needed.</div>
 
     <h2 id="backups">Backups on Railway</h2>
     <p>The persistent volume is not automatically backed up by Railway. Set up a scheduled backup by downloading the SQLite file periodically:</p>

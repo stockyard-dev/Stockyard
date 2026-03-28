@@ -62,8 +62,8 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <div class="section">
   <h2 class="section-label">The startup problem</h2>
-  <p>You need LLM API access for your product. You start with a raw API key. Then you need cost tracking. Then caching, because development is expensive. Then failover, because your users saw an error when OpenAI went down. Then guardrails, because a user tried to jailbreak your prompt.</p>
-  <p>Each of these is a separate problem, a separate service, a separate thing to maintain. For a team of 3-10 people trying to ship a product, that infrastructure work competes directly with product work.</p>
+  <p>You need LLM API access for your product. You start with a raw API key. Then you need cost tracking because your runway depends on knowing where money goes. Then caching, because iterating on prompts during development burns through budget you cannot afford to waste. Then failover, because a user churned after seeing an error during an OpenAI outage. Then guardrails, because someone tried to jailbreak your prompt and you found out from a screenshot on Twitter.</p>
+  <p>Each of these is a separate problem that a larger company would solve with a dedicated platform team. You do not have a platform team. You have 3-10 people trying to ship before the next board meeting.</p>
 </div>
 
 <section class="section-alt">
@@ -80,7 +80,9 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <div class="section">
   <h2 class="section-label">Grow into it</h2>
-  <p>Start with just the proxy. Add caching when your dev costs get noticeable. Enable guardrails when you go to production. Set up failover when you have users who depend on uptime. Each capability is a middleware module you toggle on when you need it, not a service you deploy.</p>
+  <p>Start with just the proxy. That alone gives you a single endpoint for all providers, automatic tracing, and the ability to swap models without redeploying.</p>
+  <p>Add caching when your dev costs get noticeable. Enable guardrails when you go to production. Set up failover when you have users who depend on uptime. Set a spending cap when you need to protect your runway from a bad week of API calls.</p>
+  <p>Each capability is a middleware module you toggle on when a real need shows up, not a service you deploy and maintain. The infrastructure grows with your product, not ahead of it.</p>
 </div>
 
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
