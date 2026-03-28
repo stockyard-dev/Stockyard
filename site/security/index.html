@@ -6,29 +6,20 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Security | Stockyard</title>
-<meta name="description" content="Stockyard security architecture. AES-256-GCM encryption, hash-chained audit trails, prompt injection detection, PII redaction, and compliance automation.">
-<meta property="og:title" content="Stockyard Security">
-<meta property="og:description" content="Enterprise-grade security for AI infrastructure. Encryption, audit trails, compliance automation.">
+<title>Security -- Stockyard</title>
+<meta name="description" content="How Stockyard handles security. AES-256-GCM key encryption, hash-chained audit trail, PII redaction, prompt injection detection, and self-hosted data storage.">
+<meta property="og:title" content="Security -- Stockyard">
+<meta property="og:description" content="Self-hosted by design. Provider keys encrypted at rest, hash-chained audit trail, prompt injection detection, PII redaction. Your data never leaves your server.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/security/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/security/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
-  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
-  --leather:#a0845c;--leather-light:#c4a87a;
-  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
-  --gold:#d4a843;--green:#5ba86e;
-  --font-serif:'Libre Baskerville',Georgia,serif;
-  --font-mono:'JetBrains Mono',monospace;
-}
-@media(prefers-color-scheme:light){
-  :root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}
-}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
@@ -37,27 +28,31 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .hero{max-width:800px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
 .hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
 .hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
-.hero h1{font-size:clamp(2rem,4.5vw,3rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
-.hero-sub{font-size:1.1rem;color:var(--cream-dim);font-style:italic;max-width:550px;margin:0 auto}
+.hero h1{font-size:clamp(2rem,4.5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero-sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto}
 .content{max-width:800px;margin:0 auto;padding:3rem 2rem}
 .section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
 .section-label:first-child{border-top:none;padding-top:0}
-.content p{color:var(--cream-dim);margin-bottom:1rem;font-size:1rem;line-height:1.8}
+.content p{color:var(--cream-dim);margin-bottom:1rem;font-size:0.95rem;line-height:1.8}
+.content p strong{color:var(--cream)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin:1.5rem 0}
 .card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem}
 .card h3{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
 .card p{font-size:0.85rem;color:var(--cream-dim);margin:0}
-.check{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream-dim);padding:0.6rem 0;border-bottom:1px solid var(--bg3);display:flex;gap:0.8rem;align-items:baseline}
-.check::before{content:'✓';color:var(--green);font-weight:700}
 code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.1rem 0.4rem;color:var(--leather-light)}
-.nav-toggle{display:none}
-@media(max-width:768px){.nav-links{display:none}.hero{padding:4rem 1.5rem 2rem}.grid{grid-template-columns:1fr}}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}.grid{grid-template-columns:1fr}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/security/">
 </head>
 <body>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Platform</a>
     <a href="/docs/">Docs</a>
@@ -70,113 +65,62 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
 
 <section class="hero">
   <div class="hero-eyebrow">Security</div>
-  <h1>Enterprise-grade <span class="accent">AI security</span> by default.</h1>
-  <p class="hero-sub">Encryption at rest, hash-chained audit trails, prompt injection detection, PII redaction, and automated compliance. Built into the binary.</p>
+  <h1>How Stockyard <span class="accent">handles security.</span></h1>
+  <p class="hero-sub">Self-hosted by design. Provider keys encrypted at rest, tamper-evident audit trail, prompt injection detection, PII redaction. Your data stays on your server.</p>
 </section>
 
 <div class="content">
 
-  <div class="section-label" style="border-top:none;padding-top:0">Data Protection</div>
-  <div class="grid">
-    <div class="card">
-      <h3>AES-256-GCM Encryption</h3>
-      <p>Provider API keys are encrypted at rest using AES-256-GCM with a PBKDF2-derived encryption key (100K iterations). Keys are encrypted in <code>internal/auth/crypto.go</code> and never appear in logs, API responses, or trace data.</p>
-    </div>
-    <div class="card">
-      <h3>Secret Vault</h3>
-      <p>All sensitive configuration (webhook URLs, Stripe keys, connection strings) stored in an encrypted vault. Referenced by name in Fabric manifests — never exposed in config files.</p>
-    </div>
-    <div class="card">
-      <h3>PII Redaction</h3>
-      <p>Automatic detection and redaction of names, emails, phone numbers, SSNs, and credit card numbers before prompts reach the LLM provider. Configurable per module.</p>
-    </div>
-  </div>
+  <div class="section-label" style="border-top:none;padding-top:0">Encryption at Rest</div>
+  <p><strong>Provider API keys are encrypted using AES-256-GCM.</strong> The encryption key is derived via PBKDF2-HMAC-SHA256 with 100,000 iterations. You can set your own encryption key with <code>STOCKYARD_ENCRYPTION_KEY</code> (minimum 32 characters), or Stockyard auto-generates one and stores it in the database on first boot.</p>
+  <p>Encrypted keys are never logged, never included in API responses, and never exposed in trace data. If someone gains access to the SQLite file without the encryption key, provider keys are unreadable.</p>
 
-  <div class="section-label">Audit &amp; Compliance</div>
-  <div class="grid">
-    <div class="card">
-      <h3>Hash-Chained Audit Ledger</h3>
-      <p>Every request gets a SHA-256 hash-chained entry in the <a href="/trust/" style="color:var(--rust-light,#e8975a)">Brand</a> ledger. Each hash includes the previous entry, creating a tamper-evident chain that proves no records were modified or deleted.</p>
-    </div>
-    <div class="card">
-      <h3>Compliance Automation</h3>
-      <p>Pre-built presets for HIPAA, GDPR, SOX, EU AI Act, and UK AI framework. One-click configuration applies the right modules and policies. Continuous monitoring alerts on non-compliance.</p>
-    </div>
-    <div class="card">
-      <h3>Brand Federation</h3>
-      <p>Multiple Stockyard instances anchor audit chains to a shared verification network. Regulators verify compliance by checking published hash anchors — without accessing your data.</p>
-    </div>
-  </div>
+  <div class="section-label">Audit Trail</div>
+  <p><strong>Every request gets a hash-chained ledger entry.</strong> Each entry includes a SHA-256 hash of the previous entry, creating a tamper-evident chain. If any record is modified or deleted, the chain breaks and verification fails.</p>
+  <p>The audit ledger records: the request, the response, the model used, the provider, token counts, cost, latency, and which middleware modules ran. This is the <a href="/docs/trust/">Brand</a> product.</p>
 
-  <div class="section-label">Threat Protection</div>
-  <div class="grid">
-    <div class="card">
-      <h3>Prompt Injection Detection</h3>
-      <p>500+ attack patterns with ensemble detection: regex, heuristic, and keyword matching. Requests are scored 0-100 for injection risk. Configurable thresholds for block, warn, and allow.</p>
-    </div>
-    <div class="card">
-      <h3>Immune System</h3>
-      <p>Shared threat intelligence across the platform. When any app detects an attack, the signature propagates to every other app within seconds. Every attack makes the platform stronger.</p>
-    </div>
-    <div class="card">
-      <h3>Honeypots</h3>
-      <p>Deploy fake vulnerabilities that look exploitable. When an attacker tries to exploit them, their technique is captured, the threat library is updated, and all apps are immunized.</p>
-    </div>
-  </div>
+  <div class="section-label">Prompt Injection Detection</div>
+  <p><strong>Stockyard scans prompts for injection attempts</strong> using pattern matching and heuristic scoring. Requests are scored for injection risk, and you can configure thresholds to block, warn, or allow. This runs as a middleware module and can be enabled or disabled at runtime.</p>
 
-  <div class="section-label">Incident Response</div>
-  <div class="grid">
-    <div class="card">
-      <h3>Recall</h3>
-      <p><a href="/products/">Recall</a> finds every response affected by a model error in seconds. Search by text, regex, date range, and model. One-click notifications to affected parties.</p>
-    </div>
-    <div class="card">
-      <h3>Black Box Investigation</h3>
-      <p>Reconstruct the complete context of any request: the full prompt, response, middleware execution chain, audit trail, billing record, and provider health at the time.</p>
-    </div>
-    <div class="card">
-      <h3>Safety Certification</h3>
-      <p>Automated red-team testing grades every app A through F. Apps below D must improve before publishing. Scorecards run weekly for all published apps.</p>
-    </div>
-  </div>
+  <div class="section-label">PII Redaction</div>
+  <p><strong>Automatic detection and redaction of personally identifiable information</strong> before prompts reach the LLM provider. This includes patterns for email addresses, phone numbers, and other common PII formats. Configurable per module, and runs in the middleware chain before the request is forwarded.</p>
 
-  <div class="section-label">Security Checklist</div>
-  <div style="max-width:600px">
-    <div class="check">Provider keys encrypted at rest (AES-256-GCM, PBKDF2-derived key)</div>
-    <div class="check">Passwords hashed with PBKDF2-HMAC-SHA256 (100K iterations + unique salt)</div>
-    <div class="check">Hash-chained audit trail on every request</div>
-    <div class="check">PII detection and automatic redaction</div>
-    <div class="check">Prompt injection detection (500+ patterns)</div>
-    <div class="check">Content filtering and toxicity screening</div>
-    <div class="check">Role-based access control (admin/developer/viewer/auditor)</div>
-    <div class="check">Secret scanning in prompts and responses</div>
-    <div class="check">HIPAA, GDPR, SOX, EU AI Act compliance presets</div>
-    <div class="check">Rate limiting on public endpoints (10 POST/min/IP)</div>
-    <div class="check">HSTS, CSP, X-Frame-Options, X-Content-Type-Options headers</div>
-    <div class="check">Synthetic monitoring (probes every 5 minutes)</div>
-    <div class="check">SLA compliance tracking per provider</div>
-    <div class="check">Brand federation for cross-org audit verification</div>
-    <div class="check">Webhook signature verification (Stripe)</div>
-    <div class="check">Parameterized SQL everywhere (zero injection surface)</div>
-    <div class="check">SSRF protection on mesh node registration</div>
-    <div class="check">XSS escaping on all user-rendered fields</div>
-    <div class="check">X-Forwarded-For trusted only from private proxy IPs</div>
-    <div class="check">Constant-time authentication checks</div>
-    <div class="check">No external dependencies (reduced attack surface)</div>
-  </div>
+  <div class="section-label">Content Filtering</div>
+  <p><strong>Configurable content filtering</strong> can block or flag requests and responses based on content policies. This runs as part of the middleware chain alongside prompt injection detection and PII redaction.</p>
+
+  <div class="section-label">Self-Hosted Data Storage</div>
+  <p><strong>All data stays on your server.</strong> Stockyard stores everything in a local SQLite file. Traces, costs, audit logs, cached responses, and encrypted keys never leave your infrastructure. There is no telemetry, no analytics reporting, and no usage data sent to Stockyard or any third party.</p>
+  <p>On the free Community tier, there are zero outbound calls to Stockyard infrastructure. On paid tiers, the only Stockyard-directed call is license key validation on startup. See <a href="/does-stockyard-phone-home/">Does Stockyard phone home?</a> for details.</p>
+
+  <div class="section-label">Transport &amp; Headers</div>
+  <p>Stockyard sets security headers on all responses: <code>Strict-Transport-Security</code>, <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy</code>, and <code>Permissions-Policy</code>. These are applied automatically on every page and API response.</p>
+
+  <div class="section-label">Admin Authentication</div>
+  <p>Management API endpoints require the admin key (<code>STOCKYARD_ADMIN_KEY</code>) passed as an <code>X-Admin-Key</code> header. Without it, management endpoints return 401. The admin key is not the same as the encryption key and is not used to derive encryption material.</p>
 
   <div class="section-label">Architecture</div>
-  <p>Stockyard is a single statically linked Go binary with embedded SQLite. There are no external services, no network dependencies, and no shared infrastructure. Your data stays in your binary on your machine. The attack surface is minimal because there's nothing to attack except the binary itself.</p>
-  <p>Provider keys are encrypted before they touch disk. The encryption key derives from your admin key via HKDF. Even if someone accesses the SQLite database file, provider keys are unreadable without the admin key.</p>
-  <p>For enterprises requiring additional assurance: the entire codebase is open source at <a href="https://github.com/stockyard-dev/Stockyard">github.com/stockyard-dev/Stockyard</a>. Audit it yourself.</p>
+  <p>Stockyard is a single statically linked Go binary with embedded SQLite. There are no external services, no shared infrastructure, and no network dependencies beyond the LLM providers you configure. The attack surface is the binary and the port it listens on.</p>
+  <p>All database queries use parameterized SQL. User-rendered fields are escaped to prevent XSS. The binary has zero runtime dependencies beyond the Go standard library and <code>modernc.org/sqlite</code> (a pure-Go SQLite implementation, no CGO).</p>
+  <p>The entire codebase is source-available at <a href="https://github.com/stockyard-dev/Stockyard">github.com/stockyard-dev/Stockyard</a> under BSL 1.1.</p>
 
+  <div class="section-label">What Stockyard Does Not Have Yet</div>
+  <p>Stockyard does not currently have: SOC 2 certification, HIPAA compliance certification, formal third-party security audits, SSO/SAML integration, or multi-tenant role-based access control. These may come as the product matures, but they are not available today. If your organization requires these, Stockyard may not be the right fit yet.</p>
 
 </div>
 
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Your server, your data, your control.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Self-hosted by design. No data leaves your infrastructure unless you send it to an LLM provider.</p>
+  <a href="/docs/quickstart/" class="btn btn-primary">Install Stockyard</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+    <a href="/does-stockyard-phone-home/" style="color:var(--cream-muted)">Does it phone home? &rarr;</a>
+    <a href="/single-binary/" style="color:var(--cream-muted)">Why single binary? &rarr;</a>
+  </div>
+</section>
+
 <footer>
-  <p style="font-family:var(--font-serif);color:var(--leather-light);font-style:italic;text-align:center;padding:2rem;border-top:1px solid var(--bg3)">Stockyard.</p>
-  <p style="text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);padding:0 2rem">Where AI infrastructure gets sorted.</p>
-  <p style="text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);padding:0.5rem 2rem 2rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/docs/">Developers</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 </body>
 </html>
