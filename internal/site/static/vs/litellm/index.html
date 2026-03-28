@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Stockyard vs LiteLLM — Stockyard">
-<meta property="og:description" content="Stockyard vs LiteLLM: a LiteLLM alternative with built-in observability, audit trails, and prompt management.">
+<meta property="og:description" content="Honest comparison of Stockyard and LiteLLM. Same job — route LLM requests through one endpoint. Different architecture, different tradeoffs.">
 <meta property="og:url" content="https://stockyard.dev/vs/litellm/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Stockyard vs LiteLLM — Stockyard</title>
-<meta name="description" content="Stockyard vs LiteLLM: a LiteLLM alternative with built-in observability, audit trails, and prompt management. Side-by-side comparison.">
+<title>Stockyard vs LiteLLM — LiteLLM Alternative</title>
+<meta name="description" content="Stockyard vs LiteLLM: honest comparison. Single Go binary with built-in observability vs Python proxy with plugin ecosystem. Side-by-side tradeoffs.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -30,7 +30,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .hero h1{font-size:2.2rem;margin-bottom:0.8rem;line-height:1.3}
 .hero h1 .vs{color:var(--leather);font-size:1.6rem}
 .hero h1 .them{color:var(--cream-dim)}
-.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto}
 .section{max-width:800px;margin:0 auto;padding:0 2rem 3rem}
 .section-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem}
 .ct{width:100%;border-collapse:collapse;margin:0 0 2rem;font-size:0.85rem}
@@ -44,6 +44,9 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
 h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
 code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+pre .comment{color:#5a5040}
+pre .cmd{color:var(--cream)}
 .verdict{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem 2rem;margin:2rem 0;text-align:center}
 .verdict-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem}
 .verdict p{color:var(--cream);font-size:1rem;margin-bottom:0.5rem}
@@ -53,10 +56,15 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
 .cta-ghost{border:1px solid var(--bg3);color:var(--cream-dim)}.cta-ghost:hover{border-color:var(--rust);color:var(--cream)}
 .also{text-align:center;margin:2rem 0;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)}
 .also a{color:var(--cream-dim)}.also a:hover{color:var(--rust-light)}
+.compare-setup{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0 2rem}
+.compare-setup-col{padding:0}
+.compare-setup-col h4{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.8rem}
+.compare-setup-col.theirs h4{color:var(--cream-muted)}
+.compare-setup-col.ours h4{color:var(--rust-light)}
+.compare-setup-col pre{margin:0;font-size:0.72rem}
 footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:3rem}
 .sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
 footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
-@media(max-width:600px){.hero h1{font-size:1.6rem}.ct{font-size:0.75rem}.ct th,.ct td{padding:0.5rem}}
 
 /* ===== MOBILE NAV ===== */
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
@@ -70,7 +78,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   .nav-toggle{display:block}
   .nav-links{
     display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    width:260px;background:var(--bg2);border-left:1px solid var(--bg3);
     padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
     box-shadow:-4px 0 20px rgba(0,0,0,0.5)
   }
@@ -80,16 +88,12 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   .nav-overlay.open{display:block}
 }
 
-
-/* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  .hero h1{font-size:1.6rem}
+  .ct{font-size:0.75rem}.ct th,.ct td{padding:0.5rem}
+  pre{font-size:0.68rem;padding:0.8rem}
+  .compare-setup{grid-template-columns:1fr}
   table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:wrap;gap:0}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
 }
 
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
@@ -113,7 +117,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     "url": "https://stockyard.dev"
   },
   "datePublished": "2026-03-22",
-  "dateModified": "2026-03-23"
+  "dateModified": "2026-03-27"
 }
 </script>
 </head>
@@ -136,74 +140,102 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 
 <div class="hero">
   <h1>Stockyard <span class="vs">vs</span> <span class="them">LiteLLM</span></h1>
-  <p class="sub">Both are LLM proxy layers. One is a Python package with runtime dependencies. The other is a single Go binary with a full platform built in.</p>
+  <p class="sub">Both route LLM requests through one endpoint. LiteLLM is a Python proxy with a large plugin ecosystem. Stockyard is a single Go binary with observability, guardrails, and 29 products built in. Different architecture, different tradeoffs.</p>
 </div>
 
 <section class="section" id="main">
-  <div class="section-label">Feature comparison</div>
+  <div class="section-label">Side-by-side</div>
   <table class="ct">
     <tr><th></th><th class="us">Stockyard</th><th>LiteLLM</th></tr>
-    <tr><td>Language</td><td class="us">Go (compiled, static binary)</td><td class="them">Python (interpreted)</td></tr>
-    <tr><td>Install</td><td class="us"><code>curl | sh</code> &mdash; one binary</td><td class="them"><code>pip install</code> + Redis + Postgres</td></tr>
-    <tr><td>Dependencies</td><td class="us">Zero &mdash; SQLite embedded</td><td class="them">Redis, PostgreSQL, separate UI</td></tr>
-    <tr><td>Memory footprint</td><td class="us">~12 MB at idle</td><td class="them">~200 MB+ with dependencies</td></tr>
+    <tr><td>Language</td><td class="us">Go &mdash; compiled static binary</td><td class="them">Python &mdash; interpreted</td></tr>
+    <tr><td>Install</td><td class="us"><code>curl | sh</code> &mdash; one file</td><td class="them"><code>pip install</code> + Postgres + Redis</td></tr>
+    <tr><td>Database</td><td class="us">Embedded SQLite (WAL mode)</td><td class="them">PostgreSQL (external)</td></tr>
+    <tr><td>Binary size</td><td class="us">~25 MB total</td><td class="them">Python packages + dependencies</td></tr>
     <tr><td>Cold start</td><td class="us">&lt;50ms</td><td class="them">Seconds (Python import chain)</td></tr>
-    <tr><td>Middleware</td><td class="us">76 toggleable modules, runtime hot-swap</td><td class="them">Callback hooks, limited built-in</td></tr>
-    <tr><td>Dashboard</td><td class="us">Embedded in binary at <code>/ui</code></td><td class="them">Separate service (litellm-ui)</td></tr>
-    <tr><td>Observability</td><td class="us">Built-in Lookout (traces, costs, alerts)</td><td class="them">Callbacks to external services</td></tr>
+    <tr><td>Middleware</td><td class="us">76 modules, hot-swap at runtime</td><td class="them">Callback hooks to external services</td></tr>
+    <tr><td>Observability</td><td class="us">Built-in: traces, costs, alerts (Lookout)</td><td class="them">Via callbacks to Langfuse, Helicone, etc.</td></tr>
+    <tr><td>Dashboard</td><td class="us">Embedded at <code>/ui</code></td><td class="them">Separate service (litellm-ui)</td></tr>
     <tr><td>Audit trail</td><td class="us">Hash-chained ledger (Brand)</td><td class="them">None built-in</td></tr>
-    <tr><td>Prompt management</td><td class="us">Versioned templates + A/B experiments (Tack Room)</td><td class="them">Basic prompt management</td></tr>
-    <tr><td>Workflows</td><td class="us">DAG engine with tool registry (Forge)</td><td class="them">None</td></tr>
-    <tr><td>Config marketplace</td><td class="us">Trading Post packs, one-click install</td><td class="them">None</td></tr>
-    <tr><td>Providers</td><td class="them">16 auto-configured</td><td class="us">100+ via community</td></tr>
-    <tr><td>Community size</td><td class="them">Early stage</td><td class="us">Large, established</td></tr>
-    <tr><td>Virtual keys</td><td class="tie">sk-sy- user keys with per-user provider resolution</td><td class="tie">Virtual keys with spend tracking</td></tr>
+    <tr><td>Caching</td><td class="us">Built-in: semantic + exact match</td><td class="them">Via Redis or external cache</td></tr>
+    <tr><td>Guardrails</td><td class="us">PII redaction, content filtering, prompt injection detection</td><td class="them">Via external guardrail services</td></tr>
+    <tr><td>Model aliasing</td><td class="us">Runtime API + YAML config</td><td class="them">Model mapping in config</td></tr>
+    <tr><td>Failover</td><td class="us">Model-aware routing with circuit breakers</td><td class="them">Fallback model lists</td></tr>
+    <tr><td>Providers</td><td class="them">16 with auto-detection</td><td class="us">100+ via community adapters</td></tr>
+    <tr><td>Community</td><td class="them">Early stage, small</td><td class="us">Large, mature, many contributors</td></tr>
+    <tr><td>License</td><td class="tie">BSL 1.1</td><td class="tie">Apache 2.0 (proxy) / proprietary (enterprise)</td></tr>
     <tr><td>Streaming</td><td class="tie">Full SSE pass-through</td><td class="tie">Full SSE pass-through</td></tr>
-    <tr><td>App Builder</td><td class="us">No-code visual builder + marketplace</td><td class="them">None</td></tr>
-    <tr><td>Compute Mesh</td><td class="us">Distributed GPU network with earnings</td><td class="them">None</td></tr>
-    <tr><td>Knowledge Marketplace</td><td class="us">Domain experts earn royalties</td><td class="them">None</td></tr>
-    <tr><td>Incident Response</td><td class="us">Recall &mdash; find every affected response</td><td class="them">None</td></tr>
-    <tr><td>Compliance</td><td class="us">HIPAA, GDPR, SOX, EU AI Act presets</td><td class="them">None built-in</td></tr>
-    <tr><td>Declarative Deploy</td><td class="us">Fabric &mdash; one JSON manifest</td><td class="them">Config file</td></tr>
+    <tr><td>OpenAI compatibility</td><td class="tie">Drop-in replacement</td><td class="tie">Drop-in replacement</td></tr>
   </table>
 
+  <h2>The setup difference</h2>
+  <p>This is where the architectural choice shows up most clearly. Here is what it takes to get each one running with observability and caching enabled:</p>
+  <div class="compare-setup">
+    <div class="compare-setup-col ours">
+      <h4>Stockyard</h4>
+      <pre>
+<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="cmd">stockyard</span>
 
-    <h2>When to choose LiteLLM</h2>
-    <p>LiteLLM is the right choice if you need access to 100+ providers through a single interface and don&rsquo;t need the platform features. It has a large community, extensive provider coverage, and is a proven production proxy. If your stack is already Python-heavy and you&rsquo;re comfortable managing Redis and Postgres, LiteLLM is a solid option.</p>
+<span class="comment"># Done. Tracing, caching, dashboard,</span>
+<span class="comment"># audit trail, guardrails — all running.</span>
+<span class="comment"># One binary, one SQLite file.</span>
+</pre>
+    </div>
+    <div class="compare-setup-col theirs">
+      <h4>LiteLLM</h4>
+      <pre>
+<span class="comment"># Start Postgres</span>
+<span class="cmd">docker run -d postgres:15</span>
+<span class="comment"># Start Redis</span>
+<span class="cmd">docker run -d redis:7</span>
+<span class="comment"># Install proxy</span>
+<span class="cmd">pip install litellm[proxy]</span>
+<span class="comment"># Write config, start proxy</span>
+<span class="cmd">litellm --config config.yaml</span>
+<span class="comment"># Separately: install Langfuse or</span>
+<span class="comment"># Helicone for observability</span>
+</pre>
+    </div>
+  </div>
+  <p>Both get you a working proxy. The difference is how much infrastructure you manage alongside it.</p>
 
-    <h2>When to choose Stockyard</h2>
-    <p>Stockyard is the right choice if you want more than a proxy. If you need observability, audit trails, prompt versioning, A/B experiments, workflow orchestration, and a config marketplace &mdash; all in one binary with zero dependencies &mdash; Stockyard replaces the entire middleware stack, not just the routing layer. As an OpenAI-compatible alternative to standalone proxy tools, it gives you the full platform from day one.</p>
-    <p>The Go binary deploys anywhere in seconds. No Python runtime, no Redis, no Postgres. The embedded SQLite database handles everything. You get a production dashboard from the first request, not after wiring up a separate UI service.</p>
+  <h2>Where LiteLLM wins</h2>
+  <p><strong style="color:var(--cream)">Provider coverage.</strong> LiteLLM supports 100+ providers through community-maintained adapters. Stockyard supports 16 with auto-detection from key prefixes. If you need a niche provider that Stockyard does not cover, LiteLLM probably has an adapter for it.</p>
+  <p><strong style="color:var(--cream)">Community and maturity.</strong> LiteLLM has been around longer, has more contributors, more GitHub stars, and more production deployments. There are more Stack Overflow answers, more blog posts, and more people who can help if you get stuck.</p>
+  <p><strong style="color:var(--cream)">Python ecosystem.</strong> If your team already runs Python in production and has Postgres and Redis in your stack, LiteLLM fits into what you already have. Adding another Python service is not a big ask when everything else is Python too.</p>
+  <p><strong style="color:var(--cream)">Apache 2.0 license (proxy).</strong> The core LiteLLM proxy is Apache-licensed. Stockyard uses BSL 1.1, which restricts commercial use of the source code as a competing hosted service. For most users deploying for their own use, BSL has no practical impact, but the license difference matters to some organizations.</p>
 
+  <h2>Where Stockyard wins</h2>
+  <p><strong style="color:var(--cream)">Zero external dependencies.</strong> No Postgres to manage, no Redis to monitor, no separate UI to deploy. Everything runs in one process and stores data in one SQLite file. This is not just simpler to set up — it is simpler to operate, backup, and debug over time.</p>
+  <p><strong style="color:var(--cream)">Built-in observability.</strong> Stockyard traces every request from the first one you send. Costs, latency, token counts, model usage, and a full audit ledger are recorded automatically. With LiteLLM, you get request routing but need Langfuse, Helicone, or a custom callback setup for comparable observability.</p>
+  <p><strong style="color:var(--cream)">76 middleware modules.</strong> Rate limiting, cost caps, PII redaction, content filtering, prompt injection detection, semantic caching, model aliasing, and more — all toggleable at runtime without restarting. LiteLLM has callback hooks, but each capability requires wiring an external service.</p>
+  <p><strong style="color:var(--cream)">Model-aware failover.</strong> Stockyard routes Claude requests to Anthropic first and GPT requests to OpenAI first, with circuit breakers that track provider health per model. If a provider goes down, failover happens automatically with shared HTTP transport. LiteLLM supports fallback model lists but without model-aware routing or circuit breaker state.</p>
+  <p><strong style="color:var(--cream)">Operational simplicity.</strong> Upgrades are downloading a new binary. Backups are copying a file. There is no migration coordination between services, no version matrix between proxy and database, no Redis cache invalidation after a restart.</p>
 
-      <p style="font-size:0.85rem;margin-top:1rem"><a href="/benchmarks/" style="color:var(--rust-light)">See performance benchmarks &rarr;</a></p>
+  <h2>Migration</h2>
+  <p>Both Stockyard and LiteLLM are OpenAI API-compatible. If you are currently using LiteLLM, switching means pointing your <code>base_url</code> at Stockyard instead. Your SDK code, model names, and request format stay the same.</p>
+  <pre>
+<span class="comment"># Before (LiteLLM)</span>
+<span class="cmd">client = OpenAI(base_url="http://litellm:4000/v1")</span>
+
+<span class="comment"># After (Stockyard)</span>
+<span class="cmd">client = OpenAI(base_url="http://localhost:7749/v1")</span>
+</pre>
+  <p>Provider keys work the same way — Stockyard auto-detects the provider from the key prefix, so you do not need to map keys to providers in a config file.</p>
 
   <div class="verdict">
     <div class="verdict-label">The bottom line</div>
-    <p>LiteLLM is a great OpenAI proxy. Stockyard is a platform. If all you need is model routing, LiteLLM works. If you need routing <em>plus</em> observability, audit trails, prompt management, workflows, and a config marketplace, Stockyard is a LiteLLM alternative that gives you all of that in a single <code>curl | sh</code>.</p>
+    <p>LiteLLM is a proven proxy with a large ecosystem. Stockyard is a single binary that includes the proxy, the observability, the guardrails, and the dashboard. If you want the biggest provider catalog and the most community resources, use LiteLLM. If you want everything in one process with zero infrastructure to manage, try Stockyard.</p>
   </div>
 
   <div class="cta-row">
-    <a href="/cloud/" class="cta cta-primary">Start free &rarr;</a>
-    <a href="/docs/" class="cta cta-ghost">Read the docs</a>
+    <a href="/docs/quickstart/" class="cta cta-primary">Try Stockyard &rarr;</a>
+    <a href="/single-binary/" class="cta cta-ghost">Why single binary?</a>
     <a href="/pricing/" class="cta cta-ghost">See pricing</a>
   </div>
 
   <div class="also">Also compare: <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a></div>
-
-<div style="margin-top:4rem;padding-top:2rem;border-top:1px solid var(--leather-dim,#3d3428)">
-  <h3 style="font-size:1rem;color:var(--leather,#8b7355);font-family:var(--font-mono,'JetBrains Mono',monospace);letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5rem">Explore Stockyard</h3>
-  <p style="color:var(--cream-dim,#bfb5a3)">
-    <a href="/observe/" style="color:var(--rust-light,#e8975a)">Lookout</a> &middot;
-    <a href="/trust/" style="color:var(--rust-light,#e8975a)">Brand</a> &middot;
-    <a href="/studio/" style="color:var(--rust-light,#e8975a)">Tack Room</a> &middot;
-    <a href="/forge/" style="color:var(--rust-light,#e8975a)">Forge</a> &middot;
-    <a href="/modules/" style="color:var(--rust-light,#e8975a)">76 Modules</a> &middot;
-    <a href="/benchmarks/" style="color:var(--rust-light,#e8975a)">Benchmarks</a> &middot;
-    <a href="/pricing/" style="color:var(--rust-light,#e8975a)">Pricing</a>
-  </p>
-</div>
-
 </section>
 
 <footer>
@@ -212,7 +244,6 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
   <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
 </footer>
-
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
