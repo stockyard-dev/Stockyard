@@ -112,6 +112,9 @@ function ObserveView(){
       ]} rows=${safetyEvents} emptyMsg="No safety events \u2014 events appear when safety middlewares detect PII, injections, secrets, or toxic content."/>
     </div>`}
     ${detail&&html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-sm" onClick=${()=>{const body=typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body);const cmd='curl -X POST http://localhost:7749/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d \''+body.replace(/'/g,"'\\''")+"'";navigator.clipboard.writeText(cmd);}}>\u{1F4CB} Copy as curl</button>
+      </div>
       <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
       <div class="td-row"><span class="td-label">Provider</span><span class="mono">${detail.provider||'\u2014'}</span></div>
       <div class="td-row"><span class="td-label">Tokens</span><span class="mono">${(detail.tokens_in||0)+' in / '+(detail.tokens_out||0)+' out'}</span></div>

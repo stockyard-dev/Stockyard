@@ -16,13 +16,23 @@ function OverviewView(){
   if(!apps)return html`<div class="loading">Loading\u2026</div>`;
   const totalCost=costs?.providers?.reduce((s,p)=>s+(p.cost_usd||0),0)||0;
   const totalReqs=costs?.providers?.reduce((s,p)=>s+(p.requests||0),0)||0;
+  const providerCount=costs?.providers?.length||0;
+  const isFirstRun=totalReqs===0;
   return html`<div class="page-head"><div class="page-eyebrow">Console</div><h2>System Overview</h2><p class="page-sub">${platform?platform.products+' products':apps.length+' apps'} \u2022 ${platform?.tier||'Community'} tier \u2022 ${platform?.status||'ok'}</p></div>
     <div class="stats-row">
       <${Stat} label="Products" value=${platform?.active||apps.length} sub=${platform?(platform.healthy+' healthy'):''} accent/>
       <${Stat} label="Requests" value=${fmt.num(totalReqs)} sub=${fmt.usd(totalCost)+' spent'}/>
       <${Stat} label="Modules" value=${mods}/>
-      <${Stat} label="Bus Events" value=${bus?.total_events||0} sub=${(bus?.events_per_sec||0).toFixed(1)+'/sec'}/>
+      <${Stat} label="Providers" value=${providerCount} sub=${providerCount>0?'configured':'none yet'}/>
     </div>
+    ${isFirstRun?html`<div class="first-run-checklist">
+      <div class="frc-title">\u{1F680} Getting started</div>
+      <div class="frc-item ${providerCount>0?'frc-done':''}"><span class="frc-check">${providerCount>0?'\u2713':'\u25CB'}</span><span>Set a provider key</span><code class="frc-code">export OPENAI_API_KEY=sk-...</code></div>
+      <div class="frc-item"><span class="frc-check">\u25CB</span><span>Send your first request</span><code class="frc-code">curl http://localhost:7749/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</code></div>
+      <div class="frc-item"><span class="frc-check">\u25CB</span><span>Point your app at the proxy</span><code class="frc-code">export OPENAI_BASE_URL=http://localhost:7749/v1</code></div>
+      <div class="frc-item"><span class="frc-check">\u25CB</span><span>Check traces in Observe tab</span></div>
+      <div class="frc-hint">Once you send a request, this checklist disappears and your live dashboard takes over.</div>
+    </div>`:null}
     ${relic||crucible?html`<div class="stats-row" style="margin-top:12px">
       ${relic?html`<${Stat} label="Relic Certs" value=${relic.total_certificates||0} sub=${'conf '+(relic.avg_confidence||0).toFixed(2)}/>`:null}
       ${crucible?html`<${Stat} label="Crucible Scores" value=${crucible.total_scores||0} sub=${'avg '+(crucible.avg_compound_score||0).toFixed(3)}/>`:null}

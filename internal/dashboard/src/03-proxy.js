@@ -25,7 +25,9 @@ function ProxyView(){
         <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
         <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
       </div>`)}</div></div>`:
-    tab==='providers'?html`<${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant="success"/>`}]} rows=${d('providers')} emptyMsg="No providers configured."/>`:
+    tab==='providers'?html`<div class="stats-row" style="margin-bottom:12px"><${Stat} label="Configured" value=${d('providers').length} accent/><${Stat} label="Active" value=${d('providers').filter(p=>p.status==='active').length} sub="healthy"/><${Stat} label="Errors" value=${d('providers').reduce((s,p)=>s+(p.error_count||0),0)} sub=${d('providers').some(p=>p.error_count>0)?'check logs':'none'}/></div>
+      <${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant=${r.status==='active'?'success':r.status==='error'?'danger':'muted'}/>`},{key:'errors',label:'Errors',width:'80px',mono:true,render:r=>r.error_count||0},{key:'reqs',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.request_count||0)}]} rows=${d('providers')} emptyMsg="No providers configured. Set OPENAI_API_KEY or ANTHROPIC_API_KEY as environment variables and restart."/>`:
+
     html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
