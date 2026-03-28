@@ -148,6 +148,35 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 @media(max-width:600px){.hero{padding:5rem 1.5rem 3rem}.hero-stats{gap:1.5rem}.compare-table{font-size:0.7rem;display:block;overflow-x:auto}.code-section pre{font-size:0.7rem;padding:0.8rem}}
 .outcomes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto}
 @media(max-width:768px){.outcomes-grid{grid-template-columns:1fr}}
+.proxy-wedge{padding:5rem 2rem;max-width:900px;margin:0 auto}
+.proxy-code{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.85rem;color:var(--leather-light);margin:1.5rem 0 0.8rem;line-height:1.8}
+.proxy-faq{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2rem}
+.proxy-faq-item{padding:1.2rem 1.5rem;border:1px solid var(--bg3)}
+.proxy-faq-q{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.4rem;font-weight:600}
+.proxy-faq-a{font-size:0.82rem;color:var(--cream-dim);font-style:italic}
+.proxy-cols{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+@media(max-width:600px){.proxy-cols{grid-template-columns:1fr}}
+.proxy-col h4{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.8rem}
+.proxy-col-yes h4{color:var(--green-light)}
+.proxy-col-no h4{color:var(--cream-muted)}
+.proxy-col p{font-size:0.82rem;color:var(--cream-dim);line-height:1.8;margin-bottom:0.3rem}
+.replaces-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:2rem}
+.replaces-card{padding:1.2rem;border:1px solid var(--bg3);text-align:center;position:relative}
+.replaces-card::after{content:'\2713';position:absolute;top:0.5rem;right:0.8rem;color:var(--green-light);font-size:0.8rem}
+.replaces-label{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream);display:block;margin-bottom:0.3rem}
+.replaces-detail{font-size:0.72rem;color:var(--cream-muted);font-style:italic}
+.use-cases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2rem}
+.use-case-card{padding:1.5rem;border:1px solid var(--bg3);transition:border-color 0.2s}
+.use-case-card:hover{border-color:var(--rust)}
+.use-case-name{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;font-weight:600}
+.use-case-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;line-height:1.6}
+.problems-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+@media(max-width:600px){.problems-grid{grid-template-columns:1fr}}
+.problem-card{padding:1.5rem;border:1px solid var(--bg3);transition:border-color 0.2s}
+.problem-card:hover{border-color:var(--leather)}
+.problem-label{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem}
+.problem-name{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.5rem;font-weight:600}
+.problem-products{font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.7}
 </style>
 </head>
 <body>
@@ -166,6 +195,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </nav>
 
+
+<!-- 1. Hero -->
 <section class="hero" id="main">
   <div class="hero-eyebrow">One Binary &middot; Zero Dependencies &middot; Source Available</div>
   <h1>Self-hosted LLM proxy, tracing, and security <span class="accent">in one binary.</span></h1>
@@ -177,8 +208,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
     <div class="stat"><span class="stat-num">5 min</span><span class="stat-label">To First Trace</span></div>
   </div>
   <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Start Free</a>
-    <a href="#demo" class="btn btn-secondary">See it work</a>
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+    <a href="#demo" class="btn btn-secondary">See how it works</a>
   </div>
   <div class="install-cmd" style="margin-top:1.5rem" onclick="copyInstall()" title="Click to copy">
     <span>curl -fsSL stockyard.dev/install.sh | sh</span>
@@ -186,37 +217,37 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </section>
 
-<!-- Buyer outcomes — answer the three questions before showing catalog -->
-<section class="section">
-  <div class="outcomes-grid">
-    <div style="padding:2rem 1.5rem;border:1px solid var(--bg3);border-top:3px solid var(--green-light)">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--green-light);margin-bottom:0.8rem">Save money</div>
-      <div style="font-size:1rem;color:var(--cream);margin-bottom:0.6rem;font-weight:700">Reduce cost without guessing</div>
-      <p style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem">Automatically route requests to lower-cost models that still meet your quality bar. Replay the same request across models to compare cost, latency, and output before you turn it on. 100 free routing decisions per day.</p>
-      <a href="/ship-cheaper/" style="font-family:var(--font-mono);font-size:0.72rem">See the savings path &rarr;</a>
-    </div>
-    <div style="padding:2rem 1.5rem;border:1px solid var(--bg3);border-top:3px solid var(--rust-light)">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:0.8rem">Ship safer</div>
-      <div style="font-size:1rem;color:var(--cream);margin-bottom:0.6rem;font-weight:700">Find obvious safety gaps before production</div>
-      <p style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem">Run a free adversarial quickscan against your prompts and policies. Catch common injection, jailbreak, and data leakage failures before real users hit them. Grades your defenses A&ndash;F.</p>
-      <a href="/ship-safer/" style="font-family:var(--font-mono);font-size:0.72rem">See the safety path &rarr;</a>
-    </div>
-    <div style="padding:2rem 1.5rem;border:1px solid var(--bg3);border-top:3px solid var(--gold)">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem">Install in 5 minutes</div>
-      <div style="font-size:1rem;color:var(--cream);margin-bottom:0.6rem;font-weight:700">One binary, zero dependencies</div>
-      <p style="font-size:0.82rem;color:var(--cream-dim);line-height:1.7;margin-bottom:1rem">~25MB static Go binary. No Redis, no Postgres, no Docker compose. Bring your existing API keys, point your code at Stockyard, and see the first trace appear in minutes.</p>
-      <a href="/guide/" style="font-family:var(--font-mono);font-size:0.72rem">Install now &rarr;</a>
-    </div>
+<!-- 2. Proxy-only entry wedge -->
+<section class="proxy-wedge">
+  <h2 class="section-label">Use Stockyard as just a proxy</h2>
+  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2rem;font-size:0.95rem;text-align:center">Point your app at one endpoint, route requests through it, and stop there if that&rsquo;s all you need. No forced stack adoption.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:800px;margin:0 auto">
+    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">One stable endpoint</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">OpenAI, Anthropic, Ollama, and 13 more</span></div>
+    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Model aliasing</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Swap real models, keep app-facing names stable</span></div>
+    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Zero dependencies</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">One binary, one SQLite file. No Redis, Postgres, Docker.</span></div>
+  </div>
+  <div class="proxy-code">curl -fsSL stockyard.dev/install.sh | sh<br>stockyard start</div>
+  <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);text-align:center">Change your base URL and keep moving.</p>
+  <div class="proxy-cols">
+    <div class="proxy-col proxy-col-yes"><h4>Proxy-only means you can</h4><p>Route requests through one endpoint</p><p>Swap providers without changing app code</p><p>Keep model names stable with aliases</p><p>Turn on tracing, routing, or security later if you want</p></div>
+    <div class="proxy-col proxy-col-no"><h4>You do not have to</h4><p>Adopt every Stockyard feature on day one</p><p>Run extra services or infrastructure</p><p>Set up Docker, Redis, or Postgres first</p><p>Learn the full platform before getting value</p></div>
+  </div>
+  <div class="proxy-faq">
+    <div class="proxy-faq-item"><div class="proxy-faq-q">Can I ignore the rest?</div><div class="proxy-faq-a">Yes. Proxy-only is a first-class use case.</div></div>
+    <div class="proxy-faq-item"><div class="proxy-faq-q">Do I need tracing or routing on day one?</div><div class="proxy-faq-a">No. Those are there if you want them, but the proxy layer works standalone.</div></div>
+    <div class="proxy-faq-item"><div class="proxy-faq-q">Can I swap models without changing app code?</div><div class="proxy-faq-a">Yes. Use aliases to keep app-facing names stable while changing providers underneath.</div></div>
+  </div>
+  <div style="text-align:center;margin-top:2rem">
+    <a href="/guide/" class="btn btn-primary">Start with the proxy</a>
+    <a href="/docs/" class="btn btn-secondary" style="margin-left:0.8rem">Proxy-only setup</a>
   </div>
 </section>
 
-<!-- Interactive Demo — Dashboard Replica -->
+<!-- 3. Real product / actual console -->
 <section class="section-alt" id="demo">
   <div class="section-alt-inner">
-    <h2 class="section-label">This is what you get</h2>
-    <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem;max-width:540px;margin-left:auto;margin-right:auto">This is the real Stockyard console. Pick a prompt and watch the trace appear.</p>
-
-    <!-- Dashboard frame -->
+    <h2 class="section-label">This is the actual console</h2>
+    <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem;max-width:540px;margin-left:auto;margin-right:auto">Install Stockyard and it looks like this. No mockups. Pick a prompt and watch the trace appear.</p>
     <div class="dx-shell">
       <!-- Sidebar -->
       <div class="dx-nav">
@@ -489,122 +520,79 @@ function dxCloseDetail() {
 dxPick(0);
 </script>
 
-<!-- What do you need? — goal-oriented, moved above catalog -->
+
+<!-- 4. What it replaces -->
+<section class="section">
+  <h2 class="section-label">Replace a fragmented stack with one control layer</h2>
+  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Instead of stitching together five tools, run one binary.</p>
+  <div class="replaces-grid">
+    <div class="replaces-card"><span class="replaces-label">Proxy service</span><span class="replaces-detail">Route to any provider</span></div>
+    <div class="replaces-card"><span class="replaces-label">Tracing tool</span><span class="replaces-detail">Cost, latency, tokens</span></div>
+    <div class="replaces-card"><span class="replaces-label">Cost tracker</span><span class="replaces-detail">Per-request attribution</span></div>
+    <div class="replaces-card"><span class="replaces-label">Ad hoc middleware</span><span class="replaces-detail">76 toggleable modules</span></div>
+    <div class="replaces-card"><span class="replaces-label">Audit solution</span><span class="replaces-detail">Hash-chained ledger</span></div>
+  </div>
+  <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.82rem;color:var(--cream)">One binary. One process. One file.</p>
+</section>
+
+<!-- 5. What do you need? -->
 <section class="section-alt">
   <div class="section-alt-inner">
-    <h2 class="section-label">What do you need?</h2>
-    <p style="color:var(--cream-dim);font-style:italic;text-align:center;max-width:560px;margin:0 auto 2rem">Don&rsquo;t browse 29 products. Pick a goal.</p>
+    <h2 class="section-label">Pick a goal, not a catalog</h2>
+    <p style="color:var(--cream-dim);font-style:italic;text-align:center;max-width:560px;margin:0 auto 2rem">Don&rsquo;t browse 29 products. Start with what you need.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.8rem">
       <a href="/ship-cheaper/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green-light);display:block;margin-bottom:0.3rem">Ship Cheaper</span><span style="font-size:0.75rem;color:var(--cream-dim)">Cut costs 5&ndash;25x without losing quality</span></a>
       <a href="/ship-safer/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--rust-light);display:block;margin-bottom:0.3rem">Ship Safer</span><span style="font-size:0.75rem;color:var(--cream-dim)">Red-team, block injections, catch PII</span></a>
       <a href="/ship-faster/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--gold);display:block;margin-bottom:0.3rem">Ship Faster</span><span style="font-size:0.75rem;color:var(--cream-dim)">Failover, caching, load testing</span></a>
-      <a href="/ship-compliant/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);display:block;margin-bottom:0.3rem">Ship Compliant</span><span style="font-size:0.75rem;color:var(--cream-dim)">Audit trail, provenance, governance</span></a>
-      <a href="/ship-better/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);display:block;margin-bottom:0.3rem">Ship Better</span><span style="font-size:0.75rem;color:var(--cream-dim)">Replay, evolve, gate quality</span></a>
+      <a href="/ship-compliant/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);display:block;margin-bottom:0.3rem">Stay Compliant</span><span style="font-size:0.75rem;color:var(--cream-dim)">Audit trail, provenance, governance</span></a>
+      <a href="/guide/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;transition:border-color 0.2s;display:block"><span style="font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);display:block;margin-bottom:0.3rem">Keep It Simple</span><span style="font-size:0.75rem;color:var(--cream-dim)">Just the proxy, nothing else</span></a>
     </div>
-    <p style="text-align:center;font-family:var(--font-mono);font-size:0.68rem;color:var(--cream-muted);margin-top:1.2rem">Or run all five at once: <code style="color:var(--leather-light)">POST /api/optimize</code> &mdash; one endpoint, full stack review.</p>
   </div>
 </section>
 
-<!-- What you get free -->
+<!-- 6. What you get free -->
 <section class="section-alt">
   <div class="section-alt-inner">
-    <h2 class="section-label green">What you get free</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Start with the full proxy layer, tracing, and audit trail on day one.</p>
+    <h2 class="section-label green">Start with the core stack free</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Use the proxy layer, tracing, and control plane first. Add specialized tools later only if you need them.</p>
     <div class="free-grid">
-      <div class="free-card">
-        <span class="free-num">16</span>
-        <span class="free-label">Providers, One API</span>
-        <span class="free-detail">Proxy requests across OpenAI, Anthropic, Google, Groq, Mistral, and 11 more through a single endpoint.</span>
-      </div>
-      <div class="free-card">
-        <span class="free-num">76</span>
-        <span class="free-label">Runtime Controls</span>
-        <span class="free-detail">Caching, rate limits, PII redaction, safety filters, prompt compression, A/B routing &mdash; all toggleable without redeployment.</span>
-      </div>
-      <div class="free-card">
-        <span class="free-num">&check;</span>
-        <span class="free-label">Full Tracing &amp; Audit</span>
-        <span class="free-detail">Trace cost, latency, and responses from the first request. Hash-chained audit ledger included.</span>
-      </div>
+      <div class="free-card"><span class="free-num">16</span><span class="free-label">Providers, One Endpoint</span><span class="free-detail">Route requests across OpenAI, Anthropic, Google, Groq, Mistral, and 11 more through a single URL.</span></div>
+      <div class="free-card"><span class="free-num">&check;</span><span class="free-label">Tracing From First Request</span><span class="free-detail">See cost, latency, and token usage on every request. No setup beyond install.</span></div>
+      <div class="free-card"><span class="free-num">76</span><span class="free-label">Runtime Controls</span><span class="free-detail">Caching, rate limits, PII redaction, safety filters &mdash; toggle without redeployment.</span></div>
     </div>
     <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather)">Self-hosted &middot; Source available &middot; Unlimited requests</p>
   </div>
 </section>
 
-<!-- What you unlock -->
+<!-- 7. What unlocks later -->
 <div class="section">
-  <h2 class="section-label gold">What you unlock</h2>
-  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Keep the core stack free. Add specialized tools only when a real need shows up.</p>
-  <div class="flagships">
-    <div class="flagship">
-      <span class="flagship-badge badge-individual">Individual &middot; $29.99/mo</span>
-      <div class="flagship-name">Lasso <span style="font-size:0.78rem;color:var(--cream-muted);font-weight:400">&mdash; request replay</span></div>
-      <div class="flagship-tagline">Re-run any logged request against a different model. Compare cost, latency, and output side by side.</div>
-      <div class="flagship-detail">Single replay or batch (up to 5 models) &bull; Side-by-side comparison &bull; Winner analysis &bull; Model leaderboard</div>
-      <div class="flagship-stat">Same prompt &rarr; GPT, Claude, Groq in one call</div>
-    </div>
-    <div class="flagship">
-      <span class="flagship-badge badge-pro">Pro &middot; $99.99/mo</span>
-      <div class="flagship-name">Drover <span style="font-size:0.78rem;color:var(--cream-muted);font-weight:400">&mdash; automatic routing</span></div>
-      <div class="flagship-tagline">Route each request to the cheapest model that meets your quality threshold. Three modes: cost, speed, balanced.</div>
-      <div class="flagship-detail">100 free requests/day on any tier &bull; Calibrate via replay &bull; Set quality floor &bull; Cross-provider routing</div>
-      <div class="flagship-stat">Typical savings: 5&ndash;25x depending on task complexity</div>
-    </div>
-    <div class="flagship">
-      <span class="flagship-badge badge-pro">Pro &middot; $99.99/mo</span>
-      <div class="flagship-name">Breed <span style="font-size:0.78rem;color:var(--cream-muted);font-weight:400">&mdash; prompt evolution</span></div>
-      <div class="flagship-tagline">Evolve populations of prompts through crossover, mutation, and tournament selection with LLM judges.</div>
-      <div class="flagship-detail">Genetic optimization &bull; Single-elimination tournaments &bull; LLM judges score accuracy, memorability, brevity</div>
-      <div class="flagship-stat">Tested: 280 genomes, best fitness 0.787</div>
-    </div>
-    <div class="flagship">
-      <span class="flagship-badge badge-team">Free quickscan &middot; Full suite: Team</span>
-      <div class="flagship-name">Feral <span style="font-size:0.78rem;color:var(--cream-muted);font-weight:400">&mdash; adversarial testing</span></div>
-      <div class="flagship-tagline">Free 5-probe quickscan on any tier. Full 29-probe adversarial suite on Team.</div>
-      <div class="flagship-detail">Injection &bull; Jailbreak &bull; Exfiltration &bull; Encoding &bull; Indirect injection &bull; 4 more categories in full suite</div>
-      <div class="flagship-stat">One POST, instant security grade. No setup required.</div>
-    </div>
+  <h2 class="section-label gold">Add specialized tools when a real need shows up</h2>
+  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Keep the core stack free. Unlock products by the problem they solve.</p>
+  <div class="problems-grid">
+    <div class="problem-card"><div class="problem-label">Compare &amp; replay</div><div class="problem-name">Re-run requests across models</div><div class="problem-products">Lasso replays any logged request against different models. Compare cost, latency, and output side by side before committing.</div></div>
+    <div class="problem-card"><div class="problem-label">Auto-route for cost or speed</div><div class="problem-name">Route to the cheapest model that works</div><div class="problem-products">Drover routes each request to the cheapest model that meets your quality floor. Three modes: cost, speed, balanced. 100 free decisions per day.</div></div>
+    <div class="problem-card"><div class="problem-label">Red-team &amp; stress test</div><div class="problem-name">Find safety gaps before users do</div><div class="problem-products">Feral runs adversarial probes against your prompts. Free 5-probe quickscan on any tier. Stampede floods your stack with synthetic traffic.</div></div>
+    <div class="problem-card"><div class="problem-label">Evolve &amp; enforce quality</div><div class="problem-name">Breed better prompts, gate outputs</div><div class="problem-products">Breed evolves prompt populations through genetic optimization. Verdikt evaluates outputs before they reach users. Crucible scores confidence.</div></div>
   </div>
-  <p style="text-align:center;margin-top:2rem"><a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">See all tiers &amp; what unlocks &rarr;</a></p>
+  <p style="text-align:center;margin-top:2rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">All 29 products &rarr;</a> &nbsp;&middot;&nbsp; <a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">See what unlocks at each tier &rarr;</a></p>
 </div>
 
-
-<!-- Upgrade path visual -->
-<div class="section">
-  <h2 class="section-label">The upgrade path</h2>
-  <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Start free with a full-featured proxy. Unlock products as your needs grow.</p>
-  <div class="upgrade-path">
-    <div class="upgrade-step">
-      <div class="upgrade-tier" style="color:var(--green-light)">Free</div>
-      <div class="upgrade-price" style="color:var(--green-light)">$0</div>
-      <div class="upgrade-count">76 modules + 16 apps</div>
-      <div class="upgrade-highlight">Full proxy, tracing, audit, prompt studio</div>
-    </div>
-    <div class="upgrade-step">
-      <div class="upgrade-tier" style="color:var(--leather-light)">Individual</div>
-      <div class="upgrade-price">$29.99</div>
-      <div class="upgrade-count">+5 products</div>
-      <div class="upgrade-highlight">Lasso, Auction, Doubt, Verdikt, Relic</div>
-    </div>
-    <div class="upgrade-step">
-      <div class="upgrade-tier" style="color:var(--gold)">Pro</div>
-      <div class="upgrade-price">$99.99</div>
-      <div class="upgrade-count">+7 products</div>
-      <div class="upgrade-highlight">Drover, Breed, Stampede, Fault, Morph</div>
-    </div>
-    <div class="upgrade-step">
-      <div class="upgrade-tier" style="color:var(--rust-light)">Team</div>
-      <div class="upgrade-price">$299.99</div>
-      <div class="upgrade-count">+11 products</div>
-      <div class="upgrade-highlight">Feral, Phantom, Crucible + 8 more</div>
+<!-- 8. Concrete use cases -->
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label leather">Common ways people start</h2>
+    <div class="use-cases-grid">
+      <div class="use-case-card"><div class="use-case-name">Proxy only</div><div class="use-case-desc">One endpoint in front of multiple providers. Change your base URL and stop there.</div></div>
+      <div class="use-case-card"><div class="use-case-name">Local + cloud fallback</div><div class="use-case-desc">Keep Ollama running locally, fail over to a cloud provider when you need it.</div></div>
+      <div class="use-case-card"><div class="use-case-name">Model aliasing</div><div class="use-case-desc">Keep model names stable in your app while swapping real providers underneath.</div></div>
+      <div class="use-case-card"><div class="use-case-name">Tracing first</div><div class="use-case-desc">See cost and latency on every request before you start optimizing anything.</div></div>
     </div>
   </div>
-  <p style="text-align:center;margin-top:0.8rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">Enterprise ($499.99/mo): all 29 products + Cortex, Mycelium, Spore, Molt, SSO, SLA &middot; <a href="/pricing/" style="color:var(--leather-light)">Full pricing details</a></p>
-</div>
+</section>
 
-<!-- Comparison — proof before catalog -->
+<!-- 9. Comparison -->
 <section class="compare">
-  <h2 class="section-label">How Stockyard compares</h2>
+  <h2 class="section-label">Why Stockyard instead of stitching tools together</h2>
   <table class="compare-table">
     <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th><th>Helicone</th></tr>
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
@@ -621,70 +609,17 @@ dxPick(0);
   <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem"><a href="/vs/litellm/">vs LiteLLM &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone &rarr;</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey &rarr;</a> &nbsp;&middot;&nbsp; <a href="/benchmarks/">Benchmarks &rarr;</a></p>
 </section>
 
-<!-- All 29 products — deep catalog, after proof -->
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label leather">All 29 products</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Every product runs from the same binary. Five categories. Tier-gated by color.</p>
-    <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0;font-family:var(--font-mono);font-size:0.65rem">
-      <span style="color:var(--green-light)">&#9679; Free</span>
-      <span style="color:var(--leather-light)">&#9679; Individual</span>
-      <span style="color:var(--gold)">&#9679; Pro</span>
-      <span style="color:var(--rust-light)">&#9679; Team</span>
-      <span style="color:var(--cream-dim)">&#9679; Enterprise</span>
-    </div>
-    <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin:0 0 1rem;font-family:var(--font-mono);font-size:0.7rem">
-      <span style="color:var(--gold);border:1px solid var(--gold);padding:0.2rem 0.6rem;cursor:pointer" onclick="filterProducts('all')" id="f-all">All 29</span>
-      <span style="color:var(--cream-dim);border:1px solid var(--bg3);padding:0.2rem 0.6rem;cursor:pointer" onclick="filterProducts('fence')" id="f-fence">Fence</span>
-      <span style="color:var(--cream-dim);border:1px solid var(--bg3);padding:0.2rem 0.6rem;cursor:pointer" onclick="filterProducts('herd')" id="f-herd">Herd</span>
-      <span style="color:var(--cream-dim);border:1px solid var(--bg3);padding:0.2rem 0.6rem;cursor:pointer" onclick="filterProducts('scout')" id="f-scout">Scout</span>
-      <span style="color:var(--cream-dim);border:1px solid var(--bg3);padding:0.2rem 0.6rem;cursor:pointer" onclick="filterProducts('trail')" id="f-trail">Trail</span>
-      <span style="color:var(--cream-dim);border:1px solid var(--bg3);padding:0.2rem 0.6rem;cursor:pointer" onclick="filterProducts('range')" id="f-range">Range</span>
-    </div>
-    <div class="product-grid" id="all-products">
-      <!-- Fence (infra) -->
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-team">Team</span><span class="product-cat">Fence</span><span class="product-name">Tide <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; migrations</span></span><span class="product-desc">Schema migration and platform lifecycle management.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Molt <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; dead-weight cleanup</span></span><span class="product-desc">Auto-shed unused modules. Detect zero-activity, prune dead weight.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Mycelium <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; cross-instance insights</span></span><span class="product-desc">Insight extraction across instances. Surfaces patterns you wouldn&rsquo;t find alone.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Fence</span><span class="product-name">Spore <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; adaptive patterns</span></span><span class="product-desc">Self-replicating event patterns with cap and retirement. Evolving defenses.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Fence</span><span class="product-name">Spine <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; health checks</span></span><span class="product-desc">Health probes, readiness checks, and diagnostics for your stack.</span></div>
-      <div class="product-card" data-cat="fence"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Fence</span><span class="product-name">Lasso <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; request replay</span></span><span class="product-desc">Re-run any trace against different models and compare cost, latency, quality.</span></div>
-      <!-- Herd (quality) -->
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Phantom <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; synthetic users</span></span><span class="product-desc">Persona-based testing. Synthetic users probe your system for weaknesses.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Feral <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; red-team testing</span></span><span class="product-desc">Free 5-probe quickscan. Full 29-probe adversarial suite on Team.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-team">Team</span><span class="product-cat">Herd</span><span class="product-name">Crucible <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; confidence scoring</span></span><span class="product-desc">How certain is the model? Track confidence over time.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Fault <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; chaos engineering</span></span><span class="product-desc">Inject latency, errors, and rate limits to stress-test your LLM stack.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Fossil Record <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; trend analysis</span></span><span class="product-desc">How have your models, costs, and quality changed over time?</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Herd</span><span class="product-name">Doubt <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; hallucination detection</span></span><span class="product-desc">Flag uncertain or fabricated outputs before they reach users.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Herd</span><span class="product-name">Hollow <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; shadow testing</span></span><span class="product-desc">Run requests through shadow models silently. Compare without shipping.</span></div>
-      <div class="product-card" data-cat="herd"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Herd</span><span class="product-name">Relic <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; provenance tracking</span></span><span class="product-desc">Where did this output come from? Full lineage and certificates.</span></div>
-      <!-- Scout (insight) -->
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Scout</span><span class="product-name">Cortex <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; platform memory</span></span><span class="product-desc">Live stat refresh, trace enrichment, institutional knowledge.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Trailhead <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; onboarding</span></span><span class="product-desc">Onboarding intelligence. What do new users need?</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Prism <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; multi-angle analysis</span></span><span class="product-desc">Cost, quality, and speed perspectives on every request.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">S&eacute;ance <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; conversation replay</span></span><span class="product-desc">Resurrect and replay historical conversations.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Fossil <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; deep archival</span></span><span class="product-desc">Long-term storage with compression and retrieval.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Tide Pool <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; micro-analytics</span></span><span class="product-desc">Small-scale pattern detection in request pools.</span></div>
-      <div class="product-card" data-cat="scout"><span class="product-tier badge-team">Team</span><span class="product-cat">Scout</span><span class="product-name">Echo <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; response drift</span></span><span class="product-desc">Track how model outputs change across versions and time.</span></div>
-      <!-- Trail (lifecycle) -->
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Trail</span><span class="product-name">Stampede <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; load testing</span></span><span class="product-desc">Flood your stack with synthetic traffic. Find limits before users do.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Trail</span><span class="product-name">Breed <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; prompt evolution</span></span><span class="product-desc">Genetic optimization. Evolve, crossover, mutate, tournament.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Trail</span><span class="product-name">Iron <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; compliance hardening</span></span><span class="product-desc">Security policies enforced platform-wide.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-enterprise">Ent</span><span class="product-cat">Trail</span><span class="product-name">Ramrod <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; orchestration</span></span><span class="product-desc">Coordinate multi-step workflows across products.</span></div>
-      <div class="product-card" data-cat="trail"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Trail</span><span class="product-name">Verdikt <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; quality gates</span></span><span class="product-desc">Final evaluation before responses reach users.</span></div>
-      <!-- Range (runtime) -->
-      <div class="product-card" data-cat="range"><span class="product-tier badge-pro">Pro</span><span class="product-cat">Range</span><span class="product-name">Morph <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; request transformation</span></span><span class="product-desc">Rewrite, augment, reshape requests in flight.</span></div>
-      <div class="product-card" data-cat="range"><span class="product-tier badge-individual">Ind</span><span class="product-cat">Range</span><span class="product-name">Auction <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; model bidding</span></span><span class="product-desc">Providers compete on price for your requests.</span></div>
-      <div class="product-card" data-cat="range"><span class="product-tier badge-team">Team</span><span class="product-cat">Range</span><span class="product-name">Grain <span style="font-size:0.68rem;color:var(--cream-muted);font-weight:400">&mdash; access control</span></span><span class="product-desc">Per-key, per-model permissions. Fine-grained control over who uses what.</span></div>
-    </div>
-    <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.8rem"><a href="/products/">Full product details &rarr;</a></p>
-  </div>
+<!-- 10. Benchmarks -->
+<section class="section" style="text-align:center">
+  <h2 class="section-label">Measured, not marketed</h2>
+  <p style="color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto 1.5rem;font-size:0.95rem">400ns median proxy overhead. ~12MB memory. ~25MB binary. Measured on real hardware with published methodology.</p>
+  <a href="/benchmarks/" class="btn btn-secondary">See benchmarks &amp; methodology</a>
 </section>
 
-<!-- Pricing -->
+<!-- 11. Pricing -->
 <section class="section-alt">
   <div class="section-alt-inner">
-    <h2 class="section-label gold">Pricing</h2>
+    <h2 class="section-label gold">Start simple, unlock more only when needed</h2>
     <div class="tier-row">
       <div class="tier"><div class="t-name">Community</div><div class="t-price-free">Free</div><div class="t-period">self-hosted</div><div class="t-unlock" style="color:var(--green-light)">76 modules + 16 apps</div><div class="t-desc">Full proxy, tracing, audit. Plus Drover (100/day), Feral quickscan, and auto-insights.</div><a href="/guide/" class="t-cta">Start free</a></div>
       <div class="tier"><div class="t-name">Individual</div><div class="t-price">$29.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 5 products</div><div class="t-desc">Lasso replay, Auction bidding, Doubt, Verdikt, Relic provenance.</div><a href="/pricing/" class="t-cta">Start Individual</a></div>
@@ -696,13 +631,13 @@ dxPick(0);
   </div>
 </section>
 
-<!-- CTA -->
+<!-- 12. Install CTA footer -->
 <section class="footer-cta">
-  <h2>One binary. Five minutes. Done.</h2>
-  <p>Install Stockyard, send your first request, and watch the trace appear. 76 modules, 16 providers, full audit trail &mdash; free from the first request.</p>
+  <h2>Start with one binary.</h2>
+  <p>Install Stockyard, point your app at one endpoint, and add more later only if you want it.</p>
   <div class="cta-group">
     <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
-    <a href="/pricing/" class="btn btn-secondary">See Pricing</a>
+    <a href="/docs/" class="btn btn-secondary">Proxy-only setup</a>
   </div>
   <div style="display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">
     <a href="/docs/api/" style="color:var(--leather-light)">API Reference</a>
@@ -718,7 +653,6 @@ dxPick(0);
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 function copyInstall(){navigator.clipboard.writeText('curl -fsSL stockyard.dev/install.sh | sh');var h=document.getElementById('copy-hint');if(h){h.textContent='copied!';h.style.opacity='1';setTimeout(function(){h.textContent='click to copy';h.style.opacity='0.4'},1500)}}
-function filterProducts(cat){document.querySelectorAll('#all-products .product-card').forEach(function(c){c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none'});document.querySelectorAll('[id^="f-"]').forEach(function(b){b.style.color='var(--cream-dim)';b.style.borderColor='var(--bg3)'});var a=document.getElementById('f-'+cat);if(a){a.style.color='var(--gold)';a.style.borderColor='var(--gold)'}}
 </script>
 </body>
 </html>
