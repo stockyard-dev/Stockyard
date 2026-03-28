@@ -90,6 +90,7 @@ func Register(mux *http.ServeMux) {
 		"/self-hosted-llm-proxy/",
 		"/openai-compatible-proxy/",
 		"/llm-proxy-with-sqlite/",
+		"/single-binary/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
