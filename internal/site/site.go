@@ -83,6 +83,13 @@ func Register(mux *http.ServeMux) {
 		"/ship-faster/",
 		"/ship-compliant/",
 		"/ship-better/",
+		"/proxy-only/",
+		"/model-aliasing/",
+		"/local-plus-cloud-fallback/",
+		"/trace-llm-costs/",
+		"/self-hosted-llm-proxy/",
+		"/openai-compatible-proxy/",
+		"/llm-proxy-with-sqlite/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Why SQLite for an LLM Proxy — Architecture Tradeoffs — Stockyard</title>
+<meta name="description" content="Stockyard uses embedded SQLite instead of Postgres or Redis. Here's why that works for an LLM proxy, where it breaks, and what the real-world performance looks like.">
+<meta property="og:title" content="Why SQLite for an LLM Proxy — Stockyard">
+<meta property="og:description" content="One binary, one database file. No Postgres, no Redis. The architecture tradeoff explained with real numbers.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/llm-proxy-with-sqlite/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/llm-proxy-with-sqlite/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Architecture</div>
+  <h1>One binary. One database file. <span class="accent">No external services.</span></h1>
+  <p class="sub">Stockyard uses embedded SQLite instead of Postgres, Redis, or any external database. This page explains why, where the tradeoffs are, and what the real numbers look like.</p>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Why SQLite for a proxy</h2>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem">An LLM proxy is I/O-bound on network calls to providers, not on database operations. The slowest thing Stockyard does is wait for OpenAI or Anthropic to respond — that's 500ms to 5 seconds. Writing a trace to SQLite takes microseconds. The database is never the bottleneck.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem">This means Stockyard can use an embedded database and gain enormous operational simplicity without giving up meaningful performance. No connection pooling, no schema migrations across network boundaries, no database server to monitor, no credentials to rotate for internal services.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What we measured</h2>
+    <div class="code-block">
+<span class="comment"># Proxy overhead: time Stockyard adds on top of provider latency</span>
+<span class="output">76 middleware modules executing:  ~400 nanoseconds</span>
+<span class="output">Full proxy round-trip overhead:   ~200 milliseconds</span>
+<span class="output">  (includes TLS, HTTP parsing, middleware chain, trace write)</span>
+
+<span class="comment"># SQLite operations</span>
+<span class="output">Trace write (WAL mode):           &lt;1ms</span>
+<span class="output">Audit ledger append:              &lt;1ms</span>
+<span class="output">Cache lookup:                     &lt;1ms</span>
+<span class="output">Config/alias read:                &lt;0.1ms</span>
+    </div>
+    <p style="font-size:0.85rem;color:var(--cream-dim);text-align:center;margin-top:1rem">Full benchmarks at <a href="/benchmarks/">/benchmarks/</a> with methodology and reproducible test harness.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">How it's configured</h2>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">WAL mode</strong> is enabled by default. This gives concurrent reads while writes happen, which matters when the dashboard is querying traces while the proxy is writing new ones.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Integer cents</strong> for all money values. No floating-point arithmetic, no rounding drift. $1.42 is stored as 142.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">AES-256-GCM encryption</strong> for provider API keys at rest. Keys are decrypted in memory at startup and never written to logs or API responses.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto"><strong style="color:var(--cream)">Pure-Go driver</strong> via <code style="font-size:0.8rem">modernc.org/sqlite</code>. No CGO, no C compiler needed, no dynamic linking. The SQLite engine is compiled into the Go binary. This is what makes the single static binary possible.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">Where this breaks</h2>
+    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem">SQLite is a single-writer database. If you need multiple Stockyard instances writing to the same database simultaneously, SQLite won't do that. This means Stockyard scales vertically, not horizontally at the database layer.</p>
+    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem">For most teams running an LLM proxy, this isn't a constraint. A single Stockyard instance handles thousands of concurrent proxy requests because the bottleneck is provider response time, not database writes. The write load is one trace row per request — SQLite handles tens of thousands of those per second.</p>
+    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto">If you reach the point where a single instance can't keep up, you're doing enough volume that running two instances with separate databases (or switching to a shared Postgres backend) is a reasonable next step. Stockyard isn't there yet, and neither are most teams evaluating this.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">The operational upside</h2>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Backup is cp.</strong> Copy the .db file and you have a complete backup of all traces, config, aliases, audit ledger, and cached responses.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Deploys are trivial.</strong> Copy one binary, point at the data directory, start. No migration runner, no connection string, no "is the database up?" healthcheck.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Debugging is sqlite3.</strong> Open the database with any SQLite client and query it directly. No ORM translation layer, no remote connection needed.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);max-width:650px;margin:0 auto"><strong style="color:var(--cream)">Attack surface is minimal.</strong> No database port to expose, no credentials to manage for internal services, no network path between proxy and database to secure.</p>
+</div>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Simple until you need complex.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Start with one binary and one file. If you outgrow it, you'll know — and you'll have the traces to prove it.</p>
+  <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+    <a href="/benchmarks/" style="color:var(--cream-muted)">Benchmarks →</a>
+    <a href="/architecture/" style="color:var(--cream-muted)">Architecture →</a>
+    <a href="/blog/why-go-sqlite/" style="color:var(--cream-muted)">Why Go + SQLite →</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>

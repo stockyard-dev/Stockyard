@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Use Stockyard as Just a Proxy — Self-Hosted LLM Proxy</title>
+<meta name="description" content="Route all your LLM requests through one endpoint. One Go binary, embedded SQLite, no Redis, no Postgres, no Docker. Works with OpenAI, Anthropic, and 14 more providers.">
+<meta property="og:title" content="Use Stockyard as Just a Proxy">
+<meta property="og:description" content="One endpoint for 16 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/proxy-only/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/proxy-only/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin:2rem 0}
+.fact{text-align:center;padding:1.5rem}.fact-num{font-family:var(--font-mono);font-size:2rem;color:var(--rust-light);font-weight:700}.fact-label{font-size:0.85rem;color:var(--cream-dim);margin-top:0.3rem}
+.step{display:flex;gap:1.5rem;margin-bottom:2.5rem;align-items:flex-start}
+.step-num{font-family:var(--font-mono);font-size:1.8rem;color:var(--rust);font-weight:700;min-width:2.5rem;text-align:center}
+.step-body h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}.step-body p{font-size:0.9rem;color:var(--cream-dim)}
+.step-free{font-family:var(--font-mono);font-size:0.62rem;color:var(--green-light);border:1px solid var(--green-light);padding:0.1rem 0.4rem;display:inline-block;margin-top:0.4rem}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}.fact-grid{grid-template-columns:1fr 1fr}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Self-Hosted LLM Proxy</div>
+  <h1>One endpoint. <span class="accent">Every provider.</span></h1>
+  <p class="sub">Point your app at Stockyard and route requests to OpenAI, Anthropic, Google, Ollama, and 12 more providers through a single stable endpoint. No Redis, no Postgres, no Docker.</p>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Install and proxy in 60 seconds</h2>
+  <div class="code-block">
+<span class="cmd">$ curl -fsSL stockyard.dev/install.sh | sh</span>
+<span class="output">✓ Stockyard installed (~25MB)</span>
+
+<span class="cmd">$ stockyard</span>
+<span class="output">Proxy: http://localhost:4200/v1</span>
+<span class="output">✓ 76 modules active</span>
+<span class="output">Console: http://localhost:4200/ui</span>
+
+<span class="comment"># Use it like you'd use OpenAI directly</span>
+<span class="cmd">$ curl localhost:4200/v1/chat/completions \</span>
+<span class="cmd">  -H "Authorization: Bearer $OPENAI_API_KEY" \</span>
+<span class="cmd">  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
+  </div>
+  <p style="font-size:0.85rem;color:var(--cream-dim);text-align:center;margin-top:1rem">That request just passed through 76 middleware modules. Traced, logged, audited — automatically.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What you get on free tier</h2>
+    <div class="fact-grid">
+      <div class="fact"><div class="fact-num">16</div><div class="fact-label">LLM providers</div></div>
+      <div class="fact"><div class="fact-num">76</div><div class="fact-label">middleware modules</div></div>
+      <div class="fact"><div class="fact-num">~25</div><div class="fact-label">MB binary</div></div>
+      <div class="fact"><div class="fact-num">0</div><div class="fact-label">external dependencies</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">What the proxy gives you immediately</h2>
+
+  <div class="step">
+    <span class="step-num">1</span>
+    <div class="step-body">
+      <h3>Tracing on every request</h3>
+      <p>Cost, latency, token count, model, and provider — recorded automatically. Query traces through the API or browse them in the dashboard.</p>
+      <span class="step-free">Free — Lookout</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span>
+    <div class="step-body">
+      <h3>Tamper-proof audit ledger</h3>
+      <p>Every request gets a hash-chained ledger entry. You can prove what was sent, what came back, and that nothing was altered.</p>
+      <span class="step-free">Free — Brand</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span>
+    <div class="step-body">
+      <h3>Runtime controls</h3>
+      <p>Rate limiting, token budgets, content filtering, PII redaction, prompt injection detection — all configurable per-route, all running in the middleware chain.</p>
+      <span class="step-free">Free — 76 modules</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">4</span>
+    <div class="step-body">
+      <h3>Failover routing</h3>
+      <p>If a provider goes down, Stockyard fails over to the next one automatically. Model-aware routing sends Claude requests to Anthropic first, GPT requests to OpenAI first.</p>
+      <span class="step-free">Free — Chute</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">5</span>
+    <div class="step-body">
+      <h3>Model aliasing</h3>
+      <p>Map stable names like "fast" or "smart" to real models underneath. Swap providers later without touching app code.</p>
+      <span class="step-free">Free — Alias API</span>
+    </div>
+  </div>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">You don't have to use everything</h2>
+    <p style="font-size:0.95rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto 1.5rem">Stockyard ships with 29 products and 76 modules, but you don't need to configure any of them. Install it, point your app at it, and the proxy works out of the box. Tracing, auditing, and controls are automatic. Everything else is optional — turn it on when a real need shows up.</p>
+    <p style="font-size:0.85rem;color:var(--cream-muted);text-align:center;font-family:var(--font-mono)">Most people start with just the proxy. That's the whole idea.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Supported providers</h2>
+  <p style="font-size:0.9rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto">OpenAI, Anthropic, Google Gemini, Mistral, Cohere, Groq, Together AI, Fireworks, Perplexity, DeepSeek, Ollama, LM Studio, Azure OpenAI, AWS Bedrock, OpenRouter, and any OpenAI-compatible endpoint.</p>
+</div>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Start with just the proxy.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. One SQLite file. Every request traced. Install in under a minute, no credit card needed.</p>
+  <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+    <a href="/docs/proxy/" style="color:var(--cream-muted)">Proxy Docs →</a>
+    <a href="/docs/aliasing/" style="color:var(--cream-muted)">Model Aliasing →</a>
+    <a href="/vs/litellm/" style="color:var(--cream-muted)">vs LiteLLM →</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>
