@@ -73,7 +73,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <h2 class="section-label">The problem with typical LLM infrastructure</h2>
   <p>If you want an LLM proxy, observability, guardrails, and cost tracking today, you are looking at assembling multiple services. A proxy layer. A tracing backend. A database for logs. A cache layer. Maybe a separate auth service. Each one needs its own deploy, its own config, its own monitoring, its own failure modes.</p>
   <p>That is a lot of moving parts for what is, at its core, a middleware problem: take a request, run it through some controls, forward it to a provider, record what happened.</p>
-  <p>Stockyard puts all of that in one process. Not as a monorepo of microservices crammed into a Docker Compose file. As a single compiled binary that boots in under a second and stores everything in one SQLite file.</p>
+  <p>Stockyard puts all of that in one process. Not as a monorepo of microservices crammed into a Docker Compose file. As a single compiled binary that stores everything in one SQLite file.</p>
 </div>
 
 <section class="section-alt">
@@ -157,10 +157,10 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div class="section-alt-inner">
     <h2 class="section-label">Why this works in production</h2>
     <p>A single binary is not a limitation. It is a deliberate architectural choice. Here is why it holds up:</p>
-    <p><strong style="color:var(--cream)">SQLite handles the load.</strong> Stockyard uses WAL mode for concurrent reads and writes. SQLite handles thousands of requests per second on a single node. For an LLM proxy, the database is never the bottleneck — the upstream provider API is. Your SQLite database will be waiting for OpenAI, not the other way around.</p>
+    <p><strong style="color:var(--cream)">SQLite handles the load.</strong> Stockyard uses WAL mode for concurrent reads and writes. For an LLM proxy, the database is never the bottleneck — the upstream provider API is. A typical LLM request takes 1–30 seconds waiting for the provider to respond. SQLite comfortably handles the read/write profile of that workload on a single node.</p>
     <p><strong style="color:var(--cream)">One process means one failure mode.</strong> It is either running or it is not. There is no partial failure where the proxy is up but the tracing database is down, or the cache is stale because Redis restarted. Everything starts together, fails together, recovers together.</p>
     <p><strong style="color:var(--cream)">Upgrades are atomic.</strong> Download the new binary, stop the old one, start the new one. The SQLite database migrates automatically on startup. There is no migration coordination between services, no version matrix, no "make sure the proxy version matches the tracing backend version."</p>
-    <p><strong style="color:var(--cream)">~200ms proxy overhead.</strong> The full middleware chain — rate limiting, cost tracking, prompt logging, failover detection, content filtering — adds roughly 200ms of latency. The rest of the time is spent waiting for the LLM provider to respond, which is typically 1–30 seconds.</p>
+    <p><strong style="color:var(--cream)"><a href="/benchmarks/" style="color:var(--cream)">~200ms proxy overhead.</a></strong> The full middleware chain — rate limiting, cost tracking, prompt logging, failover detection, content filtering — adds roughly 200ms of latency. The rest of the time is spent waiting for the LLM provider to respond, which is typically 1–30 seconds.</p>
   </div>
 </section>
 
