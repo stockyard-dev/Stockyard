@@ -100,7 +100,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <div class="section-label">Architecture</div>
   <p>Stockyard is a single statically linked Go binary with embedded SQLite. There are no external services, no shared infrastructure, and no network dependencies beyond the LLM providers you configure. The attack surface is the binary and the port it listens on.</p>
-  <p>All database queries use parameterized SQL. User-rendered fields are escaped to prevent XSS. The binary has zero runtime dependencies beyond the Go standard library and <code>modernc.org/sqlite</code> (a pure-Go SQLite implementation, no CGO).</p>
+  <p>Database queries use parameterized SQL. User-rendered fields are escaped to prevent XSS. The binary has zero runtime dependencies beyond the Go standard library and <code>modernc.org/sqlite</code> (a pure-Go SQLite implementation, no CGO).</p>
   <p>The entire codebase is source-available at <a href="https://github.com/stockyard-dev/Stockyard">github.com/stockyard-dev/Stockyard</a> under BSL 1.1.</p>
 
   <div class="section-label">What Stockyard Does Not Have Yet</div>
