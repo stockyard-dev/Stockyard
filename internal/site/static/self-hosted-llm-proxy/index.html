@@ -83,6 +83,13 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   </div>
 </section>
 
+<div class="section" style="padding-bottom:0">
+  <div style="background:var(--bg2);border-left:3px solid var(--green-light,#5ba86e);padding:1rem 1.2rem;font-size:0.85rem;color:var(--cream-dim)">
+    <strong style="color:var(--green-light,#5ba86e);font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase">No phone-home</strong><br>
+    Stockyard does not send telemetry, analytics, or usage data. On the free tier, there are zero outbound calls to Stockyard infrastructure. <a href="/does-stockyard-phone-home/" style="color:var(--rust-light,#e8753a)">Full details &rarr;</a>
+  </div>
+</div>
+
 <div class="section">
   <h2 class="section-label">No external services required</h2>
   <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem">Most LLM proxy tools need Redis for caching, Postgres for state, Docker for isolation, and sometimes a dedicated queue. Stockyard needs none of these. Everything is compiled into one binary using pure-Go SQLite.</p>

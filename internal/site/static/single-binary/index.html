@@ -137,7 +137,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
       <p>Separate auth layer or API gateway</p>
       <p>Container orchestrator to run it all</p>
       <p><code>docker-compose.yml</code> or Helm chart</p>
-      <p style="color:var(--cream-muted);font-style:italic;margin-top:1rem">5–7 services. 3+ databases. Multiple failure modes. One team to keep it running.</p>
+      <p style="color:var(--cream-muted);font-style:italic;margin-top:1rem">5-7 services. 3+ databases. Multiple failure modes. One team to keep it running.</p>
     </div>
     <div class="compare-col ours">
       <h3>Stockyard</h3>
@@ -157,10 +157,10 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div class="section-alt-inner">
     <h2 class="section-label">Why this works in production</h2>
     <p>A single binary is not a limitation. It is a deliberate architectural choice. Here is why it holds up:</p>
-    <p><strong style="color:var(--cream)">SQLite handles the load.</strong> Stockyard uses WAL mode for concurrent reads and writes. For an LLM proxy, the database is never the bottleneck — the upstream provider API is. A typical LLM request takes 1–30 seconds waiting for the provider to respond. SQLite comfortably handles the read/write profile of that workload on a single node.</p>
+    <p><strong style="color:var(--cream)">SQLite handles the load.</strong> Stockyard uses WAL mode for concurrent reads and writes. For an LLM proxy, the database is never the bottleneck — the upstream provider API is. A typical LLM request takes 1-30 seconds waiting for the provider to respond. SQLite comfortably handles the read/write profile of that workload on a single node.</p>
     <p><strong style="color:var(--cream)">One process means one failure mode.</strong> It is either running or it is not. There is no partial failure where the proxy is up but the tracing database is down, or the cache is stale because Redis restarted. Everything starts together, fails together, recovers together.</p>
     <p><strong style="color:var(--cream)">Upgrades are atomic.</strong> Download the new binary, stop the old one, start the new one. The SQLite database migrates automatically on startup. There is no migration coordination between services, no version matrix, no "make sure the proxy version matches the tracing backend version."</p>
-    <p><strong style="color:var(--cream)"><a href="/benchmarks/" style="color:var(--cream)">~200ms proxy overhead.</a></strong> The full middleware chain — rate limiting, cost tracking, prompt logging, failover detection, content filtering — adds roughly 200ms of latency. The rest of the time is spent waiting for the LLM provider to respond, which is typically 1–30 seconds.</p>
+    <p><strong style="color:var(--cream)"><a href="/benchmarks/" style="color:var(--cream)">~200ms proxy overhead.</a></strong> The full middleware chain — rate limiting, cost tracking, prompt logging, failover detection, content filtering — adds roughly 200ms of latency. The rest of the time is spent waiting for the LLM provider to respond, which is typically 1-30 seconds.</p>
   </div>
 </section>
 
@@ -172,11 +172,11 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Start simple. Stay simple.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary, one SQLite file, 29 products, free tier. Install in under 5 minutes.</p>
-  <a href="/docs/quickstart/" class="btn btn-primary">Get started</a>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary, one SQLite file, free tier.</p>
+  <a href="/docs/quickstart/" class="btn btn-primary">Install in 5 minutes</a>
   <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
-    <a href="/proxy-only/" style="color:var(--cream-muted)">Proxy-only guide →</a>
-    <a href="/vs/litellm/" style="color:var(--cream-muted)">vs LiteLLM →</a>
+    <a href="/proxy-only/" style="color:var(--cream-muted)">Proxy-only guide &rarr;</a>
+    <a href="/vs/litellm/" style="color:var(--cream-muted)">vs LiteLLM &rarr;</a>
   </div>
 </section>
 
@@ -184,5 +184,21 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+<script>
+document.querySelectorAll(".code-block, pre").forEach(function(el){
+  if(el.querySelector(".copy-btn"))return;
+  var btn=document.createElement("button");
+  btn.className="copy-btn";
+  btn.textContent="Copy";
+  btn.style.cssText="position:absolute;top:0.5rem;right:0.5rem;background:#2e261e;border:1px solid #2e261e;color:#bfb5a3;font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;opacity:0;transition:all 0.2s";
+  btn.onmouseover=function(){this.style.background="#c45d2c";this.style.borderColor="#c45d2c";this.style.color="#f0e6d3"};
+  btn.onmouseout=function(){this.style.background="#2e261e";this.style.borderColor="#2e261e";this.style.color="#bfb5a3"};
+  btn.onclick=function(){var t=el.textContent.replace(/^Copy/,"").trim();navigator.clipboard.writeText(t).then(function(){btn.textContent="\u2713 Copied";setTimeout(function(){btn.textContent="Copy"},2000)})};
+  el.style.position="relative";
+  el.onmouseover=function(){btn.style.opacity="1"};
+  el.onmouseout=function(){btn.style.opacity="0"};
+  el.appendChild(btn);
+});
+</script>
 </body>
 </html>

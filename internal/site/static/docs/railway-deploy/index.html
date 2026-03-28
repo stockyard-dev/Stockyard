@@ -147,5 +147,21 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
+<script>
+document.querySelectorAll(".code-block, pre").forEach(function(el){
+  if(el.querySelector(".copy-btn"))return;
+  var btn=document.createElement("button");
+  btn.className="copy-btn";
+  btn.textContent="Copy";
+  btn.style.cssText="position:absolute;top:0.5rem;right:0.5rem;background:#2e261e;border:1px solid #2e261e;color:#bfb5a3;font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;opacity:0;transition:all 0.2s";
+  btn.onmouseover=function(){this.style.background="#c45d2c";this.style.borderColor="#c45d2c";this.style.color="#f0e6d3"};
+  btn.onmouseout=function(){this.style.background="#2e261e";this.style.borderColor="#2e261e";this.style.color="#bfb5a3"};
+  btn.onclick=function(){var t=el.textContent.replace(/^Copy/,"").trim();navigator.clipboard.writeText(t).then(function(){btn.textContent="\u2713 Copied";setTimeout(function(){btn.textContent="Copy"},2000)})};
+  el.style.position="relative";
+  el.onmouseover=function(){btn.style.opacity="1"};
+  el.onmouseout=function(){btn.style.opacity="0"};
+  el.appendChild(btn);
+});
+</script>
 </body>
 </html>

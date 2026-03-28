@@ -246,6 +246,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>Changes take effect immediately. No restart, no deploy, no config file edit. See <a href="/docs/proxy/">Modules &amp; Providers</a> for the full list of 76 available modules.</p>
 
+    <div class="note"><strong>Your base URL</strong><br>Point any OpenAI-compatible SDK or tool at this URL:<br><br><code>http://localhost:7749/v1</code><br><br>That is the only change needed. Your existing code, model names, and request format stay the same.</div>
+
     <h2 id="use-your-sdk"><span class="step-num">6</span> Use your existing SDK</h2>
     <p>Stockyard is an OpenAI-compatible proxy. Point any OpenAI SDK at it by changing the base URL. That&rsquo;s the only code change.</p>
     <pre>
