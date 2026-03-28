@@ -285,6 +285,7 @@ func DefaultConfig(product string) *Config {
 			LoopWindow:          Duration{60 * time.Second},
 			LoopThreshold:       5,
 		}
+		base.ModelAlias = ModelAliasConfig{Enabled: true}
 
 	case "keypool":
 		base.Port = 4700
