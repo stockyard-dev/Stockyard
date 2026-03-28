@@ -198,6 +198,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Proxy overhead</div><div style="padding:0.5rem;border:1px solid var(--bg3)"><a href="/benchmarks/" style="color:var(--rust-light)">~200ms</a> (full chain)</div>
     <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Encryption</div><div style="padding:0.5rem;border:1px solid var(--bg3)">AES-256-GCM at rest</div>
   </div>
+  <p style="font-size:0.78rem;color:var(--cream-muted);margin-top:1rem;max-width:500px">The ~200ms proxy overhead is the full middleware chain (rate limiting, cost tracking, logging, failover, filtering). A typical LLM provider response takes 1-30 seconds, so proxy overhead is under 2% of total request time.</p>
 
 </div>
 <footer>

@@ -70,8 +70,14 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div class="section-alt-inner">
     <h2 class="section-label">Deploy your way</h2>
     <p><strong>Bare metal or VM:</strong> Download the binary, run it. Works on any Linux machine.</p>
+    <div class="code-block">
+<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
+<span class="cmd">export OPENAI_API_KEY=sk-your-key</span>
+<span class="cmd">stockyard</span>
+<span class="output"># Stockyard running on :7749</span>
+    </div>
     <p><strong>Docker:</strong> One container, one volume for the SQLite database. See the <a href="/docs/docker/">Docker guide</a> for docker-compose.yml examples including reverse proxy and OTEL sidecar setups.</p>
-    <p><strong>Railway, Fly.io, or any container platform:</strong> Stockyard deploys anywhere a Docker container runs. We run on Railway ourselves.</p>
+    <p><strong>Railway, Fly.io, or any container platform:</strong> Stockyard deploys anywhere a Docker container runs. We run on Railway ourselves. See the <a href="/docs/railway-deploy/">Railway guide</a>.</p>
   </div>
 </section>
 
@@ -91,6 +97,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
     <a href="/docs/docker/" style="color:var(--cream-muted)">Docker guide &rarr;</a>
     <a href="/single-binary/" style="color:var(--cream-muted)">Why single binary &rarr;</a>
   </div>
+  <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">BSL 1.1</a></div>
 </section>
 
 <footer>

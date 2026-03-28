@@ -167,7 +167,23 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </div>
 
 <div class="section">
-  <h2 class="section-label">Supported providers</h2>
+  <h2 class="section-label">Example: proxy-only config</h2>
+  <div class="code-block">
+<span class="comment"># stockyard.yaml -- proxy-only setup</span>
+<span class="comment"># Just set your provider keys. Everything else is automatic.</span>
+
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+
+<span class="comment"># Tracing, cost tracking, and audit logging are on by default.</span>
+<span class="comment"># No modules to configure. No YAML to write beyond this.</span>
+  </div>
+</div>
+
+<div class="section">
   <p style="font-size:0.9rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto">OpenAI, Anthropic, Google Gemini, Mistral, Cohere, Groq, Together AI, Fireworks, Perplexity, DeepSeek, Ollama, LM Studio, Azure OpenAI, AWS Bedrock, OpenRouter, and any OpenAI-compatible endpoint.</p>
 </div>
 
@@ -180,6 +196,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
     <a href="/docs/aliasing/" style="color:var(--cream-muted)">Model Aliasing →</a>
     <a href="/vs/litellm/" style="color:var(--cream-muted)">vs LiteLLM →</a>
   </div>
+  <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">BSL 1.1</a></div>
 </section>
 
 <footer>
