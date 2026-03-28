@@ -92,7 +92,6 @@ func Register(mux *http.ServeMux) {
 		"/llm-proxy-with-sqlite/",
 		"/single-binary/",
 		"/why-sqlite/",
-		"/docs/docker/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
