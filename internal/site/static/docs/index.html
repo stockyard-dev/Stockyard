@@ -183,7 +183,26 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h1>Documentation</h1>
     <p class="subtitle">76 middleware modules, 29 products, 360+ API endpoints. Everything you need to know.</p>
 
-    <div class="ov-grid">
+    <div style="margin-bottom:2rem">
+      <input id="docFilter" type="text" placeholder="Search docs..." style="width:100%;padding:0.6rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none" oninput="filterDocs(this.value)"/>
+    </div>
+
+    <div style="margin-bottom:2.5rem;padding:1.2rem;background:var(--bg2);border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.8rem">Common questions</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;font-family:var(--font-mono);font-size:0.78rem">
+        <a href="/proxy-only/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Use as proxy only</a>
+        <a href="/docs/aliasing/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Model aliasing</a>
+        <a href="/docs/docker/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Docker setup</a>
+        <a href="/why-sqlite/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Why SQLite?</a>
+        <a href="/vs/litellm/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">vs LiteLLM</a>
+        <a href="/features/llm-failover/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Failover</a>
+        <a href="/features/llm-caching/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Caching</a>
+        <a href="/does-stockyard-phone-home/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Phone home?</a>
+        <a href="/how-stockyard-backups-work/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Backups</a>
+      </div>
+    </div>
+
+    <div class="ov-grid" id="docGrid">
       <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
       <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
       <a href="/docs/sdks/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">SDK Wrappers</div><div class="ov-desc">Python, Node, Go &mdash; one import, zero config.</div></a>
@@ -211,6 +230,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </footer>
 
 <script>
+function filterDocs(q){
+  q=q.toLowerCase();
+  document.querySelectorAll('#docGrid .ov-card').forEach(function(c){
+    var text=(c.textContent||'').toLowerCase();
+    c.style.display=!q||text.includes(q)?'':'none';
+  });
+}
 document.querySelectorAll('.content pre').forEach(pre => {
   const btn = document.createElement('button');
   btn.className = 'copy-btn';
