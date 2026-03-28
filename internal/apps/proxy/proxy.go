@@ -20,10 +20,11 @@ import (
 
 // App implements platform.App for the Proxy application.
 type App struct {
-	conn     *sql.DB
-	toggle   *toggle.Registry
-	audit    func(string, string, string, string, any)
-	failover *features.FailoverRouter
+	conn       *sql.DB
+	toggle     *toggle.Registry
+	audit      func(string, string, string, string, any)
+	failover   *features.FailoverRouter
+	modelAlias *features.ModelAliasState
 }
 
 // New creates a new Proxy app instance.
@@ -44,6 +45,31 @@ func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 // SetFailoverRouter connects the proxy app to the failover router for circuit breaker management.
 func (a *App) SetFailoverRouter(router *features.FailoverRouter) {
 	a.failover = router
+}
+
+// SetModelAlias connects the proxy app to the model alias state for runtime management.
+func (a *App) SetModelAlias(ma *features.ModelAliasState) {
+	a.modelAlias = ma
+	// Load any persisted aliases from DB
+	if a.conn != nil {
+		rows, err := a.conn.Query(`SELECT alias, model FROM proxy_aliases`)
+		if err != nil {
+			log.Printf("[proxy] warning: could not load persisted aliases: %v", err)
+			return
+		}
+		defer rows.Close()
+		loaded := 0
+		for rows.Next() {
+			var alias, model string
+			if err := rows.Scan(&alias, &model); err == nil {
+				ma.Set(alias, model)
+				loaded++
+			}
+		}
+		if loaded > 0 {
+			log.Printf("[proxy] loaded %d persisted aliases from DB", loaded)
+		}
+	}
 }
 
 func (a *App) auditEvent(action, resource string, detail any) {
@@ -100,6 +126,13 @@ CREATE TABLE IF NOT EXISTS proxy_routes (
     enabled INTEGER NOT NULL DEFAULT 1,
     created_at TEXT DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS proxy_aliases (
+    alias TEXT PRIMARY KEY NOT NULL,
+    model TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
@@ -119,6 +152,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/proxy/breakers", a.handleBreakerStates)
 	mux.HandleFunc("POST /api/proxy/breakers/reset", a.handleResetAllBreakers)
 	mux.HandleFunc("POST /api/proxy/breakers/{name}/reset", a.handleResetBreaker)
+	mux.HandleFunc("GET /api/proxy/aliases", a.handleListAliases)
+	mux.HandleFunc("PUT /api/proxy/aliases", a.handleSetAlias)
+	mux.HandleFunc("DELETE /api/proxy/aliases/{alias}", a.handleDeleteAlias)
+	mux.HandleFunc("GET /api/proxy/aliases/stats", a.handleAliasStats)
 	log.Printf("[proxy] routes registered")
 }
 
@@ -810,4 +847,85 @@ func (a *App) handleResetBreaker(w http.ResponseWriter, r *http.Request) {
 		"reset":    name,
 		"breakers": states,
 	})
+}
+
+// handleListAliases returns all configured model aliases.
+// GET /api/proxy/aliases
+func (a *App) handleListAliases(w http.ResponseWriter, r *http.Request) {
+	if a.modelAlias == nil {
+		writeJSON(w, map[string]any{"aliases": []any{}, "count": 0, "enabled": false})
+		return
+	}
+	aliases := a.modelAlias.List()
+	writeJSON(w, map[string]any{"aliases": aliases, "count": len(aliases), "enabled": true})
+}
+
+// handleSetAlias creates or updates a model alias.
+// PUT /api/proxy/aliases  {"alias": "fast", "model": "gpt-4o-mini"}
+func (a *App) handleSetAlias(w http.ResponseWriter, r *http.Request) {
+	if a.modelAlias == nil {
+		http.Error(w, `{"error":"model aliasing is not active"}`, http.StatusServiceUnavailable)
+		return
+	}
+	var req struct {
+		Alias string `json:"alias"`
+		Model string `json:"model"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
+		return
+	}
+	if req.Alias == "" || req.Model == "" {
+		http.Error(w, `{"error":"alias and model are required"}`, http.StatusBadRequest)
+		return
+	}
+	updated := a.modelAlias.Set(req.Alias, req.Model)
+	// Persist to DB
+	if a.conn != nil {
+		_, _ = a.conn.Exec(`INSERT INTO proxy_aliases (alias, model) VALUES (?, ?)
+			ON CONFLICT(alias) DO UPDATE SET model = excluded.model, updated_at = datetime('now')`,
+			req.Alias, req.Model)
+	}
+	action := "created"
+	if updated {
+		action = "updated"
+	}
+	a.auditEvent("set_alias", "alias/"+req.Alias, map[string]string{"alias": req.Alias, "model": req.Model, "action": action})
+	writeJSON(w, map[string]any{"alias": req.Alias, "model": req.Model, "action": action})
+}
+
+// handleDeleteAlias removes a model alias.
+// DELETE /api/proxy/aliases/{alias}
+func (a *App) handleDeleteAlias(w http.ResponseWriter, r *http.Request) {
+	if a.modelAlias == nil {
+		http.Error(w, `{"error":"model aliasing is not active"}`, http.StatusServiceUnavailable)
+		return
+	}
+	alias := r.PathValue("alias")
+	if alias == "" {
+		http.Error(w, `{"error":"alias name required"}`, http.StatusBadRequest)
+		return
+	}
+	if !a.modelAlias.Delete(alias) {
+		http.Error(w, fmt.Sprintf(`{"error":"alias not found: %s"}`, alias), http.StatusNotFound)
+		return
+	}
+	// Remove from DB
+	if a.conn != nil {
+		_, _ = a.conn.Exec(`DELETE FROM proxy_aliases WHERE alias = ?`, alias)
+	}
+	a.auditEvent("delete_alias", "alias/"+alias, map[string]string{"alias": alias})
+	writeJSON(w, map[string]any{"deleted": alias})
+}
+
+// handleAliasStats returns alias resolution statistics.
+// GET /api/proxy/aliases/stats
+func (a *App) handleAliasStats(w http.ResponseWriter, r *http.Request) {
+	if a.modelAlias == nil {
+		writeJSON(w, map[string]any{"enabled": false})
+		return
+	}
+	stats := a.modelAlias.Stats()
+	stats["enabled"] = true
+	writeJSON(w, stats)
 }

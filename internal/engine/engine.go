@@ -341,7 +341,7 @@ func Boot(pc ProductConfig) {
 	tierWatcher.Start(30 * time.Second)
 
 	// Build middleware chain based on product features + tier
-	middlewares, failoverRouter := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers, tierWatcher)
+	middlewares, failoverRouter, modelAliasState := buildMiddlewares(toggleReg, pc, cfg, db, counter, broadcaster, providers, tierWatcher)
 
 	// License enforcement — first in chain (prepend so it runs before everything)
 	licEnforcer := license.NewEnforcer(lic)
@@ -636,6 +636,14 @@ func Boot(pc ProductConfig) {
 					SetFailoverRouter(*features.FailoverRouter)
 				}); ok {
 					setter.SetFailoverRouter(failoverRouter)
+				}
+			}
+			// Wire model alias state for alias admin API
+			if modelAliasState != nil {
+				if setter, ok := app.(interface {
+					SetModelAlias(*features.ModelAliasState)
+				}); ok {
+					setter.SetModelAlias(modelAliasState)
 				}
 			}
 			// Wire tier watcher refresh so Stripe webhook activates tier instantly
@@ -1828,7 +1836,7 @@ func buildMiddlewares(reg *toggle.Registry,
 	broadcaster *dashboard.Broadcaster,
 	providers map[string]provider.Provider,
 	tierWatcher *platform.TierWatcher,
-) ([]proxy.Middleware, *features.FailoverRouter) {
+) ([]proxy.Middleware, *features.FailoverRouter, *features.ModelAliasState) {
 	var mw []proxy.Middleware
 	var failoverRouter *features.FailoverRouter
 
@@ -2441,9 +2449,9 @@ func buildMiddlewares(reg *toggle.Registry,
 	}
 
 	// ── Phase 4 middleware ──
-	mw = buildPhase4Middlewares(pc, cfg, providers, mw, db, reg)
+	mw, modelAliasState := buildPhase4Middlewares(pc, cfg, providers, mw, db, reg)
 
-	return mw, failoverRouter
+	return mw, failoverRouter, modelAliasState
 }
 
 // buildCaps extracts cap configuration from the config.

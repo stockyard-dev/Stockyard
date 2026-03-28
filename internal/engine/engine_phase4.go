@@ -19,7 +19,7 @@ func buildPhase4Middlewares(
 	mw []proxy.Middleware,
 	db *storage.DB,
 	reg *toggle.Registry,
-) []proxy.Middleware {
+) ([]proxy.Middleware, *features.ModelAliasState) {
 
 	// Auth & Access Control (early in chain)
 	if pc.Features.AuthGate && cfg.AuthGate.Enabled {
@@ -85,9 +85,10 @@ func buildPhase4Middlewares(
 	}
 
 	// Routing (before send)
+	var modelAliasState *features.ModelAliasState
 	if pc.Features.ModelAlias && cfg.ModelAlias.Enabled {
-		s := features.NewModelAlias(cfg.ModelAlias)
-		mw = append(mw, features.ModelAliasMiddleware(s))
+		modelAliasState = features.NewModelAlias(cfg.ModelAlias)
+		mw = append(mw, features.ModelAliasMiddleware(modelAliasState))
 		log.Printf("modelalias: %d aliases", len(cfg.ModelAlias.Aliases))
 	}
 	if pc.Features.CanaryDeploy && cfg.CanaryDeploy.Enabled {
@@ -373,5 +374,5 @@ func buildPhase4Middlewares(
 		log.Printf("meshroute: enabled")
 	}
 
-	return mw
+	return mw, modelAliasState
 }

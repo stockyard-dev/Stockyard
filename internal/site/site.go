@@ -45,7 +45,7 @@ func Register(mux *http.ServeMux) {
 		"/exchange/", "/observe/", "/modules/", "/benchmarks/",
 		"/privacy/", "/terms/", "/changelog/",
 		"/studio/", "/forge/", "/trust/", "/guide/", "/team/",
-		"/docs/quickstart/", "/docs/auth/", "/docs/proxy/",
+		"/docs/quickstart/", "/docs/auth/", "/docs/proxy/", "/docs/aliasing/",
 		"/docs/observe/", "/docs/trust/", "/docs/studio/",
 		"/docs/forge/", "/docs/exchange/", "/docs/team/", "/docs/memory/", "/docs/api/",
 		"/docs/ops/",
