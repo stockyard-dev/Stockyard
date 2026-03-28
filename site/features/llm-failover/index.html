@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>LLM API Failover &mdash; Automatic Provider Fallback &mdash; Stockyard</title>
+<meta name="description" content="Model-aware failover with circuit breakers for LLM APIs. When OpenAI goes down, Stockyard routes to Anthropic automatically. No app code changes.">
+<meta property="og:title" content="LLM API Failover with Circuit Breakers">
+<meta property="og:description" content="Automatic provider failover for LLM APIs. Model-aware routing sends Claude requests to Anthropic first, GPT to OpenAI first. Circuit breakers track provider health.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/features/llm-failover/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/features/llm-failover/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto 2.5rem}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section p{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1.2rem;line-height:1.8}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+.flow{display:grid;grid-template-columns:1fr;gap:0;margin:2rem 0}
+.flow-step{padding:1.2rem 1.5rem;border-left:2px solid var(--bg3);position:relative}
+.flow-step::before{content:'';position:absolute;left:-5px;top:1.5rem;width:8px;height:8px;background:var(--rust);border-radius:50%}
+.flow-step.ok::before{background:var(--green-light)}
+.flow-step.fail::before{background:var(--rust)}
+.flow-step.skip::before{background:var(--leather)}
+.flow-step h4{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream);margin-bottom:0.3rem}
+.flow-step p{font-size:0.82rem;color:var(--cream-dim);margin:0}
+.flow-step .tag{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;padding:0.1rem 0.4rem;display:inline-block;margin-top:0.4rem}
+.flow-step .tag-ok{color:var(--green-light);border:1px solid var(--green-light)}
+.flow-step .tag-fail{color:var(--rust-light);border:1px solid var(--rust-light)}
+.flow-step .tag-skip{color:var(--leather);border:1px solid var(--leather)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}.code-block{font-size:0.7rem;padding:1rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Platform</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Reliability</div>
+  <h1>Your LLM provider goes down. <span class="accent">Your app does not.</span></h1>
+  <p class="sub">Stockyard automatically fails over to the next provider when one returns errors. Model-aware routing, circuit breakers, and streaming failover are all built into the proxy. No app code changes needed.</p>
+  <a href="/docs/quickstart/" class="btn btn-primary">Get started free</a>
+</section>
+
+<div class="section">
+  <h2 class="section-label">The problem</h2>
+  <p>Every LLM provider has outages. OpenAI goes down. Anthropic returns 500s. Google rate-limits you. When your app calls one provider directly and that provider fails, your users see errors.</p>
+  <p>The usual fix is wrapping every API call in retry logic with fallback chains. That means your application code knows about providers, manages provider-specific error handling, and handles streaming retries. It is fragile, it is scattered across your codebase, and it breaks every time you add a new model.</p>
+  <p>Stockyard handles failover at the proxy layer. Your app sends a request for a model. The proxy knows which provider to try first, detects failures, and routes to the next provider in the chain. Your application code never changes.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">How it works</h2>
+    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);margin-bottom:2rem;max-width:640px;margin-left:auto;margin-right:auto">When you send a request for <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg);padding:0.1rem 0.3rem;color:var(--leather-light)">claude-sonnet-4-5</code>, the failover chain works like this:</p>
+    <div class="flow">
+      <div class="flow-step ok">
+        <h4>1. Anthropic (natural provider)</h4>
+        <p>Model-aware routing detects "claude" in the model name and tries Anthropic first.</p>
+        <span class="tag tag-ok">try first</span>
+      </div>
+      <div class="flow-step fail">
+        <h4>2. Anthropic returns 503</h4>
+        <p>Circuit breaker records the failure. After the configured threshold, the circuit opens and skips Anthropic for subsequent requests.</p>
+        <span class="tag tag-fail">circuit records failure</span>
+      </div>
+      <div class="flow-step ok">
+        <h4>3. OpenAI (next in chain)</h4>
+        <p>Request is re-sent to the next provider. If the model is available there, the user gets a response. If not, the chain continues.</p>
+        <span class="tag tag-ok">response returned</span>
+      </div>
+      <div class="flow-step skip">
+        <h4>4. Recovery</h4>
+        <p>After the recovery timeout, the circuit moves to half-open. A probe request is sent through. If it succeeds, Anthropic is restored to the chain.</p>
+        <span class="tag tag-skip">automatic recovery</span>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:0.85rem;color:var(--cream-muted);margin-top:1.5rem">The same logic works for GPT models (OpenAI first), Gemini models (Google first), and local models (Ollama first).</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Configuration</h2>
+  <p>Enable failover by listing your providers in priority order. Stockyard reorders the chain per-request based on the model being requested, so the "natural" provider always gets tried first.</p>
+  <div class="code-block">
+<span class="comment"># stockyard.yaml</span>
+failover:
+  enabled: true
+  strategy: priority
+  providers:
+    - openai
+    - anthropic
+    - google
+    - ollama
+  circuit_breaker:
+    failure_threshold: 3
+    recovery_timeout: 30s
+  </div>
+  <p>With this config, a request for <code>gpt-4o</code> tries OpenAI first (natural provider), then Anthropic, Google, and Ollama. A request for <code>claude-sonnet-4-5</code> tries Anthropic first, then OpenAI, Google, and Ollama. The provider order adapts to the model automatically.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">Circuit breakers</h2>
+    <p>Each provider has its own circuit breaker with three states:</p>
+    <p><strong style="color:var(--cream)">Closed</strong> (normal) &mdash; requests flow through. Every failure increments a counter.</p>
+    <p><strong style="color:var(--cream)">Open</strong> (tripped) &mdash; after the failure threshold is hit, the circuit opens. All requests skip this provider and go straight to the next one in the chain. No wasted time sending requests to a provider you know is down.</p>
+    <p><strong style="color:var(--cream)">Half-open</strong> (recovery) &mdash; after the recovery timeout, one probe request is allowed through. If it succeeds, the circuit closes and the provider is back in the chain. If it fails, the circuit stays open.</p>
+    <p>This prevents the thundering herd problem where every request retries a broken provider before failing over. Once a provider is marked down, subsequent requests skip it instantly.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Streaming failover</h2>
+  <p>Streaming (SSE) requests have their own failover path. If the first provider fails before sending any chunks, Stockyard retries on the next provider transparently. Your client receives a single uninterrupted stream.</p>
+  <p>If the provider fails mid-stream (after chunks have already been sent to the client), Stockyard cannot transparently retry because the client has already received partial data. In that case, the stream ends with an error and your client handles it the same way it would handle any interrupted stream.</p>
+  <p>Non-retryable errors (400 Bad Request, 401 Unauthorized, 403 Forbidden) are never retried. If your API key is wrong or your request is malformed, failover will not help and should not waste time trying.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">Bring your own key</h2>
+    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto">If a user passes their own provider API key in the Authorization header, Stockyard skips the failover chain entirely and routes directly to the detected provider. Failover only applies to requests using server-configured provider keys.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">What you do not have to build</h2>
+  <p>Without a proxy-level failover, your application code typically needs to handle provider-specific error detection, retry logic with backoff, fallback model selection, circuit breaker state, streaming retry coordination, and provider health monitoring.</p>
+  <p>With Stockyard, your app sends one request to one endpoint. The proxy handles all of that. Your application code stays the same whether you have one provider or six.</p>
+  <div class="code-block">
+<span class="comment"># Your app code doesn't change.</span>
+<span class="comment"># Same request whether failover is on or off.</span>
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">  -H "Content-Type: application/json" \</span>
+<span class="cmd">  -H "Authorization: Bearer $OPENAI_API_KEY" \</span>
+<span class="cmd">  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'</span>
+  </div>
+</div>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Provider outages are inevitable. App downtime is not.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Model-aware failover with circuit breakers. Free tier. One binary.</p>
+  <a href="/docs/quickstart/" class="btn btn-primary">Get started</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+    <a href="/local-plus-cloud-fallback/" style="color:var(--cream-muted)">Local + cloud fallback &rarr;</a>
+    <a href="/single-binary/" style="color:var(--cream-muted)">Why single binary? &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>
