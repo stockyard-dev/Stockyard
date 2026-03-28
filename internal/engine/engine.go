@@ -2529,6 +2529,19 @@ func initProviders(cfg *config.Config) map[string]provider.Provider {
 		"xai":        {"XAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewXAI(c) }},
 		"cohere":     {"COHERE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCohere(c) }},
 		"replicate":  {"REPLICATE_API_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewReplicate(c) }},
+		"azure":      {"AZURE_OPENAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAzureOpenAI(c) }},
+		"deepinfra":  {"DEEPINFRA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDeepInfra(c) }},
+		"nvidia":     {"NVIDIA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNVIDIA(c) }},
+		"cerebras":   {"CEREBRAS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCerebras(c) }},
+		"sambanova":  {"SAMBANOVA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewSambaNova(c) }},
+		"huggingface": {"HF_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewHuggingFace(c) }},
+		"hyperbolic": {"HYPERBOLIC_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewHyperbolic(c) }},
+		"novita":     {"NOVITA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNovitaAI(c) }},
+		"featherless": {"FEATHERLESS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewFeatherless(c) }},
+		"lambda":     {"LAMBDA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLambda(c) }},
+		"nebius":     {"NEBIUS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNebius(c) }},
+		"lepton":     {"LEPTON_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLepton(c) }},
+		"nscale":     {"NSCALE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNscale(c) }},
 	}
 
 	for name, ep := range envProviders {

@@ -132,3 +132,107 @@ func NewOllama(cfg ProviderConfig) *OpenAICompat {
 	}
 	return NewOpenAICompat("ollama", cfg)
 }
+
+// NewDeepInfra creates a DeepInfra provider.
+func NewDeepInfra(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.deepinfra.com/v1/openai"
+	}
+	return NewOpenAICompat("deepinfra", cfg)
+}
+
+// NewNVIDIA creates an NVIDIA NIM provider (cloud-hosted).
+func NewNVIDIA(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://integrate.api.nvidia.com/v1"
+	}
+	return NewOpenAICompat("nvidia", cfg)
+}
+
+// NewCerebras creates a Cerebras provider.
+func NewCerebras(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.cerebras.ai/v1"
+	}
+	return NewOpenAICompat("cerebras", cfg)
+}
+
+// NewSambaNova creates a SambaNova Cloud provider.
+func NewSambaNova(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.sambanova.ai/v1"
+	}
+	return NewOpenAICompat("sambanova", cfg)
+}
+
+// NewHuggingFace creates a Hugging Face Inference provider.
+func NewHuggingFace(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://router.huggingface.co/v1"
+	}
+	return NewOpenAICompat("huggingface", cfg)
+}
+
+// NewHyperbolic creates a Hyperbolic provider.
+func NewHyperbolic(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.hyperbolic.xyz/v1"
+	}
+	return NewOpenAICompat("hyperbolic", cfg)
+}
+
+// NewNovitaAI creates a Novita AI provider.
+func NewNovitaAI(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.novita.ai/v3/openai"
+	}
+	return NewOpenAICompat("novita", cfg)
+}
+
+// NewFeatherless creates a Featherless AI provider.
+func NewFeatherless(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.featherless.ai/v1"
+	}
+	return NewOpenAICompat("featherless", cfg)
+}
+
+// NewLambda creates a Lambda Labs provider.
+func NewLambda(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.lambdalabs.com/v1"
+	}
+	return NewOpenAICompat("lambda", cfg)
+}
+
+// NewVLLM creates a local vLLM provider.
+func NewVLLM(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "http://localhost:8000/v1"
+	}
+	return NewOpenAICompat("vllm", cfg)
+}
+
+// NewNebius creates a Nebius AI Studio provider.
+func NewNebius(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.studio.nebius.ai/v1"
+	}
+	return NewOpenAICompat("nebius", cfg)
+}
+
+// NewLepton creates a Lepton AI provider.
+func NewLepton(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.lepton.ai/v1"
+	}
+	return NewOpenAICompat("lepton", cfg)
+}
+
+// NewNscale creates an Nscale provider.
+func NewNscale(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://inference.api.nscale.com/v1"
+	}
+	return NewOpenAICompat("nscale", cfg)
+}

@@ -14,7 +14,7 @@ import (
 // sharedTransport is a tuned HTTP transport shared across all provider clients.
 // Key settings vs Go defaults:
 //   - MaxIdleConnsPerHost: 16 (default 2) — prevents connection churn under load
-//   - MaxIdleConns: 64 (default 100) — reasonable for 16 providers
+//   - MaxIdleConns: 128 (default 100) — reasonable for 30 providers
 //   - IdleConnTimeout: 120s (default 90s) — keep provider connections warm longer
 //   - TLS session resumption enabled by default
 var sharedTransport = &http.Transport{
@@ -23,7 +23,7 @@ var sharedTransport = &http.Transport{
 		KeepAlive: 30 * time.Second,
 	}).DialContext,
 	TLSClientConfig:     &tls.Config{MinVersion: tls.VersionTLS12},
-	MaxIdleConns:        64,
+	MaxIdleConns:        128,
 	MaxIdleConnsPerHost: 16,
 	IdleConnTimeout:     120 * time.Second,
 	ForceAttemptHTTP2:   true,
