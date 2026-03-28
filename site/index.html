@@ -222,9 +222,9 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2 class="section-label">Use Stockyard as just a proxy</h2>
   <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2rem;font-size:0.95rem;text-align:center">Point your app at one endpoint, route requests through it, and stop there if that&rsquo;s all you need. No forced stack adoption.</p>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:800px;margin:0 auto">
-    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">One stable endpoint</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">OpenAI, Anthropic, Ollama, and 13 more</span></div>
+    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">One stable endpoint</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Across 16 providers</span></div>
     <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Model aliasing</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Swap real models, keep app-facing names stable</span></div>
-    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Zero dependencies</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">One binary, one SQLite file. No Redis, Postgres, Docker.</span></div>
+    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Zero dependencies</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">One binary, one SQLite file. No Redis, no Postgres, no Docker required.</span></div>
   </div>
   <div class="proxy-code">curl -fsSL stockyard.dev/install.sh | sh<br>stockyard start</div>
   <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);text-align:center">Change your base URL and keep moving.</p>
@@ -558,7 +558,7 @@ dxPick(0);
     <div class="free-grid">
       <div class="free-card"><span class="free-num">16</span><span class="free-label">Providers, One Endpoint</span><span class="free-detail">Route requests across OpenAI, Anthropic, Google, Groq, Mistral, and 11 more through a single URL.</span></div>
       <div class="free-card"><span class="free-num">&check;</span><span class="free-label">Tracing From First Request</span><span class="free-detail">See cost, latency, and token usage on every request. No setup beyond install.</span></div>
-      <div class="free-card"><span class="free-num">76</span><span class="free-label">Runtime Controls</span><span class="free-detail">Caching, rate limits, PII redaction, safety filters &mdash; toggle without redeployment.</span></div>
+      <div class="free-card"><span class="free-num">&check;</span><span class="free-label">Runtime Controls</span><span class="free-detail">Caching, rate limits, PII redaction, and safety filters you can toggle without redeploying.</span></div>
     </div>
     <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather)">Self-hosted &middot; Source available &middot; Unlimited requests</p>
   </div>
@@ -596,9 +596,9 @@ dxPick(0);
   <table class="compare-table">
     <tr><th></th><th style="color:var(--rust-light);font-weight:700;font-size:0.75rem">Stockyard</th><th>LiteLLM</th><th>Helicone</th></tr>
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
-    <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip + Redis + Postgres</td><td class="them">Managed SaaS</td></tr>
-    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis, Postgres</td><td class="them">Cloud only</td></tr>
-    <tr><td>Free tier</td><td class="us">76 modules, Drover, Feral scan, insights</td><td class="them">Open source proxy</td><td class="them">Limited requests</td></tr>
+    <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip install + optional Redis/Postgres</td><td class="them">Managed SaaS</td></tr>
+    <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis + Postgres for full features</td><td class="them">Cloud only</td></tr>
+    <tr><td>Free tier</td><td class="us">Proxy, tracing, routing, red-team scan</td><td class="them">Open source proxy</td><td class="them">Limited requests</td></tr>
     <tr><td>Auto-routing</td><td class="us">Built-in (Drover)</td><td class="them">Basic fallback</td><td class="them">No</td></tr>
     <tr><td>Red-team</td><td class="us">Built-in (Feral)</td><td class="them">No</td><td class="them">No</td></tr>
     <tr><td>Request replay</td><td class="us">Built-in (Lasso)</td><td class="them">No</td><td class="them">No</td></tr>
@@ -621,7 +621,7 @@ dxPick(0);
   <div class="section-alt-inner">
     <h2 class="section-label gold">Start simple, unlock more only when needed</h2>
     <div class="tier-row">
-      <div class="tier"><div class="t-name">Community</div><div class="t-price-free">Free</div><div class="t-period">self-hosted</div><div class="t-unlock" style="color:var(--green-light)">76 modules + 16 apps</div><div class="t-desc">Full proxy, tracing, audit. Plus Drover (100/day), Feral quickscan, and auto-insights.</div><a href="/guide/" class="t-cta">Start free</a></div>
+      <div class="tier"><div class="t-name">Community</div><div class="t-price-free">Free</div><div class="t-period">self-hosted</div><div class="t-unlock" style="color:var(--green-light)">Full proxy + tracing + controls</div><div class="t-desc">Full proxy, tracing, audit. Plus Drover (100/day), Feral quickscan, and auto-insights.</div><a href="/guide/" class="t-cta">Start free</a></div>
       <div class="tier"><div class="t-name">Individual</div><div class="t-price">$29.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 5 products</div><div class="t-desc">Lasso replay, Auction bidding, Doubt, Verdikt, Relic provenance.</div><a href="/pricing/" class="t-cta">Start Individual</a></div>
       <div class="tier tier-highlight"><div class="t-name">Pro</div><div class="t-price">$99.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 12 products</div><div class="t-desc">Drover autopilot, Breed evolution, Stampede load testing, Fault chaos.</div><a href="/pricing/" class="t-cta">Go Pro</a></div>
       <div class="tier"><div class="t-name">Team</div><div class="t-price">$299.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 23 products</div><div class="t-desc">Feral red-team, Phantom personas, Crucible scoring, full analytics.</div><a href="/pricing/" class="t-cta">Start Team</a></div>
