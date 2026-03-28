@@ -56,6 +56,7 @@ func Register(mux *http.ServeMux) {
 		"/blog/66-modules-400ns/",
 		"/blog/llm-api-pricing-2026/",
 		"/blog/openai-api-bill-surprise/",
+		"/blog/sqlite-in-production-2026/",
 		"/architecture/",
 		"/status/",
 		"/mcp/",
