@@ -45,7 +45,7 @@ func Register(mux *http.ServeMux) {
 		"/exchange/", "/observe/", "/modules/", "/benchmarks/",
 		"/privacy/", "/terms/", "/changelog/",
 		"/studio/", "/forge/", "/trust/", "/guide/", "/team/",
-		"/docs/quickstart/", "/docs/auth/", "/docs/proxy/", "/docs/aliasing/",
+		"/docs/quickstart/", "/docs/docker/", "/docs/auth/", "/docs/proxy/", "/docs/aliasing/",
 		"/docs/observe/", "/docs/trust/", "/docs/studio/",
 		"/docs/forge/", "/docs/exchange/", "/docs/team/", "/docs/memory/", "/docs/api/",
 		"/docs/ops/",
@@ -91,6 +91,8 @@ func Register(mux *http.ServeMux) {
 		"/openai-compatible-proxy/",
 		"/llm-proxy-with-sqlite/",
 		"/single-binary/",
+		"/why-sqlite/",
+		"/docs/docker/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
