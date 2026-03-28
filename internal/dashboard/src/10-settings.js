@@ -28,6 +28,21 @@ function SettingsView(){
       </div></div>
     ${showNew&&html`<${Modal} title="Create User" onClose=${()=>setShowNew(false)}><${Input} label="Email" value=${newEmail} onChange=${setNewEmail} placeholder="user@example.com"/><${Input} label="Name" value=${newName} onChange=${setNewName} placeholder="Optional"/><div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShowNew(false)}>Cancel<//><${Btn} variant="primary" onClick=${createUser} disabled=${!newEmail}>Create User<//></div><//>`}
     ${showProv&&html`<${Modal} title="Add Provider Key" onClose=${()=>setShowProv(false)}><${Select} label="Provider" value=${pn} onChange=${setPn} options=${[{value:'openai',label:'OpenAI'},{value:'anthropic',label:'Anthropic'},{value:'gemini',label:'Google Gemini'},{value:'groq',label:'Groq'},{value:'together',label:'Together'},{value:'mistral',label:'Mistral'}]}/><${Input} label="API Key" value=${pk} onChange=${setPk} type="password" placeholder="sk-..." mono/><div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><${Btn} onClick=${()=>setShowProv(false)}>Cancel<//><${Btn} variant="primary" onClick=${addProv} disabled=${!pk}>Save<//></div><//>`}
+    <div style="margin-top:32px;border-top:1px solid var(--bg3);padding-top:24px">
+      <div class="section-title">Quick Reference</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+        <div style="background:var(--bg2);border:1px solid var(--bg3);padding:16px">
+          <div style="font-size:0.78rem;color:var(--rust-light);font-weight:600;margin-bottom:8px">Base URL</div>
+          <code class="mono" style="font-size:0.78rem;display:block;margin-bottom:8px">${window.location.origin}/v1</code>
+          <button class="btn btn-sm" onClick=${()=>{navigator.clipboard.writeText(window.location.origin+'/v1');setToast({msg:'Base URL copied!',type:'success'})}}>\u{1F4CB} Copy</button>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--bg3);padding:16px">
+          <div style="font-size:0.78rem;color:var(--rust-light);font-weight:600;margin-bottom:8px">Backup</div>
+          <div style="font-size:0.78rem;color:var(--cream-dim)">Your data lives in one file: <code>/data/stockyard.db</code></div>
+          <code class="mono" style="font-size:0.72rem;display:block;margin-top:6px;color:var(--leather-light)">cp /data/stockyard.db backup.db</code>
+        </div>
+      </div>
+    </div>
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 

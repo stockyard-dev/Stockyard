@@ -18,6 +18,8 @@ function OverviewView(){
   const totalReqs=costs?.providers?.reduce((s,p)=>s+(p.requests||0),0)||0;
   const providerCount=costs?.providers?.length||0;
   const isFirstRun=totalReqs===0;
+  const[testResult,setTestResult]=useState(null);const[testing,setTesting]=useState(false);
+  const testConnection=async()=>{setTesting(true);setTestResult(null);try{const r=await api('/api/proxy/providers/health');const ok=!r._error&&r.providers?.some(p=>p.status==='active'||p.reachable);setTestResult(ok?'ok':'fail')}catch(e){setTestResult('fail')}setTesting(false)};
   return html`<div class="page-head"><div class="page-eyebrow">Console</div><h2>System Overview</h2><p class="page-sub">${platform?platform.products+' products':apps.length+' apps'} \u2022 ${platform?.tier||'Community'} tier \u2022 ${platform?.status||'ok'}</p></div>
     <div class="stats-row">
       <${Stat} label="Products" value=${platform?.active||apps.length} sub=${platform?(platform.healthy+' healthy'):''} accent/>
@@ -28,9 +30,9 @@ function OverviewView(){
     ${isFirstRun?html`<div class="first-run-checklist">
       <div class="frc-title">\u{1F680} Getting started</div>
       <div class="frc-item ${providerCount>0?'frc-done':''}"><span class="frc-check">${providerCount>0?'\u2713':'\u25CB'}</span><span>Set a provider key</span><code class="frc-code">export OPENAI_API_KEY=sk-...</code></div>
+      <div class="frc-item ${testResult==='ok'?'frc-done':''}"><span class="frc-check">${testResult==='ok'?'\u2713':'\u25CB'}</span><span>Test your connection</span><button class="btn btn-sm ${testing?'':'primary'}" style="margin-left:8px" onClick=${testConnection} disabled=${testing||providerCount===0}>${testing?'Testing\u2026':testResult==='ok'?'\u2713 Connected':testResult==='fail'?'Retry':'Test connection'}</button>${testResult==='fail'?html`<span style="color:var(--red);font-size:0.78rem;margin-left:8px">Could not reach providers. Check your API keys.</span>`:null}</div>
       <div class="frc-item"><span class="frc-check">\u25CB</span><span>Send your first request</span><code class="frc-code">curl http://localhost:7749/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</code></div>
       <div class="frc-item"><span class="frc-check">\u25CB</span><span>Point your app at the proxy</span><code class="frc-code">export OPENAI_BASE_URL=http://localhost:7749/v1</code></div>
-      <div class="frc-item"><span class="frc-check">\u25CB</span><span>Check traces in Observe tab</span></div>
       <div class="frc-hint">Once you send a request, this checklist disappears and your live dashboard takes over.</div>
     </div>`:null}
     ${relic||crucible?html`<div class="stats-row" style="margin-top:12px">
