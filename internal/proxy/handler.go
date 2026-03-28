@@ -3,6 +3,7 @@ package proxy
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -68,6 +69,11 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 					"type":    errType,
 				},
 			})
+			return
+		}
+		// Check if the error wraps a ProviderAPIError for structured response
+		if provErr := extractProviderError(err); provErr != nil {
+			writeProviderError(w, classifyError(err), provErr.Provider, provErr.StatusCode, sanitizeProviderError(provErr))
 			return
 		}
 		writeError(w, classifyError(err), sanitizeError(err))
@@ -456,6 +462,20 @@ func writeError(w http.ResponseWriter, status int, message string) {
 	})
 }
 
+// writeProviderError writes a structured error response that includes provider context.
+func writeProviderError(w http.ResponseWriter, status int, providerName string, upstreamStatus int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Stockyard-Provider-Error", providerName)
+	w.WriteHeader(status)
+	errBody := map[string]any{
+		"message":         message,
+		"type":            "provider_error",
+		"provider":        providerName,
+		"upstream_status": upstreamStatus,
+	}
+	json.NewEncoder(w).Encode(map[string]any{"error": errBody})
+}
+
 // isCapError checks if an error is a cap exceeded error.
 func isCapError(err error) (interface{ Error() string }, bool) {
 	type capErr interface {
@@ -525,6 +545,59 @@ func sanitizeError(err error) string {
 	default:
 		log.Printf("proxy error (sanitized): %v", err)
 		return "proxy error — see stockyard.dev/docs/quickstart/ for setup help"
+	}
+}
+
+// extractClientIP extracts the real client IP from the HTTP request.
+
+// extractProviderError checks if an error contains a ProviderAPIError.
+func extractProviderError(err error) *provider.ProviderAPIError {
+	if err == nil {
+		return nil
+	}
+	var provErr *provider.ProviderAPIError
+	if errors.As(err, &provErr) {
+		return provErr
+	}
+	// Fallback: check error string for provider error pattern
+	msg := err.Error()
+	for _, name := range []string{
+		"openai", "anthropic", "gemini", "groq", "mistral", "together", "deepseek",
+		"fireworks", "perplexity", "openrouter", "azure", "xai", "cohere", "replicate",
+		"deepinfra", "nvidia", "cerebras", "sambanova", "huggingface", "hyperbolic",
+		"novita", "featherless", "lambda", "nebius", "lepton", "nscale", "ai21",
+		"friendli", "moonshot", "dashscope", "github", "baseten", "yi",
+		"ollama", "lmstudio", "vllm", "sglang", "tgi",
+	} {
+		prefix := name + ": status "
+		if strings.HasPrefix(msg, prefix) {
+			// Parse status code from "provider: status NNN: body"
+			rest := msg[len(prefix):]
+			code := 0
+			for i := 0; i < len(rest) && rest[i] >= '0' && rest[i] <= '9'; i++ {
+				code = code*10 + int(rest[i]-'0')
+			}
+			if code > 0 {
+				return &provider.ProviderAPIError{Provider: name, StatusCode: code, Body: msg}
+			}
+		}
+	}
+	return nil
+}
+
+// sanitizeProviderError returns a client-safe error message for a provider error.
+func sanitizeProviderError(e *provider.ProviderAPIError) string {
+	switch {
+	case e.StatusCode == 401:
+		return fmt.Sprintf("Provider '%s' returned 401: invalid API key", e.Provider)
+	case e.StatusCode == 403:
+		return fmt.Sprintf("Provider '%s' returned 403: access denied", e.Provider)
+	case e.StatusCode == 429:
+		return fmt.Sprintf("Provider '%s' returned 429: rate limit exceeded", e.Provider)
+	case e.StatusCode >= 500:
+		return fmt.Sprintf("Provider '%s' returned %d: upstream server error", e.Provider, e.StatusCode)
+	default:
+		return fmt.Sprintf("Provider '%s' returned %d", e.Provider, e.StatusCode)
 	}
 }
 
