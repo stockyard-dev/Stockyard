@@ -141,7 +141,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <span class="cmd">cp /data/stockyard.db /backups/stockyard-$(date +%Y%m%d).db</span>
   </pre>
 
-  <p>That is it. One file. You can copy it while the server is running because WAL mode handles concurrent access. The copy is a consistent snapshot of the entire database.</p>
+  <p>That is it. One file. You can copy it while the server is running because WAL mode handles concurrent access safely for readers. For stronger consistency guarantees, SQLite's backup API or a tool like <a href="https://litestream.io">Litestream</a> can provide continuous replication. In practice, file copies have worked reliably for Stockyard's workload, but it is worth knowing the options.</p>
 
   <p>Restoring is the reverse:</p>
 

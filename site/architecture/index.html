@@ -167,7 +167,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <p>Every module is wrapped with <code>toggle.Wrap</code>. Disabled modules are bypassed with zero overhead. Toggle any module on or off at runtime via the API or the console &mdash; no restart required.</p>
 
   <h2 style="margin-top:3rem">The Full Platform</h2>
-  <p>The proxy is the foundation. On top of it, Stockyard runs an entire AI economy:</p>
+  <p>The proxy is the foundation. On top of it, Stockyard runs integrated products:</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1.5rem 0">
     <div style="border:1px solid var(--bg3);padding:1.2rem">
       <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Core Infrastructure</div>
@@ -175,23 +175,15 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
     <div style="border:1px solid var(--bg3);padding:1.2rem">
       <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Creation Tools</div>
-      <p style="font-size:0.85rem;margin:0"><a href="/studio/" style="color:var(--rust-light,#e8975a)">Tack Room</a> &rarr; <a href="/forge/">Forge</a> &rarr; <a href="/products/">App Builder</a> &rarr; <a href="/products/">Copilot</a></p>
+      <p style="font-size:0.85rem;margin:0"><a href="/studio/" style="color:var(--rust-light,#e8975a)">Tack Room</a> (prompt templates) &rarr; <a href="/forge/">Forge</a> (DAG workflows)</p>
     </div>
     <div style="border:1px solid var(--bg3);padding:1.2rem">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">The Economy</div>
-      <p style="font-size:0.85rem;margin:0"><a href="/exchange/" style="color:var(--rust-light,#e8975a)">Trading Post</a> &rarr; <a href="/products/">Knowledge</a> &rarr; <a href="/products/">Mesh</a> &rarr; <a href="/products/">Reputation</a></p>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Marketplace</div>
+      <p style="font-size:0.85rem;margin:0"><a href="/exchange/" style="color:var(--rust-light,#e8975a)">Trading Post</a> (config packs, one-click install)</p>
     </div>
     <div style="border:1px solid var(--bg3);padding:1.2rem">
       <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Operations</div>
-      <p style="font-size:0.85rem;margin:0"><a href="/billing/">Billing</a> &rarr; <a href="/products/">Fabric</a> &rarr; <a href="/products/">Recall</a> &rarr; <a href="/docs/memory/">Memory</a></p>
-    </div>
-    <div style="border:1px solid var(--bg3);padding:1.2rem">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:#5ba86e;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Governance</div>
-      <p style="font-size:0.85rem;margin:0"><a href="/team/">Team</a> &rarr; <a href="/products/">Governance</a> &rarr; Connect &rarr; <a href="/products/">Protocol</a></p>
-    </div>
-    <div style="border:1px solid var(--bg3);padding:1.2rem">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem">Intelligence</div>
-      <p style="font-size:0.85rem;margin:0">Cortex &rarr; Pulse &rarr; Dreams &rarr; Genome &rarr; Resonance</p>
+      <p style="font-size:0.85rem;margin:0"><a href="/billing/">Billing</a> &rarr; <a href="/team/">Team</a> &rarr; <a href="/docs/memory/">Memory</a></p>
     </div>
   </div>
 
@@ -202,8 +194,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Binary</div><div style="padding:0.5rem;border:1px solid var(--bg3)">~25MB, static</div>
     <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Dependencies</div><div style="padding:0.5rem;border:1px solid var(--bg3)">Zero</div>
     <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Tables</div><div style="padding:0.5rem;border:1px solid var(--bg3)">106+</div>
-    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">API endpoints</div><div style="padding:0.5rem;border:1px solid var(--bg3)">350+</div>
-    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Chain traversal</div><div style="padding:0.5rem;border:1px solid var(--bg3)">400ns (76 modules)</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">API endpoints</div><div style="padding:0.5rem;border:1px solid var(--bg3)">360+</div>
+    <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Proxy overhead</div><div style="padding:0.5rem;border:1px solid var(--bg3)"><a href="/benchmarks/" style="color:var(--rust-light)">~200ms</a> (full chain)</div>
     <div style="padding:0.5rem;border:1px solid var(--bg3);color:var(--leather)">Encryption</div><div style="padding:0.5rem;border:1px solid var(--bg3)">AES-256-GCM at rest</div>
   </div>
 
