@@ -236,3 +236,75 @@ func NewNscale(cfg ProviderConfig) *OpenAICompat {
 	}
 	return NewOpenAICompat("nscale", cfg)
 }
+
+// NewAI21 creates an AI21 Labs provider.
+func NewAI21(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.ai21.com/studio/v1"
+	}
+	return NewOpenAICompat("ai21", cfg)
+}
+
+// NewFriendli creates a FriendliAI provider.
+func NewFriendli(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.friendli.ai/serverless/v1"
+	}
+	return NewOpenAICompat("friendli", cfg)
+}
+
+// NewMoonshot creates a Moonshot AI (Kimi) provider.
+func NewMoonshot(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.moonshot.cn/v1"
+	}
+	return NewOpenAICompat("moonshot", cfg)
+}
+
+// NewDashScope creates an Alibaba Cloud DashScope provider (Qwen models).
+func NewDashScope(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+	}
+	return NewOpenAICompat("dashscope", cfg)
+}
+
+// NewGitHubModels creates a GitHub Models provider.
+func NewGitHubModels(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://models.inference.ai.azure.com"
+	}
+	return NewOpenAICompat("github", cfg)
+}
+
+// NewBaseten creates a Baseten provider.
+func NewBaseten(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://bridge.baseten.co/v1/direct"
+	}
+	return NewOpenAICompat("baseten", cfg)
+}
+
+// NewSGLang creates a local SGLang provider.
+func NewSGLang(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "http://localhost:30000/v1"
+	}
+	return NewOpenAICompat("sglang", cfg)
+}
+
+// NewTGI creates a local HuggingFace Text Generation Inference provider.
+func NewTGI(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "http://localhost:8080/v1"
+	}
+	return NewOpenAICompat("tgi", cfg)
+}
+
+// NewYi creates a 01.AI (Yi) provider.
+func NewYi(cfg ProviderConfig) *OpenAICompat {
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "https://api.01.ai/v1"
+	}
+	return NewOpenAICompat("yi", cfg)
+}

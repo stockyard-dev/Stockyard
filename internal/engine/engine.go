@@ -2542,6 +2542,13 @@ func initProviders(cfg *config.Config) map[string]provider.Provider {
 		"nebius":     {"NEBIUS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNebius(c) }},
 		"lepton":     {"LEPTON_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLepton(c) }},
 		"nscale":     {"NSCALE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNscale(c) }},
+		"ai21":       {"AI21_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAI21(c) }},
+		"friendli":   {"FRIENDLI_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewFriendli(c) }},
+		"moonshot":   {"MOONSHOT_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewMoonshot(c) }},
+		"dashscope":  {"DASHSCOPE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDashScope(c) }},
+		"github":     {"GITHUB_MODELS_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewGitHubModels(c) }},
+		"baseten":    {"BASETEN_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewBaseten(c) }},
+		"yi":         {"YI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewYi(c) }},
 	}
 
 	for name, ep := range envProviders {
