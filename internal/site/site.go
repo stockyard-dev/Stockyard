@@ -92,6 +92,11 @@ func Register(mux *http.ServeMux) {
 		"/llm-proxy-with-sqlite/",
 		"/single-binary/",
 		"/why-sqlite/",
+		"/does-stockyard-phone-home/",
+		"/features/llm-failover/",
+		"/features/llm-caching/",
+		"/for/solo-developers/",
+		"/use-case/llm-cost-control/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
