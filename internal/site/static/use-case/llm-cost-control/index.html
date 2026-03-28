@@ -61,7 +61,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <div class="section">
   <h2 class="section-label">Why LLM costs spiral</h2>
-  <p>LLM APIs bill per token, and tokens add up fast. A single GPT-4o conversation can cost $0.05. A thousand users a day and you are at $1,500/month before you notice. There is no built-in spending cap in most provider APIs. If your app has a bug that loops, or a user finds a way to send expensive prompts, your bill absorbs it silently.</p>
+  <p>LLM APIs bill per token, and tokens add up fast. A moderately complex GPT-4o conversation might cost a few cents. Multiply that across hundreds or thousands of users per day, and monthly bills can reach four or five figures before anyone notices. Most provider APIs have no built-in spending cap. If your app has a bug that loops, or a user finds a way to send expensive prompts, your bill absorbs it silently.</p>
   <p>The first step is knowing where the money goes. The second step is having controls to limit it. Most teams build both from scratch or bolt on multiple third-party services. Stockyard builds both into the proxy layer.</p>
 </div>
 
