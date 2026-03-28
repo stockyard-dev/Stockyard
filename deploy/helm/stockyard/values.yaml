@@ -3,7 +3,7 @@
 replicaCount: 1
 
 image:
-  repository: stockyard
+  repository: ghcr.io/stockyard-dev/stockyard
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -32,7 +32,7 @@ resources:
     cpu: 100m
     memory: 128Mi
   limits:
-    cpu: 500m
+    cpu: "1"
     memory: 512Mi
 
 persistence:
@@ -45,17 +45,34 @@ persistence:
 env:
   PORT: "4200"
   DATA_DIR: /data
-  LOG_LEVEL: info
-  LOG_FORMAT: text
 
-# Sensitive values — set via --set or external secret.
+# Provider API keys — set via --set or external secret.
+# Only set the providers you use. Stockyard auto-detects on startup.
 secrets:
   adminKey: ""
+  # Major cloud
   openaiApiKey: ""
   anthropicApiKey: ""
-  googleApiKey: ""
+  geminiApiKey: ""
+  azureOpenaiApiKey: ""
+  # Fast inference
   groqApiKey: ""
-  resendApiKey: ""
+  cerebrasApiKey: ""
+  sambanovaApiKey: ""
+  fireworksApiKey: ""
+  togetherApiKey: ""
+  # Specialized
+  mistralApiKey: ""
+  deepseekApiKey: ""
+  cohereApiKey: ""
+  xaiApiKey: ""
+  perplexityApiKey: ""
+  # Open model hosts
+  deepinfraApiKey: ""
+  nvidiaApiKey: ""
+  hfToken: ""
+  replicateApiToken: ""
+  openrouterApiKey: ""
 
 nodeSelector: {}
 tolerations: []

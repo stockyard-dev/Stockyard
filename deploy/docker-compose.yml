@@ -1,52 +1,68 @@
-version: "3.8"
+# Docker Compose for Stockyard — self-hosted LLM proxy and control layer.
+# Usage: docker compose up
+#
+# Set provider API keys in .env or export them before running.
+# Stockyard auto-detects configured providers on startup.
 
 services:
   stockyard:
-    image: stockyard:latest
-    build:
-      context: ..
-      dockerfile: Dockerfile
+    build: .
+    image: ghcr.io/stockyard-dev/stockyard:latest
     ports:
       - "${STOCKYARD_PORT:-4200}:4200"
+    volumes:
+      - stockyard-data:/data
     environment:
       - PORT=4200
       - DATA_DIR=/data
       - STOCKYARD_ADMIN_KEY=${STOCKYARD_ADMIN_KEY:-}
+      - STOCKYARD_LICENSE_KEY=${STOCKYARD_LICENSE_KEY:-}
+      # ── Major cloud providers ──
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      # ── Fast inference ──
       - GROQ_API_KEY=${GROQ_API_KEY:-}
-      - RESEND_API_KEY=${RESEND_API_KEY:-}
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_FORMAT=${LOG_FORMAT:-text}
-    volumes:
-      - stockyard-data:/data
+      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY:-}
+      - SAMBANOVA_API_KEY=${SAMBANOVA_API_KEY:-}
+      - FIREWORKS_API_KEY=${FIREWORKS_API_KEY:-}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY:-}
+      # ── Specialized ──
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - COHERE_API_KEY=${COHERE_API_KEY:-}
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY:-}
+      - AI21_API_KEY=${AI21_API_KEY:-}
+      - MOONSHOT_API_KEY=${MOONSHOT_API_KEY:-}
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
+      - YI_API_KEY=${YI_API_KEY:-}
+      # ── Open model hosts ──
+      - DEEPINFRA_API_KEY=${DEEPINFRA_API_KEY:-}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - REPLICATE_API_TOKEN=${REPLICATE_API_TOKEN:-}
+      - LAMBDA_API_KEY=${LAMBDA_API_KEY:-}
+      - HYPERBOLIC_API_KEY=${HYPERBOLIC_API_KEY:-}
+      - NEBIUS_API_KEY=${NEBIUS_API_KEY:-}
+      - NOVITA_API_KEY=${NOVITA_API_KEY:-}
+      - FEATHERLESS_API_KEY=${FEATHERLESS_API_KEY:-}
+      - NSCALE_API_KEY=${NSCALE_API_KEY:-}
+      - LEPTON_API_KEY=${LEPTON_API_KEY:-}
+      - FRIENDLI_TOKEN=${FRIENDLI_TOKEN:-}
+      - BASETEN_API_KEY=${BASETEN_API_KEY:-}
+      # ── Aggregators ──
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - GITHUB_MODELS_TOKEN=${GITHUB_MODELS_TOKEN:-}
+      # ── OTEL export (optional) ──
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-stockyard}
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4200/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  # Optional: Grafana dashboard for Stockyard metrics.
-  # Uncomment to enable.
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   ports:
-  #     - "${GRAFANA_PORT:-3000}:3000"
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER=admin
-  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-stockyard}
-  #     - GF_AUTH_ANONYMOUS_ENABLED=true
-  #   volumes:
-  #     - grafana-data:/var/lib/grafana
-  #   depends_on:
-  #     - stockyard
-  #   restart: unless-stopped
+    # Verify after start:
+    # curl http://localhost:4200/v1/chat/completions \
+    #   -H "Content-Type: application/json" \
+    #   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'
 
 volumes:
   stockyard-data:
-    driver: local
-  # grafana-data:
-  #   driver: local
