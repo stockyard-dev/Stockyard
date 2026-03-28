@@ -100,6 +100,8 @@ func Register(mux *http.ServeMux) {
 		"/features/llm-caching/",
 		"/for/solo-developers/",
 		"/use-case/llm-cost-control/",
+		"/open-source-vs-bsl/",
+		"/how-stockyard-backups-work/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

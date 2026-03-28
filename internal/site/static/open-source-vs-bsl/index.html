@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:title" content="Is Stockyard Open Source? BSL 1.1 Explained -- Stockyard">
+<meta property="og:description" content="Stockyard uses the Business Source License 1.1. Here is what that means: what you can do, what you cannot do, and why we chose it.">
+<meta property="og:url" content="https://stockyard.dev/open-source-vs-bsl/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<title>Is Stockyard Open Source? BSL 1.1 Explained -- Stockyard</title>
+<meta name="description" content="Stockyard uses BSL 1.1, not a traditional open-source license. The source is available, you can self-host it, but you cannot resell it as a competing hosted service.">
+<link rel="canonical" href="https://stockyard.dev/open-source-vs-bsl/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.section p{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1.2rem;line-height:1.8}
+.check-list{list-style:none;padding:0;margin:1.5rem 0}
+.check-list li{font-size:0.9rem;color:var(--cream-dim);padding:0.6rem 0;border-bottom:1px solid var(--bg3);display:flex;align-items:flex-start;gap:0.8rem}
+.check-list li::before{content:'';flex-shrink:0;display:inline-block;width:8px;height:8px;margin-top:0.45rem}
+.check-list li.yes::before{background:var(--green-light)}
+.check-list li.no::before{background:var(--rust)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Platform</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">License</div>
+  <h1>Is Stockyard <span class="accent">open source?</span></h1>
+  <p class="sub">Stockyard is source-available under the Business Source License 1.1. The code is public, you can read and audit it, but it is not open source in the OSI-approved sense. Here is exactly what that means for you.</p>
+</section>
+
+<div class="section">
+  <h2 class="section-label">What you can do</h2>
+  <ul class="check-list">
+    <li class="yes">Download, install, and run Stockyard for your own use</li>
+    <li class="yes">Self-host it on your own servers for your own applications</li>
+    <li class="yes">Use it in production for your company or your clients' projects</li>
+    <li class="yes">Read the entire source code on GitHub</li>
+    <li class="yes">Audit the security, cryptography, and data handling yourself</li>
+    <li class="yes">Fork the code for internal modifications</li>
+    <li class="yes">Build applications and services that use Stockyard as infrastructure</li>
+    <li class="yes">Use it commercially as long as you are not reselling it as a hosted service</li>
+  </ul>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What you cannot do</h2>
+    <ul class="check-list">
+      <li class="no">Offer Stockyard itself as a managed or hosted service to third parties</li>
+      <li class="no">Resell Stockyard as a competing product</li>
+      <li class="no">Take the source and launch a hosted "Stockyard-as-a-Service" offering</li>
+    </ul>
+    <p style="text-align:center;font-size:0.85rem;color:var(--cream-muted);margin-top:1.5rem">The restriction is narrow: you cannot use the source code to offer a competing hosted service. Everything else is permitted.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">Why BSL and not MIT or Apache 2.0</h2>
+  <p>The short answer: sustainability. Stockyard is built and maintained by one person. An MIT or Apache license would allow a well-funded company to take the source, host it as a managed service, and compete directly without contributing anything back. BSL prevents that specific scenario while keeping the source open for everyone else.</p>
+  <p>This is the same license used by MariaDB, CockroachDB, Sentry, and HashiCorp (for some products). It is a known quantity in the industry, not an exotic or custom license.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">What BSL 1.1 actually says</h2>
+    <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1.2rem">BSL 1.1 has a built-in conversion clause. After a specified period (typically 4 years from each release), the code automatically converts to a permissive open-source license. This means every version of Stockyard will eventually become fully open source. The BSL is a time-limited restriction, not a permanent one.</p>
+    <p style="font-size:0.95rem;color:var(--cream-dim)">The full license text is in the <a href="https://github.com/stockyard-dev/Stockyard/blob/main/LICENSE">LICENSE file</a> in the GitHub repository.</p>
+  </div>
+</section>
+
+<div class="section">
+  <h2 class="section-label">How this compares to competitors</h2>
+  <p><strong>LiteLLM:</strong> the proxy is Apache 2.0, but the enterprise features are proprietary. You get the open-source proxy, but advanced features require a paid license.</p>
+  <p><strong>Langfuse:</strong> MIT-licensed core, fully open source. Langfuse Cloud is a managed offering on top of the open-source project.</p>
+  <p><strong>Helicone and Portkey:</strong> managed SaaS products. The source is not available for self-hosting (Portkey has a limited open-source gateway).</p>
+  <p>Stockyard's approach is different: the entire platform is source-available, including the features that other products gate behind enterprise tiers. The only restriction is on how you can redistribute it.</p>
+</div>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="section-label">If the license is a dealbreaker</h2>
+    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto">Some organizations have policies that prohibit non-OSI-approved licenses. If that is your situation, Stockyard may not be the right choice today. LiteLLM's proxy (Apache 2.0) or Langfuse (MIT) may be better fits for your licensing requirements. We would rather be honest about this than have you discover a licensing conflict later.</p>
+  </div>
+</section>
+
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Source available. Self-host freely.</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Read the code, audit it, run it on your servers. The only thing BSL prevents is reselling it as a competing hosted service.</p>
+  <a href="/docs/quickstart/" class="btn btn-primary">Install Stockyard</a>
+  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+    <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">View source on GitHub &rarr;</a>
+    <a href="/security/" style="color:var(--cream-muted)">Security details &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>
