@@ -149,6 +149,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .outcomes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto}
 @media(max-width:768px){.outcomes-grid{grid-template-columns:1fr}}
 .proxy-wedge{padding:5rem 2rem;max-width:900px;margin:0 auto}
+.proxy-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:800px;margin:0 auto}
+@media(max-width:600px){.proxy-cards{grid-template-columns:1fr}}
 .proxy-code{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.85rem;color:var(--leather-light);margin:1.5rem 0 0.8rem;line-height:1.8}
 .proxy-faq{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2rem}
 .proxy-faq-item{padding:1.2rem 1.5rem;border:1px solid var(--bg3)}
@@ -221,7 +223,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <section class="proxy-wedge">
   <h2 class="section-label">Use Stockyard as just a proxy</h2>
   <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2rem;font-size:0.95rem;text-align:center">Point your app at one endpoint, route requests through it, and stop there if that&rsquo;s all you need. No forced stack adoption.</p>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:800px;margin:0 auto">
+  <div class="proxy-cards">
     <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">One stable endpoint</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Across 16 providers</span></div>
     <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Model aliasing</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Swap real models, keep app-facing names stable</span></div>
     <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Zero dependencies</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">One binary, one SQLite file. No Redis, no Postgres, no Docker required.</span></div>
