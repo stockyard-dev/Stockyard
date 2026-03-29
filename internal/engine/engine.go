@@ -1314,6 +1314,10 @@ func Boot(pc ProductConfig) {
 	db.Conn().Exec(`CREATE INDEX IF NOT EXISTS idx_traces_user ON observe_traces(user_id)`)
 	db.Conn().Exec(`CREATE INDEX IF NOT EXISTS idx_traces_team ON observe_traces(team_id)`)
 
+	// 2c. Team isolation — team_id on trust ledger
+	db.Conn().Exec(`ALTER TABLE trust_ledger ADD COLUMN team_id TEXT DEFAULT ''`)
+	db.Conn().Exec(`CREATE INDEX IF NOT EXISTS idx_ledger_team ON trust_ledger(team_id)`)
+
 	// 2b. Replay Mode — store request body for replay capability
 	MigrateReplayMode(db.Conn())
 

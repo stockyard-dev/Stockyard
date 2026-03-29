@@ -40,14 +40,32 @@ function AuthGate({onAuth}){
   </div></div>`;
 }
 
+function TeamPicker(){
+  const[teams,setTeams]=useState([]);const[sel,setSel]=useState(getTeamScope());
+  useEffect(()=>{(async()=>{const r=await fetch('/api/teams',{headers:{'X-Admin-Key':sessionStorage.getItem('sy_admin_key')||''}});if(r.ok){const d=await r.json();setTeams(d.teams||[])}})()},[]);
+  const onChange=v=>{setSel(v);setTeamScope(v);window.dispatchEvent(new Event('teamchange'))};
+  if(teams.length===0)return null;
+  return html`<div style="padding:0 1rem;margin-bottom:0.5rem">
+    <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:4px">Scope</div>
+    <select value=${sel} onChange=${e=>onChange(e.target.value)} style="width:100%;padding:4px 6px;background:var(--bg);border:1px solid var(--bg3);color:${sel?'var(--rust-light)':'var(--cream-dim)'};font-family:var(--font-mono);font-size:0.72rem;outline:none;cursor:pointer">
+      <option value="">All Teams</option>
+      ${teams.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}
+    </select>
+  </div>`;
+}
+
 function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);const View=VIEWS[active]||OverviewView;
+  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
+  const[teamVer,setTeamVer]=useState(0);
+  const View=VIEWS[active]||OverviewView;
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
+  useEffect(()=>{const h=()=>setTeamVer(v=>v+1);window.addEventListener('teamchange',h);return()=>window.removeEventListener('teamchange',h)},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
   if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
   return html`<div class="shell"><nav class="nav">
     <div class="nav-brand" onClick=${()=>setActive('overview')}><span class="nav-brand-text">Stockyard</span></div>
+    <${TeamPicker}/>
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
@@ -57,6 +75,6 @@ function App(){
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
     <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 18 products \u00B7 360+ endpoints</span></div>
-  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
+  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active+'-'+teamVer}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));

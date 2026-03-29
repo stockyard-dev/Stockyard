@@ -23,11 +23,19 @@ const APPS={
 const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','products'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
+let _teamScope=sessionStorage.getItem('sy_team_scope')||'';
+function setTeamScope(id){_teamScope=id;if(id)sessionStorage.setItem('sy_team_scope',id);else sessionStorage.removeItem('sy_team_scope')}
+function getTeamScope(){return _teamScope}
 async function api(path,opts={}){
   const headers=opts.headers||{};
   if(_adminKey)headers['X-Admin-Key']=_adminKey;
   if(opts.body&&typeof opts.body==='string')headers['Content-Type']='application/json';
-  try{const r=await fetch(path,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
+  let url=path;
+  if(_teamScope&&(!opts.method||opts.method==='GET')){
+    const sep=url.includes('?')?'&':'?';
+    if(!url.includes('team_id='))url+=sep+'team_id='+_teamScope;
+  }
+  try{const r=await fetch(url,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
 }
 const fmt={
   usd:v=>v==null?'\u2014':v<0.01&&v>0?'$'+v.toFixed(4):'$'+v.toFixed(2),
@@ -1147,14 +1155,32 @@ function AuthGate({onAuth}){
   </div></div>`;
 }
 
+function TeamPicker(){
+  const[teams,setTeams]=useState([]);const[sel,setSel]=useState(getTeamScope());
+  useEffect(()=>{(async()=>{const r=await fetch('/api/teams',{headers:{'X-Admin-Key':sessionStorage.getItem('sy_admin_key')||''}});if(r.ok){const d=await r.json();setTeams(d.teams||[])}})()},[]);
+  const onChange=v=>{setSel(v);setTeamScope(v);window.dispatchEvent(new Event('teamchange'))};
+  if(teams.length===0)return null;
+  return html`<div style="padding:0 1rem;margin-bottom:0.5rem">
+    <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:4px">Scope</div>
+    <select value=${sel} onChange=${e=>onChange(e.target.value)} style="width:100%;padding:4px 6px;background:var(--bg);border:1px solid var(--bg3);color:${sel?'var(--rust-light)':'var(--cream-dim)'};font-family:var(--font-mono);font-size:0.72rem;outline:none;cursor:pointer">
+      <option value="">All Teams</option>
+      ${teams.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}
+    </select>
+  </div>`;
+}
+
 function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);const View=VIEWS[active]||OverviewView;
+  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
+  const[teamVer,setTeamVer]=useState(0);
+  const View=VIEWS[active]||OverviewView;
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
+  useEffect(()=>{const h=()=>setTeamVer(v=>v+1);window.addEventListener('teamchange',h);return()=>window.removeEventListener('teamchange',h)},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
   if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
   return html`<div class="shell"><nav class="nav">
     <div class="nav-brand" onClick=${()=>setActive('overview')}><span class="nav-brand-text">Stockyard</span></div>
+    <${TeamPicker}/>
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
@@ -1164,7 +1190,7 @@ function App(){
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
     <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 18 products \u00B7 360+ endpoints</span></div>
-  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active}/></main></div>`;
+  </nav><main class="content"><${UpgradeBanner}/><${View} key=${active+'-'+teamVer}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));
 </script>

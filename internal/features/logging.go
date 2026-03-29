@@ -115,6 +115,7 @@ func LoggingMiddleware(cfg LoggingConfig) proxy.Middleware {
 					"latency":   latency.Milliseconds(),
 					"cache_hit": cacheHit,
 					"status":    status,
+					"team_id":   req.TeamID,
 				})
 			}
 

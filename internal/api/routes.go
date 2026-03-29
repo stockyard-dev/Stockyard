@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 	"github.com/stockyard-dev/stockyard/internal/storage"
@@ -72,6 +73,19 @@ func (a *API) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) handleSpend(w http.ResponseWriter, r *http.Request) {
+	teamScope := resolveTeamScope(r)
+
+	// If team-scoped, return team spend from the counter
+	if teamScope != "" {
+		teams := a.counter.GetAllTeams()
+		if spend, ok := teams[teamScope]; ok {
+			writeJSON(w, map[string]any{"team_id": teamScope, "today": spend.Today, "month": spend.Month, "tokens_in": spend.TokensIn, "tokens_out": spend.TokensOut})
+		} else {
+			writeJSON(w, map[string]any{"team_id": teamScope, "today": 0, "month": 0, "tokens_in": 0, "tokens_out": 0})
+		}
+		return
+	}
+
 	projects := a.counter.GetAll()
 	result := make(map[string]any)
 	for name, spend := range projects {
@@ -113,9 +127,10 @@ func (a *API) handleLogs(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 	project := r.URL.Query().Get("project")
+	teamScope := resolveTeamScope(r)
 	offset := (page - 1) * limit
 
-	logs, total, err := a.db.ListRequests(project, limit, offset)
+	logs, total, err := a.db.ListRequests(project, teamScope, limit, offset)
 	if err != nil {
 		log.Printf("api: ListRequests error: %v", err)
 		writeError(w, http.StatusInternalServerError, "failed to retrieve request logs")
@@ -141,6 +156,11 @@ func (a *API) handleLogDetail(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "request not found")
 		return
 	}
+	// Enforce team boundary: if caller is team-scoped, verify the record belongs to them
+	if teamScope := resolveTeamScope(r); teamScope != "" && entry.TeamID != teamScope {
+		writeError(w, http.StatusNotFound, "request not found")
+		return
+	}
 	writeJSON(w, entry)
 }
 
@@ -153,6 +173,10 @@ func (a *API) handleExportCurl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if entry == nil {
+		writeError(w, http.StatusNotFound, "request not found")
+		return
+	}
+	if teamScope := resolveTeamScope(r); teamScope != "" && entry.TeamID != teamScope {
 		writeError(w, http.StatusNotFound, "request not found")
 		return
 	}
@@ -203,6 +227,10 @@ func (a *API) handleExportPostman(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if entry == nil {
+		writeError(w, http.StatusNotFound, "request not found")
+		return
+	}
+	if teamScope := resolveTeamScope(r); teamScope != "" && entry.TeamID != teamScope {
 		writeError(w, http.StatusNotFound, "request not found")
 		return
 	}
@@ -292,6 +320,10 @@ func (a *API) handleReplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if logEntry == nil {
+		writeError(w, http.StatusNotFound, "request not found")
+		return
+	}
+	if teamScope := resolveTeamScope(r); teamScope != "" && logEntry.TeamID != teamScope {
 		writeError(w, http.StatusNotFound, "request not found")
 		return
 	}
@@ -444,4 +476,14 @@ func queryInt(r *http.Request, key string, defaultVal int) int {
 		}
 	}
 	return defaultVal
+}
+
+// resolveTeamScope returns the team_id to filter by.
+// Self-service: forced to the authenticated team (can't override).
+// Admin: uses ?team_id query param if provided, empty string = global.
+func resolveTeamScope(r *http.Request) string {
+	if team := auth.TeamFromContext(r.Context()); team != nil {
+		return fmt.Sprintf("%d", team.ID)
+	}
+	return r.URL.Query().Get("team_id")
 }

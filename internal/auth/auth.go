@@ -1239,23 +1239,37 @@ func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If the caller's key belongs to a team, scope to that team
+	teamScope := ""
+	if team := TeamFromContext(r.Context()); team != nil {
+		teamScope = fmt.Sprintf("%d", team.ID)
+	}
+
 	uid := fmt.Sprintf("%d", user.ID)
+
+	// Build WHERE clause: user_id always, team_id if scoped
+	where := "user_id = ?"
+	wargs := []any{uid}
+	if teamScope != "" {
+		where += " AND team_id = ?"
+		wargs = append(wargs, teamScope)
+	}
 
 	// Total usage
 	var totalReqs int64
 	var totalCost float64
 	var totalTokensIn, totalTokensOut int64
-	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0) FROM requests WHERE user_id = ?`, uid).Scan(&totalReqs, &totalCost, &totalTokensIn, &totalTokensOut)
+	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0) FROM requests WHERE `+where, wargs...).Scan(&totalReqs, &totalCost, &totalTokensIn, &totalTokensOut)
 
 	// This month
 	var monthReqs int64
 	var monthCost float64
-	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests WHERE user_id = ? AND timestamp >= date('now','start of month')`, uid).Scan(&monthReqs, &monthCost)
+	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests WHERE `+where+` AND timestamp >= date('now','start of month')`, wargs...).Scan(&monthReqs, &monthCost)
 
 	// Today
 	var todayReqs int64
 	var todayCost float64
-	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests WHERE user_id = ? AND timestamp >= date('now')`, uid).Scan(&todayReqs, &todayCost)
+	a.store.db.QueryRow(`SELECT COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests WHERE `+where+` AND timestamp >= date('now')`, wargs...).Scan(&todayReqs, &todayCost)
 
 	// Top models
 	type modelStat struct {
@@ -1264,7 +1278,7 @@ func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
 		Cost  float64 `json:"cost_usd"`
 	}
 	var topModels []modelStat
-	rows, _ := a.store.db.Query(`SELECT model, COUNT(*) as c, COALESCE(SUM(cost_usd),0) FROM requests WHERE user_id = ? GROUP BY model ORDER BY c DESC LIMIT 5`, uid)
+	rows, _ := a.store.db.Query(`SELECT model, COUNT(*) as c, COALESCE(SUM(cost_usd),0) FROM requests WHERE `+where+` GROUP BY model ORDER BY c DESC LIMIT 5`, wargs...)
 	if rows != nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -1277,7 +1291,7 @@ func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
 		topModels = []modelStat{}
 	}
 
-	writeJSON(w, 200, map[string]any{
+	result := map[string]any{
 		"user_id": user.ID,
 		"total": map[string]any{
 			"requests":   totalReqs,
@@ -1294,7 +1308,11 @@ func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
 			"cost_usd": todayCost,
 		},
 		"top_models": topModels,
-	})
+	}
+	if teamScope != "" {
+		result["team_id"] = teamScope
+	}
+	writeJSON(w, 200, result)
 }
 
 func (a *API) handleCreateMyKey(w http.ResponseWriter, r *http.Request) {

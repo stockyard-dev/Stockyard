@@ -24,6 +24,16 @@ func (a *App) Description() string {
 	return "Analytics, traces, alerts, anomaly detection, cost attribution"
 }
 
+// teamFilter returns SQL condition and param for team_id filtering.
+// Returns ("", "") if no team filter requested — caller should skip the clause.
+func teamFilter(r *http.Request) (string, string) {
+	tid := r.URL.Query().Get("team_id")
+	if tid == "" {
+		return "", ""
+	}
+	return " AND team_id = ?", tid
+}
+
 // SetBroadcaster connects to the event broadcaster for real-time dashboard updates.
 // Note: Trace persistence is handled by hooks.go recordObserveTrace, not here.
 func (a *App) SetBroadcaster(b any) {
@@ -215,17 +225,18 @@ func (a *App) handleOverview(w http.ResponseWriter, r *http.Request) {
 	var totalCost float64
 	var traceCount, alertCount, anomalyCount int
 
-	a.conn.QueryRow("SELECT COALESCE(COUNT(*),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_traces").
+	tf, tp := teamFilter(r)
+
+	a.conn.QueryRow("SELECT COALESCE(COUNT(*),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE 1=1"+tf, args(tp)...).
 		Scan(&totalRequests, &totalTokensIn, &totalTokensOut, &totalCost)
 	a.conn.QueryRow("SELECT COUNT(*) FROM observe_alert_rules WHERE enabled = 1").Scan(&alertCount)
 	a.conn.QueryRow("SELECT COUNT(*) FROM observe_anomalies").Scan(&anomalyCount)
-	a.conn.QueryRow("SELECT COUNT(*) FROM observe_traces").Scan(&traceCount)
+	a.conn.QueryRow("SELECT COUNT(*) FROM observe_traces WHERE 1=1"+tf, args(tp)...).Scan(&traceCount)
 
-	// Today's stats
-	today := time.Now().UTC().Format("2006-01-02")
+	// Today's stats — query traces directly for team scoping
 	var todayReqs int64
 	var todayCost float64
-	a.conn.QueryRow("SELECT COALESCE(SUM(requests),0), COALESCE(SUM(cost_usd),0) FROM observe_cost_daily WHERE date = ?", today).
+	a.conn.QueryRow("SELECT COALESCE(COUNT(*),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= date('now')"+tf, args(tp)...).
 		Scan(&todayReqs, &todayCost)
 
 	writeJSON(w, map[string]any{
@@ -243,8 +254,27 @@ func (a *App) handleOverview(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// args returns a slice of interface{} for SQL parameters, omitting empty strings.
+func args(vals ...string) []any {
+	var out []any
+	for _, v := range vals {
+		if v != "" {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
 func (a *App) handleCosts(w http.ResponseWriter, r *http.Request) {
-	rows, err := a.conn.Query("SELECT provider, COALESCE(SUM(requests),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_cost_daily GROUP BY provider ORDER BY SUM(cost_usd) DESC")
+	tf, tp := teamFilter(r)
+	var rows *sql.Rows
+	var err error
+	if tf != "" {
+		// Team-scoped: query from traces (cost_daily doesn't have team_id)
+		rows, err = a.conn.Query("SELECT provider, COALESCE(COUNT(*),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE 1=1"+tf+" GROUP BY provider ORDER BY SUM(cost_usd) DESC", tp)
+	} else {
+		rows, err = a.conn.Query("SELECT provider, COALESCE(SUM(requests),0), COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0), COALESCE(SUM(cost_usd),0) FROM observe_cost_daily GROUP BY provider ORDER BY SUM(cost_usd) DESC")
+	}
 	if err != nil {
 		writeJSON(w, map[string]any{"providers": []any{}})
 		return
@@ -270,7 +300,14 @@ func (a *App) handleCostDaily(w http.ResponseWriter, r *http.Request) {
 	if days == "" {
 		days = "30"
 	}
-	rows, err := a.conn.Query("SELECT date, COALESCE(SUM(requests),0), COALESCE(SUM(cost_usd),0) FROM observe_cost_daily WHERE date >= date('now', '-' || ? || ' days') GROUP BY date ORDER BY date", days)
+	tf, tp := teamFilter(r)
+	var rows *sql.Rows
+	var err error
+	if tf != "" {
+		rows, err = a.conn.Query("SELECT date(created_at) as d, COUNT(*), COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE created_at >= date('now', '-' || ? || ' days')"+tf+" GROUP BY d ORDER BY d", days, tp)
+	} else {
+		rows, err = a.conn.Query("SELECT date, COALESCE(SUM(requests),0), COALESCE(SUM(cost_usd),0) FROM observe_cost_daily WHERE date >= date('now', '-' || ? || ' days') GROUP BY date ORDER BY date", days)
+	}
 	if err != nil {
 		writeJSON(w, map[string]any{"daily": []any{}})
 		return
@@ -325,6 +362,10 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 		where = append(where, "t.source = ?")
 		args = append(args, sdkSource)
 	}
+	if tid := r.URL.Query().Get("team_id"); tid != "" {
+		where = append(where, "t.team_id = ?")
+		args = append(args, tid)
+	}
 	if len(where) > 0 {
 		query += " WHERE " + where[0]
 		for _, w := range where[1:] {
@@ -372,14 +413,20 @@ func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 	var reqID, svc, op, prov, model, status, meta, created string
 	var dur, tokIn, tokOut int64
 	var cost float64
-	var respBody, tagsJSON, traceSource sql.NullString
+	var respBody, tagsJSON, traceSource, traceTeamID sql.NullString
 	err := a.conn.QueryRow(`SELECT request_id, service, operation, provider, model, status,
 		duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at,
-		COALESCE(response_body, ''), COALESCE(tags, '{}'), COALESCE(source, '')
+		COALESCE(response_body, ''), COALESCE(tags, '{}'), COALESCE(source, ''), COALESCE(team_id, '')
 		FROM observe_traces WHERE id = ?`, id).
 		Scan(&reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &meta, &created,
-			&respBody, &tagsJSON, &traceSource)
+			&respBody, &tagsJSON, &traceSource, &traceTeamID)
 	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "trace not found"})
+		return
+	}
+	// Enforce team boundary
+	if tid := r.URL.Query().Get("team_id"); tid != "" && traceTeamID.String != tid {
 		w.WriteHeader(404)
 		writeJSON(w, map[string]string{"error": "trace not found"})
 		return
@@ -584,7 +631,10 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 		period = "24h"
 	}
 
+	tf, tp := teamFilter(r)
+
 	var query string
+	var qargs []any
 	switch period {
 	case "7d":
 		query = `SELECT strftime('%Y-%m-%d', created_at) as bucket,
@@ -595,7 +645,7 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 			COALESCE(SUM(tokens_in),0) as tokens_in,
 			COALESCE(SUM(tokens_out),0) as tokens_out
 			FROM observe_traces
-			WHERE created_at >= datetime('now', '-7 days')
+			WHERE created_at >= datetime('now', '-7 days')` + tf + `
 			GROUP BY bucket ORDER BY bucket`
 	case "30d":
 		query = `SELECT strftime('%Y-%m-%d', created_at) as bucket,
@@ -606,7 +656,7 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 			COALESCE(SUM(tokens_in),0) as tokens_in,
 			COALESCE(SUM(tokens_out),0) as tokens_out
 			FROM observe_traces
-			WHERE created_at >= datetime('now', '-30 days')
+			WHERE created_at >= datetime('now', '-30 days')` + tf + `
 			GROUP BY bucket ORDER BY bucket`
 	default: // 24h
 		query = `SELECT strftime('%Y-%m-%d %H:00', created_at) as bucket,
@@ -617,11 +667,14 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 			COALESCE(SUM(tokens_in),0) as tokens_in,
 			COALESCE(SUM(tokens_out),0) as tokens_out
 			FROM observe_traces
-			WHERE created_at >= datetime('now', '-24 hours')
+			WHERE created_at >= datetime('now', '-24 hours')` + tf + `
 			GROUP BY bucket ORDER BY bucket`
 	}
+	if tp != "" {
+		qargs = append(qargs, tp)
+	}
 
-	rows, err := a.conn.Query(query)
+	rows, err := a.conn.Query(query, qargs...)
 	if err != nil {
 		log.Printf("[observe] histogram query error: %v", err)
 		writeJSON(w, map[string]any{"buckets": []any{}, "error": "query failed"})
@@ -643,10 +696,11 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Provider breakdown
-	provRows, _ := a.conn.Query(`SELECT provider, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost,
+	provQuery := `SELECT provider, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost,
 		COALESCE(AVG(duration_ms),0) as avg_lat, COALESCE(SUM(tokens_in+tokens_out),0) as tokens
-		FROM observe_traces WHERE created_at >= datetime('now', '-7 days')
-		GROUP BY provider ORDER BY cost DESC`)
+		FROM observe_traces WHERE created_at >= datetime('now', '-7 days')` + tf + `
+		GROUP BY provider ORDER BY cost DESC`
+	provRows, _ := a.conn.Query(provQuery, args(tp)...)
 	var providers []map[string]any
 	if provRows != nil {
 		defer provRows.Close()
@@ -663,9 +717,10 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Model breakdown
-	modelRows, _ := a.conn.Query(`SELECT model, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost
-		FROM observe_traces WHERE created_at >= datetime('now', '-7 days')
-		GROUP BY model ORDER BY cost DESC LIMIT 10`)
+	modelQuery := `SELECT model, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost
+		FROM observe_traces WHERE created_at >= datetime('now', '-7 days')` + tf + `
+		GROUP BY model ORDER BY cost DESC LIMIT 10`
+	modelRows, _ := a.conn.Query(modelQuery, args(tp)...)
 	var models []map[string]any
 	if modelRows != nil {
 		defer modelRows.Close()

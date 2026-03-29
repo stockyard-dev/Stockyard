@@ -12,11 +12,19 @@ const APPS={
 const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','products'];
 let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
 function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
+let _teamScope=sessionStorage.getItem('sy_team_scope')||'';
+function setTeamScope(id){_teamScope=id;if(id)sessionStorage.setItem('sy_team_scope',id);else sessionStorage.removeItem('sy_team_scope')}
+function getTeamScope(){return _teamScope}
 async function api(path,opts={}){
   const headers=opts.headers||{};
   if(_adminKey)headers['X-Admin-Key']=_adminKey;
   if(opts.body&&typeof opts.body==='string')headers['Content-Type']='application/json';
-  try{const r=await fetch(path,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
+  let url=path;
+  if(_teamScope&&(!opts.method||opts.method==='GET')){
+    const sep=url.includes('?')?'&':'?';
+    if(!url.includes('team_id='))url+=sep+'team_id='+_teamScope;
+  }
+  try{const r=await fetch(url,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
 }
 const fmt={
   usd:v=>v==null?'\u2014':v<0.01&&v>0?'$'+v.toFixed(4):'$'+v.toFixed(2),

@@ -43,26 +43,26 @@ func (db *DB) InsertRequest(r *RequestLog) error {
 	return err
 }
 
-// ListRequests returns paginated request logs.
-func (db *DB) ListRequests(project string, limit, offset int) ([]RequestLog, int, error) {
+// ListRequests returns paginated request logs, optionally filtered by project and/or team.
+func (db *DB) ListRequests(project, teamID string, limit, offset int) ([]RequestLog, int, error) {
 	var total int
 	err := db.conn.QueryRow(
-		"SELECT COUNT(*) FROM requests WHERE project = ? OR ? = ''",
-		project, project,
+		"SELECT COUNT(*) FROM requests WHERE (project = ? OR ? = '') AND (team_id = ? OR ? = '')",
+		project, project, teamID, teamID,
 	).Scan(&total)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	rows, err := db.conn.Query(`
-		SELECT id, timestamp, project, COALESCE(user_id, ''), provider, model,
+		SELECT id, timestamp, project, COALESCE(user_id, ''), COALESCE(team_id, ''), provider, model,
 			tokens_in, tokens_out, cost_usd, latency_ms, status, cache_hit,
 			failover_used, COALESCE(error, '')
 		FROM requests
-		WHERE project = ? OR ? = ''
+		WHERE (project = ? OR ? = '') AND (team_id = ? OR ? = '')
 		ORDER BY timestamp DESC
 		LIMIT ? OFFSET ?`,
-		project, project, limit, offset,
+		project, project, teamID, teamID, limit, offset,
 	)
 	if err != nil {
 		return nil, 0, err
@@ -73,7 +73,7 @@ func (db *DB) ListRequests(project string, limit, offset int) ([]RequestLog, int
 	for rows.Next() {
 		var r RequestLog
 		var ts string
-		if err := rows.Scan(&r.ID, &ts, &r.Project, &r.UserID, &r.Provider,
+		if err := rows.Scan(&r.ID, &ts, &r.Project, &r.UserID, &r.TeamID, &r.Provider,
 			&r.Model, &r.TokensIn, &r.TokensOut, &r.CostUSD, &r.LatencyMs,
 			&r.Status, &r.CacheHit, &r.FailoverUsed, &r.Error); err != nil {
 			return nil, 0, err
@@ -94,12 +94,12 @@ func (db *DB) GetRequest(id string) (*RequestLog, error) {
 	var r RequestLog
 	var ts string
 	err := db.conn.QueryRow(`
-		SELECT id, timestamp, project, COALESCE(user_id, ''), provider, model,
+		SELECT id, timestamp, project, COALESCE(user_id, ''), COALESCE(team_id, ''), provider, model,
 			tokens_in, tokens_out, cost_usd, latency_ms, status, cache_hit,
 			failover_used, COALESCE(request_body, ''), COALESCE(response_body, ''),
 			COALESCE(error, '')
 		FROM requests WHERE id = ?`, id,
-	).Scan(&r.ID, &ts, &r.Project, &r.UserID, &r.Provider, &r.Model,
+	).Scan(&r.ID, &ts, &r.Project, &r.UserID, &r.TeamID, &r.Provider, &r.Model,
 		&r.TokensIn, &r.TokensOut, &r.CostUSD, &r.LatencyMs, &r.Status,
 		&r.CacheHit, &r.FailoverUsed, &r.RequestBody, &r.ResponseBody, &r.Error)
 	if err == sql.ErrNoRows {

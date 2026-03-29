@@ -35,6 +35,11 @@ func (a *App) Auditor() func(eventType, actor, resource, action string, detail a
 // RecordEvent appends an entry to the hash-chain audit ledger.
 // Thread-safe — serializes hash chain computation.
 func (a *App) RecordEvent(eventType, actor, resource, action string, detail any) (int64, string) {
+	return a.RecordTeamEvent(eventType, actor, resource, action, detail, "")
+}
+
+// RecordTeamEvent appends an entry to the hash-chain audit ledger with team attribution.
+func (a *App) RecordTeamEvent(eventType, actor, resource, action string, detail any, teamID string) (int64, string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
@@ -49,8 +54,8 @@ func (a *App) RecordEvent(eventType, actor, resource, action string, detail any)
 	h := sha256.Sum256([]byte(hashInput))
 	hash := hex.EncodeToString(h[:])
 
-	res, err := a.conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at) VALUES (?,?,?,?,?,?,?,?)`,
-		eventType, actor, resource, action, string(detailJSON), prevHash, hash, now)
+	res, err := a.conn.Exec(`INSERT INTO trust_ledger (event_type, actor, resource, action, detail_json, prev_hash, hash, created_at, team_id) VALUES (?,?,?,?,?,?,?,?,?)`,
+		eventType, actor, resource, action, string(detailJSON), prevHash, hash, now, teamID)
 	if err != nil {
 		log.Printf("[trust] ledger write error: %v", err)
 		return 0, hash
@@ -85,10 +90,11 @@ func (a *App) SetBroadcaster(b any) {
 			latency, _ := evt["latency"].(float64)
 			status, _ := evt["status"].(string)
 			cacheHit, _ := evt["cache_hit"].(bool)
-			a.RecordEvent("proxy_request", "proxy", model, "chat_completion", map[string]any{
+			teamID, _ := evt["team_id"].(string)
+			a.RecordTeamEvent("proxy_request", "proxy", model, "chat_completion", map[string]any{
 				"tokens": tokens, "cost_usd": cost, "latency_ms": latency,
 				"status": status, "cache_hit": cacheHit,
-			})
+			}, teamID)
 		case "spend_update":
 			project, _ := evt["project"].(string)
 			today, _ := evt["today"].(float64)
@@ -218,13 +224,18 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 func (a *App) handleListLedger(w http.ResponseWriter, r *http.Request) {
 	limit := "100"
 	if l := r.URL.Query().Get("limit"); l != "" {
-		// Validate limit is a reasonable number
 		var n int
 		if _, err := fmt.Sscanf(l, "%d", &n); err == nil && n > 0 && n <= 1000 {
 			limit = l
 		}
 	}
-	rows, _ := a.conn.Query("SELECT id, event_type, actor, resource, action, detail_json, prev_hash, hash, created_at FROM trust_ledger ORDER BY id DESC LIMIT ?", limit)
+	teamID := r.URL.Query().Get("team_id")
+	var rows *sql.Rows
+	if teamID != "" {
+		rows, _ = a.conn.Query("SELECT id, event_type, actor, resource, action, detail_json, prev_hash, hash, created_at FROM trust_ledger WHERE team_id = ? ORDER BY id DESC LIMIT ?", teamID, limit)
+	} else {
+		rows, _ = a.conn.Query("SELECT id, event_type, actor, resource, action, detail_json, prev_hash, hash, created_at FROM trust_ledger ORDER BY id DESC LIMIT ?", limit)
+	}
 	if rows == nil {
 		writeJSON(w, map[string]any{"events": []any{}, "count": 0})
 		return
