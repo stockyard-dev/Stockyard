@@ -63,7 +63,7 @@ function ObserveView(){
     </div><//>`;
   };
 
-  return html`<div class="page-head"><div class="page-eyebrow">Observe</div><h2>Analytics & Traces</h2><p class="page-sub">Real-time streaming, cost attribution, alerts & anomaly detection.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Lookout</div><h2>Analytics & Traces</h2><p class="page-sub">Real-time streaming, cost attribution, alerts & anomaly detection.</p></div>
     <div class="stats-row">
       <${Stat} label="Today\u2019s Requests" value=${fmt.num(today.requests||0)} accent/>
       <${Stat} label="Today\u2019s Cost" value=${fmt.usd(today.cost_usd||0)}/>

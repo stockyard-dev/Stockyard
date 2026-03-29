@@ -1,13 +1,13 @@
 
 const APPS={
   overview:{id:'overview',name:'Overview',icon:'\u25A3',desc:'System status'},
-  proxy:{id:'proxy',name:'Proxy',icon:'\u25C8',desc:'Middleware & providers'},
-  observe:{id:'observe',name:'Observe',icon:'\u25CE',desc:'Traces & costs'},
-  trust:{id:'trust',name:'Trust',icon:'\u2B21',desc:'Policies & audit'},
-  studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts & experiments'},
+  proxy:{id:'proxy',name:'Chute',icon:'\u25C8',desc:'Proxy & middleware'},
+  observe:{id:'observe',name:'Lookout',icon:'\u25CE',desc:'Traces & costs'},
+  trust:{id:'trust',name:'Brand',icon:'\u2B21',desc:'Audit & compliance'},
+  studio:{id:'studio',name:'Tack Room',icon:'\u25C7',desc:'Prompts & experiments'},
   forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
-  exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
-  products:{id:'products',name:'Products',icon:'\u2B22',desc:'Platform products'},
+  exchange:{id:'exchange',name:'Trading Post',icon:'\u21C4',desc:'Pack marketplace'},
+  products:{id:'products',name:'Products',icon:'\u2B22',desc:'All 29 products'},
 };
 const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','products'];
 function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k)||'';if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){return ''}}

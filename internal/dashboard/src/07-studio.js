@@ -22,7 +22,7 @@ function StudioView(){
   const loadTemplate=async(slug)=>{const t=await api('/api/studio/templates/'+slug);if(!t._error){setPrompt(t.content||'');if(t.model)setModels([t.model]);setSystem('');setTab('playground');setToast({msg:'Loaded: '+t.name,type:'success'})}};
   const toggleModel=(m)=>{if(models.includes(m)){if(models.length>1)setModels(models.filter(x=>x!==m))}else{setModels([...models,m])}};
   const viewExp=async(id)=>{const r=await api('/api/studio/experiments/'+id);if(!r._error)setSelExp(r)};
-  return html`<div class="page-head"><div class="page-eyebrow">Studio</div><h2>Prompt Playground</h2><p class="page-sub">Test prompts, compare models side-by-side, run experiments.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Tack Room</div><h2>Prompts & Experiments</h2><p class="page-sub">Test prompts, compare models side-by-side, run experiments.</p></div>
     <div class="stats-row"><${Stat} label="Templates" value=${d('templates').length} accent/><${Stat} label="Experiments" value=${d('experiments').length}/><${Stat} label="Benchmarks" value=${d('benchmarks').length}/></div>
     <${TabBar} tabs=${['playground','templates','experiments','benchmarks']} active=${tab} onChange=${setTab}/>
     ${tab==='playground'?html`<div class="pg-layout">

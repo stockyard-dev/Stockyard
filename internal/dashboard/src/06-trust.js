@@ -16,7 +16,7 @@ function TrustView(){
   const filtered=evtFilter==='all'?d('ledger'):d('ledger').filter(e=>e.event_type===evtFilter);
   const typeCounts={};d('ledger').forEach(e=>{typeCounts[e.event_type]=(typeCounts[e.event_type]||0)+1});
   const scoreColor=s=>s>=80?'var(--green)':s>=50?'var(--gold)':'var(--red)';
-  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Safety & Compliance</h2><p class="page-sub">Safety scorecard, audit ledger, policies, evidence packs.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Brand</div><h2>Safety & Compliance</h2><p class="page-sub">Safety scorecard, audit ledger, policies, evidence packs.</p></div>
     <div class="stats-row">
       <${Stat} label="Safety Score" value=${(sf.safety_score!=null?sf.safety_score+'%':'--')} accent sub=${'24h window'}/>
       <${Stat} label="Safety Events" value=${fmt.num(sf.total_events||0)} sub=${(sf.today?.blocked||0)+' blocked today'}/>

@@ -17,13 +17,13 @@ const html=htm.bind(h);
 
 const APPS={
   overview:{id:'overview',name:'Overview',icon:'\u25A3',desc:'System status'},
-  proxy:{id:'proxy',name:'Proxy',icon:'\u25C8',desc:'Middleware & providers'},
-  observe:{id:'observe',name:'Observe',icon:'\u25CE',desc:'Traces & costs'},
-  trust:{id:'trust',name:'Trust',icon:'\u2B21',desc:'Policies & audit'},
-  studio:{id:'studio',name:'Studio',icon:'\u25C7',desc:'Prompts & experiments'},
+  proxy:{id:'proxy',name:'Chute',icon:'\u25C8',desc:'Proxy & middleware'},
+  observe:{id:'observe',name:'Lookout',icon:'\u25CE',desc:'Traces & costs'},
+  trust:{id:'trust',name:'Brand',icon:'\u2B21',desc:'Audit & compliance'},
+  studio:{id:'studio',name:'Tack Room',icon:'\u25C7',desc:'Prompts & experiments'},
   forge:{id:'forge',name:'Forge',icon:'\u2B22',desc:'Workflows & tools'},
-  exchange:{id:'exchange',name:'Exchange',icon:'\u21C4',desc:'Pack marketplace'},
-  products:{id:'products',name:'Products',icon:'\u2B22',desc:'Platform products'},
+  exchange:{id:'exchange',name:'Trading Post',icon:'\u21C4',desc:'Pack marketplace'},
+  products:{id:'products',name:'Products',icon:'\u2B22',desc:'All 29 products'},
 };
 const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','products'];
 function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k)||'';if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){return ''}}
@@ -250,7 +250,7 @@ function ProxyView(){
   const importAliases=()=>{const input=prompt('Paste YAML aliases (one per line: alias: "model")');if(!input)return;const lines=input.split('\n').filter(l=>l.includes(':')&&!l.trim().startsWith('#')&&!l.trim().startsWith('aliases'));let count=0;lines.forEach(async l=>{const[a,...rest]=l.split(':');const alias=a.trim();const model=rest.join(':').trim().replace(/"/g,'');if(alias&&model){await api('/api/proxy/aliases',{method:'PUT',body:JSON.stringify({alias,model})});count++}});setTimeout(()=>{setToast({msg:'Imported '+lines.length+' aliases',type:'success'});loadAliases()},500)};
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const filtered=d('modules').filter(m=>!filter||m.name.toLowerCase().includes(filter.toLowerCase())||(m.category||'').toLowerCase().includes(filter.toLowerCase()));
-  return html`<div class="page-head"><div class="page-eyebrow">Proxy</div><h2>Middleware Chain</h2><p class="page-sub">Toggle modules, manage providers, routes & aliases.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Chute</div><h2>Proxy & Middleware</h2><p class="page-sub">Toggle modules, manage providers, routes & aliases.</p></div>
     <div class="stats-row"><${Stat} label="Modules" value=${d('modules').length} sub=${d('modules').filter(m=>m.enabled).length+' enabled'} accent/><${Stat} label="In Chain" value=${d('modules').filter(m=>m.in_chain).length} sub="live middleware"/><${Stat} label="Providers" value=${d('providers').length}/><${Stat} label="Routes" value=${rules.length} sub=${rules.filter(r=>r.enabled).length+' active'}/><${Stat} label="Aliases" value=${aliases.length}/></div>
     <${TabBar} tabs=${['modules','chain','providers','routing','aliases','routes','diagnostics']} active=${tab} onChange=${setTab}/>
     ${tab==='modules'?html`<div style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><input class="field-input" placeholder="Filter modules..." value=${filter} onInput=${e=>setFilter(e.target.value)} style="max-width:300px"/>
@@ -422,7 +422,7 @@ function ObserveView(){
     </div><//>`;
   };
 
-  return html`<div class="page-head"><div class="page-eyebrow">Observe</div><h2>Analytics & Traces</h2><p class="page-sub">Real-time streaming, cost attribution, alerts & anomaly detection.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Lookout</div><h2>Analytics & Traces</h2><p class="page-sub">Real-time streaming, cost attribution, alerts & anomaly detection.</p></div>
     <div class="stats-row">
       <${Stat} label="Today\u2019s Requests" value=${fmt.num(today.requests||0)} accent/>
       <${Stat} label="Today\u2019s Cost" value=${fmt.usd(today.cost_usd||0)}/>
@@ -514,7 +514,7 @@ function TrustView(){
   const filtered=evtFilter==='all'?d('ledger'):d('ledger').filter(e=>e.event_type===evtFilter);
   const typeCounts={};d('ledger').forEach(e=>{typeCounts[e.event_type]=(typeCounts[e.event_type]||0)+1});
   const scoreColor=s=>s>=80?'var(--green)':s>=50?'var(--gold)':'var(--red)';
-  return html`<div class="page-head"><div class="page-eyebrow">Trust</div><h2>Safety & Compliance</h2><p class="page-sub">Safety scorecard, audit ledger, policies, evidence packs.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Brand</div><h2>Safety & Compliance</h2><p class="page-sub">Safety scorecard, audit ledger, policies, evidence packs.</p></div>
     <div class="stats-row">
       <${Stat} label="Safety Score" value=${(sf.safety_score!=null?sf.safety_score+'%':'--')} accent sub=${'24h window'}/>
       <${Stat} label="Safety Events" value=${fmt.num(sf.total_events||0)} sub=${(sf.today?.blocked||0)+' blocked today'}/>
@@ -647,7 +647,7 @@ function StudioView(){
   const loadTemplate=async(slug)=>{const t=await api('/api/studio/templates/'+slug);if(!t._error){setPrompt(t.content||'');if(t.model)setModels([t.model]);setSystem('');setTab('playground');setToast({msg:'Loaded: '+t.name,type:'success'})}};
   const toggleModel=(m)=>{if(models.includes(m)){if(models.length>1)setModels(models.filter(x=>x!==m))}else{setModels([...models,m])}};
   const viewExp=async(id)=>{const r=await api('/api/studio/experiments/'+id);if(!r._error)setSelExp(r)};
-  return html`<div class="page-head"><div class="page-eyebrow">Studio</div><h2>Prompt Playground</h2><p class="page-sub">Test prompts, compare models side-by-side, run experiments.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Tack Room</div><h2>Prompts & Experiments</h2><p class="page-sub">Test prompts, compare models side-by-side, run experiments.</p></div>
     <div class="stats-row"><${Stat} label="Templates" value=${d('templates').length} accent/><${Stat} label="Experiments" value=${d('experiments').length}/><${Stat} label="Benchmarks" value=${d('benchmarks').length}/></div>
     <${TabBar} tabs=${['playground','templates','experiments','benchmarks']} active=${tab} onChange=${setTab}/>
     ${tab==='playground'?html`<div class="pg-layout">
@@ -849,7 +849,7 @@ function ExchangeView(){
   const installedSlugs=new Set(d('installed').map(i=>i.pack_slug));
   const st=data.status||{};
   const SECTION_ICONS={providers:'\uD83D\uDD0C',routes:'\u2194\uFE0F',modules:'\u2699\uFE0F',workflows:'\u26A1',tools:'\uD83D\uDD27',templates:'\uD83D\uDCDD',policies:'\uD83D\uDEE1\uFE0F',alerts:'\uD83D\uDD14'};
-  return html`<div class="page-head"><div class="page-eyebrow">Exchange</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs to configure middleware, providers, policies, and more in one click.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Trading Post</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs to configure middleware, providers, policies, and more in one click.</p></div>
     <div class="stats-row"><${Stat} label="Available" value=${d('packs').length} accent/><${Stat} label="Installed" value=${d('installed').length}/><${Stat} label="Environments" value=${st.environments||0}/></div>
     <${TabBar} tabs=${['packs','installed']} active=${tab} onChange=${setTab}/>
     ${tab==='packs'?html`<div class="pack-grid">${d('packs').map(p=>{
@@ -921,7 +921,7 @@ function ProductsView(){
   const catIcon=c=>c==='lifecycle'?'\u25C6':c==='runtime'?'\u25C8':c==='quality'?'\u2B21':c==='infra'?'\u25CE':c==='insight'?'\u25C7':'\u25A3';
   return html`<div>
     <div class="page-head"><div class="page-eyebrow">Platform</div><h2>Products</h2>
-      <div class="page-sub">18 products \u2022 ${products.active} active \u2022 ${products.locked} locked \u2022 tier: ${products.current_tier}</div></div>
+      <div class="page-sub">${all.length} products \u2022 ${products.active} active \u2022 ${products.locked} locked \u2022 tier: ${products.current_tier}</div></div>
     ${health&&html`<div class="stats-row">
       <div class="stat"><div class="stat-label">Status</div><div class="stat-value" style="color:${health.status==='ok'?'var(--green)':health.status==='degraded'?'var(--gold)':'var(--red)'}">${health.status}</div></div>
       <div class="stat"><div class="stat-label">Active</div><div class="stat-value accent">${health.active}</div><div class="stat-sub">of ${health.products} products</div></div>
@@ -1415,7 +1415,7 @@ function App(){
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>
     <button class="nav-item" onClick=${logout}><span class="nav-icon">\u23FB</span><span class="nav-label">Logout</span></button>
-    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 18 products \u00B7 360+ endpoints</span></div>
+    <div class="nav-footer"><span class="nav-version">v1.0 \u00B7 29 products \u00B7 360+ endpoints</span></div>
   </nav><main class="content"><${UpgradeBanner}/><${View} key=${active+'-'+teamVer}/></main></div>`;
 }
 render(html`<${App}/>`,document.getElementById('root'));

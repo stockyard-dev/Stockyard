@@ -11,7 +11,7 @@ function ExchangeView(){
   const installedSlugs=new Set(d('installed').map(i=>i.pack_slug));
   const st=data.status||{};
   const SECTION_ICONS={providers:'\uD83D\uDD0C',routes:'\u2194\uFE0F',modules:'\u2699\uFE0F',workflows:'\u26A1',tools:'\uD83D\uDD27',templates:'\uD83D\uDCDD',policies:'\uD83D\uDEE1\uFE0F',alerts:'\uD83D\uDD14'};
-  return html`<div class="page-head"><div class="page-eyebrow">Exchange</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs to configure middleware, providers, policies, and more in one click.</p></div>
+  return html`<div class="page-head"><div class="page-eyebrow">Trading Post</div><h2>Pack Marketplace</h2><p class="page-sub">Install config packs to configure middleware, providers, policies, and more in one click.</p></div>
     <div class="stats-row"><${Stat} label="Available" value=${d('packs').length} accent/><${Stat} label="Installed" value=${d('installed').length}/><${Stat} label="Environments" value=${st.environments||0}/></div>
     <${TabBar} tabs=${['packs','installed']} active=${tab} onChange=${setTab}/>
     ${tab==='packs'?html`<div class="pack-grid">${d('packs').map(p=>{

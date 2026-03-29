@@ -14,7 +14,7 @@ function ProductsView(){
   const catIcon=c=>c==='lifecycle'?'\u25C6':c==='runtime'?'\u25C8':c==='quality'?'\u2B21':c==='infra'?'\u25CE':c==='insight'?'\u25C7':'\u25A3';
   return html`<div>
     <div class="page-head"><div class="page-eyebrow">Platform</div><h2>Products</h2>
-      <div class="page-sub">18 products \u2022 ${products.active} active \u2022 ${products.locked} locked \u2022 tier: ${products.current_tier}</div></div>
+      <div class="page-sub">${all.length} products \u2022 ${products.active} active \u2022 ${products.locked} locked \u2022 tier: ${products.current_tier}</div></div>
     ${health&&html`<div class="stats-row">
       <div class="stat"><div class="stat-label">Status</div><div class="stat-value" style="color:${health.status==='ok'?'var(--green)':health.status==='degraded'?'var(--gold)':'var(--red)'}">${health.status}</div></div>
       <div class="stat"><div class="stat-label">Active</div><div class="stat-value accent">${health.active}</div><div class="stat-sub">of ${health.products} products</div></div>
