@@ -4,35 +4,75 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<title>Integrations — Stockyard</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:title" content="Integrations — Stockyard">
+<meta property="og:description" content="Use Stockyard with LangChain, Vercel AI SDK, LiteLLM, Instructor, and any OpenAI-compatible framework.">
+<meta property="og:url" content="https://stockyard.dev/docs/integrations/">
+<meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="Connect Stockyard to N8N, Zapier, Make.com, Retool, Slack, Discord, and more.">
+<title>Integrations — Stockyard Docs</title>
+<meta name="description" content="Use Stockyard with LangChain, Vercel AI SDK, LiteLLM, Instructor, and any OpenAI-compatible framework.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-.content{max-width:800px;margin:0 auto;padding:4rem 2rem}
-h1{font-size:2rem;margin-bottom:0.5rem}
-.sub{color:var(--cream-dim);margin-bottom:3rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
-.card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2);transition:border-color 0.2s}
-.card:hover{border-color:var(--rust)}
-.card-cat{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
-.card-title{font-size:1.1rem;margin-bottom:0.3rem}
-.card-desc{font-size:0.8rem;color:var(--cream-dim)}
-h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin:2rem 0 1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content;max-height:100vh;overflow-y:auto}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0;transition:color 0.15s}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content h3{font-size:1.1rem;margin-top:1.5rem;margin-bottom:0.5rem;color:var(--cream)}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
+.copy-btn{position:absolute;top:0.5rem;right:0.5rem;background:var(--bg3);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;opacity:0}
+.copy-btn:hover{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+pre:hover .copy-btn{opacity:1}
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+.endpoint-table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:0.8rem}
+.endpoint-table th,.endpoint-table td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.endpoint-table th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.endpoint-table td{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.75rem}
+.pn{display:flex;justify-content:space-between;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.pn a{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.pn a:hover{color:var(--rust-light)}
+.pn .next{margin-left:auto}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/integrations/">
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
@@ -44,43 +84,178 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
-<div class="content">
-  <h1>Integrations</h1>
-  <p class="sub">Connect Stockyard to your workflow automation, monitoring, and internal tools.</p>
+<div class="docs-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Getting Started</div>
+      <a href="/docs/quickstart/">Quickstart</a>
+      <a href="/docs/auth/">Auth &amp; Config</a>
+      <a href="/docs/providers/">Providers</a>
+      <a href="/docs/docker/">Docker</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Chute</div>
+      <a href="/docs/proxy/">Modules</a>
+      <a href="/docs/aliasing/">Model Aliasing</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Apps</div>
+      <a href="/docs/observe/">Lookout</a>
+      <a href="/docs/trust/">Brand</a>
+      <a href="/docs/studio/">Tack Room</a>
+      <a href="/docs/forge/">Forge</a>
+      <a href="/docs/team/">Team</a>
+      <a href="/docs/memory/">Memory</a>
+      <a href="/docs/exchange/">Trading Post</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Operations</div>
+      <a href="/docs/ops/">Ops Guide</a>
+      <a href="/docs/config/">Configuration</a>
+      <a href="/docs/railway-deploy/">Deploy</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Reference</div>
+      <a href="/docs/api/">API Reference</a>
+      <a href="/docs/sdks/">SDKs</a>
+      <a href="/docs/integrations/" class="active">Integrations</a>
+      <a href="/docs/cli/">CLI</a>
+    </div>
+  </aside>
+  <main class="content" id="main">
 
-  <h2>Workflow Automation</h2>
-  <div class="grid">
-    <div class="card"><div class="card-cat">Workflow</div><div class="card-title">N8N</div><div class="card-desc">Custom node for sending prompts, listing traces, toggling modules</div></div>
-    <div class="card"><div class="card-cat">Workflow</div><div class="card-title">Zapier</div><div class="card-desc">Triggers (traces, alerts) and actions (send prompt, toggle module)</div></div>
-    <div class="card"><div class="card-cat">Workflow</div><div class="card-title">Make.com</div><div class="card-desc">Pre-configured HTTP module templates for Make scenarios</div></div>
-  </div>
+<h1>Integrations</h1>
+<p class="subtitle">Works with any framework that speaks OpenAI.</p>
 
-  <h2>Internal Tools</h2>
-  <div class="grid">
-    <div class="card"><div class="card-cat">Low-Code</div><div class="card-title">Retool</div><div class="card-desc">REST API resource templates for building internal AI dashboards</div></div>
-  </div>
+<h2>LangChain (Python)</h2>
 
-  <h2>Notifications</h2>
-  <div class="grid">
-    <div class="card"><div class="card-cat">Chat</div><div class="card-title">Slack</div><div class="card-desc">Webhook notifications + slash commands for costs, status, alerts</div></div>
-    <div class="card"><div class="card-cat">Chat</div><div class="card-title">Discord</div><div class="card-desc">Webhook notifications with embed formatting</div></div>
-    <div class="card"><div class="card-cat">Incident</div><div class="card-title">PagerDuty</div><div class="card-desc">Auto-trigger incidents on provider failure, spend breaches</div></div>
-  </div>
+<pre>from langchain_openai import ChatOpenAI
 
-  <h2>AI Editors</h2>
-  <div class="grid">
-    <a class="card" href="/docs/editors/cursor/"><div class="card-cat">MCP</div><div class="card-title">Cursor</div><div class="card-desc">MCP config for Cursor IDE</div></a>
-    <a class="card" href="/docs/editors/windsurf/"><div class="card-cat">MCP</div><div class="card-title">Windsurf</div><div class="card-desc">MCP config for Windsurf</div></a>
-    <a class="card" href="/docs/editors/copilot/"><div class="card-cat">API</div><div class="card-title">GitHub Copilot</div><div class="card-desc">Custom endpoint override</div></a>
-    <a class="card" href="/docs/editors/cline/"><div class="card-cat">MCP</div><div class="card-title">Cline</div><div class="card-desc">VS Code MCP configuration</div></a>
-    <a class="card" href="/docs/editors/aider/"><div class="card-cat">CLI</div><div class="card-title">Aider</div><div class="card-desc">--openai-api-base flag</div></a>
-  </div>
+llm = ChatOpenAI(
+    base_url="https://your-host/v1",
+    api_key="sk-sy-YOUR_KEY",
+    model="gpt-4o",
+)
+
+response = llm.invoke("Explain LLM proxies in one sentence.")
+print(response.content)</pre>
+
+<h2>LangChain (TypeScript)</h2>
+
+<pre>import { ChatOpenAI } from "@langchain/openai";
+
+const llm = new ChatOpenAI({
+  configuration: {
+    baseURL: "https://your-host/v1",
+    apiKey: "sk-sy-YOUR_KEY",
+  },
+  model: "gpt-4o",
+});
+
+const response = await llm.invoke("Hello from LangChain");
+console.log(response.content);</pre>
+
+<h2>Vercel AI SDK</h2>
+
+<pre>import { createOpenAI } from "@ai-sdk/openai";
+import { generateText } from "ai";
+
+const stockyard = createOpenAI({
+  baseURL: "https://your-host/v1",
+  apiKey: "sk-sy-YOUR_KEY",
+});
+
+const { text } = await generateText({
+  model: stockyard("gpt-4o"),
+  prompt: "Hello from Vercel AI SDK",
+});
+console.log(text);</pre>
+
+<h2>LiteLLM</h2>
+
+<pre>import litellm
+
+response = litellm.completion(
+    model="openai/gpt-4o",
+    messages=[{"role": "user", "content": "Hello from LiteLLM"}],
+    api_key="sk-sy-YOUR_KEY",
+    api_base="https://your-host/v1",
+)
+print(response.choices[0].message.content)</pre>
+
+<h2>Instructor (Structured Output)</h2>
+
+<pre>import instructor
+from openai import OpenAI
+from pydantic import BaseModel
+
+client = instructor.from_openai(OpenAI(
+    base_url="https://your-host/v1",
+    api_key="sk-sy-YOUR_KEY",
+))
+
+class User(BaseModel):
+    name: str
+    age: int
+
+user = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "John is 30 years old"}],
+    response_model=User,
+)
+print(user)  # User(name='John', age=30)</pre>
+
+<h2>Continue.dev (IDE)</h2>
+
+<p>Add to your <code>~/.continue/config.json</code>:</p>
+
+<pre>{
+  "models": [
+    {
+      "title": "Stockyard GPT-4o",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "apiBase": "https://your-host/v1",
+      "apiKey": "sk-sy-YOUR_KEY"
+    }
+  ]
+}</pre>
+
+<h2>Cursor / Windsurf / Cline</h2>
+
+<p>Any AI code editor that supports custom OpenAI endpoints works with Stockyard. Set the base URL to <code>https://your-host/v1</code> and use your Stockyard API key. See <a href="/docs/editors/">Editor Setup</a> for per-editor instructions.</p>
+
+<h2>Generic Pattern</h2>
+
+<p>For any OpenAI-compatible library or tool:</p>
+
+<p>1. Find the "base URL" or "API base" setting.</p>
+<p>2. Set it to <code>https://your-stockyard-host/v1</code>.</p>
+<p>3. Use your Stockyard API key (<code>sk-sy-...</code>) as the API key.</p>
+<p>4. Use any model name your configured providers support.</p>
+
+<p>Stockyard handles provider routing, failover, caching, and all middleware transparently. The framework never knows it's not talking directly to OpenAI.</p>
+
+
+<div class="pn"><a href="/docs/sdks/">&larr; SDKs</a><a class="next" href="/docs/cli/">CLI &rarr;</a></div>
+  </main>
 </div>
-<footer>
-  <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
-</footer>
+<footer><span class="sig">Stockyard</span> &mdash; One binary. Zero dependencies. Full control.</footer>
+
+<script>
+document.querySelectorAll('pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = () => {
+    const text = pre.textContent.replace(/^Copy/, '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '\u2713 Copied';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  };
+  pre.appendChild(btn);
+});
+</script>
 </body>
 </html>

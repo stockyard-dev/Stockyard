@@ -49,6 +49,7 @@ func Register(mux *http.ServeMux) {
 		"/docs/observe/", "/docs/trust/", "/docs/studio/",
 		"/docs/forge/", "/docs/exchange/", "/docs/team/", "/docs/memory/", "/docs/api/",
 		"/docs/ops/",
+		"/docs/config/",
 		"/vs/litellm/", "/vs/helicone/", "/vs/portkey/", "/vs/langfuse/",
 		"/blog/", "/blog/why-i-built-stockyard/",
 		"/blog/architecture-decisions/", "/blog/134-tools-one-binary/",

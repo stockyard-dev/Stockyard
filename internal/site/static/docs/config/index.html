@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Integrations — Stockyard">
-<meta property="og:description" content="Use Stockyard with LangChain, Vercel AI SDK, LiteLLM, Instructor, and any OpenAI-compatible framework.">
-<meta property="og:url" content="https://stockyard.dev/docs/integrations/">
+<meta property="og:title" content="Configuration — Stockyard">
+<meta property="og:description" content="Environment variables, runtime configuration, and tuning options for Stockyard.">
+<meta property="og:url" content="https://stockyard.dev/docs/config/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Integrations — Stockyard Docs</title>
-<meta name="description" content="Use Stockyard with LangChain, Vercel AI SDK, LiteLLM, Instructor, and any OpenAI-compatible framework.">
+<title>Configuration — Stockyard Docs</title>
+<meta name="description" content="Environment variables, runtime configuration, and tuning options for Stockyard.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -69,7 +69,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 .nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
 @media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/docs/integrations/">
+<link rel="canonical" href="https://stockyard.dev/docs/config/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -111,133 +111,115 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
       <a href="/docs/ops/">Ops Guide</a>
-      <a href="/docs/config/">Configuration</a>
+      <a href="/docs/config/" class="active">Configuration</a>
       <a href="/docs/railway-deploy/">Deploy</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Reference</div>
       <a href="/docs/api/">API Reference</a>
       <a href="/docs/sdks/">SDKs</a>
-      <a href="/docs/integrations/" class="active">Integrations</a>
+      <a href="/docs/integrations/">Integrations</a>
       <a href="/docs/cli/">CLI</a>
     </div>
   </aside>
   <main class="content" id="main">
 
-<h1>Integrations</h1>
-<p class="subtitle">Works with any framework that speaks OpenAI.</p>
+<h1>Configuration</h1>
+<p class="subtitle">Environment variables and runtime options.</p>
 
-<h2>LangChain (Python)</h2>
+<h2>Core</h2>
 
-<pre>from langchain_openai import ChatOpenAI
+<table class="endpoint-table">
+<tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>PORT</code></td><td><code>7749</code></td><td>HTTP server listen port</td></tr>
+<tr><td><code>STOCKYARD_ADMIN_KEY</code></td><td><em>none</em></td><td>Admin API key. Required for all <code>/api/*</code> management endpoints. If unset, management API is open (dev mode only).</td></tr>
+<tr><td><code>STOCKYARD_DB_PATH</code></td><td><code>./stockyard.db</code></td><td>Path to SQLite database file. Use a persistent volume in production.</td></tr>
+<tr><td><code>STOCKYARD_REQUIRE_AUTH</code></td><td><code>false</code></td><td>When <code>true</code>, all <code>/v1/*</code> proxy requests require a valid <code>sk-sy-</code> API key.</td></tr>
+<tr><td><code>STOCKYARD_TRUST_PROXY</code></td><td><em>none</em></td><td>When set, trusts <code>X-User-Id</code> and <code>X-Customer-ID</code> headers from upstream reverse proxies.</td></tr>
+</table>
 
-llm = ChatOpenAI(
-    base_url="https://your-host/v1",
-    api_key="sk-sy-YOUR_KEY",
-    model="gpt-4o",
-)
+<h2>Provider Keys</h2>
 
-response = llm.invoke("Explain LLM proxies in one sentence.")
-print(response.content)</pre>
+<p>Configure LLM providers by setting environment variables. Stockyard auto-detects which providers are available based on which keys are set.</p>
 
-<h2>LangChain (TypeScript)</h2>
+<table class="endpoint-table">
+<tr><th>Variable</th><th>Provider</th></tr>
+<tr><td><code>OPENAI_API_KEY</code></td><td>OpenAI (GPT-4o, o1, o3)</td></tr>
+<tr><td><code>ANTHROPIC_API_KEY</code></td><td>Anthropic (Claude)</td></tr>
+<tr><td><code>GEMINI_API_KEY</code></td><td>Google Gemini</td></tr>
+<tr><td><code>GROQ_API_KEY</code></td><td>Groq</td></tr>
+<tr><td><code>MISTRAL_API_KEY</code></td><td>Mistral</td></tr>
+<tr><td><code>TOGETHER_API_KEY</code></td><td>Together AI</td></tr>
+<tr><td><code>DEEPSEEK_API_KEY</code></td><td>DeepSeek</td></tr>
+<tr><td><code>FIREWORKS_API_KEY</code></td><td>Fireworks AI</td></tr>
+<tr><td><code>PERPLEXITY_API_KEY</code></td><td>Perplexity</td></tr>
+<tr><td><code>OPENROUTER_API_KEY</code></td><td>OpenRouter</td></tr>
+<tr><td><code>XAI_API_KEY</code></td><td>xAI (Grok)</td></tr>
+<tr><td><code>COHERE_API_KEY</code></td><td>Cohere</td></tr>
+<tr><td><code>REPLICATE_API_TOKEN</code></td><td>Replicate</td></tr>
+<tr><td><code>AZURE_OPENAI_API_KEY</code></td><td>Azure OpenAI</td></tr>
+<tr><td><code>AZURE_OPENAI_ENDPOINT</code></td><td>Azure OpenAI endpoint URL</td></tr>
+</table>
 
-<pre>import { ChatOpenAI } from "@langchain/openai";
+<p>Users can also store per-user provider keys via the API (<code>PUT /api/auth/me/providers/{provider}</code>). Per-user keys override global environment keys for that user's requests.</p>
 
-const llm = new ChatOpenAI({
-  configuration: {
-    baseURL: "https://your-host/v1",
-    apiKey: "sk-sy-YOUR_KEY",
-  },
-  model: "gpt-4o",
-});
+<h2>Local Providers</h2>
 
-const response = await llm.invoke("Hello from LangChain");
-console.log(response.content);</pre>
+<table class="endpoint-table">
+<tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>OLLAMA_BASE_URL</code></td><td><code>http://localhost:11434</code></td><td>Ollama server URL</td></tr>
+<tr><td><code>LMSTUDIO_BASE_URL</code></td><td><code>http://localhost:1234</code></td><td>LM Studio server URL</td></tr>
+</table>
 
-<h2>Vercel AI SDK</h2>
+<h2>Billing</h2>
 
-<pre>import { createOpenAI } from "@ai-sdk/openai";
-import { generateText } from "ai";
+<table class="endpoint-table">
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>STRIPE_SECRET_KEY</code></td><td>Stripe API key for subscription billing</td></tr>
+<tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td>Stripe webhook signing secret</td></tr>
+</table>
 
-const stockyard = createOpenAI({
-  baseURL: "https://your-host/v1",
-  apiKey: "sk-sy-YOUR_KEY",
-});
+<h2>Persistence</h2>
 
-const { text } = await generateText({
-  model: stockyard("gpt-4o"),
-  prompt: "Hello from Vercel AI SDK",
-});
-console.log(text);</pre>
+<p>Stockyard stores everything in a single SQLite file. In production, mount a persistent volume at the database path:</p>
 
-<h2>LiteLLM</h2>
+<pre># Docker
+docker run -v stockyard-data:/data \
+  -e STOCKYARD_DB_PATH=/data/stockyard.db \
+  ghcr.io/stockyard-dev/stockyard</pre>
 
-<pre>import litellm
+<pre># Railway
+# Mount a volume at /data and set:
+STOCKYARD_DB_PATH=/data/stockyard.db</pre>
 
-response = litellm.completion(
-    model="openai/gpt-4o",
-    messages=[{"role": "user", "content": "Hello from LiteLLM"}],
-    api_key="sk-sy-YOUR_KEY",
-    api_base="https://your-host/v1",
-)
-print(response.choices[0].message.content)</pre>
+<p>Back up by copying the file:</p>
 
-<h2>Instructor (Structured Output)</h2>
+<pre>cp /data/stockyard.db /data/backup-$(date +%Y%m%d).db</pre>
 
-<pre>import instructor
-from openai import OpenAI
-from pydantic import BaseModel
+<h2>Runtime Configuration</h2>
 
-client = instructor.from_openai(OpenAI(
-    base_url="https://your-host/v1",
-    api_key="sk-sy-YOUR_KEY",
-))
+<p>Most configuration beyond provider keys is managed at runtime through the API or dashboard. This includes middleware modules, routing rules, trust policies, spend caps, and alert rules. Changes take effect immediately without restart.</p>
 
-class User(BaseModel):
-    name: str
-    age: int
+<pre># Enable a middleware module
+curl -X PUT https://your-host/api/proxy/modules/cache \
+  -H "X-Admin-Key: $ADMIN_KEY" \
+  -d '{"enabled": true}'
 
-user = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "John is 30 years old"}],
-    response_model=User,
-)
-print(user)  # User(name='John', age=30)</pre>
+# Set a spend cap
+curl -X POST https://your-host/api/config \
+  -H "X-Admin-Key: $ADMIN_KEY" \
+  -d '{"spend_caps": {"default": {"daily": 50.0, "monthly": 500.0}}}'</pre>
 
-<h2>Continue.dev (IDE)</h2>
+<h2>Production Checklist</h2>
 
-<p>Add to your <code>~/.continue/config.json</code>:</p>
-
-<pre>{
-  "models": [
-    {
-      "title": "Stockyard GPT-4o",
-      "provider": "openai",
-      "model": "gpt-4o",
-      "apiBase": "https://your-host/v1",
-      "apiKey": "sk-sy-YOUR_KEY"
-    }
-  ]
-}</pre>
-
-<h2>Cursor / Windsurf / Cline</h2>
-
-<p>Any AI code editor that supports custom OpenAI endpoints works with Stockyard. Set the base URL to <code>https://your-host/v1</code> and use your Stockyard API key. See <a href="/docs/editors/">Editor Setup</a> for per-editor instructions.</p>
-
-<h2>Generic Pattern</h2>
-
-<p>For any OpenAI-compatible library or tool:</p>
-
-<p>1. Find the "base URL" or "API base" setting.</p>
-<p>2. Set it to <code>https://your-stockyard-host/v1</code>.</p>
-<p>3. Use your Stockyard API key (<code>sk-sy-...</code>) as the API key.</p>
-<p>4. Use any model name your configured providers support.</p>
-
-<p>Stockyard handles provider routing, failover, caching, and all middleware transparently. The framework never knows it's not talking directly to OpenAI.</p>
+<p>1. Set <code>STOCKYARD_ADMIN_KEY</code> to a strong random value.</p>
+<p>2. Set <code>STOCKYARD_REQUIRE_AUTH</code>=true so proxy requests require API keys.</p>
+<p>3. Mount a persistent volume for the SQLite database.</p>
+<p>4. Set at least one provider API key.</p>
+<p>5. Set up a reverse proxy (Caddy, nginx) for TLS termination.</p>
 
 
-<div class="pn"><a href="/docs/sdks/">&larr; SDKs</a><a class="next" href="/docs/cli/">CLI &rarr;</a></div>
+<div class="pn"><a href="/docs/ops/">&larr; Ops Guide</a><a class="next" href="/docs/railway-deploy/">Deploy &rarr;</a></div>
   </main>
 </div>
 <footer><span class="sig">Stockyard</span> &mdash; One binary. Zero dependencies. Full control.</footer>

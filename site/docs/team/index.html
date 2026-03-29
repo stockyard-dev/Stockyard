@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Team Docs: RBAC &amp; Member Management — Stockyard">
-<meta property="og:description" content="Stockyard Team: RBAC, email invites, per-member spend tracking.">
+<meta property="og:title" content="Team Key Isolation — Stockyard">
+<meta property="og:description" content="Create teams with isolated API keys, spend tracking, and request logs. Each team gets its own namespace for clean multi-project management.">
 <meta property="og:url" content="https://stockyard.dev/docs/team/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Team Docs: RBAC &amp; Member Management — Stockyard</title>
-<meta name="description" content="Stockyard Team: RBAC, email invites, per-member spend tracking.">
+<title>Team Key Isolation — Stockyard Docs</title>
+<meta name="description" content="Create teams with isolated API keys, spend tracking, and request logs. Each team gets its own namespace for clean multi-project management.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -47,79 +47,34 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
 .content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
 .content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content h3{font-size:1.1rem;margin-top:1.5rem;margin-bottom:0.5rem;color:var(--cream)}
 .content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
 .content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
 .content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
 .copy-btn{position:absolute;top:0.5rem;right:0.5rem;background:var(--bg3);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;opacity:0}
 .copy-btn:hover{background:var(--rust);border-color:var(--rust);color:var(--cream)}
 pre:hover .copy-btn{opacity:1}
-.content pre .comment{color:#5a5040}
-.content pre .cmd{color:var(--cream)}
 .content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
 .content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
 .endpoint-table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:0.8rem}
 .endpoint-table th,.endpoint-table td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
 .endpoint-table th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
 .endpoint-table td{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.75rem}
-.endpoint-table .method{color:var(--green-light);font-weight:600}
-.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
-.ov-card{display:block;padding:1.2rem;border:1px solid var(--bg3);background:var(--bg2);transition:border-color 0.2s;text-decoration:none}
-.ov-card:hover{border-color:var(--rust)}
-.ov-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
-.ov-title{font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem}
-.ov-desc{font-size:0.8rem;color:var(--cream-dim)}
 .pn{display:flex;justify-content:space-between;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
 .pn a{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.pn a:hover{color:var(--rust-light)}
 .pn .next{margin-left:auto}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
-
-/* ===== MOBILE NAV ===== */
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
 .nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
-.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-toggle.open span:nth-child(2){opacity:0}
-.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.nav-overlay{display:none}
-@media(max-width:768px){
-  .nav{padding:0.8rem 1.2rem}
-  .nav-toggle{display:block}
-  .nav-links{
-    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
-    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
-    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
-  }
-  .nav-links.open{display:flex;font-family:var(--font-serif)}
-  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
-  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
-  .nav-overlay.open{display:block}
-}
-
-
-/* ===== GLOBAL MOBILE FIXES ===== */
-@media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:wrap;gap:0}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
-}
-
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/team/">
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-overlay" onclick="toggleNav()"></div>
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <a href="/products/">Products</a>
     <a href="/docs/">Docs</a>
@@ -129,17 +84,18 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
-
 <div class="docs-layout">
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-title">Getting Started</div>
       <a href="/docs/quickstart/">Quickstart</a>
       <a href="/docs/auth/">Auth &amp; Config</a>
+      <a href="/docs/providers/">Providers</a>
+      <a href="/docs/docker/">Docker</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Chute</div>
-      <a href="/docs/proxy/">Modules &amp; Providers</a>
+      <a href="/docs/proxy/">Modules</a>
       <a href="/docs/aliasing/">Model Aliasing</a>
     </div>
     <div class="sidebar-section">
@@ -155,82 +111,162 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <div class="sidebar-section">
       <div class="sidebar-title">Operations</div>
       <a href="/docs/ops/">Ops Guide</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">SDKs</div>
-      <a href="/docs/sdks/">SDK Wrappers</a>
+      <a href="/docs/config/">Configuration</a>
+      <a href="/docs/railway-deploy/">Deploy</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Reference</div>
       <a href="/docs/api/">API Reference</a>
+      <a href="/docs/sdks/">SDKs</a>
+      <a href="/docs/integrations/">Integrations</a>
+      <a href="/docs/cli/">CLI</a>
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>Team</h1>
-    <p class="subtitle">RBAC, invites, and per-member spend.</p>
 
-    <h2 id="overview">Overview</h2>
-    <p>Team provides role-based access control, email invites, and per-member spend tracking. Invite teammates with specific roles, track their LLM usage, and audit every change through Brand's ledger.</p>
+<h1>Team Key Isolation</h1>
+<p class="subtitle">Separate API keys, spend, and logs by team or project.</p>
 
-    <h2 id="roles">Roles</h2>
-    <p>Four built-in roles control access: <code>admin</code>, <code>developer</code>, <code>viewer</code>, and <code>auditor</code>. Assign roles on invite or change them later via API.</p>
+<h2>Overview</h2>
 
-    <h2 id="endpoints">API Endpoints</h2>
-    <table class="endpoint-table">
-      <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-      <tr><td class="method">POST</td><td>/api/team/members</td><td>Invite a new team member</td></tr>
-      <tr><td class="method">GET</td><td>/api/team/members</td><td>List all team members</td></tr>
-      <tr><td class="method">PUT</td><td>/api/team/members/{id}</td><td>Update member role or name</td></tr>
-      <tr><td class="method">DELETE</td><td>/api/team/members/{id}</td><td>Remove a team member</td></tr>
-      <tr><td class="method">POST</td><td>/api/team/accept-invite</td><td>Accept an invite token</td></tr>
-      <tr><td class="method">GET</td><td>/api/team/spend</td><td>Per-member spend this month</td></tr>
-    </table>
+<p>Teams let you carve Stockyard into isolated namespaces. Each team gets its own API keys, and every request made with a team key is automatically tagged in logs, traces, and spend tracking. No configuration needed beyond creating the team and generating keys.</p>
 
-    <h2 id="invites">Inviting Members</h2>
-    <pre>
-<span class="comment"># Invite a developer</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/team/members \</span>
-<span class="cmd">  -H "Authorization: Bearer $STOCKYARD_ADMIN_KEY" \</span>
-<span class="cmd">  -d '{"email":"alice@acme.co", "name":"Alice", "role":"developer"}'</span>
+<p>This is the recommended way to give separate projects, environments, or teams their own slice of your Stockyard instance without running multiple instances.</p>
 
-<span class="comment"># Response includes an invite token</span>
-<span class="cmd">{"id":"tm_8a4f2c","email":"alice@acme.co","role":"developer","invite_token":"a1b2c3..."}</span>
-</pre>
-    <p>If a mailer is configured, the invite email is sent automatically with an accept link.</p>
+<h2>Create a Team</h2>
 
-    <h2 id="spend">Spend Tracking</h2>
-    <pre>
-<span class="comment"># Get per-member spend for the current month</span>
-<span class="cmd">curl http://localhost:7749/api/team/spend \</span>
-<span class="cmd">  -H "Authorization: Bearer $STOCKYARD_ADMIN_KEY"</span>
+<pre>curl -X POST https://your-host/api/teams \
+  -H "X-Admin-Key: $ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Frontend", "description": "Frontend web app"}'</pre>
 
-<span class="comment"># Returns request counts, cost, and token breakdown per member</span>
-</pre>
-    <p>Spend data is pulled from billing_usage (if available) or observe_traces as a fallback, grouped by customer ID.</p>
+<p>Response:</p>
 
-    <h2 id="audit">Audit Integration</h2>
-    <p>Every invite, role change, and member removal is logged to Brand's append-only audit ledger. Events include <code>team_member.invite</code>, <code>team_member.role.update</code>, and <code>team_member.remove</code>.</p>
+<pre>{
+  "id": 1,
+  "name": "Frontend",
+  "slug": "frontend",
+  "description": "Frontend web app",
+  "created_by": 0,
+  "created_at": "2026-03-28T12:00:00Z",
+  "updated_at": "2026-03-28T12:00:00Z"
+}</pre>
 
-    <div class="note">
-      <strong>Note:</strong> All <code>/api/team/*</code> routes require the <code>STOCKYARD_ADMIN_KEY</code> header. Per-member RBAC enforcement is planned for a future release.
-    </div>
+<h2>Generate a Team Key</h2>
 
-    <div class="pn">
-      <a href="/docs/exchange/">&larr; Trading Post</a>
-      <a href="/docs/memory/" class="next">Memory &rarr;</a>
-    </div>
-  </main>
+<pre>curl -X POST https://your-host/api/teams/1/keys \
+  -H "X-Admin-Key: $ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "production"}'</pre>
+
+<p>The response includes the full API key. Copy it immediately &mdash; it is only shown once.</p>
+
+<pre>{
+  "id": 5,
+  "user_id": 1,
+  "team_id": 1,
+  "key_prefix": "sk-sy-aBcDeF...",
+  "name": "production",
+  "scopes": "*",
+  "key": "sk-sy-aBcDeFgHiJkLmNoPqRsTuVwXyZ..."
+}</pre>
+
+<h2>Use the Key</h2>
+
+<p>Team keys work exactly like regular Stockyard keys. Just set the Authorization header:</p>
+
+<pre>curl https://your-host/v1/chat/completions \
+  -H "Authorization: Bearer sk-sy-YOUR_TEAM_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'</pre>
+
+<p>Stockyard automatically detects the team key, tags the request with the team ID, and routes it through all configured middleware. Nothing else changes.</p>
+
+<h2>View Team Spend</h2>
+
+<pre>curl https://your-host/api/teams/1/spend \
+  -H "X-Admin-Key: $ADMIN_KEY"</pre>
+
+<pre>{
+  "team_id": "1",
+  "total": {
+    "requests": 1482,
+    "cost_usd": 12.4830,
+    "tokens_in": 892400,
+    "tokens_out": 341200
+  },
+  "this_month": {
+    "requests": 340,
+    "cost_usd": 3.2100
+  },
+  "today": {
+    "requests": 42,
+    "cost_usd": 0.3800
+  }
+}</pre>
+
+<h2>View Team Logs</h2>
+
+<pre>curl "https://your-host/api/teams/1/logs?limit=20" \
+  -H "X-Admin-Key: $ADMIN_KEY"</pre>
+
+<p>Returns only requests made with keys belonging to team 1. Supports <code>limit</code> and <code>offset</code> query parameters for pagination.</p>
+
+<h2>Manage Keys</h2>
+
+<table class="endpoint-table">
+<tr><th>Action</th><th>Endpoint</th><th>Method</th></tr>
+<tr><td>List keys</td><td><code>/api/teams/{id}/keys</code></td><td>GET</td></tr>
+<tr><td>Create key</td><td><code>/api/teams/{id}/keys</code></td><td>POST</td></tr>
+<tr><td>Revoke key</td><td><code>/api/teams/{id}/keys/{keyId}</code></td><td>DELETE</td></tr>
+<tr><td>Rotate key</td><td><code>/api/teams/{id}/keys/{keyId}/rotate</code></td><td>POST</td></tr>
+</table>
+
+<p>Rotating a key atomically revokes the old key and generates a new one with the same name. The old key stops working immediately.</p>
+
+<h2>Manage Teams</h2>
+
+<table class="endpoint-table">
+<tr><th>Action</th><th>Endpoint</th><th>Method</th></tr>
+<tr><td>List teams</td><td><code>/api/teams</code></td><td>GET</td></tr>
+<tr><td>Create team</td><td><code>/api/teams</code></td><td>POST</td></tr>
+<tr><td>Get team + keys</td><td><code>/api/teams/{id}</code></td><td>GET</td></tr>
+<tr><td>Update team</td><td><code>/api/teams/{id}</code></td><td>PUT</td></tr>
+<tr><td>Delete team</td><td><code>/api/teams/{id}</code></td><td>DELETE</td></tr>
+</table>
+
+<p>Deleting a team automatically revokes all its keys.</p>
+
+<h2>Dashboard</h2>
+
+<p>The Teams tab in the dashboard (at <code>/ui</code>) provides a full UI for creating teams, generating keys, viewing spend, and managing everything without touching the API directly.</p>
+
+<h2>How It Works</h2>
+
+<p>When a request arrives with a team-scoped API key:</p>
+
+<p>1. The auth middleware validates the key and looks up the associated team.</p>
+<p>2. The team and user are injected into the request context.</p>
+<p>3. The proxy handler copies the team ID onto the request metadata.</p>
+<p>4. All downstream systems &mdash; request logging, trace recording, spend tracking &mdash; include the team ID automatically.</p>
+
+<p>Existing user keys (without a team) continue to work exactly as before. Team isolation is purely additive.</p>
+
+<div class="note">
+<strong>Note:</strong> Team keys still require a user_id for ownership tracking. When creating a team key via the admin API, the key is owned by user ID 1 by default. You can specify a different <code>user_id</code> in the request body.
 </div>
 
-<footer>
-  <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
-</footer>
+
+<div class="pn"><a href="/docs/memory/">&larr; Memory</a><a class="next" href="/docs/exchange/">Trading Post &rarr;</a></div>
+  </main>
+</div>
+<footer><span class="sig">Stockyard</span> &mdash; One binary. Zero dependencies. Full control.</footer>
 
 <script>
-document.querySelectorAll('.content pre').forEach(pre => {
+document.querySelectorAll('pre').forEach(pre => {
   const btn = document.createElement('button');
   btn.className = 'copy-btn';
   btn.textContent = 'Copy';
@@ -244,11 +280,5 @@ document.querySelectorAll('.content pre').forEach(pre => {
   pre.appendChild(btn);
 });
 </script>
-
-<script>
-function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
-</script>
-
 </body>
 </html>
