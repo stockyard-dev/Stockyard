@@ -318,5 +318,14 @@ func isPublicRoute(method, path string) bool {
 	if method == "POST" && path == "/api/billing/stripe/webhook" {
 		return true // verified by Stripe signature in handler
 	}
+	if method == "POST" && path == "/api/billing/stripe/checkout" {
+		return true // creates Stripe Checkout session — Stripe handles auth
+	}
+	if method == "POST" && path == "/api/billing/stripe/portal" {
+		return true // creates Stripe customer portal session
+	}
+	if method == "GET" && path == "/api/billing/stripe/prices" {
+		return true // public pricing data
+	}
 	return false
 }
