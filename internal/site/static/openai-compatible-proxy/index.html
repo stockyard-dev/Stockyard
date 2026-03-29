@@ -42,6 +42,15 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
 @media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+<style>
+.faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem}
+.faq-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:2rem;text-align:center}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.2rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer}
+.faq-q::before{content:'Q. ';color:var(--rust)}
+.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+</style>
 </style>
 </head>
 <body>
@@ -129,6 +138,76 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   </div>
 </section>
 
+
+<section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><div class="faq-q">Is Stockyard compatible with the OpenAI API?</div><div class="faq-a">Yes. Stockyard speaks the same /v1/chat/completions protocol as OpenAI. Change your base URL and your existing OpenAI SDK code works without modification.</div></div>
+    <div class="faq-item"><div class="faq-q">Does it work with the Python OpenAI SDK?</div><div class="faq-a">Yes. Set base_url to your Stockyard instance and api_key to your Stockyard key or provider key. Streaming, function calling, and all standard features work.</div></div>
+    <div class="faq-item"><div class="faq-q">Can I use non-OpenAI models through the OpenAI API format?</div><div class="faq-a">Yes. Stockyard includes shim modules that translate requests to Anthropic, Google Gemini, and other providers. Send an OpenAI-format request for claude-sonnet-4-5 and Stockyard handles the translation.</div></div>
+    <div class="faq-item"><div class="faq-q">What tools and frameworks work with Stockyard?</div><div class="faq-a">Any tool that supports the OpenAI API works: LangChain, Vercel AI SDK, LiteLLM, Instructor, Continue.dev, Cursor, and any other OpenAI-compatible client.</div></div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Stockyard compatible with the OpenAI API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Stockyard speaks the same /v1/chat/completions protocol as OpenAI. Change your base URL and your existing OpenAI SDK code works without modification."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work with the Python OpenAI SDK?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Set base_url to your Stockyard instance and api_key to your Stockyard key or provider key. Streaming, function calling, and all standard features work."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use non-OpenAI models through the OpenAI API format?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Stockyard includes shim modules that translate requests to Anthropic, Google Gemini, and other providers. Send an OpenAI-format request for claude-sonnet-4-5 and Stockyard handles the translation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What tools and frameworks work with Stockyard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Any tool that supports the OpenAI API works: LangChain, Vercel AI SDK, LiteLLM, Instructor, Continue.dev, Cursor, and any other OpenAI-compatible client."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Stockyard OpenAI-Compatible Proxy",
+  "description": "OpenAI API-compatible LLM proxy. Change one base URL to route through 40 providers with caching, rate limiting, and cost tracking. Works with any OpenAI SDK.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Linux, macOS, Windows",
+  "url": "https://stockyard.dev/openai-compatible-proxy/",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Stockyard",
+    "url": "https://stockyard.dev"
+  }
+}
+</script>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>

@@ -49,6 +49,15 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
 @media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}.fact-grid{grid-template-columns:1fr 1fr}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+<style>
+.faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem}
+.faq-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:2rem;text-align:center}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.2rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer}
+.faq-q::before{content:'Q. ';color:var(--rust)}
+.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+</style>
 </style>
 </head>
 <body>
@@ -199,6 +208,76 @@ providers:
   <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">BSL 1.1</a></div>
 </section>
 
+
+<section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><div class="faq-q">Can I use Stockyard as just a proxy without the other features?</div><div class="faq-a">Yes. Proxy-only is a first-class use case. Install the binary, set your provider key, and route requests through one endpoint. Tracing, audit, and the other products are there if you want them later, but they are not required.</div></div>
+    <div class="faq-item"><div class="faq-q">Does proxy-only mode cost anything?</div><div class="faq-a">No. The Community tier is free and includes the full proxy with all 76 middleware modules, 40 provider integrations, caching, rate limiting, and cost tracking. No credit card required.</div></div>
+    <div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 40 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
+    <div class="faq-item"><div class="faq-q">Do I need Docker or Redis to run the proxy?</div><div class="faq-a">No. Stockyard ships as a single Go binary with embedded SQLite. No Docker, no Redis, no Postgres, no external dependencies. Download and run.</div></div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I use Stockyard as just a proxy without the other features?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Proxy-only is a first-class use case. Install the binary, set your provider key, and route requests through one endpoint. Tracing, audit, and the other products are there if you want them later, but they are not required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does proxy-only mode cost anything?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The Community tier is free and includes the full proxy with all 76 middleware modules, 40 provider integrations, caching, rate limiting, and cost tracking. No credit card required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What providers does the proxy support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Stockyard supports 40 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need Docker or Redis to run the proxy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Stockyard ships as a single Go binary with embedded SQLite. No Docker, no Redis, no Postgres, no external dependencies. Download and run."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Stockyard LLM Proxy",
+  "description": "Self-hosted LLM proxy with 76 middleware modules, 40 providers, caching, rate limiting, and cost tracking. One binary, zero dependencies.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Linux, macOS, Windows",
+  "url": "https://stockyard.dev/proxy-only/",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Stockyard",
+    "url": "https://stockyard.dev"
+  }
+}
+</script>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>

@@ -42,6 +42,15 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
 @media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+<style>
+.faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem}
+.faq-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:2rem;text-align:center}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.2rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer}
+.faq-q::before{content:'Q. ';color:var(--rust)}
+.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+</style>
 </style>
 </head>
 <body>
@@ -129,6 +138,76 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">BSL 1.1</a></div>
 </section>
 
+
+<section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><div class="faq-q">Why self-host an LLM proxy instead of using a SaaS?</div><div class="faq-a">Self-hosting means your prompts, completions, and traces never leave your network. No third-party sees your data. You also avoid per-request SaaS pricing, which can add up at scale.</div></div>
+    <div class="faq-item"><div class="faq-q">What infrastructure do I need to self-host Stockyard?</div><div class="faq-a">Any machine that can run a Go binary. Stockyard is a single ~25MB file with embedded SQLite. No Redis, no Postgres, no Docker required. Runs on a VPS, bare metal, or Kubernetes.</div></div>
+    <div class="faq-item"><div class="faq-q">Can I deploy Stockyard on Railway, Fly.io, or Render?</div><div class="faq-a">Yes. Stockyard runs on any platform that supports Docker or Go binaries. It ships with a production Dockerfile and deploys to Railway, Fly.io, Render, or any container platform.</div></div>
+    <div class="faq-item"><div class="faq-q">Is self-hosted Stockyard free?</div><div class="faq-a">Yes. The Community tier is free forever with unlimited requests, all middleware modules, and all provider integrations. Paid tiers add specialized products, not capacity.</div></div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why self-host an LLM proxy instead of using a SaaS?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Self-hosting means your prompts, completions, and traces never leave your network. No third-party sees your data. You also avoid per-request SaaS pricing, which can add up at scale."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What infrastructure do I need to self-host Stockyard?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Any machine that can run a Go binary. Stockyard is a single ~25MB file with embedded SQLite. No Redis, no Postgres, no Docker required. Runs on a VPS, bare metal, or Kubernetes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I deploy Stockyard on Railway, Fly.io, or Render?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Stockyard runs on any platform that supports Docker or Go binaries. It ships with a production Dockerfile and deploys to Railway, Fly.io, Render, or any container platform."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is self-hosted Stockyard free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The Community tier is free forever with unlimited requests, all middleware modules, and all provider integrations. Paid tiers add specialized products, not capacity."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Stockyard Self-Hosted LLM Proxy",
+  "description": "Run your LLM proxy on your own infrastructure. Prompts and completions never leave your network. One binary, embedded SQLite, zero external services.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Linux, macOS, Windows",
+  "url": "https://stockyard.dev/self-hosted-llm-proxy/",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Stockyard",
+    "url": "https://stockyard.dev"
+  }
+}
+</script>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
