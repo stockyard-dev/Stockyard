@@ -65,6 +65,7 @@ pre:hover .copy-btn{opacity:1}
 footer{text-align:center;padding:2rem;font-size:0.7rem;color:var(--cream-muted);font-family:var(--font-mono);border-top:1px solid var(--bg3)}
 footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 @media(max-width:768px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/aliasing/">
 </head>
@@ -250,6 +251,7 @@ curl https://your-stockyard/api/proxy/aliases/stats \
   </main>
 </div>
 
+<div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a> &middot; <a href="/model-aliasing/">Model aliasing</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/security/">Security</a></p>
 </footer>

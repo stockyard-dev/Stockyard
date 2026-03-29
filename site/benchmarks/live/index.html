@@ -31,6 +31,7 @@ tr:hover{background:var(--bg2)}
 .bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-right:4px}
 .updated{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:1.5rem;text-align:center}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
 </style>
 <meta property="og:title" content="Live Model Benchmarks">
 <meta property="og:description" content="Real-world LLM performance data from production traffic.">
@@ -60,6 +61,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </table>
 <p class="updated">Data: <code>GET /api/benchmarks/live</code> &middot; Updated: <span id="last-update">—</span></p>
 </div>
+<div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a> &middot; <a href="/model-aliasing/">Model aliasing</a></div>
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>

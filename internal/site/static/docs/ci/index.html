@@ -49,6 +49,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 .nav-overlay{display:none}
 @media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/ci/">
 </head>
@@ -159,6 +160,7 @@ STOCKYARD_ADMIN_KEY — Admin API key</code></pre>
     </div>
   </main>
 </div>
+<div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a></div>
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>

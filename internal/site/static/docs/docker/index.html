@@ -98,6 +98,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 }
 
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
 </style>
 <link rel="canonical" href="https://stockyard.dev/docs/docker/">
 </head>
@@ -373,6 +374,7 @@ STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
   </main>
 </div>
 
+<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a></div>
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
