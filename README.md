@@ -9,7 +9,7 @@
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-BSL_1.1-E8753A)](LICENSE)
 [![Modules](https://img.shields.io/badge/Modules-76-E8753A)](https://stockyard.dev/products)
-[![Providers](https://img.shields.io/badge/Providers-16-C4A87A)](https://stockyard.dev/docs)
+[![Providers](https://img.shields.io/badge/Providers-40-C4A87A)](https://stockyard.dev/docs)
 
 </div>
 
@@ -43,7 +43,7 @@ curl http://localhost:7749/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "model": "gpt-5.4-mini",
+    "model": "gpt-4o-mini",
     "messages": [{"role": "user", "content": "Hello"}]
   }'
 ```
@@ -67,7 +67,7 @@ Or open `http://localhost:7749/ui` for the full dashboard.
 
 Everything you need for production proxy + tracing + audit:
 
-- **Chute** — proxy across 16 LLM providers through one API, 76 middleware modules
+- **Chute** — proxy across 40 LLM providers through one API, 76 middleware modules
 - **Lookout** — automatic request tracing, per-model cost dashboards, anomaly detection
 - **Brand** — SHA-256 hash-chained audit ledger, policy enforcement, compliance evidence
 - **Tack Room** — versioned prompt templates, A/B experiments
@@ -91,7 +91,7 @@ Paid tiers add capabilities, not capacity. See [stockyard.dev/pricing](https://s
 ## When Stockyard Is NOT the Right Fit
 
 - **You only need a thin API shim.** If you just want to swap between OpenAI and Anthropic with no middleware, [LiteLLM](https://github.com/BerriAI/litellm) is simpler.
-- **You need 100+ provider integrations.** Stockyard supports 16 providers. LiteLLM supports 100+.
+- **You need 100+ provider integrations.** Stockyard supports 40 providers. LiteLLM supports 100+.
 - **You want managed-only.** Stockyard is self-hosted. You run the binary on your infrastructure.
 - **You need MIT licensing.** Stockyard is BSL 1.1 (source-available, free to use, can't build a competing proxy service).
 - **You're not using LLMs in production yet.** Stockyard solves production problems — cost overruns, audit requirements, safety filtering, provider failover.
@@ -123,7 +123,7 @@ Your App (OpenAI SDK)
 - **Single binary**, single port, single process. No orchestration.
 - **Embedded SQLite** with WAL mode via `modernc.org/sqlite` (pure Go, no CGO).
 - **76 middleware modules**, each toggleable at runtime via the API.
-- **16 LLM providers**: OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Ollama, vLLM, AWS Bedrock, Azure OpenAI, Cohere, Together AI, Fireworks, Replicate, Perplexity, Hugging Face.
+- **40 LLM providers**: OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Ollama, vLLM, Azure OpenAI, Cohere, Together AI, Fireworks, Replicate, Perplexity, Hugging Face, xAI, OpenRouter, DeepInfra, NVIDIA NIM, Cerebras, SambaNova, AI21, and 18 more.
 - **AES-256-GCM encryption** for all provider keys at rest.
 - **~400ns proxy overhead** across the full middleware chain ([benchmarks](https://stockyard.dev/benchmarks)).
 
@@ -138,7 +138,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="gpt-5.4-mini",
+    model="gpt-4o-mini",
     messages=[{"role": "user", "content": "Hello!"}]
 )
 ```

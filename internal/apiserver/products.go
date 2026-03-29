@@ -130,7 +130,7 @@ type Product struct {
 func Catalog() []Product {
 	return []Product{
 		// Core apps
-		{Slug: "proxy", Name: "Chute", Tagline: "The proxy. 76 middleware modules, 16 providers, 400ns overhead.", Category: "app"},
+		{Slug: "proxy", Name: "Chute", Tagline: "The proxy. 76 middleware modules, 40 providers, 400ns overhead.", Category: "app"},
 		{Slug: "observe", Name: "Lookout", Tagline: "Request tracing, cost dashboards, anomaly detection.", Category: "app"},
 		{Slug: "trust", Name: "Brand", Tagline: "Hash-chained audit ledger, policy engine, compliance evidence.", Category: "app"},
 		{Slug: "studio", Name: "Tack Room", Tagline: "Prompt versioning, A/B testing, experiments, benchmarks.", Category: "app"},
