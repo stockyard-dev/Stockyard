@@ -3,13 +3,152 @@ package engine
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/site"
 )
+
+// ── GitHub stats cache ──
+var ghCache struct {
+	sync.Mutex
+	data      map[string]any
+	fetchedAt time.Time
+}
+
+// fetchGitHubStats pulls stars, traffic, and release downloads from the GitHub API.
+// Cached for 10 minutes to avoid rate limits.
+func fetchGitHubStats() map[string]any {
+	ghCache.Lock()
+	defer ghCache.Unlock()
+
+	if ghCache.data != nil && time.Since(ghCache.fetchedAt) < 10*time.Minute {
+		return ghCache.data
+	}
+
+	repo := "stockyard-dev/Stockyard"
+	token := os.Getenv("GITHUB_TOKEN")
+	result := map[string]any{}
+
+	get := func(path string) map[string]any {
+		url := fmt.Sprintf("https://api.github.com/repos/%s%s", repo, path)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil
+		}
+		req.Header.Set("Accept", "application/vnd.github+json")
+		if token != "" {
+			req.Header.Set("Authorization", "token "+token)
+		}
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return nil
+		}
+		body, _ := io.ReadAll(resp.Body)
+		var data map[string]any
+		json.Unmarshal(body, &data)
+		return data
+	}
+
+	getArray := func(path string) []map[string]any {
+		url := fmt.Sprintf("https://api.github.com/repos/%s%s", repo, path)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil
+		}
+		req.Header.Set("Accept", "application/vnd.github+json")
+		if token != "" {
+			req.Header.Set("Authorization", "token "+token)
+		}
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return nil
+		}
+		body, _ := io.ReadAll(resp.Body)
+		var data []map[string]any
+		json.Unmarshal(body, &data)
+		return data
+	}
+
+	// Stars + watchers (no auth needed)
+	if repo := get(""); repo != nil {
+		if v, ok := repo["stargazers_count"].(float64); ok {
+			result["stars"] = v
+		}
+		if v, ok := repo["watchers_count"].(float64); ok {
+			result["watchers"] = v
+		}
+		if v, ok := repo["forks_count"].(float64); ok {
+			result["forks"] = v
+		}
+	}
+
+	// Traffic views (needs push access token)
+	if token != "" {
+		if views := get("/traffic/views"); views != nil {
+			if v, ok := views["count"].(float64); ok {
+				result["views_14d"] = v
+			}
+			if v, ok := views["uniques"].(float64); ok {
+				result["visitors"] = v
+			}
+		}
+
+		// Traffic clones
+		if clones := get("/traffic/clones"); clones != nil {
+			if v, ok := clones["count"].(float64); ok {
+				result["clones"] = v
+			}
+			if v, ok := clones["clones_unique"].(float64); ok {
+				result["clones_unique"] = v
+			}
+		}
+
+		// Referrers
+		if refs := getArray("/traffic/popular/referrers"); refs != nil {
+			result["referrers"] = refs
+		}
+	}
+
+	// Release downloads (no auth needed)
+	if releases := getArray("/releases"); releases != nil {
+		totalDL := 0.0
+		for _, rel := range releases {
+			assets, _ := rel["assets"].([]any)
+			for _, a := range assets {
+				if asset, ok := a.(map[string]any); ok {
+					if dl, ok := asset["download_count"].(float64); ok {
+						totalDL += dl
+					}
+				}
+			}
+		}
+		result["release_downloads"] = totalDL
+	}
+
+	result["source"] = "auto"
+	result["fetched_at"] = time.Now().UTC().Format(time.RFC3339)
+
+	ghCache.data = result
+	ghCache.fetchedAt = time.Now()
+	return result
+}
 
 const growthSchema = `
 CREATE TABLE IF NOT EXISTS growth_metrics (
@@ -171,7 +310,12 @@ func handleGrowthDashboard(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Build ad sections from manual data
 	result["google_ads"] = buildAdSection(manual["google_ads"], "manual")
 	result["reddit_ads"] = buildAdSection(manual["reddit_ads"], "manual")
-	result["github"] = buildGitHubSection(manual["github"], "manual")
+
+	// GitHub: auto-fetch from API, merge with any manual overrides
+	ghAuto := fetchGitHubStats()
+	ghManual := manual["github"]
+	result["github"] = buildGitHubSection(ghManual, ghAuto)
+
 	result["revenue"] = buildRevenueSection(manual["revenue"], db)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -209,28 +353,38 @@ func buildAdSection(entries []map[string]any, src string) map[string]any {
 	return section
 }
 
-func buildGitHubSection(entries []map[string]any, src string) map[string]any {
-	section := map[string]any{"source": src}
-	if entries == nil {
-		section["entries"] = []map[string]any{}
-		return section
-	}
-	section["entries"] = entries
-	// Find latest values
-	for _, e := range entries {
-		m, _ := e["metric"].(string)
-		v, _ := e["value"].(float64)
-		switch m {
-		case "stars":
-			section["stars"] = v
-		case "clones":
-			section["clones"] = v
-		case "visitors":
-			section["visitors"] = v
-		case "release_downloads":
-			section["release_downloads"] = v
+func buildGitHubSection(manualEntries []map[string]any, autoData map[string]any) map[string]any {
+	section := map[string]any{"source": "auto"}
+
+	// Start with auto-fetched data
+	if autoData != nil {
+		for k, v := range autoData {
+			section[k] = v
 		}
 	}
+
+	// Manual entries override auto values
+	if manualEntries != nil {
+		section["manual_entries"] = manualEntries
+		for _, e := range manualEntries {
+			m, _ := e["metric"].(string)
+			v, _ := e["value"].(float64)
+			switch m {
+			case "stars":
+				section["stars"] = v
+				section["source"] = "mixed"
+			case "clones":
+				section["clones"] = v
+			case "visitors":
+				section["visitors"] = v
+				section["source"] = "mixed"
+			case "release_downloads":
+				section["release_downloads"] = v
+				section["source"] = "mixed"
+			}
+		}
+	}
+
 	return section
 }
 

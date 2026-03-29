@@ -117,9 +117,10 @@ function GrowthView(){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
       <div style="background:var(--bg2);border:1px solid var(--bg3);padding:16px">
         <div style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:12px">GitHub ${srcBadge('manual')} ${windowTag('snapshot')}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:0.78rem;color:var(--cream-dim)">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;font-size:0.78rem;color:var(--cream-dim)">
           <div><div style="color:var(--leather);font-size:0.55rem;text-transform:uppercase;margin-bottom:2px">Stars</div><div style="color:var(--cream)">${fmtN(gh.stars)||'\u2014'}</div></div>
-          <div><div style="color:var(--leather);font-size:0.55rem;text-transform:uppercase;margin-bottom:2px">Unique Visitors</div><div style="color:var(--cream)">${fmtN(gh.visitors)||'\u2014'}</div></div>
+          <div><div style="color:var(--leather);font-size:0.55rem;text-transform:uppercase;margin-bottom:2px">Visitors (14d)</div><div style="color:var(--cream)">${fmtN(gh.visitors)||'\u2014'}</div></div>
+          <div><div style="color:var(--leather);font-size:0.55rem;text-transform:uppercase;margin-bottom:2px">Views (14d)</div><div style="color:var(--cream)">${fmtN(gh.views_14d)||'\u2014'}</div></div>
           <div><div style="color:var(--leather);font-size:0.55rem;text-transform:uppercase;margin-bottom:2px">Release DLs</div><div style="color:var(--cream)">${fmtN(gh.release_downloads)||'\u2014'}</div></div>
         </div>
         <div style="font-size:0.6rem;color:var(--cream-muted);margin-top:8px;font-style:italic">Stars + unique visitors are trustworthy signals. Clones excluded (noisy).</div>
