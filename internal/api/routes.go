@@ -4,9 +4,11 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/provider"
@@ -46,6 +48,8 @@ func (a *API) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/spend/history", a.handleSpendHistory)
 	mux.HandleFunc("GET /api/logs", a.handleLogs)
 	mux.HandleFunc("GET /api/logs/{id}", a.handleLogDetail)
+	mux.HandleFunc("GET /api/logs/{id}/curl", a.handleExportCurl)
+	mux.HandleFunc("GET /api/logs/{id}/postman", a.handleExportPostman)
 	mux.HandleFunc("GET /api/cache/stats", a.handleCacheStats)
 	mux.HandleFunc("DELETE /api/cache", a.handleCacheClear)
 	mux.HandleFunc("GET /api/config", a.handleGetConfig)
@@ -138,6 +142,116 @@ func (a *API) handleLogDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, entry)
+}
+
+func (a *API) handleExportCurl(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	entry, err := a.db.GetRequest(id)
+	if err != nil {
+		log.Printf("api: GetRequest (curl export) error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve request")
+		return
+	}
+	if entry == nil {
+		writeError(w, http.StatusNotFound, "request not found")
+		return
+	}
+	if entry.RequestBody == "" {
+		writeError(w, http.StatusBadRequest, "request body was not stored (enable body logging)")
+		return
+	}
+
+	// Determine the base URL — use the request's Host header or fall back
+	baseURL := "http://localhost:7749"
+	if r.Header.Get("X-Base-URL") != "" {
+		baseURL = strings.TrimRight(r.Header.Get("X-Base-URL"), "/")
+	}
+
+	// Build curl command
+	var b strings.Builder
+	b.WriteString("curl ")
+	b.WriteString(fmt.Sprintf("%s/v1/chat/completions \\\n", baseURL))
+	b.WriteString("  -H 'Content-Type: application/json' \\\n")
+	b.WriteString("  -H 'Authorization: Bearer $OPENAI_API_KEY' \\\n")
+	b.WriteString("  -d '")
+
+	// Pretty-print the request body
+	var pretty json.RawMessage
+	if err := json.Unmarshal([]byte(entry.RequestBody), &pretty); err == nil {
+		indented, err := json.MarshalIndent(pretty, "  ", "  ")
+		if err == nil {
+			b.Write(indented)
+		} else {
+			b.WriteString(entry.RequestBody)
+		}
+	} else {
+		b.WriteString(entry.RequestBody)
+	}
+	b.WriteString("'")
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=\"stockyard-trace-%s.sh\"", id))
+	fmt.Fprint(w, b.String())
+}
+
+func (a *API) handleExportPostman(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	entry, err := a.db.GetRequest(id)
+	if err != nil {
+		log.Printf("api: GetRequest (postman export) error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to retrieve request")
+		return
+	}
+	if entry == nil {
+		writeError(w, http.StatusNotFound, "request not found")
+		return
+	}
+	if entry.RequestBody == "" {
+		writeError(w, http.StatusBadRequest, "request body was not stored (enable body logging)")
+		return
+	}
+
+	baseURL := "http://localhost:7749"
+	if r.Header.Get("X-Base-URL") != "" {
+		baseURL = strings.TrimRight(r.Header.Get("X-Base-URL"), "/")
+	}
+
+	collection := map[string]any{
+		"info": map[string]any{
+			"name":        fmt.Sprintf("Stockyard Trace %s", id),
+			"description": fmt.Sprintf("Exported from Stockyard trace %s (%s, %s)", id, entry.Model, entry.Provider),
+			"schema":      "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		},
+		"item": []any{
+			map[string]any{
+				"name": fmt.Sprintf("%s via %s", entry.Model, entry.Provider),
+				"request": map[string]any{
+					"method": "POST",
+					"url":    fmt.Sprintf("%s/v1/chat/completions", baseURL),
+					"header": []any{
+						map[string]string{"key": "Content-Type", "value": "application/json"},
+						map[string]string{"key": "Authorization", "value": "Bearer {{api_key}}"},
+					},
+					"body": map[string]any{
+						"mode": "raw",
+						"raw":  entry.RequestBody,
+						"options": map[string]any{
+							"raw": map[string]string{"language": "json"},
+						},
+					},
+				},
+			},
+		},
+		"variable": []any{
+			map[string]string{"key": "api_key", "value": "", "type": "string"},
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"stockyard-trace-%s.postman_collection.json\"", id))
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	enc.Encode(collection)
 }
 
 func (a *API) handleCacheStats(w http.ResponseWriter, r *http.Request) {

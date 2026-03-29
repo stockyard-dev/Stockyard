@@ -393,7 +393,9 @@ function ObserveView(){
     </div>`}
     ${detail&&html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
       <div style="display:flex;gap:8px;margin-bottom:12px">
-        <button class="btn btn-sm" onClick=${()=>{const body=typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body);const cmd='curl -X POST http://localhost:7749/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d \''+body.replace(/'/g,"'\\''")+"'";navigator.clipboard.writeText(cmd);}}>\u{1F4CB} Copy as curl</button>
+        <button class="btn btn-sm" onClick=${()=>{const body=typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body);const cmd='curl -X POST '+window.location.origin+'/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d \''+body.replace(/'/g,"'\\''")+"'";navigator.clipboard.writeText(cmd);}}>\u{1F4CB} Copy as curl</button>
+        <button class="btn btn-sm" onClick=${()=>{window.open('/api/logs/'+detail.id+'/postman','_blank');}}>\u{1F4E5} Postman</button>
+        <button class="btn btn-sm" onClick=${async()=>{try{const r=await fetch('/api/replay/'+detail.id,{method:'POST',headers:{'X-Admin-Key':localStorage.getItem('sy-admin-key')||''}});const d=await r.json();alert(d.status==='replayed'?'Replayed successfully':'Replay failed: '+(d.error||'unknown'));}catch(e){alert('Replay error: '+e.message);}}}>\u21bb Replay</button>
       </div>
       <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
       <div class="td-row"><span class="td-label">Provider</span><span class="mono">${detail.provider||'\u2014'}</span></div>
