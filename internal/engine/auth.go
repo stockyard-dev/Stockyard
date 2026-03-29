@@ -299,6 +299,13 @@ func isPublicRoute(method, path string) bool {
 			return true // Alias for lasso share
 		}
 	}
+	// Playground share (public — anyone can create/view shared sessions)
+	if method == "POST" && path == "/api/playground/share" {
+		return true
+	}
+	if method == "GET" && strings.HasPrefix(path, "/api/playground/share/") {
+		return true
+	}
 	// Cloud signup (POST /api/cloud/tenants)
 	if method == "POST" && path == "/api/cloud/tenants" {
 		return true

@@ -17,6 +17,7 @@ type PlaygroundShare struct {
 	Model     string          `json:"model"`
 	Provider  string          `json:"provider,omitempty"`
 	Modules   json.RawMessage `json:"modules,omitempty"`
+	Traces    json.RawMessage `json:"traces,omitempty"`
 	CreatedAt time.Time       `json:"created_at"`
 	ExpiresAt time.Time       `json:"expires_at"`
 }
@@ -28,6 +29,7 @@ CREATE TABLE IF NOT EXISTS playground_shares (
 	model      TEXT NOT NULL DEFAULT '',
 	provider   TEXT NOT NULL DEFAULT '',
 	modules    TEXT NOT NULL DEFAULT '{}',
+	traces     TEXT NOT NULL DEFAULT '[]',
 	created_at TEXT NOT NULL DEFAULT (datetime('now')),
 	expires_at TEXT NOT NULL DEFAULT (datetime('now', '+30 days'))
 );
@@ -38,6 +40,8 @@ func migratePlayground(conn *sql.DB) {
 	if _, err := conn.Exec(playgroundSchema); err != nil {
 		log.Printf("[playground] schema migration: %v", err)
 	}
+	// Add traces column if upgrading from older schema
+	conn.Exec(`ALTER TABLE playground_shares ADD COLUMN traces TEXT NOT NULL DEFAULT '[]'`)
 }
 
 func genShareID() string {
@@ -52,11 +56,14 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 
 	// POST /api/playground/share — create a shared session
 	mux.HandleFunc("POST /api/playground/share", func(w http.ResponseWriter, r *http.Request) {
+		// Limit body to 1MB since this is a public endpoint
+		r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 		var req struct {
 			Messages json.RawMessage `json:"messages"`
 			Model    string          `json:"model"`
 			Provider string          `json:"provider"`
 			Modules  json.RawMessage `json:"modules"`
+			Traces   json.RawMessage `json:"traces"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
@@ -72,10 +79,14 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 		if len(modules) == 0 {
 			modules = json.RawMessage(`{}`)
 		}
+		traces := req.Traces
+		if len(traces) == 0 {
+			traces = json.RawMessage(`[]`)
+		}
 
 		_, err := conn.Exec(
-			`INSERT INTO playground_shares (id, messages, model, provider, modules) VALUES (?, ?, ?, ?, ?)`,
-			id, string(req.Messages), req.Model, req.Provider, string(modules),
+			`INSERT INTO playground_shares (id, messages, model, provider, modules, traces) VALUES (?, ?, ?, ?, ?, ?)`,
+			id, string(req.Messages), req.Model, req.Provider, string(modules), string(traces),
 		)
 		if err != nil {
 			log.Printf("[playground] insert: %v", err)
@@ -99,11 +110,11 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 		}
 
 		var share PlaygroundShare
-		var messages, modules, createdAt, expiresAt string
+		var messages, modules, traces, createdAt, expiresAt string
 		err := conn.QueryRow(
-			`SELECT id, messages, model, provider, modules, created_at, expires_at FROM playground_shares WHERE id = ? AND expires_at > datetime('now')`,
+			`SELECT id, messages, model, provider, modules, traces, created_at, expires_at FROM playground_shares WHERE id = ? AND expires_at > datetime('now')`,
 			id,
-		).Scan(&share.ID, &messages, &share.Model, &share.Provider, &modules, &createdAt, &expiresAt)
+		).Scan(&share.ID, &messages, &share.Model, &share.Provider, &modules, &traces, &createdAt, &expiresAt)
 		if err == sql.ErrNoRows {
 			http.Error(w, `{"error":"not found or expired"}`, http.StatusNotFound)
 			return
@@ -116,6 +127,7 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 
 		share.Messages = json.RawMessage(messages)
 		share.Modules = json.RawMessage(modules)
+		share.Traces = json.RawMessage(traces)
 		share.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
 		share.ExpiresAt, _ = time.Parse("2006-01-02 15:04:05", expiresAt)
 

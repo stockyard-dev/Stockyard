@@ -1242,6 +1242,14 @@ async function loadSharedSession() {
       if(data.provider) state.provider = data.provider;
       state.messages = messages || [];
       
+      // Load traces if present
+      const traces = typeof data.traces === 'string' ? JSON.parse(data.traces) : (data.traces || []);
+      if(traces.length) {
+        state.traces = traces;
+        renderTraces();
+        showTab('traces');
+      }
+      
       // Show shared banner
       if(messagesEl) {
         const banner = document.createElement('div');

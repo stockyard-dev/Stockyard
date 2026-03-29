@@ -95,3 +95,43 @@ func TestPlaygroundShareNotFound(t *testing.T) {
 		t.Fatalf("expected 404, got %d", w.Code)
 	}
 }
+
+func TestPlaygroundShareWithTraces(t *testing.T) {
+	mux, db := setupPlaygroundTest(t)
+	defer db.Close()
+
+	body := `{"messages":[{"role":"user","content":"hello"}],"model":"gpt-4o","traces":[{"model":"gpt-4o","tokens":42,"latency":123,"cost":0.001,"status":"ok"}]}`
+	req := httptest.NewRequest("POST", "/api/playground/share", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	mux.ServeHTTP(w, req)
+
+	if w.Code != 200 {
+		t.Fatalf("create: status %d, body: %s", w.Code, w.Body.String())
+	}
+
+	var created struct{ ID string `json:"id"` }
+	json.Unmarshal(w.Body.Bytes(), &created)
+
+	req2 := httptest.NewRequest("GET", "/api/playground/share/"+created.ID, nil)
+	w2 := httptest.NewRecorder()
+	mux.ServeHTTP(w2, req2)
+
+	if w2.Code != 200 {
+		t.Fatalf("get: status %d", w2.Code)
+	}
+
+	var share PlaygroundShare
+	json.Unmarshal(w2.Body.Bytes(), &share)
+
+	var traces []map[string]any
+	if err := json.Unmarshal(share.Traces, &traces); err != nil {
+		t.Fatalf("traces unmarshal: %v", err)
+	}
+	if len(traces) != 1 {
+		t.Fatalf("expected 1 trace, got %d", len(traces))
+	}
+	if traces[0]["model"] != "gpt-4o" {
+		t.Errorf("trace model = %v, want gpt-4o", traces[0]["model"])
+	}
+}
