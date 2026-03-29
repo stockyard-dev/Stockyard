@@ -6,8 +6,8 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Why SQLite — Stockyard</title>
-<meta name="description" content="Stockyard uses SQLite in production. WAL mode, zero-config backups, no external database to manage. Here's why that's the right choice for an LLM proxy.">
+<title>Why SQLite for an LLM Proxy — No Postgres, No Redis, No Problem — Stockyard</title>
+<meta name="description" content="Stockyard uses embedded SQLite instead of Postgres or Redis. WAL mode, zero-config backups, one-file persistence. Why that's the right call for an LLM proxy.">
 <meta property="og:title" content="Why SQLite — Stockyard">
 <meta property="og:description" content="SQLite in production for an LLM proxy. No Postgres, no connection pools, no managed database bills. One file, one backup command.">
 <meta property="og:type" content="website">
@@ -55,7 +55,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <section class="hero">
   <div class="eyebrow">Architecture Decision</div>
-  <h1>Why <span class="accent">SQLite</span></h1>
+  <h1>Why SQLite <span class="accent">for an LLM proxy.</span></h1>
   <p class="sub">Stockyard stores everything in a single SQLite file. Not Postgres. Not MySQL. Not a managed database. Here is why, and why it works.</p>
   <a href="/docs/quickstart/" class="btn btn-primary">Try it</a>
 </section>
