@@ -84,7 +84,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <div class="nav-overlay" onclick="toggleNav()"></div>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
-    <a href="/products/">Platform</a>
+    <a href="/products/">Products</a>
     <a href="/docs/">Docs</a>
     <a href="/benchmarks/">Benchmarks</a>
     <a href="/pricing/">Pricing</a>
@@ -100,7 +100,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <h2>What we collect</h2>
 <p>Stockyard collects the minimum data necessary to provide our services.</p>
 <p><strong>Self-hosted (Free tier):</strong> We collect nothing. The binary runs entirely on your infrastructure. No telemetry, no phone-home, no analytics. Your LLM traffic, API keys, prompts, and responses never leave your machine.</p>
-<p><strong>Cloud tier:</strong> When you sign up for Stockyard Cloud, we collect:</p>
+<p><strong>Paid tiers:</strong> When you sign up for a paid Stockyard plan, we collect:</p>
 <ul>
   <li>Email address (for account management and communication)</li>
   <li>Organization name (for your workspace)</li>
@@ -109,10 +109,10 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <p><strong>Website:</strong> stockyard.dev does not use cookies, tracking pixels, or third-party analytics. We use basic server-side request logs (IP, timestamp, path) for operational monitoring, retained for 30 days.</p>
 
 <h2>How we use your data</h2>
-<p>Cloud tier data is used solely to operate your Stockyard Cloud instance, send transactional emails (receipts, security alerts), and respond to support requests. We do not sell, share, or monetize your data in any way.</p>
+<p>Paid tier data is used solely to operate your Stockyard instance, send transactional emails (receipts, security alerts), and respond to support requests. We do not sell, share, or monetize your data in any way.</p>
 
 <h2>LLM traffic</h2>
-<p>Whether self-hosted or on Stockyard Cloud, your LLM requests and responses pass through the Stockyard proxy to your configured providers. Stockyard Cloud stores trace metadata (model, token count, latency, cost) per your retention settings. Prompt and response content is stored only if you explicitly enable it in Lookout settings. You can delete all trace data at any time via the API.</p>
+<p>Whether self-hosted or on a paid plan, your LLM requests and responses pass through the Stockyard proxy to your configured providers. Stockyard stores trace metadata (model, token count, latency, cost) per your retention settings. Prompt and response content is stored only if you explicitly enable it in Lookout settings. You can delete all trace data at any time via the API.</p>
 
 <h2>Provider API keys</h2>
 <p>API keys you configure for LLM providers (OpenAI, Anthropic, etc.) are encrypted at rest using AES-256-GCM. On self-hosted deployments, keys are stored in your local SQLite database. On Cloud, keys are stored in encrypted storage with per-tenant isolation.</p>
@@ -124,7 +124,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <p>We use Stripe for payment processing and Railway for Cloud infrastructure hosting. We do not share data with any other third parties. We do not use any advertising networks or data brokers.</p>
 
 <h2>Security</h2>
-<p>Stockyard Cloud uses TLS for all connections, encrypts sensitive data at rest, and maintains a hash-chained audit ledger (Brand) for tamper-evident logging. If you discover a security vulnerability, please report it to <a href="mailto:security@stockyard.dev">security@stockyard.dev</a>.</p>
+<p>Stockyard uses TLS for all connections, encrypts sensitive data at rest, and maintains a hash-chained audit ledger (Brand) for tamper-evident logging. If you discover a security vulnerability, please report it to <a href="mailto:security@stockyard.dev">security@stockyard.dev</a>.</p>
 
 <h2>Changes</h2>
 <p>We may update this policy as our services evolve. Material changes will be announced via email to Cloud users and posted to our changelog. Continued use after changes constitutes acceptance.</p>
@@ -136,7 +136,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Platform</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
   <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
 </footer>
 

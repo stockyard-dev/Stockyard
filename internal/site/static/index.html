@@ -205,8 +205,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p class="hero-sub">Point your app at Stockyard to trace requests, control spend, and harden your LLM stack in minutes. Start free, unlock more only when you need it.</p>
   <div class="hero-stats">
     <div class="stat"><span class="stat-num">~25MB</span><span class="stat-label">Single Binary</span></div>
-    <div class="stat"><span class="stat-num">16</span><span class="stat-label">Providers</span></div>
-    <div class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></div>
+    <div class="stat"><span class="stat-num">40</span><span class="stat-label">Providers</span></div>
+    <a href="/benchmarks/" style="text-decoration:none;color:inherit" class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></a>
     <div class="stat"><span class="stat-num">5 min</span><span class="stat-label">To First Trace</span></div>
   </div>
   <div class="cta-group">
@@ -318,7 +318,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
           </div>
           <div class="dx-detail-body">
             <div class="dx-td-row"><span class="dx-td-label">Trace ID</span><span class="dx-mono" id="dx-d-id">tr_a8f21c4e</span></div>
-            <div class="dx-td-row"><span class="dx-td-label">Model</span><span class="dx-mono" id="dx-d-model">gpt-5.4-mini</span></div>
+            <div class="dx-td-row"><span class="dx-td-label">Model</span><span class="dx-mono" id="dx-d-model">gpt-4o-mini</span></div>
             <div class="dx-td-row"><span class="dx-td-label">Provider</span><span class="dx-mono" id="dx-d-prov">openai</span></div>
             <div class="dx-td-row"><span class="dx-td-label">Tokens</span><span class="dx-mono" id="dx-d-tok">142 in / 156 out</span></div>
             <div class="dx-td-row"><span class="dx-td-label">Latency</span><span class="dx-mono" id="dx-d-lat">624ms</span></div>
@@ -407,44 +407,44 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <script>
 var dxDemos = [
   {
-    id:'tr_a8f21c4e',model:'gpt-5.4',routed:'gpt-5.4-mini',provider:'openai',
+    id:'tr_a8f21c4e',model:'gpt-4o',routed:'gpt-4o-mini',provider:'openai',
     tokIn:142,tokOut:156,latency:'624',cost:'0.0018',status:'ok',
-    drover:'gpt-5.4 → gpt-5.4-mini (quality 0.91, 6.6x cheaper)',
+    drover:'gpt-4o → gpt-4o-mini (quality 0.91, 6.6x cheaper)',
     prompt:'Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M.',
     response:'Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR.',
     insights:[
-      {type:'save',title:'Drover routed gpt-5.4 → gpt-5.4-mini',desc:'Quality 0.91 — 6.6x cheaper. ~$300/mo saved at 1K req/day.'},
+      {type:'save',title:'Drover routed gpt-4o → gpt-4o-mini',desc:'Quality 0.91 — 6.6x cheaper. ~$300/mo saved at 1K req/day.'},
     ]
   },
   {
-    id:'tr_c3d94b1f',model:'claude-sonnet-4-6',routed:'gpt-5.4-nano',provider:'anthropic→openai',
+    id:'tr_c3d94b1f',model:'claude-sonnet-4-5',routed:'gpt-4.1-nano',provider:'anthropic→openai',
     tokIn:186,tokOut:276,latency:'890',cost:'0.0008',status:'ok',warn:true,
-    drover:'claude-sonnet-4-6 → gpt-5.4-nano (cross-provider, 22x cheaper)',
+    drover:'claude-sonnet-4-5 → gpt-4.1-nano (cross-provider, 22x cheaper)',
     prompt:'Draft a professional email to sarah.martinez@acmecorp.com regarding her refund request #RF-4821 for $2,340. Her credit card ending in 4242 was charged twice.',
     response:'Subject: Refund Confirmation — Request #RF-4821\n\nDear Sarah,\n\nWe sincerely apologize for the duplicate charge. Your refund of $2,340 has been processed and will appear within 5–7 business days.\n\nBest regards,\nCustomer Support',
     insights:[
       {type:'warn',title:'PII detected in prompt',desc:'email, credit card (4242), name, dollar amount — sent to third-party provider.'},
-      {type:'save',title:'Cross-provider routed to gpt-5.4-nano',desc:'22x cost reduction. Quality 0.88 for email drafting.'},
+      {type:'save',title:'Cross-provider routed to gpt-4.1-nano',desc:'22x cost reduction. Quality 0.88 for email drafting.'},
     ]
   },
   {
-    id:'tr_e7b35a02',model:'gpt-5.4',routed:'gpt-5.4',provider:'openai',
+    id:'tr_e7b35a02',model:'gpt-4o',routed:'gpt-4o',provider:'openai',
     tokIn:98,tokOut:449,latency:'1340',cost:'0.0119',status:'ok',
     drover:null,
     prompt:'Write a PostgreSQL query: users signed up last 90 days, made a purchase, haven\'t logged in for 30 days. Include email, last login, total spend, days inactive.',
     response:'SELECT u.email, u.last_login_at,\n  SUM(o.total_amount) AS total_spend,\n  EXTRACT(DAY FROM NOW() - u.last_login_at) AS days_inactive\nFROM users u JOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= NOW() - INTERVAL \'90 days\'\n  AND u.last_login_at < NOW() - INTERVAL \'30 days\'\nGROUP BY u.id, u.email, u.last_login_at\nHAVING COUNT(o.id) >= 1\nORDER BY total_spend DESC;',
     insights:[
-      {type:'save',title:'Drover kept gpt-5.4',desc:'Code tasks score 0.71 on mini, 0.58 on nano — below threshold. Correctly kept flagship.'},
+      {type:'save',title:'Drover kept gpt-4o',desc:'Code tasks score 0.71 on mini, 0.58 on nano — below threshold. Correctly kept flagship.'},
     ]
   },
   {
-    id:'tr_91d48fc6',model:'claude-opus-4-6',routed:'gpt-5.4-mini',provider:'anthropic→openai',
+    id:'tr_91d48fc6',model:'claude-opus-4',routed:'gpt-4o-mini',provider:'anthropic→openai',
     tokIn:112,tokOut:580,latency:'1780',cost:'0.0042',status:'ok',
-    drover:'claude-opus-4-6 → gpt-5.4-mini (cross-provider, 23x cheaper)',
+    drover:'claude-opus-4 → gpt-4o-mini (cross-provider, 23x cheaper)',
     prompt:'Translate to Spanish, French, Japanese. Casual brand voice:\n"The new Surface Pro 11 — laptop power that detaches into a tablet. 22-hour battery, AI-accelerated workflows."',
     response:'ES: La nueva Surface Pro 11 — potencia de laptop que se convierte en tablet.\nFR: Le nouveau Surface Pro 11 — la puissance d\'un laptop qui se détache en tablette.\nJA: 新しいSurface Pro 11 — タブレットに変身するノートPCパワー。',
     insights:[
-      {type:'save',title:'Cross-provider saved $0.093',desc:'claude-opus-4-6 ($0.097/req) → gpt-5.4-mini ($0.004/req). Quality 0.86 across 3 languages.'},
+      {type:'save',title:'Cross-provider saved $0.093',desc:'claude-opus-4 ($0.097/req) → gpt-4o-mini ($0.004/req). Quality 0.86 across 3 languages.'},
     ]
   }
 ];
@@ -558,7 +558,7 @@ dxPick(0);
     <h2 class="section-label green">Start with the core stack free</h2>
     <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Use the proxy layer, tracing, and control plane first. Add specialized tools later only if you need them.</p>
     <div class="free-grid">
-      <div class="free-card"><span class="free-num">16</span><span class="free-label">Providers, One Endpoint</span><span class="free-detail">Route requests across OpenAI, Anthropic, Google, Groq, Mistral, and 11 more through a single URL.</span></div>
+      <div class="free-card"><span class="free-num">40</span><span class="free-label">Providers, One Endpoint</span><span class="free-detail">Route requests across OpenAI, Anthropic, Google, Groq, Mistral, and 35 more through a single URL.</span></div>
       <div class="free-card"><span class="free-num">&check;</span><span class="free-label">Tracing From First Request</span><span class="free-detail">See cost, latency, and token usage on every request. No setup beyond install.</span></div>
       <div class="free-card"><span class="free-num">&check;</span><span class="free-label">Runtime Controls</span><span class="free-detail">Caching, rate limits, PII redaction, and safety filters you can toggle without redeploying.</span></div>
     </div>
@@ -600,7 +600,7 @@ dxPick(0);
     <tr><td>Language</td><td class="us">Go</td><td class="them">Python</td><td class="them">TypeScript</td></tr>
     <tr><td>Deploy</td><td class="us">Single static binary</td><td class="them">pip install + optional Redis/Postgres</td><td class="them">Managed SaaS</td></tr>
     <tr><td>Dependencies</td><td class="us">Zero</td><td class="them">Redis + Postgres for full features</td><td class="them">Cloud only</td></tr>
-    <tr><td>Free tier</td><td class="us">Proxy, tracing, routing, red-team scan</td><td class="them">Open source proxy</td><td class="them">Limited requests</td></tr>
+    <tr><td>Free tier</td><td class="us">Proxy, tracing, routing, red-team scan</td><td class="them">Open source proxy</td><td class="them">Free tier with limits</td></tr>
     <tr><td>Auto-routing</td><td class="us">Built-in (Drover)</td><td class="them">Basic fallback</td><td class="them">No</td></tr>
     <tr><td>Red-team</td><td class="us">Built-in (Feral)</td><td class="them">No</td><td class="them">No</td></tr>
     <tr><td>Request replay</td><td class="us">Built-in (Lasso)</td><td class="them">No</td><td class="them">No</td></tr>

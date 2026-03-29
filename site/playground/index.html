@@ -226,7 +226,7 @@ a{color:var(--rust-light);text-decoration:none}
   <div class="nav-right">
     <a href="/" class="nav-mobile-back"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>stockyard.dev</a>
     <a href="/products/" class="nav-link">Platform</a>
-    <a href="/cloud/" class="nav-link">Cloud</a>
+    <a href="/docs/quickstart/" class="nav-link">Quickstart</a>
     <a href="/pricing/" class="nav-link">Pricing</a>
     <a href="/docs/" class="nav-link">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard" class="nav-link">GitHub</a>
@@ -744,7 +744,7 @@ function renderStack() {
     <div class="deploy-cta">
       <h4>Deploy This Stack</h4>
       <p>Get your own Stockyard endpoint with these modules running 24/7.</p>
-      <a href="/cloud/" class="deploy-btn">Start Free →</a>
+      <a href="/docs/quickstart/" class="deploy-btn">Get Started →</a>
     </div>`;
     return;
   }
@@ -793,7 +793,7 @@ function renderStack() {
   chain += `<div class="deploy-cta">
     <h4>Deploy This Stack</h4>
     <p>${enabled.length} modules configured and tested. Get a managed endpoint running this exact stack.</p>
-    <a href="/cloud/" class="deploy-btn">Deploy on Stockyard Cloud →</a>
+    <a href="/docs/quickstart/" class="deploy-btn">Install Stockyard →</a>
     <button class="deploy-share" onclick="shareStackConfig()">or share this config with your team</button>
   </div>`;
 
@@ -1150,7 +1150,7 @@ function showSignupNudge() {
       <strong>Like what you see?</strong>
       ${exchanges} exchanges through ${enabled || 'all'} modules. Get your own endpoint — same stack, always on, zero config.
     </div>
-    <a href="/cloud/" class="nudge-cta">Deploy Free →</a>
+    <a href="/docs/quickstart/" class="nudge-cta">Install Free →</a>
     <button class="nudge-dismiss" onclick="dismissNudge(this)">✕</button>
   </div>`;
   
