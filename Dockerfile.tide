@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /tide /usr/local/bin/tide
 EXPOSE 9350
-VOLUME /data
 ENV TIDE_DATA_DIR=/data PORT=9350
 ENTRYPOINT ["tide", "serve"]

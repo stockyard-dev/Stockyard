@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /doubt /usr/local/bin/doubt
 EXPOSE 9500
-VOLUME /data
 ENV DOUBT_DATA_DIR=/data PORT=9500
 ENTRYPOINT ["doubt", "serve"]

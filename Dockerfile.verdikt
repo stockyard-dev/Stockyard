@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /verdikt /usr/local/bin/verdikt
 EXPOSE 9300
-VOLUME /data
 ENV VERDIKT_DATA_DIR=/data PORT=9300
 ENTRYPOINT ["verdikt", "serve"]

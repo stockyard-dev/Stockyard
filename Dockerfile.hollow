@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /hollow /usr/local/bin/hollow
 EXPOSE 9400
-VOLUME /data
 ENV HOLLOW_DATA_DIR=/data PORT=9400
 ENTRYPOINT ["hollow", "serve"]

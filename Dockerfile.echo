@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /echo /usr/local/bin/echo
 EXPOSE 9400
-VOLUME /data
 ENV ECHO_DATA_DIR=/data PORT=9400
 ENTRYPOINT ["echo", "serve"]

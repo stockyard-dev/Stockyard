@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /prism /usr/local/bin/prism
 EXPOSE 9250
-VOLUME /data
 ENV PRISM_DATA_DIR=/data PORT=9250
 ENTRYPOINT ["prism", "serve"]

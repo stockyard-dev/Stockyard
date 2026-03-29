@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /trailhead /usr/local/bin/trailhead
 EXPOSE 9950
-VOLUME /data
 ENV TRAILHEAD_DATA_DIR=/data PORT=9950
 ENTRYPOINT ["trailhead", "serve"]

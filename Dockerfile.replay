@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /replay /usr/local/bin/replay
 EXPOSE 9850
-VOLUME /data
 ENV REPLAY_DATA_DIR=/data PORT=9850
 ENTRYPOINT ["replay", "agent"]

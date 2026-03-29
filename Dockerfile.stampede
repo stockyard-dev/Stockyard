@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /stampede /usr/local/bin/stampede
 EXPOSE 9900
-VOLUME /data
 ENV STAMPEDE_DATA_DIR=/data PORT=9900
 ENTRYPOINT ["stampede", "serve"]

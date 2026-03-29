@@ -15,7 +15,6 @@ RUN apk add --no-cache ca-certificates tzdata curl
 COPY --from=build /stockyard /usr/local/bin/stockyard
 
 EXPOSE 7749
-VOLUME /data
 ENV DATA_DIR=/data PORT=7749
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

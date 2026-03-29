@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /grain /usr/local/bin/grain
 EXPOSE 9350
-VOLUME /data
 ENV GRAIN_DATA_DIR=/data PORT=9350
 ENTRYPOINT ["grain", "serve"]

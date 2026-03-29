@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /fault /usr/local/bin/fault
 EXPOSE 9450
-VOLUME /data
 ENV FAULT_DATA_DIR=/data PORT=9450
 ENTRYPOINT ["fault", "serve"]

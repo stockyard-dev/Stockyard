@@ -11,6 +11,5 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /morph /usr/local/bin/morph
 EXPOSE 9750
-VOLUME /data
 ENV MORPH_DATA_DIR=/data PORT=9750
 ENTRYPOINT ["morph", "serve"]

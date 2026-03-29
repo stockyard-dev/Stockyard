@@ -10,6 +10,5 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /iron ./cmd/iron/
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata
 COPY --from=build /iron /usr/local/bin/iron
-VOLUME /data
 ENV IRON_DATA_DIR=/data
 ENTRYPOINT ["iron"]
