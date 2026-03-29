@@ -6,6 +6,11 @@
 <title>__PRODUCT_NAME__ Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+window.onerror=function(msg,src,line,col,err){
+  document.getElementById('root').innerHTML='<div style="padding:2rem;font-family:monospace;color:#e8753a;background:#1a1510;max-width:600px;margin:2rem auto;border:1px solid #3d3428"><h3 style="margin-top:0">Dashboard Error</h3><pre style="white-space:pre-wrap;color:#bfb5a3;font-size:0.8rem">'+msg+'\n\nSource: '+(src||'unknown')+'\nLine: '+(line||'?')+':'+col+'\n\n'+(err&&err.stack?err.stack:'')+'</pre><p style="font-size:0.8rem;color:#8b7355">Try hard-refreshing (Ctrl+Shift+R) or clearing browser cache.</p></div>';
+};
+</script>
 <script type="module">
 import{h,render}from'https://esm.sh/preact@10.19.3';import{useState,useEffect,useCallback,useRef}from'https://esm.sh/preact@10.19.3/hooks';import htm from'https://esm.sh/htm@3.1.1';
 const html=htm.bind(h);
