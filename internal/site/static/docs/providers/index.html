@@ -116,7 +116,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h1>Provider Setup Guide</h1>
     <p class="subtitle">Environment variables, example requests, and notes for all 40 providers.</p>
 
-    <p>Stockyard auto-detects providers from environment variables at startup. Set a key, start the binary, and that provider is available through the proxy. Every request gets the same middleware stack — caching, guardrails, rate limiting, tracing — regardless of which provider handles it.</p>
+    <p>Stockyard auto-detects providers from environment variables at startup. Set a key, start the binary, and that provider is available through the <a href="/openai-compatible-proxy/">OpenAI-compatible proxy</a>. Every request gets the same middleware stack — caching, guardrails, rate limiting, tracing — regardless of which provider handles it. You can also <a href="/proxy-only/">use Stockyard as a proxy only</a> without the full platform.</p>
 
     <div class="note">
       <strong>How it works</strong><br>

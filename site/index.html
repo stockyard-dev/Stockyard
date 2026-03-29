@@ -224,9 +224,9 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2 class="section-label">Use Stockyard as just a proxy</h2>
   <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2rem;font-size:0.95rem;text-align:center">Point your app at one endpoint, route requests through it, and stop there if that&rsquo;s all you need. No forced stack adoption.</p>
   <div class="proxy-cards">
-    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">One stable endpoint</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Across 40 providers</span></div>
-    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Model aliasing</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Swap real models, keep app-facing names stable</span></div>
-    <div style="padding:1.2rem;border:1px solid var(--bg3);text-align:center"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Zero dependencies</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">One binary, one SQLite file. No Redis, no Postgres, no Docker required.</span></div>
+    <a href="/openai-compatible-proxy/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;text-decoration:none"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">One stable endpoint</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">OpenAI-compatible across 40 providers</span></a>
+    <a href="/model-aliasing/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;text-decoration:none"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Model aliasing</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">Swap real models, keep app-facing names stable</span></a>
+    <a href="/why-sqlite/" style="padding:1.2rem;border:1px solid var(--bg3);text-align:center;text-decoration:none"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.4rem">Zero dependencies</span><span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic">One binary, one SQLite file. No Redis, no Postgres.</span></a>
   </div>
   <div class="proxy-code">curl -fsSL stockyard.dev/install.sh | sh<br>stockyard start</div>
   <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);text-align:center">Change your base URL and keep moving.</p>
@@ -235,13 +235,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
     <div class="proxy-col proxy-col-no"><h4>You do not have to</h4><p>Adopt every Stockyard feature on day one</p><p>Run extra services or infrastructure</p><p>Set up Docker, Redis, or Postgres first</p><p>Learn the full platform before getting value</p></div>
   </div>
   <div class="proxy-faq">
-    <div class="proxy-faq-item"><div class="proxy-faq-q">Can I ignore the rest?</div><div class="proxy-faq-a">Yes. Proxy-only is a first-class use case.</div></div>
-    <div class="proxy-faq-item"><div class="proxy-faq-q">Do I need tracing or routing on day one?</div><div class="proxy-faq-a">No. Those are there if you want them, but the proxy layer works standalone.</div></div>
-    <div class="proxy-faq-item"><div class="proxy-faq-q">Can I swap models without changing app code?</div><div class="proxy-faq-a">Yes. Use aliases to keep app-facing names stable while changing providers underneath.</div></div>
+    <div class="proxy-faq-item"><div class="proxy-faq-q">Can I ignore the rest?</div><div class="proxy-faq-a">Yes. <a href="/proxy-only/">Proxy-only is a first-class use case.</a></div></div>
+    <div class="proxy-faq-item"><div class="proxy-faq-q">Do I need tracing or routing on day one?</div><div class="proxy-faq-a">No. Those are there if you want them, but the <a href="/self-hosted-llm-proxy/">proxy layer works standalone</a>.</div></div>
+    <div class="proxy-faq-item"><div class="proxy-faq-q">Can I swap models without changing app code?</div><div class="proxy-faq-a">Yes. Use <a href="/model-aliasing/">model aliases</a> to keep app-facing names stable while changing providers underneath.</div></div>
   </div>
   <div style="text-align:center;margin-top:2rem">
-    <a href="/guide/" class="btn btn-primary">Start with the proxy</a>
-    <a href="/docs/" class="btn btn-secondary" style="margin-left:0.8rem">Proxy-only setup</a>
+    <a href="/proxy-only/" class="btn btn-primary">Start with the proxy</a>
+    <a href="/docs/quickstart/" class="btn btn-secondary" style="margin-left:0.8rem">Quickstart guide</a>
   </div>
 </section>
 
@@ -638,11 +638,12 @@ dxPick(0);
   <h2>Start with one binary.</h2>
   <p>Install Stockyard, point your app at one endpoint, and add more later only if you want it.</p>
   <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
-    <a href="/docs/" class="btn btn-secondary">Proxy-only setup</a>
+    <a href="/docs/quickstart/" class="btn btn-primary">Install Stockyard</a>
+    <a href="/proxy-only/" class="btn btn-secondary">Proxy-only setup</a>
   </div>
   <div style="display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">
-    <a href="/docs/api/" style="color:var(--leather-light)">API Reference</a>
+    <a href="/self-hosted-llm-proxy/" style="color:var(--leather-light)">Self-hosted proxy</a>
+    <a href="/openai-compatible-proxy/" style="color:var(--leather-light)">OpenAI-compatible</a>
     <a href="/benchmarks/" style="color:var(--leather-light)">Benchmarks</a>
     <a href="/blog/" style="color:var(--leather-light)">Blog</a>
     <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--leather-light)">GitHub</a>

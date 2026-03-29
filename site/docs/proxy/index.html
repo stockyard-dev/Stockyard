@@ -171,13 +171,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p class="subtitle">The gateway layer. 76 modules, 40 providers, runtime toggles.</p>
 
     <h2 id="overview">Overview</h2>
-    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 76 toggleable modules. The proxy is OpenAI API-compatible &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
+    <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 76 toggleable modules. The proxy is <a href="/openai-compatible-proxy/">OpenAI API-compatible</a> &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>
+    <p>If you only need the proxy layer without tracing or audit, see <a href="/proxy-only/">proxy-only mode</a>.</p>
 
     <h2 id="modules">Modules</h2>
     <p>Modules are organized by category:</p>
     <table class="endpoint-table">
       <tr><th>Category</th><th>Modules</th><th>Purpose</th></tr>
-      <tr><td>routing</td><td>fallbackrouter, modelswitch, regionroute, localsync, abrouter</td><td>Provider failover, model aliasing, geo routing</td></tr>
+      <tr><td>routing</td><td>fallbackrouter, modelswitch, regionroute, localsync, abrouter</td><td>Provider failover, <a href="/model-aliasing/">model aliasing</a>, geo routing</td></tr>
       <tr><td>caching</td><td>cachelayer, embedcache, semanticcache</td><td>LLM cache for responses and embeddings</td></tr>
       <tr><td>cost</td><td>costcap, tierdrop, idlekill, outputcap, usagepulse, rateshield</td><td>Spending limits, LLM rate limiting, usage reporting</td></tr>
       <tr><td>safety</td><td>promptguard, toxicfilter, guardrail, agegate, hallucicheck, secretscan, agentguard</td><td>Content moderation, injection detection, PII</td></tr>
