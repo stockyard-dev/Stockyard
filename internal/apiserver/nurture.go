@@ -29,25 +29,22 @@ func NurtureSequence() []NurtureEmail {
 			Subject: "Welcome to Stockyard — here's what you just unlocked",
 			Body: `Hey!
 
-Welcome to Stockyard. You just got access to the self-hosted LLM proxy and control plane — 16 apps, 66 middleware modules, 16 providers, one binary.
+Welcome to Stockyard. You just got access to the self-hosted LLM proxy suite — 29 products, 76 middleware modules, 40 providers, one binary.
 
 Here's the fastest way to see it in action:
 
-1. Try the playground (no install needed):
-   https://stockyard.dev/playground
-
-2. Or install locally in 30 seconds:
+1. Install locally in 30 seconds:
    curl -fsSL stockyard.dev/install.sh | sh
    stockyard
 
-3. Then point your app at it:
+2. Point your app at it:
    export OPENAI_BASE_URL=http://localhost:7749/v1
 
-That's it. Your requests now flow through 66 middleware modules — caching, cost tracking, safety filters, rate limiting, observability — all enabled by default.
+That's it. Your requests now flow through 76 middleware modules — caching, cost tracking, safety filters, rate limiting, observability — all running by default.
 
 Quick links:
 - Docs: https://stockyard.dev/docs
-- Guide (5-min walkthrough): https://stockyard.dev/guide
+- Quickstart: https://stockyard.dev/docs/quickstart
 - Architecture: https://stockyard.dev/architecture
 
 If you have any questions, just reply to this email.
@@ -63,23 +60,20 @@ Stockyard — where LLM traffic gets sorted.`,
 You've had Stockyard for a few days. Here are 3 things worth trying:
 
 1. CHECK YOUR COSTS
-   Open the Observe dashboard at /ui and click "Observe" in the sidebar.
+   Open the dashboard at /ui and click "Lookout" in the sidebar.
    Every request is traced with exact token counts and cost attribution.
    You might be surprised how much you're spending.
 
 2. BLOCK PROMPT INJECTION
    Stockyard ships with the promptguard module enabled by default. It
    catches common injection patterns before they reach your provider.
-   Check the Trust ledger at /ui → Trust to see what's been flagged.
+   Check the Brand ledger at /ui to see what's been flagged.
 
 3. INSTALL A PACK
-   Go to /ui → Exchange and install the "Cost Control Pack" — it
+   Go to /ui -> Trading Post and install the "Cost Control Pack" — it
    configures rate limiting, spending caps, and cost alerts in one click.
 
-All of this works on the free tier. No credit card needed.
-
-If you need cloud-managed hosting with zero ops, Pro ($29/mo)
-handles everything: https://stockyard.dev/pricing
+All of this works on the free Community tier. No credit card needed.
 
 — Michael`,
 		},
@@ -98,7 +92,7 @@ call returns instantly from cache — zero tokens, zero cost.
 Most teams see 15-30% cache hit rates without any configuration.
 
 To check yours:
-1. Open /ui → Observe
+1. Open /ui -> Lookout
 2. Look at the "cache_hit" column in your traces
 3. The cost dashboard shows total savings
 
@@ -107,10 +101,8 @@ Other cost-saving modules running by default:
 - outputcap: prevents runaway token generation
 - spend: real-time cost tracking per request
 
-All 66 modules are included in every tier, including the free self-hosted tier.
-
-If you want cloud-managed hosting with zero ops, Pro is
-$29/mo: https://stockyard.dev/pricing
+All 76 modules are included in every tier, including the free
+Community tier.
 
 — Michael`,
 		},
@@ -124,7 +116,7 @@ typically run Stockyard in production:
 
 DEPLOYMENT
 Most teams run Stockyard on the same server as their app, or as a
-sidecar. The binary is ~20MB and uses <50MB of memory. No external
+sidecar. The binary is ~25MB and uses <50MB of memory. No external
 databases, no Redis, no Docker required.
 
 MULTI-PROVIDER FAILOVER
@@ -132,22 +124,18 @@ Set up OpenAI as primary and Anthropic as fallback. If OpenAI returns
 a 5xx or times out, Stockyard automatically retries on Claude. Zero
 code changes in your app.
 
+TEAM KEY ISOLATION
+Create separate teams for frontend, backend, ML — each gets its own
+API keys with isolated spend tracking and request logs. No config
+sharing, no cross-contamination.
+
 AUDIT COMPLIANCE
-The Trust app maintains an append-only, hash-chained audit ledger.
+The Brand app maintains an append-only, hash-chained audit ledger.
 Every LLM request is logged with the exact prompt, response, cost,
 and latency. Export evidence packs for compliance reviews.
 
-A/B TESTING MODELS
-Use Studio to create an experiment — send 50% of traffic to GPT-4o
-and 50% to Claude Sonnet, then compare quality scores and costs.
-
-If you're evaluating Stockyard for your team, Pro ($29/mo) includes
-cloud-managed infrastructure with zero ops and 90-day audit retention.
-
-Book a walkthrough if you want: just reply to this email.
-
-Pricing: https://stockyard.dev/pricing
 Docs: https://stockyard.dev/docs
+Pricing: https://stockyard.dev/pricing
 
 — Michael`,
 		},
@@ -158,25 +146,22 @@ Docs: https://stockyard.dev/docs
 
 It's been a month since you signed up. Quick check-in:
 
-YOUR STATS (check at /ui → Observe):
+YOUR STATS (check at /ui -> Lookout):
 - Total requests proxied
 - Total cost tracked
 - Cache savings
 - Active providers
-
-If you haven't installed yet, the playground is still the fastest way
-to see Stockyard in action: https://stockyard.dev/playground
 
 WHAT'S NEW
 We ship improvements every week. Check the changelog for what's landed
 since you signed up: https://stockyard.dev/changelog
 
 PRICING REMINDER
-Free tier: self-hosted, everything unlimited, forever
-
-Pro: $29/mo — cloud-managed, 90-day retention
-Team: $99/mo — 5 seats, RBAC, compliance
-Enterprise: $299/mo — unlimited seats, SSO, SLA
+Community: free, self-hosted, everything included
+Individual: $29.99/mo
+Pro: $99.99/mo
+Team: $299.99/mo
+Enterprise: $499.99/mo
 
 Annual billing saves 2 months: https://stockyard.dev/pricing
 
@@ -194,15 +179,13 @@ It's been 2 months. This is the last email in the sequence —
 I don't want to spam you.
 
 If Stockyard is working for you:
-→ A GitHub star helps a lot: https://github.com/stockyard-dev/stockyard
-→ Tell a friend who's building with LLMs
-→ Check out Pro ($29/mo) if you want cloud-managed hosting
+- A GitHub star helps a lot: https://github.com/stockyard-dev/Stockyard
+- Tell a friend who's building with LLMs
+- Check out the paid tiers if you want extra support
 
 If it's not working for you:
-→ Reply and tell me what's missing — I'll either build it or
+- Reply and tell me what's missing — I'll either build it or
   point you to something better
-
-Either way, the playground is always there: stockyard.dev/playground
 
 Thanks for trying Stockyard. I built this because I needed it,
 and I hope it saves you time too.
@@ -285,10 +268,13 @@ func (nr *NurtureRunner) Stop() {
 func (nr *NurtureRunner) tick() {
 	sequence := NurtureSequence()
 
-	// Get all unique emails from exchange_gate_captures
+	// Get all unique emails from exchange_gate_captures AND auth users
 	rows, err := nr.db.Query(`
-		SELECT email, MIN(created_at) as signup_date 
-		FROM exchange_gate_captures 
+		SELECT email, MIN(signup_date) as signup_date FROM (
+			SELECT email, MIN(created_at) as signup_date FROM exchange_gate_captures GROUP BY email
+			UNION
+			SELECT email, MIN(created_at) as signup_date FROM users GROUP BY email
+		) combined
 		GROUP BY email
 	`)
 	if err != nil {
@@ -370,7 +356,13 @@ func (nr *NurtureRunner) RunNow() {
 // Uses a subject-based dedup key to prevent re-sending the same blast.
 // Returns (sent, failed) counts.
 func (nr *NurtureRunner) Blast(subject, body string) (int, int) {
-	rows, err := nr.db.Query("SELECT DISTINCT email FROM exchange_gate_captures")
+	rows, err := nr.db.Query(`
+		SELECT DISTINCT email FROM (
+			SELECT email FROM exchange_gate_captures
+			UNION
+			SELECT email FROM users
+		)
+	`)
 	if err != nil {
 		log.Printf("nurture blast: query error: %v", err)
 		return 0, 0
@@ -429,7 +421,9 @@ func GetNurtureStats(db *sql.DB) NurtureStats {
 
 	// These may fail if tables don't exist yet — that's OK, zeroes are fine.
 	_ = db.QueryRow("SELECT COUNT(*) FROM exchange_gate_captures").Scan(&stats.TotalCaptures)
-	_ = db.QueryRow("SELECT COUNT(DISTINCT email) FROM exchange_gate_captures").Scan(&stats.UniqueEmails)
+	_ = db.QueryRow(`SELECT COUNT(DISTINCT email) FROM (
+		SELECT email FROM exchange_gate_captures UNION SELECT email FROM users
+	)`).Scan(&stats.UniqueEmails)
 	_ = db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE status='sent'").Scan(&stats.EmailsSent)
 	_ = db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE status='failed'").Scan(&stats.EmailsFailed)
 
