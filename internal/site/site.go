@@ -3,14 +3,50 @@ package site
 
 import (
 	"embed"
+	"encoding/json"
 	"io/fs"
 	"net/http"
 	"path"
 	"strings"
+	"sync"
+	"sync/atomic"
 )
 
 //go:embed static
 var staticFiles embed.FS
+
+// Download counters (in-memory, reset on restart — engine persists periodically)
+var (
+	installCount  atomic.Int64
+	installUnique sync.Map // IP → bool
+)
+
+// DownloadStats returns current download counts.
+func DownloadStats() map[string]any {
+	unique := 0
+	installUnique.Range(func(_, _ any) bool { unique++; return true })
+	return map[string]any{
+		"install_downloads": installCount.Load(),
+		"install_unique":    unique,
+	}
+}
+
+// clientIP extracts the client IP from a request.
+func clientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		if i := strings.IndexByte(xff, ','); i > 0 {
+			return strings.TrimSpace(xff[:i])
+		}
+		return strings.TrimSpace(xff)
+	}
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return xri
+	}
+	if i := strings.LastIndex(r.RemoteAddr, ":"); i > 0 {
+		return r.RemoteAddr[:i]
+	}
+	return r.RemoteAddr
+}
 
 // setSecurityHeaders adds standard security headers to the response.
 func setSecurityHeaders(w http.ResponseWriter) {
@@ -153,13 +189,15 @@ func Register(mux *http.ServeMux) {
 		servePage(w, data, "public, max-age=60")
 	})
 
-	// Serve install script
+	// Serve install script (with download tracking)
 	mux.HandleFunc("GET /install.sh", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "install.sh")
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
+		installCount.Add(1)
+		installUnique.Store(clientIP(r), true)
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "public, max-age=300")
 		w.Write(data)
@@ -172,9 +210,17 @@ func Register(mux *http.ServeMux) {
 			http.NotFound(w, r)
 			return
 		}
+		installCount.Add(1)
+		installUnique.Store(clientIP(r), true)
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "public, max-age=300")
 		w.Write(data)
+	})
+
+	// Download stats endpoint
+	mux.HandleFunc("GET /api/downloads", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(DownloadStats())
 	})
 
 	// Serve robots.txt
