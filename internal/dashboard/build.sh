@@ -27,6 +27,7 @@ cat \
   "$SRC/09b-products.js" \
   "$SRC/10-settings.js" \
   "$SRC/12-teams.js" \
+  "$SRC/13-growth.js" \
   "$SRC/11-app.js" \
   "$SRC/tail.html" \
   > "$OUT"

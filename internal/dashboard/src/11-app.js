@@ -70,6 +70,7 @@ function App(){
     ${APP_ORDER.map(id=>{const a=APPS[id];return html`<button key=${id} class="nav-item ${active===id?'active':''}" onClick=${()=>setActive(id)}><span class="nav-icon">${a.icon}</span><span class="nav-label">${a.name}</span></button>`})}
     <div class="nav-spacer"></div><div class="nav-divider"></div>
     <button class="nav-item ${active==='teams'?'active':''}" onClick=${()=>setActive('teams')}><span class="nav-icon">\u{1F465}</span><span class="nav-label">Teams</span></button>
+    <button class="nav-item ${active==='growth'?'active':''}" onClick=${()=>setActive('growth')}><span class="nav-icon">\u{1F4C8}</span><span class="nav-label">Growth</span></button>
     <button class="nav-item ${active==='settings'?'active':''}" onClick=${()=>setActive('settings')}><span class="nav-icon">\u2699</span><span class="nav-label">Settings</span></button>
     <a class="nav-item" href="/api/apps" target="_blank"><span class="nav-icon">{}</span><span class="nav-label">Raw API</span></a>
     <a class="nav-item" href="https://stockyard.dev/docs" target="_blank"><span class="nav-icon">?</span><span class="nav-label">Docs</span></a>

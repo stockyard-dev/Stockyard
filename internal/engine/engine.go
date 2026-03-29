@@ -994,6 +994,10 @@ func Boot(pc ProductConfig) {
 	// Register marketing website (/, /docs/, /pricing/, etc.)
 	site.Register(srv.Mux(), db.Conn())
 
+	// Growth dashboard (admin stats tracking)
+	MigrateGrowth(db.Conn())
+	RegisterGrowthRoutes(srv.Mux(), db.Conn())
+
 	// License status endpoint (uses same enforcer as middleware for accurate counts)
 	srv.Mux().HandleFunc("GET /api/license", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

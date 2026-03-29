@@ -46,6 +46,6 @@ function SettingsView(){
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
 }
 
-const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,products:ProductsView,settings:SettingsView,teams:TeamsView};
+const VIEWS={overview:OverviewView,proxy:ProxyView,observe:ObserveView,trust:TrustView,studio:StudioView,forge:ForgeView,exchange:ExchangeView,products:ProductsView,settings:SettingsView,teams:TeamsView,growth:GrowthView};
 
 
