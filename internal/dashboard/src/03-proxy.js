@@ -141,7 +141,7 @@ function ProxyView(){
       <${Btn} small onClick=${importAliases}>\u{1F4E5} Import YAML<//>
     </div>
     <${DataTable} columns=${[{key:'alias',label:'Alias',width:'1fr',mono:true},{key:'model',label:'Model',width:'1.5fr',mono:true},{key:'a',label:'',width:'80px',render:r=>html`<${Btn} small variant="danger" onClick=${()=>deleteAlias(r.alias)}>Delete<//>`}]} rows=${aliases} emptyMsg="No aliases configured. Aliases let your app call logical names like 'primary-chat' instead of real model names."/>`:
-    html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`:
+    tab==='routes'?html`<${DataTable} columns=${[{key:'method',label:'Method',width:'100px',render:r=>html`<${Badge} text=${r.method||'ANY'} variant="muted"/>`},{key:'path',label:'Path',width:'1.5fr',mono:true},{key:'handler',label:'Handler',width:'1fr',mono:true}]} rows=${d('routes')} emptyMsg="No routes."/>`:
     tab==='diagnostics'?html`<${ConfigDiagnostics} providers=${d('providers')} modules=${d('modules')} aliases=${aliases}/>`:
     null}
     ${toast&&html`<${Toast} msg=${toast.msg} type=${toast.type} onDone=${()=>setToast(null)}/>`}`;
