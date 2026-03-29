@@ -200,3 +200,24 @@ func (db *DB) UpsertUsageMetering(dimension, dimensionKey string, cost float64, 
 	)
 	return err
 }
+
+// --- Team Spend ---
+
+// UpsertTeamSpendRollup inserts or updates a daily team spend rollup.
+func (db *DB) UpsertTeamSpendRollup(teamID string, cost float64, tokensIn, tokensOut int) error {
+	if teamID == "" {
+		return nil
+	}
+	date := time.Now().Format("2006-01-02")
+	_, err := db.conn.Exec(`
+		INSERT INTO team_spend_rollups (team_id, date, total_cost, total_requests, total_tokens_in, total_tokens_out)
+		VALUES (?, ?, ?, 1, ?, ?)
+		ON CONFLICT(team_id, date) DO UPDATE SET
+			total_cost = total_cost + excluded.total_cost,
+			total_requests = total_requests + 1,
+			total_tokens_in = total_tokens_in + excluded.total_tokens_in,
+			total_tokens_out = total_tokens_out + excluded.total_tokens_out`,
+		teamID, date, cost, tokensIn, tokensOut,
+	)
+	return err
+}

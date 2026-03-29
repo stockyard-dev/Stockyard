@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/billingerr"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 )
@@ -352,6 +353,15 @@ func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error
 	if os.Getenv("STOCKYARD_TRUST_PROXY") != "" {
 		req.UserID = r.Header.Get("X-User-Id")
 		req.CustomerID = r.Header.Get("X-Customer-ID")
+	}
+
+	// Bridge auth context → request fields. Auth middleware (sk-sy- key validation)
+	// takes precedence over X-User-Id headers for attribution.
+	if user := auth.UserFromContext(r.Context()); user != nil {
+		req.UserID = fmt.Sprintf("%d", user.ID)
+	}
+	if team := auth.TeamFromContext(r.Context()); team != nil {
+		req.TeamID = fmt.Sprintf("%d", team.ID)
 	}
 
 	// Extract JWT claims for billing meter — store only the claim, NEVER the raw header.

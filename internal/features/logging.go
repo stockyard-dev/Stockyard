@@ -84,6 +84,7 @@ func LoggingMiddleware(cfg LoggingConfig) proxy.Middleware {
 				Timestamp:    start,
 				Project:      req.Project,
 				UserID:       req.UserID,
+				TeamID:       req.TeamID,
 				Provider:     providerName(req, resp),
 				Model:        req.Model,
 				TokensIn:     tokensIn,

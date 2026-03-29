@@ -20,6 +20,7 @@ type SpendCounter struct {
 	mu       sync.RWMutex
 	projects map[string]*ProjectSpend
 	users    map[string]*ProjectSpend // keyed by user ID
+	teams    map[string]*ProjectSpend // keyed by team ID
 }
 
 // NewSpendCounter creates a new spend counter.
@@ -27,6 +28,7 @@ func NewSpendCounter() *SpendCounter {
 	return &SpendCounter{
 		projects: make(map[string]*ProjectSpend),
 		users:    make(map[string]*ProjectSpend),
+		teams:    make(map[string]*ProjectSpend),
 	}
 }
 
@@ -164,6 +166,60 @@ func (sc *SpendCounter) GetAllUsers() map[string]ProjectSpend {
 
 	result := make(map[string]ProjectSpend, len(sc.users))
 	for k, v := range sc.users {
+		result[k] = *v
+	}
+	return result
+}
+
+// AddTeamWithTokens increments the spend counter for a team.
+func (sc *SpendCounter) AddTeamWithTokens(teamID string, amount float64, tokensIn, tokensOut int) {
+	if teamID == "" {
+		return
+	}
+	if amount < 0 {
+		amount = 0
+	}
+	if tokensIn < 0 {
+		tokensIn = 0
+	}
+	if tokensOut < 0 {
+		tokensOut = 0
+	}
+	sc.mu.Lock()
+	defer sc.mu.Unlock()
+
+	now := time.Now()
+	ps, ok := sc.teams[teamID]
+	if !ok {
+		ps = &ProjectSpend{Updated: now}
+		sc.teams[teamID] = ps
+	}
+
+	prevY, prevM, prevD := ps.Updated.Date()
+	curY, curM, curD := now.Date()
+	if prevY != curY || prevM != curM || prevD != curD {
+		ps.Today = 0
+		ps.TokensIn = 0
+		ps.TokensOut = 0
+	}
+	if prevY != curY || prevM != curM {
+		ps.Month = 0
+	}
+
+	ps.Today += amount
+	ps.Month += amount
+	ps.TokensIn += tokensIn
+	ps.TokensOut += tokensOut
+	ps.Updated = now
+}
+
+// GetAllTeams returns a copy of all team spend data.
+func (sc *SpendCounter) GetAllTeams() map[string]ProjectSpend {
+	sc.mu.RLock()
+	defer sc.mu.RUnlock()
+
+	result := make(map[string]ProjectSpend, len(sc.teams))
+	for k, v := range sc.teams {
 		result[k] = *v
 	}
 	return result

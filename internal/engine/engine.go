@@ -1308,6 +1308,12 @@ func Boot(pc ProductConfig) {
 	// 2. Debugger — per-middleware step recording
 	db.Conn().Exec(`ALTER TABLE observe_traces ADD COLUMN debug_steps TEXT DEFAULT '[]'`)
 
+	// 2a. Team isolation — user_id + team_id on traces
+	db.Conn().Exec(`ALTER TABLE observe_traces ADD COLUMN user_id TEXT DEFAULT ''`)
+	db.Conn().Exec(`ALTER TABLE observe_traces ADD COLUMN team_id TEXT DEFAULT ''`)
+	db.Conn().Exec(`CREATE INDEX IF NOT EXISTS idx_traces_user ON observe_traces(user_id)`)
+	db.Conn().Exec(`CREATE INDEX IF NOT EXISTS idx_traces_team ON observe_traces(team_id)`)
+
 	// 2b. Replay Mode — store request body for replay capability
 	MigrateReplayMode(db.Conn())
 
@@ -2646,8 +2652,11 @@ func buildPreFlight(pc ProductConfig, cfg *config.Config, counter *tracker.Spend
 			if req.UserID != "" {
 				counter.AddUserWithTokens(req.UserID, cost, inputTokens, outputTokens)
 			}
-			log.Printf("stream spend: project=%s user=%s model=%s tokens_in=%d tokens_out=%d cost=$%.6f provider=%s",
-				req.Project, req.UserID, req.Model, inputTokens, outputTokens, cost, providerName)
+			if req.TeamID != "" {
+				counter.AddTeamWithTokens(req.TeamID, cost, inputTokens, outputTokens)
+			}
+			log.Printf("stream spend: project=%s user=%s team=%s model=%s tokens_in=%d tokens_out=%d cost=$%.6f provider=%s",
+				req.Project, req.UserID, req.TeamID, req.Model, inputTokens, outputTokens, cost, providerName)
 		}
 	}
 

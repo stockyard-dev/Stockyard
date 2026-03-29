@@ -48,6 +48,11 @@ func SpendMiddleware(cfg SpendConfig) proxy.Middleware {
 				cfg.Counter.AddUserWithTokens(req.UserID, cost, tokensIn, tokensOut)
 			}
 
+			// Also track per-team spend
+			if req.TeamID != "" {
+				cfg.Counter.AddTeamWithTokens(req.TeamID, cost, tokensIn, tokensOut)
+			}
+
 			// Check alert thresholds
 			if cfg.Alerter != nil && cfg.Caps != nil {
 				if capCfg, ok := cfg.Caps[req.Project]; ok {

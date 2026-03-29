@@ -83,7 +83,7 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 				}
 			}
 			source, _ := req.Extra["_source"].(string)
-			go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source)
+			go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source, req.UserID, req.TeamID)
 
 			// Auto-feed platform products (Relic, Crucible) from every request
 			if ProductAutoFeed != nil && resp != nil && err == nil {
@@ -137,7 +137,7 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 }
 
 // recordObserveTrace writes a trace + daily cost rollup to Observe tables.
-func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, resp *provider.Response, reqErr error, dur time.Duration, responseBody string, tags map[string]string, source string) {
+func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, resp *provider.Response, reqErr error, dur time.Duration, responseBody string, tags map[string]string, source string, userID string, teamID string) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("[observe-hook] panic: %v", r)
@@ -203,10 +203,10 @@ func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, res
 
 	now := time.Now().UTC().Format(time.RFC3339)
 	_, err := conn.Exec(`INSERT INTO observe_traces
-		(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source, request_body)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source, request_body, user_id, team_id)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		traceID, traceID, "proxy", "chat.completion", prov, model, status,
-		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now, responseBody, tagsJSON, source, requestBody)
+		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now, responseBody, tagsJSON, source, requestBody, userID, teamID)
 	if err != nil {
 		// Table might not exist if apps aren't registered — silent skip
 		return

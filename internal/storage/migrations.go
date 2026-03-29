@@ -8,6 +8,7 @@ func (db *DB) migrate() error {
 		migrationV3,
 		migrationV4,
 		migrationV5,
+		migrationV6,
 	}
 
 	// Create migrations tracking table
@@ -320,4 +321,38 @@ CREATE TABLE IF NOT EXISTS consensus_results (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_consensus_trace ON consensus_results(trace_id);
+`
+
+const migrationV6 = `
+-- Teams: named groups that own API keys for isolated logs/metrics/spend
+CREATE TABLE IF NOT EXISTS teams (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    description TEXT DEFAULT '',
+    created_by INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Team-scoped API keys
+ALTER TABLE api_keys ADD COLUMN team_id INTEGER DEFAULT NULL;
+CREATE INDEX IF NOT EXISTS idx_api_keys_team ON api_keys(team_id);
+
+-- Team attribution on request logs
+ALTER TABLE requests ADD COLUMN team_id TEXT DEFAULT '';
+CREATE INDEX IF NOT EXISTS idx_requests_team ON requests(team_id);
+
+-- Team spend rollups
+CREATE TABLE IF NOT EXISTS team_spend_rollups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    team_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    total_cost REAL DEFAULT 0,
+    total_requests INTEGER DEFAULT 0,
+    total_tokens_in INTEGER DEFAULT 0,
+    total_tokens_out INTEGER DEFAULT 0,
+    UNIQUE(team_id, date)
+);
+CREATE INDEX IF NOT EXISTS idx_team_spend ON team_spend_rollups(team_id);
 `

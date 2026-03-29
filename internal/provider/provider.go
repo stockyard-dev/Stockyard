@@ -89,6 +89,7 @@ type Request struct {
 	// Routing metadata (not sent to provider).
 	Project    string            `json:"-"`
 	UserID     string            `json:"-"`
+	TeamID     string            `json:"-"` // Team namespace for key isolation
 	CustomerID string            `json:"-"` // X-Customer-ID header for billing attribution
 	ClientIP   string            `json:"-"` // Client IP for IP-based access control
 	Schema     string            `json:"-"` // X-Schema header value

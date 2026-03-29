@@ -10,6 +10,7 @@ import (
 type SpendStore interface {
 	UpsertSpendRollup(project string, cost float64, tokensIn, tokensOut int) error
 	UpsertUserSpendRollup(userID string, cost float64, tokensIn, tokensOut int) error
+	UpsertTeamSpendRollup(teamID string, cost float64, tokensIn, tokensOut int) error
 	UpsertUsageMetering(dimension, dimensionKey string, cost float64, tokensIn, tokensOut int) error
 }
 
@@ -20,6 +21,7 @@ type Flusher struct {
 	interval  time.Duration
 	last      map[string]lastFlushed // last flushed values per project
 	lastUsers map[string]lastFlushed // last flushed values per user
+	lastTeams map[string]lastFlushed // last flushed values per team
 }
 
 // lastFlushed tracks what was last successfully written.
@@ -43,6 +45,7 @@ func NewFlusher(counter *SpendCounter, store SpendStore, interval time.Duration)
 		interval:  interval,
 		last:      make(map[string]lastFlushed),
 		lastUsers: make(map[string]lastFlushed),
+		lastTeams: make(map[string]lastFlushed),
 	}
 }
 
@@ -67,6 +70,7 @@ func (f *Flusher) Start(ctx context.Context) {
 func (f *Flusher) flush() {
 	f.flushProjects()
 	f.flushUsers()
+	f.flushTeams()
 }
 
 func (f *Flusher) flushProjects() {
@@ -134,6 +138,40 @@ func (f *Flusher) flushUsers() {
 
 		// Also populate usage_metering for the "user" dimension
 		f.store.UpsertUsageMetering("user", userID, costDelta, tokenInDelta, tokenOutDelta)
+	}
+}
+
+func (f *Flusher) flushTeams() {
+	all := f.counter.GetAllTeams()
+	for teamID, spend := range all {
+		prev := f.lastTeams[teamID]
+		costDelta := spend.Today - prev.cost
+		tokenInDelta := spend.TokensIn - prev.tokensIn
+		tokenOutDelta := spend.TokensOut - prev.tokensOut
+
+		if costDelta <= 0 && tokenInDelta <= 0 && tokenOutDelta <= 0 {
+			continue
+		}
+
+		var err error
+		for attempt := 0; attempt < maxFlushRetries; attempt++ {
+			err = f.store.UpsertTeamSpendRollup(teamID, costDelta, tokenInDelta, tokenOutDelta)
+			if err == nil {
+				break
+			}
+			if attempt < maxFlushRetries-1 {
+				time.Sleep(time.Duration(attempt+1) * 100 * time.Millisecond)
+			}
+		}
+
+		if err != nil {
+			log.Printf("flusher: team upsert failed for %s after %d attempts: %v", teamID, maxFlushRetries, err)
+			continue
+		}
+		f.lastTeams[teamID] = lastFlushed{cost: spend.Today, tokensIn: spend.TokensIn, tokensOut: spend.TokensOut}
+
+		// Also populate usage_metering for the "team" dimension
+		f.store.UpsertUsageMetering("team", teamID, costDelta, tokenInDelta, tokenOutDelta)
 	}
 }
 

@@ -32,6 +32,10 @@ func (m *mockStore) UpsertUserSpendRollup(userID string, cost float64, tokensIn,
 	return nil
 }
 
+func (m *mockStore) UpsertTeamSpendRollup(teamID string, cost float64, tokensIn, tokensOut int) error {
+	return nil
+}
+
 func TestFlusherFlushes(t *testing.T) {
 	counter := NewSpendCounter()
 	store := &mockStore{}

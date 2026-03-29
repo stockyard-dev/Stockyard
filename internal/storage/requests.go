@@ -12,6 +12,7 @@ type RequestLog struct {
 	Timestamp      time.Time `json:"timestamp"`
 	Project        string    `json:"project"`
 	UserID         string    `json:"user_id,omitempty"`
+	TeamID         string    `json:"team_id,omitempty"`
 	Provider       string    `json:"provider"`
 	Model          string    `json:"model"`
 	TokensIn       int       `json:"tokens_in"`
@@ -30,11 +31,11 @@ type RequestLog struct {
 // InsertRequest logs a proxied request to the database.
 func (db *DB) InsertRequest(r *RequestLog) error {
 	_, err := db.conn.Exec(`
-		INSERT INTO requests (id, timestamp, project, user_id, provider, model,
+		INSERT INTO requests (id, timestamp, project, user_id, team_id, provider, model,
 			tokens_in, tokens_out, cost_usd, latency_ms, status, cache_hit,
 			validation_pass, failover_used, request_body, response_body, error)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		r.ID, r.Timestamp.Format(time.RFC3339), r.Project, r.UserID,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		r.ID, r.Timestamp.Format(time.RFC3339), r.Project, r.UserID, r.TeamID,
 		r.Provider, r.Model, r.TokensIn, r.TokensOut, r.CostUSD,
 		r.LatencyMs, r.Status, r.CacheHit, r.ValidationPass,
 		r.FailoverUsed, r.RequestBody, r.ResponseBody, r.Error,

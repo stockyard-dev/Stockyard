@@ -19,6 +19,7 @@ type contextKey int
 const (
 	userKey contextKey = iota
 	apiKeyKey
+	teamKey
 )
 
 // WithUser adds a User to the context.
@@ -41,6 +42,17 @@ func WithAPIKey(ctx context.Context, k *APIKey) context.Context {
 func APIKeyFromContext(ctx context.Context) *APIKey {
 	k, _ := ctx.Value(apiKeyKey).(*APIKey)
 	return k
+}
+
+// WithTeam adds a Team to the context.
+func WithTeam(ctx context.Context, t *Team) context.Context {
+	return context.WithValue(ctx, teamKey, t)
+}
+
+// TeamFromContext extracts the authenticated Team from context.
+func TeamFromContext(ctx context.Context) *Team {
+	t, _ := ctx.Value(teamKey).(*Team)
+	return t
 }
 
 // ─── Proxy Auth Middleware ──────────────────────────────────────────────────
@@ -90,6 +102,14 @@ func ProxyAuthMiddleware(store *Store, mode ProxyAuthMode) func(http.Handler) ht
 				// Inject user context
 				ctx := WithUser(r.Context(), user)
 				ctx = WithAPIKey(ctx, ak)
+
+				// If key belongs to a team, inject team context
+				if ak.TeamID != nil && *ak.TeamID != 0 {
+					if team, err := store.GetTeam(*ak.TeamID); err == nil {
+						ctx = WithTeam(ctx, team)
+					}
+				}
+
 				next.ServeHTTP(w, r.WithContext(ctx))
 				return
 			}
