@@ -2,33 +2,137 @@
 package site
 
 import (
+	"crypto/sha256"
+	"database/sql"
 	"embed"
+	"encoding/hex"
 	"encoding/json"
 	"io/fs"
+	"log"
 	"net/http"
 	"path"
 	"strings"
-	"sync"
-	"sync/atomic"
 )
 
 //go:embed static
 var staticFiles embed.FS
 
-// Download counters (in-memory, reset on restart — engine persists periodically)
-var (
-	installCount  atomic.Int64
-	installUnique sync.Map // IP → bool
-)
+const installSchema = `
+CREATE TABLE IF NOT EXISTS install_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    ip_hash TEXT NOT NULL,
+    user_agent TEXT NOT NULL DEFAULT '',
+    referrer TEXT NOT NULL DEFAULT '',
+    path TEXT NOT NULL DEFAULT '/install.sh',
+    script_version TEXT NOT NULL DEFAULT 'v1'
+);
+CREATE INDEX IF NOT EXISTS idx_install_ts ON install_events(timestamp);
+CREATE INDEX IF NOT EXISTS idx_install_ip ON install_events(ip_hash);
+`
 
-// DownloadStats returns current download counts.
-func DownloadStats() map[string]any {
-	unique := 0
-	installUnique.Range(func(_, _ any) bool { unique++; return true })
-	return map[string]any{
-		"install_downloads": installCount.Load(),
-		"install_unique":    unique,
+// recordInstall writes a row to the install_events table.
+func recordInstall(db *sql.DB, r *http.Request, scriptPath string) {
+	if db == nil {
+		return
 	}
+	ip := clientIP(r)
+	// Hash the IP — we don't need the raw address, just uniqueness
+	h := sha256.Sum256([]byte(ip))
+	ipHash := hex.EncodeToString(h[:16]) // first 16 bytes = 32 hex chars
+
+	ua := r.Header.Get("User-Agent")
+	if len(ua) > 512 {
+		ua = ua[:512]
+	}
+	ref := r.Header.Get("Referer")
+	if len(ref) > 512 {
+		ref = ref[:512]
+	}
+
+	go func() {
+		_, err := db.Exec(
+			`INSERT INTO install_events (ip_hash, user_agent, referrer, path) VALUES (?,?,?,?)`,
+			ipHash, ua, ref, scriptPath,
+		)
+		if err != nil {
+			log.Printf("[site] install event write failed: %v", err)
+		}
+	}()
+}
+
+// DownloadStats returns install analytics from SQLite.
+func DownloadStats(db *sql.DB) map[string]any {
+	if db == nil {
+		return map[string]any{"error": "no database"}
+	}
+
+	stats := map[string]any{}
+
+	// Total
+	var total int64
+	db.QueryRow("SELECT COUNT(*) FROM install_events").Scan(&total)
+	stats["total"] = total
+
+	// Unique (by ip_hash)
+	var unique int64
+	db.QueryRow("SELECT COUNT(DISTINCT ip_hash) FROM install_events").Scan(&unique)
+	stats["unique"] = unique
+
+	// Last 24h
+	var last24h, unique24h int64
+	db.QueryRow("SELECT COUNT(*), COUNT(DISTINCT ip_hash) FROM install_events WHERE timestamp >= datetime('now', '-24 hours')").Scan(&last24h, &unique24h)
+	stats["last_24h"] = map[string]any{"total": last24h, "unique": unique24h}
+
+	// Last 7d
+	var last7d, unique7d int64
+	db.QueryRow("SELECT COUNT(*), COUNT(DISTINCT ip_hash) FROM install_events WHERE timestamp >= datetime('now', '-7 days')").Scan(&last7d, &unique7d)
+	stats["last_7d"] = map[string]any{"total": last7d, "unique": unique7d}
+
+	// Last 30d
+	var last30d, unique30d int64
+	db.QueryRow("SELECT COUNT(*), COUNT(DISTINCT ip_hash) FROM install_events WHERE timestamp >= datetime('now', '-30 days')").Scan(&last30d, &unique30d)
+	stats["last_30d"] = map[string]any{"total": last30d, "unique": unique30d}
+
+	// By day (last 30 days)
+	rows, err := db.Query(`
+		SELECT date(timestamp) as day, COUNT(*), COUNT(DISTINCT ip_hash)
+		FROM install_events
+		WHERE timestamp >= datetime('now', '-30 days')
+		GROUP BY day ORDER BY day`)
+	if err == nil {
+		defer rows.Close()
+		var daily []map[string]any
+		for rows.Next() {
+			var day string
+			var count, uniq int64
+			rows.Scan(&day, &count, &uniq)
+			daily = append(daily, map[string]any{"date": day, "total": count, "unique": uniq})
+		}
+		if daily == nil {
+			daily = []map[string]any{}
+		}
+		stats["by_day"] = daily
+	}
+
+	// Top user agents (for install method analysis)
+	uaRows, err := db.Query(`
+		SELECT user_agent, COUNT(*) as c
+		FROM install_events
+		GROUP BY user_agent ORDER BY c DESC LIMIT 10`)
+	if err == nil {
+		defer uaRows.Close()
+		var agents []map[string]any
+		for uaRows.Next() {
+			var ua string
+			var c int64
+			uaRows.Scan(&ua, &c)
+			agents = append(agents, map[string]any{"user_agent": ua, "count": c})
+		}
+		stats["top_agents"] = agents
+	}
+
+	return stats
 }
 
 // clientIP extracts the client IP from a request.
@@ -68,7 +172,18 @@ func servePage(w http.ResponseWriter, data []byte, cacheControl string) {
 }
 
 // Register mounts the site routes on the given ServeMux.
-func Register(mux *http.ServeMux) {
+func Register(mux *http.ServeMux, db *sql.DB) {
+	// Run install tracking migration
+	if db != nil {
+		for _, stmt := range strings.Split(installSchema, ";") {
+			stmt = strings.TrimSpace(stmt)
+			if stmt != "" {
+				db.Exec(stmt)
+			}
+		}
+		log.Println("[site] install tracking table ready")
+	}
+
 	// Strip the "static/" prefix so files are served from root
 	sub, err := fs.Sub(staticFiles, "static")
 	if err != nil {
@@ -189,15 +304,14 @@ func Register(mux *http.ServeMux) {
 		servePage(w, data, "public, max-age=60")
 	})
 
-	// Serve install script (with download tracking)
+	// Serve install script (with persistent download tracking)
 	mux.HandleFunc("GET /install.sh", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "install.sh")
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
-		installCount.Add(1)
-		installUnique.Store(clientIP(r), true)
+		recordInstall(db, r, "/install.sh")
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "public, max-age=300")
 		w.Write(data)
@@ -210,17 +324,16 @@ func Register(mux *http.ServeMux) {
 			http.NotFound(w, r)
 			return
 		}
-		installCount.Add(1)
-		installUnique.Store(clientIP(r), true)
+		recordInstall(db, r, "/install")
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("Cache-Control", "public, max-age=300")
 		w.Write(data)
 	})
 
-	// Download stats endpoint
+	// Download stats endpoint (persistent)
 	mux.HandleFunc("GET /api/downloads", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(DownloadStats())
+		json.NewEncoder(w).Encode(DownloadStats(db))
 	})
 
 	// Serve robots.txt

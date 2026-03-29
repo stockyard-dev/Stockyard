@@ -992,7 +992,7 @@ func Boot(pc ProductConfig) {
 	srv.WrapHandler(recoveryMiddleware)
 
 	// Register marketing website (/, /docs/, /pricing/, etc.)
-	site.Register(srv.Mux())
+	site.Register(srv.Mux(), db.Conn())
 
 	// License status endpoint (uses same enforcer as middleware for accurate counts)
 	srv.Mux().HandleFunc("GET /api/license", func(w http.ResponseWriter, r *http.Request) {
