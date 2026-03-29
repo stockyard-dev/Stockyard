@@ -168,6 +168,25 @@ Works with any OpenAI-compatible client — Python, Node, Go, curl.
 - **No key leakage** — provider keys never appear in logs, traces, or API responses
 - **Security headers** — HSTS, CSP, X-Frame-Options, X-Content-Type-Options
 
+## Shipped This Week
+
+<!-- SHIPPED-START -->
+**12 changes** in the last 7 days:
+
+- **Model router UI** — visual routing rules with create/edit/delete, savings tracker, optimization recommendations (2026-03-29)
+- **Request replay export** — curl + Postman export from any trace, replay button in dashboard (2026-03-29)
+- **Public ROADMAP.md** — honest roadmap with shipped/planned/not-planned sections (2026-03-29)
+- **Site-wide consistency audit** — 25 fixes across 82 pages (provider counts, fake models, nav, BSL accuracy) (2026-03-29)
+- **Prometheus /metrics endpoint** — zero-dependency metrics + port alignment to 7749 (2026-03-29)
+- **Production Dockerfile + Helm chart** — multi-arch Docker, ghcr.io publishing, Helm values for 40 providers (2026-03-28)
+- **Structured provider errors** — provider name, upstream status, X-Stockyard-Provider-Error header (2026-03-28)
+- **Dashboard provider health panel** — per-provider status, adapter badges, latency, errors (2026-03-28)
+- **Provider directory + docs** — /providers/ page, /docs/providers/ setup guide (2026-03-28)
+- **24 new providers** — DeepInfra, NVIDIA NIM, Cerebras, SambaNova, AI21, and 19 more (16→40 total) (2026-03-28)
+
+_See [full changelog](https://stockyard.dev/changelog/) for details._
+<!-- SHIPPED-END -->
+
 ## Build from Source
 
 ```bash

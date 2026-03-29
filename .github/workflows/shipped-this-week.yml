@@ -1,0 +1,56 @@
+name: Update Shipped This Week
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+  workflow_dispatch:       # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git log
+
+      - name: Generate shipped section
+        run: |
+          SINCE=$(date -d '7 days ago' +%Y-%m-%d 2>/dev/null || date -v-7d +%Y-%m-%d)
+
+          # Get commits from last 7 days, skip merge commits and meta commits
+          COMMITS=$(git log --since="$SINCE" --pretty=format:"- **%s** (%ad)" --date=short \
+            | grep -v "^- \*\*Merge\|^- \*\*trigger:\|^- \*\*chore:" \
+            | head -20)
+
+          if [ -z "$COMMITS" ]; then
+            COMMITS="_No commits in the last 7 days._"
+          fi
+
+          COUNT=$(echo "$COMMITS" | grep -c "^-" || true)
+
+          # Build the new section
+          SECTION="<!-- SHIPPED-START -->\n"
+          SECTION+="**${COUNT} changes** in the last 7 days:\n\n"
+          SECTION+="${COMMITS}\n\n"
+          SECTION+="_See [full changelog](https://stockyard.dev/changelog/) for details._\n"
+          SECTION+="<!-- SHIPPED-END -->"
+
+          # Replace between markers
+          awk -v section="$SECTION" '
+            /<!-- SHIPPED-START -->/ { print section; skip=1; next }
+            /<!-- SHIPPED-END -->/ { skip=0; next }
+            !skip { print }
+          ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet README.md || {
+            git add README.md
+            git commit -m "chore: update Shipped This Week in README"
+            git push
+          }
