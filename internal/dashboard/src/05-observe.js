@@ -39,6 +39,29 @@ function ObserveView(){
   const buckets=ts.buckets||[];const provs=ts.providers||[];const models=ts.models||[];
   const PCOLORS=['var(--rust-light)','var(--gold)','var(--green)','var(--leather-light)','var(--cream-muted)'];
   const sseDot=sseStatus==='connected'?'var(--green)':sseStatus==='connecting'?'var(--gold)':'var(--red)';
+  const copyCurl=()=>{if(!detail)return;const body=typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body);const cmd='curl -X POST '+window.location.origin+'/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer YOUR_KEY" -d @- <<CURL_EOF\n'+body+'\nCURL_EOF';navigator.clipboard.writeText(cmd)};
+  const openPostman=()=>{if(!detail)return;window.open('/api/logs/'+detail.id+'/postman','_blank')};
+  const doReplay=async()=>{if(!detail)return;try{const r=await fetch('/api/replay/'+detail.id,{method:'POST',headers:{'X-Admin-Key':ss('sy_admin_key')}});const d=await r.json();alert(d.status==='replayed'?'Replayed successfully':'Replay failed: '+(d.error||'unknown'))}catch(e){alert('Replay error: '+e.message)}};
+  const renderDetail=()=>{
+    if(!detail)return null;
+    return html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-sm" onClick=${copyCurl}>\u{1F4CB} Copy as curl</button>
+        <button class="btn btn-sm" onClick=${openPostman}>\u{1F4E5} Postman</button>
+        <button class="btn btn-sm" onClick=${doReplay}>\u21bb Replay</button>
+      </div>
+      <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
+      <div class="td-row"><span class="td-label">Provider</span><span class="mono">${detail.provider||'\u2014'}</span></div>
+      <div class="td-row"><span class="td-label">Tokens</span><span class="mono">${(detail.tokens_in||0)+' in / '+(detail.tokens_out||0)+' out'}</span></div>
+      <div class="td-row"><span class="td-label">Latency</span><span class="mono">${fmt.ms(detail.duration_ms||detail.latency_ms)}</span></div>
+      <div class="td-row"><span class="td-label">Cost</span><span class="mono" style="color:var(--gold)">${fmt.usd(detail.cost_usd)}</span></div>
+      <div class="td-row"><span class="td-label">Status</span><span class="mono">${detail.status||detail.status_code||200}</span></div>
+      <div class="td-row"><span class="td-label">Time</span><span class="mono">${detail.timestamp||detail.created_at||'\u2014'}</span></div>
+      ${detail.user_id?html`<div class="td-row"><span class="td-label">User ID</span><span class="mono">#${detail.user_id}</span></div>`:''}
+      ${detail.request_body?html`<div class="td-section"><div class="td-label">Request</div><pre class="td-pre">${typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body,null,2)}</pre></div>`:''}
+      ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
+    </div><//>`;
+  };
 
   return html`<div class="page-head"><div class="page-eyebrow">Observe</div><h2>Analytics & Traces</h2><p class="page-sub">Real-time streaming, cost attribution, alerts & anomaly detection.</p></div>
     <div class="stats-row">
@@ -111,22 +134,6 @@ function ObserveView(){
         {key:'model',label:'Model',width:'1fr',mono:true,render:r=>r.model||'\u2014'}
       ]} rows=${safetyEvents} emptyMsg="No safety events \u2014 events appear when safety middlewares detect PII, injections, secrets, or toxic content."/>
     </div>`}
-    ${detail&&html`<${Modal} title="Trace Detail" onClose=${()=>setDetail(null)}><div class="trace-detail">
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <button class="btn btn-sm" onClick=${()=>{const body=typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body);const cmd='curl -X POST '+window.location.origin+'/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d \''+body.replace(/'/g,"'\\''")+"'";navigator.clipboard.writeText(cmd);}}>\u{1F4CB} Copy as curl</button>
-        <button class="btn btn-sm" onClick=${()=>{window.open('/api/logs/'+detail.id+'/postman','_blank');}}>\u{1F4E5} Postman</button>
-        <button class="btn btn-sm" onClick=${async()=>{try{const r=await fetch('/api/replay/'+detail.id,{method:'POST',headers:{'X-Admin-Key':ss('sy_admin_key')}});const d=await r.json();alert(d.status==='replayed'?'Replayed successfully':'Replay failed: '+(d.error||'unknown'));}catch(e){alert('Replay error: '+e.message);}}}>\u21bb Replay</button>
-      </div>
-      <div class="td-row"><span class="td-label">Model</span><span class="mono">${detail.model||'\u2014'}</span></div>
-      <div class="td-row"><span class="td-label">Provider</span><span class="mono">${detail.provider||'\u2014'}</span></div>
-      <div class="td-row"><span class="td-label">Tokens</span><span class="mono">${(detail.tokens_in||0)+' in / '+(detail.tokens_out||0)+' out'}</span></div>
-      <div class="td-row"><span class="td-label">Latency</span><span class="mono">${fmt.ms(detail.duration_ms||detail.latency_ms)}</span></div>
-      <div class="td-row"><span class="td-label">Cost</span><span class="mono" style="color:var(--gold)">${fmt.usd(detail.cost_usd)}</span></div>
-      <div class="td-row"><span class="td-label">Status</span><span class="mono">${detail.status||detail.status_code||200}</span></div>
-      <div class="td-row"><span class="td-label">Time</span><span class="mono">${detail.timestamp||detail.created_at||'\u2014'}</span></div>
-      ${detail.user_id?html`<div class="td-row"><span class="td-label">User ID</span><span class="mono">#${detail.user_id}</span></div>`:''}
-      ${detail.request_body?html`<div class="td-section"><div class="td-label">Request</div><pre class="td-pre">${typeof detail.request_body==='string'?detail.request_body:JSON.stringify(detail.request_body,null,2)}</pre></div>`:''}
-      ${detail.response_body?html`<div class="td-section"><div class="td-label">Response</div><pre class="td-pre">${typeof detail.response_body==='string'?detail.response_body:JSON.stringify(detail.response_body,null,2)}</pre></div>`:''}
-    </div><//>}`
+    ${renderDetail()}`;
 }
 
