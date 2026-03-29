@@ -200,18 +200,28 @@ One team cannot see another team's data. The dashboard includes a team picker th
 ## Shipped This Week
 
 <!-- SHIPPED-START -->
-**16 changes** in the last 7 days:
+**20 changes** in the last 7 days:
 
-- **Multi-tenancy enforcement** — team boundaries enforced across logs, traces, spend, audit, and dashboard with team picker (2026-03-29)
-- **Per-team API key isolation** — create teams with isolated API keys, spend tracking, and request logs (2026-03-29)
-- **Docs expansion** — 4 pages rewritten/added (team isolation, configuration reference, SDKs with real code, integrations with LangChain/Vercel AI SDK/LiteLLM examples) (2026-03-29)
-- **Nurture drip activation** — 6-email sequence updated and wired to Resend (2026-03-29)
-- **Model router UI** — visual routing rules with create/edit/delete, savings tracker, optimization recommendations (2026-03-29)
-- **Request replay export** — curl + Postman export from any trace, replay button in dashboard (2026-03-29)
-- **Public ROADMAP.md** — honest roadmap with shipped/planned/not-planned sections (2026-03-29)
-- **Site-wide consistency audit** — 25 fixes across 82 pages (provider counts, fake models, nav, BSL accuracy) (2026-03-29)
-- **Prometheus /metrics endpoint** — zero-dependency metrics + port alignment to 7749 (2026-03-29)
-- **Production Dockerfile + Helm chart** — multi-arch Docker, ghcr.io publishing, Helm values for 40 providers (2026-03-28)
+- **fix: pricing page checkout buttons — exempt billing endpoints from admin auth** (2026-03-29)
+- **Claude: README update — team isolation, current counts, Sprint 2 shipped items** (2026-03-29)
+- **Claude: Multi-tenancy enforcement — team boundaries across logs, traces, spend, audit, dashboard** (2026-03-29)
+- **Claude: Nurture drip activation — updated copy, wired auth signups, ready for Resend** (2026-03-29)
+- **Claude: Docs expansion — 4 pages rewritten/added, sidebar updated across all 21 docs pages** (2026-03-29)
+- **Claude: Per-team API key isolation — schema, auth, middleware, proxy, hooks, spend, dashboard** (2026-03-29)
+- **Claude: Model router UI + Shipped This Week auto-updater** (2026-03-29)
+- **Claude: Request replay export — curl + Postman + replay button** (2026-03-29)
+- **Claude: ROADMAP.md + README/product stale count fixes** (2026-03-29)
+- **fix: railway.toml — set startCommand to 'stockyard' matching Dockerfile ENTRYPOINT** (2026-03-29)
+- **fix: railway.toml — remove build/start overrides conflicting with Dockerfile** (2026-03-29)
+- **fix: remove VOLUME from all Dockerfiles — banned on Railway** (2026-03-29)
+- **Claude: Site-wide consistency audit — 25 fixes across 82 pages** (2026-03-29)
+- **Claude: Prometheus /metrics endpoint + port alignment 4200→7749 across entire codebase** (2026-03-29)
+- **Claude: Production Dockerfile + docker-compose with 40 providers + Helm chart update + ghcr.io multi-arch publishing workflow** (2026-03-28)
+- **Claude: Structured provider error responses — include provider name, upstream status, and X-Stockyard-Provider-Error header** (2026-03-28)
+- **Claude: Dashboard provider health panel — collapsible overview with per-provider status, adapter type badges, latency, errors, available providers list** (2026-03-28)
+- **Claude: Add /providers/ directory + /docs/providers/ setup guide, sweep 16→40 across all site pages** (2026-03-28)
+- **Claude: Add 10 more providers (30→40): AI21, FriendliAI, Moonshot/Kimi, DashScope/Qwen, GitHub Models, Baseten, Yi/01.AI, SGLang, TGI, plus Nscale engine wiring** (2026-03-28)
+- **Claude: Add 14 new providers (16→30): DeepInfra, NVIDIA NIM, Cerebras, SambaNova, HuggingFace, Hyperbolic, Novita, Featherless, Lambda, Nebius, Lepton, Nscale, vLLM, Azure auto-detect** (2026-03-28)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
