@@ -611,7 +611,7 @@ function TrustView(){
       <div class="td-row"><span class="td-label">Hash</span><span class="mono" style="font-size:0.7rem;word-break:break-all">${detail.hash}</span></div>
       <div class="td-row"><span class="td-label">Prev Hash</span><span class="mono" style="font-size:0.7rem;word-break:break-all">${detail.prev_hash||'(genesis)'}</span></div>
       ${detail.detail?html`<div class="td-section"><div class="td-label">Detail</div><pre class="td-pre">${typeof detail.detail==='string'?detail.detail:JSON.stringify(detail.detail,null,2)}</pre></div>`:''}
-    </div><//>}``;
+    </div><//>}`}`;
 }
 function EvidenceForm({onCreate}){
   const[name,setName]=useState('');const today=new Date().toISOString().split('T')[0];const[from,setFrom]=useState(today);const[to,setTo]=useState(today+'T23:59:59Z');
