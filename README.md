@@ -4,7 +4,7 @@
 
 ### Self-hosted LLM proxy, tracing, and security in one Go binary
 
-[Website](https://stockyard.dev) · [Docs](https://stockyard.dev/docs) · [Playground](https://stockyard.dev/playground) · [Changelog](https://stockyard.dev/changelog)
+[Website](https://stockyard.dev) · [Docs](https://stockyard.dev/docs) · [Quickstart](https://stockyard.dev/docs/quickstart) · [Changelog](https://stockyard.dev/changelog)
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-BSL_1.1-E8753A)](LICENSE)
@@ -71,6 +71,7 @@ Everything you need for production proxy + tracing + audit:
 - **Lookout** — automatic request tracing, per-model cost dashboards, anomaly detection
 - **Brand** — SHA-256 hash-chained audit ledger, policy enforcement, compliance evidence
 - **Tack Room** — versioned prompt templates, A/B experiments
+- **Team isolation** — per-team API keys with isolated logs, spend tracking, and audit trails
 - **Drover** — automatic cost routing, 100 decisions/day free
 - **Feral quickscan** — 5 adversarial probes, instant A–F security grade
 - Unlimited requests. No credit card. Self-hosted on your infrastructure.
@@ -145,6 +146,34 @@ response = client.chat.completions.create(
 
 Works with any OpenAI-compatible client — Python, Node, Go, curl.
 
+## Team Isolation
+
+Give each team or project its own API keys. Requests are automatically isolated in logs, traces, spend tracking, and the audit ledger.
+
+```bash
+# Create a team
+curl -X POST http://localhost:7749/api/teams \
+  -H "X-Admin-Key: $ADMIN_KEY" \
+  -d '{"name": "Frontend"}'
+
+# Generate a team key
+curl -X POST http://localhost:7749/api/teams/1/keys \
+  -H "X-Admin-Key: $ADMIN_KEY" \
+  -d '{"name": "production"}'
+# → {"key": "sk-sy-...", "team_id": 1, ...}
+
+# Use the team key — requests are automatically scoped
+curl http://localhost:7749/v1/chat/completions \
+  -H "Authorization: Bearer sk-sy-TEAM_KEY" \
+  -d '{"model": "gpt-4o", "messages": [...]}'
+
+# View team-scoped spend
+curl http://localhost:7749/api/teams/1/spend \
+  -H "X-Admin-Key: $ADMIN_KEY"
+```
+
+One team cannot see another team's data. The dashboard includes a team picker that filters all views.
+
 ## vs LiteLLM
 
 | | Stockyard | LiteLLM |
@@ -157,7 +186,7 @@ Works with any OpenAI-compatible client — Python, Node, Go, curl.
 | Auto cost routing | Built-in (Drover) | Basic fallback |
 | Request replay | Built-in (Lasso) | Not included |
 | Prompt evolution | Built-in (Breed) | Not included |
-| Providers | 16 | 100+ |
+| Providers | 40 | 100+ |
 | Binary size | ~25MB | ~200MB+ Docker image |
 | License | BSL 1.1 | MIT |
 
@@ -171,18 +200,18 @@ Works with any OpenAI-compatible client — Python, Node, Go, curl.
 ## Shipped This Week
 
 <!-- SHIPPED-START -->
-**12 changes** in the last 7 days:
+**16 changes** in the last 7 days:
 
+- **Multi-tenancy enforcement** — team boundaries enforced across logs, traces, spend, audit, and dashboard with team picker (2026-03-29)
+- **Per-team API key isolation** — create teams with isolated API keys, spend tracking, and request logs (2026-03-29)
+- **Docs expansion** — 4 pages rewritten/added (team isolation, configuration reference, SDKs with real code, integrations with LangChain/Vercel AI SDK/LiteLLM examples) (2026-03-29)
+- **Nurture drip activation** — 6-email sequence updated and wired to Resend (2026-03-29)
 - **Model router UI** — visual routing rules with create/edit/delete, savings tracker, optimization recommendations (2026-03-29)
 - **Request replay export** — curl + Postman export from any trace, replay button in dashboard (2026-03-29)
 - **Public ROADMAP.md** — honest roadmap with shipped/planned/not-planned sections (2026-03-29)
 - **Site-wide consistency audit** — 25 fixes across 82 pages (provider counts, fake models, nav, BSL accuracy) (2026-03-29)
 - **Prometheus /metrics endpoint** — zero-dependency metrics + port alignment to 7749 (2026-03-29)
 - **Production Dockerfile + Helm chart** — multi-arch Docker, ghcr.io publishing, Helm values for 40 providers (2026-03-28)
-- **Structured provider errors** — provider name, upstream status, X-Stockyard-Provider-Error header (2026-03-28)
-- **Dashboard provider health panel** — per-provider status, adapter badges, latency, errors (2026-03-28)
-- **Provider directory + docs** — /providers/ page, /docs/providers/ setup guide (2026-03-28)
-- **24 new providers** — DeepInfra, NVIDIA NIM, Cerebras, SambaNova, AI21, and 19 more (16→40 total) (2026-03-28)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
@@ -200,8 +229,11 @@ Requires Go 1.22+. No other dependencies.
 
 ## Documentation
 
-- [Getting Started (5 min)](https://stockyard.dev/guide)
-- [API Reference](https://stockyard.dev/docs/api)
+- [Quickstart (5 min)](https://stockyard.dev/docs/quickstart)
+- [Configuration](https://stockyard.dev/docs/config)
+- [SDKs (Python, Go, TypeScript)](https://stockyard.dev/docs/sdks)
+- [API Reference (360+ endpoints)](https://stockyard.dev/docs/api)
+- [Team Key Isolation](https://stockyard.dev/docs/team)
 - [Products](https://stockyard.dev/products)
 - [Benchmarks](https://stockyard.dev/benchmarks)
 - [vs LiteLLM](https://stockyard.dev/vs/litellm)
