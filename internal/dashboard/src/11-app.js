@@ -3,7 +3,7 @@ function Onboarding({onComplete}){
   const[result,setResult]=useState(null);const[err,setErr]=useState('');const[loading,setLoading]=useState(false);
   const createUser=async()=>{setLoading(true);setErr('');const r=await api('/api/auth/users',{method:'POST',body:JSON.stringify({email,name})});setLoading(false);if(r._error||r.error){setErr(r.error||'Failed');return}setResult(r);setStep(1)};
   const addProvider=async()=>{if(!result?.user)return;setLoading(true);setErr('');const r=await api('/api/auth/users/'+result.user.id+'/providers/'+prov,{method:'PUT',body:JSON.stringify({api_key:pk})});setLoading(false);if(r._error||r.error){setErr(r.error||'Failed');return}setStep(2)};
-  const finish=()=>{sessionStorage.setItem('sy_onboarded','1');onComplete()};
+  const finish=()=>{ss('sy_onboarded','1');onComplete()};
   const STEPS=[{n:'Create User',d:'Set up the first user account.'},{n:'Add Provider',d:'Connect your LLM provider API key.'},{n:'Ready',d:'Your proxy is configured.'}];
   return html`<div class="onboard-overlay"><div class="onboard-box">
     <div class="onboard-header"><div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:8px">Welcome to Stockyard</div>
@@ -55,10 +55,10 @@ function TeamPicker(){
 }
 
 function App(){
-  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!sessionStorage.getItem('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!sessionStorage.getItem('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
+  const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!ss('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!ss('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
   const[teamVer,setTeamVer]=useState(0);
   const View=VIEWS[active]||OverviewView;
-  useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!sessionStorage.getItem('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
+  useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!ss('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
   useEffect(()=>{const h=()=>setTeamVer(v=>v+1);window.addEventListener('teamchange',h);return()=>window.removeEventListener('teamchange',h)},[]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};

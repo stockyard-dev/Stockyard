@@ -14,12 +14,12 @@ function DataTable({columns,rows,emptyMsg,onRowClick}){
 }
 
 function UpgradeBanner(){
-  const[triggers,setTriggers]=useState([]);const[dismissed,setDismissed]=useState(()=>JSON.parse(sessionStorage.getItem('sy_dismissed_triggers')||'[]'));const[idx,setIdx]=useState(0);
+  const[triggers,setTriggers]=useState([]);const[dismissed,setDismissed]=useState(()=>{try{return JSON.parse(ss('sy_dismissed_triggers')||'[]')}catch(e){return[]}});const[idx,setIdx]=useState(0);
   useEffect(()=>{(async()=>{const r=await api('/api/upgrade-prompts');if(r.triggers)setTriggers(r.triggers)})()},[]);
   const visible=triggers.filter(t=>!dismissed.includes(t.id));
   if(visible.length===0)return null;
   const t=visible[idx%visible.length]||visible[0];
-  const dismiss=()=>{const d=[...dismissed,t.id];setDismissed(d);sessionStorage.setItem('sy_dismissed_triggers',JSON.stringify(d))};
+  const dismiss=()=>{const d=[...dismissed,t.id];setDismissed(d);ss('sy_dismissed_triggers',JSON.stringify(d))};
   return html`<div class="upgrade-banner"><div class="upgrade-banner-inner"><span class="upgrade-badge">\u2191 Upgrade</span><strong>${t.title}</strong><span class="upgrade-msg">${t.message}</span><a href=${t.cta_link} class="upgrade-cta">${t.cta}</a><button class="upgrade-dismiss" onClick=${dismiss}>\u2715</button>${visible.length>1&&html`<button class="upgrade-next" onClick=${()=>setIdx(i=>i+1)}>\u203A</button>`}</div></div>`;
 }
 
