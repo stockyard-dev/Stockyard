@@ -10,10 +10,11 @@ const APPS={
   products:{id:'products',name:'Products',icon:'\u2B22',desc:'Platform products'},
 };
 const APP_ORDER=['overview','proxy','observe','trust','studio','forge','exchange','products'];
-let _adminKey=sessionStorage.getItem('sy_admin_key')||'';
-function setAdminKey(k){_adminKey=k;sessionStorage.setItem('sy_admin_key',k)}
-let _teamScope=sessionStorage.getItem('sy_team_scope')||'';
-function setTeamScope(id){_teamScope=id;if(id)sessionStorage.setItem('sy_team_scope',id);else sessionStorage.removeItem('sy_team_scope')}
+function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k)||'';if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){return ''}}
+let _adminKey=ss('sy_admin_key');
+function setAdminKey(k){_adminKey=k;ss('sy_admin_key',k)}
+let _teamScope=ss('sy_team_scope');
+function setTeamScope(id){_teamScope=id;if(id)ss('sy_team_scope',id);else ss('sy_team_scope',null)}
 function getTeamScope(){return _teamScope}
 async function api(path,opts={}){
   const headers=opts.headers||{};

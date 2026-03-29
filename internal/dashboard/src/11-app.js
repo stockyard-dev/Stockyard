@@ -42,7 +42,7 @@ function AuthGate({onAuth}){
 
 function TeamPicker(){
   const[teams,setTeams]=useState([]);const[sel,setSel]=useState(getTeamScope());
-  useEffect(()=>{(async()=>{const r=await fetch('/api/teams',{headers:{'X-Admin-Key':sessionStorage.getItem('sy_admin_key')||''}});if(r.ok){const d=await r.json();setTeams(d.teams||[])}})()},[]);
+  useEffect(()=>{(async()=>{const r=await fetch('/api/teams',{headers:{'X-Admin-Key':ss('sy_admin_key')}});if(r.ok){const d=await r.json();setTeams(d.teams||[])}})()},[]);
   const onChange=v=>{setSel(v);setTeamScope(v);window.dispatchEvent(new Event('teamchange'))};
   if(teams.length===0)return null;
   return html`<div style="padding:0 1rem;margin-bottom:0.5rem">
