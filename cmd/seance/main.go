@@ -278,7 +278,7 @@ func autoDiscoverSources(coll *collector.Collector) {
 	// Try common local health endpoints
 	commonEndpoints := map[string]string{
 		"localhost:8080": "http://localhost:8080/health",
-		"localhost:4200": "http://localhost:4200/health",
+		"localhost:7749": "http://localhost:7749/health",
 		"localhost:3000": "http://localhost:3000/health",
 	}
 	for name, url := range commonEndpoints {

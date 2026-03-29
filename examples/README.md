@@ -10,7 +10,7 @@ curl -fsSL stockyard.dev/install.sh | sh
 stockyard
 
 # Your app just changes the base URL
-export OPENAI_BASE_URL=http://localhost:4200/v1
+export OPENAI_BASE_URL=http://localhost:7749/v1
 ```
 
 ## Examples

@@ -27,5 +27,5 @@ client := openai.NewClientWithConfig(config)
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `STOCKYARD_URL` | `http://localhost:4200` | Stockyard proxy URL |
+| `STOCKYARD_URL` | `http://localhost:7749` | Stockyard proxy URL |
 | `STOCKYARD_ENABLED` | `true` | Set to `false` to bypass Stockyard |

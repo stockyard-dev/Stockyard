@@ -14,11 +14,11 @@ FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata curl
 COPY --from=build /stockyard /usr/local/bin/stockyard
 
-EXPOSE 4200
+EXPOSE 7749
 VOLUME /data
-ENV DATA_DIR=/data PORT=4200
+ENV DATA_DIR=/data PORT=7749
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:4200/health || exit 1
+  CMD curl -f http://localhost:7749/health || exit 1
 
 ENTRYPOINT ["stockyard"]

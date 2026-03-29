@@ -9,11 +9,11 @@ services:
     build: .
     image: ghcr.io/stockyard-dev/stockyard:latest
     ports:
-      - "${STOCKYARD_PORT:-4200}:4200"
+      - "${STOCKYARD_PORT:-7749}:7749"
     volumes:
       - stockyard-data:/data
     environment:
-      - PORT=4200
+      - PORT=7749
       - DATA_DIR=/data
       - STOCKYARD_ADMIN_KEY=${STOCKYARD_ADMIN_KEY:-}
       - STOCKYARD_LICENSE_KEY=${STOCKYARD_LICENSE_KEY:-}
@@ -60,7 +60,7 @@ services:
       - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-stockyard}
     restart: unless-stopped
     # Verify after start:
-    # curl http://localhost:4200/v1/chat/completions \
+    # curl http://localhost:7749/v1/chat/completions \
     #   -H "Content-Type: application/json" \
     #   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'
 

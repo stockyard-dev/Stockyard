@@ -26,7 +26,7 @@ type Client struct {
 func NewClient() *Client {
 	url := os.Getenv("STOCKYARD_URL")
 	if url == "" {
-		url = "http://localhost:4200"
+		url = "http://localhost:7749"
 	}
 	return &Client{
 		BaseURL:  url,

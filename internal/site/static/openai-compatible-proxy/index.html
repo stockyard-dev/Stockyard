@@ -70,7 +70,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <span class="comment"># After: through Stockyard</span>
 <span class="cmd">client = OpenAI(</span>
 <span class="cmd">    api_key="sk-...",</span>
-<span class="cmd">    base_url=<span class="highlight">"http://localhost:4200/v1"</span></span>
+<span class="cmd">    base_url=<span class="highlight">"http://localhost:7749/v1"</span></span>
 <span class="cmd">)</span>
 
 <span class="comment"># Everything else is identical. Same methods, same parameters.</span>
@@ -80,9 +80,9 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <section class="section-alt">
   <div class="section-alt-inner">
     <h2 class="section-label">Works with tools you already use</h2>
-    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Cursor:</strong> Settings &rarr; Models &rarr; Override OpenAI Base URL &rarr; <code style="font-size:0.8rem">http://localhost:4200/v1</code></p>
+    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Cursor:</strong> Settings &rarr; Models &rarr; Override OpenAI Base URL &rarr; <code style="font-size:0.8rem">http://localhost:7749/v1</code></p>
     <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Windsurf / Copilot:</strong> Set the OpenAI-compatible endpoint in settings. Stockyard handles the rest.</p>
-    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Aider / Cline:</strong> Set <code style="font-size:0.8rem">OPENAI_API_BASE=http://localhost:4200/v1</code> and they route through Stockyard automatically.</p>
+    <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem"><strong style="color:var(--cream)">Aider / Cline:</strong> Set <code style="font-size:0.8rem">OPENAI_API_BASE=http://localhost:7749/v1</code> and they route through Stockyard automatically.</p>
     <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto"><strong style="color:var(--cream)">Any OpenAI SDK:</strong> Python, Node, Go, Rust — any SDK that lets you set a base URL works out of the box.</p>
   </div>
 </section>
@@ -92,12 +92,12 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p style="font-size:0.95rem;color:var(--cream-dim);max-width:600px;margin:0 auto 1.5rem">Your app sends OpenAI-formatted requests. Stockyard translates to the right provider format underneath. Request <code style="font-size:0.8rem">claude-sonnet-4-20250514</code> as the model and Stockyard sends it to the Anthropic API. Request <code style="font-size:0.8rem">gemini-pro</code> and it goes to Google. Your app code stays the same.</p>
   <div class="code-block">
 <span class="comment"># Request Claude through OpenAI format</span>
-<span class="cmd">$ curl localhost:4200/v1/chat/completions \</span>
+<span class="cmd">$ curl localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -d '{"model":"claude-sonnet-4-20250514","messages":[...]}'</span>
 <span class="output">&#8594; translated and sent to Anthropic API</span>
 
 <span class="comment"># Request Gemini through the same format</span>
-<span class="cmd">$ curl localhost:4200/v1/chat/completions \</span>
+<span class="cmd">$ curl localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -d '{"model":"gemini-pro","messages":[...]}'</span>
 <span class="output">&#8594; translated and sent to Google API</span>
 

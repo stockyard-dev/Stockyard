@@ -7,7 +7,7 @@ COPY stockyard /usr/local/bin/stockyard
 RUN mkdir -p /data && chown stockyard:stockyard /data
 
 ENV STOCKYARD_DATA_DIR=/data
-EXPOSE 4200
-ENV PORT=4200
+EXPOSE 7749
+ENV PORT=7749
 USER stockyard
 ENTRYPOINT ["stockyard"]

@@ -44,7 +44,7 @@ npm run build -- --target x86_64-pc-windows-msvc
 ## Configuration
 
 On first launch, configure:
-- **Stockyard URL** — defaults to `http://localhost:4200`
+- **Stockyard URL** — defaults to `http://localhost:7749`
 - **Admin Key** — for API access
 - **Notifications** — toggle alerts for cost, provider, guardrail events
 

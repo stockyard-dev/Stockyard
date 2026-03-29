@@ -10,8 +10,8 @@
 curl -fsSL https://stockyard.dev/install.sh | sh
 stockyard
 
-# Proxy:   http://localhost:4200/v1
-# Console: http://localhost:4200/ui
+# Proxy:   http://localhost:7749/v1
+# Console: http://localhost:7749/ui
 ```
 
 ## Build from Source

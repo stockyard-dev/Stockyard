@@ -29,7 +29,7 @@ Instead of the full suite (port 4000), you can point at individual products:
 | Product | Port | What It Does |
 |---------|------|-------------|
 | CostCap | 4100 | Spending caps only |
-| CacheLayer | 4200 | Response caching only |
+| CacheLayer | 7749 | Response caching only |
 | RateShield | 4500 | Rate limiting only |
 | FallbackRouter | 4400 | Failover routing only |
 

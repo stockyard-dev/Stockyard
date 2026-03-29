@@ -40,7 +40,7 @@ type config struct {
 }
 
 func loadConfig() config {
-	cfg := config{URL: "http://localhost:4200"}
+	cfg := config{URL: "http://localhost:7749"}
 
 	// Load from config file first.
 	home, _ := os.UserHomeDir()
@@ -143,7 +143,7 @@ Usage:
   sy version                             CLI and server version
 
 Configuration:
-  STOCKYARD_URL       Server URL (default: http://localhost:4200)
+  STOCKYARD_URL       Server URL (default: http://localhost:7749)
   STOCKYARD_ADMIN_KEY Admin API key
   ~/.stockyard/config.json  {"url": "...", "admin_key": "..."}`)
 }

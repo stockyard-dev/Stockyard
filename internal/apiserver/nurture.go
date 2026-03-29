@@ -41,7 +41,7 @@ Here's the fastest way to see it in action:
    stockyard
 
 3. Then point your app at it:
-   export OPENAI_BASE_URL=http://localhost:4200/v1
+   export OPENAI_BASE_URL=http://localhost:7749/v1
 
 That's it. Your requests now flow through 66 middleware modules — caching, cost tracking, safety filters, rate limiting, observability — all enabled by default.
 

@@ -27,7 +27,7 @@ Stockyard puts all of it in one Go binary with embedded SQLite:
   curl -fsSL stockyard.dev/install.sh | sh
   stockyard
 
-That's it. Dashboard at localhost:4200/ui, proxy at localhost:4200/v1.
+That's it. Dashboard at localhost:7749/ui, proxy at localhost:7749/v1.
 
 What's inside:
 - 66 middleware modules (cost caps, caching, rate limiting, PII redaction, 

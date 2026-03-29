@@ -149,7 +149,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/studio/status", a.handleStatus)
 
 	// Golden dataset testing
-	proxyPort := 4200
+	proxyPort := 7749
 	if a.runner != nil {
 		proxyPort = a.runner.proxyPort
 	}

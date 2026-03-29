@@ -1,7 +1,7 @@
 #!/bin/bash
 # Set up Stockyard webhook alerting
 
-BASE="http://localhost:4200"
+BASE="http://localhost:7749"
 
 echo "=== Register Slack webhook ==="
 curl -s -X POST "$BASE/api/webhooks" \

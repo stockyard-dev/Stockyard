@@ -106,7 +106,7 @@ jobs:
 
       - name: Smoke test
         run: |
-          docker run -d --name sy-test -p 4200:4200 stockyard:latest
+          docker run -d --name sy-test -p 7749:7749 stockyard:latest
           sleep 5
-          curl -sf http://localhost:4200/health | grep '"status":"ok"'
+          curl -sf http://localhost:7749/health | grep '"status":"ok"'
           docker stop sy-test

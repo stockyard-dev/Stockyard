@@ -95,7 +95,7 @@ func DefaultConfig(product string) *Config {
 		base.Logging.MaxBodySize = 100000
 
 	case "stockyard":
-		base.Port = 4200
+		base.Port = 7749
 		base.Logging.StoreBodies = true
 		base.Cache = CacheConfig{
 			Enabled:    true,
@@ -828,7 +828,7 @@ func DefaultConfig(product string) *Config {
 
 	default:
 		if !applyPhase4Defaults(product, base) {
-			base.Port = 4200
+			base.Port = 7749
 		}
 	}
 

@@ -98,6 +98,17 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 				GlobalStatus.RecordRequest(duration, err != nil)
 			}
 
+			// Per-provider Prometheus metrics
+			if GlobalProviderMetrics != nil {
+				prov := req.Provider
+				if prov == "" && resp != nil {
+					prov = resp.Provider
+				}
+				if prov != "" {
+					GlobalProviderMetrics.RecordRequest(prov, duration, err != nil)
+				}
+			}
+
 			// Usage counters for upgrade triggers
 			if GlobalUsageCounters != nil {
 				cacheHit := resp != nil && resp.CacheHit

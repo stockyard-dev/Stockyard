@@ -7,7 +7,7 @@ Manage Stockyard infrastructure with Pulumi.
 Set environment variables:
 
 ```bash
-export STOCKYARD_URL=http://localhost:4200
+export STOCKYARD_URL=http://localhost:7749
 export STOCKYARD_ADMIN_KEY=your-admin-key
 ```
 

@@ -34,7 +34,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 4200
+            - containerPort: 7749
               protocol: TCP
           envFrom:
             - configMapRef:
@@ -51,13 +51,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 4200
+              port: 7749
             initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
               path: /health
-              port: 4200
+              port: 7749
             initialDelaySeconds: 5
             periodSeconds: 10
       volumes:

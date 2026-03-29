@@ -24,7 +24,7 @@ curl -fsSL stockyard.dev/install.sh | sh
 stockyard
 ```
 
-Dashboard at `localhost:4200/ui`. Proxy at `localhost:4200/v1`. Done.
+Dashboard at `localhost:7749/ui`. Proxy at `localhost:7749/v1`. Done.
 
 ## What's inside
 

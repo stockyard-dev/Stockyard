@@ -487,6 +487,10 @@ func Boot(pc ProductConfig) {
 	statusCollector := NewStatusCollector()
 	RegisterStatusRoutes(srv.Mux(), statusCollector, db.Conn(), pc.Version)
 
+	// Prometheus metrics endpoint (zero-dependency, text format)
+	providerMetrics := NewProviderMetrics()
+	RegisterMetricsRoute(srv.Mux(), statusCollector, providerMetrics)
+
 	// Version endpoint
 	srv.Mux().HandleFunc("GET /api/version", func(w http.ResponseWriter, r *http.Request) {
 		v := pc.Version

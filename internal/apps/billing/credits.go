@@ -215,7 +215,7 @@ func (a *App) handleStripeConnectURL(w http.ResponseWriter, r *http.Request) {
 	}
 	redirectURI := os.Getenv("STOCKYARD_URL")
 	if redirectURI == "" {
-		redirectURI = "http://localhost:4200"
+		redirectURI = "http://localhost:7749"
 	}
 	redirectURI += "/api/billing/stripe/callback"
 

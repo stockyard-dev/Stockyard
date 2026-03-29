@@ -50,7 +50,7 @@ Stockyard is a **production-ready** LLM proxy with strong fundamentals. This ses
 | Signup handlers returned raw DB errors (`UNIQUE constraint`, SQL) | **High** | Internal schema details exposed |
 | CORS `*` on MCP SSE and OpenAPI endpoints | **High** | Cross-origin attacks on sensitive endpoints |
 | Dashboard `/ui` served without authentication | **High** | SPA visible to anyone |
-| Forge ProxyURL defaulted to port 4200 with no validation | **High** | SSRF to arbitrary local services |
+| Forge ProxyURL defaulted to port 7749 with no validation | **High** | SSRF to arbitrary local services |
 | Vault "encrypted" secrets were just base64-encoded | **High** | Trivially reversible by anyone with DB access |
 | Cloud signup error included email address | **Medium** | Email enumeration |
 | Webhook list API returned full URLs with Slack tokens | **Medium** | Token exposure in admin responses |

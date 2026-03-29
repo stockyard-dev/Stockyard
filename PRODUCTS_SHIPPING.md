@@ -15,7 +15,7 @@ all platforms. Docker images are published. npm wrappers work.
 | Binary       | Product          | Port | Description                            |
 |--------------|------------------|------|----------------------------------------|
 | costcap      | CostCap          | 4100 | Spend tracking + hard/soft caps        |
-| llmcache     | CacheLayer       | 4200 | Exact + semantic response caching      |
+| llmcache     | CacheLayer       | 7749 | Exact + semantic response caching      |
 | jsonguard    | StructuredShield | 4300 | JSON schema validation + auto-retry    |
 | routefall    | FallbackRouter   | 4400 | Provider failover + circuit breaker    |
 | rateshield   | RateShield       | 4500 | Rate limiting + token bucket           |

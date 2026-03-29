@@ -11,7 +11,7 @@
 //	}
 //
 //	provider "stockyard" {
-//	  base_url  = "http://localhost:4200"
+//	  base_url  = "http://localhost:7749"
 //	  admin_key = var.stockyard_admin_key
 //	}
 //

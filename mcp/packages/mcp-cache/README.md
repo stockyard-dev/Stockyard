@@ -67,10 +67,10 @@ Once connected, ask your AI assistant:
 ## How It Works
 
 1. The MCP server downloads the Stockyard `llmcache` binary for your platform
-2. It writes a config and starts the proxy on port 4200
+2. It writes a config and starts the proxy on port 7749
 3. MCP tools communicate with the proxy's management REST API
-4. Point your LLM client at `http://127.0.0.1:4200/v1` to route through CacheLayer
-5. Dashboard available at `http://127.0.0.1:4200/ui`
+4. Point your LLM client at `http://127.0.0.1:7749/v1` to route through CacheLayer
+5. Dashboard available at `http://127.0.0.1:7749/ui`
 
 ## Requirements
 

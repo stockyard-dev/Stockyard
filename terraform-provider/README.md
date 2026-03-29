@@ -6,7 +6,7 @@ Manage Stockyard infrastructure as code.
 
 ```hcl
 provider "stockyard" {
-  base_url  = "http://localhost:4200"  # or your Cloud URL
+  base_url  = "http://localhost:7749"  # or your Cloud URL
   admin_key = var.stockyard_admin_key
 }
 ```

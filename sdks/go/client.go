@@ -2,7 +2,7 @@
 //
 // Usage:
 //
-//	client := stockyard.NewClient("http://localhost:4200", "your-admin-key")
+//	client := stockyard.NewClient("http://localhost:7749", "your-admin-key")
 //	status, _ := client.Status()
 //	modules, _ := client.ListModules()
 package stockyard
@@ -29,7 +29,7 @@ func NewClient(baseURL, adminKey string) *Client {
 	if baseURL == "" {
 		baseURL = os.Getenv("STOCKYARD_URL")
 		if baseURL == "" {
-			baseURL = "http://localhost:4200"
+			baseURL = "http://localhost:7749"
 		}
 	}
 	if adminKey == "" {

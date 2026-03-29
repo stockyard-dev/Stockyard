@@ -24,7 +24,7 @@ Stockyard puts all of it in one Go binary with embedded SQLite:
     curl -fsSL stockyard.dev/install.sh | sh
     stockyard
 
-Dashboard at localhost:4200/ui, proxy at localhost:4200/v1.
+Dashboard at localhost:7749/ui, proxy at localhost:7749/v1.
 
 What's inside: 66 middleware modules (cost caps, caching, rate limiting, PII redaction, prompt injection detection, failover — all runtime-toggleable), 16 LLM providers (OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Cohere, Ollama, and 8 more), 360+ API endpoints across 16 integrated apps.
 

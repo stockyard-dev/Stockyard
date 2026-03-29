@@ -9,7 +9,7 @@ image:
 
 service:
   type: ClusterIP
-  port: 4200
+  port: 7749
 
 ingress:
   enabled: false
@@ -43,7 +43,7 @@ persistence:
     - ReadWriteOnce
 
 env:
-  PORT: "4200"
+  PORT: "7749"
   DATA_DIR: /data
 
 # Provider API keys — set via --set or external secret.

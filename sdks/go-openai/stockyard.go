@@ -17,7 +17,7 @@ import (
 )
 
 // BaseURL returns the Stockyard proxy URL for use as the OpenAI base URL.
-// Reads STOCKYARD_URL env var, defaults to http://localhost:4200/v1.
+// Reads STOCKYARD_URL env var, defaults to http://localhost:7749/v1.
 // If STOCKYARD_ENABLED=false, returns the default OpenAI API URL.
 func BaseURL() string {
 	if strings.EqualFold(os.Getenv("STOCKYARD_ENABLED"), "false") {
@@ -26,7 +26,7 @@ func BaseURL() string {
 	if url := os.Getenv("STOCKYARD_URL"); url != "" {
 		return strings.TrimRight(url, "/") + "/v1"
 	}
-	return "http://localhost:4200/v1"
+	return "http://localhost:7749/v1"
 }
 
 // Transport returns an http.RoundTripper that adds Stockyard tracking headers.

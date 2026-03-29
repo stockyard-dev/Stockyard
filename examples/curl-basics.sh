@@ -1,7 +1,7 @@
 #!/bin/bash
 # Stockyard curl examples — all the key endpoints
 
-BASE="http://localhost:4200"
+BASE="http://localhost:7749"
 
 echo "=== Health ==="
 curl -s "$BASE/health" | jq .

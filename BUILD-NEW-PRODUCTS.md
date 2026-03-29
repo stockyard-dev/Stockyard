@@ -1109,11 +1109,11 @@ CGO_ENABLED=0 go build ./cmd/relic/ ./cmd/breed/ ./cmd/fossilrec/ ./cmd/phantom/
 STOCKYARD_LICENSE=dev /tmp/stockyard products
 
 # Platform API returns all 29
-curl localhost:4200/api/platform/products | jq '.total'
+curl localhost:7749/api/platform/products | jq '.total'
 # → 29
 
 # Tier gating works
-curl localhost:4200/relic/api/health
+curl localhost:7749/relic/api/health
 # → {"status":"ok","product":"relic"} (if Individual+ tier)
 # → {"error":"upgrade required",...} (if Community tier)
 ```

@@ -14,13 +14,13 @@ Control your Stockyard LLM proxy directly from VS Code.
 
 1. Install the extension
 2. Start Stockyard: `stockyard` (or `docker compose up`)
-3. The extension auto-connects to `http://localhost:4200`
+3. The extension auto-connects to `http://localhost:7749`
 
 ## Configuration
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `stockyard.baseUrl` | `http://localhost:4200` | Proxy URL |
+| `stockyard.baseUrl` | `http://localhost:7749` | Proxy URL |
 | `stockyard.adminKey` | (empty) | Admin key for management API |
 | `stockyard.autoRefresh` | `true` | Auto-refresh module and trace views |
 | `stockyard.refreshInterval` | `5000` | Refresh interval in ms |

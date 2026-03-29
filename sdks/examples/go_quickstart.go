@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	client := stockyard.NewClient("http://localhost:4200", "your-admin-key")
+	client := stockyard.NewClient("http://localhost:7749", "your-admin-key")
 
 	// Check system status
 	status, err := client.Status()
