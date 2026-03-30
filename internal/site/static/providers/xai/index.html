@@ -119,6 +119,17 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>xAI uses standard OpenAI-compatible auth. Set XAI_API_KEY and Stockyard auto-detects the provider.</p>
+
+  <h2>Try Grok alongside other models</h2>
+  <p>Grok is competitive on reasoning and coding benchmarks but you might not want to commit to it as your primary model yet. Stockyard makes it easy to A/B test Grok against GPT-4o or Claude on your actual workload:</p>
+  <pre><span class="comment"># Set up both providers</span>
+<span class="cmd">export XAI_API_KEY=xai-...</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="cmd">stockyard</span>
+
+<span class="comment"># Send some traffic to Grok, some to OpenAI</span>
+<span class="comment"># Compare cost, latency, and quality in the dashboard</span></pre>
+  <p style="font-size:0.85rem">Stockyard's <a href="/llm-cost-tracking/">cost dashboard</a> shows per-model breakdowns so you can see exactly how Grok compares on your workload before switching.</p>
 </section>
 
 <div class="cta-box">

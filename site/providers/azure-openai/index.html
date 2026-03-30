@@ -119,6 +119,16 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>Set AZURE_OPENAI_API_KEY and AZURE_OPENAI_BASE_URL (your deployment endpoint). Stockyard handles the api-key header format automatically.</p>
+
+  <h2>Escape Azure lock-in gradually</h2>
+  <p>If you're on Azure OpenAI today but want the option to use direct OpenAI, Anthropic, or other providers later, Stockyard gives you that exit path. Your app talks to Stockyard, not Azure directly. Add providers over time without changing application code.</p>
+  <pre><span class="comment"># Start with Azure OpenAI</span>
+<span class="cmd">export AZURE_OPENAI_API_KEY=...</span>
+<span class="cmd">export AZURE_OPENAI_BASE_URL=https://your-deployment.openai.azure.com</span>
+
+<span class="comment"># Later, add direct OpenAI as failover</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="comment"># Stockyard now routes to both. No app changes needed.</span></pre>
 </section>
 
 <div class="cta-box">
