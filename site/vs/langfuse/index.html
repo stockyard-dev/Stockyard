@@ -61,6 +61,12 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Stockyard vs Langfuse","item":"https://stockyard.dev/vs/langfuse/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Langfuse open source?","acceptedAnswer":{"@type":"Answer","text":"Yes, Langfuse is open source. Self-hosting requires Docker with Postgres. Stockyard is a single Go binary with embedded SQLite and no Docker requirement."}},{"@type":"Question","name":"What is the difference between Langfuse and Stockyard?","acceptedAnswer":{"@type":"Answer","text":"Langfuse is focused on LLM observability and evaluation. Stockyard is a full proxy platform that includes observability plus routing, caching, cost control, audit trails, and 76 middleware modules in a single binary."}},{"@type":"Question","name":"Does Langfuse work as an LLM proxy?","acceptedAnswer":{"@type":"Answer","text":"Langfuse is primarily an observability tool, not a proxy. It requires SDK integration in your application code. Stockyard works as a transparent proxy that sits between your app and providers, requiring only a base URL change."}}]}
+</script>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>

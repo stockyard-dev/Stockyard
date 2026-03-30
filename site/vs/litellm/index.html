@@ -124,6 +124,12 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Stockyard vs LiteLLM","item":"https://stockyard.dev/vs/litellm/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is LiteLLM free?","acceptedAnswer":{"@type":"Answer","text":"Yes, LiteLLM is open-source under the Apache 2.0 license. However, it requires Postgres for persistence and Redis for caching, which add infrastructure cost. Stockyard is BSL 1.1 licensed with a free tier and uses embedded SQLite with no external dependencies."}},{"@type":"Question","name":"Can I use LiteLLM and Stockyard together?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can run Stockyard as a proxy in front of LiteLLM, or migrate from LiteLLM to Stockyard since both expose an OpenAI-compatible API. Your application code does not need to change."}},{"@type":"Question","name":"What is the main difference between Stockyard and LiteLLM?","acceptedAnswer":{"@type":"Answer","text":"LiteLLM is a Python proxy that requires Postgres and Redis. Stockyard is a single Go binary with embedded SQLite and zero external dependencies. LiteLLM supports more providers (100+), while Stockyard includes built-in tracing, audit logs, and 76 middleware modules."}}]}
+</script>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
