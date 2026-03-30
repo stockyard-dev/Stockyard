@@ -213,7 +213,10 @@ func (a *App) handleCreateProposal(w http.ResponseWriter, r *http.Request) {
 		DiscussionEnds string `json:"discussion_ends"`
 		VotingEnds     string `json:"voting_ends"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+		return
+	}
 
 	id := genID("gp_")
 	ts := now()
@@ -244,7 +247,9 @@ func (a *App) handleListProposals(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, authorID, title, desc, ptype, status, discussionEnds, votingEnds, created string
 		var votesFor, votesAgainst int
-		rows.Scan(&id, &authorID, &title, &desc, &ptype, &status, &discussionEnds, &votingEnds, &votesFor, &votesAgainst, &created)
+		if err := rows.Scan(&id, &authorID, &title, &desc, &ptype, &status, &discussionEnds, &votingEnds, &votesFor, &votesAgainst, &created); err != nil {
+			continue
+		}
 		proposals = append(proposals, map[string]any{
 			"id": id, "author_id": authorID, "title": title, "description": desc,
 			"proposal_type": ptype, "status": status, "discussion_ends": discussionEnds,
@@ -299,7 +304,10 @@ func (a *App) handleUpdateProposal(w http.ResponseWriter, r *http.Request) {
 		DiscussionEnds *string `json:"discussion_ends"`
 		VotingEnds     *string `json:"voting_ends"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+		return
+	}
 
 	var existing string
 	if err := a.conn.QueryRow("SELECT id FROM governance_proposals WHERE id = ?", id).Scan(&existing); err != nil {
@@ -334,7 +342,10 @@ func (a *App) handleVote(w http.ResponseWriter, r *http.Request) {
 		VoterID string `json:"voter_id"`
 		Vote    string `json:"vote"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+		return
+	}
 
 	if req.Vote != "for" && req.Vote != "against" {
 		w.WriteHeader(400)
@@ -420,7 +431,10 @@ func (a *App) handleFileDispute(w http.ResponseWriter, r *http.Request) {
 		Description string `json:"description"`
 		Evidence    any    `json:"evidence"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+		return
+	}
 
 	id := genID("dp_")
 	ts := now()
@@ -455,7 +469,9 @@ func (a *App) handleListDisputes(w http.ResponseWriter, r *http.Request) {
 	var disputes []map[string]any
 	for rows.Next() {
 		var id, dtype, reporterID, subjectID, desc, status, created string
-		rows.Scan(&id, &dtype, &reporterID, &subjectID, &desc, &status, &created)
+		if err := rows.Scan(&id, &dtype, &reporterID, &subjectID, &desc, &status, &created); err != nil {
+			continue
+		}
 		disputes = append(disputes, map[string]any{
 			"id": id, "type": dtype, "reporter_id": reporterID, "subject_id": subjectID,
 			"description": desc, "status": status, "created_at": created,
@@ -493,7 +509,10 @@ func (a *App) handleResolveDispute(w http.ResponseWriter, r *http.Request) {
 		Resolution string `json:"resolution"`
 		ResolvedBy string `json:"resolved_by"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+		return
+	}
 
 	var existing string
 	if err := a.conn.QueryRow("SELECT id FROM disputes WHERE id = ?", id).Scan(&existing); err != nil {
@@ -518,7 +537,10 @@ func (a *App) handleCertifySafety(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Guardrails []string `json:"guardrails"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+		return
+	}
 
 	// Simple score based on presence of guardrails
 	score := 0.0
@@ -608,7 +630,9 @@ func (a *App) handleComplianceCheck(w http.ResponseWriter, r *http.Request) {
 	var results []map[string]any
 	for rows.Next() {
 		var ruleID, jurisdiction, regulation, requirement, config string
-		rows.Scan(&ruleID, &jurisdiction, &regulation, &requirement, &config)
+		if err := rows.Scan(&ruleID, &jurisdiction, &regulation, &requirement, &config); err != nil {
+			continue
+		}
 
 		// Check if there's an existing status
 		var existingStatus string
@@ -651,7 +675,9 @@ func (a *App) handleAutoFix(w http.ResponseWriter, r *http.Request) {
 	var suggestions []map[string]any
 	for rows.Next() {
 		var ruleID, regulation, requirement, configJSON string
-		rows.Scan(&ruleID, &regulation, &requirement, &configJSON)
+		if err := rows.Scan(&ruleID, &regulation, &requirement, &configJSON); err != nil {
+			continue
+		}
 
 		var config any
 		if err := json.Unmarshal([]byte(configJSON), &config); err != nil {

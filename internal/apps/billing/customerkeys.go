@@ -57,7 +57,9 @@ func (a *App) handleListCustomerKeys(w http.ResponseWriter, r *http.Request) {
 	var result []map[string]string
 	for rows.Next() {
 		var userID, custID, created, name string
-		rows.Scan(&userID, &custID, &created, &name)
+		if err := rows.Scan(&userID, &custID, &created, &name); err != nil {
+			continue
+		}
 		result = append(result, map[string]string{
 			"user_id": userID, "customer_id": custID,
 			"customer_name": name, "created_at": created,

@@ -169,7 +169,9 @@ func (a *App) handleListPacks(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, slug, name, desc, author, ptype, ver, tags, updated string
 		var downloads, installs int
-		rows.Scan(&id, &slug, &name, &desc, &author, &ptype, &ver, &tags, &downloads, &installs, &updated)
+		if err := rows.Scan(&id, &slug, &name, &desc, &author, &ptype, &ver, &tags, &downloads, &installs, &updated); err != nil {
+			continue
+		}
 		var t any
 		if err := json.Unmarshal([]byte(tags), &t); err != nil {
 			log.Printf("[exchange] json parse error: %v", err)
@@ -386,7 +388,9 @@ func (a *App) handleListInstalled(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var slug, ver, at string
-		rows.Scan(&id, &slug, &ver, &at)
+		if err := rows.Scan(&id, &slug, &ver, &at); err != nil {
+			continue
+		}
 		installed = append(installed, map[string]any{"id": id, "pack_slug": slug, "version": ver, "installed_at": at})
 	}
 	writeJSON(w, map[string]any{"installed": installed, "count": len(installed)})
@@ -420,7 +424,9 @@ func (a *App) handleListEnvironments(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var name, desc, synced, created string
-		rows.Scan(&id, &name, &desc, &synced, &created)
+		if err := rows.Scan(&id, &name, &desc, &synced, &created); err != nil {
+			continue
+		}
 		envs = append(envs, map[string]any{"id": id, "name": name, "description": desc, "last_synced": synced, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"environments": envs})
@@ -465,7 +471,9 @@ func (a *App) handleSyncLog(w http.ResponseWriter, r *http.Request) {
 	var entries []map[string]any
 	for rows.Next() {
 		var env, dir, status, at string
-		rows.Scan(&env, &dir, &status, &at)
+		if err := rows.Scan(&env, &dir, &status, &at); err != nil {
+			continue
+		}
 		entries = append(entries, map[string]any{"environment": env, "direction": dir, "status": status, "synced_at": at})
 	}
 	writeJSON(w, map[string]any{"log": entries})
@@ -560,7 +568,9 @@ func (a *App) handleGateStats(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var slug string
 			var cnt int
-			rows.Scan(&slug, &cnt)
+			if err := rows.Scan(&slug, &cnt); err != nil {
+				continue
+			}
 			topPacks = append(topPacks, map[string]any{"pack_slug": slug, "count": cnt})
 		}
 	}
@@ -601,7 +611,9 @@ func (a *App) handleGateExport(w http.ResponseWriter, r *http.Request) {
 	var emails []map[string]string
 	for rows.Next() {
 		var email, source, firstSeen string
-		rows.Scan(&email, &source, &firstSeen)
+		if err := rows.Scan(&email, &source, &firstSeen); err != nil {
+			continue
+		}
 		emails = append(emails, map[string]string{"email": email, "source": source, "first_seen": firstSeen})
 	}
 

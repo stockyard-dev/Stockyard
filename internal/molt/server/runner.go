@@ -116,7 +116,9 @@ func (s *Server) analyzeModules() []analysisItem {
 	for rows.Next() {
 		var name, category string
 		var enabled int
-		rows.Scan(&name, &category, &enabled)
+		if err := rows.Scan(&name, &category, &enabled); err != nil {
+			continue
+		}
 
 		item := analysisItem{
 			Component: name,
@@ -164,7 +166,9 @@ func (s *Server) analyzeProviders() []analysisItem {
 
 	for rows.Next() {
 		var p providerUsage
-		rows.Scan(&p.provider, &p.requests, &p.cost)
+		if err := rows.Scan(&p.provider, &p.requests, &p.cost); err != nil {
+			continue
+		}
 		providers = append(providers, p)
 	}
 
@@ -221,7 +225,9 @@ func (s *Server) analyzeProducts() []analysisItem {
 	for rows.Next() {
 		var productID string
 		var enabled int
-		rows.Scan(&productID, &enabled)
+		if err := rows.Scan(&productID, &enabled); err != nil {
+			continue
+		}
 
 		item := analysisItem{
 			Component: productID,

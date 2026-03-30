@@ -1,6 +1,14 @@
 package provider
 
 import (
+	"bufio"
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -92,6 +100,114 @@ type AzureOpenAI struct {
 }
 
 func (a *AzureOpenAI) Name() string { return "azure" }
+
+func (a *AzureOpenAI) Send(ctx context.Context, req *Request) (*Response, error) {
+	start := time.Now()
+	body, err := buildOpenAIBody(req, false)
+	if err != nil {
+		return nil, fmt.Errorf("azure: build request: %w", err)
+	}
+	url := a.config.BaseURL + "/chat/completions?api-version=2024-02-01"
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("azure: create request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("api-key", a.config.APIKey)
+	httpResp, err := a.client.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("azure: send request: %w", err)
+	}
+	defer httpResp.Body.Close()
+	if httpResp.StatusCode != http.StatusOK {
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		if readErr != nil {
+			respBody = []byte("failed to read error response")
+		}
+		return nil, &ProviderAPIError{Provider: "azure", StatusCode: httpResp.StatusCode, Body: string(respBody)}
+	}
+	var oaiResp openAIResponse
+	if err := json.NewDecoder(httpResp.Body).Decode(&oaiResp); err != nil {
+		return nil, fmt.Errorf("azure: decode response: %w", err)
+	}
+	resp := &Response{
+		ID: oaiResp.ID, Object: oaiResp.Object, Model: oaiResp.Model, Provider: "azure",
+		Latency: time.Since(start),
+		Usage:   Usage{PromptTokens: oaiResp.Usage.PromptTokens, CompletionTokens: oaiResp.Usage.CompletionTokens, TotalTokens: oaiResp.Usage.TotalTokens},
+	}
+	for _, c := range oaiResp.Choices {
+		resp.Choices = append(resp.Choices, Choice{Index: c.Index, Message: Message{Role: c.Message.Role, Content: c.Message.Content}, FinishReason: c.FinishReason})
+	}
+	return resp, nil
+}
+
+func (a *AzureOpenAI) SendStream(ctx context.Context, req *Request) (<-chan StreamChunk, error) {
+	req.Stream = true
+	body, err := buildOpenAIBody(req, true)
+	if err != nil {
+		return nil, fmt.Errorf("azure: build request: %w", err)
+	}
+	url := a.config.BaseURL + "/chat/completions?api-version=2024-02-01"
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("azure: create request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("api-key", a.config.APIKey)
+	streamClient := NewStreamClient()
+	httpResp, err := streamClient.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("azure: send stream request: %w", err)
+	}
+	if httpResp.StatusCode != http.StatusOK {
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		if readErr != nil {
+			respBody = []byte("failed to read error response")
+		}
+		httpResp.Body.Close()
+		return nil, &ProviderAPIError{Provider: "azure", StatusCode: httpResp.StatusCode, Body: string(respBody)}
+	}
+	ch := make(chan StreamChunk, 64)
+	go func() {
+		defer close(ch)
+		defer httpResp.Body.Close()
+		scanner := bufio.NewScanner(httpResp.Body)
+		tokensSoFar := 0
+		for scanner.Scan() {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+			line := scanner.Text()
+			if line == "" || !strings.HasPrefix(line, "data: ") {
+				continue
+			}
+			data := line[6:]
+			if data == "[DONE]" {
+				ch <- StreamChunk{Data: []byte(line + "\n\n"), Done: true, TokensSoFar: tokensSoFar}
+				return
+			}
+			var chunk openAIStreamChunk
+			if err := json.Unmarshal([]byte(data), &chunk); err == nil {
+				for _, c := range chunk.Choices {
+					if c.Delta.Content != "" {
+						tokens := len(c.Delta.Content) / 4
+						if tokens == 0 {
+							tokens = 1
+						}
+						tokensSoFar += tokens
+					}
+				}
+			}
+			ch <- StreamChunk{Data: []byte(line + "\n\n"), TokensSoFar: tokensSoFar}
+		}
+		if err := scanner.Err(); err != nil {
+			ch <- StreamChunk{Error: fmt.Errorf("azure: stream read: %w", err)}
+		}
+	}()
+	return ch, nil
+}
 
 // NewXAI creates an xAI (Grok) provider.
 func NewXAI(cfg ProviderConfig) *OpenAICompat {

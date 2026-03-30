@@ -252,7 +252,9 @@ func (a *App) handleStripeCreateInvoice(w http.ResponseWriter, r *http.Request) 
 	for rows.Next() {
 		var model string
 		var requests, inputTokens, outputTokens, costCents int64
-		rows.Scan(&model, &requests, &inputTokens, &outputTokens, &costCents)
+		if err := rows.Scan(&model, &requests, &inputTokens, &outputTokens, &costCents); err != nil {
+			continue
+		}
 
 		if costCents <= 0 {
 			continue

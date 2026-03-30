@@ -39,7 +39,9 @@ func (a *App) handleGenerateFromPeriod(w http.ResponseWriter, r *http.Request) {
 	var totalCents int64
 	for rows.Next() {
 		var li invoiceLineItem
-		rows.Scan(&li.Model, &li.Requests, &li.InputTokens, &li.OutputTokens, &li.CostCents)
+		if err := rows.Scan(&li.Model, &li.Requests, &li.InputTokens, &li.OutputTokens, &li.CostCents); err != nil {
+			continue
+		}
 		totalCents += li.CostCents
 		items = append(items, li)
 	}
@@ -140,7 +142,9 @@ func (a *App) handleCreateInvoice(w http.ResponseWriter, r *http.Request) {
 	var totalCents int64
 	for rows.Next() {
 		var li invoiceLineItem
-		rows.Scan(&li.Model, &li.Requests, &li.InputTokens, &li.OutputTokens, &li.CostCents)
+		if err := rows.Scan(&li.Model, &li.Requests, &li.InputTokens, &li.OutputTokens, &li.CostCents); err != nil {
+			continue
+		}
 		items = append(items, li)
 		totalCents += li.CostCents
 	}
@@ -191,7 +195,9 @@ func (a *App) handleListInvoices(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var id, acctID, custID, period, status, created string
 			var totalCents int64
-			rows.Scan(&id, &acctID, &custID, &period, &totalCents, &status, &created)
+			if err := rows.Scan(&id, &acctID, &custID, &period, &totalCents, &status, &created); err != nil {
+				continue
+			}
 			rows_result = append(rows_result, map[string]any{
 				"id": id, "account_id": acctID, "customer_id": custID,
 				"period": period, "total_cents": totalCents, "status": status, "created_at": created,
@@ -209,7 +215,9 @@ func (a *App) handleListInvoices(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var id, acctID, custID, period, status, created string
 			var totalCents int64
-			rows.Scan(&id, &acctID, &custID, &period, &totalCents, &status, &created)
+			if err := rows.Scan(&id, &acctID, &custID, &period, &totalCents, &status, &created); err != nil {
+				continue
+			}
 			rows_result = append(rows_result, map[string]any{
 				"id": id, "account_id": acctID, "customer_id": custID,
 				"period": period, "total_cents": totalCents, "status": status, "created_at": created,

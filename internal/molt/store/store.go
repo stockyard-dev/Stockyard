@@ -84,7 +84,9 @@ func (db *DB) ListAnalysis(componentType string) ([]Analysis, error) {
 	var out []Analysis
 	for rows.Next() {
 		var a Analysis
-		rows.Scan(&a.ID, &a.ComponentType, &a.ComponentID, &a.LastActivity, &a.ActivityCount, &a.ImpactScore, &a.Recommendation, &a.Reason, &a.AutoShed, &a.AnalyzedAt)
+		if err := rows.Scan(&a.ID, &a.ComponentType, &a.ComponentID, &a.LastActivity, &a.ActivityCount, &a.ImpactScore, &a.Recommendation, &a.Reason, &a.AutoShed, &a.AnalyzedAt); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil
@@ -97,7 +99,9 @@ func (db *DB) ListRecommendations(rec string) ([]Analysis, error) {
 	var out []Analysis
 	for rows.Next() {
 		var a Analysis
-		rows.Scan(&a.ID, &a.ComponentType, &a.ComponentID, &a.LastActivity, &a.ActivityCount, &a.ImpactScore, &a.Recommendation, &a.Reason, &a.AutoShed, &a.AnalyzedAt)
+		if err := rows.Scan(&a.ID, &a.ComponentType, &a.ComponentID, &a.LastActivity, &a.ActivityCount, &a.ImpactScore, &a.Recommendation, &a.Reason, &a.AutoShed, &a.AnalyzedAt); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil
@@ -110,7 +114,9 @@ func (db *DB) ListActions() ([]Action, error) {
 	var out []Action
 	for rows.Next() {
 		var a Action
-		rows.Scan(&a.ID, &a.AnalysisID, &a.ActionType, &a.ComponentType, &a.ComponentID, &a.BeforeState, &a.AfterState, &a.Reverted, &a.PerformedAt)
+		if err := rows.Scan(&a.ID, &a.AnalysisID, &a.ActionType, &a.ComponentType, &a.ComponentID, &a.BeforeState, &a.AfterState, &a.Reverted, &a.PerformedAt); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil

@@ -444,11 +444,13 @@ func handleReplayRuns(conn *sql.DB) http.HandlerFunc {
 		runs := make([]runSummary, 0)
 		for rows.Next() {
 			var rs runSummary
-			rows.Scan(&rs.ID, &rs.SourceTraceID, &rs.SourceModel, &rs.SourceProvider,
+			if err := rows.Scan(&rs.ID, &rs.SourceTraceID, &rs.SourceModel, &rs.SourceProvider,
 				&rs.TargetModel, &rs.TargetProvider,
 				&rs.SrcTokensIn, &rs.SrcTokensOut, &rs.SrcCostUSD, &rs.SrcLatencyMs,
 				&rs.TgtTokensIn, &rs.TgtTokensOut, &rs.TgtCostUSD, &rs.TgtLatencyMs,
-				&rs.Status, &rs.Error, &rs.CreatedAt)
+				&rs.Status, &rs.Error, &rs.CreatedAt); err != nil {
+				continue
+			}
 			rs.CostDelta = rs.TgtCostUSD - rs.SrcCostUSD
 			rs.SpeedDelta = rs.TgtLatencyMs - rs.SrcLatencyMs
 			if rs.Error == "" {
@@ -625,7 +627,9 @@ func handleReplayStats(conn *sql.DB) http.HandlerFunc {
 			defer rows.Close()
 			for rows.Next() {
 				var ms modelStat
-				rows.Scan(&ms.Model, &ms.Runs, &ms.AvgCost, &ms.AvgLatency)
+				if err := rows.Scan(&ms.Model, &ms.Runs, &ms.AvgCost, &ms.AvgLatency); err != nil {
+					continue
+				}
 				leaderboard = append(leaderboard, ms)
 			}
 		}

@@ -386,7 +386,9 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var s string
 		var c int
-		rows.Scan(&s, &c)
+		if err := rows.Scan(&s, &c); err != nil {
+			continue
+		}
 		stats[s] = c
 		total += c
 	}
@@ -421,7 +423,9 @@ func (a *App) listLog(w http.ResponseWriter, r *http.Request) {
 	var entries []LogEntry
 	for rows.Next() {
 		var e LogEntry
-		rows.Scan(&e.ID, &e.TaskID, &e.Action, &e.Detail, &e.CreatedAt)
+		if err := rows.Scan(&e.ID, &e.TaskID, &e.Action, &e.Detail, &e.CreatedAt); err != nil {
+			continue
+		}
 		entries = append(entries, e)
 	}
 	if entries == nil {

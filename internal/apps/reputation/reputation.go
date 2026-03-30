@@ -313,7 +313,9 @@ func (a *App) handleLeaderboard(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var userID string
 		var builder, operator, contributor, overall float64
-		rows.Scan(&userID, &builder, &operator, &contributor, &overall)
+		if err := rows.Scan(&userID, &builder, &operator, &contributor, &overall); err != nil {
+			continue
+		}
 		leaderboard = append(leaderboard, map[string]any{
 			"rank": rank, "user_id": userID, "builder_score": builder,
 			"operator_score": operator, "contributor_score": contributor,
@@ -406,7 +408,9 @@ func (a *App) handleCurrentSeason(w http.ResponseWriter, r *http.Request) {
 			var category, userID string
 			var score float64
 			var rank int
-			rows.Scan(&category, &userID, &score, &rank)
+			if err := rows.Scan(&category, &userID, &score, &rank); err != nil {
+				continue
+			}
 			leaderboards[category] = append(leaderboards[category], map[string]any{
 				"user_id": userID, "score": score, "rank": rank,
 			})
@@ -471,7 +475,9 @@ func (a *App) handleListStories(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, authorID, title, content, appID, created string
 		var likes, views int
-		rows.Scan(&id, &authorID, &title, &content, &appID, &likes, &views, &created)
+		if err := rows.Scan(&id, &authorID, &title, &content, &appID, &likes, &views, &created); err != nil {
+			continue
+		}
 		stories = append(stories, map[string]any{
 			"id": id, "author_id": authorID, "title": title, "content": content,
 			"app_id": appID, "likes": likes, "views": views, "created_at": created,
@@ -525,7 +531,9 @@ func (a *App) handleStoryFeed(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, authorID, title, content, appID, created string
 		var likes, views int
-		rows.Scan(&id, &authorID, &title, &content, &appID, &likes, &views, &created)
+		if err := rows.Scan(&id, &authorID, &title, &content, &appID, &likes, &views, &created); err != nil {
+			continue
+		}
 		feed = append(feed, map[string]any{
 			"id": id, "author_id": authorID, "title": title, "content": content,
 			"app_id": appID, "likes": likes, "views": views, "created_at": created,
@@ -556,7 +564,9 @@ func (a *App) handleGetKarma(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var id, action, created string
 			var points int
-			rows.Scan(&id, &action, &points, &created)
+			if err := rows.Scan(&id, &action, &points, &created); err != nil {
+				continue
+			}
 			events = append(events, map[string]any{
 				"id": id, "action": action, "points": points, "created_at": created,
 			})

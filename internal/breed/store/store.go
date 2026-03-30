@@ -137,7 +137,9 @@ func (db *DB) ListPopulations() ([]Population, error) {
 	var pops []Population
 	for rows.Next() {
 		var p Population
-		rows.Scan(&p.ID, &p.Name, &p.TargetEndpoint, &p.Generation, &p.PopulationSize, &p.MutationRate, &p.CrossoverRate, &p.FitnessMetric, &p.Status, &p.BestFitness, &p.CreatedAt, &p.UpdatedAt)
+		if err := rows.Scan(&p.ID, &p.Name, &p.TargetEndpoint, &p.Generation, &p.PopulationSize, &p.MutationRate, &p.CrossoverRate, &p.FitnessMetric, &p.Status, &p.BestFitness, &p.CreatedAt, &p.UpdatedAt); err != nil {
+			continue
+		}
 		pops = append(pops, p)
 	}
 	return pops, nil
@@ -164,7 +166,9 @@ func (db *DB) ListGenomes(popID string, generation int) ([]GenomeRecord, error) 
 	var genomes []GenomeRecord
 	for rows.Next() {
 		var g GenomeRecord
-		rows.Scan(&g.ID, &g.PopulationID, &g.Generation, &g.ParentA, &g.ParentB, &g.SystemPrompt, &g.FewShot, &g.Constraints, &g.Temperature, &g.MaxTokens, &g.Fitness, &g.LatencyMs, &g.Cost, &g.QualityScore, &g.Mutations, &g.CreatedAt)
+		if err := rows.Scan(&g.ID, &g.PopulationID, &g.Generation, &g.ParentA, &g.ParentB, &g.SystemPrompt, &g.FewShot, &g.Constraints, &g.Temperature, &g.MaxTokens, &g.Fitness, &g.LatencyMs, &g.Cost, &g.QualityScore, &g.Mutations, &g.CreatedAt); err != nil {
+			continue
+		}
 		genomes = append(genomes, g)
 	}
 	return genomes, nil
@@ -245,7 +249,9 @@ func (db *DB) ListTournaments() ([]Tournament, error) {
 	var out []Tournament
 	for rows.Next() {
 		var t Tournament
-		rows.Scan(&t.ID, &t.Name, &t.BracketSize, &t.Status, &t.ChampionID, &t.ChampionOutput, &t.RoundsCompleted, &t.TotalRounds, &t.Model, &t.CreatedAt, &t.UpdatedAt)
+		if err := rows.Scan(&t.ID, &t.Name, &t.BracketSize, &t.Status, &t.ChampionID, &t.ChampionOutput, &t.RoundsCompleted, &t.TotalRounds, &t.Model, &t.CreatedAt, &t.UpdatedAt); err != nil {
+			continue
+		}
 		out = append(out, t)
 	}
 	return out, nil
@@ -276,7 +282,9 @@ func (db *DB) ListMatches(tournamentID string, round int) ([]Match, error) {
 	var out []Match
 	for rows.Next() {
 		var m Match
-		rows.Scan(&m.ID, &m.TournamentID, &m.Round, &m.MatchOrder, &m.GenomeA, &m.GenomeB, &m.OutputA, &m.OutputB, &m.Winner, &m.Judgment, &m.ScoreA, &m.ScoreB, &m.CreatedAt)
+		if err := rows.Scan(&m.ID, &m.TournamentID, &m.Round, &m.MatchOrder, &m.GenomeA, &m.GenomeB, &m.OutputA, &m.OutputB, &m.Winner, &m.Judgment, &m.ScoreA, &m.ScoreB, &m.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, m)
 	}
 	return out, nil
@@ -289,7 +297,9 @@ func (db *DB) AllMatches(tournamentID string) ([]Match, error) {
 	var out []Match
 	for rows.Next() {
 		var m Match
-		rows.Scan(&m.ID, &m.TournamentID, &m.Round, &m.MatchOrder, &m.GenomeA, &m.GenomeB, &m.OutputA, &m.OutputB, &m.Winner, &m.Judgment, &m.ScoreA, &m.ScoreB, &m.CreatedAt)
+		if err := rows.Scan(&m.ID, &m.TournamentID, &m.Round, &m.MatchOrder, &m.GenomeA, &m.GenomeB, &m.OutputA, &m.OutputB, &m.Winner, &m.Judgment, &m.ScoreA, &m.ScoreB, &m.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, m)
 	}
 	return out, nil
@@ -302,7 +312,9 @@ func (db *DB) GetTopGenomesAcrossPopulations(limit int) ([]GenomeRecord, error) 
 	var out []GenomeRecord
 	for rows.Next() {
 		var g GenomeRecord
-		rows.Scan(&g.ID, &g.PopulationID, &g.Generation, &g.ParentA, &g.ParentB, &g.SystemPrompt, &g.FewShot, &g.Constraints, &g.Temperature, &g.MaxTokens, &g.Fitness, &g.LatencyMs, &g.Cost, &g.QualityScore, &g.Mutations, &g.CreatedAt)
+		if err := rows.Scan(&g.ID, &g.PopulationID, &g.Generation, &g.ParentA, &g.ParentB, &g.SystemPrompt, &g.FewShot, &g.Constraints, &g.Temperature, &g.MaxTokens, &g.Fitness, &g.LatencyMs, &g.Cost, &g.QualityScore, &g.Mutations, &g.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, g)
 	}
 	return out, nil

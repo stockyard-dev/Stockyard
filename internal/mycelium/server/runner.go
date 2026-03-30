@@ -78,7 +78,9 @@ func (s *Server) extractModelInsights() []insightSummary {
 		var model, provider string
 		var reqs int
 		var avgLat, minLat, maxLat, avgTokens, totalCost float64
-		rows.Scan(&model, &provider, &reqs, &avgLat, &minLat, &maxLat, &avgTokens, &totalCost)
+		if err := rows.Scan(&model, &provider, &reqs, &avgLat, &minLat, &maxLat, &avgTokens, &totalCost); err != nil {
+			continue
+		}
 
 		data, _ := json.Marshal(map[string]any{
 			"avg_latency_ms": avgLat, "min_latency_ms": minLat, "max_latency_ms": maxLat,
@@ -135,7 +137,9 @@ func (s *Server) extractProviderInsights() []insightSummary {
 		var provider string
 		var total, success, errors int
 		var avgLat float64
-		rows.Scan(&provider, &total, &success, &errors, &avgLat)
+		if err := rows.Scan(&provider, &total, &success, &errors, &avgLat); err != nil {
+			continue
+		}
 
 		successRate := float64(success) / float64(total)
 		data, _ := json.Marshal(map[string]any{
@@ -254,7 +258,9 @@ func (s *Server) extractErrorInsights() []insightSummary {
 	for rows.Next() {
 		var provider string
 		var errs int
-		rows.Scan(&provider, &errs)
+		if err := rows.Scan(&provider, &errs); err != nil {
+			continue
+		}
 
 		summary := fmt.Sprintf("%s: %d errors recorded", provider, errs)
 		data, _ := json.Marshal(map[string]any{"provider": provider, "error_count": errs})

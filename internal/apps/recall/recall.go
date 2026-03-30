@@ -22,9 +22,10 @@ type App struct {
 	conn       *sql.DB
 	audit      func(string, string, string, string, any)
 	dispatcher func(string, any)
+	stopCh     chan struct{}
 }
 
-func New(conn *sql.DB) *App { return &App{conn: conn} }
+func New(conn *sql.DB) *App { return &App{conn: conn, stopCh: make(chan struct{})} }
 
 func (a *App) Name() string        { return "recall" }
 func (a *App) Description() string { return "LLM output recall and incident response" }
@@ -82,14 +83,22 @@ var piiPatterns = []struct {
 
 // backgroundScanner periodically scans new traces for PII and anomalies.
 func (a *App) backgroundScanner() {
-	// Wait for system to boot and accumulate some traces
-	time.Sleep(2 * time.Minute)
+	select {
+	case <-time.After(2 * time.Minute):
+	case <-a.stopCh:
+		return
+	}
 
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		a.runAutoScan()
+	for {
+		select {
+		case <-ticker.C:
+			a.runAutoScan()
+		case <-a.stopCh:
+			return
+		}
 	}
 }
 
@@ -118,7 +127,9 @@ func (a *App) runAutoScan() map[string]any {
 
 	for rows.Next() {
 		var traceID, model, body, createdAt string
-		rows.Scan(&traceID, &model, &body, &createdAt)
+		if err := rows.Scan(&traceID, &model, &body, &createdAt); err != nil {
+			continue
+		}
 		scanned++
 
 		// Check each PII pattern

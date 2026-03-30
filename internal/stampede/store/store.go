@@ -224,7 +224,9 @@ func (s *DB) LoadSimulationResult(simID string) (*SimulationResult, error) {
 	personas := map[string]*PersonaStats{}
 	for rows.Next() {
 		var c ConversationSummary
-		rows.Scan(&c.ID, &c.PersonaName, &c.Status, &c.GoalResult, &c.GoalReason, &c.TurnCount, &c.CostCents, &c.DurationMs)
+		if err := rows.Scan(&c.ID, &c.PersonaName, &c.Status, &c.GoalResult, &c.GoalReason, &c.TurnCount, &c.CostCents, &c.DurationMs); err != nil {
+			continue
+		}
 		r.Conversations = append(r.Conversations, c)
 
 		ps, ok := personas[c.PersonaName]
@@ -331,7 +333,9 @@ func (s *DB) ListSimulations(limit int) ([]SimulationResult, error) {
 	for rows.Next() {
 		var r SimulationResult
 		var status, startedAt, completedAt sql.NullString
-		rows.Scan(&r.ID, &r.TargetURL, &r.UserCount, &status, &r.TotalCost, &startedAt, &completedAt)
+		if err := rows.Scan(&r.ID, &r.TargetURL, &r.UserCount, &status, &r.TotalCost, &startedAt, &completedAt); err != nil {
+			continue
+		}
 		results = append(results, r)
 	}
 	return results, nil

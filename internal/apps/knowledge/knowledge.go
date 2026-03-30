@@ -233,7 +233,9 @@ func (a *App) handleListBases(w http.ResponseWriter, r *http.Request) {
 		var id, authorID, title, desc, domain, status, created, updated string
 		var entriesCount, installs, price int
 		var rating float64
-		rows.Scan(&id, &authorID, &title, &desc, &domain, &entriesCount, &rating, &installs, &price, &status, &created, &updated)
+		if err := rows.Scan(&id, &authorID, &title, &desc, &domain, &entriesCount, &rating, &installs, &price, &status, &created, &updated); err != nil {
+			continue
+		}
 		bases = append(bases, map[string]any{
 			"id": id, "author_id": authorID, "title": title, "description": desc,
 			"domain": domain, "entries_count": entriesCount, "rating": rating,
@@ -373,7 +375,9 @@ func (a *App) handleListEntries(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, fact, source, created, expires string
 		var verified, verificationCount, disputed int
-		rows.Scan(&id, &fact, &source, &verified, &verificationCount, &disputed, &created, &expires)
+		if err := rows.Scan(&id, &fact, &source, &verified, &verificationCount, &disputed, &created, &expires); err != nil {
+			continue
+		}
 		entries = append(entries, map[string]any{
 			"id": id, "kb_id": kbID, "fact": fact, "source": source,
 			"verified": verified, "verification_count": verificationCount,
@@ -508,7 +512,9 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, fact, source string
 		var verified, verificationCount, disputed int
-		rows.Scan(&id, &fact, &source, &verified, &verificationCount, &disputed)
+		if err := rows.Scan(&id, &fact, &source, &verified, &verificationCount, &disputed); err != nil {
+			continue
+		}
 		results = append(results, map[string]any{
 			"id": id, "fact": fact, "source": source,
 			"verified": verified, "verification_count": verificationCount, "disputed": disputed,
@@ -603,7 +609,9 @@ func (a *App) handleMarketplace(w http.ResponseWriter, r *http.Request) {
 		var id, authorID, title, desc, dom, status string
 		var entriesCount, installs, price int
 		var rating float64
-		rows.Scan(&id, &authorID, &title, &desc, &dom, &entriesCount, &rating, &installs, &price, &status)
+		if err := rows.Scan(&id, &authorID, &title, &desc, &dom, &entriesCount, &rating, &installs, &price, &status); err != nil {
+			continue
+		}
 		bases = append(bases, map[string]any{
 			"id": id, "author_id": authorID, "title": title, "description": desc,
 			"domain": dom, "entries_count": entriesCount, "rating": rating,
@@ -656,7 +664,9 @@ func (a *App) handleListWatches(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, url, lastChecked, lastHash, created string
 		var interval int
-		rows.Scan(&id, &url, &interval, &lastChecked, &lastHash, &created)
+		if err := rows.Scan(&id, &url, &interval, &lastChecked, &lastHash, &created); err != nil {
+			continue
+		}
 		watches = append(watches, map[string]any{
 			"id": id, "kb_id": kbID, "url": url, "check_interval_hours": interval,
 			"last_checked": lastChecked, "last_hash": lastHash, "created_at": created,

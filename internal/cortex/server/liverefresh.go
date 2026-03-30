@@ -155,7 +155,9 @@ func (s *Server) runLiveRefresh() refreshResult {
 		var models []string
 		for rows.Next() {
 			var m string
-			rows.Scan(&m)
+			if err := rows.Scan(&m); err != nil {
+				continue
+			}
 			models = append(models, m)
 		}
 		if len(models) > 0 {

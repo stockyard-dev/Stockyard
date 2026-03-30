@@ -99,7 +99,9 @@ func (db *DB) ListCampaigns() ([]Campaign, error) {
 	var out []Campaign
 	for rows.Next() {
 		var c Campaign
-		rows.Scan(&c.ID, &c.Name, &c.TargetURL, &c.AttackTypes, &c.Generation, &c.TotalAttacks, &c.SuccessfulAttacks, &c.Status, &c.CreatedAt)
+		if err := rows.Scan(&c.ID, &c.Name, &c.TargetURL, &c.AttackTypes, &c.Generation, &c.TotalAttacks, &c.SuccessfulAttacks, &c.Status, &c.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, c)
 	}
 	return out, nil
@@ -127,7 +129,9 @@ func (db *DB) ListAttacks(campaignID string, successOnly bool, limit int) ([]Att
 	var out []Attack
 	for rows.Next() {
 		var a Attack
-		rows.Scan(&a.ID, &a.CampaignID, &a.Generation, &a.ParentID, &a.AttackType, &a.Payload, &a.Mutations, &a.BypassedGuardrail, &a.Success, &a.ResponseSnippet, &a.CreatedAt)
+		if err := rows.Scan(&a.ID, &a.CampaignID, &a.Generation, &a.ParentID, &a.AttackType, &a.Payload, &a.Mutations, &a.BypassedGuardrail, &a.Success, &a.ResponseSnippet, &a.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil
@@ -140,7 +144,9 @@ func (db *DB) ListVulnerabilities() ([]Vulnerability, error) {
 	var out []Vulnerability
 	for rows.Next() {
 		var v Vulnerability
-		rows.Scan(&v.ID, &v.CampaignID, &v.Guardrail, &v.AttackLineage, &v.CommonTrait, &v.Severity, &v.Patched, &v.DiscoveredAt)
+		if err := rows.Scan(&v.ID, &v.CampaignID, &v.Guardrail, &v.AttackLineage, &v.CommonTrait, &v.Severity, &v.Patched, &v.DiscoveredAt); err != nil {
+			continue
+		}
 		out = append(out, v)
 	}
 	return out, nil

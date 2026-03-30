@@ -86,7 +86,9 @@ func (db *DB) ListLoops() ([]Loop, error) {
 	var out []Loop
 	for rows.Next() {
 		var l Loop
-		rows.Scan(&l.ID, &l.Name, &l.Components, &l.LoopType, &l.Strength, &l.Description, &l.Impact, &l.FirstDetected, &l.LastSeen, &l.Occurrences)
+		if err := rows.Scan(&l.ID, &l.Name, &l.Components, &l.LoopType, &l.Strength, &l.Description, &l.Impact, &l.FirstDetected, &l.LastSeen, &l.Occurrences); err != nil {
+			continue
+		}
 		out = append(out, l)
 	}
 	return out, nil
@@ -99,7 +101,9 @@ func (db *DB) ListSimulations() ([]Simulation, error) {
 	var out []Simulation
 	for rows.Next() {
 		var s Simulation
-		rows.Scan(&s.ID, &s.Scenario, &s.Baseline, &s.Predicted, &s.Actual, &s.Accuracy, &s.CreatedAt)
+		if err := rows.Scan(&s.ID, &s.Scenario, &s.Baseline, &s.Predicted, &s.Actual, &s.Accuracy, &s.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, s)
 	}
 	return out, nil

@@ -264,7 +264,9 @@ func runObserveStage(conn *sql.DB, window string) map[string]any {
 		defer rows.Close()
 		for rows.Next() {
 			var ms modelSpend
-			rows.Scan(&ms.Model, &ms.Count, &ms.Spend)
+			if err := rows.Scan(&ms.Model, &ms.Count, &ms.Spend); err != nil {
+				continue
+			}
 			topModels = append(topModels, ms)
 		}
 	}

@@ -89,7 +89,9 @@ func (sr *SmartRouter) reload() {
 		var r RoutingRule
 		var enabled int
 		var condStr, actStr string
-		rows.Scan(&r.ID, &r.Name, &r.Priority, &condStr, &actStr, &enabled, &r.CreatedAt)
+		if err := rows.Scan(&r.ID, &r.Name, &r.Priority, &condStr, &actStr, &enabled, &r.CreatedAt); err != nil {
+			continue
+		}
 		r.Condition = json.RawMessage(condStr)
 		r.Action = json.RawMessage(actStr)
 		r.Enabled = enabled == 1

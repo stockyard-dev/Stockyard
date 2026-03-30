@@ -70,7 +70,9 @@ func (a *App) handleListCustomers(w http.ResponseWriter, r *http.Request) {
 	var customers []map[string]any
 	for rows.Next() {
 		var id, acct, extID, name, email, meta, created, updated string
-		rows.Scan(&id, &acct, &extID, &name, &email, &meta, &created, &updated)
+		if err := rows.Scan(&id, &acct, &extID, &name, &email, &meta, &created, &updated); err != nil {
+			continue
+		}
 		var metadata any
 		if err := json.Unmarshal([]byte(meta), &metadata); err != nil {
 			log.Printf("[customers] json parse error: %v", err)

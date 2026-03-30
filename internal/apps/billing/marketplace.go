@@ -123,7 +123,9 @@ func (a *App) handleMarketplaceUsage(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var model string
 		var requests, tin, tout, cost int64
-		rows.Scan(&model, &requests, &tin, &tout, &cost)
+		if err := rows.Scan(&model, &requests, &tin, &tout, &cost); err != nil {
+			continue
+		}
 		totalCents += cost
 		usage = append(usage, map[string]any{
 			"model": model, "requests": requests,

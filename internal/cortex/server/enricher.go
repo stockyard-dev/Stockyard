@@ -183,7 +183,9 @@ func (s *Server) enrichModelProfiles(since string) upsertResult {
 		var model, prov string
 		var reqs int
 		var avgLat, avgOut, avgCost, totalCost float64
-		rows.Scan(&model, &prov, &reqs, &avgLat, &avgOut, &avgCost, &totalCost)
+		if err := rows.Scan(&model, &prov, &reqs, &avgLat, &avgOut, &avgCost, &totalCost); err != nil {
+			continue
+		}
 
 		confidence := float64(reqs) / (float64(reqs) + 10.0)
 
@@ -220,7 +222,9 @@ func (s *Server) enrichProviderHealth(since string) upsertResult {
 		var prov string
 		var totalReqs, success, errors int
 		var avgLat float64
-		rows.Scan(&prov, &totalReqs, &success, &errors, &avgLat)
+		if err := rows.Scan(&prov, &totalReqs, &success, &errors, &avgLat); err != nil {
+			continue
+		}
 
 		successRate := float64(success) / float64(totalReqs) * 100
 		reliability := "reliable"
@@ -283,7 +287,9 @@ func (s *Server) enrichUsagePatterns(since string) upsertResult {
 		var models []string
 		for rows.Next() {
 			var m string
-			rows.Scan(&m)
+			if err := rows.Scan(&m); err != nil {
+				continue
+			}
 			models = append(models, m)
 		}
 		if len(models) > 0 {
@@ -327,7 +333,9 @@ func (s *Server) enrichCostInsights(since string) upsertResult {
 		var model string
 		var totalCost, avgCost float64
 		var reqs int
-		rows.Scan(&model, &totalCost, &reqs, &avgCost)
+		if err := rows.Scan(&model, &totalCost, &reqs, &avgCost); err != nil {
+			continue
+		}
 		rank++
 
 		value := fmt.Sprintf("rank #%d: $%.4f total, $%.6f avg/req, %d requests", rank, totalCost, avgCost, reqs)
@@ -372,7 +380,9 @@ func (s *Server) enrichErrorPatterns(since string) upsertResult {
 	for rows.Next() {
 		var prov, model string
 		var errs int
-		rows.Scan(&prov, &model, &errs)
+		if err := rows.Scan(&prov, &model, &errs); err != nil {
+			continue
+		}
 
 		subject := prov + "/" + model
 		value := fmt.Sprintf("%d errors from %s on %s", errs, prov, model)

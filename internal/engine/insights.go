@@ -114,7 +114,9 @@ func analyzeCostWaste(conn *sql.DB, window string) []Insight {
 	var usages []modelUsage
 	for rows.Next() {
 		var u modelUsage
-		rows.Scan(&u.model, &u.count, &u.totalCost, &u.avgCost)
+		if err := rows.Scan(&u.model, &u.count, &u.totalCost, &u.avgCost); err != nil {
+			continue
+		}
 		usages = append(usages, u)
 	}
 
@@ -199,7 +201,9 @@ func analyzePII(conn *sql.DB, window string) []Insight {
 
 	for rows.Next() {
 		var id, body string
-		rows.Scan(&id, &body)
+		if err := rows.Scan(&id, &body); err != nil {
+			continue
+		}
 		totalScanned++
 
 		traceHasPII := false
@@ -280,7 +284,9 @@ func analyzePromptDuplication(conn *sql.DB, window string) []Insight {
 
 	for rows.Next() {
 		var body string
-		rows.Scan(&body)
+		if err := rows.Scan(&body); err != nil {
+			continue
+		}
 		total++
 
 		content := extractUserContent(body)

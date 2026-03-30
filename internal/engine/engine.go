@@ -1096,7 +1096,9 @@ func Boot(pc ProductConfig) {
 			defer rows.Close()
 			for rows.Next() {
 				var id, model, status, createdAt string
-				rows.Scan(&id, &model, &status, &createdAt)
+				if err := rows.Scan(&id, &model, &status, &createdAt); err != nil {
+					continue
+				}
 				results = append(results, map[string]any{"type": "trace", "id": id, "title": model, "status": status, "created_at": createdAt})
 			}
 		}
@@ -1146,7 +1148,9 @@ func Boot(pc ProductConfig) {
 		var snaps []map[string]string
 		for rows.Next() {
 			var id, name, createdAt string
-			rows.Scan(&id, &name, &createdAt)
+			if err := rows.Scan(&id, &name, &createdAt); err != nil {
+				continue
+			}
 			snaps = append(snaps, map[string]string{"id": id, "name": name, "created_at": createdAt})
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -1172,7 +1176,9 @@ func Boot(pc ProductConfig) {
 		for rows.Next() {
 			var id, trigger, cond, action, createdAt string
 			var enabled int
-			rows.Scan(&id, &trigger, &cond, &action, &enabled, &createdAt)
+			if err := rows.Scan(&id, &trigger, &cond, &action, &enabled, &createdAt); err != nil {
+				continue
+			}
 			rules = append(rules, map[string]any{"id": id, "trigger": trigger, "condition": cond, "action": action, "enabled": enabled == 1, "created_at": createdAt})
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -1184,7 +1190,10 @@ func Boot(pc ProductConfig) {
 			Condition string `json:"condition"`
 			Action    string `json:"action"`
 		}
-		json.NewDecoder(r.Body).Decode(&req)
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, `{"error":"invalid request body"}`, http.StatusBadRequest)
+			return
+		}
 		id := fmt.Sprintf("er_%d", time.Now().UnixNano())
 		db.Conn().Exec("INSERT INTO event_rules (id, trigger, condition, action, created_at) VALUES (?, ?, ?, ?, ?)",
 			id, req.Trigger, req.Condition, req.Action, time.Now().Format(time.RFC3339))
@@ -1202,7 +1211,9 @@ func Boot(pc ProductConfig) {
 		var events []map[string]string
 		for rows.Next() {
 			var id, ruleID, trigger, action, createdAt string
-			rows.Scan(&id, &ruleID, &trigger, &action, &createdAt)
+			if err := rows.Scan(&id, &ruleID, &trigger, &action, &createdAt); err != nil {
+				continue
+			}
 			events = append(events, map[string]string{"id": id, "rule_id": ruleID, "trigger": trigger, "action": action, "created_at": createdAt})
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -1213,7 +1224,9 @@ func Boot(pc ProductConfig) {
 	db.SeedDemoData(pc.Product)
 
 	// Start data retention cleanup loop
-	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0)
+	cleanupStop := make(chan struct{})
+	defer close(cleanupStop)
+	db.StartCleanupLoop(cfg.Logging.RetentionDays, 0, cleanupStop)
 
 	// Start observe data retention/purge loop (traces, alerts, anomalies, safety events)
 	for _, app := range pc.Apps {
@@ -1379,16 +1392,20 @@ func Boot(pc ProductConfig) {
 		}
 		var results []map[string]any
 		query := "SELECT type, entity_id, title, snippet(search_index, 3, '<b>', '</b>', '...', 32) FROM search_index WHERE search_index MATCH ?"
+		args := []any{q}
 		if typ != "all" {
-			query += " AND type = '" + typ + "'"
+			query += " AND type = ?"
+			args = append(args, typ)
 		}
 		query += " ORDER BY rank LIMIT 20"
-		rows, err := db.Conn().Query(query, q)
+		rows, err := db.Conn().Query(query, args...)
 		if err == nil {
 			defer rows.Close()
 			for rows.Next() {
 				var sType, entityID, title, snippet string
-				rows.Scan(&sType, &entityID, &title, &snippet)
+				if err := rows.Scan(&sType, &entityID, &title, &snippet); err != nil {
+					continue
+				}
 				results = append(results, map[string]any{"type": sType, "id": entityID, "title": title, "snippet": snippet})
 			}
 		}
@@ -1439,7 +1456,9 @@ func Boot(pc ProductConfig) {
 		for rows.Next() {
 			var id, prefix, lastSeen string
 			var hour, freq int
-			rows.Scan(&id, &hour, &prefix, &freq, &lastSeen)
+			if err := rows.Scan(&id, &hour, &prefix, &freq, &lastSeen); err != nil {
+				continue
+			}
 			patterns = append(patterns, map[string]any{"id": id, "hour_utc": hour, "prompt_prefix": prefix, "frequency": freq, "last_seen": lastSeen})
 		}
 		if patterns == nil {
@@ -1593,7 +1612,9 @@ func Boot(pc ProductConfig) {
 			for rows.Next() {
 				var id, title string
 				var uses int
-				rows.Scan(&id, &title, &uses)
+				if err := rows.Scan(&id, &title, &uses); err != nil {
+					continue
+				}
 				apps = append(apps, map[string]string{"id": id, "title": title, "use_count": fmt.Sprintf("%d", uses)})
 			}
 		}
@@ -1619,7 +1640,9 @@ func Boot(pc ProductConfig) {
 		for rows.Next() {
 			var id, eventType, url, status, createdAt string
 			var respStatus, latencyMs, retryCount int
-			rows.Scan(&id, &eventType, &url, &respStatus, &latencyMs, &retryCount, &status, &createdAt)
+			if err := rows.Scan(&id, &eventType, &url, &respStatus, &latencyMs, &retryCount, &status, &createdAt); err != nil {
+				continue
+			}
 			deliveries = append(deliveries, map[string]any{
 				"id": id, "event_type": eventType, "url": url,
 				"response_status": respStatus, "latency_ms": latencyMs,

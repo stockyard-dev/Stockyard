@@ -86,7 +86,9 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 			var trainingData []map[string]any
 			for rows.Next() {
 				var model, metaJSON string
-				rows.Scan(&model, &metaJSON)
+				if err := rows.Scan(&model, &metaJSON); err != nil {
+					continue
+				}
 				var meta map[string]any
 				if err := json.Unmarshal([]byte(metaJSON), &meta); err != nil {
 					log.Printf("[distill] json parse error: %v", err)

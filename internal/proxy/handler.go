@@ -102,12 +102,12 @@ func (s *Server) handleCompletions(w http.ResponseWriter, r *http.Request) {
 // handleEmbeddings handles POST /v1/embeddings
 func (s *Server) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(nil, r.Body, maxRequestBodySize)
+	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		writeError(w, http.StatusRequestEntityTooLarge, "request body too large or unreadable")
 		return
 	}
-	defer r.Body.Close()
 
 	// Find an embedding-capable provider
 	var embProvider provider.EmbeddingProvider
@@ -235,12 +235,14 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleProviderTest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	names := make([]string, 0)
-	for name := range s.config.Providers {
+	names := make([]string, 0, len(s.config.Providers))
+	providers := make(map[string]provider.Provider, len(s.config.Providers))
+	for name, p := range s.config.Providers {
 		names = append(names, name)
+		providers[name] = p
 	}
 
-	for name, p := range s.config.Providers {
+	for name, p := range providers {
 		temp := float64(0)
 		maxTok := 5
 		req := &provider.Request{
@@ -259,12 +261,16 @@ func (s *Server) handleProviderTest(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		content := ""
+		if len(resp.Choices) > 0 {
+			content = resp.Choices[0].Message.Content
+		}
 		json.NewEncoder(w).Encode(map[string]any{
 			"provider":          name,
 			"provider_map_keys": names,
 			"model":             resp.Model,
-			"content":           resp.Choices[0].Message.Content,
-			"ok":                true,
+			"content":           content,
+			"ok":                len(resp.Choices) > 0,
 		})
 		return
 	}
@@ -315,11 +321,11 @@ const maxRequestBodySize = 10 * 1024 * 1024
 // Returns the request and the raw body bytes.
 func (s *Server) parseRequest(r *http.Request) (*provider.Request, []byte, error) {
 	r.Body = http.MaxBytesReader(nil, r.Body, maxRequestBodySize)
+	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return nil, nil, fmt.Errorf("request body too large or unreadable")
 	}
-	defer r.Body.Close()
 
 	var req provider.Request
 	if err := json.Unmarshal(body, &req); err != nil {

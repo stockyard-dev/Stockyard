@@ -89,7 +89,9 @@ func (s *Scheduler) sendWeeklyReport() {
 	var recipients []string
 	for rows.Next() {
 		var email string
-		rows.Scan(&email)
+		if err := rows.Scan(&email); err != nil {
+			continue
+		}
 		recipients = append(recipients, email)
 	}
 
@@ -151,7 +153,9 @@ func (s *Scheduler) generateCostReport() string {
 		var provider, model string
 		var requests, tokIn, tokOut int
 		var cost float64
-		rows.Scan(&provider, &model, &requests, &tokIn, &tokOut, &cost)
+		if err := rows.Scan(&provider, &model, &requests, &tokIn, &tokOut, &cost); err != nil {
+			continue
+		}
 		totalCost += cost
 		totalReqs += requests
 		html += fmt.Sprintf(`<tr style="border-bottom:1px solid #2e261e">
@@ -196,7 +200,9 @@ func RegisterSchedulerRoutes(mux *http.ServeMux, s *Scheduler) {
 		for rows.Next() {
 			var id, typ, period, sentAt string
 			var count int
-			rows.Scan(&id, &typ, &period, &sentAt, &count)
+			if err := rows.Scan(&id, &typ, &period, &sentAt, &count); err != nil {
+				continue
+			}
 			reports = append(reports, map[string]any{
 				"id": id, "type": typ, "period": period, "sent_at": sentAt, "recipient_count": count,
 			})

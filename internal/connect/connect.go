@@ -249,7 +249,9 @@ func (c *ConnectService) handleListApps(w http.ResponseWriter, r *http.Request) 
 	var apps []map[string]any
 	for rows.Next() {
 		var id, name, redirectURI, createdAt string
-		rows.Scan(&id, &name, &redirectURI, &createdAt)
+		if err := rows.Scan(&id, &name, &redirectURI, &createdAt); err != nil {
+			continue
+		}
 		apps = append(apps, map[string]any{
 			"id":           id,
 			"name":         name,
@@ -407,7 +409,9 @@ func (c *ConnectService) handleListSecrets(w http.ResponseWriter, r *http.Reques
 	var secrets []map[string]any
 	for rows.Next() {
 		var name, createdAt, updatedAt string
-		rows.Scan(&name, &createdAt, &updatedAt)
+		if err := rows.Scan(&name, &createdAt, &updatedAt); err != nil {
+			continue
+		}
 		secrets = append(secrets, map[string]any{
 			"name":       name,
 			"created_at": createdAt,
@@ -463,7 +467,9 @@ func (c *ConnectService) handleListThreats(w http.ResponseWriter, r *http.Reques
 	for rows.Next() {
 		var id, typ, pattern, severity, source, firstSeen, lastSeen string
 		var occurrences int
-		rows.Scan(&id, &typ, &pattern, &severity, &source, &firstSeen, &lastSeen, &occurrences)
+		if err := rows.Scan(&id, &typ, &pattern, &severity, &source, &firstSeen, &lastSeen, &occurrences); err != nil {
+			continue
+		}
 		threats = append(threats, map[string]any{
 			"id":          id,
 			"type":        typ,
@@ -497,7 +503,9 @@ func (c *ConnectService) handleThreatStats(w http.ResponseWriter, r *http.Reques
 	for rows.Next() {
 		var typ string
 		var count, totalOccurrences int
-		rows.Scan(&typ, &count, &totalOccurrences)
+		if err := rows.Scan(&typ, &count, &totalOccurrences); err != nil {
+			continue
+		}
 		stats[typ] = map[string]any{
 			"signatures":        count,
 			"total_occurrences": totalOccurrences,
@@ -524,7 +532,9 @@ func (c *ConnectService) handleSLACompliance(w http.ResponseWriter, r *http.Requ
 		var actual, threshold float64
 		var compliant int
 		var metric sql.NullString
-		rows.Scan(&provider, &slaID, &period, &actual, &compliant, &metric, &threshold)
+		if err := rows.Scan(&provider, &slaID, &period, &actual, &compliant, &metric, &threshold); err != nil {
+			continue
+		}
 		compliance = append(compliance, map[string]any{
 			"provider":  provider,
 			"sla_id":    slaID,
@@ -585,7 +595,9 @@ func (c *ConnectService) handleListSynthetic(w http.ResponseWriter, r *http.Requ
 	for rows.Next() {
 		var id, provider, status, createdAt string
 		var latencyMs int
-		rows.Scan(&id, &provider, &latencyMs, &status, &createdAt)
+		if err := rows.Scan(&id, &provider, &latencyMs, &status, &createdAt); err != nil {
+			continue
+		}
 		probes = append(probes, map[string]any{
 			"id":         id,
 			"provider":   provider,
@@ -631,7 +643,9 @@ func (c *ConnectService) handleListLabs(w http.ResponseWriter, r *http.Request) 
 	var features []map[string]any
 	for rows.Next() {
 		var id, name, desc, status, createdAt string
-		rows.Scan(&id, &name, &desc, &status, &createdAt)
+		if err := rows.Scan(&id, &name, &desc, &status, &createdAt); err != nil {
+			continue
+		}
 		features = append(features, map[string]any{
 			"id":          id,
 			"name":        name,

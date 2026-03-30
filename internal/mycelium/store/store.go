@@ -98,7 +98,9 @@ func (db *DB) ListInsights(insightType, model string, limit int) ([]Insight, err
 	var out []Insight
 	for rows.Next() {
 		var i Insight
-		rows.Scan(&i.ID, &i.InsightType, &i.Model, &i.Provider, &i.Summary, &i.Data, &i.Confidence, &i.SampleSize, &i.Source, &i.CreatedAt)
+		if err := rows.Scan(&i.ID, &i.InsightType, &i.Model, &i.Provider, &i.Summary, &i.Data, &i.Confidence, &i.SampleSize, &i.Source, &i.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, i)
 	}
 	return out, nil
@@ -117,7 +119,9 @@ func (db *DB) ListPeers() ([]Peer, error) {
 	var out []Peer
 	for rows.Next() {
 		var p Peer
-		rows.Scan(&p.ID, &p.Endpoint, &p.InstanceID, &p.LastExchange, &p.InsightsReceived, &p.InsightsSent, &p.TrustScore, &p.Status)
+		if err := rows.Scan(&p.ID, &p.Endpoint, &p.InstanceID, &p.LastExchange, &p.InsightsReceived, &p.InsightsSent, &p.TrustScore, &p.Status); err != nil {
+			continue
+		}
 		out = append(out, p)
 	}
 	return out, nil

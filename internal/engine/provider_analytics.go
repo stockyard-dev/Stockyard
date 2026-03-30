@@ -46,7 +46,9 @@ func handleProviderAnalytics(conn *sql.DB) http.HandlerFunc {
 			var prov, firstSeen, lastSeen string
 			var total, errors, totalIn, totalOut int64
 			var avgLatency, totalCost float64
-			rows.Scan(&prov, &total, &errors, &avgLatency, &totalCost, &totalIn, &totalOut, &firstSeen, &lastSeen)
+			if err := rows.Scan(&prov, &total, &errors, &avgLatency, &totalCost, &totalIn, &totalOut, &firstSeen, &lastSeen); err != nil {
+				continue
+			}
 			totalAll += total
 			errRate := float64(0)
 			if total > 0 {
@@ -192,7 +194,9 @@ func handleRateCalculator(conn *sql.DB) http.HandlerFunc {
 			var prov string
 			var totalCost float64
 			var requests int64
-			rows.Scan(&prov, &totalCost, &requests)
+			if err := rows.Scan(&prov, &totalCost, &requests); err != nil {
+				continue
+			}
 			savings := totalCost * discountPct / 100
 			totalSavings += savings
 			results = append(results, map[string]any{

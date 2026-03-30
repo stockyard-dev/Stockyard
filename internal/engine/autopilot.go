@@ -252,7 +252,9 @@ func (ap *Autopilot) reload() {
 	ap.scores = make(map[string]ModelScore)
 	for rows.Next() {
 		var ms ModelScore
-		rows.Scan(&ms.Model, &ms.Provider, &ms.QualityScore, &ms.AvgCostUSD, &ms.AvgLatencyMs, &ms.AvgTokensOut, &ms.SuccessRate, &ms.CalibrationRuns, &ms.LastCalibrated, &ms.InputPricePerM, &ms.OutputPricePerM)
+		if err := rows.Scan(&ms.Model, &ms.Provider, &ms.QualityScore, &ms.AvgCostUSD, &ms.AvgLatencyMs, &ms.AvgTokensOut, &ms.SuccessRate, &ms.CalibrationRuns, &ms.LastCalibrated, &ms.InputPricePerM, &ms.OutputPricePerM); err != nil {
+			continue
+		}
 		ap.scores[ms.Model] = ms
 	}
 }
@@ -473,8 +475,10 @@ func (ap *Autopilot) Calibrate(ctx context.Context) (*CalibrateResult, error) {
 	var traces []traceData
 	for rows.Next() {
 		var t traceData
-		rows.Scan(&t.ID, &t.Model, &t.Provider, &t.RequestBody, &t.ResponseBody,
-			&t.TokensIn, &t.TokensOut, &t.CostUSD, &t.DurationMs)
+		if err := rows.Scan(&t.ID, &t.Model, &t.Provider, &t.RequestBody, &t.ResponseBody,
+			&t.TokensIn, &t.TokensOut, &t.CostUSD, &t.DurationMs); err != nil {
+			continue
+		}
 		traces = append(traces, t)
 	}
 	if len(traces) == 0 {
@@ -926,8 +930,10 @@ func handleAutopilotDecisions(conn *sql.DB) http.HandlerFunc {
 		decisions := make([]decision, 0)
 		for rows.Next() {
 			var d decision
-			rows.Scan(&d.ID, &d.TraceID, &d.RequestedModel, &d.RoutedModel, &d.RoutedProvider,
-				&d.Reason, &d.QualityScore, &d.EstimatedCost, &d.EstimatedSavings, &d.CreatedAt)
+			if err := rows.Scan(&d.ID, &d.TraceID, &d.RequestedModel, &d.RoutedModel, &d.RoutedProvider,
+				&d.Reason, &d.QualityScore, &d.EstimatedCost, &d.EstimatedSavings, &d.CreatedAt); err != nil {
+				continue
+			}
 			decisions = append(decisions, d)
 		}
 
@@ -954,7 +960,9 @@ func handleAutopilotStats(conn *sql.DB, ap *Autopilot) http.HandlerFunc {
 			defer rows.Close()
 			for rows.Next() {
 				var rd routeDist
-				rows.Scan(&rd.Model, &rd.Count)
+				if err := rows.Scan(&rd.Model, &rd.Count); err != nil {
+					continue
+				}
 				if totalDecisions > 0 {
 					rd.Pct = float64(rd.Count) / float64(totalDecisions) * 100
 				}
@@ -1032,9 +1040,11 @@ func handleAutopilotCalibrationLog(conn *sql.DB) http.HandlerFunc {
 		entries := make([]logEntry, 0)
 		for rows.Next() {
 			var e logEntry
-			rows.Scan(&e.SourceTraceID, &e.Model, &e.Provider, &e.QualityScore,
+			if err := rows.Scan(&e.SourceTraceID, &e.Model, &e.Provider, &e.QualityScore,
 				&e.CostUSD, &e.LatencyMs, &e.TokensOut, &e.ResponsePreview,
-				&e.ReferencePreview, &e.Status, &e.CreatedAt)
+				&e.ReferencePreview, &e.Status, &e.CreatedAt); err != nil {
+				continue
+			}
 			entries = append(entries, e)
 		}
 

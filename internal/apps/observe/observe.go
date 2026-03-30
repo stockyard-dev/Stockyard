@@ -286,7 +286,9 @@ func (a *App) handleCosts(w http.ResponseWriter, r *http.Request) {
 		var prov string
 		var reqs, tokIn, tokOut int64
 		var cost float64
-		rows.Scan(&prov, &reqs, &tokIn, &tokOut, &cost)
+		if err := rows.Scan(&prov, &reqs, &tokIn, &tokOut, &cost); err != nil {
+			continue
+		}
 		providers = append(providers, map[string]any{
 			"provider": prov, "requests": reqs, "tokens_in": tokIn,
 			"tokens_out": tokOut, "cost_usd": cost,
@@ -319,7 +321,9 @@ func (a *App) handleCostDaily(w http.ResponseWriter, r *http.Request) {
 		var date string
 		var reqs int64
 		var cost float64
-		rows.Scan(&date, &reqs, &cost)
+		if err := rows.Scan(&date, &reqs, &cost); err != nil {
+			continue
+		}
 		daily = append(daily, map[string]any{"date": date, "requests": reqs, "cost_usd": cost})
 	}
 	writeJSON(w, map[string]any{"daily": daily})
@@ -388,7 +392,9 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 		var dur, tokIn, tokOut int64
 		var cost float64
 		var fav int
-		rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created, &fav)
+		if err := rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created, &fav); err != nil {
+			continue
+		}
 		traces = append(traces, map[string]any{
 			"id": id, "request_id": reqID, "service": svc, "operation": op,
 			"provider": prov, "model": model, "status": status,
@@ -483,7 +489,9 @@ func (a *App) handleListFavorites(w http.ResponseWriter, r *http.Request) {
 		var id, reqID, svc, op, prov, model, status, created, note string
 		var dur, tokIn, tokOut int64
 		var cost float64
-		rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created, &note)
+		if err := rows.Scan(&id, &reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &created, &note); err != nil {
+			continue
+		}
 		traces = append(traces, map[string]any{
 			"id": id, "request_id": reqID, "service": svc, "operation": op,
 			"provider": prov, "model": model, "status": status,
@@ -546,7 +554,9 @@ func (a *App) handleListAlerts(w http.ResponseWriter, r *http.Request) {
 		var name, metric, cond, channel, lastFired string
 		var threshold float64
 		var enabled int
-		rows.Scan(&id, &name, &metric, &cond, &threshold, &window, &channel, &enabled, &lastFired)
+		if err := rows.Scan(&id, &name, &metric, &cond, &threshold, &window, &channel, &enabled, &lastFired); err != nil {
+			continue
+		}
 		alerts = append(alerts, map[string]any{
 			"id": id, "name": name, "metric": metric, "condition": cond,
 			"threshold": threshold, "window_seconds": window, "channel": channel,
@@ -596,7 +606,9 @@ func (a *App) handleAlertHistory(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var name, msg, fired string
 		var val, thresh float64
-		rows.Scan(&name, &val, &thresh, &msg, &fired)
+		if err := rows.Scan(&name, &val, &thresh, &msg, &fired); err != nil {
+			continue
+		}
 		history = append(history, map[string]any{
 			"rule_name": name, "metric_value": val, "threshold": thresh,
 			"message": msg, "fired_at": fired,
@@ -617,7 +629,9 @@ func (a *App) handleListAnomalies(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var metric, severity, msg, detected string
 		var expected, actual, zscore float64
-		rows.Scan(&metric, &expected, &actual, &zscore, &severity, &msg, &detected)
+		if err := rows.Scan(&metric, &expected, &actual, &zscore, &severity, &msg, &detected); err != nil {
+			continue
+		}
 		anomalies = append(anomalies, map[string]any{
 			"metric": metric, "expected": expected, "actual": actual,
 			"z_score": zscore, "severity": severity, "message": msg,
@@ -689,7 +703,9 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 		var bucket string
 		var reqs, errors, tokIn, tokOut int64
 		var cost, avgLat float64
-		rows.Scan(&bucket, &reqs, &cost, &avgLat, &errors, &tokIn, &tokOut)
+		if err := rows.Scan(&bucket, &reqs, &cost, &avgLat, &errors, &tokIn, &tokOut); err != nil {
+			continue
+		}
 		buckets = append(buckets, map[string]any{
 			"bucket": bucket, "requests": reqs, "cost_usd": cost,
 			"avg_latency_ms": avgLat, "errors": errors,
@@ -780,7 +796,9 @@ func (a *App) handleListSafetyEvents(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var evType, sev, cat, detailStr, ip, uid, model, reqID, action, created string
-		rows.Scan(&id, &evType, &sev, &cat, &detailStr, &ip, &uid, &model, &reqID, &action, &created)
+		if err := rows.Scan(&id, &evType, &sev, &cat, &detailStr, &ip, &uid, &model, &reqID, &action, &created); err != nil {
+			continue
+		}
 		var detail any
 		if err := json.Unmarshal([]byte(detailStr), &detail); err != nil {
 			log.Printf("[observe] json parse error: %v", err)
@@ -923,7 +941,9 @@ func (a *App) handleHeatmap(w http.ResponseWriter, r *http.Request) {
 	intervals := map[string]bool{}
 	for rows.Next() {
 		var c cell
-		rows.Scan(&c.Interval, &c.Bucket, &c.Count)
+		if err := rows.Scan(&c.Interval, &c.Bucket, &c.Count); err != nil {
+			continue
+		}
 		cells = append(cells, c)
 		if c.Count > maxCount {
 			maxCount = c.Count
@@ -983,7 +1003,9 @@ func (a *App) handleProviderHealth(w http.ResponseWriter, r *http.Request) {
 	var providers []provHealth
 	for rows.Next() {
 		var p provHealth
-		rows.Scan(&p.Provider, &p.Total, &p.Errors, &p.AvgLatency, &p.LastSeen)
+		if err := rows.Scan(&p.Provider, &p.Total, &p.Errors, &p.AvgLatency, &p.LastSeen); err != nil {
+			continue
+		}
 		if p.Total > 0 {
 			p.ErrorRate = float64(p.Errors) / float64(p.Total)
 		}
@@ -1017,7 +1039,9 @@ func (a *App) handleAutoDisable(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var prov string
 		var total, errors int
-		rows.Scan(&prov, &total, &errors)
+		if err := rows.Scan(&prov, &total, &errors); err != nil {
+			continue
+		}
 		errorRate := float64(errors) / float64(total)
 		if errorRate > 0.5 {
 			// Disable in proxy_providers
@@ -1064,7 +1088,9 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 		defer rows.Close()
 		for rows.Next() {
 			var p provRow
-			rows.Scan(&p.Provider, &p.Requests, &p.TokensIn, &p.TokensOut, &p.Cost)
+			if err := rows.Scan(&p.Provider, &p.Requests, &p.TokensIn, &p.TokensOut, &p.Cost); err != nil {
+				continue
+			}
 			providers = append(providers, p)
 		}
 	}
@@ -1203,7 +1229,9 @@ func (a *App) handleDrift(w http.ResponseWriter, r *http.Request) {
 		var metrics []weekMetrics
 		for rows.Next() {
 			var m weekMetrics
-			rows.Scan(&m.Model, &m.AvgLength, &m.AvgLatency, &m.AvgCost, &m.ErrorRate, &m.Count)
+			if err := rows.Scan(&m.Model, &m.AvgLength, &m.AvgLatency, &m.AvgCost, &m.ErrorRate, &m.Count); err != nil {
+				continue
+			}
 			metrics = append(metrics, m)
 		}
 		return metrics

@@ -154,7 +154,9 @@ func (s *DB) ListSources() ([]Source, error) {
 	for rows.Next() {
 		var src Source
 		var synced sql.NullString
-		rows.Scan(&src.ID, &src.Type, &src.Name, &src.Config, &synced)
+		if err := rows.Scan(&src.ID, &src.Type, &src.Name, &src.Config, &synced); err != nil {
+			continue
+		}
 		if synced.Valid {
 			t, _ := time.Parse(time.RFC3339, synced.String)
 			src.LastSyncedAt = &t
@@ -281,8 +283,10 @@ func (s *DB) SearchChunks(queryEmbedding []float32, topK int) ([]SearchResult, e
 		var metaJSON sql.NullString
 		var r SearchResult
 
-		rows.Scan(&c.ID, &c.DocumentID, &c.Content, &c.ChunkIndex, &c.TokenCount, &embBytes, &metaJSON,
-			&r.DocTitle, &r.DocType, &r.DocURL, &r.DocAuthor)
+		if err := rows.Scan(&c.ID, &c.DocumentID, &c.Content, &c.ChunkIndex, &c.TokenCount, &embBytes, &metaJSON,
+			&r.DocTitle, &r.DocType, &r.DocURL, &r.DocAuthor); err != nil {
+			continue
+		}
 
 		c.Embedding = bytesToFloat32s(embBytes)
 		if len(c.Embedding) == 0 {
@@ -378,7 +382,9 @@ func (s *DB) GetRelatedEntities(entityID string, limit int) ([]Entity, []Relatio
 		var e Entity
 		var r Relationship
 		var propsJSON string
-		rows.Scan(&e.ID, &e.Type, &e.Name, &propsJSON, &e.MentionCount, &r.Type, &r.Weight, &r.Context)
+		if err := rows.Scan(&e.ID, &e.Type, &e.Name, &propsJSON, &e.MentionCount, &r.Type, &r.Weight, &r.Context); err != nil {
+			continue
+		}
 		if err := json.Unmarshal([]byte(propsJSON), &e.Properties); err != nil {
 			log.Printf("[cstore] json parse error: %v", err)
 		}
@@ -402,7 +408,9 @@ func (s *DB) FindEntitiesByName(query string, limit int) ([]Entity, error) {
 	for rows.Next() {
 		var e Entity
 		var propsJSON string
-		rows.Scan(&e.ID, &e.Type, &e.Name, &propsJSON, &e.MentionCount)
+		if err := rows.Scan(&e.ID, &e.Type, &e.Name, &propsJSON, &e.MentionCount); err != nil {
+			continue
+		}
 		if err := json.Unmarshal([]byte(propsJSON), &e.Properties); err != nil {
 			log.Printf("[cstore] json parse error: %v", err)
 		}
@@ -461,7 +469,9 @@ func (s *DB) QueryDocuments() ([]DocRow, error) {
 	var out []DocRow
 	for rows.Next() {
 		var d DocRow
-		rows.Scan(&d.ID, &d.Content, &d.Title)
+		if err := rows.Scan(&d.ID, &d.Content, &d.Title); err != nil {
+			continue
+		}
 		out = append(out, d)
 	}
 	return out, nil
@@ -491,7 +501,9 @@ func (s *DB) QueryHistory(limit int) ([]QueryHistoryRow, error) {
 	var out []QueryHistoryRow
 	for rows.Next() {
 		var q QueryHistoryRow
-		rows.Scan(&q.ID, &q.Question, &q.Answer, &q.ChunksUsed, &q.LatencyMs, &q.CostCents, &q.CreatedAt)
+		if err := rows.Scan(&q.ID, &q.Question, &q.Answer, &q.ChunksUsed, &q.LatencyMs, &q.CostCents, &q.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, q)
 	}
 	return out, nil

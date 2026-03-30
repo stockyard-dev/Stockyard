@@ -264,7 +264,9 @@ func (a *App) handleMyApps(w http.ResponseWriter, r *http.Request) {
 		var id, title, desc, cat, model, status, createdAt string
 		var rating float64
 		var useCount int
-		rows.Scan(&id, &title, &desc, &cat, &model, &status, &rating, &useCount, &createdAt)
+		if err := rows.Scan(&id, &title, &desc, &cat, &model, &status, &rating, &useCount, &createdAt); err != nil {
+			continue
+		}
 		apps = append(apps, map[string]any{
 			"id": id, "title": title, "description": desc, "category": cat,
 			"model": model, "status": status, "rating": rating, "use_count": useCount,
@@ -375,7 +377,9 @@ func (a *App) handleStore(w http.ResponseWriter, r *http.Request) {
 		var publishedAt sql.NullString
 		var priceCents, ratingCount, installCount, useCount int
 		var rating float64
-		rows.Scan(&id, &title, &desc, &cat, &model, &pricingModel, &priceCents, &rating, &ratingCount, &installCount, &useCount, &publishedAt)
+		if err := rows.Scan(&id, &title, &desc, &cat, &model, &pricingModel, &priceCents, &rating, &ratingCount, &installCount, &useCount, &publishedAt); err != nil {
+			continue
+		}
 		apps = append(apps, map[string]any{
 			"id": id, "title": title, "description": desc, "category": cat,
 			"model": model, "pricing_model": pricingModel, "price_cents": priceCents,
@@ -610,7 +614,9 @@ func (a *App) handleRunHistory(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, session, input, output, createdAt string
 		var feedback, costCents int
-		rows.Scan(&id, &session, &input, &output, &feedback, &costCents, &createdAt)
+		if err := rows.Scan(&id, &session, &input, &output, &feedback, &costCents, &createdAt); err != nil {
+			continue
+		}
 		uses = append(uses, map[string]any{
 			"id": id, "user_session": session, "input": input, "output": output,
 			"feedback": feedback, "cost_cents": costCents, "created_at": createdAt,
@@ -651,7 +657,9 @@ func (a *App) handleEarnings(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, createdAt string
 		var amount, fee, net int
-		rows.Scan(&id, &amount, &fee, &net, &createdAt)
+		if err := rows.Scan(&id, &amount, &fee, &net, &createdAt); err != nil {
+			continue
+		}
 		earnings = append(earnings, map[string]any{
 			"id": id, "amount_cents": amount, "fee_cents": fee, "net_cents": net, "created_at": createdAt,
 		})
@@ -692,7 +700,9 @@ func (a *App) handleImprovements(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, suggestion, impact, createdAt string
 		var applied int
-		rows.Scan(&id, &suggestion, &impact, &applied, &createdAt)
+		if err := rows.Scan(&id, &suggestion, &impact, &applied, &createdAt); err != nil {
+			continue
+		}
 		improvements = append(improvements, map[string]any{
 			"id": id, "suggestion": suggestion, "impact_estimate": impact,
 			"applied": applied == 1, "created_at": createdAt,

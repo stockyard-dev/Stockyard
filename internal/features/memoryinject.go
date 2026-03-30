@@ -94,7 +94,9 @@ func findRelevantMemories(conn *sql.DB, userID, query string, limit int) []strin
 
 	for rows.Next() {
 		var content string
-		rows.Scan(&content)
+		if err := rows.Scan(&content); err != nil {
+			continue
+		}
 		contentVec := memTrigramVec(content)
 		sim := memCosSim(queryVec, contentVec)
 		if sim > 0.15 {

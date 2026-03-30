@@ -59,7 +59,9 @@ func (arl *AdaptiveRateLimiter) loadBaselines() {
 	for rows.Next() {
 		var prov string
 		var avgLat float64
-		rows.Scan(&prov, &avgLat)
+		if err := rows.Scan(&prov, &avgLat); err != nil {
+			continue
+		}
 		arl.baselineLat[prov] = avgLat
 		if _, ok := arl.providerLimits[prov]; !ok {
 			arl.providerLimits[prov] = &providerLimit{maxConcurrent: 50}
@@ -95,7 +97,9 @@ func (arl *AdaptiveRateLimiter) adjustLimits() {
 	for rows.Next() {
 		var prov string
 		var currentLat, errRate float64
-		rows.Scan(&prov, &currentLat, &errRate)
+		if err := rows.Scan(&prov, &currentLat, &errRate); err != nil {
+			continue
+		}
 
 		baseline, ok := arl.baselineLat[prov]
 		if !ok {

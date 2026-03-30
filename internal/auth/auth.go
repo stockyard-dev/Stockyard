@@ -1283,7 +1283,9 @@ func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
 		defer rows.Close()
 		for rows.Next() {
 			var m modelStat
-			rows.Scan(&m.Model, &m.Reqs, &m.Cost)
+			if err := rows.Scan(&m.Model, &m.Reqs, &m.Cost); err != nil {
+				continue
+			}
 			topModels = append(topModels, m)
 		}
 	}
@@ -1705,9 +1707,11 @@ func (a *API) handleTeamLogs(w http.ResponseWriter, r *http.Request) {
 		var latencyMs int64
 		var status int
 		var cacheHit, failoverUsed bool
-		rows.Scan(&id, &ts, &project, &userID, &prov, &model,
+		if err := rows.Scan(&id, &ts, &project, &userID, &prov, &model,
 			&tokIn, &tokOut, &costUSD, &latencyMs, &status, &cacheHit,
-			&failoverUsed, &errStr)
+			&failoverUsed, &errStr); err != nil {
+			continue
+		}
 		logs = append(logs, map[string]any{
 			"id": id, "timestamp": ts, "project": project, "user_id": userID,
 			"provider": prov, "model": model, "tokens_in": tokIn, "tokens_out": tokOut,

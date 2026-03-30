@@ -74,7 +74,9 @@ func (a *App) handleListPlans(w http.ResponseWriter, r *http.Request) {
 	var plans []map[string]any
 	for rows.Next() {
 		var id, acct, name, limitsStr, created string
-		rows.Scan(&id, &acct, &name, &limitsStr, &created)
+		if err := rows.Scan(&id, &acct, &name, &limitsStr, &created); err != nil {
+			continue
+		}
 		var limits any
 		if err := json.Unmarshal([]byte(limitsStr), &limits); err != nil {
 			log.Printf("[plans] json parse error: %v", err)

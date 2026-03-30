@@ -101,7 +101,9 @@ func (db *DB) ListPersonas() ([]Persona, error) {
 	var out []Persona
 	for rows.Next() {
 		var p Persona
-		rows.Scan(&p.ID, &p.Name, &p.Description, &p.TargetURL, &p.BehaviorProfile, &p.Memory, &p.Schedule, &p.Status, &p.SessionsCompleted, &p.AnomaliesDetected, &p.LastSessionAt, &p.CreatedAt)
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.TargetURL, &p.BehaviorProfile, &p.Memory, &p.Schedule, &p.Status, &p.SessionsCompleted, &p.AnomaliesDetected, &p.LastSessionAt, &p.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, p)
 	}
 	return out, nil
@@ -123,7 +125,9 @@ func (db *DB) ListAnomalies(limit int) ([]Anomaly, error) {
 	var out []Anomaly
 	for rows.Next() {
 		var a Anomaly
-		rows.Scan(&a.ID, &a.PersonaID, &a.SessionID, &a.Severity, &a.Category, &a.Description, &a.Expected, &a.Actual, &a.Evidence, &a.FiledAt)
+		if err := rows.Scan(&a.ID, &a.PersonaID, &a.SessionID, &a.Severity, &a.Category, &a.Description, &a.Expected, &a.Actual, &a.Evidence, &a.FiledAt); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil
@@ -180,7 +184,9 @@ func (db *DB) ListSessions(personaID string, limit int) ([]Session, error) {
 	var out []Session
 	for rows.Next() {
 		var s Session
-		rows.Scan(&s.ID, &s.PersonaID, &s.StartedAt, &s.CompletedAt, &s.Turns, &s.Anomalies, &s.Status)
+		if err := rows.Scan(&s.ID, &s.PersonaID, &s.StartedAt, &s.CompletedAt, &s.Turns, &s.Anomalies, &s.Status); err != nil {
+			continue
+		}
 		out = append(out, s)
 	}
 	return out, nil

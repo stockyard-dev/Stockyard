@@ -139,7 +139,9 @@ func (f *financeHandler) handleListAdvances(w http.ResponseWriter, r *http.Reque
 	for rows.Next() {
 		var id, bID, status, createdAt string
 		var amountCents, feeCents, repaidCents int
-		rows.Scan(&id, &bID, &amountCents, &feeCents, &repaidCents, &status, &createdAt)
+		if err := rows.Scan(&id, &bID, &amountCents, &feeCents, &repaidCents, &status, &createdAt); err != nil {
+			continue
+		}
 		advances = append(advances, map[string]any{
 			"id":           id,
 			"builder_id":   bID,

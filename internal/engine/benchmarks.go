@@ -58,8 +58,10 @@ func handleLiveBenchmarks(conn *sql.DB) http.HandlerFunc {
 		var models []modelBenchmark
 		for rows.Next() {
 			var m modelBenchmark
-			rows.Scan(&m.Model, &m.Requests, &m.AvgLatency, &m.P50Latency,
-				&m.MaxLatency, &m.ErrorRate, &m.AvgCost, &m.TotalTokens, &m.AvgOutputTokens)
+			if err := rows.Scan(&m.Model, &m.Requests, &m.AvgLatency, &m.P50Latency,
+				&m.MaxLatency, &m.ErrorRate, &m.AvgCost, &m.TotalTokens, &m.AvgOutputTokens); err != nil {
+				continue
+			}
 
 			// Composite score: lower latency + lower error rate + lower cost = better.
 			// Normalize each factor 0-100.
@@ -128,7 +130,9 @@ func handleBenchmarkReport(conn *sql.DB) http.HandlerFunc {
 		var entries []entry
 		for rows.Next() {
 			var e entry
-			rows.Scan(&e.Model, &e.Requests, &e.AvgLatency, &e.ErrorRate, &e.AvgCost, &e.Tokens)
+			if err := rows.Scan(&e.Model, &e.Requests, &e.AvgLatency, &e.ErrorRate, &e.AvgCost, &e.Tokens); err != nil {
+				continue
+			}
 			entries = append(entries, e)
 		}
 

@@ -61,7 +61,9 @@ func handleScorecardHistory(conn *sql.DB) http.HandlerFunc {
 			var id, grade, createdAt string
 			var scorePct float64
 			var correct, total, patternCount int
-			rows.Scan(&id, &grade, &scorePct, &correct, &total, &patternCount, &createdAt)
+			if err := rows.Scan(&id, &grade, &scorePct, &correct, &total, &patternCount, &createdAt); err != nil {
+				continue
+			}
 			cards = append(cards, map[string]any{
 				"id": id, "grade": grade, "score_pct": scorePct,
 				"correct": correct, "total": total, "pattern_count": patternCount,

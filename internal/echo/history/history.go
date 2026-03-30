@@ -150,7 +150,9 @@ func (d *DB) GetHistory(unitID string) ([]Version, error) {
 	for rows.Next() {
 		var v Version
 		var ts string
-		rows.Scan(&v.ID, &v.UnitID, &v.Hash, &v.Content, &v.CommitSHA, &v.CommitMsg, &v.Author, &ts, &v.Reason, &v.ChangeType)
+		if err := rows.Scan(&v.ID, &v.UnitID, &v.Hash, &v.Content, &v.CommitSHA, &v.CommitMsg, &v.Author, &ts, &v.Reason, &v.ChangeType); err != nil {
+			continue
+		}
 		v.Timestamp, _ = time.Parse(time.RFC3339, ts)
 		versions = append(versions, v)
 	}
@@ -168,7 +170,9 @@ func (d *DB) ListUnits() ([]Unit, error) {
 	var units []Unit
 	for rows.Next() {
 		var u Unit
-		rows.Scan(&u.ID, &u.Name, &u.File, &u.Type, &u.CurrentHash, &u.VersionCount)
+		if err := rows.Scan(&u.ID, &u.Name, &u.File, &u.Type, &u.CurrentHash, &u.VersionCount); err != nil {
+			continue
+		}
 		units = append(units, u)
 	}
 	return units, nil
@@ -191,7 +195,9 @@ func (d *DB) GetAnnotations(unitID string) ([]Annotation, error) {
 	var out []Annotation
 	for rows.Next() {
 		var a Annotation
-		rows.Scan(&a.ID, &a.UnitID, &a.Type, &a.Content, &a.Source)
+		if err := rows.Scan(&a.ID, &a.UnitID, &a.Type, &a.Content, &a.Source); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil
@@ -268,7 +274,9 @@ func (d *DB) GetLineage(unitID string) ([]LineageRecord, error) {
 	var out []LineageRecord
 	for rows.Next() {
 		var r LineageRecord
-		rows.Scan(&r.ID, &r.UnitID, &r.PredecessorID, &r.Relationship, &r.Context)
+		if err := rows.Scan(&r.ID, &r.UnitID, &r.PredecessorID, &r.Relationship, &r.Context); err != nil {
+			continue
+		}
 		out = append(out, r)
 	}
 	return out, nil
@@ -295,7 +303,9 @@ func (d *DB) ChurnReport(since time.Time) ([]ChurnEntry, error) {
 	for rows.Next() {
 		var e ChurnEntry
 		var lastMod, authors string
-		rows.Scan(&e.UnitID, &e.Name, &e.File, &e.Kind, &e.ChangeCount, &lastMod, &authors)
+		if err := rows.Scan(&e.UnitID, &e.Name, &e.File, &e.Kind, &e.ChangeCount, &lastMod, &authors); err != nil {
+			continue
+		}
 		e.LastModified, _ = time.Parse(time.RFC3339, lastMod)
 		if authors != "" {
 			e.Authors = strings.Split(authors, ",")
@@ -356,7 +366,9 @@ func (d *DB) ListUnitsFiltered(kind, search, sort string) ([]Unit, error) {
 	var units []Unit
 	for rows.Next() {
 		var u Unit
-		rows.Scan(&u.ID, &u.Name, &u.File, &u.Type, &u.CurrentHash, &u.VersionCount)
+		if err := rows.Scan(&u.ID, &u.Name, &u.File, &u.Type, &u.CurrentHash, &u.VersionCount); err != nil {
+			continue
+		}
 		units = append(units, u)
 	}
 	return units, nil

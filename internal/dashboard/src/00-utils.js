@@ -23,7 +23,7 @@ async function api(path,opts={}){
   let url=path;
   if(_teamScope&&(!opts.method||opts.method==='GET')){
     const sep=url.includes('?')?'&':'?';
-    if(!url.includes('team_id='))url+=sep+'team_id='+_teamScope;
+    if(!url.includes('team_id='))url+=sep+'team_id='+encodeURIComponent(_teamScope);
   }
   try{const r=await fetch(url,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
 }

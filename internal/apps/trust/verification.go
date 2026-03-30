@@ -43,7 +43,9 @@ func (a *App) handlePublishAnchor(w http.ResponseWriter, r *http.Request) {
 	count := 0
 	for rows.Next() {
 		var hash string
-		rows.Scan(&hash)
+		if err := rows.Scan(&hash); err != nil {
+			continue
+		}
 		h.Write([]byte(hash))
 		count++
 	}
@@ -107,7 +109,9 @@ func (a *App) handleListAnchors(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, hash, publishedAt string
 		var eventCount int
-		rows.Scan(&id, &hash, &eventCount, &publishedAt)
+		if err := rows.Scan(&id, &hash, &eventCount, &publishedAt); err != nil {
+			continue
+		}
 		anchors = append(anchors, map[string]any{
 			"id": id, "chain_hash": hash, "event_count": eventCount, "published_at": publishedAt,
 		})

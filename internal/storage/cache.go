@@ -12,7 +12,7 @@ type CacheStats struct {
 func (db *DB) GetCacheStats() (*CacheStats, error) {
 	var stats CacheStats
 	err := db.conn.QueryRow(`
-		SELECT COUNT(*), COALESCE(SUM(hits), 0), COALESCE(SUM(cost_saved * hits), 0)
+		SELECT COUNT(*), COALESCE(SUM(size_bytes), 0), COALESCE(SUM(cost_saved * hits), 0)
 		FROM cache_entries
 	`).Scan(&stats.Entries, &stats.SizeBytes, &stats.SavingsUSD)
 	if err != nil {

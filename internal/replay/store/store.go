@@ -212,7 +212,9 @@ func (s *DB) Stats() Stats {
 		for rows.Next() {
 			var cat string
 			var count int
-			rows.Scan(&cat, &count)
+			if err := rows.Scan(&cat, &count); err != nil {
+				continue
+			}
 			st.ByCategory[cat] = count
 		}
 	}

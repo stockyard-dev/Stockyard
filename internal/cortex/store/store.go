@@ -112,7 +112,9 @@ func (db *DB) QueryMemories(subject, category string, limit int) ([]Memory, erro
 	var out []Memory
 	for rows.Next() {
 		var m Memory
-		rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt)
+		if err := rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt); err != nil {
+			continue
+		}
 		out = append(out, m)
 	}
 	return out, nil
@@ -130,7 +132,9 @@ func (db *DB) ListConflicts() ([]Conflict, error) {
 	var out []Conflict
 	for rows.Next() {
 		var c Conflict
-		rows.Scan(&c.ID, &c.MemoryA, &c.MemoryB, &c.ConflictType, &c.Resolution, &c.Resolved, &c.DetectedAt)
+		if err := rows.Scan(&c.ID, &c.MemoryA, &c.MemoryB, &c.ConflictType, &c.Resolution, &c.Resolved, &c.DetectedAt); err != nil {
+			continue
+		}
 		out = append(out, c)
 	}
 	return out, nil
@@ -192,7 +196,9 @@ func (db *DB) SearchMemories(keywords []string, limit int) ([]Memory, error) {
 	for rows.Next() {
 		var m Memory
 		var relevance int
-		rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt, &relevance)
+		if err := rows.Scan(&m.ID, &m.Category, &m.Subject, &m.Predicate, &m.Value, &m.Confidence, &m.SourceTrace, &m.SourceModel, &m.AccessCount, &m.LastAccessed, &m.DecayRate, &m.CreatedAt, &m.UpdatedAt, &relevance); err != nil {
+			continue
+		}
 		out = append(out, m)
 		ids = append(ids, m.ID)
 	}

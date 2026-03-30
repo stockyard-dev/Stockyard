@@ -385,7 +385,9 @@ func (c *Cortex) handleParadoxes(w http.ResponseWriter, r *http.Request) {
 	var paradoxes []map[string]any
 	for rows.Next() {
 		var id, typ, entityA, entityB, desc, status, createdAt string
-		rows.Scan(&id, &typ, &entityA, &entityB, &desc, &status, &createdAt)
+		if err := rows.Scan(&id, &typ, &entityA, &entityB, &desc, &status, &createdAt); err != nil {
+			continue
+		}
 		paradoxes = append(paradoxes, map[string]any{
 			"id":          id,
 			"type":        typ,
@@ -418,7 +420,9 @@ func (c *Cortex) handleCarbonSummary(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var provider, region, updatedAt string
 		var carbonGPerKWh float64
-		rows.Scan(&provider, &region, &carbonGPerKWh, &updatedAt)
+		if err := rows.Scan(&provider, &region, &carbonGPerKWh, &updatedAt); err != nil {
+			continue
+		}
 		factors = append(factors, map[string]any{
 			"provider":         provider,
 			"region":           region,
@@ -475,7 +479,9 @@ func (c *Cortex) handleModelLifecycle(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var model, status, updatedAt string
 		var deprecationDate, successor sql.NullString
-		rows.Scan(&model, &status, &deprecationDate, &successor, &updatedAt)
+		if err := rows.Scan(&model, &status, &deprecationDate, &successor, &updatedAt); err != nil {
+			continue
+		}
 		models = append(models, map[string]any{
 			"model":            model,
 			"status":           status,

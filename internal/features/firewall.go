@@ -109,7 +109,9 @@ func (fw *Firewall) loadPatterns() {
 	for rows.Next() {
 		var id int
 		var cat, pat, sev string
-		rows.Scan(&id, &cat, &pat, &sev)
+		if err := rows.Scan(&id, &cat, &pat, &sev); err != nil {
+			continue
+		}
 		re, err := regexp.Compile("(?i)" + pat)
 		if err != nil {
 			continue

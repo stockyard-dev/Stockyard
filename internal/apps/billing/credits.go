@@ -137,7 +137,9 @@ func (a *App) handleCreditTransactions(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, txType, desc, createdAt string
 		var amountCents int64
-		rows.Scan(&id, &amountCents, &txType, &desc, &createdAt)
+		if err := rows.Scan(&id, &amountCents, &txType, &desc, &createdAt); err != nil {
+			continue
+		}
 		txns = append(txns, map[string]any{
 			"id": id, "amount_cents": amountCents, "type": txType,
 			"description": desc, "created_at": createdAt,

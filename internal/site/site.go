@@ -107,7 +107,9 @@ func DownloadStats(db *sql.DB) map[string]any {
 		for rows.Next() {
 			var day string
 			var count, uniq int64
-			rows.Scan(&day, &count, &uniq)
+			if err := rows.Scan(&day, &count, &uniq); err != nil {
+				continue
+			}
 			daily = append(daily, map[string]any{"date": day, "total": count, "unique": uniq})
 		}
 		if daily == nil {

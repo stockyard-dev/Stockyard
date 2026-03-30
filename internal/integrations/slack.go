@@ -170,7 +170,9 @@ func (s *SlackIntegration) providerStatus() map[string]any {
 		var prov string
 		var total, errors int
 		var avgLatency float64
-		rows.Scan(&prov, &total, &errors, &avgLatency)
+		if err := rows.Scan(&prov, &total, &errors, &avgLatency); err != nil {
+			continue
+		}
 		errRate := float64(0)
 		if total > 0 {
 			errRate = float64(errors) / float64(total) * 100
@@ -210,7 +212,9 @@ func (s *SlackIntegration) activeAlerts() map[string]any {
 	for rows.Next() {
 		var name, metric, cond string
 		var threshold float64
-		rows.Scan(&name, &metric, &cond, &threshold)
+		if err := rows.Scan(&name, &metric, &cond, &threshold); err != nil {
+			continue
+		}
 		lines = append(lines, fmt.Sprintf("• *%s* — %s %s %.2f", name, metric, cond, threshold))
 	}
 	if len(lines) == 0 {

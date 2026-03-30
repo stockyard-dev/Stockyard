@@ -111,7 +111,9 @@ func (s *Server) runAutoShed(cfg AutoShedConfig) autoShedResult {
 	var modules []moduleInfo
 	for rows.Next() {
 		var m moduleInfo
-		rows.Scan(&m.name, &m.enabled)
+		if err := rows.Scan(&m.name, &m.enabled); err != nil {
+			continue
+		}
 		modules = append(modules, m)
 	}
 	result.ModulesChecked = len(modules)

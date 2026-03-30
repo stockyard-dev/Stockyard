@@ -409,7 +409,9 @@ func buildRevenueSection(entries []map[string]any, db *sql.DB) map[string]any {
 		for rows.Next() {
 			var tier string
 			var c int
-			rows.Scan(&tier, &c)
+			if err := rows.Scan(&tier, &c); err != nil {
+				continue
+			}
 			tierCounts[tier] = c
 		}
 	}
@@ -452,7 +454,9 @@ func handleGrowthMetrics(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		var id int
 		var date, cat, metric, src, notes, updated string
 		var val float64
-		rows.Scan(&id, &date, &cat, &metric, &val, &src, &notes, &updated)
+		if err := rows.Scan(&id, &date, &cat, &metric, &val, &src, &notes, &updated); err != nil {
+			continue
+		}
 		metrics = append(metrics, map[string]any{
 			"id": id, "date": date, "category": cat, "metric": metric,
 			"value": val, "source": src, "notes": notes, "updated_at": updated,

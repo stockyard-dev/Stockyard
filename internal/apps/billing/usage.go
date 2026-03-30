@@ -57,7 +57,9 @@ func (a *App) handleQueryUsage(w http.ResponseWriter, r *http.Request) {
 		var id, acct, cust, trace, model, prov, created string
 		var inputTok, outputTok, costCents int64
 		var cached int
-		rows.Scan(&id, &acct, &cust, &trace, &model, &prov, &inputTok, &outputTok, &costCents, &cached, &created)
+		if err := rows.Scan(&id, &acct, &cust, &trace, &model, &prov, &inputTok, &outputTok, &costCents, &cached, &created); err != nil {
+			continue
+		}
 		usage = append(usage, map[string]any{
 			"id": id, "account_id": acct, "customer_id": cust,
 			"trace_id": trace, "model": model, "provider": prov,
@@ -97,7 +99,9 @@ func (a *App) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var cust string
 		var reqs, input, output, cost int64
-		rows.Scan(&cust, &reqs, &input, &output, &cost)
+		if err := rows.Scan(&cust, &reqs, &input, &output, &cost); err != nil {
+			continue
+		}
 		summary = append(summary, map[string]any{
 			"customer_id":   cust,
 			"requests":      reqs,
@@ -150,7 +154,9 @@ func (a *App) handleUsageByCustomer(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var cust, name string
 		var reqs, input, output, cost int64
-		rows.Scan(&cust, &name, &reqs, &input, &output, &cost)
+		if err := rows.Scan(&cust, &name, &reqs, &input, &output, &cost); err != nil {
+			continue
+		}
 		customers = append(customers, map[string]any{
 			"customer_id":   cust,
 			"customer_name": name,
@@ -190,7 +196,9 @@ func (a *App) handleUsageByModel(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var model string
 		var reqs, input, output, cost int64
-		rows.Scan(&model, &reqs, &input, &output, &cost)
+		if err := rows.Scan(&model, &reqs, &input, &output, &cost); err != nil {
+			continue
+		}
 		models = append(models, map[string]any{
 			"model":         model,
 			"requests":      reqs,

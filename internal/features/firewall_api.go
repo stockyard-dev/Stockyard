@@ -42,7 +42,9 @@ func handleFirewallEvents(conn *sql.DB) http.HandlerFunc {
 		for rows.Next() {
 			var id, action, scoresJSON, matchedJSON, createdAt string
 			var traceID sql.NullString
-			rows.Scan(&id, &traceID, &scoresJSON, &action, &matchedJSON, &createdAt)
+			if err := rows.Scan(&id, &traceID, &scoresJSON, &action, &matchedJSON, &createdAt); err != nil {
+				continue
+			}
 			var scores, matched any
 			if err := json.Unmarshal([]byte(scoresJSON), &scores); err != nil {
 				log.Printf("[firewall_api] json parse error: %v", err)
@@ -90,7 +92,9 @@ func handleFirewallStats(conn *sql.DB) http.HandlerFunc {
 			for rows.Next() {
 				var pattern string
 				var count int
-				rows.Scan(&pattern, &count)
+				if err := rows.Scan(&pattern, &count); err != nil {
+					continue
+				}
 				topPatterns = append(topPatterns, map[string]any{"pattern": pattern, "count": count})
 			}
 		}

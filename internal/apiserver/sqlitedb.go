@@ -580,7 +580,9 @@ func (db *SqliteDB) Stats() map[string]any {
 		for rows.Next() {
 			var tier string
 			var c int64
-			rows.Scan(&tier, &c)
+			if err := rows.Scan(&tier, &c); err != nil {
+				continue
+			}
 			tierCounts[tier] = c
 		}
 	}
@@ -789,7 +791,9 @@ func (db *SqliteDB) GetUsageRange(tenantID, startDate, endDate string) []*CloudU
 	var results []*CloudUsage
 	for rows.Next() {
 		u := &CloudUsage{}
-		rows.Scan(&u.TenantID, &u.Date, &u.Requests, &u.TokensIn, &u.TokensOut, &u.CostUSD, &u.CacheHits, &u.Errors)
+		if err := rows.Scan(&u.TenantID, &u.Date, &u.Requests, &u.TokensIn, &u.TokensOut, &u.CostUSD, &u.CacheHits, &u.Errors); err != nil {
+			continue
+		}
 		results = append(results, u)
 	}
 	return results
@@ -965,20 +969,29 @@ func (db *SqliteDB) IncrementExchangeDownloads(slug string) error {
 }
 
 func (db *SqliteDB) ToggleExchangeStar(slug, email string) (int64, bool, error) {
-	// Check current state
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return 0, false, err
+	}
+	defer tx.Rollback()
+
 	var exists int
-	db.conn.QueryRow("SELECT COUNT(*) FROM exchange_stars WHERE slug = ? AND email = ?", slug, email).Scan(&exists)
+	tx.QueryRow("SELECT COUNT(*) FROM exchange_stars WHERE slug = ? AND email = ?", slug, email).Scan(&exists)
 
 	if exists > 0 {
-		db.conn.Exec("DELETE FROM exchange_stars WHERE slug = ? AND email = ?", slug, email)
-		db.conn.Exec("UPDATE exchange_items SET stars = stars - 1 WHERE slug = ?", slug)
+		tx.Exec("DELETE FROM exchange_stars WHERE slug = ? AND email = ?", slug, email)
+		tx.Exec("UPDATE exchange_items SET stars = stars - 1 WHERE slug = ?", slug)
 	} else {
-		db.conn.Exec("INSERT OR IGNORE INTO exchange_stars (slug, email) VALUES (?, ?)", slug, email)
-		db.conn.Exec("UPDATE exchange_items SET stars = stars + 1 WHERE slug = ?", slug)
+		tx.Exec("INSERT OR IGNORE INTO exchange_stars (slug, email) VALUES (?, ?)", slug, email)
+		tx.Exec("UPDATE exchange_items SET stars = stars + 1 WHERE slug = ?", slug)
 	}
 
 	var stars int64
-	db.conn.QueryRow("SELECT stars FROM exchange_items WHERE slug = ?", slug).Scan(&stars)
+	tx.QueryRow("SELECT stars FROM exchange_items WHERE slug = ?", slug).Scan(&stars)
+
+	if err := tx.Commit(); err != nil {
+		return 0, false, err
+	}
 	return stars, exists == 0, nil
 }
 
@@ -1020,7 +1033,9 @@ func (db *SqliteDB) ExchangeStats() map[string]any {
 			var t string
 			var c int
 			var d, s int64
-			rows.Scan(&t, &c, &d, &s)
+			if err := rows.Scan(&t, &c, &d, &s); err != nil {
+				continue
+			}
 			typeCounts[t] = c
 			totalDownloads += d
 			totalStars += s

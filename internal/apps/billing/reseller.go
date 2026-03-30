@@ -74,7 +74,9 @@ func (a *App) handleResellerClients(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, name, email, createdAt string
 		var balance, totalSpend int64
-		rows.Scan(&id, &name, &email, &createdAt, &balance, &totalSpend)
+		if err := rows.Scan(&id, &name, &email, &createdAt, &balance, &totalSpend); err != nil {
+			continue
+		}
 		clients = append(clients, map[string]any{
 			"id": id, "name": name, "email": email,
 			"balance_cents":   balance,

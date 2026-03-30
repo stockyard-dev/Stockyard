@@ -193,7 +193,9 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 		var sessions []map[string]any
 		for rows.Next() {
 			var id, cfgStr, msgsStr, resultsStr, models, createdAt string
-			rows.Scan(&id, &cfgStr, &msgsStr, &resultsStr, &models, &createdAt)
+			if err := rows.Scan(&id, &cfgStr, &msgsStr, &resultsStr, &models, &createdAt); err != nil {
+				continue
+			}
 			var cfg, msgs, results any
 			if err := json.Unmarshal([]byte(cfgStr), &cfg); err != nil {
 				log.Printf("[playground] json parse error: %v", err)

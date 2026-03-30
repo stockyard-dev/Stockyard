@@ -342,7 +342,9 @@ func (a *App) handleListPayouts(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, source, transferID, status, createdAt string
 		var amount, net int64
-		rows.Scan(&id, &source, &amount, &net, &transferID, &status, &createdAt)
+		if err := rows.Scan(&id, &source, &amount, &net, &transferID, &status, &createdAt); err != nil {
+			continue
+		}
 		payouts = append(payouts, map[string]any{
 			"id": id, "source": source, "amount_cents": amount, "net_cents": net,
 			"stripe_transfer_id": transferID, "status": status, "created_at": createdAt,

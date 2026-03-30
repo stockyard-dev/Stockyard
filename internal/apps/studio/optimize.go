@@ -131,7 +131,9 @@ func handleOptimizationHistory(conn *sql.DB) http.HandlerFunc {
 			var id, scoresJSON, createdAt string
 			var promoted sql.NullString
 			var originalScore float64
-			rows.Scan(&id, &originalScore, &scoresJSON, &promoted, &createdAt)
+			if err := rows.Scan(&id, &originalScore, &scoresJSON, &promoted, &createdAt); err != nil {
+				continue
+			}
 
 			var scores any
 			if err := json.Unmarshal([]byte(scoresJSON), &scores); err != nil {
@@ -190,7 +192,9 @@ func evaluatePrompt(conn *sql.DB, proxyPort int, prompt, templateName string) fl
 	client := &http.Client{Timeout: 60 * time.Second}
 	for rows.Next() {
 		var caseID, casePrompt, criteria string
-		rows.Scan(&caseID, &casePrompt, &criteria)
+		if err := rows.Scan(&caseID, &casePrompt, &criteria); err != nil {
+			continue
+		}
 		total++
 
 		// Use the template prompt as system message, case prompt as user message.

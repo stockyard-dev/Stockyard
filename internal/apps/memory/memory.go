@@ -144,7 +144,9 @@ func (a *App) handleRelevant(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, content, createdAt string
 		var summary sql.NullString
-		rows.Scan(&id, &content, &summary, &createdAt)
+		if err := rows.Scan(&id, &content, &summary, &createdAt); err != nil {
+			continue
+		}
 
 		contentVec := trigramVec(content)
 		sim := cosSim(queryVec, contentVec)
@@ -193,7 +195,9 @@ func (a *App) handleList(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, content, createdAt string
 		var summary, expiresAt sql.NullString
-		rows.Scan(&id, &content, &summary, &createdAt, &expiresAt)
+		if err := rows.Scan(&id, &content, &summary, &createdAt, &expiresAt); err != nil {
+			continue
+		}
 		entries = append(entries, map[string]any{
 			"id": id, "content": content, "summary": summary.String,
 			"created_at": createdAt, "expires_at": expiresAt.String,
@@ -240,7 +244,9 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 	var contents []string
 	for rows.Next() {
 		var id, content string
-		rows.Scan(&id, &content)
+		if err := rows.Scan(&id, &content); err != nil {
+			continue
+		}
 		oldIDs = append(oldIDs, id)
 		contents = append(contents, content)
 	}

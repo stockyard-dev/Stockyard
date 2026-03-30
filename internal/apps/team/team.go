@@ -195,7 +195,9 @@ func (a *App) handleListMembers(w http.ResponseWriter, r *http.Request) {
 		var id, email, role, createdAt, updatedAt string
 		var name sql.NullString
 		var accepted int
-		rows.Scan(&id, &email, &name, &role, &accepted, &createdAt, &updatedAt)
+		if err := rows.Scan(&id, &email, &name, &role, &accepted, &createdAt, &updatedAt); err != nil {
+			continue
+		}
 		m := map[string]any{
 			"id":              id,
 			"email":           email,
@@ -378,7 +380,9 @@ func (a *App) handleTeamSpend(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var member string
 		var reqCount, costCents, inputTokens, outputTokens int64
-		rows.Scan(&member, &reqCount, &costCents, &inputTokens, &outputTokens)
+		if err := rows.Scan(&member, &reqCount, &costCents, &inputTokens, &outputTokens); err != nil {
+			continue
+		}
 		members = append(members, map[string]any{
 			"user_id":       member,
 			"request_count": reqCount,

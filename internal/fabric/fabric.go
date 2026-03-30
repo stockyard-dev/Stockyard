@@ -453,7 +453,9 @@ func (e *Engine) ListDeployments() []map[string]any {
 	for rows.Next() {
 		var id, name, status, createdAt string
 		var version, autoHeal int
-		rows.Scan(&id, &name, &status, &version, &autoHeal, &createdAt)
+		if err := rows.Scan(&id, &name, &status, &version, &autoHeal, &createdAt); err != nil {
+			continue
+		}
 		results = append(results, map[string]any{
 			"id": id, "name": name, "status": status, "version": version,
 			"auto_heal": autoHeal == 1, "created_at": createdAt,
@@ -475,7 +477,9 @@ func (e *Engine) DeploymentHistory(name string) []map[string]any {
 	for rows.Next() {
 		var id, status, createdAt string
 		var version, autoHeal int
-		rows.Scan(&id, &status, &version, &autoHeal, &createdAt)
+		if err := rows.Scan(&id, &status, &version, &autoHeal, &createdAt); err != nil {
+			continue
+		}
 		results = append(results, map[string]any{
 			"id": id, "name": name, "status": status, "version": version,
 			"auto_heal": autoHeal == 1, "created_at": createdAt,
@@ -532,7 +536,9 @@ func (e *Engine) DriftCheck() []map[string]any {
 	for rows.Next() {
 		var id, name, manifestJSON string
 		var version int
-		rows.Scan(&id, &name, &manifestJSON, &version)
+		if err := rows.Scan(&id, &name, &manifestJSON, &version); err != nil {
+			continue
+		}
 
 		var m Manifest
 		if err := json.Unmarshal([]byte(manifestJSON), &m); err != nil {

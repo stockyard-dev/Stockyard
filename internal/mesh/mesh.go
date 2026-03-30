@@ -223,7 +223,9 @@ func (m *Manager) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var name string
 			var enabled int
-			rows.Scan(&name, &enabled)
+			if err := rows.Scan(&name, &enabled); err != nil {
+				continue
+			}
 			modules = append(modules, map[string]any{"name": name, "enabled": enabled == 1})
 		}
 	}
@@ -249,7 +251,9 @@ func (m *Manager) handlePricing(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var region, desc string
 		var markup float64
-		rows.Scan(&region, &markup, &desc)
+		if err := rows.Scan(&region, &markup, &desc); err != nil {
+			continue
+		}
 		pricing = append(pricing, map[string]any{
 			"region": region, "markup_pct": markup, "description": desc,
 		})
@@ -338,7 +342,9 @@ func (m *Manager) handleEarnings(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var period string
 		var tokens, earningsCents, feeCents int
-		rows.Scan(&period, &tokens, &earningsCents, &feeCents)
+		if err := rows.Scan(&period, &tokens, &earningsCents, &feeCents); err != nil {
+			continue
+		}
 		earnings = append(earnings, map[string]any{
 			"period": period, "tokens_served": tokens,
 			"earnings_cents": earningsCents, "fee_cents": feeCents,

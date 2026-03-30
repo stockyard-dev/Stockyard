@@ -198,7 +198,9 @@ func (a *App) handleListModules(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var name, cat, configJSON string
 		var enabled, priority int
-		rows.Scan(&name, &cat, &enabled, &configJSON, &priority)
+		if err := rows.Scan(&name, &cat, &enabled, &configJSON, &priority); err != nil {
+			continue
+		}
 		var cfg any
 		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
 			log.Printf("[proxy] json parse error: %v", err)
@@ -321,7 +323,9 @@ func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
 				defer rows.Close()
 				for rows.Next() {
 					var name string
-					rows.Scan(&name)
+					if err := rows.Scan(&name); err != nil {
+						continue
+					}
 					a.toggle.Set(name, req.Enabled)
 				}
 			}
@@ -362,7 +366,9 @@ func (a *App) handleChain(w http.ResponseWriter, r *http.Request) {
 		defer rows.Close()
 		for rows.Next() {
 			var n, c string
-			rows.Scan(&n, &c)
+			if err := rows.Scan(&n, &c); err != nil {
+				continue
+			}
 			catMap[n] = c
 		}
 	}
@@ -399,7 +405,9 @@ func (a *App) handleListProviders(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var name, baseURL, status, lastCheck string
 		var latency, errors, requests int
-		rows.Scan(&name, &baseURL, &status, &latency, &errors, &requests, &lastCheck)
+		if err := rows.Scan(&name, &baseURL, &status, &latency, &errors, &requests, &lastCheck); err != nil {
+			continue
+		}
 		providers = append(providers, map[string]any{
 			"name": name, "base_url": baseURL, "status": status,
 			"latency_ms": latency, "error_count": errors,
@@ -462,7 +470,9 @@ func (a *App) handleHealthCheckAll(w http.ResponseWriter, r *http.Request) {
 	var providers []provInfo
 	for rows.Next() {
 		var p provInfo
-		rows.Scan(&p.name, &p.baseURL)
+		if err := rows.Scan(&p.name, &p.baseURL); err != nil {
+			continue
+		}
 		providers = append(providers, p)
 	}
 
@@ -546,7 +556,9 @@ func (a *App) handleListRoutes(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var path, method, prov, model string
 		var enabled int
-		rows.Scan(&path, &method, &prov, &model, &enabled)
+		if err := rows.Scan(&path, &method, &prov, &model, &enabled); err != nil {
+			continue
+		}
 		routes = append(routes, map[string]any{
 			"path": path, "method": method, "provider": prov,
 			"model": model, "enabled": enabled == 1,

@@ -83,7 +83,9 @@ func (db *DB) ListScores(limit, offset int) ([]Score, error) {
 	var out []Score
 	for rows.Next() {
 		var s Score
-		rows.Scan(&s.ID, &s.TraceID, &s.ModelConfidence, &s.CacheFreshness, &s.GuardrailCoverage, &s.PromptStability, &s.ProviderReliability, &s.PipelineDepth, &s.CompoundScore, &s.Components, &s.DegradationFactors, &s.ScoredAt)
+		if err := rows.Scan(&s.ID, &s.TraceID, &s.ModelConfidence, &s.CacheFreshness, &s.GuardrailCoverage, &s.PromptStability, &s.ProviderReliability, &s.PipelineDepth, &s.CompoundScore, &s.Components, &s.DegradationFactors, &s.ScoredAt); err != nil {
+			continue
+		}
 		out = append(out, s)
 	}
 	return out, nil
@@ -96,7 +98,9 @@ func (db *DB) ListBaselines() ([]Baseline, error) {
 	var out []Baseline
 	for rows.Next() {
 		var b Baseline
-		rows.Scan(&b.ID, &b.Endpoint, &b.Model, &b.AvgCompound, &b.P50Compound, &b.P95Compound, &b.SampleCount, &b.ComputedAt)
+		if err := rows.Scan(&b.ID, &b.Endpoint, &b.Model, &b.AvgCompound, &b.P50Compound, &b.P95Compound, &b.SampleCount, &b.ComputedAt); err != nil {
+			continue
+		}
 		out = append(out, b)
 	}
 	return out, nil

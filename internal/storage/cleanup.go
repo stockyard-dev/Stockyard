@@ -36,7 +36,7 @@ func (db *DB) CleanupOldData(retentionDays int) error {
 }
 
 // StartCleanupLoop runs cleanup periodically in the background.
-func (db *DB) StartCleanupLoop(retentionDays int, interval time.Duration) {
+func (db *DB) StartCleanupLoop(retentionDays int, interval time.Duration, stop <-chan struct{}) {
 	if retentionDays <= 0 {
 		return
 	}
@@ -47,9 +47,14 @@ func (db *DB) StartCleanupLoop(retentionDays int, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
-		for range ticker.C {
-			if err := db.CleanupOldData(retentionDays); err != nil {
-				log.Printf("cleanup error: %v", err)
+		for {
+			select {
+			case <-ticker.C:
+				if err := db.CleanupOldData(retentionDays); err != nil {
+					log.Printf("cleanup error: %v", err)
+				}
+			case <-stop:
+				return
 			}
 		}
 	}()

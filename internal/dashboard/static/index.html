@@ -39,7 +39,7 @@ async function api(path,opts={}){
   let url=path;
   if(_teamScope&&(!opts.method||opts.method==='GET')){
     const sep=url.includes('?')?'&':'?';
-    if(!url.includes('team_id='))url+=sep+'team_id='+_teamScope;
+    if(!url.includes('team_id='))url+=sep+'team_id='+encodeURIComponent(_teamScope);
   }
   try{const r=await fetch(url,{...opts,headers});if(r.status===401||r.status===403)return{_error:r.status};if(!r.ok){const t=await r.text().catch(()=>'');try{return{_error:r.status,...JSON.parse(t)}}catch(e){return{_error:r.status,message:t}}}return await r.json()}catch(e){return{_error:e.message}}
 }
@@ -247,7 +247,7 @@ function ProxyView(){
   const addAlias=async()=>{if(!newAlias||!newModel)return;const r=await api('/api/proxy/aliases',{method:'PUT',body:JSON.stringify({alias:newAlias,model:newModel})});if(r._error){setToast({msg:'Failed: '+(r.error||''),type:'error'});return}setToast({msg:'Alias '+newAlias+' set',type:'success'});setNewAlias('');setNewModel('');loadAliases()};
   const deleteAlias=async name=>{await api('/api/proxy/aliases/'+name,{method:'DELETE'});setToast({msg:'Deleted '+name,type:'success'});loadAliases()};
   const exportAliases=()=>{const yaml='# stockyard aliases\naliases:\n'+aliases.map(a=>'  '+a.alias+': "'+a.model+'"').join('\n');navigator.clipboard.writeText(yaml);setToast({msg:'Copied '+aliases.length+' aliases as YAML',type:'success'})};
-  const importAliases=()=>{const input=prompt('Paste YAML aliases (one per line: alias: "model")');if(!input)return;const lines=input.split('\n').filter(l=>l.includes(':')&&!l.trim().startsWith('#')&&!l.trim().startsWith('aliases'));let count=0;lines.forEach(async l=>{const[a,...rest]=l.split(':');const alias=a.trim();const model=rest.join(':').trim().replace(/"/g,'');if(alias&&model){await api('/api/proxy/aliases',{method:'PUT',body:JSON.stringify({alias,model})});count++}});setTimeout(()=>{setToast({msg:'Imported '+lines.length+' aliases',type:'success'});loadAliases()},500)};
+  const importAliases=async()=>{const input=prompt('Paste YAML aliases (one per line: alias: "model")');if(!input)return;const lines=input.split('\n').filter(l=>l.includes(':')&&!l.trim().startsWith('#')&&!l.trim().startsWith('aliases'));let count=0;for(const l of lines){const[a,...rest]=l.split(':');const alias=a.trim();const model=rest.join(':').trim().replace(/"/g,'');if(alias&&model){await api('/api/proxy/aliases',{method:'PUT',body:JSON.stringify({alias,model})});count++}}setToast({msg:'Imported '+count+' aliases',type:'success'});loadAliases()};
   const d=k=>Array.isArray(data[k])?data[k]:[];
   const filtered=d('modules').filter(m=>!filter||m.name.toLowerCase().includes(filter.toLowerCase())||(m.category||'').toLowerCase().includes(filter.toLowerCase()));
   return html`<div class="page-head"><div class="page-eyebrow">Chute</div><h2>Proxy & Middleware</h2><p class="page-sub">Toggle modules, manage providers, routes & aliases.</p></div>

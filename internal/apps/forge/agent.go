@@ -210,7 +210,9 @@ func handleListAgentRuns(conn *sql.DB) http.HandlerFunc {
 			var workflowID int
 			var maxCost, currentCost int64
 			var awaiting int
-			rows.Scan(&id, &workflowID, &status, &maxCost, &currentCost, &awaiting, &createdAt, &completedAt)
+			if err := rows.Scan(&id, &workflowID, &status, &maxCost, &currentCost, &awaiting, &createdAt, &completedAt); err != nil {
+				continue
+			}
 			runs = append(runs, map[string]any{
 				"id": id, "workflow_id": workflowID, "status": status,
 				"max_cost_cents": maxCost, "current_cost_cents": currentCost,

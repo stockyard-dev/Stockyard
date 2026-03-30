@@ -202,7 +202,9 @@ func (s *Server) resolveStreamProviders(req *provider.Request) []string {
 			chain = append(chain, provName)
 		}
 	}
-	return chain
+	chainCopy := make([]string, len(chain))
+	copy(chainCopy, chain)
+	return chainCopy
 }
 
 // writeSSEError sends an error as an SSE event and closes the stream.

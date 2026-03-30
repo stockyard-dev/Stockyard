@@ -111,7 +111,9 @@ func handleListSuites(conn *sql.DB) http.HandlerFunc {
 		for rows.Next() {
 			var id, name, model, createdAt string
 			var caseCount, runCount int
-			rows.Scan(&id, &name, &model, &createdAt, &caseCount, &runCount)
+			if err := rows.Scan(&id, &name, &model, &createdAt, &caseCount, &runCount); err != nil {
+				continue
+			}
 			suites = append(suites, map[string]any{
 				"id": id, "name": name, "model": model,
 				"case_count": caseCount, "run_count": runCount, "created_at": createdAt,
@@ -181,7 +183,9 @@ func handleRunSuite(conn *sql.DB, proxyPort int) http.HandlerFunc {
 		var cases []testCase
 		for rows.Next() {
 			var tc testCase
-			rows.Scan(&tc.ID, &tc.Prompt, &tc.Criteria)
+			if err := rows.Scan(&tc.ID, &tc.Prompt, &tc.Criteria); err != nil {
+				continue
+			}
 			cases = append(cases, tc)
 		}
 

@@ -46,7 +46,9 @@ func handleForecast(conn *sql.DB) http.HandlerFunc {
 		var history []hourData
 		for rows.Next() {
 			var h hourData
-			rows.Scan(&h.Hour, &h.DOW, &h.Requests, &h.AvgCost)
+			if err := rows.Scan(&h.Hour, &h.DOW, &h.Requests, &h.AvgCost); err != nil {
+				continue
+			}
 			// Average over 4 weeks.
 			h.Requests = h.Requests / 4
 			history = append(history, h)
@@ -110,7 +112,9 @@ func handleCostAnomalies(conn *sql.DB) http.HandlerFunc {
 		var sum, sumSq float64
 		for rows.Next() {
 			var d dayEntry
-			rows.Scan(&d.Date, &d.Cost)
+			if err := rows.Scan(&d.Date, &d.Cost); err != nil {
+				continue
+			}
 			days = append(days, d)
 			sum += d.Cost
 			sumSq += d.Cost * d.Cost

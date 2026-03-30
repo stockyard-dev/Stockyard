@@ -94,7 +94,9 @@ func (db *DB) ListFingerprints(model string, limit int) ([]FingerprintRecord, er
 	var fps []FingerprintRecord
 	for rows.Next() {
 		var f FingerprintRecord
-		rows.Scan(&f.ID, &f.Model, &f.Provider, &f.SampleCount, &f.AvgResponseLength, &f.MedianResponseLen, &f.AvgLatencyMs, &f.RefusalRate, &f.AvgTemperature, &f.TokenEntropy, &f.ReasoningDepth, &f.FormatCompliance, &f.Signature, &f.CreatedAt)
+		if err := rows.Scan(&f.ID, &f.Model, &f.Provider, &f.SampleCount, &f.AvgResponseLength, &f.MedianResponseLen, &f.AvgLatencyMs, &f.RefusalRate, &f.AvgTemperature, &f.TokenEntropy, &f.ReasoningDepth, &f.FormatCompliance, &f.Signature, &f.CreatedAt); err != nil {
+			continue
+		}
 		fps = append(fps, f)
 	}
 	return fps, nil
@@ -111,7 +113,9 @@ func (db *DB) ListDrifts(model string) ([]DriftRecord, error) {
 	var drifts []DriftRecord
 	for rows.Next() {
 		var d DriftRecord
-		rows.Scan(&d.ID, &d.Model, &d.OldFingerprintID, &d.NewFingerprintID, &d.DriftScore, &d.ChangedMetrics, &d.DetectedAt)
+		if err := rows.Scan(&d.ID, &d.Model, &d.OldFingerprintID, &d.NewFingerprintID, &d.DriftScore, &d.ChangedMetrics, &d.DetectedAt); err != nil {
+			continue
+		}
 		drifts = append(drifts, d)
 	}
 	return drifts, nil

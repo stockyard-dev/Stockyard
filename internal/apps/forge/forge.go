@@ -206,7 +206,9 @@ func (a *App) handleListWorkflows(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, enabled int
 		var slug, name, desc, stepsJSON, trigger, updated string
-		rows.Scan(&id, &slug, &name, &desc, &stepsJSON, &trigger, &enabled, &updated)
+		if err := rows.Scan(&id, &slug, &name, &desc, &stepsJSON, &trigger, &enabled, &updated); err != nil {
+			continue
+		}
 		var steps []any
 		if err := json.Unmarshal([]byte(stepsJSON), &steps); err != nil {
 			log.Printf("[forge] json parse error: %v", err)
@@ -365,7 +367,9 @@ func (a *App) handleListRuns(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var wfID, done, total int
 		var id, slug, status, errMsg, started, completed string
-		rows.Scan(&id, &wfID, &slug, &status, &done, &total, &errMsg, &started, &completed)
+		if err := rows.Scan(&id, &wfID, &slug, &status, &done, &total, &errMsg, &started, &completed); err != nil {
+			continue
+		}
 		runs = append(runs, map[string]any{"id": id, "workflow_id": wfID, "workflow_slug": slug, "status": status, "steps_completed": done, "steps_total": total, "error": errMsg, "started_at": started, "completed_at": completed})
 	}
 	writeJSON(w, map[string]any{"runs": runs})
@@ -409,7 +413,9 @@ func (a *App) handleGetRunSteps(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var stepID, stepType, status, input, output, errMsg, started, completed string
 		var tokIn, tokOut, latency int
-		rows.Scan(&stepID, &stepType, &status, &input, &output, &tokIn, &tokOut, &latency, &errMsg, &started, &completed)
+		if err := rows.Scan(&stepID, &stepType, &status, &input, &output, &tokIn, &tokOut, &latency, &errMsg, &started, &completed); err != nil {
+			continue
+		}
 		steps = append(steps, map[string]any{
 			"step_id": stepID, "step_type": stepType, "status": status,
 			"input": input, "output": output,
@@ -451,7 +457,9 @@ func (a *App) handleListTools(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, enabled int
 		var name, desc, ttype, ver string
-		rows.Scan(&id, &name, &desc, &ttype, &ver, &enabled)
+		if err := rows.Scan(&id, &name, &desc, &ttype, &ver, &enabled); err != nil {
+			continue
+		}
 		tools = append(tools, map[string]any{"id": id, "name": name, "description": desc, "type": ttype, "version": ver, "enabled": enabled == 1})
 	}
 	writeJSON(w, map[string]any{"tools": tools, "count": len(tools)})
@@ -490,7 +498,9 @@ func (a *App) handleListSessions(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, name, model, updated string
 		var msgs, tokens int
-		rows.Scan(&id, &name, &model, &msgs, &tokens, &updated)
+		if err := rows.Scan(&id, &name, &model, &msgs, &tokens, &updated); err != nil {
+			continue
+		}
 		sessions = append(sessions, map[string]any{"id": id, "name": name, "model": model, "message_count": msgs, "token_count": tokens, "updated_at": updated})
 	}
 	writeJSON(w, map[string]any{"sessions": sessions})
@@ -522,7 +532,9 @@ func (a *App) handleGetMessages(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var role, content, model, created string
 		var tokens int
-		rows.Scan(&role, &content, &tokens, &model, &created)
+		if err := rows.Scan(&role, &content, &tokens, &model, &created); err != nil {
+			continue
+		}
 		msgs = append(msgs, map[string]any{"role": role, "content": content, "tokens": tokens, "model": model, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"session_id": id, "messages": msgs})
@@ -555,7 +567,9 @@ func (a *App) handleListBatch(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, jtype, status, created, completed string
 		var priority, attempts int
-		rows.Scan(&id, &jtype, &status, &priority, &attempts, &created, &completed)
+		if err := rows.Scan(&id, &jtype, &status, &priority, &attempts, &created, &completed); err != nil {
+			continue
+		}
 		jobs = append(jobs, map[string]any{"id": id, "type": jtype, "status": status, "priority": priority, "attempts": attempts, "created_at": created, "completed_at": completed})
 	}
 	writeJSON(w, map[string]any{"jobs": jobs})

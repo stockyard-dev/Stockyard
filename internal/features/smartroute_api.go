@@ -80,7 +80,9 @@ func handleListRules(conn *sql.DB) http.HandlerFunc {
 		for rows.Next() {
 			var id, name, condStr, actStr, createdAt string
 			var priority, enabled int
-			rows.Scan(&id, &name, &priority, &condStr, &actStr, &enabled, &createdAt)
+			if err := rows.Scan(&id, &name, &priority, &condStr, &actStr, &enabled, &createdAt); err != nil {
+				continue
+			}
 			var cond, act any
 			if err := json.Unmarshal([]byte(condStr), &cond); err != nil {
 				log.Printf("[smartroute_api] json parse error: %v", err)
@@ -199,7 +201,9 @@ func handleSavings(conn *sql.DB) http.HandlerFunc {
 			var originalModel sql.NullString
 			var count int
 			var actualCost, tokensIn, tokensOut float64
-			rows.Scan(&model, &originalModel, &count, &actualCost, &tokensIn, &tokensOut)
+			if err := rows.Scan(&model, &originalModel, &count, &actualCost, &tokensIn, &tokensOut); err != nil {
+				continue
+			}
 
 			if !originalModel.Valid || originalModel.String == "" {
 				continue
@@ -270,7 +274,9 @@ func handleOptimize(conn *sql.DB) http.HandlerFunc {
 			var model string
 			var count int
 			var avgTokensIn, avgTokensOut, totalCost, avgCost float64
-			rows.Scan(&model, &count, &avgTokensIn, &avgTokensOut, &totalCost, &avgCost)
+			if err := rows.Scan(&model, &count, &avgTokensIn, &avgTokensOut, &totalCost, &avgCost); err != nil {
+				continue
+			}
 
 			cheaper, ok := cheapModels[model]
 			if !ok {
@@ -347,7 +353,9 @@ func handleABResults(conn *sql.DB) http.HandlerFunc {
 			var model string
 			var count int
 			var avgCost, avgLatency, avgTokens float64
-			rows.Scan(&variant, &model, &count, &avgCost, &avgLatency, &avgTokens)
+			if err := rows.Scan(&variant, &model, &count, &avgCost, &avgLatency, &avgTokens); err != nil {
+				continue
+			}
 			results = append(results, map[string]any{
 				"variant":     variant.String,
 				"model":       model,

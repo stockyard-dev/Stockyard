@@ -177,7 +177,9 @@ func (a *App) handleListTemplates(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, ver int
 		var slug, name, desc, tags, status, updated string
-		rows.Scan(&id, &slug, &name, &desc, &ver, &tags, &status, &updated)
+		if err := rows.Scan(&id, &slug, &name, &desc, &ver, &tags, &status, &updated); err != nil {
+			continue
+		}
 		var t any
 		if err := json.Unmarshal([]byte(tags), &t); err != nil {
 			log.Printf("[studio] json parse error: %v", err)
@@ -294,7 +296,9 @@ func (a *App) handleListVersions(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var ver int
 		var model, author, note, created string
-		rows.Scan(&ver, &model, &author, &note, &created)
+		if err := rows.Scan(&ver, &model, &author, &note, &created); err != nil {
+			continue
+		}
 		versions = append(versions, map[string]any{"version": ver, "model": model, "author": author, "change_note": note, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"slug": slug, "versions": versions})
@@ -434,7 +438,9 @@ func (a *App) handleListExperiments(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var name, etype, status, cfg, created string
-		rows.Scan(&id, &name, &etype, &status, &cfg, &created)
+		if err := rows.Scan(&id, &name, &etype, &status, &cfg, &created); err != nil {
+			continue
+		}
 		var c any
 		if err := json.Unmarshal([]byte(cfg), &c); err != nil {
 			log.Printf("[studio] json parse error: %v", err)
@@ -499,7 +505,9 @@ func (a *App) handleListBenchmarks(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var name, status, created, completed string
-		rows.Scan(&id, &name, &status, &created, &completed)
+		if err := rows.Scan(&id, &name, &status, &created, &completed); err != nil {
+			continue
+		}
 		benchmarks = append(benchmarks, map[string]any{"id": id, "name": name, "status": status, "created_at": created, "completed_at": completed})
 	}
 	writeJSON(w, map[string]any{"benchmarks": benchmarks})
@@ -533,7 +541,9 @@ func (a *App) handleListSnapshots(w http.ResponseWriter, r *http.Request) {
 		var id int
 		var name, model, status, created string
 		var score float64
-		rows.Scan(&id, &name, &model, &status, &score, &created)
+		if err := rows.Scan(&id, &name, &model, &status, &score, &created); err != nil {
+			continue
+		}
 		snaps = append(snaps, map[string]any{"id": id, "name": name, "model": model, "status": status, "match_score": score, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"snapshots": snaps})

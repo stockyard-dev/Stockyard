@@ -37,7 +37,9 @@ func (a *App) handleSOC2Evidence(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var role string
 			var cnt int
-			rows.Scan(&role, &cnt)
+			if err := rows.Scan(&role, &cnt); err != nil {
+				continue
+			}
 			roles = append(roles, map[string]any{"role": role, "count": cnt})
 		}
 	}

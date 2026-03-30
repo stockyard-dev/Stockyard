@@ -83,7 +83,9 @@ func (db *DB) ListPatterns() ([]Pattern, error) {
 	var out []Pattern
 	for rows.Next() {
 		var p Pattern
-		rows.Scan(&p.ID, &p.Name, &p.Description, &p.TriggerConditions, &p.Actions, &p.SourceEvent, &p.Activations, &p.SuccessRate, &p.Environments, &p.Status, &p.CreatedAt)
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.TriggerConditions, &p.Actions, &p.SourceEvent, &p.Activations, &p.SuccessRate, &p.Environments, &p.Status, &p.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, p)
 	}
 	return out, nil
@@ -102,7 +104,9 @@ func (db *DB) ListActivations(patternID string, limit int) ([]Activation, error)
 	var out []Activation
 	for rows.Next() {
 		var a Activation
-		rows.Scan(&a.ID, &a.PatternID, &a.Environment, &a.TriggerData, &a.Outcome, &a.ActivatedAt)
+		if err := rows.Scan(&a.ID, &a.PatternID, &a.Environment, &a.TriggerData, &a.Outcome, &a.ActivatedAt); err != nil {
+			continue
+		}
 		out = append(out, a)
 	}
 	return out, nil
@@ -145,7 +149,9 @@ func (db *DB) ListActivePatterns() ([]Pattern, error) {
 	var out []Pattern
 	for rows.Next() {
 		var p Pattern
-		rows.Scan(&p.ID, &p.Name, &p.Description, &p.TriggerConditions, &p.Actions, &p.SourceEvent, &p.Activations, &p.SuccessRate, &p.Environments, &p.Status, &p.CreatedAt)
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.TriggerConditions, &p.Actions, &p.SourceEvent, &p.Activations, &p.SuccessRate, &p.Environments, &p.Status, &p.CreatedAt); err != nil {
+			continue
+		}
 		out = append(out, p)
 	}
 	return out, nil
@@ -182,7 +188,9 @@ func (db *DB) CountByStatus() (map[string]int, error) {
 	for rows.Next() {
 		var status string
 		var count int
-		rows.Scan(&status, &count)
+		if err := rows.Scan(&status, &count); err != nil {
+			continue
+		}
 		out[status] = count
 	}
 	return out, nil

@@ -246,7 +246,9 @@ func (a *App) handleListLedger(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var evType, actor, resource, action, detail, prevHash, hash, created string
-		rows.Scan(&id, &evType, &actor, &resource, &action, &detail, &prevHash, &hash, &created)
+		if err := rows.Scan(&id, &evType, &actor, &resource, &action, &detail, &prevHash, &hash, &created); err != nil {
+			continue
+		}
 		var d any
 		if err := json.Unmarshal([]byte(detail), &d); err != nil {
 			log.Printf("[trust] json parse error: %v", err)
@@ -297,7 +299,9 @@ func (a *App) handleVerifyLedger(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id int
 		var evType, actor, resource, action, detail, prevHash, hash, created string
-		rows.Scan(&id, &evType, &actor, &resource, &action, &detail, &prevHash, &hash, &created)
+		if err := rows.Scan(&id, &evType, &actor, &resource, &action, &detail, &prevHash, &hash, &created); err != nil {
+			continue
+		}
 
 		if prevHash != lastHash {
 			valid = false
@@ -340,7 +344,9 @@ func (a *App) handleListEvidence(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, name, desc, from, to, hash, status, created string
 		var count int
-		rows.Scan(&id, &name, &desc, &count, &from, &to, &hash, &status, &created)
+		if err := rows.Scan(&id, &name, &desc, &count, &from, &to, &hash, &status, &created); err != nil {
+			continue
+		}
 		packs = append(packs, map[string]any{
 			"id": id, "name": name, "description": desc, "event_count": count,
 			"date_from": from, "date_to": to, "hash": hash, "status": status,
@@ -392,7 +398,9 @@ func (a *App) handleListPolicies(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, enabled int
 		var name, pType, cfg string
-		rows.Scan(&id, &name, &pType, &cfg, &enabled)
+		if err := rows.Scan(&id, &name, &pType, &cfg, &enabled); err != nil {
+			continue
+		}
 		var c any
 		if err := json.Unmarshal([]byte(cfg), &c); err != nil {
 			log.Printf("[trust] json parse error: %v", err)
@@ -434,7 +442,9 @@ func (a *App) handleListFeedback(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, rating int
 		var reqID, email, comment, created string
-		rows.Scan(&id, &reqID, &email, &rating, &comment, &created)
+		if err := rows.Scan(&id, &reqID, &email, &rating, &comment, &created); err != nil {
+			continue
+		}
 		fb = append(fb, map[string]any{"id": id, "request_id": reqID, "user_email": email, "rating": rating, "comment": comment, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"feedback": fb, "count": len(fb)})
@@ -472,7 +482,9 @@ func (a *App) handleListReplays(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var id, reqID, prov, model, status, created string
 		var score float64
-		rows.Scan(&id, &reqID, &prov, &model, &status, &score, &created)
+		if err := rows.Scan(&id, &reqID, &prov, &model, &status, &score, &created); err != nil {
+			continue
+		}
 		replays = append(replays, map[string]any{"id": id, "original_request_id": reqID, "provider": prov, "model": model, "status": status, "match_score": score, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"replays": replays})

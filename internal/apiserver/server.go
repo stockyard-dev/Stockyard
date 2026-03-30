@@ -587,7 +587,11 @@ func (s *Server) handleAdminIssue(w http.ResponseWriter, r *http.Request) {
 		Email:            req.Email,
 		ExpiresAt:        time.Now().Add(time.Duration(req.Days) * 24 * time.Hour),
 	}
-	s.db.CreateLicense(rec)
+	if err := s.db.CreateLicense(rec); err != nil {
+		log.Printf("[license] create failed: %v", err)
+		writeErr(w, http.StatusInternalServerError, "failed to create license")
+		return
+	}
 
 	// Send email
 	productName := req.Product
