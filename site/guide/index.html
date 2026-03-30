@@ -347,6 +347,69 @@ footer a:hover{color:var(--rust-light)}
 
 </section>
 
+<section style="max-width:800px;margin:0 auto;padding:3rem 2rem">
+  <div class="section-label">One-line change</div>
+  <h2 style="text-align:center;font-size:1.4rem;margin-bottom:0.5rem">Works with your stack</h2>
+  <p style="text-align:center;color:var(--cream-dim);margin-bottom:2rem;font-size:0.92rem">Point your existing code at <code>http://localhost:7749/v1</code> instead of the provider. That's the whole integration.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem">OpenAI Python SDK</div>
+      <div class="code-block" style="margin:0">
+<span class="comment"># Before</span>
+<span class="cmd">client = OpenAI()</span>
+
+<span class="comment"># After</span>
+<span class="cmd">client = OpenAI(base_url=<span class="str">"http://localhost:7749/v1"</span>)</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem">OpenAI Node SDK</div>
+      <div class="code-block" style="margin:0">
+<span class="comment">// Before</span>
+<span class="cmd">const openai = new OpenAI();</span>
+
+<span class="comment">// After</span>
+<span class="cmd">const openai = new OpenAI({</span>
+<span class="cmd">  baseURL: <span class="str">"http://localhost:7749/v1"</span></span>
+<span class="cmd">});</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem">LangChain</div>
+      <div class="code-block" style="margin:0">
+<span class="cmd">llm = ChatOpenAI(</span>
+<span class="cmd">  base_url=<span class="str">"http://localhost:7749/v1"</span>,</span>
+<span class="cmd">  model=<span class="str">"gpt-4o"</span></span>
+<span class="cmd">)</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem">Vercel AI SDK</div>
+      <div class="code-block" style="margin:0">
+<span class="cmd">const openai = createOpenAI({</span>
+<span class="cmd">  baseURL: <span class="str">"http://localhost:7749/v1"</span></span>
+<span class="cmd">});</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem">Cursor / Windsurf / Copilot</div>
+      <div class="code-block" style="margin:0">
+<span class="comment"># Set in editor settings:</span>
+<span class="cmd">API Base URL: <span class="str">http://localhost:7749/v1</span></span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem">curl / any HTTP client</div>
+      <div class="code-block" style="margin:0">
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">  -d <span class="str">'{"model":"gpt-4o","messages":[...]}'</span></span>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-muted)"><a href="/docs/integrations/">Full integration docs</a> &middot; <a href="/docs/editors/">Editor setup guides</a></p>
+</section>
+
 <section class="scenarios">
   <div class="scenarios-inner">
     <div class="section-label">Who it's for</div>

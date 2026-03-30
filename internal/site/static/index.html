@@ -205,7 +205,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <section class="hero" id="main">
   <div class="hero-eyebrow">One Binary &middot; Zero Dependencies &middot; Source Available</div>
   <h1>Self-hosted LLM proxy, tracing, and security <span class="accent">in one binary.</span></h1>
-  <p class="hero-sub">Point your app at Stockyard to trace requests, control spend, and harden your LLM stack in minutes. Start free, unlock more only when you need it.</p>
+  <p class="hero-sub">Change one URL in your app. Instantly see what every LLM request costs, cache the repeated ones, and swap providers without redeploying. One binary, installs in 60 seconds, runs on your machine.</p>
   <div class="hero-stats">
     <div class="stat"><span class="stat-num">~25MB</span><span class="stat-label">Single Binary</span></div>
     <div class="stat"><span class="stat-num">40</span><span class="stat-label">Providers</span></div>
@@ -233,6 +233,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
   <div class="proxy-code">curl -fsSL stockyard.dev/install.sh | sh<br>stockyard start</div>
   <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);text-align:center">Change your base URL and keep moving.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;max-width:700px;margin:1.2rem auto 0;font-family:var(--font-mono);font-size:0.7rem">
+    <div style="background:var(--bg);border:1px solid var(--bg3);padding:0.8rem"><div style="color:var(--leather);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Python</div><span style="color:var(--cream-dim)">base_url=</span><span style="color:var(--green-light)">"localhost:7749/v1"</span></div>
+    <div style="background:var(--bg);border:1px solid var(--bg3);padding:0.8rem"><div style="color:var(--leather);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Node</div><span style="color:var(--cream-dim)">baseURL:</span> <span style="color:var(--green-light)">"localhost:7749/v1"</span></div>
+    <div style="background:var(--bg);border:1px solid var(--bg3);padding:0.8rem"><div style="color:var(--leather);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Cursor / Editors</div><span style="color:var(--green-light)">localhost:7749/v1</span></div>
+  </div>
   <div class="proxy-cols">
     <div class="proxy-col proxy-col-yes"><h4>Proxy-only means you can</h4><p>Route requests through one endpoint</p><p>Swap providers without changing app code</p><p>Keep model names stable with aliases</p><p>Turn on tracing, routing, or security later if you want</p></div>
     <div class="proxy-col proxy-col-no"><h4>You do not have to</h4><p>Adopt every Stockyard feature on day one</p><p>Run extra services or infrastructure</p><p>Set up Docker, Redis, or Postgres first</p><p>Learn the full platform before getting value</p></div>

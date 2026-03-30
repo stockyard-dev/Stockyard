@@ -100,6 +100,43 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p style="font-size:0.85rem;color:var(--cream-dim);text-align:center;margin-top:1rem">That request just passed through 76 middleware modules. Traced, logged, audited — automatically.</p>
 </div>
 
+<div class="section" style="padding-bottom:2rem">
+  <h2 class="section-label">Change one line in your code</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Python</div>
+      <div class="code-block" style="margin:0;font-size:0.75rem">
+<span class="cmd">client = OpenAI(</span>
+<span class="cmd">  base_url=<span class="str">"http://localhost:7749/v1"</span></span>
+<span class="cmd">)</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Node / TypeScript</div>
+      <div class="code-block" style="margin:0;font-size:0.75rem">
+<span class="cmd">const openai = new OpenAI({</span>
+<span class="cmd">  baseURL: <span class="str">"http://localhost:7749/v1"</span></span>
+<span class="cmd">});</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Cursor / Windsurf / Copilot</div>
+      <div class="code-block" style="margin:0;font-size:0.75rem">
+<span class="comment"># Editor settings → API Base URL:</span>
+<span class="cmd">http://localhost:7749/v1</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">LangChain / LlamaIndex / Any SDK</div>
+      <div class="code-block" style="margin:0;font-size:0.75rem">
+<span class="comment"># Any OpenAI-compatible SDK works.</span>
+<span class="comment"># Just change the base URL.</span>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)"><a href="/docs/integrations/">Full integration docs</a> &middot; <a href="/docs/editors/">Editor setup guides</a></p>
+</div>
+
 <section class="section-alt">
   <div class="section-alt-inner">
     <h2 class="section-label">What you get on free tier</h2>
