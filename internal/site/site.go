@@ -191,8 +191,11 @@ func setSecurityHeaders(w http.ResponseWriter) {
 
 // servePage writes an HTML page with security headers and cache control.
 // Gzip compression is handled by the outer gzipMiddleware.
-func servePage(w http.ResponseWriter, data []byte, cacheControl string) {
+func servePage(w http.ResponseWriter, r *http.Request, data []byte, cacheControl string) {
 	setSecurityHeaders(w)
+	if r.Host != "stockyard.dev" && r.Host != "www.stockyard.dev" && r.Host != "localhost" && !strings.HasPrefix(r.Host, "localhost:") && !strings.HasPrefix(r.Host, "127.0.0.1") {
+		w.Header().Set("X-Robots-Tag", "noindex, nofollow")
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", cacheControl)
 	w.Write(data)
@@ -300,7 +303,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			http.NotFound(w, r)
 			return
 		}
-		servePage(w, data, "public, max-age=300")
+		servePage(w, r, data, "public, max-age=300")
 	})
 
 	for _, page := range pages {
@@ -317,7 +320,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 				http.NotFound(w, r)
 				return
 			}
-			servePage(w, data, "public, max-age=300")
+			servePage(w, r, data, "public, max-age=300")
 		})
 	}
 
@@ -328,7 +331,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			http.NotFound(w, r)
 			return
 		}
-		servePage(w, data, "public, max-age=60")
+		servePage(w, r, data, "public, max-age=60")
 	})
 
 	// Serve install script (with persistent download tracking)
@@ -363,8 +366,15 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		json.NewEncoder(w).Encode(DownloadStats(db))
 	})
 
-	// Serve robots.txt
+	// Serve robots.txt — block crawlers on non-canonical hosts
 	mux.HandleFunc("GET /robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		host := r.Host
+		if host != "stockyard.dev" && host != "www.stockyard.dev" {
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.Header().Set("Cache-Control", "public, max-age=3600")
+			w.Write([]byte("User-agent: *\nDisallow: /\n"))
+			return
+		}
 		data, err := fs.ReadFile(sub, "robots.txt")
 		if err != nil {
 			http.NotFound(w, r)
