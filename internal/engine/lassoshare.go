@@ -50,7 +50,9 @@ func genLassoShareID() string {
 
 // RegisterLassoShareRoutes mounts share creation and retrieval endpoints.
 func RegisterLassoShareRoutes(mux *http.ServeMux, conn *sql.DB) {
-	conn.Exec(lassoShareSchema)
+	if _, err := conn.Exec(lassoShareSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 
 	// POST /api/replay/share — create a share from a replay run ID
 	mux.HandleFunc("POST /api/replay/share", handleCreateLassoShare(conn))
@@ -210,7 +212,10 @@ func handleCreateCustomShare(conn *sql.DB) http.HandlerFunc {
 		if req.RightMs < req.LeftMs {
 			speedWinner = req.RightModel
 		}
-		winnersJSON, _ := json.Marshal(map[string]string{"cost": costWinner, "speed": speedWinner})
+		winnersJSON, marshalErr := json.Marshal(map[string]string{"cost": costWinner, "speed": speedWinner})
+		if marshalErr != nil {
+			winnersJSON = []byte("{}")
+		}
 
 		title := req.Title
 		if title == "" {

@@ -257,7 +257,10 @@ func (a *App) installWorkflows(specs []WorkflowSpec, r *InstallResult) {
 			r.Skipped["workflows"]++
 			continue
 		}
-		steps, _ := json.Marshal(s.Steps)
+		steps, marshalErr := json.Marshal(s.Steps)
+		if marshalErr != nil {
+			steps = []byte("{}")
+		}
 		_, err := a.conn.Exec(`INSERT INTO forge_workflows (slug, name, description, steps_json, enabled, created_at)
 			VALUES (?, ?, ?, ?, 1, ?)`,
 			s.Slug, s.Name, s.Description, string(steps), time.Now().Format(time.RFC3339))
@@ -277,7 +280,10 @@ func (a *App) installTools(specs []ToolSpec, r *InstallResult) {
 			r.Skipped["tools"]++
 			continue
 		}
-		schema, _ := json.Marshal(s.SchemaJSON)
+		schema, marshalErr := json.Marshal(s.SchemaJSON)
+		if marshalErr != nil {
+			schema = []byte("{}")
+		}
 		// Schema: id (autoincrement), name, description, type, schema_json, handler, enabled
 		_, err := a.conn.Exec(`INSERT INTO forge_tools (name, description, type, schema_json, handler, enabled)
 			VALUES (?, ?, ?, ?, ?, 1)`,
@@ -298,7 +304,10 @@ func (a *App) installTemplates(specs []TemplateSpec, r *InstallResult) {
 			r.Skipped["templates"]++
 			continue
 		}
-		tagsJSON, _ := json.Marshal(strings.Split(s.Tags, ","))
+		tagsJSON, marshalErr := json.Marshal(strings.Split(s.Tags, ","))
+		if marshalErr != nil {
+			tagsJSON = []byte("{}")
+		}
 		// Schema: id (autoincrement), slug, name, description, current_version, tags_json, status
 		res, err := a.conn.Exec(`INSERT INTO studio_templates (slug, name, description, current_version, tags_json, status)
 			VALUES (?, ?, ?, 1, ?, 'active')`,
@@ -328,7 +337,10 @@ func (a *App) installPolicies(specs []PolicySpec, r *InstallResult) {
 			enabled = 1
 		}
 		// Schema: id (autoincrement), name, type, config_json, enabled
-		configJSON, _ := json.Marshal(map[string]string{"pattern": s.Pattern, "description": s.Description})
+		configJSON, marshalErr := json.Marshal(map[string]string{"pattern": s.Pattern, "description": s.Description})
+		if marshalErr != nil {
+			configJSON = []byte("{}")
+		}
 		_, err := a.conn.Exec(`INSERT INTO trust_policies (name, type, config_json, enabled) VALUES (?, ?, ?, ?)`,
 			s.Name, s.PolicyType, string(configJSON), enabled)
 		if err != nil {

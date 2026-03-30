@@ -42,6 +42,9 @@ func (a *App) handleSOC2Evidence(w http.ResponseWriter, r *http.Request) {
 			}
 			roles = append(roles, map[string]any{"role": role, "count": cnt})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	// Policy list.

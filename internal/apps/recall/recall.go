@@ -187,6 +187,9 @@ func (a *App) runAutoScan() map[string]any {
 			incidentsCreated++
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	if scanned > 0 {
 		log.Printf("[recall] auto-scan: scanned %d traces, created %d incidents", scanned, incidentsCreated)
@@ -312,6 +315,9 @@ func searchTraces(conn *sql.DB, query, searchType, dateStart, dateEnd, modelFilt
 			CreatedAt:       createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return results, nil
 }
 
@@ -365,6 +371,9 @@ func searchTracesRegex(conn *sql.DB, pattern, dateStart, dateEnd, modelFilter st
 				break
 			}
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return results, nil
 }
@@ -465,6 +474,9 @@ func (a *App) handleListIncidents(w http.ResponseWriter, r *http.Request) {
 		}
 		incidents = append(incidents, inc)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	writeJSON(w, http.StatusOK, incidents)
 }
@@ -512,6 +524,9 @@ func (a *App) handleGetIncidentTraces(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		traces = append(traces, t)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	writeJSON(w, http.StatusOK, map[string]any{"traces": traces, "total": total})
@@ -597,6 +612,9 @@ func (a *App) handleNotify(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		traceIDs = append(traceIDs, tid)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	now := time.Now().UTC().Format(time.RFC3339)

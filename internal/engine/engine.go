@@ -860,7 +860,10 @@ func Boot(pc ProductConfig) {
 
 				// ── Relic: certify every response ──
 				if relicDB != nil {
-					promptJSON, _ := json.Marshal(req.Messages)
+					promptJSON, marshalErr := json.Marshal(req.Messages)
+					if marshalErr != nil {
+						promptJSON = []byte("{}")
+					}
 					promptHash := fmt.Sprintf("%x", sha256.Sum256(promptJSON))
 					contentHash := fmt.Sprintf("%x", sha256.Sum256([]byte(content)))
 					chainHash := fmt.Sprintf("%x", sha256.Sum256([]byte(traceID+contentHash)))
@@ -1101,6 +1104,9 @@ func Boot(pc ProductConfig) {
 				}
 				results = append(results, map[string]any{"type": "trace", "id": id, "title": model, "status": status, "created_at": createdAt})
 			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
+			}
 		}
 		// Search apps
 		rows2, err := db.Conn().Query("SELECT id, title, category, status FROM published_apps WHERE title LIKE ? OR description LIKE ? LIMIT 10",
@@ -1111,6 +1117,9 @@ func Boot(pc ProductConfig) {
 				var id, title, cat, status string
 				rows2.Scan(&id, &title, &cat, &status)
 				results = append(results, map[string]any{"type": "app", "id": id, "title": title, "category": cat, "status": status})
+			}
+			if err := rows2.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 		if results == nil {
@@ -1130,7 +1139,10 @@ func Boot(pc ProductConfig) {
 		db.Conn().QueryRow("SELECT COUNT(*) FROM proxy_modules").Scan(&modules)
 		db.Conn().QueryRow("SELECT COUNT(*) FROM proxy_providers").Scan(&providers)
 		snap := map[string]any{"modules": modules, "providers": providers, "timestamp": time.Now().Format(time.RFC3339)}
-		snapJSON, _ := json.Marshal(snap)
+		snapJSON, marshalErr := json.Marshal(snap)
+		if marshalErr != nil {
+			snapJSON = []byte("{}")
+		}
 		id := fmt.Sprintf("snap_%d", time.Now().UnixNano())
 		db.Conn().Exec("INSERT INTO snapshots (id, name, data, created_at) VALUES (?, 'auto', ?, ?)",
 			id, string(snapJSON), time.Now().Format(time.RFC3339))
@@ -1152,6 +1164,9 @@ func Boot(pc ProductConfig) {
 				continue
 			}
 			snaps = append(snaps, map[string]string{"id": id, "name": name, "created_at": createdAt})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"snapshots": snaps})
@@ -1180,6 +1195,9 @@ func Boot(pc ProductConfig) {
 				continue
 			}
 			rules = append(rules, map[string]any{"id": id, "trigger": trigger, "condition": cond, "action": action, "enabled": enabled == 1, "created_at": createdAt})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"rules": rules})
@@ -1215,6 +1233,9 @@ func Boot(pc ProductConfig) {
 				continue
 			}
 			events = append(events, map[string]string{"id": id, "rule_id": ruleID, "trigger": trigger, "action": action, "created_at": createdAt})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"events": events})
@@ -1408,6 +1429,9 @@ func Boot(pc ProductConfig) {
 				}
 				results = append(results, map[string]any{"type": sType, "id": entityID, "title": title, "snippet": snippet})
 			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
+			}
 		}
 		if results == nil {
 			results = []map[string]any{}
@@ -1461,6 +1485,9 @@ func Boot(pc ProductConfig) {
 			}
 			patterns = append(patterns, map[string]any{"id": id, "hour_utc": hour, "prompt_prefix": prefix, "frequency": freq, "last_seen": lastSeen})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if patterns == nil {
 			patterns = []map[string]any{}
 		}
@@ -1509,6 +1536,9 @@ func Boot(pc ProductConfig) {
 				var action, detail, at string
 				auditRows.Scan(&action, &detail, &at)
 				auditEntries = append(auditEntries, map[string]string{"action": action, "detail": detail, "created_at": at})
+			}
+			if err := auditRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 
@@ -1568,6 +1598,9 @@ func Boot(pc ProductConfig) {
 				depRows.Scan(&dtype, &did, &dat)
 				deps = append(deps, map[string]string{"type": dtype, "id": did, "created_at": dat})
 			}
+			if err := depRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
+			}
 		}
 
 		// Get apps using this template
@@ -1579,6 +1612,9 @@ func Boot(pc ProductConfig) {
 				var aid, atitle string
 				appRows.Scan(&aid, &atitle)
 				apps = append(apps, map[string]string{"id": aid, "title": atitle})
+			}
+			if err := appRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 
@@ -1617,6 +1653,9 @@ func Boot(pc ProductConfig) {
 				}
 				apps = append(apps, map[string]string{"id": id, "title": title, "use_count": fmt.Sprintf("%d", uses)})
 			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
+			}
 		}
 		if apps == nil {
 			apps = []map[string]string{}
@@ -1648,6 +1687,9 @@ func Boot(pc ProductConfig) {
 				"response_status": respStatus, "latency_ms": latencyMs,
 				"retry_count": retryCount, "status": status, "created_at": createdAt,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if deliveries == nil {
 			deliveries = []map[string]any{}

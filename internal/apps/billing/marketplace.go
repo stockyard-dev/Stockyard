@@ -28,7 +28,9 @@ CREATE INDEX IF NOT EXISTS idx_mp_accounts_key ON marketplace_accounts(api_key_h
 `
 
 func (a *App) migrateMarketplace() {
-	a.conn.Exec(marketplaceSchema)
+	if _, err := a.conn.Exec(marketplaceSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 func (a *App) registerMarketplaceRoutes(mux *http.ServeMux) {
@@ -132,6 +134,9 @@ func (a *App) handleMarketplaceUsage(w http.ResponseWriter, r *http.Request) {
 			"input_tokens": tin, "output_tokens": tout,
 			"cost_cents": cost,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if usage == nil {
 		usage = []map[string]any{}

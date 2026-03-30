@@ -112,6 +112,9 @@ func DownloadStats(db *sql.DB) map[string]any {
 			}
 			daily = append(daily, map[string]any{"date": day, "total": count, "unique": uniq})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if daily == nil {
 			daily = []map[string]any{}
 		}
@@ -131,6 +134,9 @@ func DownloadStats(db *sql.DB) map[string]any {
 			var c int64
 			uaRows.Scan(&ua, &c)
 			agents = append(agents, map[string]any{"user_agent": ua, "count": c})
+		}
+		if err := uaRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		stats["top_agents"] = agents
 	}

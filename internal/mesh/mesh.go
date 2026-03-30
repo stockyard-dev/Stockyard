@@ -134,7 +134,10 @@ func (m *Manager) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	id := genNodeID()
 	now := time.Now().UTC().Format(time.RFC3339)
-	metaJSON, _ := json.Marshal(req.Metadata)
+	metaJSON, marshalErr := json.Marshal(req.Metadata)
+	if marshalErr != nil {
+		metaJSON = []byte("{}")
+	}
 
 	m.conn.Exec(`INSERT OR REPLACE INTO mesh_nodes (id, name, url, region, status, last_heartbeat, metadata, created_at)
 		VALUES (?, ?, ?, ?, 'healthy', ?, ?, ?)`,
@@ -180,6 +183,9 @@ func (m *Manager) handleListNodes(w http.ResponseWriter, r *http.Request) {
 			"status": status, "last_heartbeat": heartbeat, "metadata": meta,
 			"created_at": createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if nodes == nil {
 		nodes = []map[string]any{}
@@ -228,6 +234,9 @@ func (m *Manager) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 			}
 			modules = append(modules, map[string]any{"name": name, "enabled": enabled == 1})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 	if modules == nil {
 		modules = []map[string]any{}
@@ -257,6 +266,9 @@ func (m *Manager) handlePricing(w http.ResponseWriter, r *http.Request) {
 		pricing = append(pricing, map[string]any{
 			"region": region, "markup_pct": markup, "description": desc,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if pricing == nil {
 		pricing = []map[string]any{}
@@ -349,6 +361,9 @@ func (m *Manager) handleEarnings(w http.ResponseWriter, r *http.Request) {
 			"period": period, "tokens_served": tokens,
 			"earnings_cents": earningsCents, "fee_cents": feeCents,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if earnings == nil {
 		earnings = []map[string]any{}

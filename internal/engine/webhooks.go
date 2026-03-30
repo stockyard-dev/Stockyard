@@ -121,6 +121,9 @@ func (wm *WebhookManager) reload() {
 		h.Enabled = enabled == 1
 		hooks = append(hooks, h)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	wm.mu.Lock()
 	wm.hooks = hooks
 	wm.mu.Unlock()
@@ -353,6 +356,9 @@ func RegisterWebhookRoutes(mux *http.ServeMux, wm *WebhookManager) {
 			}
 			hooks = append(hooks, h)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"webhooks": hooks})
 	})
@@ -423,6 +429,9 @@ func RegisterWebhookRoutes(mux *http.ServeMux, wm *WebhookManager) {
 				d["error"] = errMsg
 			}
 			deliveries = append(deliveries, d)
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"deliveries": deliveries})
@@ -495,7 +504,10 @@ func SlackNotify(webhookURL, text string) error {
 	if err := validateWebhookURL(webhookURL); err != nil {
 		return fmt.Errorf("invalid slack webhook URL: %w", err)
 	}
-	payload, _ := json.Marshal(map[string]string{"text": text})
+	payload, marshalErr := json.Marshal(map[string]string{"text": text})
+	if marshalErr != nil {
+		payload = []byte("{}")
+	}
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Post(webhookURL, "application/json", bytes.NewReader(payload))
 	if err != nil {

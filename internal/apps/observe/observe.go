@@ -294,6 +294,9 @@ func (a *App) handleCosts(w http.ResponseWriter, r *http.Request) {
 			"tokens_out": tokOut, "cost_usd": cost,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"providers": providers})
 }
 
@@ -325,6 +328,9 @@ func (a *App) handleCostDaily(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		daily = append(daily, map[string]any{"date": date, "requests": reqs, "cost_usd": cost})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"daily": daily})
 }
@@ -401,6 +407,9 @@ func (a *App) handleListTraces(w http.ResponseWriter, r *http.Request) {
 			"duration_ms": dur, "tokens_in": tokIn, "tokens_out": tokOut,
 			"cost_usd": cost, "created_at": created, "favorited": fav == 1,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"traces": traces, "count": len(traces)})
 }
@@ -499,6 +508,9 @@ func (a *App) handleListFavorites(w http.ResponseWriter, r *http.Request) {
 			"cost_usd": cost, "created_at": created, "note": note, "favorited": true,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if traces == nil {
 		traces = []map[string]any{}
 	}
@@ -528,7 +540,10 @@ func (a *App) handleRecordTrace(w http.ResponseWriter, r *http.Request) {
 	if t.Service == "" {
 		t.Service = "proxy"
 	}
-	meta, _ := json.Marshal(t.Metadata)
+	meta, marshalErr := json.Marshal(t.Metadata)
+	if marshalErr != nil {
+		meta = []byte("{}")
+	}
 	a.conn.Exec(`INSERT INTO observe_traces (id, request_id, parent_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		t.ID, t.RequestID, t.ParentID, t.Service, t.Operation, t.Provider, t.Model, t.Status, t.Duration, t.TokensIn, t.TokensOut, t.CostUSD, string(meta))
 
@@ -562,6 +577,9 @@ func (a *App) handleListAlerts(w http.ResponseWriter, r *http.Request) {
 			"threshold": threshold, "window_seconds": window, "channel": channel,
 			"enabled": enabled == 1, "last_fired": lastFired,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"alerts": alerts, "count": len(alerts)})
 }
@@ -614,6 +632,9 @@ func (a *App) handleAlertHistory(w http.ResponseWriter, r *http.Request) {
 			"message": msg, "fired_at": fired,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"history": history})
 }
 
@@ -637,6 +658,9 @@ func (a *App) handleListAnomalies(w http.ResponseWriter, r *http.Request) {
 			"z_score": zscore, "severity": severity, "message": msg,
 			"detected_at": detected,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"anomalies": anomalies})
 }
@@ -712,6 +736,9 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 			"tokens_in": tokIn, "tokens_out": tokOut,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Provider breakdown
 	provQuery := `SELECT provider, COUNT(*) as reqs, COALESCE(SUM(cost_usd),0) as cost,
@@ -732,6 +759,9 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 				"avg_latency_ms": avgLat, "tokens": tokens,
 			})
 		}
+		if err := provRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	// Model breakdown
@@ -751,6 +781,9 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 				"model": model, "requests": reqs, "cost_usd": cost,
 			})
 		}
+		if err := modelRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	writeJSON(w, map[string]any{
@@ -765,7 +798,10 @@ func (a *App) handleTimeseries(w http.ResponseWriter, r *http.Request) {
 // This gets wired into the engine and passed to safety middlewares.
 func (a *App) SafetyReporter() func(eventType, severity, category, actionTaken, model, requestID, sourceIP, userID string, detail any) {
 	return func(eventType, severity, category, actionTaken, model, requestID, sourceIP, userID string, detail any) {
-		detailJSON, _ := json.Marshal(detail)
+		detailJSON, marshalErr := json.Marshal(detail)
+		if marshalErr != nil {
+			detailJSON = []byte("{}")
+		}
 		a.conn.Exec(`INSERT INTO observe_safety_events (event_type, severity, category, detail_json, source_ip, user_id, model, request_id, action_taken) VALUES (?,?,?,?,?,?,?,?,?)`,
 			eventType, severity, category, string(detailJSON), sourceIP, userID, model, requestID, actionTaken)
 	}
@@ -809,6 +845,9 @@ func (a *App) handleListSafetyEvents(w http.ResponseWriter, r *http.Request) {
 			"request_id": reqID, "action_taken": action, "created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"events": events, "count": len(events)})
 }
 
@@ -823,6 +862,9 @@ func (a *App) handleSafetySummary(w http.ResponseWriter, r *http.Request) {
 			var count int
 			typeRows.Scan(&evType, &sev, &action, &count)
 			byType = append(byType, map[string]any{"event_type": evType, "severity": sev, "action_taken": action, "count": count})
+		}
+		if err := typeRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -950,6 +992,9 @@ func (a *App) handleHeatmap(w http.ResponseWriter, r *http.Request) {
 		}
 		intervals[c.Interval] = true
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Build sorted interval list
 	var intervalList []string
@@ -1018,6 +1063,9 @@ func (a *App) handleProviderHealth(w http.ResponseWriter, r *http.Request) {
 		}
 		providers = append(providers, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"providers": providers, "count": len(providers)})
 }
 
@@ -1049,6 +1097,9 @@ func (a *App) handleAutoDisable(w http.ResponseWriter, r *http.Request) {
 			disabled = append(disabled, prov)
 			log.Printf("[auto-disable] provider %s disabled: %d/%d errors (%.0f%%)", prov, errors, total, errorRate*100)
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	writeJSON(w, map[string]any{
@@ -1093,6 +1144,9 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 			}
 			providers = append(providers, p)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	// Per-model breakdown
@@ -1110,6 +1164,9 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 			rows2.Scan(&m.Model, &m.Requests, &m.Cost)
 			models = append(models, m)
 		}
+		if err := rows2.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	// Daily breakdown
@@ -1126,6 +1183,9 @@ func (a *App) handleCostReport(w http.ResponseWriter, r *http.Request) {
 			var d dayRow
 			rows3.Scan(&d.Date, &d.Requests, &d.Cost)
 			daily = append(daily, d)
+		}
+		if err := rows3.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -1233,6 +1293,9 @@ func (a *App) handleDrift(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			metrics = append(metrics, m)
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		return metrics
 	}
@@ -1386,6 +1449,9 @@ func (a *App) handleCostsByTag(w http.ResponseWriter, r *http.Request) {
 		b.CostUSD += costUSD
 		totalCost += costUSD
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	type breakdownEntry struct {
 		Value    string  `json:"value"`
@@ -1445,6 +1511,9 @@ func (a *App) handleListTags(w http.ResponseWriter, r *http.Request) {
 			}
 			keyValues[k][v] = true
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	var tagList []tagInfo

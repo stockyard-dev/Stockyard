@@ -41,7 +41,9 @@ CREATE TABLE IF NOT EXISTS insurance_claims (
 
 // MigrateFinance creates finance-related tables.
 func MigrateFinance(conn *sql.DB) {
-	conn.Exec(financeSchema)
+	if _, err := conn.Exec(financeSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 	log.Printf("[billing/finance] migrations applied")
 }
 
@@ -151,6 +153,9 @@ func (f *financeHandler) handleListAdvances(w http.ResponseWriter, r *http.Reque
 			"status":       status,
 			"created_at":   createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if advances == nil {
 		advances = []map[string]any{}

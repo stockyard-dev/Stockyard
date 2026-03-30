@@ -196,6 +196,9 @@ func (s *Server) enrichModelProfiles(since string) upsertResult {
 		total.created += r.created
 		total.updated += r.updated
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	return total
 }
@@ -242,6 +245,9 @@ func (s *Server) enrichProviderHealth(since string) upsertResult {
 		r := s.upsertMemory("provider_health", prov, "reliability", value, confidence, "")
 		total.created += r.created
 		total.updated += r.updated
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	return total
@@ -291,6 +297,9 @@ func (s *Server) enrichUsagePatterns(since string) upsertResult {
 				continue
 			}
 			models = append(models, m)
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if len(models) > 0 {
 			value := fmt.Sprintf("%d active models: ", len(models))
@@ -343,6 +352,9 @@ func (s *Server) enrichCostInsights(since string) upsertResult {
 		total.created += r.created
 		total.updated += r.updated
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Expensive request threshold — anything >$0.01
 	var expensiveCount int
@@ -389,6 +401,9 @@ func (s *Server) enrichErrorPatterns(since string) upsertResult {
 		r := s.upsertMemory("error_pattern", subject, "recurring_errors", value, 0.75, model)
 		total.created += r.created
 		total.updated += r.updated
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	return total

@@ -241,7 +241,10 @@ func (s *Server) handleHeal(w http.ResponseWriter, r *http.Request) {
 
 	// Remember successful pattern
 	if result.TestsPassed && s.cfg.Memory != nil {
-		diagJSON, _ := json.Marshal(diag)
+		diagJSON, marshalErr := json.Marshal(diag)
+		if marshalErr != nil {
+			diagJSON = []byte("{}")
+		}
 		_ = s.cfg.Memory.Remember(fingerprint, diagJSON, "", "", true)
 	}
 

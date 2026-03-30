@@ -4,6 +4,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -107,6 +108,9 @@ func (db *DB) ListCertificates(limit, offset int) ([]Certificate, error) {
 		}
 		certs = append(certs, c)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return certs, nil
 }
 
@@ -123,6 +127,9 @@ func (db *DB) GetByTrace(traceID string) ([]Certificate, error) {
 			return nil, err
 		}
 		certs = append(certs, c)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return certs, nil
 }

@@ -73,7 +73,10 @@ func LoggingMiddleware(cfg LoggingConfig) proxy.Middleware {
 				cacheHit = resp.CacheHit
 
 				if cfg.StoreBodies && len(resp.Choices) > 0 {
-					b, _ := json.Marshal(resp)
+					b, marshalErr := json.Marshal(resp)
+					if marshalErr != nil {
+						b = []byte("{}")
+					}
 					respBody = truncate(string(b), cfg.MaxBodySize)
 				}
 			}

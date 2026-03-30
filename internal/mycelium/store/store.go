@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -103,6 +104,9 @@ func (db *DB) ListInsights(insightType, model string, limit int) ([]Insight, err
 		}
 		out = append(out, i)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -123,6 +127,9 @@ func (db *DB) ListPeers() ([]Peer, error) {
 			continue
 		}
 		out = append(out, p)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

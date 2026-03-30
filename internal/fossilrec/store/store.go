@@ -4,6 +4,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -99,6 +100,9 @@ func (db *DB) ListFingerprints(model string, limit int) ([]FingerprintRecord, er
 		}
 		fps = append(fps, f)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return fps, nil
 }
 
@@ -117,6 +121,9 @@ func (db *DB) ListDrifts(model string) ([]DriftRecord, error) {
 			continue
 		}
 		drifts = append(drifts, d)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return drifts, nil
 }

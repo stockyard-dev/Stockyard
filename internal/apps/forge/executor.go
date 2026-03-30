@@ -162,7 +162,10 @@ func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, inpu
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 
-	inputJSON, _ := json.Marshal(input)
+	inputJSON, marshalErr := json.Marshal(input)
+	if marshalErr != nil {
+		inputJSON = []byte("{}")
+	}
 	rc := &RunContext{
 		RunID:    runID,
 		Input:    string(inputJSON),
@@ -274,7 +277,10 @@ func executeLLMStep(ctx context.Context, rc *RunContext, step Step, start time.T
 		body["model"] = "gpt-4o-mini"
 	}
 
-	reqBody, _ := json.Marshal(body)
+	reqBody, marshalErr := json.Marshal(body)
+	if marshalErr != nil {
+		reqBody = []byte("{}")
+	}
 
 	// Call the local proxy with a 30s timeout
 	stepCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
@@ -439,7 +445,10 @@ func executeToolStep(ctx context.Context, rc *RunContext, step Step, start time.
 		// Use resolved prompt as the input if no explicit args
 		toolArgs = map[string]string{"input": resolveTemplate(step.Config.Prompt, rc)}
 	}
-	argsJSON, _ := json.Marshal(toolArgs)
+	argsJSON, marshalErr := json.Marshal(toolArgs)
+	if marshalErr != nil {
+		argsJSON = []byte("{}")
+	}
 
 	// If handler is a URL, call it; otherwise treat as a built-in
 	if handler != "" && (strings.HasPrefix(handler, "http://") || strings.HasPrefix(handler, "https://")) {
@@ -473,7 +482,10 @@ func executeToolStep(ctx context.Context, rc *RunContext, step Step, start time.
 				summary[id] = truncate(r.Output, 500)
 			}
 		}
-		j, _ := json.Marshal(summary)
+		j, marshalErr := json.Marshal(summary)
+		if marshalErr != nil {
+			j = []byte("{}")
+		}
 		return &StepResult{StepID: step.ID, Status: "success", Output: string(j), LatencyMS: time.Since(start).Milliseconds()}
 	default:
 		return &StepResult{StepID: step.ID, Status: "error", Error: fmt.Sprintf("no handler for tool %q (handler: %q)", toolName, handler), LatencyMS: time.Since(start).Milliseconds()}
@@ -754,13 +766,19 @@ func failRun(conn *sql.DB, runID string, errMsg string) {
 
 func completeRun(conn *sql.DB, runID string, results map[string]*StepResult) {
 	now := time.Now().Format(time.RFC3339)
-	outputJSON, _ := json.Marshal(results)
+	outputJSON, marshalErr := json.Marshal(results)
+	if marshalErr != nil {
+		outputJSON = []byte("{}")
+	}
 	conn.Exec("UPDATE forge_runs SET status = 'success', output_json = ?, completed_at = ? WHERE id = ?", string(outputJSON), now, runID)
 	log.Printf("[forge] run %s: SUCCESS (%d steps)", runID, len(results))
 }
 
 func saveResults(conn *sql.DB, runID string, results map[string]*StepResult) {
-	outputJSON, _ := json.Marshal(results)
+	outputJSON, marshalErr := json.Marshal(results)
+	if marshalErr != nil {
+		outputJSON = []byte("{}")
+	}
 	conn.Exec("UPDATE forge_runs SET output_json = ? WHERE id = ?", string(outputJSON), runID)
 }
 

@@ -111,6 +111,9 @@ func (s *Server) extractModelInsights() []insightSummary {
 			Summary: summary, Confidence: confidence,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	return summaries
 }
@@ -174,6 +177,9 @@ func (s *Server) extractProviderInsights() []insightSummary {
 			Type: "provider_reliability", Provider: provider,
 			Summary: summary, Confidence: insight.Confidence,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	return summaries
@@ -263,7 +269,10 @@ func (s *Server) extractErrorInsights() []insightSummary {
 		}
 
 		summary := fmt.Sprintf("%s: %d errors recorded", provider, errs)
-		data, _ := json.Marshal(map[string]any{"provider": provider, "error_count": errs})
+		data, marshalErr := json.Marshal(map[string]any{"provider": provider, "error_count": errs})
+		if marshalErr != nil {
+			data = []byte("{}")
+		}
 
 		insight := &store.Insight{
 			ID:          myceliumID("mi"),
@@ -281,6 +290,9 @@ func (s *Server) extractErrorInsights() []insightSummary {
 			Type: "error_pattern", Provider: provider,
 			Summary: summary, Confidence: 0.8,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	return summaries

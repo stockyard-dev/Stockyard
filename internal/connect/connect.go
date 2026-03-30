@@ -114,7 +114,9 @@ type ConnectService struct {
 
 // NewConnectService creates a ConnectService, runs schema migrations, and seeds data.
 func NewConnectService(conn *sql.DB) *ConnectService {
-	conn.Exec(connectSchema)
+	if _, err := conn.Exec(connectSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 
 	now := time.Now().UTC().Format(time.RFC3339)
 
@@ -258,6 +260,9 @@ func (c *ConnectService) handleListApps(w http.ResponseWriter, r *http.Request) 
 			"redirect_uri": redirectURI,
 			"created_at":   createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if apps == nil {
 		apps = []map[string]any{}
@@ -418,6 +423,9 @@ func (c *ConnectService) handleListSecrets(w http.ResponseWriter, r *http.Reques
 			"updated_at": updatedAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if secrets == nil {
 		secrets = []map[string]any{}
 	}
@@ -481,6 +489,9 @@ func (c *ConnectService) handleListThreats(w http.ResponseWriter, r *http.Reques
 			"occurrences": occurrences,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if threats == nil {
 		threats = []map[string]any{}
 	}
@@ -510,6 +521,9 @@ func (c *ConnectService) handleThreatStats(w http.ResponseWriter, r *http.Reques
 			"signatures":        count,
 			"total_occurrences": totalOccurrences,
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	writeConnectJSON(w, map[string]any{"stats": stats})
@@ -544,6 +558,9 @@ func (c *ConnectService) handleSLACompliance(w http.ResponseWriter, r *http.Requ
 			"actual":    actual,
 			"compliant": compliant == 1,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if compliance == nil {
 		compliance = []map[string]any{}
@@ -606,6 +623,9 @@ func (c *ConnectService) handleListSynthetic(w http.ResponseWriter, r *http.Requ
 			"created_at": createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if probes == nil {
 		probes = []map[string]any{}
 	}
@@ -653,6 +673,9 @@ func (c *ConnectService) handleListLabs(w http.ResponseWriter, r *http.Request) 
 			"status":      status,
 			"created_at":  createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if features == nil {
 		features = []map[string]any{}
@@ -777,9 +800,18 @@ func (c *ConnectService) handleUpdatePreferences(w http.ResponseWriter, r *http.
 	json.NewDecoder(r.Body).Decode(&req)
 
 	now := connectNow()
-	modulesJSON, _ := json.Marshal(req.FrequentModules)
-	modelsJSON, _ := json.Marshal(req.FrequentModels)
-	layoutJSON, _ := json.Marshal(req.UILayout)
+	modulesJSON, marshalErr := json.Marshal(req.FrequentModules)
+	if marshalErr != nil {
+		modulesJSON = []byte("{}")
+	}
+	modelsJSON, marshalErr := json.Marshal(req.FrequentModels)
+	if marshalErr != nil {
+		modelsJSON = []byte("{}")
+	}
+	layoutJSON, marshalErr := json.Marshal(req.UILayout)
+	if marshalErr != nil {
+		layoutJSON = []byte("{}")
+	}
 
 	if string(modulesJSON) == "null" {
 		modulesJSON = []byte("[]")

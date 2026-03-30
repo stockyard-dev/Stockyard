@@ -141,6 +141,9 @@ func (s *Server) analyzeModules() []analysisItem {
 
 		items = append(items, item)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	return items
 }
@@ -170,6 +173,9 @@ func (s *Server) analyzeProviders() []analysisItem {
 			continue
 		}
 		providers = append(providers, p)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	// Check for high-cost, low-usage providers
@@ -245,6 +251,9 @@ func (s *Server) analyzeProducts() []analysisItem {
 		}
 
 		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	return items

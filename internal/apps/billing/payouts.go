@@ -46,7 +46,9 @@ CREATE INDEX IF NOT EXISTS idx_revenue_period ON platform_revenue(period);
 `
 
 func (a *App) migratePayouts() {
-	a.conn.Exec(payoutsSchema)
+	if _, err := a.conn.Exec(payoutsSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 func (a *App) registerPayoutRoutes(mux *http.ServeMux) {
@@ -349,6 +351,9 @@ func (a *App) handleListPayouts(w http.ResponseWriter, r *http.Request) {
 			"id": id, "source": source, "amount_cents": amount, "net_cents": net,
 			"stripe_transfer_id": transferID, "status": status, "created_at": createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if payouts == nil {
 		payouts = []map[string]any{}

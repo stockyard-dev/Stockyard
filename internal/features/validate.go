@@ -226,9 +226,15 @@ func validateNode(value any, schema *schemaNode, path string) error {
 	// Enum check
 	if len(schema.Enum) > 0 {
 		found := false
-		valJSON, _ := json.Marshal(value)
+		valJSON, marshalErr := json.Marshal(value)
+		if marshalErr != nil {
+			valJSON = []byte("{}")
+		}
 		for _, e := range schema.Enum {
-			eJSON, _ := json.Marshal(e)
+			eJSON, marshalErr := json.Marshal(e)
+			if marshalErr != nil {
+				eJSON = []byte("{}")
+			}
 			if string(valJSON) == string(eJSON) {
 				found = true
 				break

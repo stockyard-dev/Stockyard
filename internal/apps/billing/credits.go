@@ -30,7 +30,9 @@ CREATE INDEX IF NOT EXISTS idx_credit_tx_customer ON billing_credit_transactions
 
 // migrateCredits creates the credits tables.
 func (a *App) migrateCredits() {
-	a.conn.Exec(creditsSchema)
+	if _, err := a.conn.Exec(creditsSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 // registerCreditsRoutes mounts credit-related endpoints.
@@ -144,6 +146,9 @@ func (a *App) handleCreditTransactions(w http.ResponseWriter, r *http.Request) {
 			"id": id, "amount_cents": amountCents, "type": txType,
 			"description": desc, "created_at": createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if txns == nil {
 		txns = []map[string]any{}

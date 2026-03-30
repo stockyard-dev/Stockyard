@@ -209,6 +209,9 @@ func (a *App) handleListMembers(w http.ResponseWriter, r *http.Request) {
 		}
 		members = append(members, m)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if members == nil {
 		members = []map[string]any{}
 	}
@@ -390,6 +393,9 @@ func (a *App) handleTeamSpend(w http.ResponseWriter, r *http.Request) {
 			"input_tokens":  inputTokens,
 			"output_tokens": outputTokens,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if members == nil {
 		members = []map[string]any{}

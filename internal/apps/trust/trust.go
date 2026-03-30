@@ -49,7 +49,10 @@ func (a *App) RecordTeamEvent(eventType, actor, resource, action string, detail 
 
 	// Compute hash
 	now := time.Now().UTC().Format(time.RFC3339Nano)
-	detailJSON, _ := json.Marshal(detail)
+	detailJSON, marshalErr := json.Marshal(detail)
+	if marshalErr != nil {
+		detailJSON = []byte("{}")
+	}
 	hashInput := fmt.Sprintf("%s|%s|%s|%s|%s|%s", prevHash, eventType, action, resource, string(detailJSON), now)
 	h := sha256.Sum256([]byte(hashInput))
 	hash := hex.EncodeToString(h[:])
@@ -259,6 +262,9 @@ func (a *App) handleListLedger(w http.ResponseWriter, r *http.Request) {
 			"created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"events": events, "count": len(events)})
 }
 
@@ -322,6 +328,9 @@ func (a *App) handleVerifyLedger(w http.ResponseWriter, r *http.Request) {
 		lastHash = hash
 		checked++
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	result := map[string]any{"valid": valid, "events_checked": checked}
 	if !valid {
@@ -352,6 +361,9 @@ func (a *App) handleListEvidence(w http.ResponseWriter, r *http.Request) {
 			"date_from": from, "date_to": to, "hash": hash, "status": status,
 			"created_at": created,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"packs": packs})
 }
@@ -407,6 +419,9 @@ func (a *App) handleListPolicies(w http.ResponseWriter, r *http.Request) {
 		}
 		policies = append(policies, map[string]any{"id": id, "name": name, "type": pType, "config": c, "enabled": enabled == 1})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"policies": policies})
 }
 
@@ -417,7 +432,10 @@ func (a *App) handleCreatePolicy(w http.ResponseWriter, r *http.Request) {
 		Config any    `json:"config"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	cfg, _ := json.Marshal(req.Config)
+	cfg, marshalErr := json.Marshal(req.Config)
+	if marshalErr != nil {
+		cfg = []byte("{}")
+	}
 	res, _ := a.conn.Exec("INSERT INTO trust_policies (name, type, config_json) VALUES (?,?,?)", req.Name, req.Type, string(cfg))
 	id, _ := res.LastInsertId()
 
@@ -446,6 +464,9 @@ func (a *App) handleListFeedback(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		fb = append(fb, map[string]any{"id": id, "request_id": reqID, "user_email": email, "rating": rating, "comment": comment, "created_at": created})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"feedback": fb, "count": len(fb)})
 }
@@ -487,6 +508,9 @@ func (a *App) handleListReplays(w http.ResponseWriter, r *http.Request) {
 		}
 		replays = append(replays, map[string]any{"id": id, "original_request_id": reqID, "provider": prov, "model": model, "status": status, "match_score": score, "created_at": created})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"replays": replays})
 }
 
@@ -501,7 +525,10 @@ func (a *App) handleCreateReplay(w http.ResponseWriter, r *http.Request) {
 	rpb := make([]byte, 4)
 	rand.Read(rpb)
 	id := fmt.Sprintf("rp_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(rpb))
-	inputJSON, _ := json.Marshal(req.Input)
+	inputJSON, marshalErr := json.Marshal(req.Input)
+	if marshalErr != nil {
+		inputJSON = []byte("{}")
+	}
 	a.conn.Exec("INSERT INTO trust_replays (id, original_request_id, provider, model, input_json) VALUES (?,?,?,?,?)",
 		id, req.RequestID, req.Provider, req.Model, string(inputJSON))
 	writeJSON(w, map[string]any{"status": "queued", "id": id})

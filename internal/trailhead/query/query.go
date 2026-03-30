@@ -137,7 +137,10 @@ func (e *Engine) Ask(ctx context.Context, question string, topK int) (*Answer, e
 	}
 
 	// Save query to history
-	sourcesJSON, _ := json.Marshal(sources)
+	sourcesJSON, marshalErr := json.Marshal(sources)
+	if marshalErr != nil {
+		sourcesJSON = []byte("{}")
+	}
 	queryID := fmt.Sprintf("q-%d", time.Now().UnixNano())
 	e.db.SaveQuery(queryID, question, response, string(sourcesJSON), len(results), latency.Milliseconds(), cost)
 

@@ -180,6 +180,9 @@ func migrateEncryptExistingKeys(db *sql.DB, key []byte) error {
 			toMigrate = append(toMigrate, r)
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if len(toMigrate) == 0 {
 		return nil
 	}

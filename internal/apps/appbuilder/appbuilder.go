@@ -273,6 +273,9 @@ func (a *App) handleMyApps(w http.ResponseWriter, r *http.Request) {
 			"created_at": createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if apps == nil {
 		apps = []map[string]any{}
 	}
@@ -310,7 +313,10 @@ func (a *App) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		a.conn.Exec("UPDATE published_apps SET category = ?, updated_at = ? WHERE id = ?", *req.Category, now, id)
 	}
 	if req.Config != nil {
-		cfgJSON, _ := json.Marshal(req.Config)
+		cfgJSON, marshalErr := json.Marshal(req.Config)
+		if marshalErr != nil {
+			cfgJSON = []byte("{}")
+		}
 		a.conn.Exec("UPDATE published_apps SET config = ?, updated_at = ? WHERE id = ?", string(cfgJSON), now, id)
 	}
 	if req.PricingModel != nil {
@@ -386,6 +392,9 @@ func (a *App) handleStore(w http.ResponseWriter, r *http.Request) {
 			"rating": rating, "rating_count": ratingCount, "install_count": installCount,
 			"use_count": useCount, "published_at": publishedAt.String,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if apps == nil {
 		apps = []map[string]any{}
@@ -622,6 +631,9 @@ func (a *App) handleRunHistory(w http.ResponseWriter, r *http.Request) {
 			"feedback": feedback, "cost_cents": costCents, "created_at": createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if uses == nil {
 		uses = []map[string]any{}
 	}
@@ -663,6 +675,9 @@ func (a *App) handleEarnings(w http.ResponseWriter, r *http.Request) {
 		earnings = append(earnings, map[string]any{
 			"id": id, "amount_cents": amount, "fee_cents": fee, "net_cents": net, "created_at": createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if earnings == nil {
 		earnings = []map[string]any{}
@@ -707,6 +722,9 @@ func (a *App) handleImprovements(w http.ResponseWriter, r *http.Request) {
 			"id": id, "suggestion": suggestion, "impact_estimate": impact,
 			"applied": applied == 1, "created_at": createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if improvements == nil {
 		improvements = []map[string]any{}

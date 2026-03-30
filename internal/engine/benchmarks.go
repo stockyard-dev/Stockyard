@@ -78,6 +78,9 @@ func handleLiveBenchmarks(conn *sql.DB) http.HandlerFunc {
 			m.Score = (latencyScore*0.4 + reliabilityScore*0.4 + costScore*0.2)
 			models = append(models, m)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 
 		// Sort by composite score descending.
 		sort.Slice(models, func(i, j int) bool {
@@ -134,6 +137,9 @@ func handleBenchmarkReport(conn *sql.DB) http.HandlerFunc {
 				continue
 			}
 			entries = append(entries, e)
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 
 		w.Header().Set("Content-Type", "application/json")

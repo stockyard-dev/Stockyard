@@ -189,6 +189,9 @@ func (a *App) handleListTemplates(w http.ResponseWriter, r *http.Request) {
 			"current_version": ver, "tags": t, "status": status, "updated_at": updated,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"templates": templates, "count": len(templates)})
 }
 
@@ -236,7 +239,10 @@ func (a *App) handleCreateTemplate(w http.ResponseWriter, r *http.Request) {
 		Author  string   `json:"author"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	tagsJSON, _ := json.Marshal(req.Tags)
+	tagsJSON, marshalErr := json.Marshal(req.Tags)
+	if marshalErr != nil {
+		tagsJSON = []byte("{}")
+	}
 
 	res, err := a.conn.Exec("INSERT INTO studio_templates (slug, name, description, tags_json) VALUES (?,?,?,?)",
 		req.Slug, req.Name, req.Desc, string(tagsJSON))
@@ -247,7 +253,10 @@ func (a *App) handleCreateTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 	id, _ := res.LastInsertId()
 
-	varsJSON, _ := json.Marshal(req.Vars)
+	varsJSON, marshalErr := json.Marshal(req.Vars)
+	if marshalErr != nil {
+		varsJSON = []byte("{}")
+	}
 	a.conn.Exec("INSERT INTO studio_template_versions (template_id, version, content, variables_json, model, author) VALUES (?,1,?,?,?,?)",
 		id, req.Content, string(varsJSON), req.Model, req.Author)
 
@@ -273,7 +282,10 @@ func (a *App) handleAddVersion(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewDecoder(r.Body).Decode(&req)
 	newVer := curVer + 1
-	varsJSON, _ := json.Marshal(req.Vars)
+	varsJSON, marshalErr := json.Marshal(req.Vars)
+	if marshalErr != nil {
+		varsJSON = []byte("{}")
+	}
 
 	a.conn.Exec("INSERT INTO studio_template_versions (template_id, version, content, variables_json, model, author, change_note) VALUES (?,?,?,?,?,?,?)",
 		id, newVer, req.Content, string(varsJSON), req.Model, req.Author, req.ChangeNote)
@@ -300,6 +312,9 @@ func (a *App) handleListVersions(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		versions = append(versions, map[string]any{"version": ver, "model": model, "author": author, "change_note": note, "created_at": created})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"slug": slug, "versions": versions})
 }
@@ -447,6 +462,9 @@ func (a *App) handleListExperiments(w http.ResponseWriter, r *http.Request) {
 		}
 		exps = append(exps, map[string]any{"id": id, "name": name, "type": etype, "status": status, "config": c, "created_at": created})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"experiments": exps, "count": len(exps)})
 }
 
@@ -461,8 +479,14 @@ func (a *App) handleCreateExperiment(w http.ResponseWriter, r *http.Request) {
 	if req.Type == "" {
 		req.Type = "ab_test"
 	}
-	cfg, _ := json.Marshal(req.Config)
-	vars, _ := json.Marshal(req.Variants)
+	cfg, marshalErr := json.Marshal(req.Config)
+	if marshalErr != nil {
+		cfg = []byte("{}")
+	}
+	vars, marshalErr := json.Marshal(req.Variants)
+	if marshalErr != nil {
+		vars = []byte("{}")
+	}
 	res, _ := a.conn.Exec("INSERT INTO studio_experiments (name, type, config_json, variants_json) VALUES (?,?,?,?)",
 		req.Name, req.Type, string(cfg), string(vars))
 	id, _ := res.LastInsertId()
@@ -486,7 +510,10 @@ func (a *App) handleUpdateExperiment(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if req.Results != nil {
-		j, _ := json.Marshal(req.Results)
+		j, marshalErr := json.Marshal(req.Results)
+		if marshalErr != nil {
+			j = []byte("{}")
+		}
 		a.conn.Exec("UPDATE studio_experiments SET results_json = ? WHERE id = ?", string(j), id)
 	}
 	writeJSON(w, map[string]string{"status": "updated"})
@@ -510,6 +537,9 @@ func (a *App) handleListBenchmarks(w http.ResponseWriter, r *http.Request) {
 		}
 		benchmarks = append(benchmarks, map[string]any{"id": id, "name": name, "status": status, "created_at": created, "completed_at": completed})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"benchmarks": benchmarks})
 }
 
@@ -520,8 +550,14 @@ func (a *App) handleCreateBenchmark(w http.ResponseWriter, r *http.Request) {
 		Prompts []string `json:"prompts"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	models, _ := json.Marshal(req.Models)
-	prompts, _ := json.Marshal(req.Prompts)
+	models, marshalErr := json.Marshal(req.Models)
+	if marshalErr != nil {
+		models = []byte("{}")
+	}
+	prompts, marshalErr := json.Marshal(req.Prompts)
+	if marshalErr != nil {
+		prompts = []byte("{}")
+	}
 	res, _ := a.conn.Exec("INSERT INTO studio_benchmarks (name, models_json, prompts_json) VALUES (?,?,?)", req.Name, string(models), string(prompts))
 	id, _ := res.LastInsertId()
 	writeJSON(w, map[string]any{"status": "created", "id": id})
@@ -546,6 +582,9 @@ func (a *App) handleListSnapshots(w http.ResponseWriter, r *http.Request) {
 		}
 		snaps = append(snaps, map[string]any{"id": id, "name": name, "model": model, "status": status, "match_score": score, "created_at": created})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"snapshots": snaps})
 }
 
@@ -558,7 +597,10 @@ func (a *App) handleCreateSnapshot(w http.ResponseWriter, r *http.Request) {
 		Expected string `json:"expected_output"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	inputJSON, _ := json.Marshal(req.Input)
+	inputJSON, marshalErr := json.Marshal(req.Input)
+	if marshalErr != nil {
+		inputJSON = []byte("{}")
+	}
 	res, _ := a.conn.Exec("INSERT INTO studio_snapshots (name, template_id, model, input_json, expected_output) VALUES (?,?,?,?,?)",
 		req.Name, req.TemplID, req.Model, string(inputJSON), req.Expected)
 	id, _ := res.LastInsertId()
@@ -710,12 +752,18 @@ func (a *App) handleRunBenchmark(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create benchmark record
-	modelsJSON, _ := json.Marshal(req.Models)
+	modelsJSON, marshalErr := json.Marshal(req.Models)
+	if marshalErr != nil {
+		modelsJSON = []byte("{}")
+	}
 	promptNames := make([]string, len(req.Prompts))
 	for i, p := range req.Prompts {
 		promptNames[i] = p.Name
 	}
-	promptsJSON, _ := json.Marshal(promptNames)
+	promptsJSON, marshalErr := json.Marshal(promptNames)
+	if marshalErr != nil {
+		promptsJSON = []byte("{}")
+	}
 	res, _ := a.conn.Exec(
 		`INSERT INTO studio_benchmarks (name, models_json, prompts_json, status, started_at) VALUES (?,?,?,'running',?)`,
 		req.Name, string(modelsJSON), string(promptsJSON), time.Now().Format(time.RFC3339))

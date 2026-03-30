@@ -211,6 +211,9 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 				"models": models, "created_at": createdAt,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if sessions == nil {
 			sessions = []map[string]any{}
 		}

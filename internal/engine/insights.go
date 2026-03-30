@@ -119,6 +119,9 @@ func analyzeCostWaste(conn *sql.DB, window string) []Insight {
 		}
 		usages = append(usages, u)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Check if cheaper alternatives exist in calibration data
 	for _, u := range usages {
@@ -217,6 +220,9 @@ func analyzePII(conn *sql.DB, window string) []Insight {
 			affectedTraces++
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	if affectedTraces > 0 {
 		// Build summary of PII types found
@@ -310,6 +316,9 @@ func analyzePromptDuplication(conn *sql.DB, window string) []Insight {
 			}
 			prefixExamples[prefix] = example
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	// Find groups with significant duplication

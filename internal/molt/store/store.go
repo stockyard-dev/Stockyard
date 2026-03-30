@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -89,6 +90,9 @@ func (db *DB) ListAnalysis(componentType string) ([]Analysis, error) {
 		}
 		out = append(out, a)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -104,6 +108,9 @@ func (db *DB) ListRecommendations(rec string) ([]Analysis, error) {
 		}
 		out = append(out, a)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -118,6 +125,9 @@ func (db *DB) ListActions() ([]Action, error) {
 			continue
 		}
 		out = append(out, a)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

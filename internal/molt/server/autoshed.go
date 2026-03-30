@@ -116,6 +116,9 @@ func (s *Server) runAutoShed(cfg AutoShedConfig) autoShedResult {
 		}
 		modules = append(modules, m)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	result.ModulesChecked = len(modules)
 
 	for _, mod := range modules {

@@ -18,10 +18,17 @@ func (db *DB) SeedDemoData(project string) {
 	}
 
 	// Clear stale demo data so dashboards show current dates
-	db.conn.Exec("DELETE FROM requests WHERE id LIKE 'demo-%'")
-	db.conn.Exec("DELETE FROM observe_traces WHERE id LIKE 't-demo-%'")
-	db.conn.Exec("DELETE FROM observe_cost_daily WHERE provider IN ('openai','anthropic','groq','deepseek','mistral','xai')")
-	db.conn.Exec("DELETE FROM spend_rollups WHERE project = ?", project)
+	tx, txErr := db.conn.Begin()
+	if txErr != nil {
+		log.Printf("[seed] failed to start transaction: %v", txErr)
+		return
+	}
+	defer tx.Rollback()
+
+	tx.Exec("DELETE FROM requests WHERE id LIKE 'demo-%'")
+	tx.Exec("DELETE FROM observe_traces WHERE id LIKE 't-demo-%'")
+	tx.Exec("DELETE FROM observe_cost_daily WHERE provider IN ('openai','anthropic','groq','deepseek','mistral','xai')")
+	tx.Exec("DELETE FROM spend_rollups WHERE project = ?", project)
 
 	log.Println("[seed] Populating demo data...")
 
@@ -107,7 +114,7 @@ func (db *DB) SeedDemoData(project string) {
 			reqBody := fmt.Sprintf(`{"model":"%s","messages":[{"role":"user","content":"%s"}]}`, m.model, prompt)
 
 			// Insert into requests table
-			db.conn.Exec(`
+			tx.Exec(`
 				INSERT OR IGNORE INTO requests (id, timestamp, project, user_id, provider, model,
 					tokens_in, tokens_out, cost_usd, latency_ms, status, cache_hit,
 					validation_pass, failover_used, request_body, response_body, error)
@@ -117,7 +124,7 @@ func (db *DB) SeedDemoData(project string) {
 			)
 
 			// Insert into observe_traces table
-			db.conn.Exec(`
+			tx.Exec(`
 				INSERT OR IGNORE INTO observe_traces (id, request_id, service, operation, provider, model,
 					status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at)
 				VALUES (?, ?, 'proxy', 'chat.completions', ?, ?, ?, ?, ?, ?, ?, '{}', ?)`,
@@ -147,7 +154,7 @@ func (db *DB) SeedDemoData(project string) {
 		}
 
 		// Upsert spend rollup for this day
-		db.conn.Exec(`
+		tx.Exec(`
 			INSERT INTO spend_rollups (project, date, total_cost, total_requests, total_tokens_in, total_tokens_out)
 			VALUES (?, ?, ?, ?, ?, ?)
 			ON CONFLICT(project, date) DO UPDATE SET
@@ -161,7 +168,7 @@ func (db *DB) SeedDemoData(project string) {
 
 	// Insert observe_cost_daily aggregates
 	for key, agg := range costAgg {
-		db.conn.Exec(`
+		tx.Exec(`
 			INSERT INTO observe_cost_daily (date, provider, model, requests, tokens_in, tokens_out, cost_usd)
 			VALUES (?, ?, ?, ?, ?, ?, ?)
 			ON CONFLICT(date, provider, model) DO UPDATE SET
@@ -174,7 +181,7 @@ func (db *DB) SeedDemoData(project string) {
 	}
 
 	// Seed a demo experiment
-	db.conn.Exec(`
+	tx.Exec(`
 		INSERT OR IGNORE INTO studio_experiments (id, name, type, status, config_json, variants_json, created_at)
 		VALUES (1, 'gpt4o-vs-claude-summary', 'ab', 'completed',
 			'{"prompt":"Summarize quarterly earnings in 3 sentences","models":["gpt-4o","claude-sonnet-4-5-20250929"],"runs":3,"eval":"concise"}',
@@ -183,5 +190,9 @@ func (db *DB) SeedDemoData(project string) {
 		now.Add(-2*time.Hour).Format(time.RFC3339),
 	)
 
+	if err := tx.Commit(); err != nil {
+		log.Printf("[seed] commit failed: %v", err)
+		return
+	}
 	log.Printf("[seed] Seeded %d demo traces across 7 days + 1 experiment", seeded)
 }

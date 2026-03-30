@@ -233,6 +233,9 @@ func (s *Store) ListUsers() ([]User, error) {
 		}
 		users = append(users, u)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return users, nil
 }
 
@@ -416,6 +419,9 @@ func (s *Store) ListKeys(userID int64) ([]APIKey, error) {
 		}
 		keys = append(keys, ak)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return keys, nil
 }
 
@@ -565,6 +571,9 @@ func (s *Store) ListTeams() ([]Team, error) {
 		}
 		teams = append(teams, t)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return teams, nil
 }
 
@@ -680,6 +689,9 @@ func (s *Store) ListTeamKeys(teamID int64) ([]APIKey, error) {
 			ak.TeamID = &tid.Int64
 		}
 		keys = append(keys, ak)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return keys, nil
 }
@@ -822,6 +834,9 @@ func (s *Store) ListProviderKeys(userID int64) ([]ProviderKey, error) {
 		}
 		keys = append(keys, pk)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return keys, nil
 }
 
@@ -866,6 +881,9 @@ func (s *Store) GetAllProviderKeys(userID int64) (map[string]ProviderKeyFull, er
 		}
 		pk.APIKey = decrypted
 		keys[prov] = pk
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return keys, nil
 }
@@ -1287,6 +1305,9 @@ func (a *API) handleMyUsage(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			topModels = append(topModels, m)
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 	if topModels == nil {
@@ -1718,6 +1739,9 @@ func (a *API) handleTeamLogs(w http.ResponseWriter, r *http.Request) {
 			"cost_usd": costUSD, "latency_ms": latencyMs, "status": status,
 			"cache_hit": cacheHit, "failover_used": failoverUsed, "error": errStr,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if logs == nil {
 		logs = []map[string]any{}

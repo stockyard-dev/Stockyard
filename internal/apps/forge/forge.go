@@ -215,6 +215,9 @@ func (a *App) handleListWorkflows(w http.ResponseWriter, r *http.Request) {
 		}
 		wfs = append(wfs, map[string]any{"id": id, "slug": slug, "name": name, "description": desc, "trigger_type": trigger, "enabled": enabled == 1, "updated_at": updated, "step_count": len(steps)})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"workflows": wfs, "count": len(wfs)})
 }
 
@@ -256,8 +259,14 @@ func (a *App) handleCreateWorkflow(w http.ResponseWriter, r *http.Request) {
 	if req.TriggerType == "" {
 		req.TriggerType = "manual"
 	}
-	steps, _ := json.Marshal(req.Steps)
-	trigCfg, _ := json.Marshal(req.TriggerCfg)
+	steps, marshalErr := json.Marshal(req.Steps)
+	if marshalErr != nil {
+		steps = []byte("{}")
+	}
+	trigCfg, marshalErr := json.Marshal(req.TriggerCfg)
+	if marshalErr != nil {
+		trigCfg = []byte("{}")
+	}
 	res, err := a.conn.Exec("INSERT INTO forge_workflows (slug, name, description, steps_json, trigger_type, trigger_config) VALUES (?,?,?,?,?,?)",
 		req.Slug, req.Name, req.Desc, string(steps), req.TriggerType, string(trigCfg))
 	if err != nil {
@@ -289,14 +298,20 @@ func (a *App) handleUpdateWorkflow(w http.ResponseWriter, r *http.Request) {
 		a.conn.Exec("UPDATE forge_workflows SET description = ?, updated_at = ? WHERE slug = ?", *req.Desc, now, slug)
 	}
 	if req.Steps != nil {
-		steps, _ := json.Marshal(req.Steps)
+		steps, marshalErr := json.Marshal(req.Steps)
+		if marshalErr != nil {
+			steps = []byte("{}")
+		}
 		a.conn.Exec("UPDATE forge_workflows SET steps_json = ?, updated_at = ? WHERE slug = ?", string(steps), now, slug)
 	}
 	if req.TriggerType != nil {
 		a.conn.Exec("UPDATE forge_workflows SET trigger_type = ?, updated_at = ? WHERE slug = ?", *req.TriggerType, now, slug)
 	}
 	if req.TriggerCfg != nil {
-		tc, _ := json.Marshal(req.TriggerCfg)
+		tc, marshalErr := json.Marshal(req.TriggerCfg)
+		if marshalErr != nil {
+			tc = []byte("{}")
+		}
 		a.conn.Exec("UPDATE forge_workflows SET trigger_config = ?, updated_at = ? WHERE slug = ?", string(tc), now, slug)
 	}
 	if req.Enabled != nil {
@@ -332,7 +347,10 @@ func (a *App) handleRunWorkflow(w http.ResponseWriter, r *http.Request) {
 		Input any `json:"input"`
 	}
 	json.NewDecoder(r.Body).Decode(&input)
-	inputJSON, _ := json.Marshal(input.Input)
+	inputJSON, marshalErr := json.Marshal(input.Input)
+	if marshalErr != nil {
+		inputJSON = []byte("{}")
+	}
 
 	rb := make([]byte, 4)
 	rand.Read(rb)
@@ -371,6 +389,9 @@ func (a *App) handleListRuns(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		runs = append(runs, map[string]any{"id": id, "workflow_id": wfID, "workflow_slug": slug, "status": status, "steps_completed": done, "steps_total": total, "error": errMsg, "started_at": started, "completed_at": completed})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"runs": runs})
 }
@@ -423,6 +444,9 @@ func (a *App) handleGetRunSteps(w http.ResponseWriter, r *http.Request) {
 			"error": errMsg, "started_at": started, "completed_at": completed,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"run_id": id, "steps": steps, "count": len(steps)})
 }
 
@@ -462,6 +486,9 @@ func (a *App) handleListTools(w http.ResponseWriter, r *http.Request) {
 		}
 		tools = append(tools, map[string]any{"id": id, "name": name, "description": desc, "type": ttype, "version": ver, "enabled": enabled == 1})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"tools": tools, "count": len(tools)})
 }
 
@@ -477,7 +504,10 @@ func (a *App) handleCreateTool(w http.ResponseWriter, r *http.Request) {
 	if req.Type == "" {
 		req.Type = "function"
 	}
-	schema, _ := json.Marshal(req.Schema)
+	schema, marshalErr := json.Marshal(req.Schema)
+	if marshalErr != nil {
+		schema = []byte("{}")
+	}
 	res, _ := a.conn.Exec("INSERT INTO forge_tools (name, description, type, schema_json, handler) VALUES (?,?,?,?,?)",
 		req.Name, req.Desc, req.Type, string(schema), req.Handler)
 	id, _ := res.LastInsertId()
@@ -502,6 +532,9 @@ func (a *App) handleListSessions(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		sessions = append(sessions, map[string]any{"id": id, "name": name, "model": model, "message_count": msgs, "token_count": tokens, "updated_at": updated})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"sessions": sessions})
 }
@@ -536,6 +569,9 @@ func (a *App) handleGetMessages(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		msgs = append(msgs, map[string]any{"role": role, "content": content, "tokens": tokens, "model": model, "created_at": created})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"session_id": id, "messages": msgs})
 }
@@ -572,6 +608,9 @@ func (a *App) handleListBatch(w http.ResponseWriter, r *http.Request) {
 		}
 		jobs = append(jobs, map[string]any{"id": id, "type": jtype, "status": status, "priority": priority, "attempts": attempts, "created_at": created, "completed_at": completed})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"jobs": jobs})
 }
 
@@ -588,7 +627,10 @@ func (a *App) handleSubmitBatch(w http.ResponseWriter, r *http.Request) {
 	bb := make([]byte, 4)
 	rand.Read(bb)
 	id := fmt.Sprintf("batch_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(bb))
-	inputJSON, _ := json.Marshal(req.Input)
+	inputJSON, marshalErr := json.Marshal(req.Input)
+	if marshalErr != nil {
+		inputJSON = []byte("{}")
+	}
 	a.conn.Exec("INSERT INTO forge_batch_jobs (id, type, input_json, priority) VALUES (?,?,?,?)", id, req.Type, string(inputJSON), req.Priority)
 	writeJSON(w, map[string]any{"status": "queued", "id": id})
 }

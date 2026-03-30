@@ -34,7 +34,9 @@ type Scheduler struct {
 func NewScheduler(conn *sql.DB, mailer interface {
 	Send(to, subject, body string) error
 }) *Scheduler {
-	conn.Exec(schedulerSchema)
+	if _, err := conn.Exec(schedulerSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 	return &Scheduler{conn: conn, mailer: mailer, stop: make(chan struct{})}
 }
 
@@ -93,6 +95,9 @@ func (s *Scheduler) sendWeeklyReport() {
 			continue
 		}
 		recipients = append(recipients, email)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	if len(recipients) == 0 {
@@ -166,6 +171,9 @@ func (s *Scheduler) generateCostReport() string {
 <td style="text-align:right;padding:8px">$%.4f</td>
 </tr>`, provider, model, requests, tokIn+tokOut, cost)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	html += fmt.Sprintf(`<tr style="border-top:2px solid #e8753a;font-weight:bold">
 <td style="padding:8px" colspan="2">Total</td>
@@ -206,6 +214,9 @@ func RegisterSchedulerRoutes(mux *http.ServeMux, s *Scheduler) {
 			reports = append(reports, map[string]any{
 				"id": id, "type": typ, "period": period, "sent_at": sentAt, "recipient_count": count,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if reports == nil {
 			reports = []map[string]any{}

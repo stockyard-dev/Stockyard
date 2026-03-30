@@ -119,6 +119,9 @@ func handleListSuites(conn *sql.DB) http.HandlerFunc {
 				"case_count": caseCount, "run_count": runCount, "created_at": createdAt,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if suites == nil {
 			suites = []map[string]any{}
 		}
@@ -143,7 +146,10 @@ func handleAddCase(conn *sql.DB) http.HandlerFunc {
 		}
 
 		id := generateTestID("tc_")
-		criteriaJSON, _ := json.Marshal(req.ExpectedCriteria)
+		criteriaJSON, marshalErr := json.Marshal(req.ExpectedCriteria)
+		if marshalErr != nil {
+			criteriaJSON = []byte("{}")
+		}
 		now := time.Now().UTC().Format(time.RFC3339)
 		conn.Exec("INSERT INTO test_cases (id, suite_id, prompt, expected_criteria, created_at) VALUES (?, ?, ?, ?, ?)",
 			id, suiteID, req.Prompt, string(criteriaJSON), now)
@@ -188,6 +194,9 @@ func handleRunSuite(conn *sql.DB, proxyPort int) http.HandlerFunc {
 			}
 			cases = append(cases, tc)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 
 		if len(cases) == 0 {
 			writeTestJSON(w, http.StatusBadRequest, map[string]string{"error": "no test cases in suite"})
@@ -221,7 +230,10 @@ func handleRunSuite(conn *sql.DB, proxyPort int) http.HandlerFunc {
 				}
 			}
 
-			resultsJSON, _ := json.Marshal(results)
+			resultsJSON, marshalErr := json.Marshal(results)
+			if marshalErr != nil {
+				resultsJSON = []byte("{}")
+			}
 			completedAt := time.Now().UTC().Format(time.RFC3339)
 			conn.Exec("UPDATE test_runs SET status = 'completed', passed = ?, failed = ?, results = ?, completed_at = ? WHERE id = ?",
 				passed, failed, string(resultsJSON), completedAt, runID)

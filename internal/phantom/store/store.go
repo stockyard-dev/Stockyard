@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -106,6 +107,9 @@ func (db *DB) ListPersonas() ([]Persona, error) {
 		}
 		out = append(out, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -129,6 +133,9 @@ func (db *DB) ListAnomalies(limit int) ([]Anomaly, error) {
 			continue
 		}
 		out = append(out, a)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }
@@ -188,6 +195,9 @@ func (db *DB) ListSessions(personaID string, limit int) ([]Session, error) {
 			continue
 		}
 		out = append(out, s)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

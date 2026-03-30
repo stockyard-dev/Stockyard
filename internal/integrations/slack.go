@@ -188,6 +188,9 @@ func (s *SlackIntegration) providerStatus() map[string]any {
 			"text": fmt.Sprintf("%s *%s*\n%.0fms avg · %.1f%% errors", status, prov, avgLatency, errRate),
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if len(fields) == 0 {
 		return map[string]any{"response_type": "ephemeral", "text": "No provider data in the last hour."}
 	}
@@ -216,6 +219,9 @@ func (s *SlackIntegration) activeAlerts() map[string]any {
 			continue
 		}
 		lines = append(lines, fmt.Sprintf("• *%s* — %s %s %.2f", name, metric, cond, threshold))
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if len(lines) == 0 {
 		return map[string]any{"response_type": "ephemeral", "text": "No active alert rules configured."}

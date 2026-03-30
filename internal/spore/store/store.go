@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -88,6 +89,9 @@ func (db *DB) ListPatterns() ([]Pattern, error) {
 		}
 		out = append(out, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -108,6 +112,9 @@ func (db *DB) ListActivations(patternID string, limit int) ([]Activation, error)
 			continue
 		}
 		out = append(out, a)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }
@@ -154,6 +161,9 @@ func (db *DB) ListActivePatterns() ([]Pattern, error) {
 		}
 		out = append(out, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -192,6 +202,9 @@ func (db *DB) CountByStatus() (map[string]int, error) {
 			continue
 		}
 		out[status] = count
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

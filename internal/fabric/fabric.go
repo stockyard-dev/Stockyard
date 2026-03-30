@@ -207,7 +207,9 @@ type Engine struct {
 
 // NewEngine creates a Fabric engine and runs migrations.
 func NewEngine(conn *sql.DB) *Engine {
-	conn.Exec(fabricSchema)
+	if _, err := conn.Exec(fabricSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 	log.Printf("[fabric] migrations applied")
 	return &Engine{conn: conn}
 }
@@ -295,7 +297,10 @@ func (e *Engine) reconcileInternal(m Manifest, dryRun bool) ReconcileResult {
 	// Apply module configs
 	if len(m.ModuleConfig) > 0 {
 		for mod, cfg := range m.ModuleConfig {
-			cfgJSON, _ := json.Marshal(cfg)
+			cfgJSON, marshalErr := json.Marshal(cfg)
+			if marshalErr != nil {
+				cfgJSON = []byte("{}")
+			}
 			action := Action{Type: "module_config", Target: mod, Detail: string(cfgJSON), Status: "ok"}
 			if !dryRun {
 				e.conn.Exec("UPDATE proxy_modules SET config_json = ?, updated_at = ? WHERE name = ?",
@@ -340,7 +345,10 @@ func (e *Engine) reconcileInternal(m Manifest, dryRun bool) ReconcileResult {
 	if m.Consensus != nil {
 		action := Action{Type: "consensus", Target: "consensus_config", Detail: fmt.Sprintf("models=%v", m.Consensus.Models), Status: "ok"}
 		if !dryRun && len(m.Consensus.Models) > 0 {
-			modelsJSON, _ := json.Marshal(m.Consensus.Models)
+			modelsJSON, marshalErr := json.Marshal(m.Consensus.Models)
+			if marshalErr != nil {
+				modelsJSON = []byte("{}")
+			}
 			threshold := m.Consensus.AgreementThreshold
 			if threshold == 0 {
 				threshold = 0.8
@@ -387,8 +395,14 @@ func (e *Engine) reconcileInternal(m Manifest, dryRun bool) ReconcileResult {
 
 	// Store deployment record
 	if !dryRun {
-		manifestJSON, _ := json.Marshal(m)
-		resultJSON, _ := json.Marshal(result)
+		manifestJSON, marshalErr := json.Marshal(m)
+		if marshalErr != nil {
+			manifestJSON = []byte("{}")
+		}
+		resultJSON, marshalErr := json.Marshal(result)
+		if marshalErr != nil {
+			resultJSON = []byte("{}")
+		}
 		autoHeal := 1
 		if m.AutoHeal != nil && !*m.AutoHeal {
 			autoHeal = 0
@@ -461,6 +475,9 @@ func (e *Engine) ListDeployments() []map[string]any {
 			"auto_heal": autoHeal == 1, "created_at": createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return results
 }
 
@@ -484,6 +501,9 @@ func (e *Engine) DeploymentHistory(name string) []map[string]any {
 			"id": id, "name": name, "status": status, "version": version,
 			"auto_heal": autoHeal == 1, "created_at": createdAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return results
 }
@@ -568,6 +588,9 @@ func (e *Engine) DriftCheck() []map[string]any {
 					genFabricID("dr_"), id, fmt.Sprintf("module %q re-enabled", mod), time.Now().Format(time.RFC3339))
 			}
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return drifts
 }

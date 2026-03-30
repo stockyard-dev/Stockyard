@@ -289,7 +289,10 @@ func (e *patternEngine) replicate(parent store.Pattern, triggerEvt bus.Event) {
 				if tc.Value != "" {
 					childTC.Value = tc.Value
 				}
-				tcJSON, _ := json.Marshal(childTC)
+				tcJSON, marshalErr := json.Marshal(childTC)
+				if marshalErr != nil {
+					tcJSON = []byte("{}")
+				}
 				children = append(children, store.Pattern{
 					ID:                sporeID("sp"),
 					Name:              fmt.Sprintf("%s/field:%s", parent.Name, field),
@@ -317,7 +320,10 @@ func (e *patternEngine) replicate(parent store.Pattern, triggerEvt bus.Event) {
 				Event:       relEvt,
 				Consecutive: 2, // require 2 hits for child patterns (less sensitive)
 			}
-			tcJSON, _ := json.Marshal(childTC)
+			tcJSON, marshalErr := json.Marshal(childTC)
+			if marshalErr != nil {
+				tcJSON = []byte("{}")
+			}
 			children = append(children, store.Pattern{
 				ID:                sporeID("sp"),
 				Name:              fmt.Sprintf("%s/watch:%s", parent.Name, relEvt),

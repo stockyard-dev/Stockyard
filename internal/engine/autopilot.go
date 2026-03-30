@@ -257,6 +257,9 @@ func (ap *Autopilot) reload() {
 		}
 		ap.scores[ms.Model] = ms
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 }
 
 // pickModel selects the optimal model for a request.
@@ -480,6 +483,9 @@ func (ap *Autopilot) Calibrate(ctx context.Context) (*CalibrateResult, error) {
 			continue
 		}
 		traces = append(traces, t)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if len(traces) == 0 {
 		return nil, fmt.Errorf("no replayable traces found — send some proxy requests first")
@@ -832,7 +838,10 @@ func handleAutopilotUpdate(conn *sql.DB, ap *Autopilot) http.HandlerFunc {
 			conn.Exec(`UPDATE autopilot_config SET reference_model=?, updated_at=datetime('now') WHERE id=1`, *req.ReferenceModel)
 		}
 		if req.CandidateModels != nil {
-			j, _ := json.Marshal(req.CandidateModels)
+			j, marshalErr := json.Marshal(req.CandidateModels)
+			if marshalErr != nil {
+				j = []byte("{}")
+			}
 			conn.Exec(`UPDATE autopilot_config SET candidate_models=?, updated_at=datetime('now') WHERE id=1`, string(j))
 		}
 		if req.MaxCostUSD != nil {
@@ -936,6 +945,9 @@ func handleAutopilotDecisions(conn *sql.DB) http.HandlerFunc {
 			}
 			decisions = append(decisions, d)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 
 		apJSON(w, 200, map[string]any{"decisions": decisions, "count": len(decisions)})
 	}
@@ -967,6 +979,9 @@ func handleAutopilotStats(conn *sql.DB, ap *Autopilot) http.HandlerFunc {
 					rd.Pct = float64(rd.Count) / float64(totalDecisions) * 100
 				}
 				dist = append(dist, rd)
+			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 		if dist == nil {
@@ -1046,6 +1061,9 @@ func handleAutopilotCalibrationLog(conn *sql.DB) http.HandlerFunc {
 				continue
 			}
 			entries = append(entries, e)
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 
 		apJSON(w, 200, map[string]any{"log": entries, "count": len(entries)})

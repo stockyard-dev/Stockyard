@@ -257,6 +257,9 @@ func (a *App) handleListProposals(w http.ResponseWriter, r *http.Request) {
 			"created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"proposals": proposals, "count": len(proposals)})
 }
 
@@ -284,6 +287,9 @@ func (a *App) handleGetProposal(w http.ResponseWriter, r *http.Request) {
 			votes = append(votes, map[string]any{
 				"voter_id": voterID, "vote": vote, "created_at": voteCreated,
 			})
+		}
+		if err := voteRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -438,7 +444,10 @@ func (a *App) handleFileDispute(w http.ResponseWriter, r *http.Request) {
 
 	id := genID("dp_")
 	ts := now()
-	evidence, _ := json.Marshal(req.Evidence)
+	evidence, marshalErr := json.Marshal(req.Evidence)
+	if marshalErr != nil {
+		evidence = []byte("{}")
+	}
 	if req.Evidence == nil {
 		evidence = []byte("{}")
 	}
@@ -476,6 +485,9 @@ func (a *App) handleListDisputes(w http.ResponseWriter, r *http.Request) {
 			"id": id, "type": dtype, "reporter_id": reporterID, "subject_id": subjectID,
 			"description": desc, "status": status, "created_at": created,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"disputes": disputes, "count": len(disputes)})
 }
@@ -575,7 +587,10 @@ func (a *App) handleCertifySafety(w http.ResponseWriter, r *http.Request) {
 		grade = "D"
 	}
 
-	detailsJSON, _ := json.Marshal(details)
+	detailsJSON, marshalErr := json.Marshal(details)
+	if marshalErr != nil {
+		detailsJSON = []byte("{}")
+	}
 	ts := now()
 	expiresAt := time.Now().Add(90 * 24 * time.Hour).Format(time.RFC3339)
 
@@ -657,6 +672,9 @@ func (a *App) handleComplianceCheck(w http.ResponseWriter, r *http.Request) {
 			"checked_at":   ts,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	writeJSON(w, map[string]any{"app_id": appID, "results": results, "count": len(results), "checked_at": ts})
 }
@@ -692,6 +710,9 @@ func (a *App) handleAutoFix(w http.ResponseWriter, r *http.Request) {
 			"auto_fixable":     true,
 			"fix_description":  "Apply the suggested Stockyard configuration to meet " + regulation + " requirements",
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	writeJSON(w, map[string]any{

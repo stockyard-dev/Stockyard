@@ -4,6 +4,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -142,6 +143,9 @@ func (db *DB) ListPopulations() ([]Population, error) {
 		}
 		pops = append(pops, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return pops, nil
 }
 
@@ -170,6 +174,9 @@ func (db *DB) ListGenomes(popID string, generation int) ([]GenomeRecord, error) 
 			continue
 		}
 		genomes = append(genomes, g)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return genomes, nil
 }
@@ -254,6 +261,9 @@ func (db *DB) ListTournaments() ([]Tournament, error) {
 		}
 		out = append(out, t)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -287,6 +297,9 @@ func (db *DB) ListMatches(tournamentID string, round int) ([]Match, error) {
 		}
 		out = append(out, m)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -302,6 +315,9 @@ func (db *DB) AllMatches(tournamentID string) ([]Match, error) {
 		}
 		out = append(out, m)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -316,6 +332,9 @@ func (db *DB) GetTopGenomesAcrossPopulations(limit int) ([]GenomeRecord, error) 
 			continue
 		}
 		out = append(out, g)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

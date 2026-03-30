@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -91,6 +92,9 @@ func (db *DB) ListLoops() ([]Loop, error) {
 		}
 		out = append(out, l)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -105,6 +109,9 @@ func (db *DB) ListSimulations() ([]Simulation, error) {
 			continue
 		}
 		out = append(out, s)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

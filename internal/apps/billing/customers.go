@@ -23,7 +23,10 @@ func (a *App) handleCreateCustomer(w http.ResponseWriter, r *http.Request) {
 
 	id := genID("bc_")
 	now := nowRFC3339()
-	meta, _ := json.Marshal(req.Metadata)
+	meta, marshalErr := json.Marshal(req.Metadata)
+	if marshalErr != nil {
+		meta = []byte("{}")
+	}
 	if string(meta) == "null" {
 		meta = []byte("{}")
 	}
@@ -82,6 +85,9 @@ func (a *App) handleListCustomers(w http.ResponseWriter, r *http.Request) {
 			"name": name, "email": email, "metadata": metadata,
 			"created_at": created, "updated_at": updated,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if customers == nil {
 		customers = []map[string]any{}
@@ -173,7 +179,10 @@ func (a *App) handleUpdateCustomer(w http.ResponseWriter, r *http.Request) {
 		a.conn.Exec("UPDATE billing_customers SET email = ?, updated_at = ? WHERE id = ?", *req.Email, now, id)
 	}
 	if req.Metadata != nil {
-		meta, _ := json.Marshal(req.Metadata)
+		meta, marshalErr := json.Marshal(req.Metadata)
+		if marshalErr != nil {
+			meta = []byte("{}")
+		}
 		a.conn.Exec("UPDATE billing_customers SET metadata = ?, updated_at = ? WHERE id = ?", string(meta), now, id)
 	}
 

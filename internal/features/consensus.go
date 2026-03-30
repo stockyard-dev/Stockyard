@@ -117,6 +117,9 @@ func (ce *ConsensusEngine) loadConfigs() []ConsensusConfig {
 		}
 		configs = append(configs, cfg)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	ce.configs = configs
 	ce.lastLoad = time.Now()

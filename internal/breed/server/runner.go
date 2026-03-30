@@ -226,7 +226,10 @@ func (s *Server) runEvolution(pop *Population, req evolveRequest) evolveResult {
 				MaxTokens:    50,
 			}
 			if len(muts) > 0 {
-				mutsJSON, _ := json.Marshal(muts)
+				mutsJSON, marshalErr := json.Marshal(muts)
+				if marshalErr != nil {
+					mutsJSON = []byte("{}")
+				}
 				child.Mutations = string(mutsJSON)
 			} else {
 				child.Mutations = `["crossover"]`

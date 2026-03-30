@@ -101,7 +101,10 @@ func (r *Runner) Run(ctx context.Context, req RunExperimentRequest) (*Experiment
 		"prompt": req.Prompt, "system": req.System,
 		"runs": req.Runs, "eval": req.Eval, "eval_arg": req.EvalArg,
 	})
-	varsJSON, _ := json.Marshal(req.Models)
+	varsJSON, marshalErr := json.Marshal(req.Models)
+	if marshalErr != nil {
+		varsJSON = []byte("{}")
+	}
 	res, err := r.conn.Exec(
 		`INSERT INTO studio_experiments (name, type, status, config_json, variants_json, started_at)
 		 VALUES (?, 'ab_test', 'running', ?, ?, ?)`,
@@ -164,7 +167,10 @@ func (r *Runner) Run(ctx context.Context, req RunExperimentRequest) (*Experiment
 	}
 
 	// Save results
-	resultsJSON, _ := json.Marshal(result)
+	resultsJSON, marshalErr := json.Marshal(result)
+	if marshalErr != nil {
+		resultsJSON = []byte("{}")
+	}
 	r.conn.Exec(`UPDATE studio_experiments SET status = 'completed', results_json = ?, ended_at = ? WHERE id = ?`,
 		string(resultsJSON), time.Now().Format(time.RFC3339), expID)
 

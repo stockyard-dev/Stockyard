@@ -151,7 +151,10 @@ func (db *DB) migrate() error {
 // SaveError upserts an error by fingerprint: increments count and updates last_seen
 // if it already exists, otherwise inserts a new row.
 func (db *DB) SaveError(e Error) error {
-	headersJSON, _ := json.Marshal(e.Headers)
+	headersJSON, marshalErr := json.Marshal(e.Headers)
+	if marshalErr != nil {
+		headersJSON = []byte("{}")
+	}
 	now := time.Now()
 	if e.FirstSeen.IsZero() {
 		e.FirstSeen = now

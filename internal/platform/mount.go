@@ -188,7 +188,10 @@ func handleEventStream(eventBus *bus.Bus) http.HandlerFunc {
 		// Send recent history first
 		history := eventBus.History(50, "", "")
 		for _, evt := range history {
-			data, _ := json.Marshal(evt)
+			data, marshalErr := json.Marshal(evt)
+			if marshalErr != nil {
+				data = []byte("{}")
+			}
 			w.Write([]byte("data: " + string(data) + "\n\n"))
 		}
 		flusher.Flush()
@@ -210,7 +213,10 @@ func handleEventStream(eventBus *bus.Bus) http.HandlerFunc {
 			case <-ctx.Done():
 				return
 			case evt := <-ch:
-				data, _ := json.Marshal(evt)
+				data, marshalErr := json.Marshal(evt)
+				if marshalErr != nil {
+					data = []byte("{}")
+				}
 				w.Write([]byte("data: " + string(data) + "\n\n"))
 				flusher.Flush()
 			}

@@ -333,6 +333,9 @@ func (nr *NurtureRunner) tick() {
 			time.Sleep(500 * time.Millisecond)
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	if sent > 0 {
 		log.Printf("nurture: sent %d emails this tick", sent)
@@ -401,6 +404,9 @@ func (nr *NurtureRunner) Blast(subject, body string) (int, int) {
 
 		time.Sleep(200 * time.Millisecond) // Rate limit
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	log.Printf("nurture blast: done — sent=%d failed=%d", sent, failed)
 	return sent, failed
@@ -438,6 +444,9 @@ func GetNurtureStats(db *sql.DB) NurtureStats {
 			continue
 		}
 		stats.ByDay[day] = count
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	return stats

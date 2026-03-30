@@ -548,7 +548,10 @@ func truncateForPreview(data string) string {
 }
 
 func mustJSON(v any) string {
-	data, _ := json.Marshal(v)
+	data, marshalErr := json.Marshal(v)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	return string(data)
 }
 

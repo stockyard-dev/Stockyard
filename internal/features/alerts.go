@@ -80,7 +80,10 @@ func (a *Alerter) sendAlert(project string, threshold, spent, cap float64) {
 		Timestamp: time.Now().Format(time.RFC3339),
 	}
 
-	body, _ := json.Marshal(payload)
+	body, marshalErr := json.Marshal(payload)
+	if marshalErr != nil {
+		body = []byte("{}")
+	}
 	resp, err := a.client.Post(a.config.WebhookURL, "application/json", bytes.NewReader(body))
 	if err != nil {
 		log.Printf("alert webhook failed: %v", err)

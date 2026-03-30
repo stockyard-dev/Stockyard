@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"time"
@@ -170,6 +171,9 @@ func (s *SQLSource) runReadOnlyQuery(ctx context.Context, db *sql.DB, name, quer
 		sb.WriteString("\n")
 		results = append(results, row)
 		rowCount++
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	if rowCount == 0 {

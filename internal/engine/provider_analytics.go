@@ -66,6 +66,9 @@ func handleProviderAnalytics(conn *sql.DB) http.HandlerFunc {
 				"last_seen":    lastSeen,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 
 		// Calculate market share.
 		for _, p := range providers {
@@ -97,6 +100,9 @@ func handleProviderAnalytics(conn *sql.DB) http.HandlerFunc {
 				trends = append(trends, map[string]any{
 					"date": date, "provider": prov, "cost_usd": cost,
 				})
+			}
+			if err := trendRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 		if trends == nil {
@@ -207,6 +213,9 @@ func handleRateCalculator(conn *sql.DB) http.HandlerFunc {
 				"new_cost_30d":     totalCost - savings,
 				"requests":         requests,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if results == nil {
 			results = []map[string]any{}

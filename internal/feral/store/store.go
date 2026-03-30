@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -104,6 +105,9 @@ func (db *DB) ListCampaigns() ([]Campaign, error) {
 		}
 		out = append(out, c)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -134,6 +138,9 @@ func (db *DB) ListAttacks(campaignID string, successOnly bool, limit int) ([]Att
 		}
 		out = append(out, a)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -148,6 +155,9 @@ func (db *DB) ListVulnerabilities() ([]Vulnerability, error) {
 			continue
 		}
 		out = append(out, v)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

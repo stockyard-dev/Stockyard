@@ -45,9 +45,15 @@ func (a *App) handleGenerateFromPeriod(w http.ResponseWriter, r *http.Request) {
 		totalCents += li.CostCents
 		items = append(items, li)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	id := genID("inv_")
-	itemsJSON, _ := json.Marshal(items)
+	itemsJSON, marshalErr := json.Marshal(items)
+	if marshalErr != nil {
+		itemsJSON = []byte("{}")
+	}
 	a.conn.Exec(`INSERT INTO billing_invoices (id, account_id, customer_id, period, total_cents, status, line_items, created_at) VALUES (?,?,?,?,?,?,?,?)`,
 		id, "default", "all", period, totalCents, "draft", string(itemsJSON), nowRFC3339())
 
@@ -148,6 +154,9 @@ func (a *App) handleCreateInvoice(w http.ResponseWriter, r *http.Request) {
 		items = append(items, li)
 		totalCents += li.CostCents
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	if len(items) == 0 {
 		w.WriteHeader(400)
@@ -155,7 +164,10 @@ func (a *App) handleCreateInvoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	itemsJSON, _ := json.Marshal(items)
+	itemsJSON, marshalErr := json.Marshal(items)
+	if marshalErr != nil {
+		itemsJSON = []byte("{}")
+	}
 	invoiceID := genID("inv_")
 
 	_, err = a.conn.Exec(`INSERT INTO billing_invoices (id, account_id, customer_id, period, total_cents, status, line_items, created_at)
@@ -203,6 +215,9 @@ func (a *App) handleListInvoices(w http.ResponseWriter, r *http.Request) {
 				"period": period, "total_cents": totalCents, "status": status, "created_at": created,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	} else {
 		rows, err := a.conn.Query(`SELECT id, account_id, customer_id, period, total_cents, status, created_at
 			FROM billing_invoices ORDER BY created_at DESC LIMIT 100`)
@@ -222,6 +237,9 @@ func (a *App) handleListInvoices(w http.ResponseWriter, r *http.Request) {
 				"id": id, "account_id": acctID, "customer_id": custID,
 				"period": period, "total_cents": totalCents, "status": status, "created_at": created,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 

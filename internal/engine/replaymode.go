@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -458,6 +459,9 @@ func handleReplayRuns(conn *sql.DB) http.HandlerFunc {
 			}
 			runs = append(runs, rs)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		replayJSON(w, 200, map[string]any{"runs": runs, "count": len(runs)})
 	}
 }
@@ -631,6 +635,9 @@ func handleReplayStats(conn *sql.DB) http.HandlerFunc {
 					continue
 				}
 				leaderboard = append(leaderboard, ms)
+			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 		if leaderboard == nil {

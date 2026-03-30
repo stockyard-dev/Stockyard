@@ -25,7 +25,9 @@ CREATE INDEX IF NOT EXISTS idx_cost_index_date ON cost_index_history(date);
 
 // RegisterCostIndexRoutes mounts the cost index API.
 func RegisterCostIndexRoutes(mux *http.ServeMux, conn *sql.DB) {
-	conn.Exec(costIndexSchema)
+	if _, err := conn.Exec(costIndexSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 
 	mux.HandleFunc("GET /api/cost-index", func(w http.ResponseWriter, r *http.Request) {
 		pricing := provider.ListPricing()

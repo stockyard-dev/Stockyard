@@ -85,6 +85,9 @@ func (db *DB) ListRequests(project, teamID string, limit, offset int) ([]Request
 		}
 		logs = append(logs, r)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	return logs, total, nil
 }

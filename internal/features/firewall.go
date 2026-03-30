@@ -84,7 +84,9 @@ type compiledPattern struct {
 
 // NewFirewall creates and initializes the firewall.
 func NewFirewall(conn *sql.DB) *Firewall {
-	conn.Exec(FirewallSchema)
+	if _, err := conn.Exec(FirewallSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 	fw := &Firewall{
 		conn: conn,
 		config: FirewallConfig{
@@ -120,6 +122,9 @@ func (fw *Firewall) loadPatterns() {
 		patterns[cat] = append(patterns[cat], &compiledPattern{
 			ID: id, Category: cat, Pattern: pat, Regex: re, Severity: sev, Weight: weight,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	fw.mu.Lock()
@@ -310,8 +315,14 @@ func FirewallMiddleware(fw *Firewall) proxy.Middleware {
 
 			// Log the event.
 			eventID := "fw_" + generateFWID()
-			scoresJSON, _ := json.Marshal(scores)
-			matchedJSON, _ := json.Marshal(matched)
+			scoresJSON, marshalErr := json.Marshal(scores)
+			if marshalErr != nil {
+				scoresJSON = []byte("{}")
+			}
+			matchedJSON, marshalErr := json.Marshal(matched)
+			if marshalErr != nil {
+				matchedJSON = []byte("{}")
+			}
 			fw.conn.Exec("INSERT INTO firewall_events (id, scores, action, matched_patterns, created_at) VALUES (?, ?, ?, ?, ?)",
 				eventID, string(scoresJSON), action, string(matchedJSON), time.Now().UTC().Format(time.RFC3339))
 
@@ -347,7 +358,10 @@ func FirewallMiddleware(fw *Firewall) proxy.Middleware {
 
 					if len(respIssues) > 0 || len(dlpIssues) > 0 {
 						allIssues := append(respIssues, dlpIssues...)
-						issueJSON, _ := json.Marshal(allIssues)
+						issueJSON, marshalErr := json.Marshal(allIssues)
+						if marshalErr != nil {
+							issueJSON = []byte("{}")
+						}
 
 						respAction := "warn"
 						for _, issue := range allIssues {

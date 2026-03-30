@@ -61,6 +61,9 @@ func handleFirewallEvents(conn *sql.DB) http.HandlerFunc {
 				"created_at":       createdAt,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if events == nil {
 			events = []map[string]any{}
 		}
@@ -96,6 +99,9 @@ func handleFirewallStats(conn *sql.DB) http.HandlerFunc {
 					continue
 				}
 				topPatterns = append(topPatterns, map[string]any{"pattern": pattern, "count": count})
+			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 		if topPatterns == nil {

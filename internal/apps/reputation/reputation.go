@@ -258,7 +258,10 @@ func (a *App) computeScores(userID string) map[string]any {
 		"packs": packCount, "pack_installs": packInstalls,
 		"templates": templateCount, "workflows": workflowCount,
 	}
-	factorsJSON, _ := json.Marshal(factors)
+	factorsJSON, marshalErr := json.Marshal(factors)
+	if marshalErr != nil {
+		factorsJSON = []byte("{}")
+	}
 
 	// Upsert scores
 	a.conn.Exec(`INSERT INTO reputation_scores (user_id, builder_score, operator_score, contributor_score, overall_score, factors, updated_at)
@@ -322,6 +325,9 @@ func (a *App) handleLeaderboard(w http.ResponseWriter, r *http.Request) {
 			"overall_score": overall,
 		})
 		rank++
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"leaderboard": leaderboard, "role": role, "count": len(leaderboard)})
 }
@@ -415,6 +421,9 @@ func (a *App) handleCurrentSeason(w http.ResponseWriter, r *http.Request) {
 				"user_id": userID, "score": score, "rank": rank,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	writeJSON(w, map[string]any{
@@ -483,6 +492,9 @@ func (a *App) handleListStories(w http.ResponseWriter, r *http.Request) {
 			"app_id": appID, "likes": likes, "views": views, "created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"stories": stories, "count": len(stories)})
 }
 
@@ -539,6 +551,9 @@ func (a *App) handleStoryFeed(w http.ResponseWriter, r *http.Request) {
 			"app_id": appID, "likes": likes, "views": views, "created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"feed": feed, "count": len(feed)})
 }
 
@@ -570,6 +585,9 @@ func (a *App) handleGetKarma(w http.ResponseWriter, r *http.Request) {
 			events = append(events, map[string]any{
 				"id": id, "action": action, "points": points, "created_at": created,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 

@@ -340,7 +340,10 @@ func (s *Server) runSession(p *store.Persona, apiKey string) {
 	}
 
 	// Complete session
-	anomalySummary, _ := json.Marshal(allAnomalies)
+	anomalySummary, marshalErr := json.Marshal(allAnomalies)
+	if marshalErr != nil {
+		anomalySummary = []byte("{}")
+	}
 	s.cfg.Store.CompleteSession(sessionID, turns, string(anomalySummary))
 	s.cfg.Store.IncrementPersonaSessions(p.ID, len(allAnomalies))
 

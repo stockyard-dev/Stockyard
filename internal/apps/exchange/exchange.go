@@ -182,6 +182,9 @@ func (a *App) handleListPacks(w http.ResponseWriter, r *http.Request) {
 			"tags": t, "downloads": downloads, "installs": installs, "updated_at": updated,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"packs": packs, "count": len(packs)})
 }
 
@@ -237,8 +240,14 @@ func (a *App) handleCreatePack(w http.ResponseWriter, r *http.Request) {
 	b := make([]byte, 4)
 	rand.Read(b)
 	id := fmt.Sprintf("pk_%s_%s", time.Now().Format("20060102150405"), hex.EncodeToString(b))
-	tags, _ := json.Marshal(req.Tags)
-	content, _ := json.Marshal(req.Content)
+	tags, marshalErr := json.Marshal(req.Tags)
+	if marshalErr != nil {
+		tags = []byte("{}")
+	}
+	content, marshalErr := json.Marshal(req.Content)
+	if marshalErr != nil {
+		content = []byte("{}")
+	}
 
 	_, err := a.conn.Exec("INSERT INTO exchange_packs (id, slug, name, description, author, pack_type, tags_json, readme) VALUES (?,?,?,?,?,?,?,?)",
 		id, req.Slug, req.Name, req.Desc, req.Author, req.Type, string(tags), req.Readme)
@@ -268,7 +277,10 @@ func (a *App) handleAddVersion(w http.ResponseWriter, r *http.Request) {
 		Changelog string `json:"changelog"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	content, _ := json.Marshal(req.Content)
+	content, marshalErr := json.Marshal(req.Content)
+	if marshalErr != nil {
+		content = []byte("{}")
+	}
 	a.conn.Exec("INSERT INTO exchange_pack_versions (pack_id, version, content_json, changelog) VALUES (?,?,?,?)", id, req.Version, string(content), req.Changelog)
 	a.conn.Exec("UPDATE exchange_packs SET current_version = ?, updated_at = ? WHERE id = ?", req.Version, time.Now().Format(time.RFC3339), id)
 	writeJSON(w, map[string]any{"status": "published", "slug": slug, "version": req.Version})
@@ -393,6 +405,9 @@ func (a *App) handleListInstalled(w http.ResponseWriter, r *http.Request) {
 		}
 		installed = append(installed, map[string]any{"id": id, "pack_slug": slug, "version": ver, "installed_at": at})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"installed": installed, "count": len(installed)})
 }
 
@@ -429,6 +444,9 @@ func (a *App) handleListEnvironments(w http.ResponseWriter, r *http.Request) {
 		}
 		envs = append(envs, map[string]any{"id": id, "name": name, "description": desc, "last_synced": synced, "created_at": created})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"environments": envs})
 }
 
@@ -439,7 +457,10 @@ func (a *App) handleCreateEnvironment(w http.ResponseWriter, r *http.Request) {
 		Config any    `json:"config"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
-	cfg, _ := json.Marshal(req.Config)
+	cfg, marshalErr := json.Marshal(req.Config)
+	if marshalErr != nil {
+		cfg = []byte("{}")
+	}
 	res, _ := a.conn.Exec("INSERT INTO exchange_environments (name, description, config_json) VALUES (?,?,?)", req.Name, req.Desc, string(cfg))
 	id, _ := res.LastInsertId()
 	writeJSON(w, map[string]any{"status": "created", "id": id})
@@ -455,7 +476,10 @@ func (a *App) handleSync(w http.ResponseWriter, r *http.Request) {
 	if req.Direction == "" {
 		req.Direction = "push"
 	}
-	changes, _ := json.Marshal(req.Changes)
+	changes, marshalErr := json.Marshal(req.Changes)
+	if marshalErr != nil {
+		changes = []byte("{}")
+	}
 	a.conn.Exec("INSERT INTO exchange_sync_log (environment, direction, changes_json) VALUES (?,?,?)", name, req.Direction, string(changes))
 	a.conn.Exec("UPDATE exchange_environments SET last_synced = ? WHERE name = ?", time.Now().Format(time.RFC3339), name)
 	writeJSON(w, map[string]any{"status": "synced", "environment": name, "direction": req.Direction})
@@ -475,6 +499,9 @@ func (a *App) handleSyncLog(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		entries = append(entries, map[string]any{"environment": env, "direction": dir, "status": status, "synced_at": at})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"log": entries})
 }
@@ -573,6 +600,9 @@ func (a *App) handleGateStats(w http.ResponseWriter, r *http.Request) {
 			}
 			topPacks = append(topPacks, map[string]any{"pack_slug": slug, "count": cnt})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	// Recent captures
@@ -586,6 +616,9 @@ func (a *App) handleGateStats(w http.ResponseWriter, r *http.Request) {
 			recent = append(recent, map[string]any{
 				"email": email, "pack_slug": slug, "source": source, "created_at": created,
 			})
+		}
+		if err := recentRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -615,6 +648,9 @@ func (a *App) handleGateExport(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		emails = append(emails, map[string]string{"email": email, "source": source, "first_seen": firstSeen})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	if format == "csv" {

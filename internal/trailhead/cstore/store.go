@@ -163,6 +163,9 @@ func (s *DB) ListSources() ([]Source, error) {
 		}
 		out = append(out, src)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -185,7 +188,10 @@ type Document struct {
 }
 
 func (s *DB) SaveDocument(doc Document) error {
-	metaJSON, _ := json.Marshal(doc.Metadata)
+	metaJSON, marshalErr := json.Marshal(doc.Metadata)
+	if marshalErr != nil {
+		metaJSON = []byte("{}")
+	}
 	_, err := s.db.Exec(
 		`INSERT OR REPLACE INTO documents (id, source_id, type, title, content, url, author, created_date, metadata_json, content_hash)
 		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -240,7 +246,10 @@ type Chunk struct {
 
 func (s *DB) SaveChunk(c Chunk) error {
 	embBytes := float32sToBytes(c.Embedding)
-	metaJSON, _ := json.Marshal(c.Metadata)
+	metaJSON, marshalErr := json.Marshal(c.Metadata)
+	if marshalErr != nil {
+		metaJSON = []byte("{}")
+	}
 	_, err := s.db.Exec(
 		"INSERT OR REPLACE INTO chunks (id, document_id, content, chunk_index, token_count, embedding, metadata_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		c.ID, c.DocumentID, c.Content, c.ChunkIndex, c.TokenCount, embBytes, string(metaJSON),
@@ -298,6 +307,9 @@ func (s *DB) SearchChunks(queryEmbedding []float32, topK int) ([]SearchResult, e
 		r.Score = sim
 		all = append(all, scored{result: r, score: sim})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Sort by score descending
 	for i := 0; i < len(all); i++ {
@@ -341,7 +353,10 @@ type Relationship struct {
 }
 
 func (s *DB) UpsertEntity(e Entity) error {
-	propsJSON, _ := json.Marshal(e.Properties)
+	propsJSON, marshalErr := json.Marshal(e.Properties)
+	if marshalErr != nil {
+		propsJSON = []byte("{}")
+	}
 	_, err := s.db.Exec(`
 		INSERT INTO entities (id, type, name, properties_json, mention_count, last_seen)
 		VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP)
@@ -391,6 +406,9 @@ func (s *DB) GetRelatedEntities(entityID string, limit int) ([]Entity, []Relatio
 		entities = append(entities, e)
 		rels = append(rels, r)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return entities, rels, nil
 }
 
@@ -415,6 +433,9 @@ func (s *DB) FindEntitiesByName(query string, limit int) ([]Entity, error) {
 			log.Printf("[cstore] json parse error: %v", err)
 		}
 		out = append(out, e)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }
@@ -474,6 +495,9 @@ func (s *DB) QueryDocuments() ([]DocRow, error) {
 		}
 		out = append(out, d)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -505,6 +529,9 @@ func (s *DB) QueryHistory(limit int) ([]QueryHistoryRow, error) {
 			continue
 		}
 		out = append(out, q)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }

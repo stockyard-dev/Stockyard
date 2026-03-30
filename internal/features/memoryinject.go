@@ -103,6 +103,9 @@ func findRelevantMemories(conn *sql.DB, userID, query string, limit int) []strin
 			results = append(results, scored{content: content, score: sim})
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Sort by score descending.
 	for i := 0; i < len(results); i++ {

@@ -1,6 +1,9 @@
 package storage
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 // SpendRollup represents a daily spend summary.
 type SpendRollup struct {
@@ -51,6 +54,9 @@ func (db *DB) GetSpendHistory(project string, days int) ([]SpendRollup, error) {
 			return nil, err
 		}
 		rollups = append(rollups, r)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return rollups, nil
 }
@@ -134,6 +140,9 @@ func (db *DB) GetUserSpendHistory(userID string, days int) ([]UserSpendRollup, e
 			return nil, err
 		}
 		rollups = append(rollups, r)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return rollups, nil
 }

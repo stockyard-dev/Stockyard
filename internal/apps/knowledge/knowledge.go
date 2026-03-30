@@ -243,6 +243,9 @@ func (a *App) handleListBases(w http.ResponseWriter, r *http.Request) {
 			"created_at": created, "updated_at": updated,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"bases": bases, "count": len(bases)})
 }
 
@@ -384,6 +387,9 @@ func (a *App) handleListEntries(w http.ResponseWriter, r *http.Request) {
 			"disputed": disputed, "created_at": created, "expires_at": expires,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"entries": entries, "count": len(entries)})
 }
 
@@ -520,6 +526,9 @@ func (a *App) handleQuery(w http.ResponseWriter, r *http.Request) {
 			"verified": verified, "verification_count": verificationCount, "disputed": disputed,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Charge for paid knowledge bases (only if results found)
 	var feeCents, netCents int
@@ -618,6 +627,9 @@ func (a *App) handleMarketplace(w http.ResponseWriter, r *http.Request) {
 			"installs": installs, "price_per_query_cents": price, "status": status,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"bases": bases, "count": len(bases), "domain": domain})
 }
 
@@ -672,6 +684,9 @@ func (a *App) handleListWatches(w http.ResponseWriter, r *http.Request) {
 			"last_checked": lastChecked, "last_hash": lastHash, "created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"watches": watches, "count": len(watches)})
 }
 
@@ -714,7 +729,10 @@ func (a *App) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
 
 	// Generate trigrams
 	trigrams := generateTrigrams(strings.ToLower(req.Text))
-	trigramJSON, _ := json.Marshal(trigrams)
+	trigramJSON, marshalErr := json.Marshal(trigrams)
+	if marshalErr != nil {
+		trigramJSON = []byte("{}")
+	}
 
 	a.conn.Exec(
 		"INSERT INTO embedding_cache (text_hash, trigrams, created_at) VALUES (?,?,?)",

@@ -160,6 +160,9 @@ func (s *Server) runLiveRefresh() refreshResult {
 			}
 			models = append(models, m)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if len(models) > 0 {
 			value := fmt.Sprintf("%d models in use: %s", len(models), strings.Join(models, ", "))
 			if len(value) > 250 {

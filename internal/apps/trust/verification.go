@@ -19,7 +19,9 @@ CREATE TABLE IF NOT EXISTS trust_anchors (
 `
 
 func (a *App) migrateVerification() {
-	a.conn.Exec(verificationSchema)
+	if _, err := a.conn.Exec(verificationSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 func (a *App) registerVerificationRoutes(mux *http.ServeMux) {
@@ -48,6 +50,9 @@ func (a *App) handlePublishAnchor(w http.ResponseWriter, r *http.Request) {
 		}
 		h.Write([]byte(hash))
 		count++
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	chainHash := hex.EncodeToString(h.Sum(nil))
 
@@ -115,6 +120,9 @@ func (a *App) handleListAnchors(w http.ResponseWriter, r *http.Request) {
 		anchors = append(anchors, map[string]any{
 			"id": id, "chain_hash": hash, "event_count": eventCount, "published_at": publishedAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if anchors == nil {
 		anchors = []map[string]any{}

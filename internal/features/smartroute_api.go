@@ -100,6 +100,9 @@ func handleListRules(conn *sql.DB) http.HandlerFunc {
 				"created_at": createdAt,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if rules == nil {
 			rules = []map[string]any{}
 		}
@@ -224,6 +227,9 @@ func handleSavings(conn *sql.DB) http.HandlerFunc {
 			})
 			totalSaved += saved
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if savings == nil {
 			savings = []map[string]any{}
 		}
@@ -307,6 +313,9 @@ func handleOptimize(conn *sql.DB) http.HandlerFunc {
 				},
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if recommendations == nil {
 			recommendations = []map[string]any{}
 		}
@@ -364,6 +373,9 @@ func handleABResults(conn *sql.DB) http.HandlerFunc {
 				"avg_latency": avgLatency,
 				"avg_tokens":  avgTokens,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if results == nil {
 			results = []map[string]any{}

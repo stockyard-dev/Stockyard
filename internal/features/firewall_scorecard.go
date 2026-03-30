@@ -26,7 +26,9 @@ CREATE INDEX IF NOT EXISTS idx_fw_scorecards_created ON firewall_scorecards(crea
 
 // InitScorecardSchema creates the scorecards table.
 func InitScorecardSchema(conn *sql.DB) {
-	conn.Exec(scorecardSchema)
+	if _, err := conn.Exec(scorecardSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 // RegisterScorecardAPI mounts the persistent scorecard endpoint and scheduled scan.
@@ -69,6 +71,9 @@ func handleScorecardHistory(conn *sql.DB) http.HandlerFunc {
 				"correct": correct, "total": total, "pattern_count": patternCount,
 				"created_at": createdAt,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if cards == nil {
 			cards = []map[string]any{}
@@ -139,7 +144,10 @@ func runScorecard(conn *sql.DB, fw *Firewall) map[string]any {
 
 	// Persist the scorecard.
 	id := "sc_" + genScorecardID()
-	resultsJSON, _ := json.Marshal(results)
+	resultsJSON, marshalErr := json.Marshal(results)
+	if marshalErr != nil {
+		resultsJSON = []byte("{}")
+	}
 	conn.Exec("INSERT INTO firewall_scorecards (id, grade, score_pct, correct, total, pattern_count, results, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		id, grade, pct, correct, total, patternCount, string(resultsJSON), time.Now().UTC().Format(time.RFC3339))
 

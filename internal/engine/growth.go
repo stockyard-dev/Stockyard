@@ -261,6 +261,9 @@ func handleGrowthDashboard(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			uRows.Scan(&d, &c)
 			uDaily = append(uDaily, map[string]any{"date": d, "count": c})
 		}
+		if err := uRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		users["by_day"] = uDaily
 	}
 	result["users"] = users
@@ -314,6 +317,9 @@ func handleGrowthDashboard(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 				"date": date, "metric": metric, "value": val,
 				"source": src, "notes": notes,
 			})
+		}
+		if err := mRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -414,6 +420,9 @@ func buildRevenueSection(entries []map[string]any, db *sql.DB) map[string]any {
 			}
 			tierCounts[tier] = c
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 	section["users_by_tier"] = tierCounts
 
@@ -461,6 +470,9 @@ func handleGrowthMetrics(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			"id": id, "date": date, "category": cat, "metric": metric,
 			"value": val, "source": src, "notes": notes, "updated_at": updated,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if metrics == nil {
 		metrics = []map[string]any{}

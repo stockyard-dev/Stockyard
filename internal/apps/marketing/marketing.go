@@ -168,6 +168,9 @@ func (a *App) listTasks(w http.ResponseWriter, r *http.Request) {
 		}
 		tasks = append(tasks, t)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if tasks == nil {
 		tasks = []Task{}
 	}
@@ -392,6 +395,9 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) {
 		stats[s] = c
 		total += c
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	stats["total"] = total
 
 	// Channel counts
@@ -404,6 +410,9 @@ func (a *App) stats(w http.ResponseWriter, r *http.Request) {
 			var c int
 			rows2.Scan(&s, &c)
 			chStats[s] = c
+		}
+		if err := rows2.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -427,6 +436,9 @@ func (a *App) listLog(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		entries = append(entries, e)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if entries == nil {
 		entries = []LogEntry{}

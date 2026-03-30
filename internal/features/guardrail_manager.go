@@ -94,6 +94,9 @@ func (mgr *GuardrailManager) reload() {
 		compiled[r.Name] = re
 		rules = append(rules, r)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	mgr.mu.Lock()
 	mgr.rules = rules

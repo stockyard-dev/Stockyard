@@ -2,6 +2,7 @@ package billing
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -64,6 +65,9 @@ func (a *App) handleListCustomerKeys(w http.ResponseWriter, r *http.Request) {
 			"user_id": userID, "customer_id": custID,
 			"customer_name": name, "created_at": created,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if result == nil {
 		result = []map[string]string{}

@@ -66,7 +66,9 @@ type SmartRouter struct {
 // NewSmartRouter creates a new smart router with DB-backed rules.
 func NewSmartRouter(conn *sql.DB) *SmartRouter {
 	// Ensure schema exists.
-	conn.Exec(SmartRouteSchema)
+	if _, err := conn.Exec(SmartRouteSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 
 	sr := &SmartRouter{
 		conn:     conn,
@@ -96,6 +98,9 @@ func (sr *SmartRouter) reload() {
 		r.Action = json.RawMessage(actStr)
 		r.Enabled = enabled == 1
 		rules = append(rules, r)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	sr.mu.Lock()

@@ -269,6 +269,9 @@ func runObserveStage(conn *sql.DB, window string) map[string]any {
 			}
 			topModels = append(topModels, ms)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	// Avg latency

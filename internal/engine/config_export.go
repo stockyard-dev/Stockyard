@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -62,6 +63,9 @@ func RegisterConfigRoutes(mux *http.ServeMux, conn *sql.DB) {
 					cfg.Modules = append(cfg.Modules, m)
 				}
 			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
+			}
 		}
 
 		// Providers
@@ -78,6 +82,9 @@ func RegisterConfigRoutes(mux *http.ServeMux, conn *sql.DB) {
 					cfg.Providers = append(cfg.Providers, p)
 				}
 			}
+			if err := provRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
+			}
 		}
 
 		// Webhooks (redact URL paths — may contain tokens like Slack webhook secrets)
@@ -90,6 +97,9 @@ func RegisterConfigRoutes(mux *http.ServeMux, conn *sql.DB) {
 					wh.URL = redactWebhookURL(wh.URL)
 					cfg.Webhooks = append(cfg.Webhooks, wh)
 				}
+			}
+			if err := whRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 
@@ -106,6 +116,9 @@ func RegisterConfigRoutes(mux *http.ServeMux, conn *sql.DB) {
 					}
 					cfg.Policies = append(cfg.Policies, p)
 				}
+			}
+			if err := polRows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 		}
 
@@ -231,6 +244,9 @@ func ExportConfigCLI(conn *sql.DB) error {
 			m.Enabled = enabled == 1
 			cfg.Modules = append(cfg.Modules, m)
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	enc := json.NewEncoder(nil) // will be os.Stdout in real usage

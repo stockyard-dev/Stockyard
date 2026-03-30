@@ -24,7 +24,9 @@ CREATE TABLE IF NOT EXISTS distillation_jobs (
 `
 
 func migrateDistillSchema(conn *sql.DB) {
-	conn.Exec(distillSchema)
+	if _, err := conn.Exec(distillSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 func registerDistillRoutes(mux *http.ServeMux, conn *sql.DB) {
@@ -75,7 +77,10 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 			`, req.Model, req.DateFrom, req.DateTo)
 			if err != nil {
 				log.Printf("[studio] distill query error for job %s: %v", id, err)
-				errJSON, _ := json.Marshal(map[string]string{"error": "failed to query trace data"})
+				errJSON, marshalErr := json.Marshal(map[string]string{"error": "failed to query trace data"})
+				if marshalErr != nil {
+					errJSON = []byte("{}")
+				}
 				conn.Exec("UPDATE distillation_jobs SET status = 'failed', result = ? WHERE id = ?",
 					string(errJSON), id)
 				return
@@ -100,6 +105,9 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 					"metadata": meta,
 				})
 				samples++
+			}
+			if err := rows.Err(); err != nil {
+				log.Printf("[db] rows iteration error: %v", err)
 			}
 
 			resultJSON, _ := json.Marshal(map[string]any{

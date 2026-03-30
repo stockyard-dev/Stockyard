@@ -45,8 +45,14 @@ func (s *Server) handleRecordScore(w http.ResponseWriter, r *http.Request) {
 	}}
 	compound := score.Compute(comps, nil)
 	factors := score.DegradationFactors(comps, 0.8)
-	compsJSON, _ := json.Marshal(comps)
-	factorsJSON, _ := json.Marshal(factors)
+	compsJSON, marshalErr := json.Marshal(comps)
+	if marshalErr != nil {
+		compsJSON = []byte("{}")
+	}
+	factorsJSON, marshalErr := json.Marshal(factors)
+	if marshalErr != nil {
+		factorsJSON = []byte("{}")
+	}
 	sc := &store.Score{
 		ID: genID("cs"), TraceID: req.TraceID,
 		ModelConfidence: req.ModelConfidence, CacheFreshness: req.CacheFreshness,

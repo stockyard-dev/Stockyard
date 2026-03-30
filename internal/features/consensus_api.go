@@ -100,6 +100,9 @@ func (ce *ConsensusEngine) handleListConfigs(w http.ResponseWriter, r *http.Requ
 		}
 		configs = append(configs, cfg)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	if configs == nil {
 		configs = []ConsensusConfig{}
@@ -168,7 +171,10 @@ func (ce *ConsensusEngine) handleUpdateConfig(w http.ResponseWriter, r *http.Req
 		cfg.Enabled = *update.Enabled
 	}
 
-	newModelsJSON, _ := json.Marshal(cfg.Models)
+	newModelsJSON, marshalErr := json.Marshal(cfg.Models)
+	if marshalErr != nil {
+		newModelsJSON = []byte("{}")
+	}
 
 	_, err = ce.conn.Exec(
 		`UPDATE consensus_configs SET name=?, models=?, agreement_threshold=?, min_agree=?, on_disagree=?, enabled=? WHERE id=?`,
@@ -249,6 +255,9 @@ func (ce *ConsensusEngine) handleListResults(w http.ResponseWriter, r *http.Requ
 		_ = json.Unmarshal([]byte(responsesJSON), &cr.Responses)
 		_ = json.Unmarshal([]byte(simJSON), &cr.SimilarityMatrix)
 		results = append(results, cr)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	if results == nil {
@@ -334,6 +343,9 @@ func (ce *ConsensusEngine) handleStats(w http.ResponseWriter, r *http.Request) {
 			}
 			totalAvg += sum / float64(len(matrix))
 			count++
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if count > 0 {
 			s.AvgAgreement = totalAvg / float64(count)

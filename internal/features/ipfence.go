@@ -234,7 +234,10 @@ func (ipf *IPFenceState) sendWebhook(ev IPFenceEvent) {
 			"project":   ev.Project,
 			"timestamp": ev.Timestamp.Format(time.RFC3339),
 		}
-		body, _ := json.Marshal(payload)
+		body, marshalErr := json.Marshal(payload)
+		if marshalErr != nil {
+			body = []byte("{}")
+		}
 		resp, err := ipf.client.Post(ipf.cfg.Webhook, "application/json", bytes.NewReader(body))
 		if err != nil {
 			log.Printf("ipfence: webhook failed: %v", err)

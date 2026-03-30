@@ -274,6 +274,9 @@ func (a *App) handleStripeCreateInvoice(w http.ResponseWriter, r *http.Request) 
 
 		totalCents += costCents
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	writeJSON(w, map[string]any{
 		"invoice_id":  invoiceID,

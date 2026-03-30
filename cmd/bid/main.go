@@ -160,7 +160,10 @@ func cmdRequest(args []string) {
 			"bid_timeout_ms":          200,
 		},
 	}
-	data, _ := json.Marshal(body)
+	data, marshalErr := json.Marshal(body)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 
 	start := time.Now()
 	resp, err := http.Post(*url+"/api/bid", "application/json", bytes.NewReader(data))

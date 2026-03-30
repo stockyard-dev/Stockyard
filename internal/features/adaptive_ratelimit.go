@@ -67,6 +67,9 @@ func (arl *AdaptiveRateLimiter) loadBaselines() {
 			arl.providerLimits[prov] = &providerLimit{maxConcurrent: 50}
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 }
 
 func (arl *AdaptiveRateLimiter) monitorLoop() {
@@ -131,6 +134,9 @@ func (arl *AdaptiveRateLimiter) adjustLimits() {
 			}
 		}
 		limit.lastCheck = time.Now()
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 }
 

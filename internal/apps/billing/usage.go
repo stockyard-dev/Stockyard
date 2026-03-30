@@ -68,6 +68,9 @@ func (a *App) handleQueryUsage(w http.ResponseWriter, r *http.Request) {
 			"created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if usage == nil {
 		usage = []map[string]any{}
 	}
@@ -113,6 +116,9 @@ func (a *App) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		totalInput += input
 		totalOutput += output
 		totalCost += cost
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if summary == nil {
 		summary = []map[string]any{}
@@ -166,6 +172,9 @@ func (a *App) handleUsageByCustomer(w http.ResponseWriter, r *http.Request) {
 			"cost_cents":    cost,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if customers == nil {
 		customers = []map[string]any{}
 	}
@@ -206,6 +215,9 @@ func (a *App) handleUsageByModel(w http.ResponseWriter, r *http.Request) {
 			"output_tokens": output,
 			"cost_cents":    cost,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if models == nil {
 		models = []map[string]any{}
@@ -354,6 +366,9 @@ func (a *App) handleUsageByTag(w http.ResponseWriter, r *http.Request) {
 		b.InputTokens += tokIn
 		b.OutputTokens += tokOut
 		totalCents += costCents
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	type entry struct {

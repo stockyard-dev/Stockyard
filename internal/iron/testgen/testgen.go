@@ -226,7 +226,10 @@ func generatePythonTestFunc(name string, acc parser.Acceptance) string {
 	sb.WriteString(fmt.Sprintf("    \"\"\"%s\"\"\"\n", acc.Description))
 
 	if acc.Body != nil {
-		bodyJSON, _ := json.Marshal(acc.Body)
+		bodyJSON, marshalErr := json.Marshal(acc.Body)
+		if marshalErr != nil {
+			bodyJSON = []byte("{}")
+		}
 		sb.WriteString(fmt.Sprintf("    resp = requests.%s(BASE_URL + \"%s\", json=%s)\n", method, path, string(bodyJSON)))
 	} else {
 		sb.WriteString(fmt.Sprintf("    resp = requests.%s(BASE_URL + \"%s\")\n", method, path))
@@ -303,7 +306,10 @@ func generateTSTestFunc(acc parser.Acceptance, behaviorName string) string {
 	sb.WriteString(fmt.Sprintf("  it('%s', async () => {\n", acc.Description))
 
 	if acc.Body != nil {
-		bodyJSON, _ := json.Marshal(acc.Body)
+		bodyJSON, marshalErr := json.Marshal(acc.Body)
+		if marshalErr != nil {
+			bodyJSON = []byte("{}")
+		}
 		sb.WriteString(fmt.Sprintf("    const resp = await fetch(`${BASE_URL}%s`, {\n", path))
 		sb.WriteString(fmt.Sprintf("      method: '%s',\n", method))
 		sb.WriteString("      headers: { 'Content-Type': 'application/json' },\n")

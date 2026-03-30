@@ -699,7 +699,10 @@ func cmdApps() {
 		if len(args) > 1 {
 			title = strings.Join(args[1:], " ")
 		}
-		payload, _ := json.Marshal(map[string]string{"title": title})
+		payload, marshalErr := json.Marshal(map[string]string{"title": title})
+		if marshalErr != nil {
+			payload = []byte("{}")
+		}
 		body, err := apiRequest("POST", "/api/apps/builder/create", string(payload))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -141,6 +142,9 @@ func (db *DB) GetUserEvents(userID string, limit int) ([]UserEvent, error) {
 			}
 		}
 		events = append(events, e)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	// Reverse so oldest first (chronological order).

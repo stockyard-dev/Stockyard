@@ -91,7 +91,10 @@ func dimensionAvg(evals []store.Evaluation, dim string) float64 {
 }
 
 func fireWebhook(url string, a Alert) {
-	body, _ := json.Marshal(a)
+	body, marshalErr := json.Marshal(a)
+	if marshalErr != nil {
+		body = []byte("{}")
+	}
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Post(url, "application/json", bytes.NewReader(body))
 	if err != nil {

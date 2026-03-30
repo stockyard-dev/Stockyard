@@ -287,6 +287,9 @@ func RegisterGuardrailRoutes(mux *http.ServeMux, mgr *features.GuardrailManager,
 			}
 			events = append(events, e)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"events": events})
 	})

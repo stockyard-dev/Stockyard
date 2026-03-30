@@ -224,6 +224,9 @@ func (db *SqliteDB) migrateHashCloudKeys() {
 			toMigrate = append(toMigrate, kv{id, key})
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	for _, item := range toMigrate {
 		hashed := hashAPIKey(item.key)
@@ -360,9 +363,18 @@ func (db *SqliteDB) importCloudJSON(dataDir string) error {
 	defer tx.Rollback()
 
 	for _, t := range snap.Tenants {
-		providerJSON, _ := json.Marshal(t.ProviderKeys)
-		configJSON, _ := json.Marshal(t.ProxyConfig)
-		productsJSON, _ := json.Marshal(t.EnabledProducts)
+		providerJSON, marshalErr := json.Marshal(t.ProviderKeys)
+		if marshalErr != nil {
+			providerJSON = []byte("{}")
+		}
+		configJSON, marshalErr := json.Marshal(t.ProxyConfig)
+		if marshalErr != nil {
+			configJSON = []byte("{}")
+		}
+		productsJSON, marshalErr := json.Marshal(t.EnabledProducts)
+		if marshalErr != nil {
+			productsJSON = []byte("{}")
+		}
 
 		_, err := tx.Exec(`INSERT OR IGNORE INTO cloud_tenants (id, email, name, api_key, plan, daily_request_limit, stripe_customer_id, stripe_subscription_id, provider_keys_json, proxy_config_json, enabled_products_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			t.ID, t.Email, t.Name, t.APIKey, t.Plan, t.DailyRequestLimit,
@@ -420,9 +432,18 @@ func (db *SqliteDB) importExchangeJSON(dataDir string) error {
 	defer tx.Rollback()
 
 	for _, item := range snap.Items {
-		tagsJSON, _ := json.Marshal(item.Tags)
-		productsJSON, _ := json.Marshal(item.Products)
-		providersJSON, _ := json.Marshal(item.Providers)
+		tagsJSON, marshalErr := json.Marshal(item.Tags)
+		if marshalErr != nil {
+			tagsJSON = []byte("{}")
+		}
+		productsJSON, marshalErr := json.Marshal(item.Products)
+		if marshalErr != nil {
+			productsJSON = []byte("{}")
+		}
+		providersJSON, marshalErr := json.Marshal(item.Providers)
+		if marshalErr != nil {
+			providersJSON = []byte("{}")
+		}
 
 		_, err := tx.Exec(`INSERT OR IGNORE INTO exchange_items (id, slug, type, title, description, author_email, author_name, content, tags_json, products_json, providers_json, downloads, stars, forks, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			item.ID, item.Slug, item.Type, item.Title, item.Description,
@@ -585,6 +606,9 @@ func (db *SqliteDB) Stats() map[string]any {
 			}
 			tierCounts[tier] = c
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	return map[string]any{
@@ -619,6 +643,9 @@ func (db *SqliteDB) scanLicenseRows(rows *sql.Rows) ([]*LicenseRecord, error) {
 		l.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 		l.ExpiresAt, _ = time.Parse(time.RFC3339, expiresAt)
 		result = append(result, l)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return result, nil
 }
@@ -717,21 +744,30 @@ func (db *SqliteDB) scanTenant(query string, args ...any) (*CloudTenant, error) 
 }
 
 func (db *SqliteDB) UpdateProviderKeys(apiKey string, keys map[string]string) error {
-	j, _ := json.Marshal(keys)
+	j, marshalErr := json.Marshal(keys)
+	if marshalErr != nil {
+		j = []byte("{}")
+	}
 	hashed := hashAPIKey(apiKey)
 	_, err := db.conn.Exec("UPDATE cloud_tenants SET provider_keys_json = ? WHERE api_key = ?", string(j), hashed)
 	return err
 }
 
 func (db *SqliteDB) UpdateProxyConfig(apiKey string, config map[string]any) error {
-	j, _ := json.Marshal(config)
+	j, marshalErr := json.Marshal(config)
+	if marshalErr != nil {
+		j = []byte("{}")
+	}
 	hashed := hashAPIKey(apiKey)
 	_, err := db.conn.Exec("UPDATE cloud_tenants SET proxy_config_json = ? WHERE api_key = ?", string(j), hashed)
 	return err
 }
 
 func (db *SqliteDB) UpgradeToPro(apiKey, stripeCustomerID, stripeSubID string) error {
-	productsJSON, _ := json.Marshal([]string{"*"})
+	productsJSON, marshalErr := json.Marshal([]string{"*"})
+	if marshalErr != nil {
+		productsJSON = []byte("{}")
+	}
 	hashed := hashAPIKey(apiKey)
 	_, err := db.conn.Exec("UPDATE cloud_tenants SET plan = 'pro', daily_request_limit = 0, enabled_products_json = ?, stripe_customer_id = ?, stripe_subscription_id = ? WHERE api_key = ?",
 		string(productsJSON), stripeCustomerID, stripeSubID, hashed)
@@ -739,7 +775,10 @@ func (db *SqliteDB) UpgradeToPro(apiKey, stripeCustomerID, stripeSubID string) e
 }
 
 func (db *SqliteDB) DowngradeToFree(stripeSubID string) error {
-	productsJSON, _ := json.Marshal([]string{"proxy", "observe", "trust", "studio", "forge", "exchange", "billing", "team", "memory", "recall", "copilot", "appbuilder", "knowledge", "reputation", "governance", "marketing"})
+	productsJSON, marshalErr := json.Marshal([]string{"proxy", "observe", "trust", "studio", "forge", "exchange", "billing", "team", "memory", "recall", "copilot", "appbuilder", "knowledge", "reputation", "governance", "marketing"})
+	if marshalErr != nil {
+		productsJSON = []byte("{}")
+	}
 	res, err := db.conn.Exec("UPDATE cloud_tenants SET plan = 'free', daily_request_limit = 1000, enabled_products_json = ?, stripe_subscription_id = '' WHERE stripe_subscription_id = ?",
 		string(productsJSON), stripeSubID)
 	if err != nil {
@@ -796,6 +835,9 @@ func (db *SqliteDB) GetUsageRange(tenantID, startDate, endDate string) []*CloudU
 		}
 		results = append(results, u)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return results
 }
 
@@ -844,6 +886,9 @@ func (db *SqliteDB) ListTenants() []*CloudTenant {
 		}
 		result = append(result, t)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return result
 }
 
@@ -863,9 +908,18 @@ func (db *SqliteDB) CloudStats() map[string]any {
 // ---------------------------------------------------------------------------
 
 func (db *SqliteDB) CreateExchangeItem(item *ExchangeItem) error {
-	tagsJSON, _ := json.Marshal(item.Tags)
-	productsJSON, _ := json.Marshal(item.Products)
-	providersJSON, _ := json.Marshal(item.Providers)
+	tagsJSON, marshalErr := json.Marshal(item.Tags)
+	if marshalErr != nil {
+		tagsJSON = []byte("{}")
+	}
+	productsJSON, marshalErr := json.Marshal(item.Products)
+	if marshalErr != nil {
+		productsJSON = []byte("{}")
+	}
+	providersJSON, marshalErr := json.Marshal(item.Providers)
+	if marshalErr != nil {
+		providersJSON = []byte("{}")
+	}
 	if item.ID == "" {
 		item.ID = generateID("ex_", 12)
 	}
@@ -1041,6 +1095,9 @@ func (db *SqliteDB) ExchangeStats() map[string]any {
 			totalStars += s
 			totalItems += c
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	return map[string]any{
@@ -1074,6 +1131,9 @@ func (db *SqliteDB) scanExchangeRows(rows *sql.Rows) []*ExchangeItem {
 		item.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 		item.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAt)
 		result = append(result, item)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return result
 }

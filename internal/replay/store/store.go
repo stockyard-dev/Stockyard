@@ -68,7 +68,10 @@ func (s *DB) migrate() error {
 
 // Write implements capture.DeltaSink.
 func (s *DB) Write(d capture.Delta) error {
-	metaJSON, _ := json.Marshal(d.Metadata)
+	metaJSON, marshalErr := json.Marshal(d.Metadata)
+	if marshalErr != nil {
+		metaJSON = []byte("{}")
+	}
 	_, err := s.db.Exec(
 		`INSERT OR IGNORE INTO deltas (id, timestamp, type, category, key, before_val, after_val, metadata_json, request_id, user_id)
 		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -142,6 +145,9 @@ func (s *DB) QueryDeltas(filter DeltaFilter) ([]capture.Delta, error) {
 			log.Printf("[replay] failed to parse delta metadata: %v", err)
 		}
 		deltas = append(deltas, d)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return deltas, nil
 }
@@ -217,6 +223,9 @@ func (s *DB) Stats() Stats {
 			}
 			st.ByCategory[cat] = count
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	rows2, _ := s.db.Query("SELECT type, COUNT(*) FROM deltas GROUP BY type")
@@ -227,6 +236,9 @@ func (s *DB) Stats() Stats {
 			var count int
 			rows2.Scan(&typ, &count)
 			st.ByType[typ] = count
+		}
+		if err := rows2.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -247,7 +259,10 @@ func (s *DB) PurgeOlderThan(retention time.Duration) (int64, error) {
 
 // SaveSnapshot stores a state snapshot at a point in time.
 func (s *DB) SaveSnapshot(id string, ts time.Time, state map[string]any, deltaCount int) error {
-	data, _ := json.Marshal(state)
+	data, marshalErr := json.Marshal(state)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	_, err := s.db.Exec(
 		"INSERT OR REPLACE INTO snapshots (id, timestamp, state_json, delta_count) VALUES (?, ?, ?, ?)",
 		id, ts.UTC(), string(data), deltaCount,

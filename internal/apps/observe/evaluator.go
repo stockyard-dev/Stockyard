@@ -115,6 +115,9 @@ func (e *AlertEvaluator) evaluate() {
 			// Already logged above
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 }
 
 func (e *AlertEvaluator) getMetricValue(metric string, windowSecs int64) (float64, error) {

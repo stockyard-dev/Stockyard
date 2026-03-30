@@ -302,7 +302,10 @@ func (a *Agent) RecordError(errorMsg, requestID, path string) {
 
 // RecordState records an arbitrary state snapshot.
 func (a *Agent) RecordState(key string, value any) {
-	data, _ := json.Marshal(value)
+	data, marshalErr := json.Marshal(value)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	a.Record(Delta{
 		Timestamp: time.Now().UTC(),
 		Type:      DeltaStateSet,

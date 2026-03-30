@@ -71,6 +71,9 @@ func (r *Registry) SeedFromDB(conn *sql.DB) {
 			r.state[name] = enabled == 1
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	r.mu.Unlock()
 	log.Printf("[toggle] seeded %d module states", len(r.state))
 }

@@ -92,7 +92,10 @@ func handleOptimizeTemplate(conn *sql.DB, proxyPort int) http.HandlerFunc {
 				}
 			}
 
-			scoresJSON, _ := json.Marshal(scores)
+			scoresJSON, marshalErr := json.Marshal(scores)
+			if marshalErr != nil {
+				scoresJSON = []byte("{}")
+			}
 			conn.Exec("UPDATE optimization_runs SET original_score = ?, variant_scores = ?, promoted_variant = ? WHERE id = ?",
 				originalScore, string(scoresJSON), bestVariant, runID)
 		}()
@@ -147,6 +150,9 @@ func handleOptimizationHistory(conn *sql.DB) http.HandlerFunc {
 				"promoted_variant": promoted.String,
 				"created_at":       createdAt,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if runs == nil {
 			runs = []map[string]any{}
@@ -217,6 +223,9 @@ func evaluatePrompt(conn *sql.DB, proxyPort int, prompt, templateName string) fl
 		if status < 300 {
 			passed++
 		}
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	if total == 0 {

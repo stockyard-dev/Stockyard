@@ -228,6 +228,9 @@ func (e *Engine) Summarize(ctx context.Context, state *collector.SystemState) (*
 
 // MarshalHistory serializes Q&A history to JSON.
 func MarshalHistory(pairs []QAPair) string {
-	data, _ := json.Marshal(pairs)
+	data, marshalErr := json.Marshal(pairs)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	return string(data)
 }

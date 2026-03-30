@@ -353,7 +353,10 @@ func mapAnthropicFinishReason(reason string) string {
 
 // mustJSON marshals a value and returns the JSON string.
 func mustJSON(v any) string {
-	b, _ := json.Marshal(v)
+	b, marshalErr := json.Marshal(v)
+	if marshalErr != nil {
+		b = []byte("{}")
+	}
 	return string(b)
 }
 

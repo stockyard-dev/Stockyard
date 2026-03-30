@@ -158,6 +158,9 @@ func (a *App) handleRelevant(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	// Sort by relevance descending.
 	for i := 0; i < len(results); i++ {
@@ -202,6 +205,9 @@ func (a *App) handleList(w http.ResponseWriter, r *http.Request) {
 			"id": id, "content": content, "summary": summary.String,
 			"created_at": createdAt, "expires_at": expiresAt.String,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if entries == nil {
 		entries = []map[string]any{}
@@ -249,6 +255,9 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 		}
 		oldIDs = append(oldIDs, id)
 		contents = append(contents, content)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	if len(oldIDs) == 0 {

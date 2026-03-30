@@ -27,7 +27,9 @@ CREATE INDEX IF NOT EXISTS idx_agent_runs_status ON agent_runs(status);
 `
 
 func migrateAgent(conn *sql.DB) {
-	conn.Exec(agentSchema)
+	if _, err := conn.Exec(agentSchema); err != nil {
+		log.Printf("[schema] migration error: %v", err)
+	}
 }
 
 func genAgentID() string {
@@ -220,6 +222,9 @@ func handleListAgentRuns(conn *sql.DB) http.HandlerFunc {
 				"created_at":        createdAt, "completed_at": completedAt.String,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if runs == nil {
 			runs = []map[string]any{}
 		}
@@ -237,7 +242,10 @@ func appendTimeline(conn *sql.DB, runID, eventType, timestamp, detail string) {
 	timeline = append(timeline, map[string]any{
 		"type": eventType, "timestamp": timestamp, "detail": detail,
 	})
-	updated, _ := json.Marshal(timeline)
+	updated, marshalErr := json.Marshal(timeline)
+	if marshalErr != nil {
+		updated = []byte("{}")
+	}
 	conn.Exec("UPDATE agent_runs SET timeline = ? WHERE id = ?", string(updated), runID)
 }
 

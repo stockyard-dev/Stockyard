@@ -84,6 +84,9 @@ func (a *App) handleResellerClients(w http.ResponseWriter, r *http.Request) {
 			"created_at":      createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if clients == nil {
 		clients = []map[string]any{}
 	}

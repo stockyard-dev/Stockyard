@@ -147,7 +147,10 @@ func (g *Generator) embedBatch(ctx context.Context, texts []string) ([][]float32
 		"model": g.cfg.Model,
 		"input": texts,
 	}
-	data, _ := json.Marshal(reqBody)
+	data, marshalErr := json.Marshal(reqBody)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", g.cfg.BaseURL+"/v1/embeddings", bytes.NewReader(data))
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -156,6 +157,9 @@ func (d *DB) GetHistory(unitID string) ([]Version, error) {
 		v.Timestamp, _ = time.Parse(time.RFC3339, ts)
 		versions = append(versions, v)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return versions, nil
 }
 
@@ -174,6 +178,9 @@ func (d *DB) ListUnits() ([]Unit, error) {
 			continue
 		}
 		units = append(units, u)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return units, nil
 }
@@ -199,6 +206,9 @@ func (d *DB) GetAnnotations(unitID string) ([]Annotation, error) {
 			continue
 		}
 		out = append(out, a)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }
@@ -279,6 +289,9 @@ func (d *DB) GetLineage(unitID string) ([]LineageRecord, error) {
 		}
 		out = append(out, r)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -311,6 +324,9 @@ func (d *DB) ChurnReport(since time.Time) ([]ChurnEntry, error) {
 			e.Authors = strings.Split(authors, ",")
 		}
 		entries = append(entries, e)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return entries, nil
 }
@@ -371,6 +387,9 @@ func (d *DB) ListUnitsFiltered(kind, search, sort string) ([]Unit, error) {
 		}
 		units = append(units, u)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return units, nil
 }
 
@@ -381,6 +400,9 @@ func contentHash(content string) string {
 
 // MarshalJSON is a helper.
 func MarshalJSON(v any) string {
-	data, _ := json.Marshal(v)
+	data, marshalErr := json.Marshal(v)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	return string(data)
 }

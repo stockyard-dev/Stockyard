@@ -53,6 +53,9 @@ func handleForecast(conn *sql.DB) http.HandlerFunc {
 			h.Requests = h.Requests / 4
 			history = append(history, h)
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 
 		// Simple forecast: use same day-of-week pattern for next 24 hours.
 		// In production, this would use a proper time-series model.
@@ -118,6 +121,9 @@ func handleCostAnomalies(conn *sql.DB) http.HandlerFunc {
 			days = append(days, d)
 			sum += d.Cost
 			sumSq += d.Cost * d.Cost
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 
 		n := float64(len(days))
@@ -188,6 +194,9 @@ func handleCostAnomalies(conn *sql.DB) http.HandlerFunc {
 					rootCauses = append(rootCauses, map[string]any{
 						"model": model, "provider": prov, "requests": reqs, "cost_usd": cost,
 					})
+				}
+				if err := causeRows.Err(); err != nil {
+					log.Printf("[db] rows iteration error: %v", err)
 				}
 			}
 		}

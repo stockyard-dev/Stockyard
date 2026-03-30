@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 	_ "modernc.org/sqlite"
 )
@@ -117,6 +118,9 @@ func (db *DB) QueryMemories(subject, category string, limit int) ([]Memory, erro
 		}
 		out = append(out, m)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return out, nil
 }
 
@@ -136,6 +140,9 @@ func (db *DB) ListConflicts() ([]Conflict, error) {
 			continue
 		}
 		out = append(out, c)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	return out, nil
 }
@@ -201,6 +208,9 @@ func (db *DB) SearchMemories(keywords []string, limit int) ([]Memory, error) {
 		}
 		out = append(out, m)
 		ids = append(ids, m.ID)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	// Update access counts

@@ -38,7 +38,10 @@ func (a *App) handleCreatePlan(w http.ResponseWriter, r *http.Request) {
 
 	id := genID("bp_")
 	now := nowRFC3339()
-	limitsJSON, _ := json.Marshal(req.Limits)
+	limitsJSON, marshalErr := json.Marshal(req.Limits)
+	if marshalErr != nil {
+		limitsJSON = []byte("{}")
+	}
 
 	_, err := a.conn.Exec(`INSERT INTO billing_plans (id, account_id, name, limits, created_at) VALUES (?,?,?,?,?)`,
 		id, req.AccountID, req.Name, string(limitsJSON), now)
@@ -86,6 +89,9 @@ func (a *App) handleListPlans(w http.ResponseWriter, r *http.Request) {
 			"limits": limits, "created_at": created,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if plans == nil {
 		plans = []map[string]any{}
 	}
@@ -113,7 +119,10 @@ func (a *App) handleUpdatePlan(w http.ResponseWriter, r *http.Request) {
 		a.conn.Exec("UPDATE billing_plans SET name = ? WHERE id = ?", *req.Name, id)
 	}
 	if req.Limits != nil {
-		limitsJSON, _ := json.Marshal(req.Limits)
+		limitsJSON, marshalErr := json.Marshal(req.Limits)
+		if marshalErr != nil {
+			limitsJSON = []byte("{}")
+		}
 		a.conn.Exec("UPDATE billing_plans SET limits = ? WHERE id = ?", string(limitsJSON), id)
 	}
 

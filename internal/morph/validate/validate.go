@@ -196,7 +196,10 @@ func renderTemplate(template string, params map[string]any) string {
 		case bool:
 			replacement = fmt.Sprintf("%t", v)
 		default:
-			data, _ := json.Marshal(v)
+			data, marshalErr := json.Marshal(v)
+			if marshalErr != nil {
+				data = []byte("{}")
+			}
 			replacement = string(data)
 		}
 		result = strings.ReplaceAll(result, placeholder, replacement)

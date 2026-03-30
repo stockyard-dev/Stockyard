@@ -98,6 +98,9 @@ func (te *TrustEnforcer) reload() {
 
 		policies = append(policies, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	te.mu.Lock()
 	te.policies = policies

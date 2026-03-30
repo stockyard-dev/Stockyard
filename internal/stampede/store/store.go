@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -249,6 +250,9 @@ func (s *DB) LoadSimulationResult(simID string) (*SimulationResult, error) {
 			ps.Errors++
 		}
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 
 	r.PersonaBreakdown = map[string]PersonaStats{}
 	for name, ps := range personas {
@@ -276,6 +280,9 @@ func (s *DB) LoadSimulationResult(simID string) (*SimulationResult, error) {
 				failureReasons[g.Reason] = append(failureReasons[g.Reason], g.ConversationID)
 			}
 		}
+		if err := gradeRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		for reason, ids := range failureReasons {
 			r.FailurePatterns = append(r.FailurePatterns, FailurePatternSummary{
 				Pattern: reason, Count: len(ids), IDs: ids,
@@ -294,6 +301,9 @@ func (s *DB) LoadSimulationResult(simID string) (*SimulationResult, error) {
 			var f SafetySummary
 			safetyRows.Scan(&f.ConversationID, &f.Type, &f.Severity, &f.Description, &f.TurnNumber, &f.Evidence)
 			r.SafetyFindings = append(r.SafetyFindings, f)
+		}
+		if err := safetyRows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 	}
 
@@ -338,12 +348,18 @@ func (s *DB) ListSimulations(limit int) ([]SimulationResult, error) {
 		}
 		results = append(results, r)
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	return results, nil
 }
 
 // Helper to marshal messages to JSON for storage.
 func MarshalMessages(msgs any) string {
-	data, _ := json.Marshal(msgs)
+	data, marshalErr := json.Marshal(msgs)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	return string(data)
 }
 

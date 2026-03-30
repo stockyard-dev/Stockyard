@@ -102,7 +102,10 @@ func (c *Client) sendOpenAI(ctx context.Context, message string) (string, error)
 		},
 		"model": "default",
 	}
-	data, _ := json.Marshal(body)
+	data, marshalErr := json.Marshal(body)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 
 	url := c.cfg.URL
 	if !strings.HasSuffix(url, "/chat/completions") && !strings.HasSuffix(url, "/v1/chat/completions") {
@@ -149,7 +152,10 @@ func (c *Client) sendOpenAI(ctx context.Context, message string) (string, error)
 // sendSimple sends a request in simple JSON format: {"message": "..."} -> {"response": "..."}
 func (c *Client) sendSimple(ctx context.Context, message string) (string, error) {
 	body := map[string]string{"message": message}
-	data, _ := json.Marshal(body)
+	data, marshalErr := json.Marshal(body)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", c.cfg.URL, bytes.NewReader(data))
 	if err != nil {

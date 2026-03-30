@@ -133,7 +133,10 @@ func (db *DB) migrate() error {
 
 // SaveEvaluation inserts an evaluation record.
 func (db *DB) SaveEvaluation(e Evaluation) error {
-	issuesJSON, _ := json.Marshal(e.Issues)
+	issuesJSON, marshalErr := json.Marshal(e.Issues)
+	if marshalErr != nil {
+		issuesJSON = []byte("{}")
+	}
 	_, err := db.conn.Exec(
 		`INSERT INTO evaluations (request_id, domain, score, relevance, accuracy, helpfulness, safety, tone, verdict, issues_json, latency_ms)
 		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -257,7 +260,10 @@ func (db *DB) SaveBatchEvaluation(batchID string, evals []Evaluation) error {
 	defer stmt.Close()
 
 	for _, e := range evals {
-		issuesJSON, _ := json.Marshal(e.Issues)
+		issuesJSON, marshalErr := json.Marshal(e.Issues)
+		if marshalErr != nil {
+			issuesJSON = []byte("{}")
+		}
 		if _, err := stmt.Exec(batchID, e.RequestID, e.Domain, e.Score,
 			e.Relevance, e.Accuracy, e.Helpfulness, e.Safety, e.Tone,
 			e.Verdict, string(issuesJSON), e.LatencyMs); err != nil {

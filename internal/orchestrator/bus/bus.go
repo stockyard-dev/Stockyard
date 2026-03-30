@@ -316,6 +316,9 @@ func (b *Bus) Stats() Stats {
 
 // MarshalEvent serializes an event for logging or storage.
 func MarshalEvent(e Event) string {
-	data, _ := json.Marshal(e)
+	data, marshalErr := json.Marshal(e)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	return string(data)
 }

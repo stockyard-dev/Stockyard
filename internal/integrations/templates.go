@@ -93,7 +93,10 @@ func SeedDefaultTemplates(conn *sql.DB) {
 	}
 
 	for _, t := range templates {
-		formatJSON, _ := json.Marshal(t.format)
+		formatJSON, marshalErr := json.Marshal(t.format)
+		if marshalErr != nil {
+			formatJSON = []byte("{}")
+		}
 		id := generateTemplateID()
 		conn.Exec(`INSERT OR IGNORE INTO webhook_templates (id, name, service, format_json) VALUES (?, ?, ?, ?)`,
 			id, t.name, t.service, string(formatJSON))
@@ -135,6 +138,9 @@ func TemplateRoutes(mux *http.ServeMux, conn *sql.DB) {
 				"created_at": createdAt,
 			})
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if templates == nil {
 			templates = []map[string]any{}
 		}
@@ -162,6 +168,9 @@ func TemplateRoutes(mux *http.ServeMux, conn *sql.DB) {
 				"connected":  enabled == 1,
 				"updated_at": updatedAt,
 			})
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
 		}
 		if services == nil {
 			services = []map[string]any{}

@@ -66,6 +66,9 @@ func (a *App) SetModelAlias(ma *features.ModelAliasState) {
 				loaded++
 			}
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 		if loaded > 0 {
 			log.Printf("[proxy] loaded %d persisted aliases from DB", loaded)
 		}
@@ -210,6 +213,9 @@ func (a *App) handleListModules(w http.ResponseWriter, r *http.Request) {
 			"config": cfg, "priority": priority, "in_chain": chainSet[name],
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	writeJSON(w, map[string]any{"modules": modules, "count": len(modules)})
 }
 
@@ -262,7 +268,10 @@ func (a *App) handleUpdateModule(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if req.Config != nil {
-		j, _ := json.Marshal(req.Config)
+		j, marshalErr := json.Marshal(req.Config)
+		if marshalErr != nil {
+			j = []byte("{}")
+		}
 		a.conn.Exec("UPDATE proxy_modules SET config_json = ?, updated_at = ? WHERE name = ?", string(j), time.Now().Format(time.RFC3339), name)
 	}
 	if req.Priority != nil {
@@ -328,6 +337,9 @@ func (a *App) handleBulkToggle(w http.ResponseWriter, r *http.Request) {
 					}
 					a.toggle.Set(name, req.Enabled)
 				}
+				if err := rows.Err(); err != nil {
+					log.Printf("[db] rows iteration error: %v", err)
+				}
 			}
 		}
 	} else {
@@ -371,6 +383,9 @@ func (a *App) handleChain(w http.ResponseWriter, r *http.Request) {
 			}
 			catMap[n] = c
 		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
 	}
 
 	type richEntry struct {
@@ -413,6 +428,9 @@ func (a *App) handleListProviders(w http.ResponseWriter, r *http.Request) {
 			"latency_ms": latency, "error_count": errors,
 			"request_count": requests, "last_check": lastCheck,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"providers": providers, "count": len(providers)})
 }
@@ -474,6 +492,9 @@ func (a *App) handleHealthCheckAll(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		providers = append(providers, p)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 
 	type result struct {
@@ -563,6 +584,9 @@ func (a *App) handleListRoutes(w http.ResponseWriter, r *http.Request) {
 			"path": path, "method": method, "provider": prov,
 			"model": model, "enabled": enabled == 1,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	writeJSON(w, map[string]any{"routes": routes})
 }

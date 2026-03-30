@@ -249,7 +249,10 @@ func (c *Cortex) handleHealthPulse(w http.ResponseWriter, r *http.Request) {
 		"provider_count":  providerCount,
 		"enabled_modules": enabledModules,
 	}
-	breakdownJSON, _ := json.Marshal(breakdown)
+	breakdownJSON, marshalErr := json.Marshal(breakdown)
+	if marshalErr != nil {
+		breakdownJSON = []byte("{}")
+	}
 
 	// Store in health_scores.
 	c.conn.Exec(`INSERT OR REPLACE INTO health_scores (date, score, breakdown) VALUES (?, ?, ?)`,
@@ -364,6 +367,9 @@ func (c *Cortex) handleResonance(w http.ResponseWriter, r *http.Request) {
 			"created_at":       createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if patterns == nil {
 		patterns = []map[string]any{}
 	}
@@ -398,6 +404,9 @@ func (c *Cortex) handleParadoxes(w http.ResponseWriter, r *http.Request) {
 			"created_at":  createdAt,
 		})
 	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
 	if paradoxes == nil {
 		paradoxes = []map[string]any{}
 	}
@@ -429,6 +438,9 @@ func (c *Cortex) handleCarbonSummary(w http.ResponseWriter, r *http.Request) {
 			"carbon_g_per_kwh": carbonGPerKWh,
 			"updated_at":       updatedAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if factors == nil {
 		factors = []map[string]any{}
@@ -489,6 +501,9 @@ func (c *Cortex) handleModelLifecycle(w http.ResponseWriter, r *http.Request) {
 			"successor":        successor.String,
 			"updated_at":       updatedAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if models == nil {
 		models = []map[string]any{}

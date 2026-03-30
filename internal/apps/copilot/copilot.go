@@ -529,7 +529,10 @@ func (a *App) executeAction(action llmAction) (int, any) {
 // ---------------------------------------------------------------------------
 
 func (a *App) saveSession(sessionID string, messages []map[string]string) {
-	msgJSON, _ := json.Marshal(messages)
+	msgJSON, marshalErr := json.Marshal(messages)
+	if marshalErr != nil {
+		msgJSON = []byte("{}")
+	}
 	now := time.Now().UTC().Format(time.RFC3339)
 	a.conn.Exec("UPDATE copilot_sessions SET messages = ?, updated_at = ? WHERE id = ?",
 		string(msgJSON), now, sessionID)
@@ -565,6 +568,9 @@ func (a *App) handleListSessions(w http.ResponseWriter, r *http.Request) {
 			"created_at":    createdAt,
 			"updated_at":    updatedAt,
 		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
 	}
 	if sessions == nil {
 		sessions = []map[string]any{}

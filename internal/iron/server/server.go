@@ -302,7 +302,10 @@ func (s *Server) runBuild(build *store.Build, spec *store.Spec) {
 
 	// Record the spec file as a build output
 	files := []store.BuildFile{{Path: spec.Name + ext, Content: spec.Content}}
-	filesJSON, _ := json.Marshal(files)
+	filesJSON, marshalErr := json.Marshal(files)
+	if marshalErr != nil {
+		filesJSON = []byte("{}")
+	}
 	build.FilesJSON = string(filesJSON)
 	build.Status = "success"
 	build.CompletedAt = time.Now().UTC()

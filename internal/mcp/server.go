@@ -149,7 +149,10 @@ func (s *Server) handleMessage(w http.ResponseWriter, r *http.Request) {
 	resp := s.dispatch(r.Context(), &req)
 
 	// Send response back via SSE channel.
-	data, _ := json.Marshal(resp)
+	data, marshalErr := json.Marshal(resp)
+	if marshalErr != nil {
+		data = []byte("{}")
+	}
 	select {
 	case sess.ch <- data:
 	default:
