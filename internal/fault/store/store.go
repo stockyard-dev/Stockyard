@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -203,7 +204,9 @@ func (db *DB) ListErrors(limit int) ([]Error, error) {
 			return nil, err
 		}
 		if headersJSON != "" {
-			json.Unmarshal([]byte(headersJSON), &e.Headers)
+			if err := json.Unmarshal([]byte(headersJSON), &e.Headers); err != nil {
+				log.Printf("[fault] failed to parse headers: %v", err)
+			}
 		}
 		e.FirstSeen, _ = time.Parse(time.RFC3339, firstSeen)
 		e.LastSeen, _ = time.Parse(time.RFC3339, lastSeen)
@@ -232,7 +235,9 @@ func (db *DB) GetError(fingerprint string) (*Error, error) {
 		return nil, err
 	}
 	if headersJSON != "" {
-		json.Unmarshal([]byte(headersJSON), &e.Headers)
+		if err := json.Unmarshal([]byte(headersJSON), &e.Headers); err != nil {
+			log.Printf("[fault] failed to parse headers: %v", err)
+		}
 	}
 	e.FirstSeen, _ = time.Parse(time.RFC3339, firstSeen)
 	e.LastSeen, _ = time.Parse(time.RFC3339, lastSeen)

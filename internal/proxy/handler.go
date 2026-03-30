@@ -116,7 +116,9 @@ func (s *Server) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
 	var bodyParsed struct {
 		Model string `json:"model"`
 	}
-	json.Unmarshal(body, &bodyParsed)
+	if err := json.Unmarshal(body, &bodyParsed); err != nil {
+		log.Printf("[handler] json parse error: %v", err)
+	}
 
 	// Prefer provider specified in X-Provider header
 	pname := r.Header.Get("X-Provider")

@@ -347,7 +347,10 @@ func (s *Server) evaluateGenome(g store.GenomeRecord, model, apiKey, endpoint st
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	if resp.StatusCode != 200 {
 		log.Printf("[breed] evaluate HTTP %d: %s", resp.StatusCode, truncate(string(respBody), 200))
 		return "", latency, 0
@@ -398,7 +401,10 @@ Reply with ONLY a number between 0 and 10, nothing else.`, tagline)
 		return 0.5 // default mid-score on error
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 
 	content, _ := parseOAIResponse(respBody)
 	content = strings.TrimSpace(content)

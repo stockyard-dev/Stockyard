@@ -83,7 +83,11 @@ func (s *HTTPSource) Fetch(ctx context.Context, hints []string) (*Snapshot, erro
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		snap.Error = fmt.Sprintf("read body: %v", err)
+		return snap, err
+	}
 	snap.Data = string(body)
 
 	// Try to parse as JSON for structured access

@@ -2,6 +2,7 @@ package billing
 
 import (
 	"encoding/json"
+	"log"
 	"math"
 	"net/http"
 	"time"
@@ -267,7 +268,9 @@ func (a *App) handleCustomerStatus(w http.ResponseWriter, r *http.Request) {
 
 	if hasPlan {
 		var limitsAny any
-		json.Unmarshal([]byte(planLimitsStr), &limitsAny)
+		if err := json.Unmarshal([]byte(planLimitsStr), &limitsAny); err != nil {
+			log.Printf("[usage] json parse error: %v", err)
+		}
 		planStatus := map[string]any{
 			"plan_id":   planID,
 			"plan_name": planName,

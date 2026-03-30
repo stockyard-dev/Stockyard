@@ -423,9 +423,13 @@ func (e *Engine) GetDeployment(name string) (*ReconcileResult, *Manifest, error)
 		return nil, nil, err
 	}
 	var m Manifest
-	json.Unmarshal([]byte(manifestJSON), &m)
+	if err := json.Unmarshal([]byte(manifestJSON), &m); err != nil {
+		log.Printf("[fabric] json parse error: %v", err)
+	}
 	var r ReconcileResult
-	json.Unmarshal([]byte(resultJSON), &r)
+	if err := json.Unmarshal([]byte(resultJSON), &r); err != nil {
+		log.Printf("[fabric] json parse error: %v", err)
+	}
 	r.DeploymentID = id
 	r.Name = name
 	r.Version = version
@@ -488,7 +492,9 @@ func (e *Engine) Rollback(name string, version int) ReconcileResult {
 		return ReconcileResult{Status: "failed", Errors: []string{"version not found"}}
 	}
 	var m Manifest
-	json.Unmarshal([]byte(manifestJSON), &m)
+	if err := json.Unmarshal([]byte(manifestJSON), &m); err != nil {
+		log.Printf("[fabric] json parse error: %v", err)
+	}
 	return e.Reconcile(m)
 }
 
@@ -529,7 +535,9 @@ func (e *Engine) DriftCheck() []map[string]any {
 		rows.Scan(&id, &name, &manifestJSON, &version)
 
 		var m Manifest
-		json.Unmarshal([]byte(manifestJSON), &m)
+		if err := json.Unmarshal([]byte(manifestJSON), &m); err != nil {
+			log.Printf("[fabric] json parse error: %v", err)
+		}
 
 		// Check for module drift: verify enabled modules are still enabled
 		for _, mod := range m.Modules {

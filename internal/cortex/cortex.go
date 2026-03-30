@@ -81,8 +81,10 @@ type Cortex struct {
 }
 
 // NewCortex creates a Cortex service, runs schema migrations, and seeds data.
-func NewCortex(conn *sql.DB) *Cortex {
-	conn.Exec(cortexSchema)
+func NewCortex(conn *sql.DB) (*Cortex, error) {
+	if _, err := conn.Exec(cortexSchema); err != nil {
+		return nil, fmt.Errorf("cortex schema: %w", err)
+	}
 
 	now := time.Now().UTC().Format(time.RFC3339)
 
@@ -101,7 +103,7 @@ func NewCortex(conn *sql.DB) *Cortex {
 		"claude-2", "deprecated", "2024-12-01", "claude-3-haiku", now)
 
 	log.Printf("[cortex] schema applied and data seeded")
-	return &Cortex{conn: conn}
+	return &Cortex{conn: conn}, nil
 }
 
 func cortexGenID(prefix string) string {
@@ -272,7 +274,9 @@ func (c *Cortex) handleDreamsLatest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var improvementsList any
-	json.Unmarshal([]byte(improvements), &improvementsList)
+	if err := json.Unmarshal([]byte(improvements), &improvementsList); err != nil {
+		log.Printf("[cortex] failed to parse improvements: %v", err)
+	}
 
 	writeCortexJSON(w, map[string]any{
 		"dream": map[string]any{
@@ -304,7 +308,9 @@ func (c *Cortex) handleGetGenome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var mutationsList any
-	json.Unmarshal([]byte(mutations), &mutationsList)
+	if err := json.Unmarshal([]byte(mutations), &mutationsList); err != nil {
+		log.Printf("[cortex] failed to parse mutations: %v", err)
+	}
 
 	writeCortexJSON(w, map[string]any{
 		"app_id":        appID,
@@ -337,10 +343,15 @@ func (c *Cortex) handleResonance(w http.ResponseWriter, r *http.Request) {
 		var id, appCat, promptStruct, model, modConfig, createdAt string
 		var score float64
 		var occurrences int
-		rows.Scan(&id, &appCat, &promptStruct, &model, &modConfig, &score, &occurrences, &createdAt)
+		if err := rows.Scan(&id, &appCat, &promptStruct, &model, &modConfig, &score, &occurrences, &createdAt); err != nil {
+			log.Printf("[cortex] scan pattern row: %v", err)
+			continue
+		}
 
 		var modCfg any
-		json.Unmarshal([]byte(modConfig), &modCfg)
+		if err := json.Unmarshal([]byte(modConfig), &modCfg); err != nil {
+			log.Printf("[cortex] failed to parse model config: %v", err)
+		}
 
 		patterns = append(patterns, map[string]any{
 			"id":               id,
@@ -487,7 +498,10 @@ func (c *Cortex) handleArchaeologyQuery(w http.ResponseWriter, r *http.Request) 
 	var req struct {
 		Question string `json:"question"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
 	if req.Question == "" {
 		w.WriteHeader(400)
 		writeCortexJSON(w, map[string]string{"error": "question required"})

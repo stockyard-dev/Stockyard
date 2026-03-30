@@ -200,7 +200,9 @@ func SmartRouteMiddleware(sr *SmartRouter) proxy.Middleware {
 			if req.Extra != nil && req.Extra["_ab_variant"] == nil {
 				for _, rule := range rules {
 					var cond routeCondition
-					json.Unmarshal(rule.Condition, &cond)
+					if err := json.Unmarshal(rule.Condition, &cond); err != nil {
+						log.Printf("[smartroute] json parse error: %v", err)
+					}
 					if cond.Field == "ab_split" {
 						if req.Extra == nil {
 							req.Extra = make(map[string]any)

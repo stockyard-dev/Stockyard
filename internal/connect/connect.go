@@ -728,9 +728,15 @@ func (c *ConnectService) handleGetPreferences(w http.ResponseWriter, r *http.Req
 
 	var modules, models any
 	var layout any
-	json.Unmarshal([]byte(freqModules), &modules)
-	json.Unmarshal([]byte(freqModels), &models)
-	json.Unmarshal([]byte(uiLayout), &layout)
+	if err := json.Unmarshal([]byte(freqModules), &modules); err != nil {
+		log.Printf("[connect] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(freqModels), &models); err != nil {
+		log.Printf("[connect] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(uiLayout), &layout); err != nil {
+		log.Printf("[connect] json parse error: %v", err)
+	}
 
 	writeConnectJSON(w, map[string]any{
 		"user_id":          userID,

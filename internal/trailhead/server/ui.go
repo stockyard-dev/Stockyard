@@ -156,7 +156,7 @@ async function loadStats() {
     document.getElementById('s-entities').textContent = data.entities || 0;
     document.getElementById('s-rels').textContent = data.relationships || 0;
     document.getElementById('s-queries').textContent = data.queries || 0;
-  } catch(e) {}
+  } catch(e) {console.error("trailhead load failed:",e)}
 }
 
 async function askQuestion() {
@@ -245,7 +245,7 @@ async function searchEntities(q) {
     });
     html += '</table>';
     el.innerHTML = html;
-  } catch(e) {}
+  } catch(e) {console.error("trailhead load failed:",e)}
 }
 
 async function loadHistory() {
@@ -263,7 +263,7 @@ async function loadHistory() {
     });
     html += '</table>';
     el.innerHTML = html;
-  } catch(e) {}
+  } catch(e) {console.error("trailhead load failed:",e)}
 }
 
 async function startIndex() {

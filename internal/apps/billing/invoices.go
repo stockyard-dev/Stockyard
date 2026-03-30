@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"log"
 	"html"
 	"net/http"
 	"strings"
@@ -65,7 +66,9 @@ func (a *App) handleInvoiceCSV(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var items []invoiceLineItem
-	json.Unmarshal([]byte(lineItemsStr), &items)
+	if err := json.Unmarshal([]byte(lineItemsStr), &items); err != nil {
+		log.Printf("[invoices] json parse error: %v", err)
+	}
 
 	w.Header().Set("Content-Type", "text/csv")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=invoice_%s.csv", id))
@@ -234,7 +237,9 @@ func (a *App) handleGetInvoice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var items []invoiceLineItem
-	json.Unmarshal([]byte(lineItemsStr), &items)
+	if err := json.Unmarshal([]byte(lineItemsStr), &items); err != nil {
+		log.Printf("[invoices] json parse error: %v", err)
+	}
 
 	// Get customer info
 	var name, email string
@@ -262,7 +267,9 @@ func (a *App) handleInvoiceHTML(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var items []invoiceLineItem
-	json.Unmarshal([]byte(lineItemsStr), &items)
+	if err := json.Unmarshal([]byte(lineItemsStr), &items); err != nil {
+		log.Printf("[invoices] json parse error: %v", err)
+	}
 
 	var name, email string
 	a.conn.QueryRow("SELECT name, email FROM billing_customers WHERE id = ?", custID).Scan(&name, &email)

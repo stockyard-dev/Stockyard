@@ -76,7 +76,10 @@ func (p *PagerDutyIntegration) getIntegrationKey() string {
 		return ""
 	}
 	var cfg map[string]string
-	json.Unmarshal([]byte(configJSON), &cfg)
+	if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+		log.Printf("[pagerduty] failed to parse config: %v", err)
+		return ""
+	}
 	return cfg["integration_key"]
 }
 

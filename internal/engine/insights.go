@@ -461,7 +461,9 @@ func extractUserContent(requestBody string) string {
 			Content string `json:"content"`
 		} `json:"messages"`
 	}
-	json.Unmarshal([]byte(requestBody), &parsed)
+	if err := json.Unmarshal([]byte(requestBody), &parsed); err != nil {
+		log.Printf("[insights] json parse error: %v", err)
+	}
 
 	for _, m := range parsed.Messages {
 		if m.Role == "user" {

@@ -406,7 +406,9 @@ func (a *App) handleStoreDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var cfgParsed any
-	json.Unmarshal([]byte(config), &cfgParsed)
+	if err := json.Unmarshal([]byte(config), &cfgParsed); err != nil {
+		log.Printf("[appbuilder] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "title": title, "description": desc, "category": cat,
 		"model": model, "system_prompt": prompt, "config": cfgParsed,
@@ -568,7 +570,10 @@ func (a *App) callProxy(model, systemPrompt, userInput string) (string, int) {
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	if resp.StatusCode >= 400 {
 		log.Printf("[appbuilder] proxy returned %d: %s", resp.StatusCode, string(respBody[:min(len(respBody), 200)]))
 		return "[LLM returned an error — check provider configuration]", 0

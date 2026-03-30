@@ -107,9 +107,14 @@ func (s *Server) handleCertify(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleList(w http.ResponseWriter, r *http.Request) {
 	if s.cfg.Store == nil { writeJSON(w, 200, []any{}); return }
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
-	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
-	if limit <= 0 { limit = 50 }
+	limit := 50
+	if v, err := strconv.Atoi(r.URL.Query().Get("limit")); err == nil && v > 0 {
+		limit = v
+	}
+	offset := 0
+	if v, err := strconv.Atoi(r.URL.Query().Get("offset")); err == nil {
+		offset = v
+	}
 	certs, err := s.cfg.Store.ListCertificates(limit, offset)
 	if err != nil { writeJSON(w, 500, map[string]string{"error": err.Error()}); return }
 	if certs == nil { certs = []store.Certificate{} }

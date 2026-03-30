@@ -55,7 +55,10 @@ func (s *StripeClient) stripePost(endpoint string, formData string) (map[string]
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("stripe read %s: %w", endpoint, err)
+	}
 	var result map[string]any
 	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, fmt.Errorf("stripe parse %s: %w (body: %s)", endpoint, err, string(body))
@@ -89,7 +92,10 @@ func (s *StripeClient) stripeGet(endpoint string) (map[string]any, error) {
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("stripe read %s: %w", endpoint, err)
+	}
 	var result map[string]any
 	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, fmt.Errorf("stripe parse %s: %w", endpoint, err)

@@ -316,7 +316,9 @@ func (a *App) handleChat(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, http.StatusNotFound, map[string]string{"error": "session not found"})
 			return
 		}
-		json.Unmarshal([]byte(messagesJSON), &messages)
+		if err := json.Unmarshal([]byte(messagesJSON), &messages); err != nil {
+			log.Printf("[copilot] json parse error: %v", err)
+		}
 	} else {
 		sessionID = genCopilotID("cs_")
 		now := time.Now().UTC().Format(time.RFC3339)
@@ -554,7 +556,9 @@ func (a *App) handleListSessions(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		var msgs []any
-		json.Unmarshal([]byte(messagesJSON), &msgs)
+		if err := json.Unmarshal([]byte(messagesJSON), &msgs); err != nil {
+			log.Printf("[copilot] json parse error: %v", err)
+		}
 		sessions = append(sessions, map[string]any{
 			"id":            id,
 			"message_count": len(msgs),
@@ -585,7 +589,9 @@ func (a *App) handleGetSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var messages any
-	json.Unmarshal([]byte(messagesJSON), &messages)
+	if err := json.Unmarshal([]byte(messagesJSON), &messages); err != nil {
+		log.Printf("[copilot] json parse error: %v", err)
+	}
 
 	writeJSON(w, http.StatusOK, map[string]any{
 		"id":         id,

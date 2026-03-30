@@ -69,7 +69,10 @@ func (g *Gemini) Send(ctx context.Context, req *Request) (*Response, error) {
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
-		respBody, _ := io.ReadAll(httpResp.Body)
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		if readErr != nil {
+			respBody = []byte("failed to read error response")
+		}
 		return nil, &ProviderAPIError{
 			Provider:   "gemini",
 			StatusCode: httpResp.StatusCode,
@@ -108,7 +111,10 @@ func (g *Gemini) SendStream(ctx context.Context, req *Request) (<-chan StreamChu
 	}
 
 	if httpResp.StatusCode != http.StatusOK {
-		respBody, _ := io.ReadAll(httpResp.Body)
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		if readErr != nil {
+			respBody = []byte("failed to read error response")
+		}
 		httpResp.Body.Close()
 		return nil, &ProviderAPIError{
 			Provider:   "gemini",

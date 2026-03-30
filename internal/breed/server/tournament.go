@@ -355,7 +355,10 @@ REASON: [one sentence explaining why the winner is better]`, outputA, outputB)
 		return idB, 5, 6, "judge unavailable — shorter tagline wins"
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 
 	content, _ := parseOAIResponse(respBody)
 	content = strings.TrimSpace(content)

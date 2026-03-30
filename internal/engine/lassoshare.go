@@ -270,7 +270,9 @@ func handleGetLassoShare(conn *sql.DB) http.HandlerFunc {
 		conn.Exec(`UPDATE lasso_shares SET views = views + 1 WHERE id = ?`, id)
 
 		var winners map[string]string
-		json.Unmarshal([]byte(winnersStr), &winners)
+		if err := json.Unmarshal([]byte(winnersStr), &winners); err != nil {
+			log.Printf("[lassoshare] json parse error: %v", err)
+		}
 
 		// Cost savings calculation
 		costDelta := rightCost - leftCost
@@ -315,7 +317,9 @@ func extractPromptFromBody(body string) string {
 			Content string `json:"content"`
 		} `json:"messages"`
 	}
-	json.Unmarshal([]byte(body), &parsed)
+	if err := json.Unmarshal([]byte(body), &parsed); err != nil {
+		log.Printf("[lassoshare] json parse error: %v", err)
+	}
 	for _, m := range parsed.Messages {
 		if m.Role == "user" {
 			if len(m.Content) > 500 {

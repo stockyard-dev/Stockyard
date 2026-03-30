@@ -195,9 +195,15 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 			var id, cfgStr, msgsStr, resultsStr, models, createdAt string
 			rows.Scan(&id, &cfgStr, &msgsStr, &resultsStr, &models, &createdAt)
 			var cfg, msgs, results any
-			json.Unmarshal([]byte(cfgStr), &cfg)
-			json.Unmarshal([]byte(msgsStr), &msgs)
-			json.Unmarshal([]byte(resultsStr), &results)
+			if err := json.Unmarshal([]byte(cfgStr), &cfg); err != nil {
+				log.Printf("[playground] json parse error: %v", err)
+			}
+			if err := json.Unmarshal([]byte(msgsStr), &msgs); err != nil {
+				log.Printf("[playground] json parse error: %v", err)
+			}
+			if err := json.Unmarshal([]byte(resultsStr), &results); err != nil {
+				log.Printf("[playground] json parse error: %v", err)
+			}
 			sessions = append(sessions, map[string]any{
 				"id": id, "config": cfg, "messages": msgs, "results": results,
 				"models": models, "created_at": createdAt,
@@ -222,9 +228,15 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 			return
 		}
 		var cfg, msgs, results any
-		json.Unmarshal([]byte(cfgStr), &cfg)
-		json.Unmarshal([]byte(msgsStr), &msgs)
-		json.Unmarshal([]byte(resultsStr), &results)
+		if err := json.Unmarshal([]byte(cfgStr), &cfg); err != nil {
+			log.Printf("[playground] json parse error: %v", err)
+		}
+		if err := json.Unmarshal([]byte(msgsStr), &msgs); err != nil {
+			log.Printf("[playground] json parse error: %v", err)
+		}
+		if err := json.Unmarshal([]byte(resultsStr), &results); err != nil {
+			log.Printf("[playground] json parse error: %v", err)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
 			"id": id, "config": cfg, "messages": msgs, "results": results,

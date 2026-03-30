@@ -82,8 +82,12 @@ func handleListRules(conn *sql.DB) http.HandlerFunc {
 			var priority, enabled int
 			rows.Scan(&id, &name, &priority, &condStr, &actStr, &enabled, &createdAt)
 			var cond, act any
-			json.Unmarshal([]byte(condStr), &cond)
-			json.Unmarshal([]byte(actStr), &act)
+			if err := json.Unmarshal([]byte(condStr), &cond); err != nil {
+				log.Printf("[smartroute_api] json parse error: %v", err)
+			}
+			if err := json.Unmarshal([]byte(actStr), &act); err != nil {
+				log.Printf("[smartroute_api] json parse error: %v", err)
+			}
 			rules = append(rules, map[string]any{
 				"id":         id,
 				"name":       name,

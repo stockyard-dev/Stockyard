@@ -88,7 +88,9 @@ func handleDistill(conn *sql.DB) http.HandlerFunc {
 				var model, metaJSON string
 				rows.Scan(&model, &metaJSON)
 				var meta map[string]any
-				json.Unmarshal([]byte(metaJSON), &meta)
+				if err := json.Unmarshal([]byte(metaJSON), &meta); err != nil {
+					log.Printf("[distill] json parse error: %v", err)
+				}
 
 				// Build JSONL training format.
 				trainingData = append(trainingData, map[string]any{
@@ -135,7 +137,9 @@ func handleDistillStatus(conn *sql.DB) http.HandlerFunc {
 		}
 
 		var result any
-		json.Unmarshal([]byte(resultJSON), &result)
+		if err := json.Unmarshal([]byte(resultJSON), &result); err != nil {
+			log.Printf("[distill] json parse error: %v", err)
+		}
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{

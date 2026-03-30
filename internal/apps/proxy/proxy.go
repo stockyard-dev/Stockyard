@@ -200,7 +200,9 @@ func (a *App) handleListModules(w http.ResponseWriter, r *http.Request) {
 		var enabled, priority int
 		rows.Scan(&name, &cat, &enabled, &configJSON, &priority)
 		var cfg any
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[proxy] json parse error: %v", err)
+		}
 		modules = append(modules, map[string]any{
 			"name": name, "category": cat, "enabled": enabled == 1,
 			"config": cfg, "priority": priority, "in_chain": chainSet[name],
@@ -220,7 +222,9 @@ func (a *App) handleGetModule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var cfg any
-	json.Unmarshal([]byte(configJSON), &cfg)
+	if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+		log.Printf("[proxy] json parse error: %v", err)
+	}
 
 	inChain := false
 	if a.toggle != nil {

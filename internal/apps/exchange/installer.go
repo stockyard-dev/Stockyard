@@ -405,7 +405,9 @@ func (a *App) Uninstall(installID int) (*InstallResult, error) {
 	}
 
 	var content PackContent
-	json.Unmarshal([]byte(contentJSON), &content)
+	if err := json.Unmarshal([]byte(contentJSON), &content); err != nil {
+		log.Printf("[installer] json parse error: %v", err)
+	}
 
 	result := &InstallResult{
 		PackSlug: packSlug,

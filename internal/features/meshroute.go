@@ -146,7 +146,10 @@ func MeshRouteMiddleware(conn *sql.DB) proxy.Middleware {
 		defer httpResp.Body.Close()
 
 		if httpResp.StatusCode != http.StatusOK {
-			respBody, _ := io.ReadAll(httpResp.Body)
+			respBody, err := io.ReadAll(httpResp.Body)
+			if err != nil {
+				respBody = []byte{}
+			}
 			limit := len(respBody)
 			if limit > 200 {
 				limit = 200

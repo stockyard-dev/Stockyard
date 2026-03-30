@@ -2,6 +2,7 @@ package billing
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -71,7 +72,9 @@ func (a *App) handleListCustomers(w http.ResponseWriter, r *http.Request) {
 		var id, acct, extID, name, email, meta, created, updated string
 		rows.Scan(&id, &acct, &extID, &name, &email, &meta, &created, &updated)
 		var metadata any
-		json.Unmarshal([]byte(meta), &metadata)
+		if err := json.Unmarshal([]byte(meta), &metadata); err != nil {
+			log.Printf("[customers] json parse error: %v", err)
+		}
 		customers = append(customers, map[string]any{
 			"id": id, "account_id": acct, "external_id": extID,
 			"name": name, "email": email, "metadata": metadata,
@@ -97,7 +100,9 @@ func (a *App) handleGetCustomer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var metadata any
-	json.Unmarshal([]byte(meta), &metadata)
+	if err := json.Unmarshal([]byte(meta), &metadata); err != nil {
+		log.Printf("[customers] json parse error: %v", err)
+	}
 
 	// Get current plan
 	var plan map[string]any
@@ -108,7 +113,9 @@ func (a *App) handleGetCustomer(w http.ResponseWriter, r *http.Request) {
 		Scan(&planID, &planName, &planLimits, &effectiveFrom)
 	if err == nil {
 		var limits any
-		json.Unmarshal([]byte(planLimits), &limits)
+		if err := json.Unmarshal([]byte(planLimits), &limits); err != nil {
+			log.Printf("[customers] json parse error: %v", err)
+		}
 		plan = map[string]any{
 			"id": planID, "name": planName, "limits": limits,
 			"effective_from": effectiveFrom,

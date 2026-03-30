@@ -55,9 +55,14 @@ func fetchGitHubStats() map[string]any {
 		if resp.StatusCode != 200 {
 			return nil
 		}
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil
+		}
 		var data map[string]any
-		json.Unmarshal(body, &data)
+		if err := json.Unmarshal(body, &data); err != nil {
+			return nil
+		}
 		return data
 	}
 
@@ -80,9 +85,14 @@ func fetchGitHubStats() map[string]any {
 		if resp.StatusCode != 200 {
 			return nil
 		}
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil
+		}
 		var data []map[string]any
-		json.Unmarshal(body, &data)
+		if err := json.Unmarshal(body, &data); err != nil {
+			return nil
+		}
 		return data
 	}
 

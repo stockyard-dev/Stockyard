@@ -246,7 +246,10 @@ func (b *Bridge) fetchTraces(ctx context.Context, simID string) ([]proxyTrace, e
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading proxy response: %w", err)
+	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("proxy returned %d: %s", resp.StatusCode, truncate(string(body), 200))
 	}

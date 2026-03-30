@@ -208,7 +208,9 @@ func (a *App) handleListWorkflows(w http.ResponseWriter, r *http.Request) {
 		var slug, name, desc, stepsJSON, trigger, updated string
 		rows.Scan(&id, &slug, &name, &desc, &stepsJSON, &trigger, &enabled, &updated)
 		var steps []any
-		json.Unmarshal([]byte(stepsJSON), &steps)
+		if err := json.Unmarshal([]byte(stepsJSON), &steps); err != nil {
+			log.Printf("[forge] json parse error: %v", err)
+		}
 		wfs = append(wfs, map[string]any{"id": id, "slug": slug, "name": name, "description": desc, "trigger_type": trigger, "enabled": enabled == 1, "updated_at": updated, "step_count": len(steps)})
 	}
 	writeJSON(w, map[string]any{"workflows": wfs, "count": len(wfs)})
@@ -226,8 +228,12 @@ func (a *App) handleGetWorkflow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var s, tc any
-	json.Unmarshal([]byte(steps), &s)
-	json.Unmarshal([]byte(trigCfg), &tc)
+	if err := json.Unmarshal([]byte(steps), &s); err != nil {
+		log.Printf("[forge] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(trigCfg), &tc); err != nil {
+		log.Printf("[forge] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "slug": slug, "name": name, "description": desc,
 		"steps": s, "trigger_type": trigger, "trigger_config": tc,
@@ -377,8 +383,12 @@ func (a *App) handleGetRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in, out any
-	json.Unmarshal([]byte(inputJSON), &in)
-	json.Unmarshal([]byte(outputJSON), &out)
+	if err := json.Unmarshal([]byte(inputJSON), &in); err != nil {
+		log.Printf("[forge] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(outputJSON), &out); err != nil {
+		log.Printf("[forge] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "workflow_id": wfID, "workflow_slug": slug, "status": status,
 		"input": in, "output": out,

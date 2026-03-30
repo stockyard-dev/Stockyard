@@ -82,9 +82,11 @@ type Manager struct {
 }
 
 // NewManager creates a mesh manager.
-func NewManager(conn *sql.DB) *Manager {
-	conn.Exec(meshSchema)
-	return &Manager{conn: conn}
+func NewManager(conn *sql.DB) (*Manager, error) {
+	if _, err := conn.Exec(meshSchema); err != nil {
+		return nil, fmt.Errorf("mesh schema: %w", err)
+	}
+	return &Manager{conn: conn}, nil
 }
 
 func genNodeID() string {
@@ -155,9 +157,14 @@ func (m *Manager) handleListNodes(w http.ResponseWriter, r *http.Request) {
 	var nodes []map[string]any
 	for rows.Next() {
 		var id, name, url, region, status, heartbeat, metaJSON, createdAt string
-		rows.Scan(&id, &name, &url, &region, &status, &heartbeat, &metaJSON, &createdAt)
+		if err := rows.Scan(&id, &name, &url, &region, &status, &heartbeat, &metaJSON, &createdAt); err != nil {
+			log.Printf("[mesh] scan node row: %v", err)
+			continue
+		}
 		var meta any
-		json.Unmarshal([]byte(metaJSON), &meta)
+		if err := json.Unmarshal([]byte(metaJSON), &meta); err != nil {
+			log.Printf("[mesh] failed to parse node metadata: %v", err)
+		}
 
 		// Mark nodes as unhealthy if no heartbeat in 2 minutes.
 		if heartbeat != "" {
@@ -270,9 +277,13 @@ func (m *Manager) handleGetNode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var models []string
-	json.Unmarshal([]byte(supportedModels), &models)
+	if err := json.Unmarshal([]byte(supportedModels), &models); err != nil {
+		log.Printf("[mesh] failed to parse supported models: %v", err)
+	}
 	var meta any
-	json.Unmarshal([]byte(metaJSON), &meta)
+	if err := json.Unmarshal([]byte(metaJSON), &meta); err != nil {
+		log.Printf("[mesh] failed to parse node metadata: %v", err)
+	}
 	writeMeshJSON(w, map[string]any{
 		"id": id, "name": name, "url": url, "region": region, "status": status,
 		"gpu_model": gpuModel, "vram_gb": vramGB, "supported_models": models,

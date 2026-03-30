@@ -47,7 +47,9 @@ func loadConfig() config {
 	if home != "" {
 		cfgPath := filepath.Join(home, ".stockyard", "config.json")
 		if data, err := os.ReadFile(cfgPath); err == nil {
-			json.Unmarshal(data, &cfg)
+			if err := json.Unmarshal(data, &cfg); err != nil {
+				fmt.Fprintf(os.Stderr, "warning: failed to parse config: %v\n", err)
+			}
 		}
 	}
 
@@ -164,7 +166,10 @@ func apiGet(path string) ([]byte, error) {
 		return nil, fmt.Errorf("connection failed: %w", err)
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response: %w", err)
+	}
 	if resp.StatusCode >= 400 {
 		return body, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 	}
@@ -192,7 +197,10 @@ func apiRequest(method, path string, jsonBody string) ([]byte, error) {
 		return nil, fmt.Errorf("connection failed: %w", err)
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response: %w", err)
+	}
 	if resp.StatusCode >= 400 {
 		return body, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 	}
@@ -212,7 +220,9 @@ func cmdStatus() {
 		fatal("%v", err)
 	}
 	var status map[string]any
-	json.Unmarshal(data, &status)
+	if err := json.Unmarshal(data, &status); err != nil {
+		fatal("failed to parse status: %v", err)
+	}
 
 	fmt.Printf("Stockyard — %s\n", getString(status, "status"))
 	fmt.Printf("Uptime:    %s\n", getString(status, "uptime"))
@@ -227,7 +237,10 @@ func cmdStatus() {
 		return
 	}
 	var appsResp map[string]any
-	json.Unmarshal(appsData, &appsResp)
+	if err := json.Unmarshal(appsData, &appsResp); err != nil {
+		fmt.Fprintf(os.Stderr, "warning: failed to parse apps: %v\n", err)
+		return
+	}
 	apps, _ := appsResp["apps"].([]any)
 
 	if len(apps) > 0 {
@@ -253,7 +266,9 @@ func cmdCosts() {
 	}
 
 	var resp map[string]any
-	json.Unmarshal(data, &resp)
+	if err := json.Unmarshal(data, &resp); err != nil {
+		fatal("failed to parse costs: %v", err)
+	}
 
 	fmt.Printf("Costs — %s\n\n", period)
 
@@ -294,7 +309,9 @@ func cmdModules() {
 			fatal("%v", err)
 		}
 		var resp map[string]any
-		json.Unmarshal(data, &resp)
+		if err := json.Unmarshal(data, &resp); err != nil {
+			fatal("failed to parse modules: %v", err)
+		}
 		modules, _ := resp["modules"].([]any)
 
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
@@ -370,7 +387,9 @@ func cmdTraces() {
 	}
 
 	var resp map[string]any
-	json.Unmarshal(data, &resp)
+	if err := json.Unmarshal(data, &resp); err != nil {
+		fatal("failed to parse traces: %v", err)
+	}
 	traces, _ := resp["traces"].([]any)
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
@@ -456,7 +475,9 @@ func cmdProviders() {
 	}
 
 	var resp map[string]any
-	json.Unmarshal(data, &resp)
+	if err := json.Unmarshal(data, &resp); err != nil {
+		fatal("failed to parse providers: %v", err)
+	}
 	providers, _ := resp["providers"].([]any)
 
 	if len(providers) == 0 {
@@ -504,7 +525,9 @@ func cmdConfig() {
 		}
 		// Pretty-print the JSON.
 		var obj any
-		json.Unmarshal(data, &obj)
+		if err := json.Unmarshal(data, &obj); err != nil {
+			fatal("failed to parse config: %v", err)
+		}
 		pretty, _ := json.MarshalIndent(obj, "", "  ")
 		fmt.Println(string(pretty))
 
@@ -538,7 +561,9 @@ func cmdVersion() {
 		return
 	}
 	var status map[string]any
-	json.Unmarshal(data, &status)
+	if err := json.Unmarshal(data, &status); err != nil {
+		fatal("failed to parse version: %v", err)
+	}
 	fmt.Printf("Server: %s (%s)\n", getString(status, "version"), getString(status, "status"))
 }
 

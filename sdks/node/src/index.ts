@@ -5,12 +5,13 @@ const DEFAULT_BASE = process.env.STOCKYARD_URL
   : "http://localhost:8080/v1";
 
 export class StockyardOpenAI extends OpenAI {
-  constructor(opts: ConstructorParameters<typeof OpenAI>[0] = {} as any) {
+  constructor(opts?: ConstructorParameters<typeof OpenAI>[0]) {
+    const resolved = opts ?? {};
     super({
-      ...opts,
-      baseURL: opts.baseURL || DEFAULT_BASE,
+      ...resolved,
+      baseURL: resolved.baseURL || DEFAULT_BASE,
       defaultHeaders: {
-        ...opts.defaultHeaders,
+        ...resolved.defaultHeaders,
         "X-Stockyard-Source": "node-sdk",
       },
     });

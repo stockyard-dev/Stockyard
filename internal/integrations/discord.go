@@ -74,7 +74,10 @@ func (d *DiscordIntegration) getWebhookURL() string {
 		return ""
 	}
 	var cfg map[string]string
-	json.Unmarshal([]byte(configJSON), &cfg)
+	if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+		log.Printf("[discord] failed to parse config: %v", err)
+		return ""
+	}
 	return cfg["webhook_url"]
 }
 

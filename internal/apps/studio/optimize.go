@@ -134,7 +134,9 @@ func handleOptimizationHistory(conn *sql.DB) http.HandlerFunc {
 			rows.Scan(&id, &originalScore, &scoresJSON, &promoted, &createdAt)
 
 			var scores any
-			json.Unmarshal([]byte(scoresJSON), &scores)
+			if err := json.Unmarshal([]byte(scoresJSON), &scores); err != nil {
+				log.Printf("[optimize] json parse error: %v", err)
+			}
 
 			runs = append(runs, map[string]any{
 				"id":               id,

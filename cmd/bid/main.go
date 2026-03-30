@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"io"
 	"net/http"
 	"os"
@@ -168,20 +169,27 @@ func cmdRequest(args []string) {
 		os.Exit(1)
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	totalTime := time.Since(start)
 
 	if resp.StatusCode != 200 {
 		fmt.Printf("  ✗ Exchange returned %d:\n", resp.StatusCode)
 		var pretty map[string]any
-		json.Unmarshal(respBody, &pretty)
+		if err := json.Unmarshal(respBody, &pretty); err != nil {
+			log.Printf("[main] json parse error: %v", err)
+		}
 		out, _ := json.MarshalIndent(pretty, "  ", "  ")
 		fmt.Println("  " + string(out))
 		os.Exit(1)
 	}
 
 	var result map[string]any
-	json.Unmarshal(respBody, &result)
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		log.Printf("[main] json parse error: %v", err)
+	}
 
 	fmt.Println()
 

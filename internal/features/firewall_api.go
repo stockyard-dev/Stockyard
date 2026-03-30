@@ -44,8 +44,12 @@ func handleFirewallEvents(conn *sql.DB) http.HandlerFunc {
 			var traceID sql.NullString
 			rows.Scan(&id, &traceID, &scoresJSON, &action, &matchedJSON, &createdAt)
 			var scores, matched any
-			json.Unmarshal([]byte(scoresJSON), &scores)
-			json.Unmarshal([]byte(matchedJSON), &matched)
+			if err := json.Unmarshal([]byte(scoresJSON), &scores); err != nil {
+				log.Printf("[firewall_api] json parse error: %v", err)
+			}
+			if err := json.Unmarshal([]byte(matchedJSON), &matched); err != nil {
+				log.Printf("[firewall_api] json parse error: %v", err)
+			}
 			events = append(events, map[string]any{
 				"id":               id,
 				"trace_id":         traceID.String,

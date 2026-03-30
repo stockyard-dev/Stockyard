@@ -69,7 +69,9 @@ type probeResult struct {
 func personaProbes(p *store.Persona) []canaryProbe {
 	var goals []string
 	var profile map[string]any
-	json.Unmarshal([]byte(p.BehaviorProfile), &profile)
+	if err := json.Unmarshal([]byte(p.BehaviorProfile), &profile); err != nil {
+		log.Printf("[server] json parse error: %v", err)
+	}
 	if g, ok := profile["goals"].([]any); ok {
 		for _, v := range g {
 			if s, ok := v.(string); ok {
@@ -191,7 +193,9 @@ func personaMultiTurnProbes(p *store.Persona) []multiTurnProbe {
 
 	// Enterprise evaluators get a harder multi-turn test
 	var profile map[string]any
-	json.Unmarshal([]byte(p.BehaviorProfile), &profile)
+	if err := json.Unmarshal([]byte(p.BehaviorProfile), &profile); err != nil {
+		log.Printf("[server] json parse error: %v", err)
+	}
 	if level, _ := profile["technical_level"].(string); level == "expert" {
 		probes = append(probes, multiTurnProbe{
 			Name:       "cross-model-handoff",
@@ -387,7 +391,10 @@ func (s *Server) executeProbe(p *store.Persona, sessionID string, probe canaryPr
 	defer resp.Body.Close()
 	result.StatusCode = resp.StatusCode
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 
 	if resp.StatusCode != 200 {
 		result.Error = string(respBody)
@@ -458,7 +465,10 @@ func (s *Server) executeStreamProbe(p *store.Persona, sessionID string, probe ca
 
 	if resp.StatusCode != 200 {
 		result.Latency = time.Since(start)
-		respBody, _ := io.ReadAll(resp.Body)
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			respBody = []byte{}
+		}
 		result.Error = string(respBody)
 		result.Anomalies = append(result.Anomalies, store.Anomaly{
 			ID: genID("pa"), PersonaID: p.ID, SessionID: sessionID,
@@ -602,7 +612,10 @@ func (s *Server) executeMultiTurnProbe(p *store.Persona, sessionID string, mp mu
 			return allAnomalies, i + 1
 		}
 
-		respBody, _ := io.ReadAll(resp.Body)
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			respBody = []byte{}
+		}
 		resp.Body.Close()
 
 		if resp.StatusCode != 200 {
@@ -670,7 +683,10 @@ func (s *Server) executeEdgeCaseProbe(p *store.Persona, sessionID string, ep edg
 		return anomalies
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 
 	// If we expected a specific status, check it
 	if ep.ExpectStatus > 0 && resp.StatusCode != ep.ExpectStatus {

@@ -19,7 +19,7 @@ function ObserveView(){
           liveRef.current=[evt,...liveRef.current].slice(0,maxLive);
           if(!livePaused)setLiveEvents([...liveRef.current]);
         }
-      }catch(err){}
+      }catch(err){console.error('SSE parse failed:',err)}
     };
     return()=>es.close();
   },[]);

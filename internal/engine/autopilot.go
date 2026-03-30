@@ -239,7 +239,9 @@ func (ap *Autopilot) reload() {
 		Mode:             mode,
 		SampleSize:       sampleSize,
 	}
-	json.Unmarshal([]byte(candidatesJSON), &ap.config.CandidateModels)
+	if err := json.Unmarshal([]byte(candidatesJSON), &ap.config.CandidateModels); err != nil {
+		log.Printf("[autopilot] json parse error: %v", err)
+	}
 
 	// Load scores
 	rows, err := ap.conn.Query(`SELECT model, provider, quality_score, avg_cost_usd, avg_latency_ms, avg_tokens_out, success_rate, calibration_runs, last_calibrated, input_price_per_m, output_price_per_m FROM autopilot_model_scores`)

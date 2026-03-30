@@ -15,6 +15,8 @@ import (
 )
 
 // Observer collects metrics from a running application.
+var healthClient = &http.Client{Timeout: 5 * time.Second}
+
 type Observer struct {
 	mu        sync.RWMutex
 	target    string
@@ -163,7 +165,7 @@ func probeTarget(healthURL string, targetName string) Sample {
 
 	start := time.Now()
 	req, _ := http.NewRequestWithContext(ctx, "GET", healthURL, nil)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := healthClient.Do(req)
 	latency := int(time.Since(start).Milliseconds())
 
 	sample := Sample{

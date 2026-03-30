@@ -179,7 +179,9 @@ func (a *App) handleListTemplates(w http.ResponseWriter, r *http.Request) {
 		var slug, name, desc, tags, status, updated string
 		rows.Scan(&id, &slug, &name, &desc, &ver, &tags, &status, &updated)
 		var t any
-		json.Unmarshal([]byte(tags), &t)
+		if err := json.Unmarshal([]byte(tags), &t); err != nil {
+			log.Printf("[studio] json parse error: %v", err)
+		}
 		templates = append(templates, map[string]any{
 			"id": id, "slug": slug, "name": name, "description": desc,
 			"current_version": ver, "tags": t, "status": status, "updated_at": updated,
@@ -206,8 +208,12 @@ func (a *App) handleGetTemplate(w http.ResponseWriter, r *http.Request) {
 		Scan(&content, &vars, &model, &author)
 
 	var t, v any
-	json.Unmarshal([]byte(tags), &t)
-	json.Unmarshal([]byte(vars), &v)
+	if err := json.Unmarshal([]byte(tags), &t); err != nil {
+		log.Printf("[studio] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(vars), &v); err != nil {
+		log.Printf("[studio] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "slug": slug, "name": name, "description": desc,
 		"current_version": ver, "tags": t, "status": status,
@@ -430,7 +436,9 @@ func (a *App) handleListExperiments(w http.ResponseWriter, r *http.Request) {
 		var name, etype, status, cfg, created string
 		rows.Scan(&id, &name, &etype, &status, &cfg, &created)
 		var c any
-		json.Unmarshal([]byte(cfg), &c)
+		if err := json.Unmarshal([]byte(cfg), &c); err != nil {
+			log.Printf("[studio] json parse error: %v", err)
+		}
 		exps = append(exps, map[string]any{"id": id, "name": name, "type": etype, "status": status, "config": c, "created_at": created})
 	}
 	writeJSON(w, map[string]any{"experiments": exps, "count": len(exps)})
@@ -641,9 +649,15 @@ func (a *App) handleGetExperiment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var cfg, vars, results any
-	json.Unmarshal([]byte(cfgJSON), &cfg)
-	json.Unmarshal([]byte(varsJSON), &vars)
-	json.Unmarshal([]byte(resultsJSON), &results)
+	if err := json.Unmarshal([]byte(cfgJSON), &cfg); err != nil {
+		log.Printf("[studio] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(varsJSON), &vars); err != nil {
+		log.Printf("[studio] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(resultsJSON), &results); err != nil {
+		log.Printf("[studio] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "name": name, "type": etype, "status": status,
 		"config": cfg, "variants": vars, "results": results,

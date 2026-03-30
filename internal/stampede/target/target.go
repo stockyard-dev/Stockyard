@@ -122,7 +122,10 @@ func (c *Client) sendOpenAI(ctx context.Context, message string) (string, error)
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("target returned %d: %s", resp.StatusCode, truncBody(respBody))
 	}
@@ -161,7 +164,10 @@ func (c *Client) sendSimple(ctx context.Context, message string) (string, error)
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("target returned %d: %s", resp.StatusCode, truncBody(respBody))
 	}

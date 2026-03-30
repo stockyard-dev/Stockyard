@@ -176,7 +176,9 @@ func (a *App) handleGetReputation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var factorsMap any
-	json.Unmarshal([]byte(factors), &factorsMap)
+	if err := json.Unmarshal([]byte(factors), &factorsMap); err != nil {
+		log.Printf("[reputation] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"user_id": userID, "builder_score": builderScore, "operator_score": operatorScore,
 		"contributor_score": contributorScore, "overall_score": overallScore,

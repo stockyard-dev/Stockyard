@@ -175,7 +175,10 @@ func (e *patternEngine) matchPattern(p store.Pattern, evt bus.Event) bool {
 // firePattern executes a pattern's action and records the activation.
 func (e *patternEngine) firePattern(p store.Pattern, evt bus.Event) {
 	var action patternAction
-	json.Unmarshal([]byte(p.Actions), &action)
+	if err := json.Unmarshal([]byte(p.Actions), &action); err != nil {
+		log.Printf("[spore] failed to parse pattern actions: %v", err)
+		return
+	}
 
 	triggerData, _ := json.Marshal(map[string]any{
 		"event_type":   evt.Type,
@@ -192,7 +195,9 @@ func (e *patternEngine) firePattern(p store.Pattern, evt bus.Event) {
 		TriggerData: string(triggerData),
 		Outcome:     "pending",
 	}
-	e.store.CreateActivation(activation)
+	if err := e.store.CreateActivation(activation); err != nil {
+		log.Printf("[spore] failed to create activation: %v", err)
+	}
 
 	// Execute action
 	outcome := "success"
@@ -218,13 +223,17 @@ func (e *patternEngine) firePattern(p store.Pattern, evt bus.Event) {
 	}
 
 	// Update activation outcome
-	e.store.UpdateActivationOutcome(activationID, outcome)
+	if err := e.store.UpdateActivationOutcome(activationID, outcome); err != nil {
+		log.Printf("[spore] failed to update activation outcome: %v", err)
+	}
 
 	// Get actual activation count from DB (cached p.Activations is stale)
 	acts, _ := e.store.ListActivations(p.ID, 1000)
 	newCount := len(acts)
 	successRate := 1.0
-	e.store.UpdatePatternStats(p.ID, newCount, successRate)
+	if err := e.store.UpdatePatternStats(p.ID, newCount, successRate); err != nil {
+		log.Printf("[spore] failed to update pattern stats: %v", err)
+	}
 
 	log.Printf("[spore] pattern %s activated (%d total), action=%s",
 		p.Name, newCount, action.Type)
@@ -260,7 +269,10 @@ func (e *patternEngine) replicate(parent store.Pattern, triggerEvt bus.Event) {
 		return
 	}
 	var tc triggerCondition
-	json.Unmarshal([]byte(parent.TriggerConditions), &tc)
+	if err := json.Unmarshal([]byte(parent.TriggerConditions), &tc); err != nil {
+		log.Printf("[spore] failed to parse trigger conditions for replication: %v", err)
+		return
+	}
 
 	var children []store.Pattern
 

@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"io"
 	"os"
 	"path/filepath"
@@ -115,7 +116,9 @@ func (v *Vault) load() {
 	if err := json.Unmarshal(data, &plainKeys); err == nil {
 		// Check if it's actually our encrypted payload by looking for "version"
 		var probe map[string]json.RawMessage
-		json.Unmarshal(data, &probe)
+		if err := json.Unmarshal(data, &probe); err != nil {
+			log.Printf("[keyvault] json parse error: %v", err)
+		}
 		if _, hasVersion := probe["version"]; hasVersion {
 			// This is an encrypted payload, try to decrypt
 			v.loadEncrypted(data)
@@ -176,7 +179,9 @@ func (v *Vault) loadEncrypted(data []byte) {
 		return
 	}
 
-	json.Unmarshal(plaintext, &v.keys)
+	if err := json.Unmarshal(plaintext, &v.keys); err != nil {
+		log.Printf("[keyvault] json parse error: %v", err)
+	}
 }
 
 // save persists keys to disk, encrypted if a passphrase is set.

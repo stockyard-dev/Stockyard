@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/replay/capture"
@@ -132,9 +133,14 @@ func (s *DB) QueryDeltas(filter DeltaFilter) ([]capture.Delta, error) {
 		var d capture.Delta
 		var ts string
 		var metaJSON string
-		rows.Scan(&d.ID, &ts, &d.Type, &d.Category, &d.Key, &d.Before, &d.After, &metaJSON)
+		if err := rows.Scan(&d.ID, &ts, &d.Type, &d.Category, &d.Key, &d.Before, &d.After, &metaJSON); err != nil {
+			log.Printf("[replay] scan delta row: %v", err)
+			continue
+		}
 		d.Timestamp, _ = time.Parse(time.RFC3339Nano, ts)
-		json.Unmarshal([]byte(metaJSON), &d.Metadata)
+		if err := json.Unmarshal([]byte(metaJSON), &d.Metadata); err != nil {
+			log.Printf("[replay] failed to parse delta metadata: %v", err)
+		}
 		deltas = append(deltas, d)
 	}
 	return deltas, nil
@@ -261,6 +267,9 @@ func (s *DB) LoadSnapshot(before time.Time) (time.Time, map[string]any, error) {
 
 	t, _ := time.Parse(time.RFC3339Nano, ts)
 	var state map[string]any
-	json.Unmarshal([]byte(stateJSON), &state)
+	if err := json.Unmarshal([]byte(stateJSON), &state); err != nil {
+		log.Printf("[replay] failed to parse snapshot state: %v", err)
+		return t, nil, fmt.Errorf("parse snapshot: %w", err)
+	}
 	return t, state, nil
 }

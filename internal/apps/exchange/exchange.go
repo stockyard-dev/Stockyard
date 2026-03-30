@@ -171,7 +171,9 @@ func (a *App) handleListPacks(w http.ResponseWriter, r *http.Request) {
 		var downloads, installs int
 		rows.Scan(&id, &slug, &name, &desc, &author, &ptype, &ver, &tags, &downloads, &installs, &updated)
 		var t any
-		json.Unmarshal([]byte(tags), &t)
+		if err := json.Unmarshal([]byte(tags), &t); err != nil {
+			log.Printf("[exchange] json parse error: %v", err)
+		}
 		packs = append(packs, map[string]any{
 			"id": id, "slug": slug, "name": name, "description": desc,
 			"author": author, "pack_type": ptype, "current_version": ver,
@@ -193,13 +195,17 @@ func (a *App) handleGetPack(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var t any
-	json.Unmarshal([]byte(tags), &t)
+	if err := json.Unmarshal([]byte(tags), &t); err != nil {
+		log.Printf("[exchange] json parse error: %v", err)
+	}
 
 	// Get version content
 	var content string
 	a.conn.QueryRow("SELECT content_json FROM exchange_pack_versions WHERE pack_id = ? AND version = ?", id, ver).Scan(&content)
 	var c any
-	json.Unmarshal([]byte(content), &c)
+	if err := json.Unmarshal([]byte(content), &c); err != nil {
+		log.Printf("[exchange] json parse error: %v", err)
+	}
 
 	writeJSON(w, map[string]any{
 		"id": id, "slug": slug, "name": name, "description": desc,
@@ -310,7 +316,9 @@ func (a *App) handlePreviewPack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var content PackContent
-	json.Unmarshal([]byte(contentJSON), &content)
+	if err := json.Unmarshal([]byte(contentJSON), &content); err != nil {
+		log.Printf("[exchange] json parse error: %v", err)
+	}
 
 	// Check what already exists
 	preview := map[string]any{

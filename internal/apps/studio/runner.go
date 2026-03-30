@@ -252,7 +252,10 @@ func (r *Runner) executeRun(ctx context.Context, req RunExperimentRequest, model
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	latency := time.Since(start)
 
 	if resp.StatusCode != 200 {

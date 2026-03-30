@@ -89,8 +89,12 @@ func handleAgentTimeline(conn *sql.DB) http.HandlerFunc {
 		}
 
 		var timeline, checkpoints any
-		json.Unmarshal([]byte(timelineJSON), &timeline)
-		json.Unmarshal([]byte(checkpointsJSON), &checkpoints)
+		if err := json.Unmarshal([]byte(timelineJSON), &timeline); err != nil {
+			log.Printf("[agent] json parse error: %v", err)
+		}
+		if err := json.Unmarshal([]byte(checkpointsJSON), &checkpoints); err != nil {
+			log.Printf("[agent] json parse error: %v", err)
+		}
 
 		writeAgentJSON(w, http.StatusOK, map[string]any{
 			"id": id, "status": status,
@@ -225,7 +229,9 @@ func appendTimeline(conn *sql.DB, runID, eventType, timestamp, detail string) {
 	var timelineJSON string
 	conn.QueryRow("SELECT timeline FROM agent_runs WHERE id = ?", runID).Scan(&timelineJSON)
 	var timeline []map[string]any
-	json.Unmarshal([]byte(timelineJSON), &timeline)
+	if err := json.Unmarshal([]byte(timelineJSON), &timeline); err != nil {
+		log.Printf("[agent] json parse error: %v", err)
+	}
 	timeline = append(timeline, map[string]any{
 		"type": eventType, "timestamp": timestamp, "detail": detail,
 	})

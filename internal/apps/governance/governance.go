@@ -476,7 +476,9 @@ func (a *App) handleGetDispute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var evidence any
-	json.Unmarshal([]byte(evidenceJSON), &evidence)
+	if err := json.Unmarshal([]byte(evidenceJSON), &evidence); err != nil {
+		log.Printf("[governance] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "type": dtype, "reporter_id": reporterID, "subject_id": subjectID,
 		"description": desc, "evidence": evidence, "status": status,
@@ -580,7 +582,9 @@ func (a *App) handleGetSafetyCert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var details any
-	json.Unmarshal([]byte(detailsJSON), &details)
+	if err := json.Unmarshal([]byte(detailsJSON), &details); err != nil {
+		log.Printf("[governance] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"app_id": appID, "grade": grade, "score": score,
 		"details": details, "certified_at": certifiedAt, "expires_at": expiresAt,
@@ -650,7 +654,9 @@ func (a *App) handleAutoFix(w http.ResponseWriter, r *http.Request) {
 		rows.Scan(&ruleID, &regulation, &requirement, &configJSON)
 
 		var config any
-		json.Unmarshal([]byte(configJSON), &config)
+		if err := json.Unmarshal([]byte(configJSON), &config); err != nil {
+			log.Printf("[governance] json parse error: %v", err)
+		}
 
 		suggestions = append(suggestions, map[string]any{
 			"rule_id":          ruleID,

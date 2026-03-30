@@ -479,7 +479,10 @@ func (s *Server) executeAttack(campaign *store.Campaign, generation int, probe a
 		return false, ""
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 
 	// If guardrail blocked it (non-200), that's a PASS (attack was caught)
 	if resp.StatusCode != 200 {
@@ -531,7 +534,9 @@ func parseContent(body []byte) string {
 			} `json:"message"`
 		} `json:"choices"`
 	}
-	json.Unmarshal(body, &resp)
+	if err := json.Unmarshal(body, &resp); err != nil {
+		log.Printf("[server] json parse error: %v", err)
+	}
 	if len(resp.Choices) > 0 {
 		return resp.Choices[0].Message.Content
 	}

@@ -2,6 +2,7 @@ package billing
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -75,7 +76,9 @@ func (a *App) handleListPlans(w http.ResponseWriter, r *http.Request) {
 		var id, acct, name, limitsStr, created string
 		rows.Scan(&id, &acct, &name, &limitsStr, &created)
 		var limits any
-		json.Unmarshal([]byte(limitsStr), &limits)
+		if err := json.Unmarshal([]byte(limitsStr), &limits); err != nil {
+			log.Printf("[plans] json parse error: %v", err)
+		}
 		plans = append(plans, map[string]any{
 			"id": id, "account_id": acct, "name": name,
 			"limits": limits, "created_at": created,

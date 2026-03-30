@@ -148,7 +148,10 @@ func (e *Executor) Execute(ctx context.Context, op *intent.Operation) (*Result, 
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	result.StatusCode = resp.StatusCode
 	result.RawResponse = string(respBody)
 	result.Success = resp.StatusCode >= 200 && resp.StatusCode < 300

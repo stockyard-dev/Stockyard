@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"time"
 
@@ -378,7 +379,9 @@ func (s *DB) GetRelatedEntities(entityID string, limit int) ([]Entity, []Relatio
 		var r Relationship
 		var propsJSON string
 		rows.Scan(&e.ID, &e.Type, &e.Name, &propsJSON, &e.MentionCount, &r.Type, &r.Weight, &r.Context)
-		json.Unmarshal([]byte(propsJSON), &e.Properties)
+		if err := json.Unmarshal([]byte(propsJSON), &e.Properties); err != nil {
+			log.Printf("[cstore] json parse error: %v", err)
+		}
 		entities = append(entities, e)
 		rels = append(rels, r)
 	}
@@ -400,7 +403,9 @@ func (s *DB) FindEntitiesByName(query string, limit int) ([]Entity, error) {
 		var e Entity
 		var propsJSON string
 		rows.Scan(&e.ID, &e.Type, &e.Name, &propsJSON, &e.MentionCount)
-		json.Unmarshal([]byte(propsJSON), &e.Properties)
+		if err := json.Unmarshal([]byte(propsJSON), &e.Properties); err != nil {
+			log.Printf("[cstore] json parse error: %v", err)
+		}
 		out = append(out, e)
 	}
 	return out, nil

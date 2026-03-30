@@ -471,7 +471,9 @@ func (s *Server) createSourceFromConfig(srcType, name, configJSON string) connec
 			URL     string            `json:"url"`
 			Headers map[string]string `json:"headers"`
 		}
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		if cfg.URL != "" {
 			return connector.NewHTTPSource(name, cfg.URL, cfg.Headers)
 		}
@@ -479,7 +481,9 @@ func (s *Server) createSourceFromConfig(srcType, name, configJSON string) connec
 		var cfg struct {
 			Endpoints map[string]string `json:"endpoints"`
 		}
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		if len(cfg.Endpoints) > 0 {
 			return connector.NewHealthSource(name, cfg.Endpoints)
 		}
@@ -488,23 +492,31 @@ func (s *Server) createSourceFromConfig(srcType, name, configJSON string) connec
 			Path string `json:"path"`
 			Tail int    `json:"tail"`
 		}
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		if cfg.Path != "" {
 			return connector.NewLogSource(name, cfg.Path, cfg.Tail)
 		}
 	case "sql":
 		var cfg connector.SQLSourceConfig
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		if cfg.DSN != "" {
 			return connector.NewSQLSource(name, cfg)
 		}
 	case "redis":
 		var cfg connector.RedisSourceConfig
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		return connector.NewRedisSource(name, cfg)
 	case "prometheus":
 		var cfg connector.PrometheusSourceConfig
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		if cfg.Endpoint != "" {
 			return connector.NewPrometheusSource(name, cfg)
 		}
@@ -512,13 +524,17 @@ func (s *Server) createSourceFromConfig(srcType, name, configJSON string) connec
 		var cfg struct {
 			Prefix string `json:"prefix"`
 		}
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		return connector.NewEnvSource(name, cfg.Prefix, nil)
 	case "static":
 		var cfg struct {
 			Content string `json:"content"`
 		}
-		json.Unmarshal([]byte(configJSON), &cfg)
+		if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+			log.Printf("[server] json parse error: %v", err)
+		}
 		return connector.NewStaticSource(name, cfg.Content)
 	}
 	return nil

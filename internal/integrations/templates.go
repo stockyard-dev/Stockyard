@@ -122,7 +122,9 @@ func TemplateRoutes(mux *http.ServeMux, conn *sql.DB) {
 			var id, name, service, formatJSON, createdAt string
 			rows.Scan(&id, &name, &service, &formatJSON, &createdAt)
 			var format any
-			json.Unmarshal([]byte(formatJSON), &format)
+			if err := json.Unmarshal([]byte(formatJSON), &format); err != nil {
+				log.Printf("[templates] json parse error: %v", err)
+			}
 			templates = append(templates, map[string]any{
 				"id":         id,
 				"name":       name,

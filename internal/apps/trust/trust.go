@@ -248,7 +248,9 @@ func (a *App) handleListLedger(w http.ResponseWriter, r *http.Request) {
 		var evType, actor, resource, action, detail, prevHash, hash, created string
 		rows.Scan(&id, &evType, &actor, &resource, &action, &detail, &prevHash, &hash, &created)
 		var d any
-		json.Unmarshal([]byte(detail), &d)
+		if err := json.Unmarshal([]byte(detail), &d); err != nil {
+			log.Printf("[trust] json parse error: %v", err)
+		}
 		events = append(events, map[string]any{
 			"id": id, "event_type": evType, "actor": actor, "resource": resource,
 			"action": action, "detail": d, "prev_hash": prevHash, "hash": hash,
@@ -392,7 +394,9 @@ func (a *App) handleListPolicies(w http.ResponseWriter, r *http.Request) {
 		var name, pType, cfg string
 		rows.Scan(&id, &name, &pType, &cfg, &enabled)
 		var c any
-		json.Unmarshal([]byte(cfg), &c)
+		if err := json.Unmarshal([]byte(cfg), &c); err != nil {
+			log.Printf("[trust] json parse error: %v", err)
+		}
 		policies = append(policies, map[string]any{"id": id, "name": name, "type": pType, "config": c, "enabled": enabled == 1})
 	}
 	writeJSON(w, map[string]any{"policies": policies})

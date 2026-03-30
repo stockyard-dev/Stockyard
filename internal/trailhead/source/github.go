@@ -330,7 +330,10 @@ func (g *GitHub) get(ctx context.Context, path string, target any) error {
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading GitHub response: %w", err)
+	}
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("GitHub API returned %d: %s", resp.StatusCode, truncate(string(body), 200))
 	}

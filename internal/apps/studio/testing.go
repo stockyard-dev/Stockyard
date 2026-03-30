@@ -275,7 +275,9 @@ func runTestCase(proxyPort int, model, caseID, prompt, criteriaJSON string) map[
 
 	// Evaluate criteria.
 	var criteria map[string]any
-	json.Unmarshal([]byte(criteriaJSON), &criteria)
+	if err := json.Unmarshal([]byte(criteriaJSON), &criteria); err != nil {
+		log.Printf("[testing] json parse error: %v", err)
+	}
 
 	passed := true
 	var failures []string
@@ -344,7 +346,9 @@ func handleGetRun(conn *sql.DB) http.HandlerFunc {
 		}
 
 		var results any
-		json.Unmarshal([]byte(resultsJSON), &results)
+		if err := json.Unmarshal([]byte(resultsJSON), &results); err != nil {
+			log.Printf("[testing] json parse error: %v", err)
+		}
 
 		writeTestJSON(w, http.StatusOK, map[string]any{
 			"id": runID, "suite_id": suiteID, "status": status,

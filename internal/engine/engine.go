@@ -436,7 +436,9 @@ func Boot(pc ProductConfig) {
 	features.RegisterFirewallAPI(srv.Mux(), db.Conn(), firewall)
 	features.InitScorecardSchema(db.Conn())
 	features.RegisterScorecardAPI(srv.Mux(), db.Conn(), firewall)
-	features.StartScorecardSchedule(db.Conn(), firewall)
+	scorecardStop := make(chan struct{})
+	defer close(scorecardStop)
+	features.StartScorecardSchedule(db.Conn(), firewall, scorecardStop)
 
 	// Smart routing rules API
 	smartRouter := features.NewSmartRouter(db.Conn())
@@ -459,12 +461,20 @@ func Boot(pc ProductConfig) {
 	fabricEngine.StartHealingLoop()
 
 	// Multi-region proxy mesh
-	meshMgr := mesh.NewManager(db.Conn())
-	meshMgr.Register(srv.Mux())
+	meshMgr, err := mesh.NewManager(db.Conn())
+	if err != nil {
+		log.Printf("[mesh] init failed: %v", err)
+	} else {
+		meshMgr.Register(srv.Mux())
+	}
 
 	// Cortex platform intelligence
-	cortexSvc := cortex.NewCortex(db.Conn())
-	cortexSvc.Register(srv.Mux())
+	cortexSvc, err := cortex.NewCortex(db.Conn())
+	if err != nil {
+		log.Printf("[cortex] init failed: %v", err)
+	} else {
+		cortexSvc.Register(srv.Mux())
+	}
 
 	// Connect (OAuth, Vault, Labs, Security, SLA, Adapt)
 	connectSvc := connect.NewConnectService(db.Conn())
@@ -1399,7 +1409,9 @@ func Boot(pc ProductConfig) {
 			return
 		}
 		var steps []any
-		json.Unmarshal([]byte(debugSteps), &steps)
+		if err := json.Unmarshal([]byte(debugSteps), &steps); err != nil {
+			log.Printf("[engine] json parse error: %v", err)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"trace_id": traceID, "steps": steps, "count": len(steps)})
 	})
@@ -1486,8 +1498,12 @@ func Boot(pc ProductConfig) {
 		db.Conn().QueryRow("SELECT COALESCE(customer_id,''), COALESCE(cost_cents,0) FROM billing_usage WHERE trace_id = ?", traceID).Scan(&billingCustomer, &billingCost)
 
 		var tags, debugSteps any
-		json.Unmarshal([]byte(tagsStr), &tags)
-		json.Unmarshal([]byte(debugStr), &debugSteps)
+		if err := json.Unmarshal([]byte(tagsStr), &tags); err != nil {
+			log.Printf("[engine] json parse error: %v", err)
+		}
+		if err := json.Unmarshal([]byte(debugStr), &debugSteps); err != nil {
+			log.Printf("[engine] json parse error: %v", err)
+		}
 
 		blackbox := map[string]any{
 			"trace_id": traceID,

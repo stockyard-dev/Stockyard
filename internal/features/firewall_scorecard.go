@@ -166,19 +166,25 @@ func genScorecardID() string {
 }
 
 // StartScorecardSchedule runs the scorecard weekly and alerts on score decrease.
-func StartScorecardSchedule(conn *sql.DB, fw *Firewall) {
+func StartScorecardSchedule(conn *sql.DB, fw *Firewall, stop <-chan struct{}) {
 	go func() {
+		ticker := time.NewTicker(7 * 24 * time.Hour)
+		defer ticker.Stop()
 		for {
-			time.Sleep(7 * 24 * time.Hour) // Weekly
-			result := runScorecard(conn, fw)
-			if decreased, ok := result["score_decreased"].(bool); ok && decreased {
-				fireWebhook("security.scorecard_decrease", map[string]any{
-					"grade":          result["grade"],
-					"previous_grade": result["previous_grade"],
-					"score_pct":      result["score_pct"],
-				})
+			select {
+			case <-ticker.C:
+				result := runScorecard(conn, fw)
+				if decreased, ok := result["score_decreased"].(bool); ok && decreased {
+					fireWebhook("security.scorecard_decrease", map[string]any{
+						"grade":          result["grade"],
+						"previous_grade": result["previous_grade"],
+						"score_pct":      result["score_pct"],
+					})
+				}
+				log.Printf("[firewall] scheduled scorecard: grade=%s score=%.1f%%", result["grade"], result["score_pct"])
+			case <-stop:
+				return
 			}
-			log.Printf("[firewall] scheduled scorecard: grade=%s score=%.1f%%", result["grade"], result["score_pct"])
 		}
 	}()
 }

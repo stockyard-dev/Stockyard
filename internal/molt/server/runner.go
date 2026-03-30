@@ -317,7 +317,9 @@ func (s *Server) executeRevert(actionID string) error {
 
 	// Parse before state
 	var before map[string]any
-	json.Unmarshal([]byte(target.BeforeState), &before)
+	if err := json.Unmarshal([]byte(target.BeforeState), &before); err != nil {
+		log.Printf("[server] json parse error: %v", err)
+	}
 
 	switch target.ComponentType {
 	case "module":

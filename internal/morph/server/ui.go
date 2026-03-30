@@ -127,7 +127,7 @@ async function loadStats(){
     const ps=s.per_service||[];
     const maxC=Math.max(...ps.map(p=>p.count),1);
     bd.innerHTML=ps.map(p=>'<div class="svc-bar"><span class="svc-name">'+p.service+'</span><div class="bar" style="width:'+((p.count/maxC)*300)+'px"></div><span>'+p.count+' calls, '+(p.success_rate*100).toFixed(0)+'% ok, '+p.avg_latency_ms.toFixed(0)+'ms avg</span></div>').join('');
-  }catch(e){}
+  }catch(e){console.error('load failed:',e)}
 }
 
 async function loadHistory(){
@@ -138,7 +138,7 @@ async function loadHistory(){
       const t=x.created_at?new Date(x.created_at).toLocaleTimeString():'';
       return '<tr><td>'+t+'</td><td>'+x.service+'</td><td>'+x.action+'</td><td><code>'+x.method+'</code></td><td class="'+sc+'">'+x.status_code+'</td><td>'+x.latency_ms.toFixed(0)+'ms</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+x.intent+'</td></tr>';
     }).join('');
-  }catch(e){}
+  }catch(e){console.error('load failed:',e)}
 }
 
 async function loadServices(){
@@ -147,7 +147,7 @@ async function loadServices(){
     document.getElementById('services').innerHTML=(s||[]).map(x=>
       '<tr><td><strong>'+x.name+'</strong></td><td>'+x.actions.join(', ')+'</td><td class="'+(x.configured?'configured':'unconfigured')+'">'+(x.configured?'Configured':'Not configured')+'</td></tr>'
     ).join('');
-  }catch(e){}
+  }catch(e){console.error('load failed:',e)}
 }
 
 loadStats();loadHistory();loadServices();

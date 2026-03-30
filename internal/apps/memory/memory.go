@@ -312,7 +312,10 @@ func (a *App) llmSummarize(content string, entryCount int) string {
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		respBody = []byte{}
+	}
 	if resp.StatusCode >= 400 {
 		log.Printf("[memory] summarize LLM returned %d", resp.StatusCode)
 		return ""

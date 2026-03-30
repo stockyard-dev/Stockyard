@@ -725,7 +725,7 @@ async function toggleModule(name, enabled) {
     // Update local state
     const m = state.modules.find(m => m.name === name);
     if (m) m.enabled = enabled;
-  } catch(e) {}
+  } catch(e) {console.error('module toggle failed:',e)}
 }
 
 // ─── STACK BUILDER ─────────────────────────────────────────────
@@ -1094,7 +1094,7 @@ function renderMarkdown(text) {
     try {
       marked.setOptions({ breaks: true, gfm: true });
       return marked.parse(text);
-    } catch(e) {}
+    } catch(e) {console.error('markdown parse failed:',e)}
   }
   return escapeHtml(text);
 }

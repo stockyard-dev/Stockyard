@@ -432,7 +432,9 @@ func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var metadata any
-	json.Unmarshal([]byte(meta), &metadata)
+	if err := json.Unmarshal([]byte(meta), &metadata); err != nil {
+		log.Printf("[observe] json parse error: %v", err)
+	}
 	writeJSON(w, map[string]any{
 		"id": id, "request_id": reqID, "service": svc, "operation": op,
 		"provider": prov, "model": model, "status": status,
@@ -780,7 +782,9 @@ func (a *App) handleListSafetyEvents(w http.ResponseWriter, r *http.Request) {
 		var evType, sev, cat, detailStr, ip, uid, model, reqID, action, created string
 		rows.Scan(&id, &evType, &sev, &cat, &detailStr, &ip, &uid, &model, &reqID, &action, &created)
 		var detail any
-		json.Unmarshal([]byte(detailStr), &detail)
+		if err := json.Unmarshal([]byte(detailStr), &detail); err != nil {
+			log.Printf("[observe] json parse error: %v", err)
+		}
 		events = append(events, map[string]any{
 			"id": id, "event_type": evType, "severity": sev, "category": cat,
 			"detail": detail, "source_ip": ip, "user_id": uid, "model": model,

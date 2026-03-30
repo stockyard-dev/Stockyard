@@ -89,7 +89,9 @@ func (s *Server) handleQueryDeltas(w http.ResponseWriter, r *http.Request) {
 		filter.Before, _ = time.Parse(time.RFC3339, t)
 	}
 	if l := q.Get("limit"); l != "" {
-		filter.Limit, _ = strconv.Atoi(l)
+		if v, err := strconv.Atoi(l); err == nil {
+			filter.Limit = v
+		}
 	}
 	if filter.Limit <= 0 {
 		filter.Limit = 100

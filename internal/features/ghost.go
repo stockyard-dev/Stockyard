@@ -81,6 +81,8 @@ func GhostFromDB(conn *sql.DB) GhostConfig {
 	if err != nil || raw == "" || raw == "{}" {
 		return cfg
 	}
-	json.Unmarshal([]byte(raw), &cfg)
+	if err := json.Unmarshal([]byte(raw), &cfg); err != nil {
+		log.Printf("[ghost] json parse error: %v", err)
+	}
 	return cfg
 }

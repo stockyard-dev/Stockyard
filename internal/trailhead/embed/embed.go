@@ -162,7 +162,10 @@ func (g *Generator) embedBatch(ctx context.Context, texts []string) ([][]float32
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading embedding response: %w", err)
+	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("embedding API returned %d: %s", resp.StatusCode, truncate(string(body), 200))
 	}

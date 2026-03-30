@@ -890,9 +890,15 @@ func (db *SqliteDB) GetExchangeItem(slug string) (*ExchangeItem, error) {
 	if err != nil {
 		return nil, fmt.Errorf("not found: %s", slug)
 	}
-	json.Unmarshal([]byte(tagsJSON), &item.Tags)
-	json.Unmarshal([]byte(productsJSON), &item.Products)
-	json.Unmarshal([]byte(providersJSON), &item.Providers)
+	if err := json.Unmarshal([]byte(tagsJSON), &item.Tags); err != nil {
+		log.Printf("[sqlitedb] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(productsJSON), &item.Products); err != nil {
+		log.Printf("[sqlitedb] json parse error: %v", err)
+	}
+	if err := json.Unmarshal([]byte(providersJSON), &item.Providers); err != nil {
+		log.Printf("[sqlitedb] json parse error: %v", err)
+	}
 	item.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 	item.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAt)
 	return item, nil
@@ -1041,9 +1047,15 @@ func (db *SqliteDB) scanExchangeRows(rows *sql.Rows) []*ExchangeItem {
 			&item.Downloads, &item.Stars, &item.Forks, &item.Status, &createdAt, &updatedAt); err != nil {
 			continue
 		}
-		json.Unmarshal([]byte(tagsJSON), &item.Tags)
-		json.Unmarshal([]byte(productsJSON), &item.Products)
-		json.Unmarshal([]byte(providersJSON), &item.Providers)
+		if err := json.Unmarshal([]byte(tagsJSON), &item.Tags); err != nil {
+			log.Printf("[sqlitedb] json parse error: %v", err)
+		}
+		if err := json.Unmarshal([]byte(productsJSON), &item.Products); err != nil {
+			log.Printf("[sqlitedb] json parse error: %v", err)
+		}
+		if err := json.Unmarshal([]byte(providersJSON), &item.Providers); err != nil {
+			log.Printf("[sqlitedb] json parse error: %v", err)
+		}
 		item.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
 		item.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAt)
 		result = append(result, item)

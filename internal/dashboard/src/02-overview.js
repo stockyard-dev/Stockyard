@@ -28,7 +28,7 @@ function provStatus(s){const m={ok:{icon:'\u2713',cls:'prov-ok'},healthy:{icon:'
 function ProviderPanel({provHealth,providerCount}){
   const[expanded,setExpanded]=useState(false);
   const[testing,setTesting]=useState(null);
-  const testOne=async(name)=>{setTesting(name);try{await api('/api/proxy/providers/health')}catch(e){}setTesting(null)};
+  const testOne=async(name)=>{setTesting(name);try{await api('/api/proxy/providers/health')}catch(e){console.error('health check failed:',e)}setTesting(null)};
   const configured=provHealth?.providers?.filter(p=>p.status!=='unconfigured')||[];
   const unconfigured=provHealth?.providers?.filter(p=>p.status==='unconfigured')||[];
   const healthyCount=configured.filter(p=>p.status==='ok'||p.status==='healthy'||p.status==='active').length;

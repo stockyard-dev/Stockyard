@@ -56,7 +56,10 @@ func (a *Anthropic) Send(ctx context.Context, req *Request) (*Response, error) {
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode != http.StatusOK {
-		respBody, _ := io.ReadAll(httpResp.Body)
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		if readErr != nil {
+			respBody = []byte("failed to read error response")
+		}
 		return nil, &ProviderAPIError{
 			Provider:   "anthropic",
 			StatusCode: httpResp.StatusCode,
@@ -92,7 +95,10 @@ func (a *Anthropic) SendStream(ctx context.Context, req *Request) (<-chan Stream
 	}
 
 	if httpResp.StatusCode != http.StatusOK {
-		respBody, _ := io.ReadAll(httpResp.Body)
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		if readErr != nil {
+			respBody = []byte("failed to read error response")
+		}
 		httpResp.Body.Close()
 		return nil, &ProviderAPIError{
 			Provider:   "anthropic",

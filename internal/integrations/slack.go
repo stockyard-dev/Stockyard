@@ -116,26 +116,30 @@ func (s *SlackIntegration) getWebhookURL() string {
 		return ""
 	}
 	var cfg map[string]string
-	json.Unmarshal([]byte(configJSON), &cfg)
+	if err := json.Unmarshal([]byte(configJSON), &cfg); err != nil {
+		log.Printf("[slack] failed to parse config: %v", err)
+		return ""
+	}
 	return cfg["webhook_url"]
 }
 
 func (s *SlackIntegration) costsSummary(period string) map[string]any {
-	// Whitelist valid periods — filter values feed into fmt.Sprintf SQL
-	var filter string
+	var since time.Time
 	switch period {
 	case "week":
-		filter = "datetime('now', '-7 days')"
+		since = time.Now().UTC().AddDate(0, 0, -7)
 	case "month":
-		filter = "datetime('now', 'start of month')"
+		now := time.Now().UTC()
+		since = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
 	default:
-		filter = "datetime('now', 'start of day')"
+		now := time.Now().UTC()
+		since = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 		period = "today"
 	}
 
 	var totalCost float64
 	var totalReqs int
-	s.conn.QueryRow(fmt.Sprintf("SELECT COALESCE(SUM(cost_usd), 0), COUNT(*) FROM observe_traces WHERE created_at >= %s", filter)).
+	s.conn.QueryRow("SELECT COALESCE(SUM(cost_usd), 0), COUNT(*) FROM observe_traces WHERE created_at >= ?", since.Format(time.RFC3339)).
 		Scan(&totalCost, &totalReqs)
 
 	return map[string]any{

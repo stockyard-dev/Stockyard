@@ -164,7 +164,10 @@ func runQuickscan(targetURL, apiKey, model string) quickscanReport {
 			continue
 		}
 		defer resp.Body.Close()
-		respBody, _ := io.ReadAll(resp.Body)
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			respBody = []byte{}
+		}
 
 		// Non-200 = guardrail blocked it
 		if resp.StatusCode != 200 {
@@ -299,7 +302,9 @@ func parseQuickscanContent(body []byte) string {
 			} `json:"message"`
 		} `json:"choices"`
 	}
-	json.Unmarshal(body, &resp)
+	if err := json.Unmarshal(body, &resp); err != nil {
+		log.Printf("[quickscan] json parse error: %v", err)
+	}
 	if len(resp.Choices) > 0 {
 		return resp.Choices[0].Message.Content
 	}

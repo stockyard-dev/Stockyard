@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -290,13 +291,19 @@ func scanDecision(s scanner) (*Decision, error) {
 		return nil, err
 	}
 	if variantsJSON != "" {
-		json.Unmarshal([]byte(variantsJSON), &d.Variants)
+		if err := json.Unmarshal([]byte(variantsJSON), &d.Variants); err != nil {
+			log.Printf("[store] json parse error: %v", err)
+		}
 	}
 	if rulesJSON != "" {
-		json.Unmarshal([]byte(rulesJSON), &d.Rules)
+		if err := json.Unmarshal([]byte(rulesJSON), &d.Rules); err != nil {
+			log.Printf("[store] json parse error: %v", err)
+		}
 	}
 	if tagsJSON != "" {
-		json.Unmarshal([]byte(tagsJSON), &d.Tags)
+		if err := json.Unmarshal([]byte(tagsJSON), &d.Tags); err != nil {
+			log.Printf("[store] json parse error: %v", err)
+		}
 	}
 	return &d, nil
 }
@@ -314,7 +321,9 @@ func scanEntries(rows *sql.Rows) ([]Entry, error) {
 			return nil, err
 		}
 		if ctxJSON != "" {
-			json.Unmarshal([]byte(ctxJSON), &e.Context)
+			if err := json.Unmarshal([]byte(ctxJSON), &e.Context); err != nil {
+				log.Printf("[store] json parse error: %v", err)
+			}
 		}
 		out = append(out, e)
 	}
