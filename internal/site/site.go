@@ -307,6 +307,16 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/what-is-llm-failover/",
 		"/vs/aws-bedrock/",
 		"/vs/azure-ai-gateway/",
+		"/providers/openai/",
+		"/providers/anthropic/",
+		"/providers/google-gemini/",
+		"/providers/groq/",
+		"/providers/deepseek/",
+		"/providers/mistral/",
+		"/providers/ollama/",
+		"/providers/azure-openai/",
+		"/providers/cohere/",
+		"/providers/xai/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

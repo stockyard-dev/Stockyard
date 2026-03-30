@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Ollama Proxy — Route Local Models Through Stockyard</title>
+<meta name="description" content="Proxy Ollama local model requests through Stockyard. Add cost tracking, tracing, and cloud failover to your local LLM setup.">
+<meta property="og:title" content="Ollama Proxy — Route Local Models Through Stockyard">
+<meta property="og:description" content="Proxy Ollama local model requests through Stockyard. Add cost tracking, tracing, and cloud failover to your local LLM setup.">
+<meta property="og:url" content="https://stockyard.dev/providers/ollama/">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/providers/ollama/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:5rem 2rem 2.5rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.2;margin-bottom:1rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:2.5rem 2rem;max-width:800px;margin:0 auto}
+.section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--bg3)}
+.section h2:first-child{border-top:none;padding-top:0}
+.section p{font-size:0.92rem;color:var(--cream-dim);margin-bottom:1rem}
+code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+pre .cmd{color:var(--cream)}pre .comment{color:var(--cream-muted)}pre .output{color:var(--green-light)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0}
+.detail-item{padding:1rem;border:1px solid var(--bg3);background:var(--bg2)}
+.detail-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
+.detail-value{font-family:var(--font-mono);font-size:0.82rem;color:var(--cream)}
+.cta-box{text-align:center;padding:3rem 2rem;margin:2rem 0;border:1px solid var(--bg3);background:var(--bg2)}
+.cta-box p{color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.92rem}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000}.nav-links.open{display:flex}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}.detail-grid{grid-template-columns:1fr}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I use local and cloud models together?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard routes by model name. Local Ollama models and cloud providers work through the same endpoint. Use model aliasing to set up automatic failover from local to cloud."}},{"@type":"Question","name":"Does Ollama through Stockyard add latency?","acceptedAnswer":{"@type":"Answer","text":"Negligible. Stockyard adds ~400 nanoseconds of middleware overhead. Local network latency to Ollama is typically under 1ms."}},{"@type":"Question","name":"Can I track costs for local models?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard tracks tokens and latency for local models. Cost is $0 per request, but the tracking helps you compare local vs cloud performance."}}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Providers","item":"https://stockyard.dev/providers/"},{"@type":"ListItem","position":3,"name":"Ollama","item":"https://stockyard.dev/providers/ollama/"}]}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand">&#9651; Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <div class="nav-links">
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/blog/">Blog</a>
+    <a href="/guide/" class="btn btn-primary" style="padding:0.5rem 1.2rem">Install</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Provider</div>
+  <h1>Route <span class="accent">Ollama</span> through Stockyard</h1>
+  <p class="sub">Add cost tracking, caching, failover, and 76 middleware modules to your Ollama requests. One URL change, no SDK swap.</p>
+</section>
+
+<section class="section">
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">Environment variable</div>
+      <div class="detail-value">Auto-detected at localhost:11434</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Models</div>
+      <div class="detail-value">Any model pulled in Ollama (Llama, Mistral, Phi, Gemma, etc.)</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">Failover to</div>
+      <div class="detail-value">OpenAI GPT-4o, Anthropic Claude, or Groq</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-label">API format</div>
+      <div class="detail-value">OpenAI-compatible</div>
+    </div>
+  </div>
+
+  <h2>Why proxy Ollama?</h2>
+  <p>Ollama runs open-source models locally. Proxying through Stockyard gives your local models the same infrastructure as cloud providers: request tracing, latency tracking, and middleware modules like safety guardrails and PII redaction.</p><p>The real power is <a href="/local-plus-cloud-fallback/">local-plus-cloud failover</a>. Route requests to Ollama first (free, fast for small models), and fall back to OpenAI or Anthropic when the local model cannot handle the request or when you need a more capable model.</p>
+
+  <h2>Quick start</h2>
+  <pre><span class="comment"># Install Stockyard</span>
+<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
+
+<span class="comment"># Set your Ollama API key</span>
+<span class="cmd">export Auto-detected at localhost:11434=your-key-here</span>
+
+<span class="comment"># Start the proxy</span>
+<span class="cmd">stockyard</span>
+<span class="output"># Provider: ollama (from Auto-detected at localhost:11434)</span>
+<span class="output"># Proxy listening on :7749</span>
+
+<span class="comment"># Send a request through the proxy</span>
+<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">  -H "Content-Type: application/json" \</span>
+<span class="cmd">  -d '{"model":"Any model pulled in Ollama (Llama","messages":[{"role":"user","content":"hello"}]}'</span></pre>
+
+  <h2>Good to know</h2>
+  <p>Ollama must be running before Stockyard starts. Stockyard auto-detects it at localhost:11434. Custom ports can be set via OLLAMA_BASE_URL.</p>
+</section>
+
+<div class="cta-box">
+  <p>Route Ollama through Stockyard in under 60 seconds.</p>
+  <a href="/guide/" class="btn btn-primary">Install Guide</a>
+  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a></p>
+</div>
+
+<div class="explore-bar">Explore: <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/providers/google-gemini/">Google Gemini</a> &middot; <a href="/guide/">Install guide</a></div>
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+</body>
+</html>
