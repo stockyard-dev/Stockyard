@@ -303,6 +303,8 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/vs/braintrust/",
 		"/what-is-llm-proxy/",
 		"/what-is-model-aliasing/",
+		"/what-is-prompt-caching/",
+		"/what-is-llm-failover/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

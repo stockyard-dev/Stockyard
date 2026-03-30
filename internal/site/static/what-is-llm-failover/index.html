@@ -6,15 +6,15 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>What Is an LLM Proxy? How It Works and Why You Need One</title>
-<meta name="description" content="An LLM proxy sits between your application and AI providers. It routes requests, tracks costs, caches responses, and adds security. Here is how it works.">
-<meta property="og:title" content="What Is an LLM Proxy? How It Works and Why You Need One">
-<meta property="og:description" content="An LLM proxy sits between your application and AI providers. It routes requests, tracks costs, caches responses, and adds security. Here is how it works.">
-<meta property="og:url" content="https://stockyard.dev/what-is-llm-proxy/">
+<title>What Is LLM Failover? Automatic Provider Switching for Reliability</title>
+<meta name="description" content="LLM failover automatically routes requests to a backup provider when the primary goes down. Keep your application running during OpenAI outages.">
+<meta property="og:title" content="What Is LLM Failover? Automatic Provider Switching for Reliability">
+<meta property="og:description" content="LLM failover automatically routes requests to a backup provider when the primary goes down. Keep your application running during OpenAI outages.">
+<meta property="og:url" content="https://stockyard.dev/what-is-llm-failover/">
 <meta property="og:type" content="article">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://stockyard.dev/what-is-llm-proxy/">
+<link rel="canonical" href="https://stockyard.dev/what-is-llm-failover/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -47,10 +47,10 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 .explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an LLM proxy?","acceptedAnswer":{"@type":"Answer","text":"If you use multiple LLM providers, need cost tracking, want request caching, or have compliance requirements for audit logs, an LLM proxy simplifies your infrastructure. For single-provider setups with low volume, direct API calls may be sufficient."}},{"@type":"Question","name":"Does an LLM proxy slow down my requests?","acceptedAnswer":{"@type":"Answer","text":"A well-built proxy adds minimal latency. Stockyard's 76 middleware modules add approximately 400 nanoseconds total. The LLM provider response time (typically 1-30 seconds) dominates request duration."}},{"@type":"Question","name":"Can I use an LLM proxy with any provider?","acceptedAnswer":{"@type":"Answer","text":"Most LLM proxies support multiple providers through an OpenAI-compatible API. Stockyard supports 40+ providers including OpenAI, Anthropic, Google, Groq, Mistral, DeepSeek, and local models via Ollama."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does LLM failover add latency?","acceptedAnswer":{"@type":"Answer","text":"Only when a failover actually occurs. The proxy first tries the primary provider. If it fails, the retry to the backup provider adds the time of one failed request plus one successful request. Health-check-based failover can avoid this by routing away from degraded providers proactively."}},{"@type":"Question","name":"Can I fail over between different model providers?","acceptedAnswer":{"@type":"Answer","text":"Yes. With model aliasing, you can map a single model name to different providers. Stockyard supports 40+ providers, so you can set up failover chains across OpenAI, Anthropic, Google, Groq, and others."}},{"@type":"Question","name":"How do I know when failover happens?","acceptedAnswer":{"@type":"Answer","text":"Stockyard logs every failover event with the original provider, the backup provider, and the reason for failover. The Lookout dashboard shows failover events alongside normal request traces."}}]}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"What Is an LLM Proxy? How It Works and Why You Need One","item":"https://stockyard.dev/what-is-llm-proxy/"}]}
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"What Is LLM Failover","item":"https://stockyard.dev/what-is-llm-failover/"}]}
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
@@ -70,26 +70,23 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <section class="hero">
   <div class="eyebrow">Guide</div>
-  <h1>What is an <span class="accent">LLM proxy</span>?</h1>
-  <p class="sub">A technical explanation of what LLM proxies do, how they work, and when you need one.</p>
+  <h1>What is <span class="accent">LLM failover</span>?</h1>
+  <p class="sub">When OpenAI goes down, your application should not. Automatic provider switching keeps LLM requests flowing.</p>
 </section>
 
 <section class="section">
 
-  <h2>The short version</h2>
-  <p>An LLM proxy is a server that sits between your application and LLM providers like OpenAI, Anthropic, and Google. Your app sends requests to the proxy instead of directly to the provider. The proxy forwards the request, logs it, and returns the response.</p><p>This indirection layer lets you add routing, caching, cost tracking, rate limiting, safety filters, and observability without changing your application code.</p>
+  <h2>The problem</h2>
+  <p>LLM providers have outages. OpenAI has had multiple multi-hour incidents. Anthropic, Google, and others have had their own. If your application depends on a single provider, a provider outage becomes your outage.</p><p>LLM failover solves this by automatically routing requests to a backup provider when the primary fails. Your application does not need to know which provider is handling the request.</p>
 
   <h2>How it works</h2>
-  <p>Your app already calls an API endpoint to reach the LLM provider, typically <code>/v1/chat/completions</code> for OpenAI-compatible APIs. An LLM proxy implements the same API. You change one URL in your app config, and all requests now flow through the proxy.</p><p>The proxy can then do any combination of: route to different providers based on model name, <a href="/what-is-prompt-caching/">cache identical requests</a>, enforce spend limits, redact PII, log every request for debugging, and <a href="/what-is-llm-failover/">fail over to backup providers</a> when one goes down.</p><p>Because the proxy speaks the same API as the provider, your application code does not need to know the proxy exists. Any SDK that works with OpenAI works with the proxy.</p>
+  <p>An LLM proxy maintains a list of providers that can handle a given model class. When a request to the primary provider fails (timeout, 5xx error, rate limit), the proxy retries the request against the next provider in the chain.</p><p>The retry happens transparently. Your application gets a response as if the primary provider handled it. The proxy logs which provider actually served the request, so you can track failover events.</p><p>More sophisticated implementations use health checks to detect degraded providers before they start failing requests, and route around them proactively.</p>
 
-  <h2>When you need one</h2>
-  <p>You probably need an LLM proxy if any of these are true: you use more than one LLM provider, you need to track costs per request, you want to cache responses to reduce latency and spend, you need audit logs for compliance, or you want to add safety guardrails without modifying application code.</p><p>You probably do not need one if you are calling a single provider with a few hundred requests per day and have no compliance requirements.</p>
+  <h2>Failover with model aliasing</h2>
+  <p>Failover works best with <a href="/what-is-model-aliasing/">model aliasing</a>. Your application requests <code>default-model</code>. The proxy maps that to <code>gpt-4o</code> on OpenAI, with <code>claude-sonnet-4-5-20250929</code> on Anthropic as the fallback. If OpenAI is down, the proxy routes to Anthropic automatically.</p><p>Without model aliasing, failover requires the backup provider to support the same model name, which limits your options to providers that offer OpenAI-compatible models.</p>
 
-  <h2>Self-hosted vs managed</h2>
-  <p>Some LLM proxies run as managed SaaS (Portkey, Helicone). Others are <a href="/self-hosted-llm-proxy/">self-hosted</a> (Stockyard, LiteLLM). The tradeoff is operational overhead vs data control. With a managed proxy, your prompts and completions flow through a third party. With a self-hosted proxy, everything stays on your infrastructure.</p><p>Stockyard is a <a href="/one-binary-llm-proxy/">self-hosted LLM proxy</a> that ships as a single binary with <a href="/why-sqlite/">embedded SQLite</a>. No external database, no Docker, no SaaS dependency. <a href="/guide/">Install it in under 60 seconds</a>.</p>
-
-  <h2>LLM proxy vs LLM gateway</h2>
-  <p>These terms are often used interchangeably. Some products call themselves gateways to emphasize API management features (authentication, rate limiting, request transformation). Others call themselves proxies to emphasize transparent request forwarding. For a detailed breakdown, see our <a href="/llm-gateway-vs-proxy/">LLM gateway vs proxy comparison</a>.</p>
+  <h2>Failover in Stockyard</h2>
+  <p>Stockyard includes automatic <a href="/features/llm-failover/">failover routing</a> as a built-in middleware module. Configure multiple providers, set a fallback chain, and the proxy handles the rest. Failed requests are retried against the next provider with the original request parameters.</p><p>Combined with <a href="/model-aliasing/">model aliasing</a> and <a href="/proxy-only/">proxy-only mode</a>, you can set up a resilient multi-provider routing layer in under 5 minutes. <a href="/guide/">Install Stockyard</a>.</p>
 
 </section>
 
@@ -98,7 +95,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <a href="/guide/" class="btn btn-primary">Get Started</a>
 </div>
 
-<div class="explore-bar">Explore: <a href="/what-is-prompt-caching/">Prompt caching</a> &middot; <a href="/what-is-llm-failover/">LLM failover</a> &middot; <a href="/what-is-model-aliasing/">Model aliasing</a> &middot; <a href="/guide/">Install guide</a></div>
+<div class="explore-bar">Explore: <a href="/what-is-model-aliasing/">Model aliasing</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/guide/">Install guide</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
