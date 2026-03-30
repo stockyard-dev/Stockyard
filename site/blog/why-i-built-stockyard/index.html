@@ -176,7 +176,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <li>OpenAI went down for 45 minutes on a Tuesday afternoon. My app went down with it.</li>
       <li>I realized I was paying for the exact same API response dozens of times because users kept asking similar questions.</li>
     </ol>
-    <p>These are not hard problems. Cost caps, failover routing, and response caching are solved problems in every other part of the stack. But for LLM APIs? You&rsquo;re on your own.</p>
+    <p>These are not hard problems. Cost caps, <a href="/what-is-llm-failover/">failover routing</a>, and <a href="/what-is-prompt-caching/">response caching</a> are solved problems in every other part of the stack. But for LLM APIs? You&rsquo;re on your own.</p>
     <p>I looked at the options. LiteLLM is the big one. But it&rsquo;s Python, it needs Redis and Postgres, and it&rsquo;s one monolithic proxy. I just wanted a spending cap. I didn&rsquo;t want to set up an entire infrastructure stack for it.</p>
     <p>So I built what I wanted: a single binary I could <a href="/guide/">download and run</a> in 10 seconds.</p>
 

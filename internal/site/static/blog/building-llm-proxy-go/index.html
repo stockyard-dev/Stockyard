@@ -86,7 +86,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </nav>
 
 <div class="post-layout" id="main">
-  <h1>Building an LLM proxy in Go: architecture decisions</h1>
+  <h1>Building an <a href="/what-is-llm-proxy/">LLM proxy</a> in Go: architecture decisions</h1>
   <div class="post-meta"><time datetime="2026-03-28">March 28, 2026</time> &middot; Michael</div>
 
   <p>Stockyard is an LLM proxy written in Go. It ships as a single ~25MB binary with embedded SQLite, 76 middleware modules, 29 integrated products, and a web console. No external dependencies, no runtime, no container required.</p>
@@ -121,7 +121,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>The middleware chain</h2>
 
-  <p>Stockyard has 76 middleware modules. Rate limiting, cost tracking, caching, PII redaction, prompt injection detection, model aliasing, failover routing, and more. They all run in a single request pipeline.</p>
+  <p>Stockyard has 76 middleware modules. Rate limiting, cost tracking, caching, PII redaction, prompt injection detection, <a href="/what-is-model-aliasing/">model aliasing</a>, <a href="/what-is-llm-failover/">failover routing</a>, and more. They all run in a single request pipeline.</p>
 
   <p>Each module implements a simple interface: receive the request, optionally modify it, optionally short-circuit it, or pass it to the next module. The chain is built at startup and modules can be toggled at runtime without restarting the server.</p>
 

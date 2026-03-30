@@ -6,15 +6,15 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Stockyard vs Kong AI Gateway — Stockyard">
-<meta property="og:description" content="Comparing self-hosted LLM proxy approaches. One binary vs enterprise API gateway.">
-<meta property="og:url" content="https://stockyard.dev/vs/kong/">
+<meta property="og:title" content="Stockyard vs AWS Bedrock — AWS Bedrock Alternative">
+<meta property="og:description" content="Stockyard vs AWS Bedrock: self-hosted LLM proxy vs managed AWS service. No vendor lock-in, no AWS dependency, zero external infrastructure.">
+<meta property="og:url" content="https://stockyard.dev/vs/aws-bedrock/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Stockyard vs Kong AI Gateway — Kong Alternative</title>
-<meta name="description" content="Stockyard vs Kong AI Gateway: self-hosted LLM proxy comparison. Single binary with zero dependencies vs enterprise API gateway requiring Postgres and admin UI.">
-<link rel="canonical" href="https://stockyard.dev/vs/kong/">
+<title>Stockyard vs AWS Bedrock — AWS Bedrock Alternative</title>
+<meta name="description" content="Stockyard vs AWS Bedrock: self-hosted LLM proxy vs managed AWS service. No vendor lock-in, no AWS dependency, zero external infrastructure.">
+<link rel="canonical" href="https://stockyard.dev/vs/aws-bedrock/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -74,36 +74,36 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 </nav>
 
 <header class="hero">
-  <h1>Stockyard <span class="vs">vs</span> <span class="them">Kong AI Gateway</span></h1>
+  <h1>Stockyard <span class="vs">vs</span> <span class="them">AWS Bedrock</span></h1>
   <p class="sub">Enterprise API gateway with AI plugins vs single-binary <a href="/what-is-llm-proxy/">LLM proxy</a>. Different scale, different tradeoffs.</p>
 </header>
 
 <section class="section">
   <table class="ct">
-    <tr><th>Feature</th><th class="us">Stockyard</th><th>Kong AI Gateway</th></tr>
-    <tr><td>Architecture</td><td class="us">Single Go binary, ~25MB</td><td class="them">Nginx/OpenResty + Postgres + Admin API</td></tr>
-    <tr><td>External database</td><td class="us">None (embedded SQLite)</td><td class="them">Postgres required</td></tr>
-    <tr><td>Install time</td><td class="us">~60 seconds</td><td class="them">~30 minutes (Docker Compose)</td></tr>
-    <tr><td>LLM providers</td><td class="us">40+ built-in</td><td class="them">Via AI proxy plugin</td></tr>
-    <tr><td>OpenAI-compatible</td><td class="us">&#10003; Native</td><td class="them">&#10003; Via plugin</td></tr>
-    <tr><td>Request tracing</td><td class="us">&#10003; Built-in (Lookout)</td><td class="them">Via separate plugins</td></tr>
-    <tr><td>Cost tracking</td><td class="us">&#10003; Per-request</td><td class="them">Not built-in</td></tr>
-    <tr><td>Middleware modules</td><td class="us">76 toggleable</td><td class="them">Plugin-based (install separately)</td></tr>
-    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">Logging plugins</td></tr>
-    <tr><td>API gateway features</td><td class="us">LLM-focused only</td><td class="them">&#10003; Full API gateway (rate limiting, auth, transforms)</td></tr>
-    <tr><td>License</td><td class="us">BSL 1.1</td><td class="them">Apache 2.0 (OSS) / Proprietary (Enterprise)</td></tr>
-    <tr><td>Target user</td><td class="us">Teams adding LLM proxy to existing stack</td><td class="them">Teams needing full API gateway with AI features</td></tr>
+    <tr><th>Feature</th><th class="us">Stockyard</th><th>AWS Bedrock</th></tr>
+    <tr><td>Architecture</td><td class="us">Single Go binary, runs anywhere</td><td class="them">AWS managed service</td></tr>
+    <tr><td>Vendor lock-in</td><td class="us">None — runs on any Linux/macOS/Windows</td><td class="them">AWS account required</td></tr>
+    <tr><td>Self-hosted</td><td class="us">&#10003; Default</td><td class="them">No — AWS only</td></tr>
+    <tr><td>LLM providers</td><td class="us">40+ (any provider)</td><td class="them">AWS-hosted models only</td></tr>
+    <tr><td>OpenAI-compatible API</td><td class="us">&#10003; Native</td><td class="them">Custom AWS SDK</td></tr>
+    <tr><td>External database</td><td class="us">None (embedded SQLite)</td><td class="them">DynamoDB / S3 (AWS managed)</td></tr>
+    <tr><td>Request tracing</td><td class="us">&#10003; Built-in (Lookout)</td><td class="them">Via CloudWatch</td></tr>
+    <tr><td>Cost tracking</td><td class="us">&#10003; Per-request, real-time</td><td class="them">Via AWS Cost Explorer (delayed)</td></tr>
+    <tr><td>Middleware modules</td><td class="us">76 toggleable</td><td class="them">Guardrails (separate service)</td></tr>
+    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">CloudTrail (separate service)</td></tr>
+    <tr><td>Pricing model</td><td class="us">Fixed tiers from $0/mo</td><td class="them">Pay-per-token + AWS infra costs</td></tr>
+    <tr><td>Install time</td><td class="us">~60 seconds</td><td class="them">~30 minutes (IAM, VPC, policies)</td></tr>
   </table>
   <p style="font-size:0.78rem;color:var(--cream-muted);text-align:center">Based on publicly available documentation as of March 2026.</p>
 
-  <h2>Different tools for different jobs</h2>
-  <p>Kong is an enterprise API gateway that added AI capabilities through plugins. Stockyard is purpose-built as an LLM proxy. The overlap is in routing LLM requests, but the approach is fundamentally different.</p><p>Kong gives you a full API gateway with rate limiting, authentication, request transforms, and service mesh capabilities. If you already run Kong for your API infrastructure, adding the AI proxy plugin makes sense. You get LLM routing integrated into your existing gateway.</p><p>Stockyard gives you a focused LLM proxy with 76 middleware modules, built-in tracing, cost tracking, and an <a href="/llm-audit-logs/">audit trail</a>. If you need a dedicated LLM layer without the overhead of a general-purpose API gateway, Stockyard is simpler to deploy and operate.</p>
+  <h2>Different models</h2>
+  <p>AWS Bedrock gives you access to models hosted on AWS infrastructure: Anthropic Claude, Meta Llama, Mistral, Amazon Titan, and others. You use them through the AWS SDK with IAM authentication.</p><p>Stockyard routes to any provider through a single <a href="/openai-compatible-proxy/">OpenAI-compatible endpoint</a>. You can call OpenAI, Anthropic, Google, Groq, DeepSeek, and 35+ others without separate SDK integrations. If you want to use Bedrock as one of your providers, Stockyard can route to it alongside your other providers.</p>
 
-  <h2>The dependency question</h2>
-  <p>Kong requires Postgres for its configuration store and typically runs as a Docker Compose stack with multiple services. Stockyard is a <a href="/one-binary-llm-proxy/">single binary</a> with <a href="/why-sqlite/">embedded SQLite</a>. No external database, no container orchestration.</p><p>For teams that already run Kong, adding AI features to it avoids a new service. For teams that do not have Kong, deploying it just for LLM routing adds significant operational overhead compared to running Stockyard.</p>
+  <h2>The lock-in question</h2>
+  <p>Bedrock ties your LLM infrastructure to AWS. Your application uses the AWS SDK, your IAM policies control access, your CloudWatch monitors performance. Moving to another cloud or adding non-AWS models means significant rework.</p><p>Stockyard is a <a href="/one-binary-llm-proxy/">single binary</a> that runs on any server. Move it between AWS, GCP, Azure, Railway, or your own hardware by copying one file. Add or remove providers with a config change, not an infrastructure migration.</p>
 
   <h2>When to choose each</h2>
-  <p><strong>Choose Kong</strong> if you already run Kong for API management, need a general-purpose API gateway, or require enterprise support and compliance features. The AI plugins add LLM routing to your existing infrastructure.</p><p><strong>Choose Stockyard</strong> if you want a dedicated <a href="/self-hosted-llm-proxy/">self-hosted LLM proxy</a> with zero dependencies, built-in observability, and <a href="/proxy-only/">proxy-only mode</a> that lets you start routing in under 60 seconds.</p>
+  <p><strong>Choose AWS Bedrock</strong> if your entire stack is on AWS, you only need AWS-hosted models, you want AWS to manage the infrastructure, and you are comfortable with AWS pricing and vendor lock-in.</p><p><strong>Choose Stockyard</strong> if you want multi-provider routing, need to avoid vendor lock-in, want a <a href="/self-hosted-llm-proxy/">self-hosted proxy</a> with <a href="/why-sqlite/">zero dependencies</a>, or need features like <a href="/what-is-model-aliasing/">model aliasing</a>, <a href="/what-is-prompt-caching/">prompt caching</a>, and <a href="/llm-audit-logs/">audit trails</a> built into the proxy layer.</p>
 
   <div class="cta-row">
     <a href="/guide/" class="cta cta-primary">Try Stockyard &rarr;</a>
@@ -111,10 +111,10 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <a href="/pricing/" class="cta cta-ghost">See pricing</a>
   </div>
 
-  <div class="also">Also compare: <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/aws-bedrock/">vs AWS Bedrock</a> &nbsp;&middot;&nbsp; <a href="/vs/azure-ai-gateway/">vs Azure AI</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a></div>
+  <div class="also">Also compare: <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/kong/">vs Kong</a> &nbsp;&middot;&nbsp; <a href="/vs/azure-ai-gateway/">vs Azure AI</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a></div>
 </section>
 
-<div class="explore-bar">Explore: <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/guide/">Install guide</a></div>
+<div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/guide/">Install guide</a></div>
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a></p>

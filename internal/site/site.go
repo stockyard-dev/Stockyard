@@ -305,6 +305,8 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/what-is-model-aliasing/",
 		"/what-is-prompt-caching/",
 		"/what-is-llm-failover/",
+		"/vs/aws-bedrock/",
+		"/vs/azure-ai-gateway/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

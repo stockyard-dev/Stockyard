@@ -90,7 +90,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <p>You shipped a feature that uses an LLM API. Usage grew. The bill followed. Now you are looking at the invoice trying to figure out where the money went and how to make it stop.</p>
 
-  <p>This is not a pricing problem. It is a visibility and control problem. Most LLM providers give you an API key and a dashboard that shows aggregate spend a day or two behind. They do not give you per-request cost tracking, spending caps, caching, or model routing. You are expected to build all of that yourself, or just absorb the cost.</p>
+  <p>This is not a pricing problem. It is a visibility and control problem. Most LLM providers give you an API key and a dashboard that shows aggregate spend a day or two behind. They do not give you per-request cost tracking, spending caps, <a href="/what-is-prompt-caching/">caching</a>, or <a href="/what-is-model-aliasing/">model routing</a>. You are expected to build all of that yourself, or just absorb the cost.</p>
 
   <p>There are really only four levers that matter for controlling LLM costs, and most teams are not using any of them.</p>
 
@@ -132,7 +132,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <p>Not every request needs your most expensive model. A classification task, a simple extraction, or a formatting operation probably works fine on a smaller, cheaper model. But switching models usually means changing code, redeploying, and hoping nothing breaks.</p>
 
-  <p>Model aliasing lets you decouple model selection from application code. Your app requests a logical name like "fast" or "smart." The proxy maps it to a real model. When you want to swap gpt-4o for gpt-4o-mini on your classification endpoint, you change one alias instead of redeploying.</p>
+  <p><a href="/what-is-model-aliasing/">Model aliasing</a> lets you decouple model selection from application code. Your app requests a logical name like "fast" or "smart." The proxy maps it to a real model. When you want to swap gpt-4o for gpt-4o-mini on your classification endpoint, you change one alias instead of redeploying.</p>
 
   <pre>
 <span class="comment"># Map "fast" to the cheapest model</span>

@@ -219,7 +219,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <h2>Where Stockyard wins</h2>
   <p><strong style="color:var(--cream)">Zero external dependencies.</strong> No Postgres to manage, no Redis to monitor, no separate UI to deploy. Everything runs in one process and stores data in one SQLite file. This is not just simpler to set up — it is simpler to operate, backup, and debug over time.</p>
   <p><strong style="color:var(--cream)">Built-in observability.</strong> Stockyard traces every request from the first one you send. Costs, latency, token counts, model usage, and a full audit ledger are recorded automatically. With LiteLLM, you get request routing but need Langfuse, Helicone, or a custom callback setup for comparable observability.</p>
-  <p><strong style="color:var(--cream)">76 middleware modules.</strong> Rate limiting, cost caps, PII redaction, content filtering, prompt injection detection, semantic caching, model aliasing, and more — all toggleable at runtime without restarting. LiteLLM has callback hooks, but each capability requires wiring an external service.</p>
+  <p><strong style="color:var(--cream)">76 middleware modules.</strong> Rate limiting, cost caps, PII redaction, content filtering, prompt injection detection, semantic caching, <a href="/what-is-model-aliasing/">model aliasing</a>, and more — all toggleable at runtime without restarting. LiteLLM has callback hooks, but each capability requires wiring an external service.</p>
   <p><strong style="color:var(--cream)">Model-aware failover.</strong> Stockyard routes Claude requests to Anthropic first and GPT requests to OpenAI first, with circuit breakers that track provider health per model. If a provider goes down, failover happens automatically with shared HTTP transport. LiteLLM supports fallback model lists but without model-aware routing or circuit breaker state.</p>
   <p><strong style="color:var(--cream)">Operational simplicity.</strong> Upgrades are downloading a new binary. Backups are copying a file. There is no migration coordination between services, no version matrix between proxy and database, no Redis cache invalidation after a restart.</p>
 
@@ -245,7 +245,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <a href="/pricing/" class="cta cta-ghost">See pricing</a>
   </div>
 
-  <div class="also">Also compare: <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/kong/">vs Kong</a> &nbsp;&middot;&nbsp; <a href="/vs/braintrust/">vs Braintrust</a></div>
+  <div class="also">Also compare: <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/kong/">vs Kong</a> &nbsp;&middot;&nbsp; <a href="/vs/aws-bedrock/">vs AWS Bedrock</a></div>
 </section>
 
 <div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/model-aliasing/">Model aliasing</a></div>

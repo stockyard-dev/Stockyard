@@ -90,7 +90,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>When you need just a proxy</h2>
   <p>You have one team, one app, and one or two providers. You want to swap between OpenAI and Anthropic without changing application code. You want cost tracking and maybe caching. You do not need user management, billing, or multi-tenant isolation.</p>
-  <p>A proxy-only setup gets you <a href="/model-aliasing/">model aliasing</a>, provider failover, request logging, and basic cost tracking with minimal overhead. Stockyard calls this <a href="/proxy-only/">proxy-only mode</a>.</p>
+  <p>A proxy-only setup gets you <a href="/model-aliasing/">model aliasing</a>, <a href="/what-is-llm-failover/">provider failover</a>, request logging, and basic cost tracking with minimal overhead. Stockyard calls this <a href="/proxy-only/">proxy-only mode</a>.</p>
 
   <h2>When you need a gateway</h2>
   <p>Multiple teams share the same LLM infrastructure. You need per-team API keys, spend caps, rate limits, and audit trails. You are building a platform where internal or external users consume LLM capabilities through your API.</p>
@@ -122,7 +122,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </div>
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between an LLM gateway and an LLM proxy?","acceptedAnswer":{"@type":"Answer","text":"An LLM proxy forwards requests to providers with optional logging and caching. An LLM gateway adds authentication, rate limiting, billing, and multi-tenant isolation on top of the proxy layer."}},{"@type":"Question","name":"Do I need an LLM gateway or just a proxy?","acceptedAnswer":{"@type":"Answer","text":"If you have one team and one app, a proxy is enough. If multiple teams share LLM infrastructure and you need per-team billing and access control, you need a gateway."}},{"@type":"Question","name":"Can I start with a proxy and add gateway features later?","acceptedAnswer":{"@type":"Answer","text":"With Stockyard, yes. Every gateway feature is a runtime-toggleable module. Start with proxy-only mode and enable multi-tenancy, spend caps, and audit logs when you need them."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between an LLM gateway and an <a href="/what-is-llm-proxy/">LLM proxy</a>?","acceptedAnswer":{"@type":"Answer","text":"An LLM proxy forwards requests to providers with optional logging and caching. An LLM gateway adds authentication, rate limiting, billing, and multi-tenant isolation on top of the proxy layer."}},{"@type":"Question","name":"Do I need an LLM gateway or just a proxy?","acceptedAnswer":{"@type":"Answer","text":"If you have one team and one app, a proxy is enough. If multiple teams share LLM infrastructure and you need per-team billing and access control, you need a gateway."}},{"@type":"Question","name":"Can I start with a proxy and add gateway features later?","acceptedAnswer":{"@type":"Answer","text":"With Stockyard, yes. Every gateway feature is a runtime-toggleable module. Start with proxy-only mode and enable multi-tenancy, spend caps, and audit logs when you need them."}}]}
 </script>
 <div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/products/">All products</a> &middot; <a href="/model-aliasing/">Model aliasing</a> &middot; <a href="/architecture/">Architecture</a></div>
 <footer>

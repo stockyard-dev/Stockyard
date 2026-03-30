@@ -83,14 +83,14 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 </div>
 
 <div class="section">
-  <h2>What makes a good self-hosted LLM proxy?</h2>
+  <h2>What makes a good self-hosted <a href="/what-is-llm-proxy/">LLM proxy</a>?</h2>
   <p>A self-hosted LLM proxy sits between your application and LLM providers. It routes requests, tracks costs, adds guardrails, and keeps your data on your own infrastructure. The best ones minimize operational burden while maximizing control.</p>
   <p>The criteria that matter most: how many providers does it support out of the box? How much infrastructure does it require beyond the proxy itself? Can you deploy it in five minutes or does it need a weekend? Does it handle streaming, function calling, and the latest model features?</p>
 
   <h2>The options</h2>
 
   <h3>Stockyard</h3>
-  <p>Single Go binary with embedded SQLite. Ships as a ~25MB download, runs with zero external dependencies. 76 middleware modules for cost tracking, PII redaction, rate limiting, caching, and model aliasing. 40 provider integrations. <a href="/openai-compatible-proxy/">OpenAI-compatible API</a> so any SDK that talks to <code>/v1/chat/completions</code> works without code changes. BSL 1.1 licensed.</p>
+  <p>Single Go binary with embedded SQLite. Ships as a ~25MB download, runs with zero external dependencies. 76 middleware modules for cost tracking, PII redaction, rate limiting, caching, and <a href="/what-is-model-aliasing/">model aliasing</a>. 40 provider integrations. <a href="/openai-compatible-proxy/">OpenAI-compatible API</a> so any SDK that talks to <code>/v1/chat/completions</code> works without code changes. BSL 1.1 licensed.</p>
   <p>The tradeoff: SQLite means single-node. No horizontal scaling. If you need multi-region clustering, this is not the right tool. If you need a proxy that runs on one server and just works, it is.</p>
   <p><a href="/guide/" class="btn btn-primary">Try Stockyard</a></p>
 
@@ -108,7 +108,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h3>Custom Nginx/Envoy</h3>
   <p>You can build an LLM proxy with Nginx reverse proxy rules or Envoy filters. Zero dependencies beyond the proxy itself. Maximum control.</p>
-  <p>The tradeoff: you build everything yourself. No cost tracking, no model aliasing, no provider failover, no token counting, no streaming support out of the box. Every feature is a custom implementation.</p>
+  <p>The tradeoff: you build everything yourself. No cost tracking, no model aliasing, no <a href="/what-is-llm-failover/">provider failover</a>, no token counting, no streaming support out of the box. Every feature is a custom implementation.</p>
 
   <table class="compare-table">
     <tr><th>Feature</th><th>Stockyard</th><th>LiteLLM</th><th>Portkey</th><th>Kong AI</th></tr>

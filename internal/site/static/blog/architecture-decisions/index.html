@@ -169,7 +169,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h1>Architecture Decisions Behind Stockyard</h1>
     <div class="post-meta"><time datetime="2026-02-10">February 10, 2026</time> &middot; Michael</div>
 
-    <p>Every architectural decision in Stockyard traces back to one principle: a developer should be able to go from zero to a fully-instrumented LLM proxy in under 60 seconds. Here&rsquo;s what that forced us to choose, and what we gave up.</p>
+    <p>Every architectural decision in Stockyard traces back to one principle: a developer should be able to go from zero to a fully-instrumented <a href="/what-is-llm-proxy/">LLM proxy</a> in under 60 seconds. Here&rsquo;s what that forced us to choose, and what we gave up.</p>
 
     <h2>Go over Python</h2>
     <p>The LLM tooling ecosystem is overwhelmingly Python. We chose Go anyway. The reason is deployment: a Go binary is a single static file. No virtualenvs, no pip dependencies, no version conflicts, no runtime. Download it, run it.</p>
