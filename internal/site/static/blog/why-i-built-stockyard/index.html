@@ -175,7 +175,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </ol>
     <p>These are not hard problems. Cost caps, failover routing, and response caching are solved problems in every other part of the stack. But for LLM APIs? You&rsquo;re on your own.</p>
     <p>I looked at the options. LiteLLM is the big one. But it&rsquo;s Python, it needs Redis and Postgres, and it&rsquo;s one monolithic proxy. I just wanted a spending cap. I didn&rsquo;t want to set up an entire infrastructure stack for it.</p>
-    <p>So I built what I wanted: a single binary I could download and run in 10 seconds.</p>
+    <p>So I built what I wanted: a single binary I could <a href="/guide/">download and run</a> in 10 seconds.</p>
 
     <h2>What Stockyard is</h2>
     <p>Stockyard is a Go proxy that sits between your app and any LLM provider. You don&rsquo;t change your application code &mdash; you just point your <code>OPENAI_BASE_URL</code> at Stockyard instead of directly at OpenAI.</p>
@@ -242,7 +242,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </p>
 </div>
 
-<div class="explore-bar">Explore: <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a></div>
+<div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/guide/">Install guide</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/why-sqlite/">Why SQLite</a></div>
 <footer>
   <p class="sig">Stockyard.</p>
   <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>

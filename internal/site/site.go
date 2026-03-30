@@ -294,6 +294,11 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/blog/self-hosted-vs-saas-llm-proxy/",
 		"/providers/",
 		"/docs/providers/",
+		"/best-self-hosted-llm-proxy/",
+		"/llm-gateway-vs-proxy/",
+		"/llm-cost-tracking/",
+		"/llm-audit-logs/",
+		"/one-binary-llm-proxy/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

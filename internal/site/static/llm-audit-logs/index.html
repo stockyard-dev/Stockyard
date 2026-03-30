@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Audit Logs for LLM Traffic — Tamper-Evident, Self-Hosted — Stockyard</title>
+<meta name="description" content="Hash-chained audit logs for every LLM request and response. Tamper-evident, self-hosted, compliance-ready. Built for regulated industries using AI.">
+<meta property="og:title" content="LLM Audit Logs — Tamper-Evident, Self-Hosted">
+<meta property="og:description" content="Every prompt, every completion, every decision. Hash-chained audit trail on your own infrastructure.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/llm-audit-logs/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/llm-audit-logs/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section h2{font-family:var(--font-mono);font-size:1.1rem;color:var(--cream);margin-bottom:1rem}
+.section h3{font-family:var(--font-mono);font-size:0.95rem;color:var(--rust-light);margin:2rem 0 0.8rem}
+.section p{margin-bottom:1rem;color:var(--cream-dim);font-size:0.92rem}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+.compare-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.78rem;margin:1.5rem 0}
+.compare-table th{text-align:left;padding:0.8rem;border-bottom:2px solid var(--rust);color:var(--cream);font-weight:600}
+.compare-table td{padding:0.7rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+.compare-table tr:hover td{background:var(--bg2)}
+.check{color:var(--green-light)}.cross{color:var(--rust)}
+.cta-box{background:var(--bg2);border:1px solid var(--bg3);padding:2rem;text-align:center;margin:2rem 0}
+.cta-box p{color:var(--cream-dim);margin-bottom:1rem;font-size:0.9rem}
+.faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem}
+.faq-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:2rem;text-align:center}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.2rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer}
+.faq-q::before{content:'Q. ';color:var(--rust)}
+.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Compliance</div>
+  <h1><span class="accent">Audit Logs</span> for LLM Traffic</h1>
+  <p class="sub">Every prompt, every completion, every decision. Hash-chained, tamper-evident, stored on your infrastructure. Built for teams that answer to compliance.</p>
+</div>
+
+<div class="section">
+  <h2>Why LLM traffic needs audit logs</h2>
+  <p>Regulated industries cannot deploy LLM features without proving what the model said, when it said it, and what safeguards were in place. Healthcare, finance, legal, and government teams need an audit trail that survives legal discovery.</p>
+  <p>Standard application logging is not enough. LLM audit logs need to capture the full request and response, the model and provider used, which guardrails were active, whether PII was detected and redacted, and a tamper-evident chain of custody.</p>
+
+  <h2>How Stockyard handles audit</h2>
+  <p>The <a href="/docs/trust/">Brand product</a> (formerly Trust) maintains a hash-chained audit ledger. Every entry includes a SHA-256 hash of the previous entry, making the chain tamper-evident. If any record is modified or deleted, the chain breaks and the tampering is detectable.</p>
+  <p>Audit entries capture: the full prompt and completion (optionally redacted), the model and provider, active middleware modules, PII detection results, content policy decisions, latency and token counts, and the requesting user or API key.</p>
+
+  <div class="code-block">
+<span class="comment"># Query the audit ledger</span>
+<span class="cmd">curl http://localhost:7749/api/trust/ledger?limit=10</span>
+
+<span class="comment"># Export compliance evidence pack</span>
+<span class="cmd">curl http://localhost:7749/api/trust/evidence-pack \</span>
+<span class="cmd">  -d '{"start":"2026-03-01","end":"2026-03-31"}'</span>
+  </div>
+
+  <h2>Self-hosted matters for compliance</h2>
+  <p>Sending audit data to a SaaS observability tool creates a new compliance surface. Now your audit trail lives on someone else's infrastructure, subject to their security posture and data handling policies.</p>
+  <p>Stockyard keeps everything in <a href="/why-sqlite/">embedded SQLite</a> on your server. The audit ledger, the traces, the cost data. Your compliance team can point auditors at a server you control, not a third-party dashboard.</p>
+
+  <div class="cta-box">
+    <p>Compliance-ready audit logs. No SaaS dependency. No data leaving your network.</p>
+    <a href="/guide/" class="btn btn-primary">Install Stockyard</a> <a href="/self-hosted-llm-proxy/" class="btn btn-secondary" style="margin-left:0.5rem">Why self-hosted</a>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are Stockyard audit logs tamper-evident?","acceptedAnswer":{"@type":"Answer","text":"Yes. The Brand audit ledger uses SHA-256 hash chaining. Each entry includes the hash of the previous entry, so any modification or deletion breaks the chain and is immediately detectable."}},{"@type":"Question","name":"What data is captured in LLM audit logs?","acceptedAnswer":{"@type":"Answer","text":"Full prompt and completion text, model and provider, active middleware modules, PII detection results, content policy decisions, token counts, latency, and the requesting API key or user identity."}},{"@type":"Question","name":"Can I export audit data for compliance reviews?","acceptedAnswer":{"@type":"Answer","text":"Yes. The evidence pack API exports a date-range of audit entries in a format suitable for compliance reviews, including the hash chain for verification."}}]}
+</script>
+<div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/products/">All products</a> &middot; <a href="/pricing/">Pricing</a></div>
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>

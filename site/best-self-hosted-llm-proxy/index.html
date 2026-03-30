@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>Best Self-Hosted LLM Proxy (2026) — Stockyard vs LiteLLM vs Portkey vs Kong</title>
+<meta name="description" content="Compare self-hosted LLM proxy options: Stockyard, LiteLLM, Portkey, Kong. Deployment complexity, provider coverage, and operational overhead compared.">
+<meta property="og:title" content="Best Self-Hosted LLM Proxy — 2026 Comparison">
+<meta property="og:description" content="Compare every self-hosted LLM proxy option on deployment, providers, and operational overhead.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/best-self-hosted-llm-proxy/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/best-self-hosted-llm-proxy/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section h2{font-family:var(--font-mono);font-size:1.1rem;color:var(--cream);margin-bottom:1rem}
+.section h3{font-family:var(--font-mono);font-size:0.95rem;color:var(--rust-light);margin:2rem 0 0.8rem}
+.section p{margin-bottom:1rem;color:var(--cream-dim);font-size:0.92rem}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+.compare-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.78rem;margin:1.5rem 0}
+.compare-table th{text-align:left;padding:0.8rem;border-bottom:2px solid var(--rust);color:var(--cream);font-weight:600}
+.compare-table td{padding:0.7rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+.compare-table tr:hover td{background:var(--bg2)}
+.check{color:var(--green-light)}.cross{color:var(--rust)}
+.cta-box{background:var(--bg2);border:1px solid var(--bg3);padding:2rem;text-align:center;margin:2rem 0}
+.cta-box p{color:var(--cream-dim);margin-bottom:1rem;font-size:0.9rem}
+.faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem}
+.faq-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:2rem;text-align:center}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.2rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer}
+.faq-q::before{content:'Q. ';color:var(--rust)}
+.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">2026 Comparison</div>
+  <h1>Best <span class="accent">Self-Hosted LLM Proxy</span> Tools</h1>
+  <p class="sub">Every option for routing LLM traffic through your own infrastructure, compared on what actually matters: deployment complexity, provider coverage, and operational overhead.</p>
+</div>
+
+<div class="section">
+  <h2>What makes a good self-hosted LLM proxy?</h2>
+  <p>A self-hosted LLM proxy sits between your application and LLM providers. It routes requests, tracks costs, adds guardrails, and keeps your data on your own infrastructure. The best ones minimize operational burden while maximizing control.</p>
+  <p>The criteria that matter most: how many providers does it support out of the box? How much infrastructure does it require beyond the proxy itself? Can you deploy it in five minutes or does it need a weekend? Does it handle streaming, function calling, and the latest model features?</p>
+
+  <h2>The options</h2>
+
+  <h3>Stockyard</h3>
+  <p>Single Go binary with embedded SQLite. Ships as a ~25MB download, runs with zero external dependencies. 76 middleware modules for cost tracking, PII redaction, rate limiting, caching, and model aliasing. 40 provider integrations. <a href="/openai-compatible-proxy/">OpenAI-compatible API</a> so any SDK that talks to <code>/v1/chat/completions</code> works without code changes. BSL 1.1 licensed.</p>
+  <p>The tradeoff: SQLite means single-node. No horizontal scaling. If you need multi-region clustering, this is not the right tool. If you need a proxy that runs on one server and just works, it is.</p>
+  <p><a href="/guide/" class="btn btn-primary">Try Stockyard</a></p>
+
+  <h3>LiteLLM</h3>
+  <p>Python-based proxy with broad provider support (100+ models). Requires Python, pip, and typically Postgres for production use. Good if your team already runs Python infrastructure and needs a proxy they can extend with custom Python code. Active open-source community.</p>
+  <p>The tradeoff: Python runtime adds deployment complexity. Postgres dependency means another service to manage. Cold starts can be slow. <a href="/vs/litellm/">Full comparison</a>.</p>
+
+  <h3>Portkey</h3>
+  <p>Primarily a SaaS product with a gateway component. Strong observability features and a polished dashboard. The self-hosted option requires Docker and external databases.</p>
+  <p>The tradeoff: self-hosted mode is not the primary product. Fewer battle-tested self-hosted deployments in the wild. <a href="/vs/portkey/">Full comparison</a>.</p>
+
+  <h3>Kong AI Gateway</h3>
+  <p>Enterprise API gateway with LLM plugins. Mature infrastructure, battle-tested at scale. If you already run Kong for your API layer, adding LLM routing is natural.</p>
+  <p>The tradeoff: massive operational footprint. Postgres required. Configuration is complex. Overkill if all you need is an LLM proxy.</p>
+
+  <h3>Custom Nginx/Envoy</h3>
+  <p>You can build an LLM proxy with Nginx reverse proxy rules or Envoy filters. Zero dependencies beyond the proxy itself. Maximum control.</p>
+  <p>The tradeoff: you build everything yourself. No cost tracking, no model aliasing, no provider failover, no token counting, no streaming support out of the box. Every feature is a custom implementation.</p>
+
+  <table class="compare-table">
+    <tr><th>Feature</th><th>Stockyard</th><th>LiteLLM</th><th>Portkey</th><th>Kong AI</th></tr>
+    <tr><td>Self-contained binary</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+    <tr><td>No external DB</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td><td class="cross">&#10007;</td></tr>
+    <tr><td>Providers (built-in)</td><td>40</td><td>100+</td><td>20+</td><td>10+</td></tr>
+    <tr><td>Middleware modules</td><td>76</td><td>~15</td><td>~20</td><td>~10</td></tr>
+    <tr><td>Deploy time</td><td>&lt;5 min</td><td>~30 min</td><td>~1 hr</td><td>~2 hr</td></tr>
+    <tr><td>OpenAI-compatible</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+    <tr><td>Cost tracking</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td>Plugin</td></tr>
+    <tr><td>PII redaction</td><td class="check">&#10003;</td><td class="cross">&#10007;</td><td class="check">&#10003;</td><td class="cross">&#10007;</td></tr>
+  </table>
+
+  <div class="cta-box">
+    <p>Stockyard installs in one command. No Docker, no Postgres, no Python.</p>
+    <a href="/guide/" class="btn btn-primary">Get started in 5 minutes</a>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the fastest self-hosted LLM proxy to deploy?","acceptedAnswer":{"@type":"Answer","text":"Stockyard deploys in under 5 minutes. Download a single binary, set one environment variable for your provider API key, and start it. No Docker, no database setup, no package manager."}},{"@type":"Question","name":"Do I need Postgres to run a self-hosted LLM proxy?","acceptedAnswer":{"@type":"Answer","text":"Not with Stockyard. It uses embedded SQLite for all storage including traces, cost tracking, and configuration. Other proxies like LiteLLM and Kong typically require Postgres."}},{"@type":"Question","name":"Can I use a self-hosted proxy with any LLM provider?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard supports 40 providers including OpenAI, Anthropic, Google, Groq, Mistral, DeepSeek, and local models via Ollama. All through a single OpenAI-compatible API endpoint."}}]}
+</script>
+<div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/why-sqlite/">Why SQLite</a></div>
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>One Binary LLM Proxy — No Docker, No Postgres, No Redis — Stockyard</title>
+<meta name="description" content="LLM proxy that ships as a single ~25MB Go binary with embedded SQLite. Zero external dependencies. Install in one command, run anywhere.">
+<meta property="og:title" content="One Binary LLM Proxy — Zero Dependencies">
+<meta property="og:description" content="No Docker. No Postgres. No Redis. One binary that runs your entire LLM infrastructure stack.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/one-binary-llm-proxy/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/one-binary-llm-proxy/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
+.hero{max-width:720px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,2.8rem);line-height:1.2;margin-bottom:1.5rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section h2{font-family:var(--font-mono);font-size:1.1rem;color:var(--cream);margin-bottom:1rem}
+.section h3{font-family:var(--font-mono);font-size:0.95rem;color:var(--rust-light);margin:2rem 0 0.8rem}
+.section p{margin-bottom:1rem;color:var(--cream-dim);font-size:0.92rem}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.code-block{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;color:var(--cream-dim);overflow-x:auto;margin:1.5rem 0}
+.code-block .cmd{color:var(--cream)}.code-block .comment{color:var(--cream-muted)}.code-block .output{color:var(--green-light)}
+.compare-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.78rem;margin:1.5rem 0}
+.compare-table th{text-align:left;padding:0.8rem;border-bottom:2px solid var(--rust);color:var(--cream);font-weight:600}
+.compare-table td{padding:0.7rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
+.compare-table tr:hover td{background:var(--bg2)}
+.check{color:var(--green-light)}.cross{color:var(--rust)}
+.cta-box{background:var(--bg2);border:1px solid var(--bg3);padding:2rem;text-align:center;margin:2rem 0}
+.cta-box p{color:var(--cream-dim);margin-bottom:1rem;font-size:0.9rem}
+.faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem}
+.faq-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:2rem;text-align:center}
+.faq-item{border-bottom:1px solid var(--bg3);padding:1.2rem 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-family:var(--font-mono);font-size:0.88rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer}
+.faq-q::before{content:'Q. ';color:var(--rust)}
+.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Architecture</div>
+  <h1><span class="accent">One Binary.</span> Zero Dependencies.</h1>
+  <p class="sub">No Docker. No Postgres. No Redis. No Python. One ~25MB Go binary that runs your entire LLM proxy, tracing, and security stack.</p>
+</div>
+
+<div class="section">
+  <h2>Why one binary matters</h2>
+  <p>Every dependency is a failure mode. Postgres needs backups, upgrades, and monitoring. Redis needs memory tuning and persistence configuration. Docker adds a layer of abstraction that complicates debugging. Python needs virtual environments and package management.</p>
+  <p>Stockyard compiles to a single static binary. It embeds SQLite for all storage, serves its own dashboard, and runs its own API server. You download it, set an environment variable, and start it. That is the entire deployment.</p>
+
+  <div class="code-block">
+<span class="comment"># That's it. The whole install.</span>
+<span class="cmd">curl -fsSL https://stockyard.dev/install.sh | sh</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="cmd">stockyard</span>
+<span class="output">&#9733; Stockyard running on :7749</span>
+<span class="output">  Dashboard: http://localhost:7749/ui</span>
+<span class="output">  Proxy:     http://localhost:7749/v1</span>
+  </div>
+
+  <h2>What is inside the binary</h2>
+  <p>The ~25MB binary contains: an <a href="/openai-compatible-proxy/">OpenAI-compatible proxy</a> with 76 middleware modules, <a href="/why-sqlite/">embedded SQLite</a> for traces/costs/config, a Preact dashboard, 40 provider integrations, a CLI, and 29 product modules from cost tracking to adversarial testing.</p>
+  <p>There is no separate database to install. No message queue. No cache layer. No sidecar. The binary is the entire platform.</p>
+
+  <h2>How SQLite replaces Postgres</h2>
+  <p>Stockyard uses <code>modernc.org/sqlite</code>, a pure-Go SQLite implementation. No CGO, no shared libraries. The database file lives next to the binary. Backups are a file copy. There is no connection pooling to configure, no schema migrations to manage across versions, no replication topology to design.</p>
+  <p>The tradeoff is real: SQLite is single-writer, single-node. Stockyard will never be a distributed system. For the target use case (one proxy per team, handling hundreds of requests per second), this is not a limitation. It is a simplification. <a href="/why-sqlite/">Full writeup on why SQLite</a>.</p>
+
+  <h2>Operational benefits</h2>
+  <p>Upgrades: download the new binary, restart the process. Backups: copy the SQLite file. Monitoring: one process, one port. Debugging: one log stream. Security surface: one binary, no network-accessible databases, no shared dependencies.</p>
+  <p>This is infrastructure that a single developer can operate. No DevOps team required. No Kubernetes cluster. No Terraform modules. One binary on one server.</p>
+
+  <div class="cta-box">
+    <p>Download the binary. Set one env var. You are running.</p>
+    <a href="/guide/" class="btn btn-primary">Install in 5 minutes</a> <a href="/architecture/" class="btn btn-secondary" style="margin-left:0.5rem">Architecture deep dive</a>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How big is the Stockyard binary?","acceptedAnswer":{"@type":"Answer","text":"Approximately 25MB. It includes the proxy, dashboard, SQLite engine, all 76 middleware modules, and 40 provider integrations. No additional downloads or dependencies required."}},{"@type":"Question","name":"Does Stockyard need Docker?","acceptedAnswer":{"@type":"Answer","text":"No. Stockyard is a static binary that runs directly on Linux, macOS, or Windows. Docker images are available for convenience but not required."}},{"@type":"Question","name":"Can a single binary handle production LLM traffic?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard handles hundreds of requests per second on a single node. The embedded SQLite database is optimized for the write patterns of LLM proxy traffic. For most teams, a single instance is more than sufficient."}}]}
+</script>
+<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/architecture/">Architecture</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/guide/">Install guide</a></div>
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+</body>
+</html>
