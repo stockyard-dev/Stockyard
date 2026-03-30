@@ -118,7 +118,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How big is the Stockyard binary?","acceptedAnswer":{"@type":"Answer","text":"Approximately 25MB. It includes the proxy, dashboard, SQLite engine, all 76 middleware modules, and 40 provider integrations. No additional downloads or dependencies required."}},{"@type":"Question","name":"Does Stockyard need Docker?","acceptedAnswer":{"@type":"Answer","text":"No. Stockyard is a static binary that runs directly on Linux, macOS, or Windows. Docker images are available for convenience but not required."}},{"@type":"Question","name":"Can a single binary handle production LLM traffic?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard handles hundreds of requests per second on a single node. The embedded SQLite database is optimized for the write patterns of LLM proxy traffic. For most teams, a single instance is more than sufficient."}}]}
 </script>
-<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/architecture/">Architecture</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/guide/">Install guide</a></div>
+<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/architecture/">Architecture</a> &middot; <a href="/providers/ollama/">Ollama</a> &middot; <a href="/providers/openai/">Openai</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>

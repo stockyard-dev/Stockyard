@@ -117,7 +117,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does Stockyard calculate LLM costs?","acceptedAnswer":{"@type":"Answer","text":"Stockyard counts input and output tokens per request and multiplies by the provider pricing for that model. Costs are calculated in real time and stored in the local SQLite database."}},{"@type":"Question","name":"Can I set spend limits per user or team?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard supports daily and monthly spend caps per API key, per user, and per team. When a cap is reached, requests are blocked or routed to a cheaper model depending on configuration."}},{"@type":"Question","name":"Does cost tracking require sending data to a third party?","acceptedAnswer":{"@type":"Answer","text":"No. All cost data is stored in embedded SQLite on your own infrastructure. No prompts, completions, or cost data leaves your network."}}]}
 </script>
-<div class="explore-bar">Explore: <a href="/pricing/">Stockyard pricing</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/blog/llm-api-pricing-2026/">LLM API pricing 2026</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a></div>
+<div class="explore-bar">Explore: <a href="/pricing/">Stockyard pricing</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/deepseek/">Deepseek</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
