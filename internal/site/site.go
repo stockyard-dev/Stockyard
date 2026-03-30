@@ -432,6 +432,18 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
+	// Serve RSS feed
+	mux.HandleFunc("GET /blog/feed.xml", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "blog/feed.xml")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		w.Write(data)
+	})
+
 	// Serve static assets (JS, CSS, images) from site/js/ etc.
 	fileServer := http.FileServer(http.FS(sub))
 	mux.HandleFunc("GET /site-assets/", func(w http.ResponseWriter, r *http.Request) {

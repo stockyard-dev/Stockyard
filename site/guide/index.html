@@ -538,6 +538,29 @@ console.log(response.choices[0].message.content);
   </div>
 </section>
 
+<section style="max-width:500px;margin:0 auto;padding:2.5rem 2rem;text-align:center;border-top:1px solid var(--bg3)">
+  <p style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Not ready to install yet?</p>
+  <p style="color:var(--cream-dim);font-size:0.9rem;margin-bottom:1.2rem">Get notified when we ship new features. No spam, unsubscribe anytime.</p>
+  <div id="email-capture" style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+    <input type="email" id="guide-email" placeholder="you@company.com" style="padding:0.6rem 1rem;font-family:var(--font-mono);font-size:0.82rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);width:240px;outline:none" onfocus="this.style.borderColor='var(--rust)'" onblur="this.style.borderColor='var(--bg3)'">
+    <button onclick="captureGuideEmail()" style="padding:0.6rem 1.2rem;font-family:var(--font-mono);font-size:0.82rem;background:var(--rust);color:var(--cream);border:1px solid var(--rust);cursor:pointer">Notify me</button>
+  </div>
+  <p id="email-msg" style="font-family:var(--font-mono);font-size:0.75rem;margin-top:0.8rem;color:var(--green-light);display:none"></p>
+</section>
+
+<script>
+async function captureGuideEmail(){
+  var email=document.getElementById('guide-email').value.trim();
+  if(!email||!email.includes('@')){document.getElementById('email-msg').textContent='Enter a valid email';document.getElementById('email-msg').style.display='block';document.getElementById('email-msg').style.color='var(--rust-light)';return}
+  try{
+    var r=await fetch('/api/exchange/gate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,source:'guide_page'})});
+    if(r.ok){document.getElementById('email-msg').textContent='You\'re on the list.';document.getElementById('email-msg').style.display='block';document.getElementById('email-msg').style.color='var(--green-light)';document.getElementById('email-capture').style.display='none'}
+    else{document.getElementById('email-msg').textContent='Something went wrong. Try again.';document.getElementById('email-msg').style.display='block';document.getElementById('email-msg').style.color='var(--rust-light)'}
+  }catch(e){document.getElementById('email-msg').textContent='Something went wrong. Try again.';document.getElementById('email-msg').style.display='block';document.getElementById('email-msg').style.color='var(--rust-light)'}
+}
+document.getElementById('guide-email').addEventListener('keydown',function(e){if(e.key==='Enter')captureGuideEmail()});
+</script>
+
 <section style="max-width:700px;margin:0 auto;padding:3rem 2rem;border-top:1px solid var(--bg3)">
   <h2 style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem">Ready for more?</h2>
   <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:1.5rem">Everything you just saw is free &mdash; including 100 Drover autopilot requests per day and a 5-probe Feral security quickscan. See your real savings and security grade before you pay anything. When you're ready for unlimited routing, the full 29-probe red-team suite, prompt evolution (Breed), or any of the 29 products &mdash; upgrade in one click.</p>

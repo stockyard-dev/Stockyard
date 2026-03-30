@@ -1,60 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-<channel>
-  <title>Stockyard Blog</title>
-  <description>Building LLM infrastructure in the open.</description>
-  <link>https://stockyard.dev/blog/</link>
-  <atom:link href="https://stockyard.dev/blog/feed.xml" rel="self" type="application/rss+xml"/>
-  <language>en-us</language>
-  <lastBuildDate>Sun, 22 Mar 2026 00:00:00 +0000</lastBuildDate>
-  <item>
-    <title>The True Cost of LLM APIs in 2026: 40+ Models Compared</title>
-    <link>https://stockyard.dev/blog/llm-api-pricing-2026/</link>
-    <guid>https://stockyard.dev/blog/llm-api-pricing-2026/</guid>
-    <description>Pricing for 40+ models across 11 providers. GPT-4o, Claude, Gemini, Llama, Mistral, DeepSeek, Grok — what does 1 million tokens actually cost? Plus how to cut your bill 50-80%.</description>
-    <pubDate>Sun, 22 Mar 2026 00:00:00 +0000</pubDate>
-  </item>
-  <item>
-    <title>66 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain</title>
-    <link>https://stockyard.dev/blog/66-modules-400ns/</link>
-    <guid>https://stockyard.dev/blog/66-modules-400ns/</guid>
-    <description>We put 66 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.</description>
-    <pubDate>Sun, 22 Mar 2026 00:00:00 +0000</pubDate>
-  </item>
-  <item>
-    <title>66 Middleware Modules at 400ns</title>
-    <link>https://stockyard.dev/blog/66-modules-400ns/</link>
-    <guid>https://stockyard.dev/blog/66-modules-400ns/</guid>
-    <description>The architecture behind Stockyard's middleware chain. Function composition, zero-alloc toggle registry, and why Go closures are the right primitive for LLM proxying.</description>
-    <pubDate>Sun, 22 Mar 2026 00:00:00 +0000</pubDate>
-  </item>
-  <item>
-    <title>Why One Binary: Building an LLM Gateway with Go and SQLite</title>
-    <link>https://stockyard.dev/blog/why-go-sqlite/</link>
-    <guid>https://stockyard.dev/blog/why-go-sqlite/</guid>
-    <description>Why I chose Go over Python and SQLite over Postgres for an LLM proxy. The engineering tradeoffs behind shipping sixteen apps as one static binary.</description>
-    <pubDate>Wed, 19 Mar 2026 00:00:00 +0000</pubDate>
-  </item>
-  <item>
-    <title>Replacing 134 LLM Tools with One Binary</title>
-    <link>https://stockyard.dev/blog/134-tools-one-binary/</link>
-    <guid>https://stockyard.dev/blog/134-tools-one-binary/</guid>
-    <description>The LLM middleware ecosystem is fragmented across 134+ standalone tools. Here's how Stockyard consolidates them into a single Go binary.</description>
-    <pubDate>Thu, 27 Feb 2026 00:00:00 +0000</pubDate>
-  </item>
-  <item>
-    <title>Architecture Decisions Behind Stockyard</title>
-    <link>https://stockyard.dev/blog/architecture-decisions/</link>
-    <guid>https://stockyard.dev/blog/architecture-decisions/</guid>
-    <description>Why Go, why SQLite, why a single binary, and why 66 middleware modules instead of a plugin system.</description>
-    <pubDate>Thu, 27 Feb 2026 00:00:00 +0000</pubDate>
-  </item>
-  <item>
-    <title>Why I Built Stockyard</title>
-    <link>https://stockyard.dev/blog/why-i-built-stockyard/</link>
-    <guid>https://stockyard.dev/blog/why-i-built-stockyard/</guid>
-    <description>I was building an app with the OpenAI API. Then I shipped it. Within the first week, three things went wrong.</description>
-    <pubDate>Thu, 27 Feb 2026 00:00:00 +0000</pubDate>
-  </item>
-</channel>
+  <channel>
+    <title>Stockyard Blog</title>
+    <link>https://stockyard.dev/blog/</link>
+    <description>Technical posts about LLM infrastructure, proxy architecture, and building with Go and SQLite.</description>
+    <language>en</language>
+    <atom:link href="https://stockyard.dev/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Building an LLM Proxy in Go: Architecture Decisions -- Stockyard</title>
+      <link>https://stockyard.dev/blog/building-llm-proxy-go/</link>
+      <guid>https://stockyard.dev/blog/building-llm-proxy-go/</guid>
+      <pubDate>2026-03-28T00:00:00Z</pubDate>
+      <description>How Stockyard is built: Go 1.22 ServeMux, pure-Go SQLite, 76 middleware modules, embedded static files, CGO_ENABLED=0. Real architecture decisions from a production LLM proxy.</description>
+    </item>
+    <item>
+      <title>Your LLM API Bill Just Doubled. Here Are Your Options. -- Stockyard</title>
+      <link>https://stockyard.dev/blog/openai-api-bill-surprise/</link>
+      <guid>https://stockyard.dev/blog/openai-api-bill-surprise/</guid>
+      <pubDate>2026-03-28T00:00:00Z</pubDate>
+      <description>LLM API costs spiral because of four problems: no caching, no spending limits, wrong model routing, and no visibility. Practical fixes with real config examples.</description>
+    </item>
+    <item>
+      <title>SQLite in Production: What I Learned Running It for an LLM Proxy -- Stockyard</title>
+      <link>https://stockyard.dev/blog/sqlite-in-production-2026/</link>
+      <guid>https://stockyard.dev/blog/sqlite-in-production-2026/</guid>
+      <pubDate>2026-03-28T00:00:00Z</pubDate>
+      <description>Running SQLite in production for an LLM proxy. WAL mode, pure-Go driver, backup strategy, what works and what does not. Real experience from building Stockyard.</description>
+    </item>
+    <item>
+      <title>76 Modules, 400 Nanoseconds: Benchmarking an LLM Middleware Chain — Stockyard</title>
+      <link>https://stockyard.dev/blog/66-modules-400ns/</link>
+      <guid>https://stockyard.dev/blog/66-modules-400ns/</guid>
+      <pubDate>2026-03-22T00:00:00Z</pubDate>
+      <description>We put 76 middleware modules between our app and OpenAI. PII redaction, cost caps, caching, rate limiting, audit logging — the entire chain adds 400ns. Here's how.</description>
+    </item>
+    <item>
+      <title>The True Cost of LLM APIs in 2026: 40+ Models Compared — Stockyard</title>
+      <link>https://stockyard.dev/blog/llm-api-pricing-2026/</link>
+      <guid>https://stockyard.dev/blog/llm-api-pricing-2026/</guid>
+      <pubDate>2026-03-22T00:00:00Z</pubDate>
+      <description>We compiled pricing for 40+ models across 40 providers. GPT-4o, Claude, Gemini, Llama, Mistral, DeepSeek — what does 1 million tokens actually cost?</description>
+    </item>
+    <item>
+      <title>Self-Hosted vs SaaS LLM Proxy: How to Decide -- Stockyard</title>
+      <link>https://stockyard.dev/blog/self-hosted-vs-saas-llm-proxy/</link>
+      <guid>https://stockyard.dev/blog/self-hosted-vs-saas-llm-proxy/</guid>
+      <pubDate>2026-03-15T00:00:00Z</pubDate>
+      <description>Should you self-host your LLM proxy or use a managed SaaS? The tradeoffs are real on both sides. Here is a practical framework for deciding.</description>
+    </item>
+    <item>
+      <title>Replacing 134 LLM Tools with One Binary — Stockyard</title>
+      <link>https://stockyard.dev/blog/134-tools-one-binary/</link>
+      <guid>https://stockyard.dev/blog/134-tools-one-binary/</guid>
+      <pubDate>2026-02-18T00:00:00Z</pubDate>
+      <description>The LLM middleware ecosystem is fragmented across 134+ standalone tools. Here's how Stockyard consolidates them.</description>
+    </item>
+    <item>
+      <title>Architecture Decisions Behind Stockyard — Stockyard</title>
+      <link>https://stockyard.dev/blog/architecture-decisions/</link>
+      <guid>https://stockyard.dev/blog/architecture-decisions/</guid>
+      <pubDate>2026-02-10T00:00:00Z</pubDate>
+      <description>Why Go, why SQLite, why a single binary, and why 76 middleware modules instead of a plugin system.</description>
+    </item>
+    <item>
+      <title>Why One Binary — Stockyard</title>
+      <link>https://stockyard.dev/blog/why-go-sqlite/</link>
+      <guid>https://stockyard.dev/blog/why-go-sqlite/</guid>
+      <pubDate>2026-02-01T00:00:00Z</pubDate>
+      <description>Why I chose Go over Python and SQLite over Postgres for an LLM proxy. The engineering tradeoffs behind shipping 29 products as one static binary.</description>
+    </item>
+    <item>
+      <title>Why I Built Stockyard — Stockyard</title>
+      <link>https://stockyard.dev/blog/why-i-built-stockyard/</link>
+      <guid>https://stockyard.dev/blog/why-i-built-stockyard/</guid>
+      <pubDate>2026-02-01T00:00:00Z</pubDate>
+      <description>I was building an app with the OpenAI API. Then I shipped it. Within the first week, three things went wrong.</description>
+    </item>
+  </channel>
 </rss>
