@@ -299,6 +299,10 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/llm-cost-tracking/",
 		"/llm-audit-logs/",
 		"/one-binary-llm-proxy/",
+		"/vs/kong/",
+		"/vs/braintrust/",
+		"/what-is-llm-proxy/",
+		"/what-is-model-aliasing/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
