@@ -65,8 +65,9 @@ func RegisterLassoShareRoutes(mux *http.ServeMux, conn *sql.DB) {
 
 	// Cleanup expired shares
 	go func() {
-		for {
-			time.Sleep(6 * time.Hour)
+		ticker := time.NewTicker(6 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
 			result, err := conn.Exec(`DELETE FROM lasso_shares WHERE expires_at < datetime('now')`)
 			if err == nil {
 				if n, _ := result.RowsAffected(); n > 0 {

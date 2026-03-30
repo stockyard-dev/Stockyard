@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"path"
 	"strings"
@@ -137,19 +138,37 @@ func DownloadStats(db *sql.DB) map[string]any {
 
 // clientIP extracts the client IP from a request.
 func clientIP(r *http.Request) string {
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		if i := strings.IndexByte(xff, ','); i > 0 {
-			return strings.TrimSpace(xff[:i])
+	host, _, _ := net.SplitHostPort(r.RemoteAddr)
+	if host == "" {
+		host = r.RemoteAddr
+	}
+	// Only trust forwarded headers from private/proxy IPs (Railway, localhost)
+	if isPrivateIP(host) {
+		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+			if i := strings.IndexByte(xff, ','); i > 0 {
+				return strings.TrimSpace(xff[:i])
+			}
+			return strings.TrimSpace(xff)
 		}
-		return strings.TrimSpace(xff)
+		if xri := r.Header.Get("X-Real-IP"); xri != "" {
+			return xri
+		}
 	}
-	if xri := r.Header.Get("X-Real-IP"); xri != "" {
-		return xri
+	return host
+}
+
+func isPrivateIP(ip string) bool {
+	parsed := net.ParseIP(ip)
+	if parsed == nil {
+		return false
 	}
-	if i := strings.LastIndex(r.RemoteAddr, ":"); i > 0 {
-		return r.RemoteAddr[:i]
+	for _, cidr := range []string{"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "::1/128"} {
+		_, network, _ := net.ParseCIDR(cidr)
+		if network.Contains(parsed) {
+			return true
+		}
 	}
-	return r.RemoteAddr
+	return false
 }
 
 // setSecurityHeaders adds standard security headers to the response.
@@ -158,7 +177,7 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("X-Frame-Options", "DENY")
 	w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
-	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com")
+	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net")
 	w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 }
 

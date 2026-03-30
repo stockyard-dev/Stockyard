@@ -236,8 +236,9 @@ func registerPlaygroundRoutes(mux *http.ServeMux, conn *sql.DB) {
 
 	// Cleanup: remove expired shares periodically
 	go func() {
-		for {
-			time.Sleep(6 * time.Hour)
+		ticker := time.NewTicker(6 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
 			result, err := conn.Exec(`DELETE FROM playground_shares WHERE expires_at < datetime('now')`)
 			if err == nil {
 				if n, _ := result.RowsAffected(); n > 0 {

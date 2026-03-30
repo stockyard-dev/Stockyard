@@ -87,14 +87,14 @@ func fetchGitHubStats() map[string]any {
 	}
 
 	// Stars + watchers (no auth needed)
-	if repo := get(""); repo != nil {
-		if v, ok := repo["stargazers_count"].(float64); ok {
+	if repoInfo := get(""); repoInfo != nil {
+		if v, ok := repoInfo["stargazers_count"].(float64); ok {
 			result["stars"] = v
 		}
-		if v, ok := repo["watchers_count"].(float64); ok {
+		if v, ok := repoInfo["watchers_count"].(float64); ok {
 			result["watchers"] = v
 		}
-		if v, ok := repo["forks_count"].(float64); ok {
+		if v, ok := repoInfo["forks_count"].(float64); ok {
 			result["forks"] = v
 		}
 	}
@@ -115,7 +115,7 @@ func fetchGitHubStats() map[string]any {
 			if v, ok := clones["count"].(float64); ok {
 				result["clones"] = v
 			}
-			if v, ok := clones["clones_unique"].(float64); ok {
+			if v, ok := clones["uniques"].(float64); ok {
 				result["clones_unique"] = v
 			}
 		}
@@ -466,6 +466,7 @@ func handleGrowthMetricUpsert(w http.ResponseWriter, r *http.Request, db *sql.DB
 		Notes    string  `json:"notes"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(map[string]string{"error": "invalid JSON"})
 		return
@@ -474,6 +475,7 @@ func handleGrowthMetricUpsert(w http.ResponseWriter, r *http.Request, db *sql.DB
 		req.Date = time.Now().Format("2006-01-02")
 	}
 	if req.Category == "" || req.Metric == "" {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(400)
 		json.NewEncoder(w).Encode(map[string]string{"error": "category and metric are required"})
 		return
@@ -490,6 +492,7 @@ func handleGrowthMetricUpsert(w http.ResponseWriter, r *http.Request, db *sql.DB
 			notes = excluded.notes, updated_at = datetime('now')`,
 		req.Date, req.Category, req.Metric, req.Value, req.Source, req.Notes)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
@@ -505,12 +508,14 @@ func handleGrowthMetricDelete(w http.ResponseWriter, r *http.Request, db *sql.DB
 	id := r.PathValue("id")
 	res, err := db.Exec("DELETE FROM growth_metrics WHERE id = ?", id)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
 	n, _ := res.RowsAffected()
 	if n == 0 {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(404)
 		json.NewEncoder(w).Encode(map[string]string{"error": "not found"})
 		return
