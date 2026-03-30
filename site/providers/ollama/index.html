@@ -104,30 +104,45 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <pre><span class="comment"># Install Stockyard</span>
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
 
-<span class="comment"># Set your Ollama API key</span>
-<span class="cmd">export Auto-detected at localhost:11434=your-key-here</span>
+<span class="comment"># Make sure Ollama is running with a model</span>
+<span class="cmd">ollama pull llama3.2</span>
+<span class="cmd">ollama serve</span>
 
-<span class="comment"># Start the proxy</span>
+<span class="comment"># Install and start Stockyard (auto-detects Ollama)</span>
+<span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
 <span class="cmd">stockyard</span>
-<span class="output"># Provider: ollama (from Auto-detected at localhost:11434)</span>
+<span class="output"># Provider: ollama (auto-detected at localhost:11434)</span>
 <span class="output"># Proxy listening on :7749</span>
 
 <span class="comment"># Send a request through the proxy</span>
 <span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
-<span class="cmd">  -d '{"model":"Any model pulled in Ollama (Llama","messages":[{"role":"user","content":"hello"}]}'</span></pre>
+<span class="cmd">  -d '{"model":"llama3.2","messages":[{"role":"user","content":"hello"}]}'</span></pre>
 
   <h2>Good to know</h2>
   <p>Ollama must be running before Stockyard starts. Stockyard auto-detects it at localhost:11434. Custom ports can be set via OLLAMA_BASE_URL.</p>
+
+  <h2>Local + cloud failover</h2>
+  <p>The real power of proxying Ollama is combining it with cloud providers. Route requests to your local model first (free, fast), and automatically fall back to OpenAI or Anthropic when you need a more capable model or when the local machine is busy.</p>
+  <pre><span class="comment"># Set both local and cloud providers</span>
+<span class="cmd">export OPENAI_API_KEY=sk-...</span>
+<span class="cmd">stockyard</span>
+<span class="output"># Provider: ollama (auto-detected at localhost:11434)</span>
+<span class="output"># Provider: openai (from OPENAI_API_KEY)</span>
+
+<span class="comment"># Alias for automatic routing</span>
+<span class="cmd">curl -X PUT http://localhost:7749/v1/api/proxy/aliases \</span>
+<span class="cmd">  -d '{"alias":"default","model":"llama3.2","fallback":"gpt-4o-mini"}'</span></pre>
+  <p style="font-size:0.85rem">Requests go to Ollama first. If Ollama is down or returns an error, Stockyard retries on OpenAI. Your app sends requests to <code>default</code> and never knows which provider handled it. See <a href="/local-plus-cloud-fallback/">local + cloud fallback</a> for the full setup.</p>
 </section>
 
 <div class="cta-box">
   <p>Route Ollama through Stockyard in under 60 seconds.</p>
   <a href="/guide/" class="btn btn-primary">Install Guide</a>
-  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best Self Hosted Llm Proxy</a> &middot; <a href="/one-binary-llm-proxy/">One Binary Llm Proxy</a></p>
+  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/one-binary-llm-proxy/">One-binary proxy</a></p>
 </div>
 
-<div class="explore-bar">Explore: <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/providers/groq/">Groq</a> &middot; <a href="/providers/deepseek/">Deepseek</a></div>
+<div class="explore-bar">Explore: <a href="/providers/openai/">OpenAI</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/providers/groq/">Groq</a> &middot; <a href="/providers/deepseek/">DeepSeek</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>

@@ -119,15 +119,27 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>Anthropic has different token counting and pricing than OpenAI. Stockyard normalizes both so your cost dashboard shows accurate per-request costs regardless of provider.</p>
+
+  <h2>Use Claude with the OpenAI SDK</h2>
+  <p>Anthropic has its own SDK and API format. With Stockyard, you don't need to use it. Send standard OpenAI-format requests and Stockyard translates them to Anthropic's format automatically:</p>
+  <pre><span class="comment"># Use the OpenAI Python SDK to call Claude</span>
+<span class="cmd">from openai import OpenAI</span>
+<span class="cmd">client = OpenAI(base_url="http://localhost:7749/v1")</span>
+
+<span class="cmd">response = client.chat.completions.create(</span>
+<span class="cmd">    model="claude-sonnet-4-5-20250929",</span>
+<span class="cmd">    messages=[{"role": "user", "content": "hello"}]</span>
+<span class="cmd">)</span></pre>
+  <p style="font-size:0.85rem">This means you can switch between OpenAI and Anthropic models without changing your SDK, your error handling, or your response parsing. Just change the model name.</p>
 </section>
 
 <div class="cta-box">
   <p>Route Anthropic through Stockyard in under 60 seconds.</p>
   <a href="/guide/" class="btn btn-primary">Install Guide</a>
-  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/vs/litellm/">vs Litellm</a> &middot; <a href="/vs/braintrust/">vs Braintrust</a></p>
+  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/vs/braintrust/">vs Braintrust</a></p>
 </div>
 
-<div class="explore-bar">Explore: <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/google-gemini/">Google Gemini</a> &middot; <a href="/guide/">Install guide</a></div>
+<div class="explore-bar">Explore: <a href="/providers/openai/">OpenAI</a> &middot; <a href="/providers/google-gemini/">Google Gemini</a> &middot; <a href="/guide/">Install guide</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>

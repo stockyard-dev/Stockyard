@@ -119,15 +119,28 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>Groq has aggressive rate limits on free tiers. Stockyard's rate limiting module can smooth out request bursts and the cache reduces redundant API calls.</p>
+
+  <h2>Handle Groq rate limits gracefully</h2>
+  <p>Groq's LPU hardware delivers sub-second responses, but free-tier rate limits can throttle you at 30 requests per minute. Stockyard helps in two ways:</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+    <div style="padding:1rem;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);margin-bottom:0.5rem">CACHING</div>
+      <p style="font-size:0.82rem;margin:0">Identical prompts return cached responses instantly. For iterative development, this can cut your effective request count by 50-80%.</p>
+    </div>
+    <div style="padding:1rem;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);margin-bottom:0.5rem">FAILOVER</div>
+      <p style="font-size:0.82rem;margin:0">When Groq returns a 429 rate limit error, Stockyard automatically retries on your fallback provider (OpenAI, DeepSeek, etc.) so your app never sees the error.</p>
+    </div>
+  </div>
 </section>
 
 <div class="cta-box">
   <p>Route Groq through Stockyard in under 60 seconds.</p>
   <a href="/guide/" class="btn btn-primary">Install Guide</a>
-  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/vs/litellm/">vs Litellm</a> &middot; <a href="/vs/helicone/">vs Helicone</a></p>
+  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/vs/helicone/">vs Helicone</a></p>
 </div>
 
-<div class="explore-bar">Explore: <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/providers/deepseek/">Deepseek</a> &middot; <a href="/providers/ollama/">Ollama</a></div>
+<div class="explore-bar">Explore: <a href="/providers/openai/">OpenAI</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/providers/deepseek/">DeepSeek</a> &middot; <a href="/providers/ollama/">Ollama</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>

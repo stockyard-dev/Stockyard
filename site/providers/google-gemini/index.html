@@ -119,15 +119,24 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>Gemini model names are auto-detected. Use the full model name (e.g., gemini-2.5-flash) in your request body.</p>
+
+  <h2>Use Gemini Flash as your cost optimizer</h2>
+  <p>Gemini 2.5 Flash is one of the cheapest capable models available. With <a href="/what-is-model-aliasing/">model aliasing</a>, you can route cost-sensitive tasks to Flash while keeping quality-critical requests on GPT-4o or Claude:</p>
+  <pre><span class="comment"># Route cheap tasks to Gemini, expensive tasks to GPT-4o</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">  -d '{"alias":"cheap","model":"gemini-2.5-flash"}'</span>
+<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">  -d '{"alias":"quality","model":"gpt-4o"}'</span></pre>
+  <p style="font-size:0.85rem">Your app sends to <code>cheap</code> or <code>quality</code>. Change the backing model anytime without redeploying.</p>
 </section>
 
 <div class="cta-box">
   <p>Route Google Gemini through Stockyard in under 60 seconds.</p>
   <a href="/guide/" class="btn btn-primary">Install Guide</a>
-  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/vs/aws-bedrock/">vs Aws Bedrock</a> &middot; <a href="/vs/litellm/">vs Litellm</a></p>
+  <p style="margin-top:1rem;margin-bottom:0;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)"><a href="/docs/providers/">All 40 providers</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/what-is-llm-proxy/">What is an LLM proxy?</a> &middot; <a href="/vs/aws-bedrock/">vs AWS Bedrock</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a></p>
 </div>
 
-<div class="explore-bar">Explore: <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/guide/">Install guide</a></div>
+<div class="explore-bar">Explore: <a href="/providers/openai/">OpenAI</a> &middot; <a href="/providers/anthropic/">Anthropic</a> &middot; <a href="/guide/">Install guide</a></div>
 <footer>
   <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
 </footer>
