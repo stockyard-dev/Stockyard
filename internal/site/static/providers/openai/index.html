@@ -119,6 +119,18 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>OpenAI models are auto-detected from the model name in the request. No extra config needed beyond the API key.</p>
+
+  <h2>Direct OpenAI vs through Stockyard</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0">
+    <div style="padding:1rem;border:1px solid var(--bg3)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);margin-bottom:0.5rem">DIRECT TO OPENAI</div>
+      <p style="font-size:0.82rem;margin:0">Requests go straight to api.openai.com. No cost visibility until the monthly invoice. No caching. No failover. No audit trail.</p>
+    </div>
+    <div style="padding:1rem;border:1px solid var(--rust)">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);margin-bottom:0.5rem">THROUGH STOCKYARD</div>
+      <p style="font-size:0.82rem;margin:0">Every request logged with cost. Identical prompts cached automatically. If OpenAI goes down, failover to Claude or Gemini. Hash-chained audit trail for compliance.</p>
+    </div>
+  </div>
 </section>
 
 <div class="cta-box">

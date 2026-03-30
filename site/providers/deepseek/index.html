@@ -119,6 +119,15 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <h2>Good to know</h2>
   <p>DeepSeek servers are in China, which can add latency for US/EU users. Stockyard's failover can route to faster providers when latency exceeds your threshold.</p>
+
+  <h2>Cost savings example</h2>
+  <p>For a workload doing 10,000 requests/day at ~500 tokens each:</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin:1rem 0;font-family:var(--font-mono);font-size:0.75rem">
+    <div style="padding:0.8rem;border:1px solid var(--bg3);text-align:center"><div style="color:var(--cream-muted);font-size:0.6rem;margin-bottom:0.3rem">GPT-4o</div><div style="color:var(--cream)">~$75/day</div></div>
+    <div style="padding:0.8rem;border:1px solid var(--bg3);text-align:center"><div style="color:var(--cream-muted);font-size:0.6rem;margin-bottom:0.3rem">DeepSeek-chat</div><div style="color:var(--green-light)">~$4/day</div></div>
+    <div style="padding:0.8rem;border:1px solid var(--rust);text-align:center"><div style="color:var(--cream-muted);font-size:0.6rem;margin-bottom:0.3rem">DeepSeek + caching</div><div style="color:var(--green-light)">~$1-2/day</div></div>
+  </div>
+  <p style="font-size:0.82rem">With Stockyard's <a href="/what-is-prompt-caching/">prompt cache</a>, repeated requests are free. Combined with DeepSeek's pricing, the same workload can cost 50-75x less than direct GPT-4o.</p>
 </section>
 
 <div class="cta-box">
