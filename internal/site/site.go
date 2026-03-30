@@ -474,18 +474,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/site-assets")
 		fileServer.ServeHTTP(w, r)
 	})
-
-	// Blog RSS feed
-	mux.HandleFunc("GET /blog/feed.xml", func(w http.ResponseWriter, r *http.Request) {
-		data, err := fs.ReadFile(sub, "blog/feed.xml")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		w.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
-		w.Header().Set("Cache-Control", "public, max-age=3600")
-		w.Write(data)
-	})
 }
 
 // NotFoundHandler returns an http.HandlerFunc that serves the branded 404 page.
