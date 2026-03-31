@@ -344,12 +344,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/trough/",
 		"/fence/",
 		"/brand/",
-		// Product install scripts
-		"/corral/install.sh",
-		"/gate/install.sh",
-		"/trough/install.sh",
-		"/fence/install.sh",
-		"/brand/install.sh",
 		// Product docs
 		"/docs/corral/",
 		"/docs/gate/",
@@ -395,6 +389,21 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		}
 		servePage(w, r, data, "public, max-age=60")
 	})
+
+	// Product tool install scripts
+	for _, tool := range []string{"corral", "gate", "trough", "fence", "brand"} {
+		t := tool
+		mux.HandleFunc("GET /"+t+"/install.sh", func(w http.ResponseWriter, r *http.Request) {
+			data, err := fs.ReadFile(sub, t+"/install.sh")
+			if err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.Header().Set("Cache-Control", "public, max-age=300")
+			w.Write(data)
+		})
+	}
 
 	// Serve install script (with persistent download tracking)
 	mux.HandleFunc("GET /install.sh", func(w http.ResponseWriter, r *http.Request) {
