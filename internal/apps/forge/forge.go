@@ -24,6 +24,16 @@ func New(conn *sql.DB) *App { return &App{conn: conn} }
 // SetProxyPort tells the executor which port to call for LLM requests.
 func (a *App) SetProxyPort(port int) { a.proxyPort = port }
 
+// StartScheduler begins the workflow scheduler goroutine.
+// Called from engine.Boot() via interface assertion.
+func (a *App) StartScheduler(ctx context.Context) {
+	if a.conn == nil || a.proxyPort <= 0 {
+		return
+	}
+	sched := NewScheduler(a.conn, a.proxyPort, a.audit)
+	go sched.Start(ctx)
+}
+
 // SetAuditor wires the trust audit function for recording workflow events.
 func (a *App) SetAuditor(fn func(string, string, string, string, any)) {
 	a.audit = fn

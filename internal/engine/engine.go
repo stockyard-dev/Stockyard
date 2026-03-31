@@ -1270,6 +1270,13 @@ func Boot(pc ProductConfig) {
 	alertEval := observe.NewAlertEvaluator(db.Conn())
 	go alertEval.Start(flushCtx)
 
+	// Start app-level schedulers (Forge workflow scheduler)
+	for _, app := range pc.Apps {
+		if sched, ok := app.(interface{ StartScheduler(context.Context) }); ok {
+			sched.StartScheduler(flushCtx)
+		}
+	}
+
 	// Start nurture email sequence (checks hourly, sends drip emails to captured leads)
 	mailer := apiserver.NewMailer()
 	nurture := apiserver.NewNurtureRunner(db.Conn(), mailer)
