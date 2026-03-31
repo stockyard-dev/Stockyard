@@ -92,6 +92,16 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 .stockyard-banner{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0;font-size:.9rem}
 .stockyard-banner strong{font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust-light)}
 
+
+.mockup-block{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.mockup-block-inner{max-width:820px;margin:0 auto}
+.mockup-tabs{display:flex;gap:.5rem;margin-bottom:1rem;font-family:var(--font-mono);font-size:.72rem}
+.mockup-tab{padding:.3rem .8rem;border:1px solid var(--bg3);color:var(--cream-muted);cursor:pointer;transition:all .15s}
+.mockup-tab.active{border-color:var(--rust);color:var(--rust-light);background:var(--bg)}
+.mockup-tab:hover{color:var(--cream)}
+.mockup-pane{display:none}.mockup-pane.active{display:block}
+.mockup-img{width:100%;border-radius:6px;border:1px solid var(--bg3);display:block}
+.mockup-caption{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted);margin-top:.6rem;letter-spacing:1px}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");</script>
@@ -162,6 +172,18 @@ curl -s http://localhost:8750/api/verify -H 'Authorization: Bearer secret'
 # Export an evidence pack for a date range
 curl -s "http://localhost:8750/api/evidence/export?from=2026-01-01" \
   -H 'Authorization: Bearer secret' > evidence-q1.json</pre>
+  </div>
+</section>
+
+<!-- Mockup -->
+<section class="mockup-block">
+  <div class="mockup-block-inner">
+    <div class="section-label">See it</div>
+    <div class="mockup-tabs">
+      <button class="mockup-tab active" onclick="switchTab(this,'brand-terminal')">Terminal</button>
+    </div>
+    <div class="mockup-pane active" id="brand-terminal"><img src="/site-assets/assets/screenshots/brand-terminal.svg" alt="Brand terminal output showing event ingestion and chain verification" class="mockup-img" loading="lazy" width="720"></div>
+    <p class="mockup-caption">Brand appends events to a SHA-256 hash chain. One call verifies the entire ledger.</p>
   </div>
 </section>
 
