@@ -210,7 +210,10 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
           <li>Webhook signing / verification helpers</li>
           <li>Retention controls per endpoint</li>
       </ul>
-      <a href="/pricing/" class="cta">Upgrade to Pro &rarr;</a>
+      <div style="display:flex;gap:.6rem;flex-direction:column">
+  <button id="checkout-btn-monthly" onclick="startCheckout('corral-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $0.99/mo</button>
+  <button id="checkout-btn-annual" onclick="startCheckout('corral-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $9.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
+</div>
     </div>
   </div>
 </section>
@@ -277,6 +280,22 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 </script>
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as an event?", "acceptedAnswer": {"@type": "Answer", "text": "Any HTTP request received at a <code>/hook/{id}</code> URL. Each captured request is one event."}}, {"@type": "Question", "name": "Does Corral require Docker or a database?", "acceptedAnswer": {"@type": "Answer", "text": "No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary."}}, {"@type": "Question", "name": "What happens when I hit the free event limit?", "acceptedAnswer": {"@type": "Answer", "text": "The binary enforces limits only when you're using Corral as a managed service. Self-hosted instances on the free tier show a warning in the API but do not hard-block events. Pro removes the limit entirely."}}, {"@type": "Question", "name": "How does retention work?", "acceptedAnswer": {"@type": "Answer", "text": "Set <code>RETENTION_DAYS</code> to control automatic cleanup. Free tier defaults to 7 days. Pro supports up to 90 days."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "Apache 2.0. Free to use, modify, and deploy with no restrictions."}}]}
+</script>
+<script>
+async function startCheckout(plan, interval) {
+  const btn = document.getElementById('checkout-btn-' + interval);
+  if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
+  try {
+    const r = await fetch('https://stockyard.dev/api/checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({plan: plan, interval: interval})
+    });
+    const d = await r.json();
+    if (d.url) { window.location.href = d.url; }
+    else { alert('Checkout error — ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+  } catch(e) { alert('Network error — please try again'); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+}
 </script>
 </body>
 </html>

@@ -218,7 +218,10 @@ curl http://localhost:8770/api/resolve/openai \
           <li>Rotation reminders</li>
           <li>Shared vault views across team</li>
       </ul>
-      <a href="/pricing/" class="cta">Upgrade to Pro &rarr;</a>
+      <div style="display:flex;gap:.6rem;flex-direction:column">
+  <button id="checkout-btn-monthly" onclick="startCheckout('fence-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $4.99/mo</button>
+  <button id="checkout-btn-annual" onclick="startCheckout('fence-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $49.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
+</div>
     </div>
   </div>
 </section>
@@ -285,6 +288,22 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 </script>
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are keys stored encrypted at rest?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. AES-256-GCM encryption using a key derived from <code>FENCE_ENCRYPTION_KEY</code>. Set this to a 32-byte hex string generated with <code>openssl rand -hex 32</code>."}}, {"@type": "Question", "name": "What happens when I revoke a token?", "acceptedAnswer": {"@type": "Answer", "text": "Revocation is instant. The next resolve request with that token returns 401. The underlying key is unaffected \u2014 other tokens still work."}}, {"@type": "Question", "name": "Can I scope a token to a specific key?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set <code>key_id</code> when issuing a token and that token can only resolve that specific key, not the whole vault."}}, {"@type": "Question", "name": "What's the free tier member limit?", "acceptedAnswer": {"@type": "Answer", "text": "2 members on Free. The API returns an error when you try to add a third. Existing members and their tokens keep working. Upgrade to Pro to remove the limit."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "BSL 1.1. Free for small teams (under 10 members). Commercial license for larger organizations. Contact hello@stockyard.dev."}}]}
+</script>
+<script>
+async function startCheckout(plan, interval) {
+  const btn = document.getElementById('checkout-btn-' + interval);
+  if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
+  try {
+    const r = await fetch('https://stockyard.dev/api/checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({plan: plan, interval: interval})
+    });
+    const d = await r.json();
+    if (d.url) { window.location.href = d.url; }
+    else { alert('Checkout error — ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+  } catch(e) { alert('Network error — please try again'); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+}
 </script>
 </body>
 </html>

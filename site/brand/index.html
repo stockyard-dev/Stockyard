@@ -213,7 +213,10 @@ curl -s "http://localhost:8750/api/evidence/export?from=2026-01-01" \
           <li>Tamper detection status in exports</li>
           <li>Signed evidence bundle metadata</li>
       </ul>
-      <a href="/pricing/" class="cta">Upgrade to Pro &rarr;</a>
+      <div style="display:flex;gap:.6rem;flex-direction:column">
+  <button id="checkout-btn-monthly" onclick="startCheckout('brand-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $4.99/mo</button>
+  <button id="checkout-btn-annual" onclick="startCheckout('brand-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $49.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
+</div>
     </div>
   </div>
 </section>
@@ -280,6 +283,22 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 </script>
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How does the hash chain work?", "acceptedAnswer": {"@type": "Answer", "text": "Each event records the SHA-256 hash of the previous event. Verification re-computes every hash from scratch and checks that the chain is unbroken. Any modification invalidates all subsequent hashes."}}, {"@type": "Question", "name": "Can I POST events from any language?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The ingest endpoint is plain HTTP POST with JSON. No SDK required. Works from curl, Python, Node, Go, or anything that makes HTTP requests."}}, {"@type": "Question", "name": "What happens when I hit the free event limit?", "acceptedAnswer": {"@type": "Answer", "text": "Brand logs a warning but does not drop events on self-hosted instances. The limit is enforced on the managed service tier. Upgrade to Pro to remove the cap."}}, {"@type": "Question", "name": "What compliance frameworks does Brand cover?", "acceptedAnswer": {"@type": "Answer", "text": "Built-in policy templates for SOC2 Type II, HIPAA Audit Controls, GDPR Article 30, and EU AI Act. Apply them in one API call."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "BSL 1.1. Free for small teams. Commercial license for organizations over 10 members. Contact hello@stockyard.dev."}}]}
+</script>
+<script>
+async function startCheckout(plan, interval) {
+  const btn = document.getElementById('checkout-btn-' + interval);
+  if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
+  try {
+    const r = await fetch('https://stockyard.dev/api/checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({plan: plan, interval: interval})
+    });
+    const d = await r.json();
+    if (d.url) { window.location.href = d.url; }
+    else { alert('Checkout error — ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+  } catch(e) { alert('Network error — please try again'); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+}
 </script>
 </body>
 </html>

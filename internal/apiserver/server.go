@@ -90,6 +90,7 @@ func (s *Server) registerRoutes() {
 
 	// Public API — product catalog
 	s.mux.HandleFunc("GET /api/products", s.handleProducts)
+	s.mux.HandleFunc("GET /api/tools", s.handleToolPlans)
 	s.mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
 	s.mux.HandleFunc("GET /api/plans", s.handlePlans)
 
@@ -142,6 +143,7 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 
 	// Product catalog + pricing
 	mux.HandleFunc("GET /api/products", s.handleProducts)
+	mux.HandleFunc("GET /api/tools", s.handleToolPlans)
 	mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
 	mux.HandleFunc("GET /api/plans", s.handlePlans)
 
@@ -301,6 +303,24 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	product := req.Product
 	tier := req.Tier
 	if req.Plan != "" {
+		// Check tool plans first (e.g. "corral-pro", "gate-pro")
+		if toolPlan := ToolPlanBySlug(req.Plan); toolPlan != nil {
+			priceID := getPriceID(toolPlan.Tool, "pro", interval)
+			if priceID == "" {
+				writeErr(w, http.StatusBadRequest, fmt.Sprintf("no price configured for tool %s — set STRIPE_PRICE_%s_PRO_%s",
+					toolPlan.Tool, strings.ToUpper(toolPlan.Tool), strings.ToUpper(interval)))
+				return
+			}
+			url, err := s.stripe.CreateCheckoutSession(toolPlan.Tool, "pro", req.Email, priceID)
+			if err != nil {
+				log.Printf("checkout error: %v", err)
+				writeErr(w, http.StatusInternalServerError, fmt.Sprintf("checkout: %v", err))
+				return
+			}
+			writeOK(w, map[string]string{"url": url})
+			return
+		}
+
 		// New plans model: plan slug maps directly
 		plan := PlanBySlug(req.Plan)
 		if plan == nil {
@@ -471,6 +491,13 @@ func (s *Server) handleProducts(w http.ResponseWriter, r *http.Request) {
 		"apps":  products,
 		"plans": plans,
 		"count": len(products),
+	})
+}
+
+func (s *Server) handleToolPlans(w http.ResponseWriter, r *http.Request) {
+	writeOK(w, map[string]any{
+		"tools": ToolPlans(),
+		"count": len(ToolPlans()),
 	})
 }
 

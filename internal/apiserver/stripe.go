@@ -1,8 +1,10 @@
 package apiserver
 
 import (
+	"crypto/ed25519"
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -241,20 +243,22 @@ const (
 
 // WebhookHandler processes Stripe webhook events.
 type WebhookHandler struct {
-	db          *SqliteDB
-	stripe      *StripeClient
-	keyPair     *license.KeyPair
-	mailer      Mailer
-	authUpdater AuthTierUpdater // updates user tier in auth system (optional)
+	db           *SqliteDB
+	stripe       *StripeClient
+	keyPair      *license.KeyPair
+	mailer       Mailer
+	authUpdater  AuthTierUpdater // updates user tier in auth system (optional)
+	toolsPrivKey string          // hex Ed25519 private key for tool license issuance
 }
 
 // NewWebhookHandler creates a new webhook processor.
 func NewWebhookHandler(db *SqliteDB, stripe *StripeClient, kp *license.KeyPair, mailer Mailer) *WebhookHandler {
 	return &WebhookHandler{
-		db:      db,
-		stripe:  stripe,
-		keyPair: kp,
-		mailer:  mailer,
+		db:           db,
+		stripe:       stripe,
+		keyPair:      kp,
+		mailer:       mailer,
+		toolsPrivKey: os.Getenv("STOCKYARD_TOOLS_PRIVATE_KEY"),
 	}
 }
 
@@ -375,23 +379,39 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 		return fmt.Errorf("upsert customer: %w", err)
 	}
 
-	// Determine license product scope
+	// Determine license product scope and issue the right key type
 	licProduct := product
-	if product == "stockyard" {
-		licProduct = "stockyard" // suite covers all
+	var licenseKey string
+
+	toolProducts := map[string]bool{"corral": true, "gate": true, "trough": true, "fence": true, "brand": true}
+	if toolProducts[product] && wh.toolsPrivKey != "" {
+		// Issue an Ed25519 tool license key (offline-verifiable by the tool binary)
+		key, err := issueToolLicenseKey(wh.toolsPrivKey, product, customerID)
+		if err != nil {
+			log.Printf("webhook: tool license issuance failed: %v — falling back to platform key", err)
+		} else {
+			licenseKey = key
+			log.Printf("webhook: tool Ed25519 license issued for %s customer=%s", product, customerID)
+		}
 	}
 
-	// Generate license key
-	licTier := license.TierFromString(tier)
-	key, err := wh.keyPair.Issue(license.IssueRequest{
-		Product:    licProduct,
-		Tier:       licTier,
-		CustomerID: customerID,
-		Email:      email,
-		Duration:   365 * 24 * time.Hour, // 1 year, renewed on subscription
-	})
-	if err != nil {
-		return fmt.Errorf("issue license: %w", err)
+	// Fall back to platform keypair if tool key not issued
+	if licenseKey == "" {
+		if product == "stockyard" {
+			licProduct = "stockyard"
+		}
+		licTier := license.TierFromString(tier)
+		key, err := wh.keyPair.Issue(license.IssueRequest{
+			Product:    licProduct,
+			Tier:       licTier,
+			CustomerID: customerID,
+			Email:      email,
+			Duration:   365 * 24 * time.Hour,
+		})
+		if err != nil {
+			return fmt.Errorf("issue license: %w", err)
+		}
+		licenseKey = key
 	}
 
 	// Store license record
@@ -401,7 +421,7 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 		StripeSubscriptionID: subscriptionID,
 		Product:              product,
 		Tier:                 tier,
-		LicenseKey:           key,
+		LicenseKey:           licenseKey,
 		Status:               "active",
 		Email:                email,
 		ExpiresAt:            time.Now().Add(365 * 24 * time.Hour),
@@ -418,14 +438,14 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	}
 
 	if wh.mailer != nil {
-		if err := wh.mailer.SendLicenseKey(email, productName, tier, key); err != nil {
+		if err := wh.mailer.SendLicenseKey(email, productName, tier, licenseKey); err != nil {
 			log.Printf("webhook: email send failed (non-fatal): %v", err)
 			// Non-fatal — key is stored in DB, customer can retrieve via portal
 		}
 	}
 
 	log.Printf("webhook: license issued — key=%s...%s product=%s tier=%s",
-		key[:10], key[len(key)-6:], product, tier)
+		licenseKey[:10], licenseKey[len(licenseKey)-6:], product, tier)
 
 	// Upgrade user tier in auth system (if connected)
 	if wh.authUpdater != nil && email != "" {
@@ -536,4 +556,43 @@ func GetStripeConfigFromEnv() StripeConfig {
 		SuccessURL:    os.Getenv("STRIPE_SUCCESS_URL"),
 		CancelURL:     os.Getenv("STRIPE_CANCEL_URL"),
 	}
+}
+
+// issueToolLicenseKey issues an Ed25519-signed license key for a standalone tool.
+// The key can be validated offline by the tool binary using the embedded public key.
+// Format: stockyard_<base64url(payload)>.<base64url(signature)>
+func issueToolLicenseKey(privKeyHex, product, customerID string) (string, error) {
+	privBytes, err := hex.DecodeString(privKeyHex)
+	if err != nil || len(privBytes) != 64 {
+		return "", fmt.Errorf("invalid tools private key: must be 64-byte hex")
+	}
+
+	type payload struct {
+		Product    string `json:"p"`
+		Tier       string `json:"t"`
+		ExpiresAt  int64  `json:"e"` // 0 = never (renewed by subscription)
+		CustomerID string `json:"c"`
+		IssuedAt   int64  `json:"i"`
+	}
+
+	p := payload{
+		Product:    product,
+		Tier:       "pro",
+		ExpiresAt:  time.Now().Add(395 * 24 * time.Hour).Unix(), // 13 months — renewed before expiry
+		CustomerID: customerID,
+		IssuedAt:   time.Now().Unix(),
+	}
+
+	payloadBytes, err := json.Marshal(p)
+	if err != nil {
+		return "", fmt.Errorf("marshal payload: %w", err)
+	}
+
+	privKey := ed25519.PrivateKey(privBytes)
+	sig := ed25519.Sign(privKey, payloadBytes)
+
+	key := "stockyard_" +
+		base64.RawURLEncoding.EncodeToString(payloadBytes) + "." +
+		base64.RawURLEncoding.EncodeToString(sig)
+	return key, nil
 }

@@ -165,3 +165,95 @@ func ProductBySlug(slug string) *Product {
 	}
 	return nil
 }
+
+// ─── Focused Tool Plans ─────────────────────────────────────────────────────
+// Standalone tools from the Stockyard family. Each has its own Free + Pro tier.
+// License keys are Ed25519-signed and validated offline in each tool binary.
+
+// ToolPlan represents a pricing plan for a standalone Stockyard tool.
+type ToolPlan struct {
+	Slug         string `json:"slug"`          // e.g. "corral"
+	Name         string `json:"name"`          // e.g. "Corral Pro"
+	Tool         string `json:"tool"`          // product slug for license issuance
+	PriceCents   int    `json:"price_cents"`   // monthly
+	AnnualCents  int    `json:"annual_cents"`  // annual
+	FreeSummary  string `json:"free_summary"`  // what free includes
+	ProSummary   string `json:"pro_summary"`   // what pro unlocks
+	PageURL      string `json:"page_url"`
+}
+
+// ToolPlans returns all standalone tool pricing plans.
+func ToolPlans() []ToolPlan {
+	return []ToolPlan{
+		{
+			Slug:        "corral-pro",
+			Name:        "Corral Pro",
+			Tool:        "corral",
+			PriceCents:  99,
+			AnnualCents: 990,
+			FreeSummary: "3 endpoints, 1,000 events/mo, 7-day retention",
+			ProSummary:  "Unlimited endpoints, 90-day retention, retry, export, search",
+			PageURL:     "https://stockyard.dev/corral/",
+		},
+		{
+			Slug:        "gate-pro",
+			Name:        "Gate Pro",
+			Tool:        "gate",
+			PriceCents:  299,
+			AnnualCents: 2990,
+			FreeSummary: "1 upstream, 5 users",
+			ProSummary:  "Unlimited upstreams, users, per-route limits, IP lists, log export",
+			PageURL:     "https://stockyard.dev/gate/",
+		},
+		{
+			Slug:        "trough-pro",
+			Name:        "Trough Pro",
+			Tool:        "trough",
+			PriceCents:  299,
+			AnnualCents: 2990,
+			FreeSummary: "1 service, 10,000 requests/mo, 7-day history",
+			ProSummary:  "Unlimited services, anomaly detection, spend alerts, 90-day history",
+			PageURL:     "https://stockyard.dev/trough/",
+		},
+		{
+			Slug:        "fence-pro",
+			Name:        "Fence Pro",
+			Tool:        "fence",
+			PriceCents:  499,
+			AnnualCents: 4990,
+			FreeSummary: "10 keys, 2 members, 2 vaults",
+			ProSummary:  "Unlimited keys, members, RBAC, full audit trail, export",
+			PageURL:     "https://stockyard.dev/fence/",
+		},
+		{
+			Slug:        "brand-pro",
+			Name:        "Brand Pro",
+			Tool:        "brand",
+			PriceCents:  499,
+			AnnualCents: 4990,
+			FreeSummary: "10,000 events/mo, 7-day retention",
+			ProSummary:  "Unlimited events, 90-day retention, policy templates, signed bundles",
+			PageURL:     "https://stockyard.dev/brand/",
+		},
+	}
+}
+
+// ToolPlanBySlug returns a tool plan by slug (e.g. "corral-pro").
+func ToolPlanBySlug(slug string) *ToolPlan {
+	for _, p := range ToolPlans() {
+		if p.Slug == slug {
+			return &p
+		}
+	}
+	return nil
+}
+
+// ToolPlanByTool returns the pro plan for a tool slug (e.g. "corral").
+func ToolPlanByTool(tool string) *ToolPlan {
+	for _, p := range ToolPlans() {
+		if p.Tool == tool {
+			return &p
+		}
+	}
+	return nil
+}

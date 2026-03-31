@@ -208,7 +208,10 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
           <li>Multiple admin keys</li>
           <li>Route-based protection rules</li>
       </ul>
-      <a href="/pricing/" class="cta">Upgrade to Pro &rarr;</a>
+      <div style="display:flex;gap:.6rem;flex-direction:column">
+  <button id="checkout-btn-monthly" onclick="startCheckout('gate-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $2.99/mo</button>
+  <button id="checkout-btn-annual" onclick="startCheckout('gate-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $29.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
+</div>
     </div>
   </div>
 </section>
@@ -275,6 +278,22 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 </script>
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Gate work with browser apps?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set <code>GATE_CORS_ORIGINS</code> for CORS headers. The <code>POST /gate/login</code> endpoint sets an HTTP-only cookie for browser clients. Pro adds session duration controls."}}, {"@type": "Question", "name": "Can I run it behind a load balancer?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gate is stateless except for the SQLite DB. Run one instance behind a reverse proxy or load balancer. For HA, point multiple instances at the same <code>DATA_DIR</code> on shared storage."}}, {"@type": "Question", "name": "What happens at the user limit on Free?", "acceptedAnswer": {"@type": "Answer", "text": "The admin API returns an error when you try to create a sixth user. Existing users and keys keep working. Upgrade to Pro to remove the limit."}}, {"@type": "Question", "name": "Does the upstream know Gate is in the path?", "acceptedAnswer": {"@type": "Answer", "text": "No. Gate proxies requests as-is. The upstream sees the original request headers (with auth headers stripped). It has no awareness of Gate."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "Apache 2.0. Free to use, modify, and deploy."}}]}
+</script>
+<script>
+async function startCheckout(plan, interval) {
+  const btn = document.getElementById('checkout-btn-' + interval);
+  if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
+  try {
+    const r = await fetch('https://stockyard.dev/api/checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({plan: plan, interval: interval})
+    });
+    const d = await r.json();
+    if (d.url) { window.location.href = d.url; }
+    else { alert('Checkout error — ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+  } catch(e) { alert('Network error — please try again'); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+}
 </script>
 </body>
 </html>
