@@ -7,15 +7,15 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>Fence — Team vault for API keys</title>
-<meta name="description" content="Store, rotate, and audit shared API credentials. AES-256-GCM encryption at rest. Single binary, embedded SQLite. Free to start, Pro at $4.99/mo.">
+<meta name="description" content="Encrypted storage for shared API credentials. 10 keys and 2 members free. Pro at $4.99/mo for unlimited keys, role-based access, and full audit trail.">
 <meta property="og:title" content="Fence — Team vault for API keys">
-<meta property="og:description" content="Store, rotate, and audit shared API credentials. AES-256-GCM encryption at rest. Single binary, embedded SQLite. Free to start, Pro at $4.99/mo.">
+<meta property="og:description" content="Encrypted storage for shared API credentials. 10 keys and 2 members free. Pro at $4.99/mo for unlimited keys, role-based access, and full audit trail.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/fence/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fence — Team vault for API keys">
-<meta name="twitter:description" content="Store, rotate, and audit shared API credentials. AES-256-GCM encryption at rest. Single binary, embedded SQLite. Free to start, Pro at $4.99/mo.">
+<meta name="twitter:description" content="Encrypted storage for shared API credentials. 10 keys and 2 members free. Pro at $4.99/mo for unlimited keys, role-based access, and full audit trail.">
 <link rel="canonical" href="https://stockyard.dev/fence/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -25,55 +25,73 @@
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
-.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:.8rem;transition:top .2s}.skip-link:focus{top:0}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3);position:relative;z-index:200}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono);align-items:center}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono);align-items:center}
 .nav-links>a{color:var(--cream-dim)}.nav-links>a:hover{color:var(--rust-light)}
 .nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
-.drop-arrow{font-size:0.65rem;margin-left:2px}
-.nav-drop-menu{display:none;position:absolute;top:calc(100% + 0.8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:0.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+.drop-arrow{font-size:.65rem;margin-left:2px}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .nav-drop-menu.open{display:block}
-.nav-drop-menu a{display:block;padding:0.4rem 1.2rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}
+.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)}
 .nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
-.drop-section{padding:0.3rem 1.2rem;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:0.3rem}
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
-.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.drop-section{padding:.3rem 1.2rem;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:.3rem}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all .3s}
 .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .nav-overlay{display:none}
-@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex}.nav-links>a{font-size:1.05rem;padding:0.4rem 0}.nav-drop-trigger{font-size:1.05rem;padding:0.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:0.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:0.95rem;padding:0.3rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}}
+@media(max-width:768px){.nav{padding:.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,.5)}.nav-links.open{display:flex}.nav-links>a{font-size:1.05rem;padding:.4rem 0}.nav-drop-trigger{font-size:1.05rem;padding:.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}.nav-overlay.open{display:block}}
 .hero{max-width:820px;margin:0 auto;padding:6rem 2rem 4rem;text-align:center}
-.eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
 .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.2rem}
 h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.2rem}
-.accent{color:var(--rust-light)}.sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:580px;margin:0 auto 1.5rem;line-height:1.8}
-.pricing-badge{display:inline-flex;gap:1rem;font-family:var(--font-mono);font-size:0.75rem;margin-bottom:2.5rem;flex-wrap:wrap;justify-content:center}
-.badge{padding:0.3rem 0.8rem;border:1px solid}.badge-free{color:var(--green-light);border-color:var(--green-light)}.badge-pro{color:var(--gold);border-color:var(--gold)}
+.accent{color:var(--rust-light)}
+.sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:580px;margin:0 auto 2rem;line-height:1.8}
 .cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
-.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.75rem 1.8rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:.85rem;padding:.75rem 1.8rem;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
 .btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream)}
 .section{padding:4rem 2rem;max-width:820px;margin:0 auto}
 .section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
 .section-alt-inner{max-width:820px;margin:0 auto}
-.section-label{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.2rem}
-.section-label.leather{color:var(--leather-light)}
-h2{font-size:clamp(1.5rem,3.5vw,2rem);margin-bottom:1rem;line-height:1.3}
+.section-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.2rem}
+.section-label.leather{color:var(--leather-light)}.section-label.gold{color:var(--gold)}
+h2{font-size:clamp(1.4rem,3.5vw,1.9rem);margin-bottom:1rem;line-height:1.3}
 p{color:var(--cream-dim);line-height:1.8;margin-bottom:1rem}
-pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0}
-code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.1rem 0.4rem;color:var(--leather-light)}
-.pre-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0}
+code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:.1rem .4rem;color:var(--leather-light)}
+.pre-label{font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:.4rem}
 .uc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:1.5rem}
 .uc-card{padding:1.5rem;border:1px solid var(--bg3);background:var(--bg)}
-.uc-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
-.uc-desc{font-size:0.82rem;color:var(--cream-dim);font-style:italic;line-height:1.6}
+.uc-name{font-family:var(--font-mono);font-size:.85rem;color:var(--cream);margin-bottom:.5rem}
+.uc-desc{font-size:.82rem;color:var(--cream-dim);font-style:italic;line-height:1.6}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}
+@media(max-width:560px){.pricing-grid{grid-template-columns:1fr}}
+.pricing-card{padding:2rem;border:1px solid var(--bg3);background:var(--bg);position:relative}
+.pricing-card.pro{border-color:var(--gold)}
+.pricing-card-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.6rem}
+.pricing-card-label.free{color:var(--green-light)}
+.pricing-card-label.pro{color:var(--gold)}
+.pricing-card-price{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--cream);line-height:1;margin-bottom:.2rem}
+.pricing-card-period{font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.4rem}
+.pricing-card-for{font-family:var(--font-mono);font-size:.65rem;color:var(--leather-light);background:var(--bg3);padding:.15rem .5rem;display:inline-block;margin-bottom:1.2rem}
+.pricing-card ul{list-style:none;margin:0 0 1.5rem}
+.pricing-card ul li{font-size:.82rem;color:var(--cream-dim);padding:.3rem 0;padding-left:1.2rem;position:relative;line-height:1.5}
+.pricing-card ul li::before{position:absolute;left:0;color:var(--green-light)}
+.pricing-card.free ul li::before{content:'✓'}
+.pricing-card.pro ul li::before{content:'✓';color:var(--gold)}
+.pricing-card .cta{display:block;text-align:center;font-family:var(--font-mono);font-size:.8rem;padding:.6rem 1rem;border:2px solid;transition:all .2s}
+.pricing-card.free .cta{color:var(--cream);border-color:var(--leather)}.pricing-card.free .cta:hover{border-color:var(--cream)}
+.pricing-card.pro .cta{color:var(--gold);border-color:var(--gold)}.pricing-card.pro .cta:hover{background:var(--gold);color:var(--bg)}
 .faq-item{border-top:1px solid var(--bg3);padding:1.2rem 0}
-.faq-q{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem}
-.faq-a{font-size:0.85rem;color:var(--cream-dim);line-height:1.7}
+.faq-q{font-family:var(--font-mono);font-size:.85rem;color:var(--cream);margin-bottom:.5rem}
+.faq-a{font-size:.85rem;color:var(--cream-dim);line-height:1.7}
 .cta-strip{padding:5rem 2rem;text-align:center;max-width:700px;margin:0 auto}
 .cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
-.stockyard-banner{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0;font-size:0.9rem}
-.stockyard-banner strong{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust-light)}
+.stockyard-banner{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0;font-size:.9rem}
+.stockyard-banner strong{font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust-light)}
+
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");</script>
@@ -104,25 +122,24 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
   </div>
 </nav>
 <main id="main">
+
+<!-- A. Hero -->
 <section class="hero">
   <div class="eyebrow">Focused Tool &middot; BSL 1.1 &middot; Single Binary</div>
   <h1>Team vault for <span class="accent">API keys.</span></h1>
-  <p class="sub">Stop sharing API keys in Slack and .env files. Fence stores them encrypted, issues scoped tokens to team members, and logs every access. Instant revocation, rotation without app restarts.</p>
-  <div class="pricing-badge">
-    <span class="badge badge-free">Free &mdash; 10 keys, 2 members</span>
-    <span class="badge badge-pro">Pro &mdash; $4.99/mo unlimited</span>
-  </div>
+  <p class="sub">Stop sharing API keys in Slack and .env files. Fence stores them encrypted, issues scoped tokens to team members, and logs every access. Rotate keys and revoke access instantly without redeploying.</p>
   <div class="cta-group">
     <a href="#install" class="btn btn-primary">Install Fence</a>
     <a href="/docs/fence/" class="btn btn-secondary">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard-fence" class="btn btn-secondary">GitHub</a>
   </div>
 </section>
+
+<!-- B. Quickstart -->
 <section class="section-alt" id="install">
   <div class="section-alt-inner">
     <div class="section-label">Quickstart</div>
-    <h2>Up in 60 seconds.</h2>
-    <p>Install, run, create a vault, store a key. Team members resolve it with their token.</p>
+    <h2>Running in under 60 seconds.</h2>
     <div class="pre-label">Install</div>
     <pre>curl -fsSL https://stockyard.dev/fence/install.sh | sh</pre>
     <div class="pre-label">Run</div>
@@ -130,87 +147,133 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
 FENCE_ENCRYPTION_KEY=$(openssl rand -hex 32) \
 fence
 
-  Stockyard Fence dev
   API:      http://localhost:8770/api
   Resolve:  http://localhost:8770/api/resolve/{key_name}</pre>
-    <div class="pre-label">Store a key and issue a token to a team member</div>
-    <pre># Create vault
+    <div class="pre-label">Store a key and issue a member token</div>
+    <pre># Create a vault and store a key
 curl -s -X POST http://localhost:8770/api/vaults \
-  -H 'Authorization: Bearer secret' \
-  -d '{"name":"production"}'
+  -H 'Authorization: Bearer secret' -d '{"name":"production"}'
 
-# Store a key
-curl -s -X POST http://localhost:8770/api/vaults/{vault_id}/keys \
+curl -s -X POST http://localhost:8770/api/vaults/{id}/keys \
   -H 'Authorization: Bearer secret' \
   -d '{"name":"openai","value":"sk-...","provider":"openai"}'
 
-# Issue a token to alice
-curl -s -X POST http://localhost:8770/api/vaults/{vault_id}/tokens \
-  -H 'Authorization: Bearer secret' \
-  -d '{"member_id":"{member_id}","name":"alice-token"}'
+# Issue a token to a team member
+curl -s -X POST http://localhost:8770/api/vaults/{id}/tokens \
+  -d '{"member_id":"{mid}","name":"alice"}'
+# → fence_... (save it — shown once)
 
-# Alice resolves the key at runtime
-curl -s http://localhost:8770/api/resolve/openai \
-  -H 'Authorization: Bearer fence_...'
-# Returns: {"key":"openai","value":"sk-..."}</pre>
+# Member resolves the key at runtime
+curl http://localhost:8770/api/resolve/openai \
+  -H 'Authorization: Bearer fence_...'</pre>
   </div>
 </section>
+
+<!-- C. Use cases -->
 <section class="section">
   <div class="section-label">Use cases</div>
   <h2>Three things developers use this for.</h2>
   <div class="uc-grid">
-    <div class="uc-card"><div class="uc-name">Replace .env file sharing</div><div class="uc-desc">Every dev on the team has a copy of production keys in their .env. One laptop compromise exposes everything. Fence issues each dev a token, keys stay encrypted on the server.</div></div>
-    <div class="uc-card"><div class="uc-name">Rotate keys without app restarts</div><div class="uc-desc">Rotate a key in Fence and every app that resolves it at runtime gets the new value on the next request. No redeploys, no coordinating restarts.</div></div>
-    <div class="uc-card"><div class="uc-name">Audit who accessed what and when</div><div class="uc-desc">Compliance audit asks which employees had access to the Stripe API key last quarter. Fence has a log of every resolution: who, when, from where.</div></div>
+    <div class="uc-card"><div class="uc-name">Replace .env file sharing</div><div class="uc-desc">Every dev has a copy of production keys in their .env. One compromised laptop exposes everything. Fence issues each dev a scoped token; keys stay encrypted on the server.</div></div>
+    <div class="uc-card"><div class="uc-name">Rotate keys without app restarts</div><div class="uc-desc">Rotate a key in Fence and every app that resolves it at runtime gets the new value immediately. No redeploys, no coordinating restarts across services.</div></div>
+    <div class="uc-card"><div class="uc-name">Audit who accessed what</div><div class="uc-desc">Compliance review asks which employees had access to the Stripe key last quarter. Fence has a complete log of every resolution: who, when, from where.</div></div>
   </div>
 </section>
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <div class="section-label leather">Why not heavier tools</div>
-    <h2>HashiCorp Vault is powerful but complex. Fence is 9MB.</h2>
-    <p>Vault is the right answer when you have hundreds of services, dynamic secrets, and a dedicated platform team. For most teams, the problem is simpler: stop sharing API keys in chat and give people a way to access them that leaves a trail. Fence does that without requiring you to learn HCL or run a cluster.</p><p>AES-256-GCM encryption at rest, scoped tokens per team member, instant revocation, audit log. Single binary, embedded SQLite, zero infrastructure dependencies.</p>
-  </div>
-</section>
+
+<!-- D. Free vs Pro -->
 <section class="section">
-  <div class="section-label">Scope</div>
-  <h2>When Fence is all you need.</h2>
-  <p>Fence is the right tool when the problem is shared API key management for a small to medium team. It handles encrypted storage, per-member access tokens, rotation, and audit logging. It doesn't do dynamic secrets, PKI, or Kubernetes integration.</p><p>The free tier covers 10 keys and 2 team members. Pro removes those limits for $4.99/month.</p>
-</section>
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <div class="section-label">The broader picture</div>
-    <h2>When you need the full LLM control plane.</h2>
-    <div class="stockyard-banner">
-      <strong>Stockyard Platform</strong><br>
-      Fence is a standalone key vault from the Stockyard family. If you're building LLM applications and need full API key management integrated with request tracing, cost control, and team collaboration — Stockyard is the full platform with all of that built in.
+  <div class="section-label gold">Pricing</div>
+  <h2>Free to run. Pro when you need more.</h2>
+  <div class="pricing-grid">
+    <div class="pricing-card free">
+      <div class="pricing-card-label free">Free</div>
+      <div class="pricing-card-price">$0</div>
+      <div class="pricing-card-period">forever, self-hosted</div>
+      <div class="pricing-card-for">Best for: solo devs and small projects</div>
+      <ul>
+          <li>10 keys</li>
+          <li>2 members</li>
+          <li>2 projects / vaults</li>
+          <li>Key labeling and notes</li>
+          <li>AES-256-GCM encrypted local storage</li>
+          <li>Basic access log</li>
+          <li>Manual key add / remove</li>
+      </ul>
+      <a href="#install" class="cta">Get started &rarr;</a>
     </div>
-    <a href="/" class="btn btn-secondary">Learn about Stockyard &rarr;</a>
+    <div class="pricing-card pro">
+      <div class="pricing-card-label pro">Pro</div>
+      <div class="pricing-card-price">$4.99</div>
+      <div class="pricing-card-period">per month</div>
+      <div class="pricing-card-for">Best for: teams with shared credentials</div>
+      <ul>
+          <li>Unlimited keys</li>
+          <li>Unlimited members</li>
+          <li>Unlimited projects / vaults</li>
+          <li>Role-based access (admin / reader)</li>
+          <li>Full key usage audit trail</li>
+          <li>Expiration reminders</li>
+          <li>Tags and search across keys</li>
+          <li>Export / import key sets</li>
+          <li>Rotation reminders</li>
+          <li>Shared vault views across team</li>
+      </ul>
+      <a href="/pricing/" class="cta">Upgrade to Pro &rarr;</a>
+    </div>
   </div>
 </section>
-<section class="section">
-  <div class="section-label">FAQ</div>
-  <div class="faq-item"><div class="faq-q">Are keys stored encrypted?</div><div class="faq-a">Yes. AES-256-GCM encryption at rest. Set FENCE_ENCRYPTION_KEY to a 32-byte hex key. If not set, it derives from the admin key (not recommended for production).</div></div>
-  <div class="faq-item"><div class="faq-q">What happens when I revoke a token?</div><div class="faq-a">Revocation is instant. The next resolve request with that token returns 401. The underlying key is unaffected — other tokens still work.</div></div>
-  <div class="faq-item"><div class="faq-q">Can I scope a token to a specific key?</div><div class="faq-a">Yes. Set key_id when issuing a token and that token can only resolve that specific key, not the whole vault.</div></div>
-  <div class="faq-item"><div class="faq-q">What's the license?</div><div class="faq-a">BSL 1.1. Free for small teams. Commercial license required for organizations over 10 members. Contact hello@stockyard.dev.</div></div>
+
+<!-- E. When this is enough -->
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Scope</div>
+    <h2>When Fence is all you need.</h2>
+    <p>Fence is the right tool when you need shared API key management for a small to medium team. The free tier covers 10 keys and 2 members. Pro removes those limits and adds RBAC and full audit trails for $4.99/month. It doesn't do dynamic secrets or PKI — for those, Vault is the right answer.</p>
+  </div>
 </section>
+
+<!-- F. When to use Stockyard -->
+<section class="section">
+  <div class="section-label leather">The broader picture</div>
+  <h2>When you need the full LLM control plane.</h2>
+  <div class="stockyard-banner">
+    <strong>Stockyard Platform</strong><br>
+    Fence is a standalone key vault from the Stockyard family. Stockyard's full platform includes API key management integrated with LLM request tracing, cost control, team collaboration, and 25+ more tools. If you're managing LLM provider credentials for a team, Stockyard handles the full workflow.
+  </div>
+  <a href="/" class="btn btn-secondary">Learn about Stockyard &rarr;</a>
+</section>
+
+<!-- G. FAQ -->
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">FAQ</div>
+  <div class="faq-item"><div class="faq-q">Are keys stored encrypted at rest?</div><div class="faq-a">Yes. AES-256-GCM encryption using a key derived from <code>FENCE_ENCRYPTION_KEY</code>. Set this to a 32-byte hex string generated with <code>openssl rand -hex 32</code>.</div></div>
+  <div class="faq-item"><div class="faq-q">What happens when I revoke a token?</div><div class="faq-a">Revocation is instant. The next resolve request with that token returns 401. The underlying key is unaffected — other tokens still work.</div></div>
+  <div class="faq-item"><div class="faq-q">Can I scope a token to a specific key?</div><div class="faq-a">Yes. Set <code>key_id</code> when issuing a token and that token can only resolve that specific key, not the whole vault.</div></div>
+  <div class="faq-item"><div class="faq-q">What's the free tier member limit?</div><div class="faq-a">2 members on Free. The API returns an error when you try to add a third. Existing members and their tokens keep working. Upgrade to Pro to remove the limit.</div></div>
+  <div class="faq-item"><div class="faq-q">What's the license?</div><div class="faq-a">BSL 1.1. Free for small teams (under 10 members). Commercial license for larger organizations. Contact hello@stockyard.dev.</div></div>
+  </div>
+</section>
+
+<!-- H. Final CTA -->
 <section class="cta-strip">
   <div class="section-label">Get started</div>
   <h2>Stop sharing API keys in Slack.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Encrypted storage. Scoped tokens. Instant revocation. Free to start.</p>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Encrypted storage. Instant revocation. Free to start.</p>
   <div class="cta-group">
     <a href="#install" class="btn btn-primary">Install Fence</a>
     <a href="/docs/fence/" class="btn btn-secondary">Read the docs</a>
   </div>
-  <p style="margin-top:2rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather)">Need the full LLM stack? &rarr; <a href="/">Stockyard Platform</a></p>
+  <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Need the full LLM stack? &rarr; <a href="/">Stockyard Platform</a></p>
 </section>
+
 </main>
-<footer style="border-top:1px solid var(--bg3);padding:2.5rem 2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">
+<footer style="border-top:1px solid var(--bg3);padding:2.5rem 2rem;font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted)">
   <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2rem">
-    <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Platform</div><a href="/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Stockyard</a><a href="/pricing/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Pricing</a><a href="/docs/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Docs</a></div>
-    <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Tools</div><a href="/corral/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Corral</a><a href="/gate/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Gate</a><a href="/trough/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Trough</a><a href="/fence/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Fence</a><a href="/brand/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Brand</a></div>
-    <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Docs</div><a href="/docs/corral/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Corral docs</a><a href="/docs/gate/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Gate docs</a><a href="/docs/trough/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Trough docs</a><a href="/docs/fence/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Fence docs</a><a href="/docs/brand/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Brand docs</a></div>
-    <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Company</div><a href="/privacy/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Privacy</a><a href="/terms/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Terms</a><a href="/security/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Security</a><a href="/changelog/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Changelog</a></div>
+    <div><div style="color:var(--leather-light);margin-bottom:.8rem;letter-spacing:1px;text-transform:uppercase">Platform</div><a href="/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Stockyard</a><a href="/pricing/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Pricing</a><a href="/docs/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Docs</a></div>
+    <div><div style="color:var(--leather-light);margin-bottom:.8rem;letter-spacing:1px;text-transform:uppercase">Tools</div><a href="/corral/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Corral</a><a href="/gate/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Gate</a><a href="/trough/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Trough</a><a href="/fence/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Fence</a><a href="/brand/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Brand</a></div>
+    <div><div style="color:var(--leather-light);margin-bottom:.8rem;letter-spacing:1px;text-transform:uppercase">Docs</div><a href="/docs/corral/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Corral</a><a href="/docs/gate/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Gate</a><a href="/docs/trough/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Trough</a><a href="/docs/fence/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Fence</a><a href="/docs/brand/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Brand</a></div>
+    <div><div style="color:var(--leather-light);margin-bottom:.8rem;letter-spacing:1px;text-transform:uppercase">Company</div><a href="/privacy/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Privacy</a><a href="/terms/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Terms</a><a href="/security/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Security</a><a href="/changelog/" style="display:block;padding:.2rem 0;color:var(--cream-muted)">Changelog</a></div>
   </div>
   <div style="text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--bg3)">&copy; 2026 Stockyard &middot; <a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a></div>
 </footer>
@@ -219,6 +282,9 @@ function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.quer
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav()}})
+</script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are keys stored encrypted at rest?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. AES-256-GCM encryption using a key derived from <code>FENCE_ENCRYPTION_KEY</code>. Set this to a 32-byte hex string generated with <code>openssl rand -hex 32</code>."}}, {"@type": "Question", "name": "What happens when I revoke a token?", "acceptedAnswer": {"@type": "Answer", "text": "Revocation is instant. The next resolve request with that token returns 401. The underlying key is unaffected \u2014 other tokens still work."}}, {"@type": "Question", "name": "Can I scope a token to a specific key?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set <code>key_id</code> when issuing a token and that token can only resolve that specific key, not the whole vault."}}, {"@type": "Question", "name": "What's the free tier member limit?", "acceptedAnswer": {"@type": "Answer", "text": "2 members on Free. The API returns an error when you try to add a third. Existing members and their tokens keep working. Upgrade to Pro to remove the limit."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "BSL 1.1. Free for small teams (under 10 members). Commercial license for larger organizations. Contact hello@stockyard.dev."}}]}
 </script>
 </body>
 </html>

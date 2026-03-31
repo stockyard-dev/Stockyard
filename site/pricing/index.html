@@ -386,52 +386,202 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
 </section>
 
 <div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a></div>
-<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a></div>
 
 <!-- Focused Tools Pricing -->
-<section style="padding:4rem 2rem;max-width:900px;margin:0 auto">
-  <div style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem;text-align:center">Focused Tools</div>
-  <h2 style="font-size:1.5rem;text-align:center;margin-bottom:0.8rem">Standalone tools from the Stockyard family</h2>
-  <p style="color:var(--cream-dim);font-style:italic;text-align:center;max-width:580px;margin:0 auto 2.5rem;font-size:0.95rem">Each tool solves one specific problem. Single binary, embedded SQLite, free to start. They work standalone or alongside Stockyard.</p>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.2rem">
-    <div style="padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2)">
-      <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.3rem"><a href="/corral/" style="color:var(--cream)">Corral</a></div>
-      <div style="font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1rem">Webhook capture and replay</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--green-light);margin-bottom:0.3rem">Free &mdash; 1,000 events/mo</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--gold)">Pro &mdash; $0.99/mo &mdash; unlimited</div>
-      <div style="margin-top:1rem"><a href="/corral/" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--rust-light)">Learn more &rarr;</a></div>
+<section style="padding:4rem 2rem;max-width:1100px;margin:0 auto">
+  <div style="font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem;text-align:center">Focused Tools</div>
+  <h2 style="font-size:1.5rem;text-align:center;margin-bottom:.6rem">Standalone tools from the Stockyard family</h2>
+  <p style="color:var(--cream-dim);font-style:italic;text-align:center;max-width:580px;margin:0 auto 2.5rem;font-size:.9rem">Each tool solves one specific infrastructure problem. Single binary, embedded SQLite, free to start. Works standalone or alongside Stockyard.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:1.5rem">
+    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
+          <a href="/corral/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Corral</a>
+          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$0.99/mo Pro</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Self-hosted webhook inbox</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">3 endpoints &middot; 1K events/mo &middot; 7-day retention</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>3 endpoints</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Live event stream</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Manual replay</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>1 forward target / endpoint</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs</div>
+        </div>
+        <div style="padding:1rem 1.5rem">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $0.99/mo</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited endpoints</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>30–90 day retention</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Retry failed deliveries</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Event filtering &amp; export</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams, production</div>
+        </div>
+      </div>
+      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
+        <a href="/corral/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
+        <a href="/corral/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
+      </div>
     </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2)">
-      <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.3rem"><a href="/gate/" style="color:var(--cream)">Gate</a></div>
-      <div style="font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1rem">Auth gateway for internal tools</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--green-light);margin-bottom:0.3rem">Free &mdash; 1 upstream, 5 users</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--gold)">Pro &mdash; $2.99/mo &mdash; unlimited</div>
-      <div style="margin-top:1rem"><a href="/gate/" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--rust-light)">Learn more &rarr;</a></div>
+    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
+          <a href="/gate/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Gate</a>
+          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$2.99/mo Pro</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Auth proxy for internal services</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">1 upstream &middot; 5 users</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>API key auth</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Session login</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Fixed rate limiting</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Access logs</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs</div>
+        </div>
+        <div style="padding:1rem 1.5rem">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $2.99/mo</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited upstreams &amp; users</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Per-route rate limits</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>IP allow / deny lists</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Log export &amp; filtering</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams with multiple services</div>
+        </div>
+      </div>
+      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
+        <a href="/gate/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
+        <a href="/gate/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
+      </div>
     </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2)">
-      <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.3rem"><a href="/trough/" style="color:var(--cream)">Trough</a></div>
-      <div style="font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1rem">API cost monitor</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--green-light);margin-bottom:0.3rem">Free &mdash; 10,000 requests/mo</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--gold)">Pro &mdash; $2.99/mo &mdash; unlimited</div>
-      <div style="margin-top:1rem"><a href="/trough/" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--rust-light)">Learn more &rarr;</a></div>
+    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
+          <a href="/trough/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Trough</a>
+          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$2.99/mo Pro</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">API cost monitor</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">1 service &middot; 10K requests/mo &middot; 7-day history</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Daily cost summary</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Route-level breakdown</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>CSV export</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Simple cost rules</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs</div>
+        </div>
+        <div style="padding:1rem 1.5rem">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $2.99/mo</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited services</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>90-day history</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Anomaly detection</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Spend alerts &amp; trend reports</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams running multiple APIs</div>
+        </div>
+      </div>
+      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
+        <a href="/trough/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
+        <a href="/trough/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
+      </div>
     </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2)">
-      <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.3rem"><a href="/fence/" style="color:var(--cream)">Fence</a></div>
-      <div style="font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1rem">API key vault for teams</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--green-light);margin-bottom:0.3rem">Free &mdash; 10 keys, 2 members</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--gold)">Pro &mdash; $4.99/mo &mdash; unlimited</div>
-      <div style="margin-top:1rem"><a href="/fence/" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--rust-light)">Learn more &rarr;</a></div>
+    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
+          <a href="/fence/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Fence</a>
+          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$4.99/mo Pro</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Team vault for API keys</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">10 keys &middot; 2 members &middot; 2 vaults</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>AES-256-GCM encryption</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Scoped member tokens</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Basic access log</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Manual key management</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs, small teams</div>
+        </div>
+        <div style="padding:1rem 1.5rem">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $4.99/mo</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited keys &amp; members</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Role-based access</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Full audit trail</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Rotation reminders &amp; expiry</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams with shared credentials</div>
+        </div>
+      </div>
+      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
+        <a href="/fence/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
+        <a href="/fence/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
+      </div>
     </div>
-    <div style="padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2)">
-      <div style="font-family:var(--font-mono);font-size:0.95rem;color:var(--cream);margin-bottom:0.3rem"><a href="/brand/" style="color:var(--cream)">Brand</a></div>
-      <div style="font-size:0.82rem;color:var(--cream-dim);font-style:italic;margin-bottom:1rem">Verifiable audit trail</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--green-light);margin-bottom:0.3rem">Free &mdash; 10,000 events</div>
-      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--gold)">Pro &mdash; $4.99/mo &mdash; unlimited</div>
-      <div style="margin-top:1rem"><a href="/brand/" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--rust-light)">Learn more &rarr;</a></div>
+    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
+      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
+          <a href="/brand/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Brand</a>
+          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$4.99/mo Pro</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Verifiable audit trail</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">10K events/mo &middot; 7-day retention</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>SHA-256 hash chain</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Chain verification</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>JSON export</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Basic evidence pack</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs, small apps</div>
+        </div>
+        <div style="padding:1rem 1.5rem">
+          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $4.99/mo</div>
+          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
+          <ul style="list-style:none">
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>90-day retention</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Policy templates (SOC2, HIPAA, GDPR)</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Scheduled evidence export</li>
+          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Signed evidence bundles</li>
+          </ul>
+          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams with compliance needs</div>
+        </div>
+      </div>
+      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
+        <a href="/brand/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
+        <a href="/brand/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
+      </div>
     </div>
   </div>
-  <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.72rem;color:var(--leather)">Tool pricing is separate from Stockyard platform pricing &middot; Each tool has its own free tier</p>
+  <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:.72rem;color:var(--leather)">Tool pricing is separate from Stockyard platform pricing &middot; Each tool has its own independent free tier</p>
 </section>
+
 
 <footer>
   <p class="sig">Stockyard.</p>
