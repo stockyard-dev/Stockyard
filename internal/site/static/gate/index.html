@@ -175,9 +175,11 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
     <div class="section-label">See it</div>
     <div class="mockup-tabs">
       <button class="mockup-tab active" onclick="switchTab(this,'gate-terminal')">Terminal</button>
+    <button class="mockup-tab" onclick="switchTab(this,'gate-dashboard')">Dashboard</button>
     </div>
     <div class="mockup-pane active" id="gate-terminal"><img src="/site-assets/assets/screenshots/gate-terminal.svg" alt="Gate startup output showing proxy configuration and key issuance" class="mockup-img" loading="lazy" width="720"></div>
-    <p class="mockup-caption">Gate proxies every request through an auth check. No key, no access.</p>
+    <div class="mockup-pane" id="gate-dashboard"><img src="/site-assets/assets/screenshots/gate-dashboard.svg" alt="Gate dashboard showing API keys, users, and access log" class="mockup-img" loading="lazy" width="720"></div>
+    <p class="mockup-caption">Gate proxies every request through an auth check. No key, no access. The dashboard shows live access logs, key management, and user accounts.</p>
   </div>
 </section>
 

@@ -181,9 +181,11 @@ curl -s "http://localhost:8750/api/evidence/export?from=2026-01-01" \
     <div class="section-label">See it</div>
     <div class="mockup-tabs">
       <button class="mockup-tab active" onclick="switchTab(this,'brand-terminal')">Terminal</button>
+    <button class="mockup-tab" onclick="switchTab(this,'brand-dashboard')">Dashboard</button>
     </div>
     <div class="mockup-pane active" id="brand-terminal"><img src="/site-assets/assets/screenshots/brand-terminal.svg" alt="Brand terminal output showing event ingestion and chain verification" class="mockup-img" loading="lazy" width="720"></div>
-    <p class="mockup-caption">Brand appends events to a SHA-256 hash chain. One call verifies the entire ledger.</p>
+    <div class="mockup-pane" id="brand-dashboard"><img src="/site-assets/assets/screenshots/brand-dashboard.svg" alt="Brand dashboard showing event feed, chain health verification, and evidence export" class="mockup-img" loading="lazy" width="720"></div>
+    <p class="mockup-caption">Brand appends events to a SHA-256 hash chain. One call verifies the entire ledger. The dashboard shows the live event feed, chain health, policy templates, and evidence export.</p>
   </div>
 </section>
 

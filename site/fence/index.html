@@ -186,9 +186,11 @@ curl http://localhost:8770/api/resolve/openai \
     <div class="section-label">See it</div>
     <div class="mockup-tabs">
       <button class="mockup-tab active" onclick="switchTab(this,'fence-terminal')">Terminal</button>
+    <button class="mockup-tab" onclick="switchTab(this,'fence-dashboard')">Dashboard</button>
     </div>
     <div class="mockup-pane active" id="fence-terminal"><img src="/site-assets/assets/screenshots/fence-terminal.svg" alt="Fence terminal output showing key storage and token-based resolution" class="mockup-img" loading="lazy" width="720"></div>
-    <p class="mockup-caption">Fence stores credentials encrypted at rest. Team members resolve them at runtime with scoped tokens.</p>
+    <div class="mockup-pane" id="fence-dashboard"><img src="/site-assets/assets/screenshots/fence-dashboard.svg" alt="Fence dashboard showing vaults, encrypted keys, members, and access log" class="mockup-img" loading="lazy" width="720"></div>
+    <p class="mockup-caption">Fence stores credentials encrypted at rest. Team members resolve them at runtime with scoped tokens. The dashboard shows vault contents (names only — values never shown), members, and every access.</p>
   </div>
 </section>
 
