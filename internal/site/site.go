@@ -292,6 +292,8 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/for/startups/",
 		"/docs/railway-deploy/",
 		"/blog/self-hosted-vs-saas-llm-proxy/",
+		"/blog/cursor-api-costs/",
+		"/blog/proxy-only-vs-full-platform/",
 		"/providers/",
 		"/docs/providers/",
 		"/best-self-hosted-llm-proxy/",
