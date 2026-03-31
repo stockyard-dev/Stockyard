@@ -199,10 +199,13 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// Evidence
 	mux.HandleFunc("GET /api/trust/evidence", a.handleListEvidence)
 	mux.HandleFunc("POST /api/trust/evidence", a.handleCreateEvidence)
+	mux.HandleFunc("GET /api/trust/evidence/{id}/export", a.handleExportEvidence)
 
 	// Policies
 	mux.HandleFunc("GET /api/trust/policies", a.handleListPolicies)
 	mux.HandleFunc("POST /api/trust/policies", a.handleCreatePolicy)
+	mux.HandleFunc("GET /api/trust/policies/templates", a.handleListPolicyTemplates)
+	mux.HandleFunc("POST /api/trust/policies/templates/{slug}/apply", a.handleApplyPolicyTemplate)
 
 	// Feedback
 	mux.HandleFunc("GET /api/trust/feedback", a.handleListFeedback)
@@ -400,7 +403,206 @@ func (a *App) handleCreateEvidence(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, map[string]any{"status": "generated", "id": id, "event_count": count, "hash": hash})
 }
 
+// handleExportEvidence returns a full JSON evidence bundle for an evidence pack.
+// Contains: metadata, all ledger entries in the date range, chain verification result.
+func (a *App) handleExportEvidence(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+
+	// Load evidence pack metadata
+	var name, desc, dateFrom, dateTo, packHash, status, created string
+	var eventCount int
+	err := a.conn.QueryRow(`SELECT name, description, event_count, date_from, date_to, hash, status, created_at
+		FROM trust_evidence_packs WHERE id = ?`, id).Scan(&name, &desc, &eventCount, &dateFrom, &dateTo, &packHash, &status, &created)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "evidence pack not found"})
+		return
+	}
+
+	// Load all ledger entries in the date range
+	rows, err := a.conn.Query(`SELECT id, event_type, actor, resource, action, detail_json, prev_hash, hash, created_at
+		FROM trust_ledger WHERE created_at >= ? AND created_at <= ? ORDER BY id ASC`, dateFrom, dateTo)
+	if err != nil {
+		w.WriteHeader(500)
+		writeJSON(w, map[string]string{"error": "query failed"})
+		return
+	}
+	defer rows.Close()
+
+	var entries []map[string]any
+	var chainValid bool = true
+	var prevHash string
+	for rows.Next() {
+		var eid int
+		var eventType, actor, resource, action, detail, ph, h, cat string
+		if err := rows.Scan(&eid, &eventType, &actor, &resource, &action, &detail, &ph, &h, &cat); err != nil {
+			continue
+		}
+		// Verify chain continuity
+		if prevHash != "" && ph != prevHash {
+			chainValid = false
+		}
+		prevHash = h
+
+		var detailParsed any
+		json.Unmarshal([]byte(detail), &detailParsed)
+		entries = append(entries, map[string]any{
+			"id": eid, "event_type": eventType, "actor": actor, "resource": resource,
+			"action": action, "detail": detailParsed, "prev_hash": ph, "hash": h,
+			"created_at": cat,
+		})
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
+
+	// Build export bundle
+	bundle := map[string]any{
+		"evidence_pack": map[string]any{
+			"id": id, "name": name, "description": desc,
+			"date_from": dateFrom, "date_to": dateTo,
+			"generated_at": created, "pack_hash": packHash,
+		},
+		"chain_verification": map[string]any{
+			"valid":       chainValid,
+			"entry_count": len(entries),
+			"first_hash":  "",
+			"last_hash":   prevHash,
+		},
+		"entries": entries,
+		"export_metadata": map[string]any{
+			"exported_at": time.Now().UTC().Format("2006-01-02T15:04:05Z"),
+			"format":      "stockyard-evidence-v1",
+			"product":     "Stockyard Brand",
+		},
+	}
+	if len(entries) > 0 {
+		if h, ok := entries[0]["hash"].(string); ok {
+			bundle["chain_verification"].(map[string]any)["first_hash"] = h
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"evidence-%s.json\"", id))
+	json.NewEncoder(w).Encode(bundle)
+}
+
 // --- Policies ---
+
+// policyTemplates are pre-built compliance rule sets.
+var policyTemplates = map[string]struct {
+	Name        string
+	Description string
+	Policies    []struct {
+		Name   string
+		Type   string
+		Config map[string]any
+	}
+}{
+	"soc2": {
+		Name:        "SOC 2 Type II",
+		Description: "Controls for service organization trust criteria: security, availability, confidentiality.",
+		Policies: []struct {
+			Name   string
+			Type   string
+			Config map[string]any
+		}{
+			{"SOC2: Require authentication", "require_auth", map[string]any{"enforce": true, "description": "All API requests must be authenticated"}},
+			{"SOC2: Audit all requests", "audit_all", map[string]any{"log_bodies": true, "retention_days": 365, "description": "Log all request/response pairs for audit trail"}},
+			{"SOC2: PII detection", "pii_scan", map[string]any{"action": "warn", "scan_input": true, "scan_output": true, "description": "Detect PII in prompts and responses"}},
+			{"SOC2: Cost anomaly alerts", "cost_threshold", map[string]any{"daily_limit_usd": 100, "alert": true, "description": "Alert when daily spend exceeds threshold"}},
+			{"SOC2: Access review", "access_review", map[string]any{"interval_days": 90, "description": "Quarterly access review reminder"}},
+		},
+	},
+	"hipaa": {
+		Name:        "HIPAA",
+		Description: "Health Insurance Portability and Accountability Act safeguards for PHI.",
+		Policies: []struct {
+			Name   string
+			Type   string
+			Config map[string]any
+		}{
+			{"HIPAA: PHI detection", "pii_scan", map[string]any{"action": "block", "scan_input": true, "scan_output": true, "patterns": []string{"ssn", "medical_record", "diagnosis", "patient_name"}, "description": "Block requests containing PHI"}},
+			{"HIPAA: Require encryption", "require_encryption", map[string]any{"enforce_tls": true, "description": "All requests must use TLS"}},
+			{"HIPAA: Audit logging", "audit_all", map[string]any{"log_bodies": true, "retention_days": 2190, "description": "6-year audit trail retention"}},
+			{"HIPAA: Minimum necessary", "output_cap", map[string]any{"max_tokens": 4096, "description": "Limit response size to minimum necessary"}},
+			{"HIPAA: Access controls", "require_auth", map[string]any{"enforce": true, "require_team": true, "description": "Team-scoped access with authentication"}},
+		},
+	},
+	"gdpr": {
+		Name:        "GDPR",
+		Description: "General Data Protection Regulation compliance for EU data subjects.",
+		Policies: []struct {
+			Name   string
+			Type   string
+			Config map[string]any
+		}{
+			{"GDPR: PII detection", "pii_scan", map[string]any{"action": "redact", "scan_input": true, "scan_output": true, "description": "Redact personal data in prompts and responses"}},
+			{"GDPR: Data retention", "data_retention", map[string]any{"retention_days": 30, "auto_delete": true, "description": "Auto-delete request logs after 30 days"}},
+			{"GDPR: Consent logging", "consent_gate", map[string]any{"require_consent_header": true, "description": "Require consent acknowledgment header on requests"}},
+			{"GDPR: Right to erasure", "erasure_support", map[string]any{"enabled": true, "description": "Support data deletion requests by user ID"}},
+		},
+	},
+	"eu-ai-act": {
+		Name:        "EU AI Act",
+		Description: "European Union Artificial Intelligence Act compliance for high-risk AI systems.",
+		Policies: []struct {
+			Name   string
+			Type   string
+			Config map[string]any
+		}{
+			{"EU AI Act: Transparency", "transparency_log", map[string]any{"log_model": true, "log_provider": true, "description": "Log which AI model and provider handled each request"}},
+			{"EU AI Act: Human oversight", "approval_gate", map[string]any{"require_approval_above_cost": 1.00, "description": "Require human approval for high-cost requests"}},
+			{"EU AI Act: Accuracy monitoring", "drift_watch", map[string]any{"enabled": true, "threshold": 0.15, "description": "Monitor output quality drift over time"}},
+			{"EU AI Act: Risk assessment", "risk_classify", map[string]any{"enabled": true, "description": "Classify request risk level based on content and model"}},
+		},
+	},
+}
+
+func (a *App) handleListPolicyTemplates(w http.ResponseWriter, r *http.Request) {
+	var templates []map[string]any
+	for slug, t := range policyTemplates {
+		templates = append(templates, map[string]any{
+			"slug":         slug,
+			"name":         t.Name,
+			"description":  t.Description,
+			"policy_count": len(t.Policies),
+		})
+	}
+	writeJSON(w, map[string]any{"templates": templates})
+}
+
+func (a *App) handleApplyPolicyTemplate(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	tmpl, ok := policyTemplates[slug]
+	if !ok {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "template not found"})
+		return
+	}
+
+	var created int
+	for _, p := range tmpl.Policies {
+		cfg, _ := json.Marshal(p.Config)
+		_, err := a.conn.Exec("INSERT INTO trust_policies (name, type, config_json) VALUES (?,?,?)",
+			p.Name, p.Type, string(cfg))
+		if err != nil {
+			log.Printf("[trust] policy template apply error: %v", err)
+			continue
+		}
+		created++
+	}
+
+	a.RecordEvent("admin_action", "admin", "template:"+slug, "policy_template_applied", map[string]any{
+		"template": slug, "policies_created": created,
+	})
+
+	writeJSON(w, map[string]any{
+		"status":           "applied",
+		"template":         slug,
+		"policies_created": created,
+	})
+}
 
 func (a *App) handleListPolicies(w http.ResponseWriter, r *http.Request) {
 	rows, _ := a.conn.Query("SELECT id, name, type, config_json, enabled FROM trust_policies ORDER BY name")

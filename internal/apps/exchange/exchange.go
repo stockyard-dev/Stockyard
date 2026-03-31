@@ -124,6 +124,18 @@ CREATE TABLE IF NOT EXISTS exchange_gate_captures (
     created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_gate_email ON exchange_gate_captures(email);
+
+-- Pack ratings/reviews
+CREATE TABLE IF NOT EXISTS exchange_ratings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pack_slug TEXT NOT NULL,
+    rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5),
+    review TEXT DEFAULT '',
+    author TEXT DEFAULT 'anonymous',
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(pack_slug, author)
+);
+CREATE INDEX IF NOT EXISTS idx_ratings_pack ON exchange_ratings(pack_slug);
 `
 
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
@@ -134,6 +146,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/exchange/packs/{slug}/versions", a.handleAddVersion)
 	mux.HandleFunc("POST /api/exchange/packs/{slug}/install", a.handleInstallPack)
 	mux.HandleFunc("GET /api/exchange/packs/{slug}/preview", a.handlePreviewPack)
+
+	// Ratings
+	mux.HandleFunc("GET /api/exchange/packs/{slug}/ratings", a.handleListRatings)
+	mux.HandleFunc("POST /api/exchange/packs/{slug}/ratings", a.handleSubmitRating)
 
 	// Installed
 	mux.HandleFunc("GET /api/exchange/installed", a.handleListInstalled)
@@ -385,6 +401,81 @@ func (a *App) handlePreviewPack(w http.ResponseWriter, r *http.Request) {
 	preview["content"] = content
 
 	writeJSON(w, preview)
+}
+
+// --- Ratings ---
+
+func (a *App) handleListRatings(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+
+	rows, err := a.conn.Query(`SELECT rating, review, author, created_at FROM exchange_ratings WHERE pack_slug = ? ORDER BY created_at DESC`, slug)
+	if err != nil || rows == nil {
+		writeJSON(w, map[string]any{"ratings": []any{}, "average": 0, "count": 0})
+		return
+	}
+	defer rows.Close()
+
+	var ratings []map[string]any
+	var sum, count int
+	for rows.Next() {
+		var rating int
+		var review, author, created string
+		if err := rows.Scan(&rating, &review, &author, &created); err != nil {
+			continue
+		}
+		ratings = append(ratings, map[string]any{
+			"rating": rating, "review": review, "author": author, "created_at": created,
+		})
+		sum += rating
+		count++
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
+
+	avg := 0.0
+	if count > 0 {
+		avg = float64(sum) / float64(count)
+	}
+	writeJSON(w, map[string]any{"ratings": ratings, "average": avg, "count": count})
+}
+
+func (a *App) handleSubmitRating(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+
+	var req struct {
+		Rating int    `json:"rating"`
+		Review string `json:"review"`
+		Author string `json:"author"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if req.Rating < 1 || req.Rating > 5 {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "rating must be 1-5"})
+		return
+	}
+	if req.Author == "" {
+		req.Author = "anonymous"
+	}
+
+	// Upsert: update if same author already rated this pack
+	_, err := a.conn.Exec(`INSERT INTO exchange_ratings (pack_slug, rating, review, author)
+		VALUES (?,?,?,?)
+		ON CONFLICT(pack_slug, author) DO UPDATE SET rating = excluded.rating, review = excluded.review, created_at = datetime('now')`,
+		slug, req.Rating, req.Review, req.Author)
+	if err != nil {
+		log.Printf("[exchange] rating error: %v", err)
+		w.WriteHeader(500)
+		writeJSON(w, map[string]string{"error": "failed to save rating"})
+		return
+	}
+
+	if a.audit != nil {
+		a.audit("exchange_event", "exchange", "pack:"+slug, "rated", map[string]any{"rating": req.Rating, "author": req.Author})
+	}
+
+	writeJSON(w, map[string]any{"status": "saved", "pack": slug, "rating": req.Rating})
 }
 
 // --- Installed ---
