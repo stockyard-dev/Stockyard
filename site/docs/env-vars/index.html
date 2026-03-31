@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta property="og:title" content="Environment Variables -- Stockyard Docs">
+<meta property="og:description" content="Complete reference of Stockyard environment variables. Provider keys, ports, data directory, auth mode, logging, and feature configuration.">
+<meta property="og:url" content="https://stockyard.dev/docs/env-vars/">
+<meta property="og:type" content="website">
+<title>Environment Variables -- Stockyard Docs</title>
+<meta name="description" content="Complete reference of Stockyard environment variables. Provider keys, ports, data directory, auth mode, logging, and feature configuration.">
+<link rel="canonical" href="https://stockyard.dev/docs/env-vars/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;
+  --gold:#d4a843;
+  --green:#4a8c5c;--green-light:#5ba86e;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content;max-height:100vh;overflow-y:auto}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0;transition:color 0.15s}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem;position:relative}
+.copy-btn{position:absolute;top:0.5rem;right:0.5rem;background:var(--bg3);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.6rem;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;opacity:0}
+.copy-btn:hover{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+pre:hover .copy-btn{opacity:1}
+.content pre .comment{color:#5a5040}
+.content pre .cmd{color:var(--cream)}
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.content .note strong{color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+.endpoint-table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:0.8rem}
+.endpoint-table th,.endpoint-table td{padding:0.5rem 0.8rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.endpoint-table th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
+.endpoint-table td{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.75rem}
+.step-num{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.7rem;font-weight:600;margin-right:0.5rem;flex-shrink:0}
+.pn{display:flex;justify-content:space-between;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.pn a{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.pn a:hover{color:var(--rust-light)}
+.pn .next{margin-left:auto}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+
+/* ===== MOBILE NAV ===== */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-overlay{display:none}
+@media(max-width:768px){
+  .nav{padding:0.8rem 1.2rem}
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
+    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
+    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
+    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
+  }
+  .nav-links.open{display:flex;font-family:var(--font-serif)}
+  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
+  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+  .nav-overlay.open{display:block}
+}
+
+/* ===== GLOBAL MOBILE FIXES ===== */
+@media(max-width:600px){
+  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
+  img{max-width:100%;height:auto}
+}
+
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
+
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<nav class="nav">
+  <a href="/" class="nav-brand">&#9651; Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+</nav>
+
+<div class="docs-layout">
+    <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Getting Started</div>
+      <a href="/docs/quickstart/">Quickstart</a>
+      <a href="/docs/auth/">Auth &amp; Config</a>
+      <a href="/docs/config/">Configuration</a>
+      <a href="/docs/env-vars/" class="active">Environment Vars</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Chute</div>
+      <a href="/docs/proxy/">Modules &amp; Providers</a>
+      <a href="/docs/aliasing/">Model Aliasing</a>
+      <a href="/docs/caching/">Caching</a>
+      <a href="/docs/failover/">Failover</a>
+      <a href="/docs/rate-limiting/">Rate Limiting</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Apps</div>
+      <a href="/docs/observe/">Lookout</a>
+      <a href="/docs/trust/">Brand</a>
+      <a href="/docs/studio/">Tack Room</a>
+      <a href="/docs/forge/">Forge</a>
+      <a href="/docs/team/">Team</a>
+      <a href="/docs/memory/">Memory</a>
+      <a href="/docs/exchange/">Trading Post</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Operations</div>
+      <a href="/docs/ops/">Ops Guide</a>
+      <a href="/docs/docker/">Docker</a>
+      <a href="/docs/railway-deploy/">Railway Deploy</a>
+      <a href="/docs/webhooks/">Webhooks</a>
+      <a href="/docs/mcp/">MCP Server</a>
+      <a href="/docs/troubleshooting/">Troubleshooting</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Reference</div>
+      <a href="/docs/api/">API Reference</a>
+      <a href="/docs/sdks/">SDK Wrappers</a>
+      <a href="/docs/cli/">CLI</a>
+      <a href="/docs/integrations/">Integrations</a>
+      <a href="/docs/editors/">Editor Setup</a>
+      <a href="/docs/migration/">Migration Guide</a>
+    </div>
+  </aside>
+  <main class="content" id="main">
+    <h1>Environment Variables</h1>
+    <p class="subtitle">Complete reference for all environment variables.</p>
+
+    <h2 id="core">Core</h2>
+    <pre>
+<span class="comment"># Server</span>
+<span class="cmd">PORT=7749</span>                       <span class="comment"># HTTP port (default: 7749)</span>
+<span class="cmd">DATA_DIR=/data</span>                  <span class="comment"># SQLite database directory</span>
+<span class="cmd">STOCKYARD_ADMIN_KEY=your-key</span>    <span class="comment"># Admin API key (required for management APIs)</span>
+
+<span class="comment"># Auth</span>
+<span class="cmd">STOCKYARD_REQUIRE_AUTH=true</span>     <span class="comment"># Require API keys for /v1/* requests</span>
+
+<span class="comment"># Logging</span>
+<span class="cmd">LOG_LEVEL=info</span>                  <span class="comment"># debug, info, warn, error</span>
+<span class="cmd">LOG_FORMAT=text</span>                 <span class="comment"># text or json</span></pre>
+
+    <h2 id="providers">Provider keys</h2>
+    <pre>
+<span class="cmd">OPENAI_API_KEY=sk-...</span>
+<span class="cmd">ANTHROPIC_API_KEY=sk-ant-...</span>
+<span class="cmd">GOOGLE_API_KEY=...</span>
+<span class="cmd">GROQ_API_KEY=gsk_...</span>
+<span class="cmd">DEEPSEEK_API_KEY=...</span>
+<span class="cmd">MISTRAL_API_KEY=...</span>
+<span class="cmd">COHERE_API_KEY=...</span>
+<span class="cmd">XAI_API_KEY=...</span>
+
+<span class="comment"># Azure OpenAI</span>
+<span class="cmd">AZURE_OPENAI_API_KEY=...</span>
+<span class="cmd">AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com</span>
+<span class="cmd">AZURE_OPENAI_API_VERSION=2024-02-15-preview</span>
+
+<span class="comment"># Ollama (local)</span>
+<span class="cmd">OLLAMA_BASE_URL=http://localhost:11434</span></pre>
+    <p>Stockyard auto-detects providers from environment variables. Set a key and the provider is available immediately.</p>
+
+    <h2 id="licensing">Licensing</h2>
+    <pre>
+<span class="cmd">STOCKYARD_LICENSE_KEY=...</span>       <span class="comment"># License key for paid tiers</span></pre>
+
+    <h2 id="otel">OpenTelemetry</h2>
+    <pre>
+<span class="cmd">STOCKYARD_OTEL_ENDPOINT=...</span>    <span class="comment"># OTLP endpoint for trace export</span>
+<span class="cmd">OTEL_EXPORTER_OTLP_ENDPOINT=...</span> <span class="comment"># Standard OTEL env var (also works)</span></pre>
+
+    <h2 id="railway">Railway / PaaS</h2>
+    <pre>
+<span class="cmd">RAILWAY_VOLUME_MOUNT_PATH=/data</span> <span class="comment"># Auto-detected on Railway</span></pre>
+    <p>On Railway, Stockyard auto-detects the volume mount path. Set <code>DATA_DIR</code> only if you need to override the default.</p>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = () => {
+    const text = pre.textContent.replace(/^Copy/, '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '\u2713 Copied';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  };
+  pre.appendChild(btn);
+});
+</script>
+<script>
+function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+</body>
+</html>
