@@ -24,6 +24,7 @@ The OSS proxy must be a real, usable product. The commercial platform must retai
 | `internal/billingerr` | Error type definitions |
 | `internal/tracker` | Per-request spend counter |
 | `internal/slog` | Structured logging |
+| `internal/mcp` | MCP server for editor integration (Cursor, Windsurf, Cline, Aider) |
 | `internal/features` (subset) | Core middleware modules (see below) |
 | `cmd/stockyard-proxy` | OSS binary entry point |
 
@@ -57,7 +58,6 @@ All modules live in `internal/features/`. The OSS binary enables the subset abov
 | All 29 products | Bid, Breed, Cortex, Doubt, Echo, Feral, etc. |
 | `internal/engine` (Boot function) | Full platform bootstrap |
 | `internal/license` | License enforcement |
-| `internal/mcp` | MCP server |
 | `internal/features` (subset) | Advanced middleware: promptguard, toxicfilter, guardrail, hallucicheck, compliancelog, secretscan, agentguard, codefence, billingmeter, tenantwall, etc. |
 | `cmd/stockyard` | Commercial binary entry point |
 
@@ -111,5 +111,4 @@ The dashboard is the primary conversion surface. Users who outgrow the proxy API
 
 ## Unresolved
 
-- **MCP server**: Currently classified as BSL. Could move to OSS if PM decides it increases adoption enough to justify.
 - **Basic trace API**: OSS includes request logging via the `logging` middleware. Whether to expose a `/api/traces` read endpoint (no dashboard) is a PM call.

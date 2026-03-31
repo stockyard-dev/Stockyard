@@ -20,6 +20,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
 	"github.com/stockyard-dev/stockyard/internal/features"
+	"github.com/stockyard-dev/stockyard/internal/mcp"
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 	"github.com/stockyard-dev/stockyard/internal/slog"
@@ -151,6 +152,10 @@ func BootProxy(pc ProxyConfig) {
 
 	// Basic traces
 	registerProxyTraceRoutes(srv.Mux(), db.Conn())
+
+	// MCP server (SSE transport for Cursor, Windsurf, Cline, Aider)
+	mcpServer := mcp.NewServer(handler)
+	mcpServer.Register(srv.Mux())
 
 	// Auth wrappers
 	proxyAuthMode := auth.GetProxyAuthMode()
