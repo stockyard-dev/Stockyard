@@ -30,6 +30,9 @@ jobs:
       - name: Build core
         run: CGO_ENABLED=0 go build -ldflags="-s -w" -o stockyard ./cmd/stockyard/
 
+      - name: Build OSS proxy
+        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o stockyard-proxy ./cmd/stockyard-proxy/
+
       - name: Build all sub-products
         run: |
           for p in bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt; do

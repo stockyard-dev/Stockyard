@@ -21,6 +21,18 @@ builds:
       - -X main.commit={{.ShortCommit}}
       - -X main.date={{.Date}}
 
+  - id: stockyard-proxy
+    main: ./cmd/stockyard-proxy
+    binary: stockyard-proxy
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.ShortCommit}}
+      - -X main.date={{.Date}}
+
   - id: sy-api
     main: ./cmd/sy-api
     binary: sy-api
@@ -48,6 +60,13 @@ archives:
       - goos: windows
         format: zip
 
+  - id: stockyard-proxy
+    builds: [stockyard-proxy]
+    name_template: "stockyard-proxy_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
   - id: tools
     builds: [sy-api, sy-keygen]
     name_template: "stockyard-tools_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -71,12 +90,25 @@ brews:
       owner: stockyard-dev
       name: homebrew-tap
     homepage: "https://stockyard.dev"
-    description: "LLM proxy platform — 6 apps, 58 modules, one binary"
-    license: "MIT"
+    description: "Self-hosted LLM proxy, tracing, and security in one binary"
+    license: "BSL-1.1"
     install: |
       bin.install "stockyard"
     test: |
       assert_match "stockyard", shell_output("#{bin}/stockyard --version")
+
+  - name: stockyard-proxy
+    ids: [stockyard-proxy]
+    repository:
+      owner: stockyard-dev
+      name: homebrew-tap
+    homepage: "https://stockyard.dev"
+    description: "Open source LLM proxy — routing, caching, failover, model aliasing"
+    license: "Apache-2.0"
+    install: |
+      bin.install "stockyard-proxy"
+    test: |
+      assert_match "stockyard-proxy", shell_output("#{bin}/stockyard-proxy --version")
 
 dockers:
   - image_templates:
@@ -99,10 +131,13 @@ release:
   header: |
     ## What's new
 
-    Six apps. One binary. Zero dependencies.
+    **Stockyard Platform** (BSL 1.1) — full binary with dashboard, 76 modules, 29 products.
+    **Stockyard Proxy** (Apache 2.0) — open source proxy core with routing, caching, failover.
+
     See the [changelog](https://stockyard.dev/changelog/) for details.
   footer: |
     ---
-    **Quick install:** `curl -sSL stockyard.dev/install | sh`
+    **Full platform:** `curl -sSL stockyard.dev/install.sh | sh`
+    **Open source proxy:** `go build ./cmd/stockyard-proxy/`
     **Docker:** `docker run -p 7749:7749 ghcr.io/stockyard-dev/stockyard:{{.Version}}`
     **Docs:** https://stockyard.dev/docs/

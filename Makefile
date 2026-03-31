@@ -9,6 +9,11 @@ build:
 	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard ./cmd/stockyard
 	@echo "Built dist/stockyard ($(VERSION))"
 
+# Build the open-source proxy
+proxy:
+	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard-proxy ./cmd/stockyard-proxy
+	@echo "Built dist/stockyard-proxy ($(VERSION))"
+
 # Build the CLI tool
 cli:
 	CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/sy ./cmd/sy
@@ -17,8 +22,8 @@ cli:
 # Sub-products
 PRODUCTS = bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt relic breed fossilrec phantom feral tidepool crucible cortex mycelium spore molt
 
-# Build all binaries (unified + tools + CLI + products)
-build-all: build cli build-products
+# Build all binaries (unified + proxy + tools + CLI + products)
+build-all: build proxy cli build-products
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-api ./cmd/sy-api
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/sy-keygen ./cmd/sy-keygen
 	@echo "Built all binaries in dist/"
@@ -57,6 +62,7 @@ dev:
 # Verify it compiles
 check:
 	CGO_ENABLED=0 go build -o /dev/null ./cmd/stockyard && echo "stockyard: ok"
+	CGO_ENABLED=0 go build -o /dev/null ./cmd/stockyard-proxy && echo "stockyard-proxy: ok"
 	CGO_ENABLED=0 go build -o /dev/null ./cmd/sy-api && echo "sy-api: ok"
 
 # Cross-compile for releases
@@ -65,7 +71,11 @@ release-build:
 	GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_linux_arm64 ./cmd/stockyard
 	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_darwin_amd64 ./cmd/stockyard
 	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard_darwin_arm64 ./cmd/stockyard
-	@echo "Built 4 release binaries in dist/"
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard-proxy_linux_amd64 ./cmd/stockyard-proxy
+	GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard-proxy_linux_arm64 ./cmd/stockyard-proxy
+	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard-proxy_darwin_amd64 ./cmd/stockyard-proxy
+	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=$(VERSION)" -o dist/stockyard-proxy_darwin_arm64 ./cmd/stockyard-proxy
+	@echo "Built 8 release binaries in dist/"
 
 # Docker
 docker:
