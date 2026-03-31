@@ -332,6 +332,12 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/how-to-reduce-llm-costs/",
 		"/llm-request-replay/",
 		"/prompt-version-control/",
+		"/tools/",
+		"/tools/fence/",
+		"/tools/corral/",
+		"/tools/trough/",
+		"/tools/gate/",
+		"/tools/brand-standalone/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Stockyard Tools -- Self-Hosted Dev Tools, Single Binary</title>
+<meta name="description" content="Five self-hosted dev tools. API key vault, webhook debugger, cost monitor, auth proxy, audit trail. Single binary, zero dependencies.">
+<link rel="canonical" href="https://stockyard.dev/tools/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:5rem 2rem 2.5rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.2;margin-bottom:1rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:2.5rem 2rem;max-width:800px;margin:0 auto}
+.section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--bg3)}
+.section h2:first-child{border-top:none;padding-top:0}
+.section p{font-size:0.92rem;color:var(--cream-dim);margin-bottom:1rem}
+code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+pre .cmd{color:var(--cream)}pre .comment{color:var(--cream-muted)}pre .output{color:var(--green-light)}
+.cta-box{text-align:center;padding:3rem 2rem;margin:2rem 0;border:1px solid var(--bg3);background:var(--bg2)}
+.cta-box p{color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.92rem}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000}.nav-links.open{display:flex}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
+
+.pricing-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
+.price-card{border:1px solid var(--bg3);padding:1.5rem;text-align:center}
+.price-card .tier{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem}
+.price-card .amount{font-size:1.8rem;color:var(--cream);font-family:var(--font-mono);margin-bottom:0.3rem}
+.price-card .period{font-size:0.75rem;color:var(--cream-muted);font-family:var(--font-mono)}
+.price-card ul{text-align:left;list-style:none;margin-top:1rem;font-size:0.82rem;color:var(--cream-dim)}
+.price-card ul li::before{content:'\2713 ';color:var(--green-light)}
+.more-tools{padding:2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem}
+.more-tools a{color:var(--cream-dim);margin:0 0.5rem}.more-tools a:hover{color:var(--rust-light)}
+@media(max-width:768px){.pricing-row{grid-template-columns:1fr}}</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand">&#9651; Stockyard</a>
+  <div class="nav-links"><a href="/tools/">Tools</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/blog/">Blog</a></div>
+</nav>
+<section class="hero">
+  <div class="eyebrow">Stockyard Tools</div>
+  <h1>Self-Hosted Dev Tools. <span class="accent">Single Binary.</span></h1>
+  <p class="sub">Every tool ships as one binary with embedded SQLite and zero dependencies. Free tiers on everything.</p>
+</section>
+<section class="section">
+<a href="/tools/fence/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Fence</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">API Key Vault <span class='accent'>for Teams</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">Store, rotate, and audit API keys. One binary. Every access logged.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $9/mo</div></a>
+<a href="/tools/corral/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Corral</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">Webhook <span class='accent'>Debugger &amp; Relay</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">Receive, inspect, replay, and forward webhooks. Self-hosted RequestBin in a single binary.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $9/mo</div></a>
+<a href="/tools/trough/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Trough</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">API Cost Monitor <span class='accent'>for Any API</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">See what every API call costs. Not just LLMs. Any HTTP API.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $14/mo</div></a>
+<a href="/tools/gate/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Gate</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">Auth Proxy <span class='accent'>for Internal Tools</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">Put auth in front of anything. No code changes to the upstream app.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $9/mo</div></a>
+<a href="/tools/brand-standalone/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Brand</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">Audit Trail <span class='accent'>for Any App</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">SHA-256 hash-chained ledger. Tamper-evident. POST events, export evidence packs.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $19/mo</div></a>
+
+<div style="text-align:center;margin-top:2rem;padding:1.5rem;border:1px solid var(--bg3)">
+  <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Proxy</div>
+  <div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">The LLM Proxy That Started It All</div>
+  <div style="font-size:0.82rem;color:var(--cream-dim)">40+ providers, 76 middleware modules, built-in cost tracking and audit trail.</div>
+  <div style="margin-top:0.8rem"><a href="/" class="btn btn-primary" style="padding:0.5rem 1.5rem;font-size:0.78rem">Learn More</a></div>
+</div>
+</section>
+<footer><p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a></p></footer>
+</body>
+</html>
