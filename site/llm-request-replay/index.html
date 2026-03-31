@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<title>LLM Request Replay — Re-run Requests Against Different Models</title>
+<meta name="description" content="Replay any logged LLM request against a different model or provider. Compare cost, latency, and output quality side by side before switching.">
+<meta property="og:title" content="LLM Request Replay — Re-run Requests Against Different Models">
+<meta property="og:description" content="Replay any logged LLM request against a different model or provider. Compare cost, latency, and output quality side by side before switching.">
+<meta property="og:url" content="https://stockyard.dev/llm-request-replay/">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/llm-request-replay/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.hero{max-width:720px;margin:0 auto;padding:5rem 2rem 2.5rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.2;margin-bottom:1rem}.hero h1 .accent{color:var(--rust-light)}
+.hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
+.section{padding:2.5rem 2rem;max-width:800px;margin:0 auto}
+.section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--bg3)}
+.section h2:first-child{border-top:none;padding-top:0}
+.section p{font-size:0.92rem;color:var(--cream-dim);margin-bottom:1rem}
+code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+pre .cmd{color:var(--cream)}pre .comment{color:var(--cream-muted)}pre .output{color:var(--green-light)}
+.cta-box{text-align:center;padding:3rem 2rem;margin:2rem 0;border:1px solid var(--bg3);background:var(--bg2)}
+.cta-box p{color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.92rem}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000}.nav-links.open{display:flex}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to set up a test harness for replay?","acceptedAnswer":{"@type":"Answer","text":"No. Stockyard logs every request automatically. Replay works on any logged request with one API call. No test fixtures, no mock data, no configuration."}},{"@type":"Question","name":"Can I replay against models from different providers?","acceptedAnswer":{"@type":"Answer","text":"Yes. Replay works across any provider Stockyard supports. Replay an OpenAI request against Anthropic, Google, DeepSeek, or any of the 40+ supported providers."}},{"@type":"Question","name":"Is request replay available on the free tier?","acceptedAnswer":{"@type":"Answer","text":"Replay (Lasso) is available on the Individual plan ($29.99/mo) and above. The free tier includes request logging so your data is captured, and you can upgrade to access replay when ready."}}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"LLM Request Replay","item":"https://stockyard.dev/llm-request-replay/"}]}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand">&#9651; Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <div class="nav-links">
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/blog/">Blog</a>
+    <a href="/guide/" class="btn btn-primary" style="padding:0.5rem 1.2rem">Install</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Feature</div>
+  <h1>LLM <span class="accent">Request Replay</span></h1>
+  <p class="sub">Take any past request, re-run it against a different model, and compare the results. No code changes, no test harness.</p>
+</section>
+
+<section class="section">
+
+  <h2>Why replay matters</h2>
+  <p>You want to switch from GPT-4o to Claude or DeepSeek. But will the output quality hold? The only way to know is to test with your actual production requests, not synthetic benchmarks.</p>
+  <p>Request replay takes a real request from your logs, sends it to a different model, and shows you the original and new response side by side. You compare cost, latency, token count, and output quality on your own data.</p>
+
+  <h2>How it works in Stockyard</h2>
+  <p>Every request through Stockyard is logged with the full prompt, response, model, tokens, cost, and latency. Lasso (Stockyard's replay engine) lets you pick any logged request and re-run it:</p>
+  <pre><span class="comment"># Replay a request against a different model</span>
+<span class="cmd">curl -X POST http://localhost:7749/api/replay \</span>
+<span class="cmd">  -d '{"trace_id": "tr_a8f21c4e", "model": "claude-sonnet-4-5-20250929"}'</span>
+
+<span class="comment"># Compare the results</span>
+<span class="cmd">curl http://localhost:7749/api/replay/compare/tr_a8f21c4e</span>
+<span class="output"># Original: gpt-4o, $0.0045, 1.2s, 342 tokens</span>
+<span class="output"># Replay:   claude-sonnet-4-5, $0.0038, 0.9s, 318 tokens</span></pre>
+
+  <h2>Use cases</h2>
+  <p><strong style="color:var(--cream)">Provider migration.</strong> Before switching from OpenAI to Anthropic, replay 100 production requests and compare quality. Make the decision with data, not guesswork.</p>
+  <p><strong style="color:var(--cream)">Cost optimization.</strong> Replay your most expensive requests against cheaper models. Find out which requests can safely use DeepSeek or Gemini Flash instead of GPT-4o.</p>
+  <p><strong style="color:var(--cream)">Regression testing.</strong> After changing prompts, replay historical requests to verify the new prompt produces equivalent or better output.</p>
+  <p><strong style="color:var(--cream)">Shareable comparisons.</strong> Generate a share link for any replay comparison. Send it to your team to discuss whether the switch makes sense.</p>
+
+  <h2>How this differs from benchmarks</h2>
+  <p>Public benchmarks test models on standardized tasks. Replay tests models on your actual workload. A model that scores well on MMLU might perform poorly on your specific prompt patterns. Replay gives you the answer for your data.</p>
+</section>
+
+<div class="cta-box">
+  <p>Try Stockyard. One binary, 40 providers, under 60 seconds.</p>
+  <a href="/guide/" class="btn btn-primary">Get Started</a>
+</div>
+
+<div class="explore-bar">Explore: <a href="/llm-cost-tracking/">Cost tracking</a> &middot; <a href="/what-is-model-aliasing/">Model aliasing</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/guide/">Install guide</a></div>
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+</script>
+</body>
+</html>

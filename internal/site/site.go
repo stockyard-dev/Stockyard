@@ -317,6 +317,11 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/providers/azure-openai/",
 		"/providers/cohere/",
 		"/providers/xai/",
+		"/llm-proxy-for-cursor/",
+		"/llm-proxy-for-teams/",
+		"/how-to-reduce-llm-costs/",
+		"/llm-request-replay/",
+		"/prompt-version-control/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
