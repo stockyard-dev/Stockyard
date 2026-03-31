@@ -344,6 +344,12 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/trough/",
 		"/fence/",
 		"/brand/",
+		// Product install scripts
+		"/corral/install.sh",
+		"/gate/install.sh",
+		"/trough/install.sh",
+		"/fence/install.sh",
+		"/brand/install.sh",
 		// Product docs
 		"/docs/corral/",
 		"/docs/gate/",
