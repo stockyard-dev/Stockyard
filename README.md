@@ -7,7 +7,8 @@
 [Website](https://stockyard.dev) · [Docs](https://stockyard.dev/docs) · [Quickstart](https://stockyard.dev/docs/quickstart) · [Changelog](https://stockyard.dev/changelog)
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
-[![License](https://img.shields.io/badge/License-BSL_1.1-E8753A)](LICENSE)
+[![License](https://img.shields.io/badge/Proxy-Apache_2.0-4CAF50)](LICENSE-APACHE)
+[![License](https://img.shields.io/badge/Platform-BSL_1.1-E8753A)](LICENSE)
 [![Modules](https://img.shields.io/badge/Modules-76-E8753A)](https://stockyard.dev/products)
 [![Providers](https://img.shields.io/badge/Providers-40-C4A87A)](https://stockyard.dev/docs)
 
@@ -65,15 +66,31 @@ Or open `http://localhost:7749/ui` for the full dashboard.
 
 ## What's Free
 
-Everything you need for production proxy + tracing + audit:
+### Open Source Proxy (Apache 2.0)
 
-- **Chute** — proxy across 40 LLM providers through one API, 76 middleware modules
-- **Lookout** — automatic request tracing, per-model cost dashboards, anomaly detection
+The proxy core is fully open source. Build it yourself or download the binary:
+
+- **Proxy engine** — route to 40 LLM providers through one OpenAI-compatible API
+- **24 middleware modules** — caching, failover, rate limiting, model aliasing, spend tracking, request logging
+- **Provider adapters** — OpenAI, Anthropic, Gemini, Groq, DeepSeek, Mistral, Ollama, and more
+- **Trace API** — per-request cost, latency, and token tracking via JSON endpoints
+- **Module management** — toggle middleware at runtime via API
+
+```bash
+go build -o stockyard-proxy ./cmd/stockyard-proxy/
+```
+
+### Free Tier of Full Platform (BSL 1.1)
+
+The commercial binary includes everything above plus:
+
+- **Lookout** — tracing dashboards, per-model cost views, anomaly detection
 - **Brand** — SHA-256 hash-chained audit ledger, policy enforcement, compliance evidence
 - **Tack Room** — versioned prompt templates, A/B experiments
-- **Team isolation** — per-team API keys with isolated logs, spend tracking, and audit trails
+- **Admin dashboard** — visual console for all features
+- **Team isolation** — per-team API keys with isolated logs and spend tracking
 - **Drover** — automatic cost routing, 100 decisions/day free
-- **Feral quickscan** — 5 adversarial probes, instant A–F security grade
+- **Feral quickscan** — 5 adversarial probes, instant A-F security grade
 - Unlimited requests. No credit card. Self-hosted on your infrastructure.
 
 ## What Unlocks with Paid Tiers
@@ -231,8 +248,14 @@ _See [full changelog](https://stockyard.dev/changelog/) for details._
 ```bash
 git clone https://github.com/stockyard-dev/Stockyard.git
 cd Stockyard
+
+# Open-source proxy (Apache 2.0)
+CGO_ENABLED=0 go build -o stockyard-proxy ./cmd/stockyard-proxy/
+./stockyard-proxy
+
+# Full platform (BSL 1.1)
 CGO_ENABLED=0 go build -o stockyard ./cmd/stockyard/
-./stockyard start
+./stockyard
 ```
 
 Requires Go 1.22+. No other dependencies.
@@ -250,7 +273,25 @@ Requires Go 1.22+. No other dependencies.
 
 ## License
 
-Stockyard is licensed under the [Business Source License 1.1](LICENSE). Source-available — free to use, modify, and self-host. You may not use it to offer a competing LLM proxy service. See LICENSE for details.
+Stockyard uses a dual-license model:
+
+**Stockyard Proxy** — the core LLM proxy with provider routing, model aliasing, caching, failover, rate limiting, spend tracking, and request logging — is open source under the [Apache License 2.0](LICENSE-APACHE).
+
+**Stockyard Platform** — the full binary including Observe (tracing dashboards), Trust (audit ledger), Studio (prompt management), Forge (workflows), Exchange (config packs), the admin dashboard, and all 29 platform products — is licensed under the [Business Source License 1.1](LICENSE).
+
+### Building
+
+```bash
+# Open-source proxy only
+go build -o stockyard-proxy ./cmd/stockyard-proxy/
+
+# Full commercial platform
+go build -o stockyard ./cmd/stockyard/
+```
+
+The OSS proxy is a complete, standalone product. The commercial platform adds advanced observability, compliance, orchestration, and team features.
+
+See [docs/licensing/open-core-boundary.md](docs/licensing/open-core-boundary.md) for the full classification of what's in each binary.
 
 ---
 
