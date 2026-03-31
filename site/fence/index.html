@@ -126,10 +126,11 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <!-- A. Hero -->
 <section class="hero">
   <div class="eyebrow">Focused Tool &middot; BSL 1.1 &middot; Single Binary</div>
-  <h1>Team vault for <span class="accent">API keys.</span></h1>
-  <p class="sub">Stop sharing API keys in Slack and .env files. Fence stores them encrypted, issues scoped tokens to team members, and logs every access. Rotate keys and revoke access instantly without redeploying.</p>
+  <h1>Stop sharing API keys <span class="accent">in Slack.</span></h1>
+  <p class="sub">Encrypted vault for shared API credentials. Issue scoped tokens to team members, log every access, rotate keys without redeploying. AES-256-GCM at rest, offline-verifiable Pro license.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Fence</a>
+    <a href="#install" class="btn btn-primary">Install Fence Free</a>
+    <a href="#pricing" class="btn btn-secondary" style="border-color:var(--gold);color:var(--gold)">Pro &mdash; $4.99/mo</a>
     <a href="/docs/fence/" class="btn btn-secondary">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard-fence" class="btn btn-secondary">GitHub</a>
   </div>
@@ -182,7 +183,7 @@ curl http://localhost:8770/api/resolve/openai \
 
 <!-- D. Free vs Pro -->
 <section class="section">
-  <div class="section-label gold">Pricing</div>
+  <div id="pricing" class="section-label gold">Pricing</div>
   <h2>Free to run. Pro when you need more.</h2>
   <div class="pricing-grid">
     <div class="pricing-card free">
@@ -230,8 +231,9 @@ curl http://localhost:8770/api/resolve/openai \
 <section class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Scope</div>
-    <h2>When Fence is all you need.</h2>
-    <p>Fence is the right tool when you need shared API key management for a small to medium team. The free tier covers 10 keys and 2 members. Pro removes those limits and adds RBAC and full audit trails for $4.99/month. It doesn't do dynamic secrets or PKI — for those, Vault is the right answer.</p>
+    <h2>When Fence is the right tool.</h2>
+    <p>Fence is for teams sharing API keys through .env files or chat — which is most teams. Free covers 10 keys, 2 members, and 2 vaults. Pro ($4.99/mo) removes those limits and adds RBAC, full audit trail, and key rotation reminders.</p>
+    
   </div>
 </section>
 
@@ -244,6 +246,23 @@ curl http://localhost:8770/api/resolve/openai \
     Fence is a standalone key vault from the Stockyard family. Stockyard's full platform includes API key management integrated with LLM request tracing, cost control, team collaboration, and 25+ more tools. If you're managing LLM provider credentials for a team, Stockyard handles the full workflow.
   </div>
   <a href="/" class="btn btn-secondary">Learn about Stockyard &rarr;</a>
+</section>
+
+<!-- After Upgrade -->
+<section class="section">
+  <div class="section-label gold">After you upgrade</div>
+  <h2>How Pro gets activated.</h2>
+  <p>When your payment goes through, you'll receive an email at the address you used at checkout. The email contains your license key — a string that starts with <code>stockyard_</code>.</p>
+  <p>Set it as an environment variable before starting Fence:</p>
+  <pre>FENCE_LICENSE_KEY=stockyard_your_key_here fence
+
+  License:   Pro (your-email@example.com)
+  Dashboard: http://localhost:8770/ui</pre>
+  <p>That's it. Pro features unlock immediately on startup — no restart required after the first run, no account to log into, no phone-home check. The key is verified locally.</p>
+  <div style="background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--leather);padding:1rem 1.2rem;font-size:.85rem;margin-top:1rem">
+    <strong style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather-light)">Didn't get the email?</strong><br>
+    Check your spam folder first. If it's not there after 5 minutes, email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your payment confirmation and we'll send the key manually.
+  </div>
 </section>
 
 <!-- G. FAQ -->
@@ -264,8 +283,8 @@ curl http://localhost:8770/api/resolve/openai \
   <h2>Stop sharing API keys in Slack.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Encrypted storage. Instant revocation. Free to start.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Fence</a>
-    <a href="/docs/fence/" class="btn btn-secondary">Read the docs</a>
+    <a href="#install" class="btn btn-primary">Install Fence Free</a>
+    <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Upgrade to Pro</a>
   </div>
   <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Need the full LLM stack? &rarr; <a href="/">Stockyard Platform</a></p>
 </section>

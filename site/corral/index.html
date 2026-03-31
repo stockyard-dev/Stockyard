@@ -126,10 +126,11 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <!-- A. Hero -->
 <section class="hero">
   <div class="eyebrow">Focused Tool &middot; Apache 2.0 &middot; Single Binary</div>
-  <h1>Self-hosted <span class="accent">webhook inbox</span> for developers.</h1>
-  <p class="sub">Capture every incoming webhook, inspect headers and body, replay to any target, and set up auto-forwarding rules. No Ngrok account, no cloud dependency, runs on your machine or your server.</p>
+  <h1>Self-hosted <span class="accent">webhook inbox.</span> Capture, replay, forward.</h1>
+  <p class="sub">Every incoming webhook, captured and stored locally. Inspect headers and body, replay failed events to any target, fan out to multiple services. No Ngrok account. No cloud dependency. 30-second install.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Corral</a>
+    <a href="#install" class="btn btn-primary">Install Corral Free</a>
+    <a href="#pricing" class="btn btn-secondary" style="border-color:var(--gold);color:var(--gold)">Pro &mdash; $0.99/mo</a>
     <a href="/docs/corral/" class="btn btn-secondary">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard-corral" class="btn btn-secondary">GitHub</a>
   </div>
@@ -172,7 +173,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 <!-- D. Free vs Pro -->
 <section class="section">
-  <div class="section-label gold">Pricing</div>
+  <div id="pricing" class="section-label gold">Pricing</div>
   <h2>Free to run. Pro when you need more.</h2>
   <div class="pricing-grid">
     <div class="pricing-card free">
@@ -222,8 +223,9 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <section class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Scope</div>
-    <h2>When Corral is all you need.</h2>
-    <p>Corral is the right tool when your problem is webhooks: receiving, inspecting, replaying, or forwarding them. It does one thing and does it well. The free tier covers 3 endpoints and 1,000 events per month — enough for most development workflows. Pro unlocks unlimited endpoints and longer retention for $0.99/month.</p>
+    <h2>When Corral is the right tool.</h2>
+    <p>Corral solves one problem: receiving, storing, inspecting, and replaying webhooks. If that's your pain, it does it well. Free covers 3 endpoints and 1,000 events/month — enough for most development workflows. Pro ($0.99/mo) removes those limits and adds replay history, retry on failed forwards, event search, and JSON export.</p>
+    <p style="font-family:var(--font-mono);font-size:.78rem;margin-top:1rem"><a href="/corral/vs-hookdeck/">Corral vs Hookdeck</a> &nbsp;&middot;&nbsp; <a href="/corral/vs-webhook-site/">Corral vs webhook.site</a> &nbsp;&middot;&nbsp; <a href="/blog/how-to-debug-webhooks-locally/">Debug webhooks locally</a></p>
   </div>
 </section>
 
@@ -236,6 +238,23 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
     Corral is a standalone webhook tool from the Stockyard family. If you're building LLM-powered applications and need request tracing, cost control, prompt management, and model routing — Stockyard is the full platform. It includes hash-chained audit logging (Brand), API key management (Fence), and 25+ more tools in one binary.
   </div>
   <a href="/" class="btn btn-secondary">Learn about Stockyard &rarr;</a>
+</section>
+
+<!-- After Upgrade -->
+<section class="section">
+  <div class="section-label gold">After you upgrade</div>
+  <h2>How Pro gets activated.</h2>
+  <p>When your payment goes through, you'll receive an email at the address you used at checkout. The email contains your license key — a string that starts with <code>stockyard_</code>.</p>
+  <p>Set it as an environment variable before starting Corral:</p>
+  <pre>CORRAL_LICENSE_KEY=stockyard_your_key_here corral
+
+  License:   Pro (your-email@example.com)
+  Dashboard: http://localhost:8760/ui</pre>
+  <p>That's it. Pro features unlock immediately on startup — no restart required after the first run, no account to log into, no phone-home check. The key is verified locally.</p>
+  <div style="background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--leather);padding:1rem 1.2rem;font-size:.85rem;margin-top:1rem">
+    <strong style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather-light)">Didn't get the email?</strong><br>
+    Check your spam folder first. If it's not there after 5 minutes, email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your payment confirmation and we'll send the key manually.
+  </div>
 </section>
 
 <!-- G. FAQ -->
@@ -256,8 +275,8 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
   <h2>Capture your first webhook in 30 seconds.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Single binary. Free to start. $0.99/mo for unlimited.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Corral</a>
-    <a href="/docs/corral/" class="btn btn-secondary">Read the docs</a>
+    <a href="#install" class="btn btn-primary">Install Corral Free</a>
+    <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Upgrade to Pro</a>
   </div>
   <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Need the full LLM stack? &rarr; <a href="/">Stockyard Platform</a></p>
 </section>

@@ -126,10 +126,11 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <!-- A. Hero -->
 <section class="hero">
   <div class="eyebrow">Focused Tool &middot; Apache 2.0 &middot; Single Binary</div>
-  <h1>Put auth in front of <span class="accent">internal tools</span> in minutes.</h1>
-  <p class="sub">Reverse proxy that adds API key auth, session login, rate limiting, and access logs to any service — without writing a line of auth code. Point it at your app and it handles everything.</p>
+  <h1>Auth for internal tools <span class="accent">in 60 seconds.</span></h1>
+  <p class="sub">Reverse proxy that adds API key auth, session login, rate limiting, and access logs to any service — without touching a line of application code. Set two environment variables. Done.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Gate</a>
+    <a href="#install" class="btn btn-primary">Install Gate Free</a>
+    <a href="#pricing" class="btn btn-secondary" style="border-color:var(--gold);color:var(--gold)">Pro &mdash; $2.99/mo</a>
     <a href="/docs/gate/" class="btn btn-secondary">Docs</a>
     <a href="https://github.com/stockyard-dev/stockyard-gate" class="btn btn-secondary">GitHub</a>
   </div>
@@ -171,7 +172,7 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
 
 <!-- D. Free vs Pro -->
 <section class="section">
-  <div class="section-label gold">Pricing</div>
+  <div id="pricing" class="section-label gold">Pricing</div>
   <h2>Free to run. Pro when you need more.</h2>
   <div class="pricing-grid">
     <div class="pricing-card free">
@@ -220,8 +221,9 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
 <section class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Scope</div>
-    <h2>When Gate is all you need.</h2>
-    <p>Gate is the right tool when the problem is auth for internal services and you don't want to stand up Keycloak. The free tier covers one upstream and five users — enough to protect a single internal tool. Pro unlocks unlimited upstreams and more granular controls for $2.99/month.</p>
+    <h2>When Gate is the right tool.</h2>
+    <p>Gate is for auth on internal services where you don't want to stand up Keycloak or write middleware. Free covers 1 upstream and 5 users — enough to protect a single internal tool. Pro ($2.99/mo) unlocks unlimited upstreams, users, per-route rate limits, IP lists, and log export.</p>
+    <p style="font-family:var(--font-mono);font-size:.78rem;margin-top:1rem"><a href="/gate/self-hosted-auth-proxy/">Self-hosted auth proxy guide</a> &nbsp;&middot;&nbsp; <a href="/gate/vs-authelia/">Gate vs Authelia</a> &nbsp;&middot;&nbsp; <a href="/blog/protect-internal-tools-with-a-lightweight-auth-gateway/">Protect internal tools</a></p>
   </div>
 </section>
 
@@ -234,6 +236,23 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
     Gate is a standalone auth proxy from the Stockyard family. Stockyard's full platform includes built-in authentication, team management, request tracing across 16 LLM providers, cost control, and 25+ more tools in one binary.
   </div>
   <a href="/" class="btn btn-secondary">Learn about Stockyard &rarr;</a>
+</section>
+
+<!-- After Upgrade -->
+<section class="section">
+  <div class="section-label gold">After you upgrade</div>
+  <h2>How Pro gets activated.</h2>
+  <p>When your payment goes through, you'll receive an email at the address you used at checkout. The email contains your license key — a string that starts with <code>stockyard_</code>.</p>
+  <p>Set it as an environment variable before starting Gate:</p>
+  <pre>GATE_LICENSE_KEY=stockyard_your_key_here gate
+
+  License:   Pro (your-email@example.com)
+  Dashboard: http://localhost:8780/ui</pre>
+  <p>That's it. Pro features unlock immediately on startup — no restart required after the first run, no account to log into, no phone-home check. The key is verified locally.</p>
+  <div style="background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--leather);padding:1rem 1.2rem;font-size:.85rem;margin-top:1rem">
+    <strong style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather-light)">Didn't get the email?</strong><br>
+    Check your spam folder first. If it's not there after 5 minutes, email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your payment confirmation and we'll send the key manually.
+  </div>
 </section>
 
 <!-- G. FAQ -->
@@ -254,8 +273,8 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
   <h2>Add auth to any internal tool in 60 seconds.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Single binary. No code changes required. Free to start.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Gate</a>
-    <a href="/docs/gate/" class="btn btn-secondary">Read the docs</a>
+    <a href="#install" class="btn btn-primary">Install Gate Free</a>
+    <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Upgrade to Pro</a>
   </div>
   <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Need the full LLM stack? &rarr; <a href="/">Stockyard Platform</a></p>
 </section>

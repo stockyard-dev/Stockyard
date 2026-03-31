@@ -2,36 +2,106 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <title>Subscription Confirmed — Stockyard</title>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--rust:#c45d2c;--cream:#f0e6d3;--cream-dim:#bfb5a3;--green:#4a8c5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 body{font-family:var(--font-serif);background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
-.card{background:var(--bg2);border:1px solid var(--green);border-radius:12px;padding:3rem;max-width:520px;text-align:center}
-.icon{font-size:3rem;margin-bottom:1rem}
-h1{font-size:1.6rem;margin-bottom:0.75rem}
-p{color:var(--cream-dim);line-height:1.6;margin-bottom:1.5rem}
-.cta{display:inline-block;background:var(--rust);color:var(--cream);padding:0.75rem 2rem;border-radius:6px;text-decoration:none;font-family:var(--font-mono);font-size:0.85rem;transition:opacity 0.2s}
-.cta:hover{opacity:0.85}
-.note{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);margin-top:1.5rem}
+a{color:var(--rust-light)}a:hover{color:var(--gold)}
+.card{background:var(--bg2);border:1px solid var(--green);max-width:600px;width:100%;padding:3rem;text-align:center;margin-bottom:2rem}
+.icon{font-size:2.5rem;margin-bottom:1rem;color:var(--green-light)}
+h1{font-size:1.6rem;margin-bottom:.75rem}
+.steps{text-align:left;margin:2rem 0}
+.step{display:flex;gap:1rem;margin-bottom:1.5rem;align-items:flex-start}
+.step-num{font-family:var(--font-mono);font-size:.7rem;background:var(--rust);color:var(--cream);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.2rem}
+.step-body{flex:1}
+.step-title{font-family:var(--font-mono);font-size:.82rem;color:var(--cream);margin-bottom:.3rem}
+.step-desc{font-size:.85rem;color:var(--cream-dim);line-height:1.6}
+pre{background:var(--bg3);padding:.7rem 1rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather-light);margin:.5rem 0;text-align:left;overflow-x:auto}
+.cta{display:inline-block;background:var(--rust);color:var(--cream);padding:.7rem 2rem;text-decoration:none;font-family:var(--font-mono);font-size:.85rem;transition:opacity .2s;margin-top:1rem}
+.cta:hover{opacity:.85;color:var(--cream)}
+.note{background:var(--bg3);border-left:3px solid var(--leather);padding:.8rem 1rem;font-size:.8rem;color:var(--cream-dim);text-align:left;margin-top:1.5rem}
+.tool-env{font-family:var(--font-mono);font-size:.72rem;color:var(--gold)}
 </style>
-<link rel="canonical" href="https://stockyard.dev/billing/success/">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <div class="card">
-<div class="icon">✓</div>
-<h1>Subscription Confirmed</h1>
-<p>Your Pro plan is now active. <strong style="color:var(--cream)">Check your email</strong> — your license key has been sent to the address you used at checkout.</p>
-<p style="font-size:0.85rem">Set it as an environment variable to unlock Pro features:<br>
-<span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--cream);display:inline-block;margin-top:0.4rem;background:var(--bg);padding:0.3rem 0.7rem">CORRAL_LICENSE_KEY=stockyard_...</span></p>
-<p style="font-size:0.82rem">Didn't get the email? Check your spam folder or <a href="mailto:hello@stockyard.dev">contact us</a>.</p>
-<a href="/docs/" class="cta">View Docs →</a>
-<div class="note">Questions? <a href="mailto:support@stockyard.dev" style="color:var(--rust)">support@stockyard.dev</a></div>
+  <div class="icon">&#10003;</div>
+  <h1>You're subscribed to Pro.</h1>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Check your email</div>
+        <div class="step-desc">Your license key has been sent to the address you used at checkout. The email comes from <strong>hello@stockyard.dev</strong>. Check your spam folder if it doesn't arrive within 5 minutes.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Set the license key environment variable</div>
+        <div class="step-desc">The key is a string starting with <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">stockyard_</code>. Set it before starting the tool:</div>
+        <pre id="env-example">CORRAL_LICENSE_KEY=stockyard_your_key_here corral</pre>
+        <div class="step-desc" style="margin-top:.4rem;font-size:.78rem" id="all-envs">Other tools use: <span class="tool-env">GATE_LICENSE_KEY</span>, <span class="tool-env">TROUGH_LICENSE_KEY</span>, <span class="tool-env">FENCE_LICENSE_KEY</span>, <span class="tool-env">BRAND_LICENSE_KEY</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Verify Pro is active</div>
+        <div class="step-desc">The startup log will show <strong style="color:var(--green-light)">License: Pro (your@email.com)</strong>. The dashboard at <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">/ui</code> will also show the Pro badge.</div>
+      </div>
+    </div>
+  </div>
+
+  <a href="/docs/" class="cta">Go to Docs</a>
+
+  <div class="note">
+    <strong style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather-light)">Key not arriving?</strong><br>
+    Email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your payment confirmation and we'll send the key manually within a few hours.
+  </div>
 </div>
+
+<p style="font-family:var(--font-mono);font-size:.7rem;color:var(--leather);text-align:center">
+  <a href="/" style="color:var(--leather)">Stockyard</a> &middot;
+  <a href="/corral/" style="color:var(--leather)">Corral</a> &middot;
+  <a href="/gate/" style="color:var(--leather)">Gate</a> &middot;
+  <a href="/trough/" style="color:var(--leather)">Trough</a> &middot;
+  <a href="/fence/" style="color:var(--leather)">Fence</a> &middot;
+  <a href="/brand/" style="color:var(--leather)">Brand</a>
+</p>
+
+<script>
+// Detect which tool the user came from via URL params or referrer
+var params = new URLSearchParams(window.location.search);
+var product = params.get('product') || '';
+var envMap = {
+  corral: 'CORRAL_LICENSE_KEY',
+  gate:   'GATE_LICENSE_KEY',
+  trough: 'TROUGH_LICENSE_KEY',
+  fence:  'FENCE_LICENSE_KEY',
+  brand:  'BRAND_LICENSE_KEY',
+};
+var cmdMap = {
+  corral: 'corral',
+  gate:   'gate --upstream http://localhost:3000',
+  trough: 'trough',
+  fence:  'fence',
+  brand:  'brand',
+};
+if (product && envMap[product]) {
+  var envEl = document.getElementById('env-example');
+  var allEl = document.getElementById('all-envs');
+  if (envEl) envEl.textContent = envMap[product] + '=stockyard_your_key_here ' + cmdMap[product];
+  if (allEl) allEl.style.display = 'none';
+}
+</script>
 </body>
 </html>

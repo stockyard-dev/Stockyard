@@ -302,6 +302,9 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/blog/self-hosted-vs-saas-llm-proxy/",
 		"/blog/cursor-api-costs/",
 		"/blog/proxy-only-vs-full-platform/",
+		"/blog/how-to-debug-webhooks-locally/",
+		"/blog/protect-internal-tools-with-a-lightweight-auth-gateway/",
+		"/blog/how-to-find-expensive-api-routes/",
 		"/providers/",
 		"/docs/providers/",
 		"/best-self-hosted-llm-proxy/",
@@ -344,6 +347,13 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/trough/",
 		"/fence/",
 		"/brand/",
+		// Tool SEO pages
+		"/corral/vs-hookdeck/",
+		"/corral/vs-webhook-site/",
+		"/gate/self-hosted-auth-proxy/",
+		"/gate/vs-authelia/",
+		"/trough/api-cost-monitor/",
+		"/trough/openai-api-cost-monitor/",
 		// Product docs
 		"/docs/corral/",
 		"/docs/gate/",
