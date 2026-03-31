@@ -182,6 +182,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Cost report (printable HTML)
 	mux.HandleFunc("GET /api/observe/cost-report", a.handleCostReport)
+	mux.HandleFunc("GET /api/observe/cost-report/csv", a.handleCostReportCSV)
 
 	// Auto-disable broken providers
 	mux.HandleFunc("GET /api/observe/provider-health", a.handleProviderHealth)
@@ -1256,6 +1257,122 @@ func fmtNum(n int) string {
 
 func fmtNum64(n int64) string {
 	return fmtNum(int(n))
+}
+
+// handleCostReportCSV exports cost data as downloadable CSV for finance teams.
+func (a *App) handleCostReportCSV(w http.ResponseWriter, r *http.Request) {
+	daysInt := 30
+	if d := r.URL.Query().Get("days"); d != "" {
+		if n, err := strconv.Atoi(d); err == nil && n > 0 && n <= 365 {
+			daysInt = n
+		}
+	}
+	modifier := fmt.Sprintf("-%d days", daysInt)
+
+	// What section to export: "daily" (default), "provider", "model", "traces"
+	section := r.URL.Query().Get("section")
+	if section == "" {
+		section = "daily"
+	}
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"stockyard-costs-%dd-%s.csv\"", daysInt, section))
+
+	switch section {
+	case "daily":
+		fmt.Fprintln(w, "date,requests,cost_usd,tokens_in,tokens_out")
+		rows, err := a.conn.Query(`SELECT date(created_at) as d, COUNT(*), COALESCE(SUM(cost_usd),0),
+			COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0)
+			FROM observe_traces WHERE created_at >= datetime('now', ?)
+			GROUP BY d ORDER BY d`, modifier)
+		if err != nil {
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var d string
+			var reqs int
+			var cost float64
+			var tin, tout int64
+			if rows.Scan(&d, &reqs, &cost, &tin, &tout) == nil {
+				fmt.Fprintf(w, "%s,%d,%.6f,%d,%d\n", d, reqs, cost, tin, tout)
+			}
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
+
+	case "provider":
+		fmt.Fprintln(w, "provider,requests,cost_usd,tokens_in,tokens_out")
+		rows, err := a.conn.Query(`SELECT provider, COUNT(*), COALESCE(SUM(cost_usd),0),
+			COALESCE(SUM(tokens_in),0), COALESCE(SUM(tokens_out),0)
+			FROM observe_traces WHERE created_at >= datetime('now', ?) AND provider != ''
+			GROUP BY provider ORDER BY SUM(cost_usd) DESC`, modifier)
+		if err != nil {
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var prov string
+			var reqs int
+			var cost float64
+			var tin, tout int64
+			if rows.Scan(&prov, &reqs, &cost, &tin, &tout) == nil {
+				fmt.Fprintf(w, "%s,%d,%.6f,%d,%d\n", prov, reqs, cost, tin, tout)
+			}
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
+
+	case "model":
+		fmt.Fprintln(w, "model,provider,requests,cost_usd,avg_latency_ms")
+		rows, err := a.conn.Query(`SELECT model, provider, COUNT(*), COALESCE(SUM(cost_usd),0), COALESCE(AVG(duration_ms),0)
+			FROM observe_traces WHERE created_at >= datetime('now', ?) AND model != ''
+			GROUP BY model, provider ORDER BY SUM(cost_usd) DESC`, modifier)
+		if err != nil {
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var model, prov string
+			var reqs int
+			var cost, latency float64
+			if rows.Scan(&model, &prov, &reqs, &cost, &latency) == nil {
+				fmt.Fprintf(w, "%s,%s,%d,%.6f,%.0f\n", model, prov, reqs, cost, latency)
+			}
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
+
+	case "traces":
+		fmt.Fprintln(w, "timestamp,model,provider,status,tokens_in,tokens_out,cost_usd,latency_ms,cached")
+		rows, err := a.conn.Query(`SELECT created_at, model, provider, status, tokens_in, tokens_out,
+			cost_usd, duration_ms, cached
+			FROM observe_traces WHERE created_at >= datetime('now', ?)
+			ORDER BY created_at DESC LIMIT 10000`, modifier)
+		if err != nil {
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var ts, model, prov, status string
+			var tin, tout, latency, cached int
+			var cost float64
+			if rows.Scan(&ts, &model, &prov, &status, &tin, &tout, &cost, &latency, &cached) == nil {
+				fmt.Fprintf(w, "%s,%s,%s,%s,%d,%d,%.6f,%d,%d\n", ts, model, prov, status, tin, tout, cost, latency, cached)
+			}
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
+
+	default:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		json.NewEncoder(w).Encode(map[string]string{"error": "section must be: daily, provider, model, or traces"})
+	}
 }
 
 // handleDrift compares this week's metrics to last week's per model.
