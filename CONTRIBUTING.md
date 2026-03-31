@@ -8,7 +8,8 @@ Thanks for wanting to help! Stockyard is a small project and every contribution 
 git clone https://github.com/stockyard-dev/stockyard.git
 cd stockyard
 make test              # Run all tests
-make build             # Build binary to dist/
+make build             # Build full platform to dist/
+make proxy             # Build OSS proxy to dist/
 make bench-short       # Run benchmarks (quick)
 make pre-push          # Full check: lint + test + bench
 ```
@@ -16,31 +17,28 @@ make pre-push          # Full check: lint + test + bench
 ## Project Structure
 
 ```
-cmd/stockyard/         # Main entry point
+cmd/stockyard/         # Full platform entry point (BSL 1.1)
+cmd/stockyard-proxy/   # OSS proxy entry point (Apache 2.0)
 internal/
-  engine/              # Boot sequence, hooks, config, doctor, OTEL, webhooks, status
-  provider/            # OpenAI, Anthropic, Gemini, Groq, Ollama + 12 more adapters
-  proxy/               # Middleware chain, toggle registry, benchmarks
-  auth/                # Users, API keys, key rotation, provider keys
-  apiserver/           # App REST APIs (Observe, Trust, Studio, Forge, Exchange)
-  storage/             # SQLite persistence
-  license/             # License validation
-  dashboard/           # Embedded Preact SPA (/ui)
+  engine/              # Boot sequences: Boot() for platform, BootProxy() for OSS
+  provider/            # Provider adapters (OSS)
+  proxy/               # Middleware chain, toggle registry (OSS)
+  auth/                # Users, API keys, provider keys (OSS)
+  mcp/                 # MCP server for editor integration (OSS)
+  features/            # All middleware modules (OSS core + BSL advanced)
+  storage/             # SQLite persistence (OSS)
+  config/              # Configuration loading (OSS)
+  toggle/              # Runtime module enable/disable (OSS)
+  tracker/             # Spend counter + flusher (OSS)
+  apps/                # Platform apps: observe, trust, studio, forge, exchange (BSL)
+  dashboard/           # Embedded Preact SPA at /ui (BSL)
+  platform/            # Product mount system, tier gating (BSL)
   site/                # Marketing site (go:embed from static/)
-  slog/                # Structured logging
+docs/
+  licensing/           # Open-core boundary decision doc
 site/                  # Marketing site source (HTML)
-  blog/                # Blog posts + RSS feed
-  docs/                # 10-page documentation with sidebar nav
-  status/              # Live status page
-examples/              # Python, Node.js, curl integration samples
-vscode-extension/      # VS Code extension (TypeScript)
-terraform-provider/    # Terraform provider stub (Go)
-mcp/                   # MCP server packages for Claude Desktop / Cursor
-configs/               # Example configs (claude_desktop_config.json, etc.)
 .github/
-  actions/             # GitHub Action: setup-stockyard
-  workflows/           # CI: build, test, bench, docker, release
-  ISSUE_TEMPLATE/      # Bug report and feature request templates
+  workflows/           # CI, release, CLA
 ```
 
 ## Making Changes
@@ -54,12 +52,13 @@ configs/               # Example configs (claude_desktop_config.json, etc.)
 ## Key Make Targets
 
 ```bash
-make build         # Build binary
+make build         # Build full platform binary
+make proxy         # Build OSS proxy binary
 make test          # All tests with -race
 make bench         # Full benchmarks (3 runs)
 make bench-short   # Quick benchmarks (1 run)
 make lint          # go vet
-make doctor        # Build + run stockyard doctor
+make check         # Verify both binaries compile
 make site-sync     # Copy site/ -> internal/site/static/
 make pre-push      # lint + test + bench-short
 make docker        # Build Docker image
@@ -80,9 +79,9 @@ These are load-bearing decisions. Don't change them without an RFC:
 - **Single binary** — Go + embedded assets, no sidecars
 - **SQLite only** — no Postgres, no Redis, no external storage
 - **OpenAI-compatible API** — `/v1/chat/completions` is the contract
-- **58 middleware modules** — toggleable at runtime via API
-- **6 flagship apps** — Proxy, Observe, Trust, Studio, Forge, Exchange
-- **Preact dashboard** — embedded via `go:embed`, served at `/ui`
+- **76 middleware modules** — toggleable at runtime via API
+- **Open-core boundary** — proxy core (Apache 2.0) vs platform (BSL 1.1), see `docs/licensing/open-core-boundary.md`
+- **Preact dashboard** — embedded via `go:embed`, served at `/ui` (BSL binary only)
 - **Site files live in two places** — `site/` (source) and `internal/site/static/` (embedded). Always run `make site-sync` after editing site HTML.
 
 ## Adding a Middleware Module
@@ -107,6 +106,14 @@ These are load-bearing decisions. Don't change them without an RFC:
 
 Use the [issue templates](https://github.com/stockyard-dev/stockyard/issues/new/choose). Include `stockyard doctor --json` output, OS, and a minimal reproduction. Redact API keys!
 
-## License
+## License & CLA
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+Stockyard uses a dual-license model:
+- **Stockyard Proxy** (`cmd/stockyard-proxy/`) is Apache 2.0
+- **Stockyard Platform** (`cmd/stockyard/`) is BSL 1.1
+
+Both binaries compile from the same repo. Your contribution may appear in either or both.
+
+Before your first pull request can be merged, you must sign the [Contributor License Agreement](CLA.md). The CLA bot will prompt you automatically — just comment "I have read the CLA Document and I hereby sign the CLA" on your PR. You only need to do this once.
+
+The CLA grants Stockyard the right to include your contribution in both the Apache 2.0 and BSL 1.1 binaries. This is standard practice for open-core projects.
