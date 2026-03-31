@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <title>Self-hosted Auth Proxy for Internal Tools — Gate</title>
-<meta name="description" content="Gate adds API key auth, session login, rate limiting, and access logs to any HTTP service. Single binary, self-hosted, no code changes required. Free to start, Pro at $2.99/mo.">
+<meta name="description" content="Gate adds API key auth, session login, rate limiting, and access logs to any HTTP service — without changing application code. Single binary, self-hosted.">>
 <meta property="og:title" content="Self-hosted Auth Proxy for Internal Tools — Gate">
 <meta property="og:description" content="Gate adds API key auth, session login, rate limiting, and access logs to any HTTP service. Single binary, self-hosted, no code changes required. Free to start, Pro at $2.99/mo.">
 <meta property="og:type" content="website">
@@ -65,6 +65,7 @@ ul.prose{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9}
 .breadcrumb a{color:var(--leather)}</style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Gate","item":"https://stockyard.dev/gate/"},{"@type":"ListItem","position":3,"name":"Self-hosted Auth Proxy","item":"https://stockyard.dev/gate/self-hosted-auth-proxy/"}]}</script>
 </head>
 <body>
 <nav class="nav">
@@ -176,5 +177,6 @@ ul.prose{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9}
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':''}}
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a self-hosted auth proxy?","acceptedAnswer":{"@type":"Answer","text":"An auth proxy sits in front of an HTTP service and enforces authentication before requests reach the upstream. Gate is a self-hosted auth proxy that adds API key auth, session login, and rate limiting to any service without code changes."}},{"@type":"Question","name":"How is Gate different from adding auth to my application?","acceptedAnswer":{"@type":"Answer","text":"Gate handles auth at the proxy layer. Your application receives only authenticated requests and doesn't need to implement auth logic. This is especially useful for third-party services, legacy tools, or admin panels you don't control."}},{"@type":"Question","name":"What auth methods does Gate support?","acceptedAnswer":{"@type":"Answer","text":"Gate supports API key auth via bearer tokens and session-based login via username/password with HTTP-only cookies. Per-route rate limiting is available on Pro."}}]}</script>
 </body>
 </html>
