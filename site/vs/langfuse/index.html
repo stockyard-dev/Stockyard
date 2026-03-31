@@ -110,7 +110,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <tr><td>Audit trail</td><td class="us">Hash-chained tamper-evident ledger</td><td class="them">Logging only</td></tr>
     <tr><td>SDK integrations</td><td class="tie">OpenAI-compatible SDK (any language)</td><td class="tie">Python, JS/TS, LangChain, LlamaIndex, Vercel AI</td></tr>
     <tr><td>Community</td><td class="tie">Early stage</td><td class="tie">Large &mdash; ~24K GitHub stars, acquired by ClickHouse</td></tr>
-    <tr><td>License</td><td class="tie">BSL 1.1</td><td class="tie">MIT (core)</td></tr>
+    <tr><td>License</td><td class="us">Apache 2.0 (proxy) / BSL 1.1 (platform)</td><td class="tie">MIT (core)</td></tr>
   </table>
 
   <h2>The key difference</h2>
@@ -124,7 +124,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   <p><strong style="color:var(--cream)">SDK ecosystem.</strong> Langfuse integrates with LangChain, LlamaIndex, Vercel AI SDK, and the broader Python/TypeScript ecosystem through decorators and callbacks. If your application is built on these frameworks, Langfuse drops in with minimal friction.</p>
   <p><strong style="color:var(--cream)">Community and maturity.</strong> Langfuse has a large open-source community, was acquired by ClickHouse in early 2026, and is used in production by many teams. There are more resources, more integrations, and more people who can help.</p>
   <p><strong style="color:var(--cream)">Deeper trace model.</strong> Langfuse's hierarchical trace model with nested spans, sessions, and user-level grouping is more expressive than Stockyard's request-level tracing. For complex multi-step agent workflows, Langfuse captures more structure.</p>
-  <p><strong style="color:var(--cream)">MIT license.</strong> Langfuse's core is MIT-licensed. Stockyard uses BSL 1.1.</p>
+  <p><strong style="color:var(--cream)">MIT license.</strong> Langfuse's core is MIT-licensed. Stockyard's proxy core is Apache 2.0, and the full platform is BSL 1.1.</p>
 
   <h2>Where Stockyard wins</h2>
   <p><strong style="color:var(--cream)">Zero-instrumentation observability.</strong> Route through the proxy and tracing happens automatically. No SDK, no decorators, no code changes beyond swapping one base URL. This matters when you want observability without touching application code.</p>

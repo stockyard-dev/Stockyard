@@ -6,14 +6,14 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Is Stockyard Open Source? BSL 1.1 Explained -- Stockyard">
-<meta property="og:description" content="Stockyard uses the Business Source License 1.1. Here is what that means: what you can do, what you cannot do, and why we chose it.">
+<meta property="og:title" content="Stockyard Licensing: Open Source Proxy + Commercial Platform">
+<meta property="og:description" content="Stockyard Proxy is open source (Apache 2.0). The full platform is source-available (BSL 1.1). Here is what each covers.">
 <meta property="og:url" content="https://stockyard.dev/open-source-vs-bsl/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Is Stockyard Open Source? BSL 1.1 Explained -- Stockyard</title>
-<meta name="description" content="Stockyard uses BSL 1.1, not a traditional open-source license. The source is available, you can self-host it, but you cannot resell it as a competing hosted service.">
+<title>Stockyard Licensing: Open Source Proxy + Commercial Platform</title>
+<meta name="description" content="Stockyard Proxy is open source under Apache 2.0. The full platform with dashboards, audit ledger, and 29 products is BSL 1.1. Both binaries build from the same repo.">
 <link rel="canonical" href="https://stockyard.dev/open-source-vs-bsl/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -63,20 +63,37 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 <section class="hero">
   <div class="eyebrow">License</div>
   <h1>Is Stockyard <span class="accent">open source?</span></h1>
-  <p class="sub">Stockyard is source-available under the Business Source License 1.1. The code is public, you can read and audit it, but it is not open source in the OSI-approved sense. Here is exactly what that means for you.</p>
+  <p class="sub">The proxy core is open source (Apache 2.0). The full platform is source-available under BSL 1.1. Here is exactly what that means.</p>
 </section>
+
+<div class="section">
+  <h2 class="section-label">Two binaries, two licenses</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0">
+    <div style="padding:1.5rem;border:2px solid var(--green-light)">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:0.5rem">Open Source (Apache 2.0)</div>
+      <div style="font-size:1.1rem;color:var(--cream);margin-bottom:0.8rem;font-weight:700">Stockyard Proxy</div>
+      <p style="font-size:0.85rem;color:var(--cream-dim);margin-bottom:0.5rem">The LLM proxy core: OpenAI-compatible routing, 24 middleware modules, provider adapters, model aliasing, caching, failover, rate limiting, spend tracking, request logging.</p>
+      <p style="font-size:0.82rem;color:var(--green-light)"><code>go build ./cmd/stockyard-proxy/</code></p>
+    </div>
+    <div style="padding:1.5rem;border:2px solid var(--rust)">
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust-light);margin-bottom:0.5rem">Source Available (BSL 1.1)</div>
+      <div style="font-size:1.1rem;color:var(--cream);margin-bottom:0.8rem;font-weight:700">Stockyard Platform</div>
+      <p style="font-size:0.85rem;color:var(--cream-dim);margin-bottom:0.5rem">Everything in the proxy plus: Lookout (tracing dashboards), Brand (audit ledger), Tack Room (prompts), Forge (workflows), Trading Post (config packs), admin dashboard, and 29 products.</p>
+      <p style="font-size:0.82rem;color:var(--rust-light)"><code>go build ./cmd/stockyard/</code></p>
+    </div>
+  </div>
+</div>
 
 <div class="section">
   <h2 class="section-label">What you can do</h2>
   <ul class="check-list">
-    <li class="yes">Download, install, and run Stockyard for your own use</li>
-    <li class="yes">Self-host it on your own servers for your own applications</li>
-    <li class="yes">Use it in production for your company or your clients' projects</li>
-    <li class="yes">Read the entire source code on GitHub</li>
-    <li class="yes">Audit the security, cryptography, and data handling yourself</li>
-    <li class="yes">Fork the code for internal modifications</li>
-    <li class="yes">Build applications and services that use Stockyard as infrastructure</li>
-    <li class="yes">Use it commercially as long as you are not reselling it as a hosted service</li>
+    <li class="yes">Use the proxy (Apache 2.0) for anything, including competing products</li>
+    <li class="yes">Fork, modify, and redistribute the proxy under Apache 2.0 terms</li>
+    <li class="yes">Contribute to the proxy codebase</li>
+    <li class="yes">Download and self-host the full platform for your own use</li>
+    <li class="yes">Use the full platform in production for your company</li>
+    <li class="yes">Read and audit the entire source code on GitHub</li>
+    <li class="yes">Build applications that use Stockyard as infrastructure</li>
   </ul>
 </div>
 
@@ -84,18 +101,17 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <div class="section-alt-inner">
     <h2 class="section-label">What you cannot do</h2>
     <ul class="check-list">
-      <li class="no">Offer Stockyard itself as a managed or hosted service to third parties</li>
-      <li class="no">Resell Stockyard as a competing product</li>
-      <li class="no">Take the source and launch a hosted "Stockyard-as-a-Service" offering</li>
+      <li class="no">Offer the full Stockyard Platform (BSL portion) as a managed or hosted service</li>
+      <li class="no">Resell the platform's commercial features as a competing product</li>
     </ul>
-    <p style="text-align:center;font-size:0.85rem;color:var(--cream-muted);margin-top:1.5rem">The restriction is focused on one scenario: using the source to offer a competing hosted service. For the full terms, read the <a href="https://github.com/stockyard-dev/Stockyard/blob/main/LICENSE">LICENSE file</a> in the repository. This page is a summary, not legal advice.</p>
+    <p style="text-align:center;font-size:0.85rem;color:var(--cream-muted);margin-top:1.5rem">The BSL restriction applies only to the platform binary, not the proxy. The proxy is Apache 2.0 with no restrictions. For the full terms, read the <a href="https://github.com/stockyard-dev/Stockyard/blob/main/LICENSE">LICENSE</a> and <a href="https://github.com/stockyard-dev/Stockyard/blob/main/LICENSE-APACHE">LICENSE-APACHE</a> files.</p>
   </div>
 </section>
 
 <div class="section">
-  <h2 class="section-label">Why BSL and not MIT or Apache 2.0</h2>
-  <p>The short answer: sustainability. Stockyard is built and maintained by one person. An MIT or Apache license would allow a well-funded company to take the source, host it as a managed service, and compete directly without contributing anything back. BSL prevents that specific scenario while keeping the source open for everyone else.</p>
-  <p>This is the same license used by MariaDB, CockroachDB, Sentry, and HashiCorp (for some products). It is a known quantity in the industry, not an exotic or custom license.</p>
+  <h2 class="section-label">Why a dual license</h2>
+  <p>The proxy is the adoption wedge. Making it Apache 2.0 means developers can use it with zero licensing concerns, embed it in their products, and contribute back. That builds the community and ecosystem.</p>
+  <p>The platform features (dashboards, audit ledger, workflow engine, 29 products) are the commercial value. Keeping those under BSL prevents a well-funded company from taking the full platform and offering it as a competing hosted service. This is the same model used by GitLab (MIT core + proprietary), Grafana (AGPL + proprietary), and many others.</p>
 </div>
 
 <section class="section-alt">
@@ -108,16 +124,16 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
 <div class="section">
   <h2 class="section-label">How this compares to competitors</h2>
-  <p><strong>LiteLLM:</strong> the proxy is Apache 2.0, but the enterprise features are proprietary. You get the open-source proxy, but advanced features require a paid license.</p>
-  <p><strong>Langfuse:</strong> MIT-licensed core, fully open source. Langfuse Cloud is a managed offering on top of the open-source project.</p>
-  <p><strong>Helicone and Portkey:</strong> managed SaaS products. The source is not available for self-hosting (Portkey has a limited open-source gateway).</p>
-  <p>Stockyard's approach is different: the entire platform is source-available, including the features that other products gate behind enterprise tiers. The only restriction is on how you can redistribute it.</p>
+  <p><strong>LiteLLM:</strong> the proxy is Apache 2.0, enterprise features are proprietary. Similar model to Stockyard but requires Postgres.</p>
+  <p><strong>Langfuse:</strong> MIT-licensed core, fully open source. Langfuse Cloud is a managed offering on top.</p>
+  <p><strong>Helicone and Portkey:</strong> managed SaaS products. Limited self-hosting options.</p>
+  <p>Stockyard's approach: the proxy core is genuinely open source (Apache 2.0), and the full platform source is available under BSL for self-hosting. You get more transparency than SaaS products and more freedom on the proxy layer than BSL-only tools.</p>
 </div>
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <h2 class="section-label">If the license is a dealbreaker</h2>
-    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto">Some organizations have policies that prohibit non-OSI-approved licenses. If that is your situation, Stockyard may not be the right choice today. LiteLLM's proxy (Apache 2.0) or Langfuse (MIT) may be better fits for your licensing requirements. We would rather be honest about this than have you discover a licensing conflict later.</p>
+    <h2 class="section-label">If the license matters to your organization</h2>
+    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto">If your organization requires Apache 2.0 or MIT for everything, the Stockyard Proxy meets that requirement. You get a fully functional LLM proxy with routing, caching, failover, and spend tracking under Apache 2.0. The commercial platform features (dashboards, audit ledger, workflows) are BSL 1.1.</p>
   </div>
 </section>
 
