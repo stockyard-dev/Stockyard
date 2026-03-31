@@ -117,6 +117,8 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// Add team_id column to existing databases (safe: SQLite errors if already exists)
+	conn.Exec("ALTER TABLE trust_ledger ADD COLUMN team_id TEXT DEFAULT ''")
 	log.Printf("[trust] migrations applied")
 	return nil
 }
@@ -132,7 +134,8 @@ CREATE TABLE IF NOT EXISTS trust_ledger (
     detail_json TEXT DEFAULT '{}',
     prev_hash TEXT NOT NULL DEFAULT '',
     hash TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now')),
+    team_id TEXT DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS idx_ledger_type ON trust_ledger(event_type);
 CREATE INDEX IF NOT EXISTS idx_ledger_created ON trust_ledger(created_at);

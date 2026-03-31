@@ -101,6 +101,9 @@ func (tw *TierWatcher) poll() {
 }
 
 func (tw *TierWatcher) readFromDB() (Tier, bool) {
+	if tw.db == nil {
+		return TierCommunity, false
+	}
 	var tierNum int
 	err := tw.db.QueryRow("SELECT tier FROM platform_tier_state WHERE id = 'active'").Scan(&tierNum)
 	if err != nil {

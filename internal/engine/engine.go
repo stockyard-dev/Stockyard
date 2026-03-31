@@ -2165,9 +2165,11 @@ func buildMiddlewares(reg *toggle.Registry,
 	}
 
 	// Autopilot — automatic cost-optimized routing (after modelswitch, before failover)
-	MigrateAutopilot(db.Conn())
-	GlobalAutopilot = NewAutopilot(db.Conn(), tierWatcher)
-	add("autopilot", AutopilotMiddleware(GlobalAutopilot))
+	if db != nil {
+		MigrateAutopilot(db.Conn())
+		GlobalAutopilot = NewAutopilot(db.Conn(), tierWatcher)
+		add("autopilot", AutopilotMiddleware(GlobalAutopilot))
+	}
 
 	// MultiCall — multi-model consensus (fans out to multiple models)
 	if pc.Features.MultiCall && cfg.MultiCall.Enabled {

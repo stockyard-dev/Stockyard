@@ -216,10 +216,19 @@ func (s *Server) handleBuildSpec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Capture response before goroutine mutates the build
+	resp := map[string]any{
+		"id":         build.ID,
+		"spec_id":    build.SpecID,
+		"status":     build.Status,
+		"output_dir": build.OutputDir,
+		"started_at": build.StartedAt,
+	}
+
 	// Run build asynchronously
 	go s.runBuild(build, spec)
 
-	writeJSON(w, http.StatusAccepted, build)
+	writeJSON(w, http.StatusAccepted, resp)
 }
 
 func (s *Server) handleListBuilds(w http.ResponseWriter, r *http.Request) {

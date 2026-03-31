@@ -37,6 +37,20 @@ func (db *DB) migrate() error {
 		}
 	}
 
+	// Post-migration ALTER TABLEs — these reference tables created by other
+	// packages (auth, engine) that may not exist yet on a fresh DB.
+	// They succeed silently on production (tables exist) and fail silently
+	// on fresh DBs (tables don't exist yet, will be created with columns).
+	softAlters := []string{
+		"ALTER TABLE api_keys ADD COLUMN team_id INTEGER DEFAULT NULL",
+		"ALTER TABLE requests ADD COLUMN team_id TEXT DEFAULT ''",
+		"CREATE INDEX IF NOT EXISTS idx_api_keys_team ON api_keys(team_id)",
+		"CREATE INDEX IF NOT EXISTS idx_requests_team ON requests(team_id)",
+	}
+	for _, alt := range softAlters {
+		db.conn.Exec(alt) // ignore errors: table may not exist or column may already exist
+	}
+
 	return nil
 }
 
@@ -335,13 +349,7 @@ CREATE TABLE IF NOT EXISTS teams (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Team-scoped API keys
-ALTER TABLE api_keys ADD COLUMN team_id INTEGER DEFAULT NULL;
-CREATE INDEX IF NOT EXISTS idx_api_keys_team ON api_keys(team_id);
-
--- Team attribution on request logs
-ALTER TABLE requests ADD COLUMN team_id TEXT DEFAULT '';
-CREATE INDEX IF NOT EXISTS idx_requests_team ON requests(team_id);
+-- Team-scoped API keys and request attribution handled as post-migration soft-fail
 
 -- Team spend rollups
 CREATE TABLE IF NOT EXISTS team_spend_rollups (

@@ -33,7 +33,12 @@ func TestBuildMiddlewares(t *testing.T) {
 			providers := map[string]provider.Provider{}
 			reg := toggle.New()
 
-			mw, _ := buildMiddlewares(reg, pc, cfg, nil, counter, broadcaster, providers, platform.TierDev)
+			db, err := storage.Open(t.TempDir())
+			if err != nil {
+				t.Fatalf("storage.Open: %v", err)
+			}
+
+			mw, _, _ := buildMiddlewares(reg, pc, cfg, db, counter, broadcaster, providers, platform.NewTierWatcher(nil, platform.TierDev))
 			if len(mw) == 0 {
 				t.Error("expected at least one middleware")
 			}
@@ -104,7 +109,7 @@ func TestLoggingMiddlewareNilDB(t *testing.T) {
 
 	// Pass nil DB — should not panic
 	reg := toggle.New()
-	mw, _ := buildMiddlewares(reg, products[0], cfg, nil, counter, broadcaster, map[string]provider.Provider{}, platform.TierDev)
+	mw, _, _ := buildMiddlewares(reg, products[0], cfg, nil, counter, broadcaster, map[string]provider.Provider{}, platform.NewTierWatcher(nil, platform.TierDev))
 	if len(mw) == 0 {
 		t.Error("expected middlewares even with nil DB")
 	}
