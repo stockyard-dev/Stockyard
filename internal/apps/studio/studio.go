@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -132,6 +133,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/studio/experiments/run", a.handleRunExperiment)
 	mux.HandleFunc("GET /api/studio/experiments/{id}", a.handleGetExperiment)
 	mux.HandleFunc("PUT /api/studio/experiments/{id}", a.handleUpdateExperiment)
+	mux.HandleFunc("POST /api/studio/experiments/{id}/promote", a.handlePromoteWinner)
+
+	// Templates: promote/rollback version
+	mux.HandleFunc("POST /api/studio/templates/{slug}/promote/{version}", a.handlePromoteVersion)
 
 	// Benchmarks
 	mux.HandleFunc("GET /api/studio/benchmarks", a.handleListBenchmarks)
@@ -714,6 +719,151 @@ func (a *App) handleGetExperiment(w http.ResponseWriter, r *http.Request) {
 		"id": id, "name": name, "type": etype, "status": status,
 		"config": cfg, "variants": vars, "results": results,
 		"started_at": started, "ended_at": ended, "created_at": created,
+	})
+}
+
+// handlePromoteWinner takes the winning model/config from an experiment and
+// creates a new version of the associated template.
+func (a *App) handlePromoteWinner(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+
+	// Load experiment results
+	var resultsJSON, cfgJSON, name string
+	err := a.conn.QueryRow(`SELECT name, config_json, results_json FROM studio_experiments WHERE id = ?`, id).
+		Scan(&name, &cfgJSON, &resultsJSON)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "experiment not found"})
+		return
+	}
+
+	// Parse results to find winner
+	var results struct {
+		Winner    string `json:"winner"`
+		WinReason string `json:"win_reason"`
+		Variants  []struct {
+			Model    string  `json:"model"`
+			AvgCost  float64 `json:"avg_cost_usd"`
+			EvalScore float64 `json:"eval_score"`
+		} `json:"variants"`
+	}
+	if err := json.Unmarshal([]byte(resultsJSON), &results); err != nil || results.Winner == "" {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "experiment has no winner — run it first"})
+		return
+	}
+
+	// Get template slug from request body or config
+	var req struct {
+		TemplateSlug string `json:"template_slug"`
+		ChangeNote   string `json:"change_note"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.ChangeNote == "" {
+		req.ChangeNote = fmt.Sprintf("Promoted from experiment %s (winner: %s, reason: %s)", name, results.Winner, results.WinReason)
+	}
+
+	if req.TemplateSlug == "" {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "template_slug required"})
+		return
+	}
+
+	// Look up template
+	var templateID, currentVersion int
+	err = a.conn.QueryRow(`SELECT id, current_version FROM studio_templates WHERE slug = ?`, req.TemplateSlug).
+		Scan(&templateID, &currentVersion)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "template not found"})
+		return
+	}
+
+	// Get the winning variant's prompt from the experiment config
+	var cfg struct {
+		Prompt string `json:"prompt"`
+		System string `json:"system"`
+	}
+	json.Unmarshal([]byte(cfgJSON), &cfg)
+
+	// Create new version with the winning model
+	newVersion := currentVersion + 1
+	content := cfg.Prompt
+	if cfg.System != "" {
+		content = cfg.System + "\n---\n" + cfg.Prompt
+	}
+
+	_, err = a.conn.Exec(`INSERT INTO studio_template_versions (template_id, version, content, model, change_note, author)
+		VALUES (?, ?, ?, ?, ?, 'experiment')`,
+		templateID, newVersion, content, results.Winner, req.ChangeNote)
+	if err != nil {
+		w.WriteHeader(500)
+		writeJSON(w, map[string]string{"error": "failed to create version"})
+		return
+	}
+
+	// Update current_version
+	a.conn.Exec(`UPDATE studio_templates SET current_version = ?, updated_at = datetime('now') WHERE id = ?`,
+		newVersion, templateID)
+
+	writeJSON(w, map[string]any{
+		"status":          "promoted",
+		"template":        req.TemplateSlug,
+		"new_version":     newVersion,
+		"winning_model":   results.Winner,
+		"win_reason":      results.WinReason,
+		"experiment_id":   id,
+		"experiment_name": name,
+	})
+}
+
+// handlePromoteVersion sets a specific version as the active version for a template.
+// Also serves as rollback — promote an older version to make it current.
+func (a *App) handlePromoteVersion(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	versionStr := r.PathValue("version")
+
+	version, err := strconv.Atoi(versionStr)
+	if err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "version must be a number"})
+		return
+	}
+
+	// Verify template exists
+	var templateID, currentVersion int
+	err = a.conn.QueryRow(`SELECT id, current_version FROM studio_templates WHERE slug = ?`, slug).
+		Scan(&templateID, &currentVersion)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "template not found"})
+		return
+	}
+
+	// Verify version exists
+	var versionID int
+	err = a.conn.QueryRow(`SELECT id FROM studio_template_versions WHERE template_id = ? AND version = ?`,
+		templateID, version).Scan(&versionID)
+	if err != nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "version not found"})
+		return
+	}
+
+	// Update current version
+	a.conn.Exec(`UPDATE studio_templates SET current_version = ?, updated_at = datetime('now') WHERE id = ?`,
+		version, templateID)
+
+	action := "promoted"
+	if version < currentVersion {
+		action = "rolled_back"
+	}
+
+	writeJSON(w, map[string]any{
+		"status":           action,
+		"template":         slug,
+		"previous_version": currentVersion,
+		"current_version":  version,
 	})
 }
 
