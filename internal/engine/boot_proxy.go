@@ -155,6 +155,8 @@ func BootProxy(pc ProxyConfig) {
 
 	// MCP server (SSE transport for Cursor, Windsurf, Cline, Aider)
 	mcpServer := mcp.NewServer(handler)
+	mcpServer.SetDB(db.Conn())
+	mcpServer.SetToggle(toggleReg)
 	mcpServer.Register(srv.Mux())
 
 	// Auth wrappers

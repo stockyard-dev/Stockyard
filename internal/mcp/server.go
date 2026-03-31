@@ -6,11 +6,13 @@ package mcp
 import (
 	"context"
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -23,6 +25,14 @@ import (
 type Server struct {
 	handler  proxy.Handler
 	sessions sync.Map // sessionID → *session
+	db       *sql.DB  // optional: enables management tools
+	toggle   ToggleRegistry // optional: enables module management
+}
+
+// ToggleRegistry is the interface for runtime module enable/disable.
+type ToggleRegistry interface {
+	KnownModules() map[string]bool
+	Set(name string, enabled bool)
 }
 
 type session struct {
@@ -55,6 +65,12 @@ type rpcError struct {
 func NewServer(handler proxy.Handler) *Server {
 	return &Server{handler: handler}
 }
+
+// SetDB enables management tools that require database access.
+func (s *Server) SetDB(db *sql.DB) { s.db = db }
+
+// SetToggle enables module management tools.
+func (s *Server) SetToggle(t ToggleRegistry) { s.toggle = t }
 
 // Register mounts the MCP endpoints on the given mux.
 func (s *Server) Register(mux *http.ServeMux) {
@@ -202,47 +218,64 @@ func (s *Server) handleInitialize(req *jsonRPCRequest) *jsonRPCResponse {
 }
 
 func (s *Server) handleToolsList(req *jsonRPCRequest) *jsonRPCResponse {
-	return &jsonRPCResponse{
-		JSONRPC: "2.0",
-		ID:      req.ID,
-		Result: map[string]any{
-			"tools": []map[string]any{
-				{
-					"name":        "chat",
-					"description": "Send a chat completion request through the Stockyard proxy with full middleware chain (tracing, cost tracking, audit logs, guardrails, etc.)",
-					"inputSchema": map[string]any{
-						"type": "object",
-						"properties": map[string]any{
-							"model": map[string]any{
-								"type":        "string",
-								"description": "Model identifier (e.g. gpt-4o, claude-sonnet-4-20250514, gemini-pro)",
-							},
-							"messages": map[string]any{
-								"type": "array",
-								"items": map[string]any{
-									"type": "object",
-									"properties": map[string]any{
-										"role":    map[string]any{"type": "string", "enum": []string{"system", "user", "assistant"}},
-										"content": map[string]any{"type": "string"},
-									},
-									"required": []string{"role", "content"},
-								},
-								"description": "Array of chat messages",
-							},
-							"temperature": map[string]any{
-								"type":        "number",
-								"description": "Sampling temperature (0-2)",
-							},
-							"max_tokens": map[string]any{
-								"type":        "integer",
-								"description": "Maximum tokens in the response",
-							},
-						},
-						"required": []string{"model", "messages"},
-					},
+	tools := []map[string]any{
+		{
+			"name":        "chat",
+			"description": "Send a chat completion request through the Stockyard proxy with full middleware chain.",
+			"inputSchema": map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"model":       map[string]any{"type": "string", "description": "Model identifier (e.g. gpt-4o, claude-sonnet-4-5-20250929)"},
+					"messages":    map[string]any{"type": "array", "items": map[string]any{"type": "object", "properties": map[string]any{"role": map[string]any{"type": "string"}, "content": map[string]any{"type": "string"}}, "required": []string{"role", "content"}}, "description": "Array of chat messages"},
+					"temperature": map[string]any{"type": "number", "description": "Sampling temperature (0-2)"},
+					"max_tokens":  map[string]any{"type": "integer", "description": "Maximum tokens in the response"},
+				},
+				"required": []string{"model", "messages"},
+			},
+		},
+		{
+			"name":        "list_modules",
+			"description": "List all middleware modules with their enabled/disabled state.",
+			"inputSchema": map[string]any{"type": "object", "properties": map[string]any{}},
+		},
+		{
+			"name":        "toggle_module",
+			"description": "Enable or disable a middleware module at runtime.",
+			"inputSchema": map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"name":    map[string]any{"type": "string", "description": "Module name (e.g. cache, failover, ratelimit)"},
+					"enabled": map[string]any{"type": "boolean", "description": "Whether to enable or disable the module"},
+				},
+				"required": []string{"name", "enabled"},
+			},
+		},
+		{
+			"name":        "recent_traces",
+			"description": "Get the most recent LLM requests with cost, latency, model, and provider info.",
+			"inputSchema": map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"limit": map[string]any{"type": "integer", "description": "Number of traces to return (default 20, max 100)"},
 				},
 			},
 		},
+		{
+			"name":        "spend_summary",
+			"description": "Get spend totals for the last 24 hours and 30 days.",
+			"inputSchema": map[string]any{"type": "object", "properties": map[string]any{}},
+		},
+		{
+			"name":        "list_providers",
+			"description": "List configured LLM providers and their status.",
+			"inputSchema": map[string]any{"type": "object", "properties": map[string]any{}},
+		},
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		ID:      req.ID,
+		Result:  map[string]any{"tools": tools},
 	}
 }
 
@@ -259,62 +292,210 @@ func (s *Server) handleToolsCall(ctx context.Context, req *jsonRPCRequest) *json
 		}
 	}
 
-	if params.Name != "chat" {
+	switch params.Name {
+	case "chat":
+		return s.toolChat(ctx, req.ID, params.Arguments)
+	case "list_modules":
+		return s.toolListModules(req.ID)
+	case "toggle_module":
+		return s.toolToggleModule(req.ID, params.Arguments)
+	case "recent_traces":
+		return s.toolRecentTraces(req.ID, params.Arguments)
+	case "spend_summary":
+		return s.toolSpendSummary(req.ID)
+	case "list_providers":
+		return s.toolListProviders(req.ID)
+	default:
 		return &jsonRPCResponse{
 			JSONRPC: "2.0",
 			ID:      req.ID,
 			Error:   &rpcError{Code: -32602, Message: "unknown tool: " + params.Name},
 		}
 	}
+}
 
-	// Parse chat arguments.
-	var args struct {
+func (s *Server) toolChat(ctx context.Context, id any, args json.RawMessage) *jsonRPCResponse {
+	var a struct {
 		Model       string             `json:"model"`
 		Messages    []provider.Message `json:"messages"`
 		Temperature *float64           `json:"temperature"`
 		MaxTokens   *int               `json:"max_tokens"`
 	}
-	if err := json.Unmarshal(params.Arguments, &args); err != nil {
-		return &jsonRPCResponse{
-			JSONRPC: "2.0",
-			ID:      req.ID,
-			Error:   &rpcError{Code: -32602, Message: "invalid chat arguments: " + err.Error()},
-		}
+	if err := json.Unmarshal(args, &a); err != nil {
+		return &jsonRPCResponse{JSONRPC: "2.0", ID: id, Error: &rpcError{Code: -32602, Message: "invalid chat arguments: " + err.Error()}}
 	}
 
-	// Build the proxy request and route through the full middleware chain.
 	proxyReq := &provider.Request{
-		Model:       args.Model,
-		Messages:    args.Messages,
-		Temperature: args.Temperature,
-		MaxTokens:   args.MaxTokens,
+		Model: a.Model, Messages: a.Messages, Temperature: a.Temperature, MaxTokens: a.MaxTokens,
 	}
-
 	resp, err := s.handler(ctx, proxyReq)
 	if err != nil {
-		return &jsonRPCResponse{
-			JSONRPC: "2.0",
-			ID:      req.ID,
-			Error:   &rpcError{Code: -32000, Message: "proxy error: " + err.Error()},
-		}
+		return &jsonRPCResponse{JSONRPC: "2.0", ID: id, Error: &rpcError{Code: -32000, Message: "proxy error: " + err.Error()}}
 	}
 
-	// Extract the assistant's response text.
 	content := ""
 	if len(resp.Choices) > 0 {
 		content = resp.Choices[0].Message.Content
 	}
+	return &jsonRPCResponse{JSONRPC: "2.0", ID: id, Result: map[string]any{
+		"content": []map[string]any{{"type": "text", "text": content}}, "isError": false,
+	}}
+}
 
+func (s *Server) toolListModules(id any) *jsonRPCResponse {
+	if s.toggle == nil {
+		return s.textResult(id, "Module management not available in this configuration.")
+	}
+	states := s.toggle.KnownModules()
+	var lines []string
+	enabled, disabled := 0, 0
+	for name, on := range states {
+		status := "OFF"
+		if on {
+			status = "ON"
+			enabled++
+		} else {
+			disabled++
+		}
+		lines = append(lines, fmt.Sprintf("  %s: %s", name, status))
+	}
+	sort.Strings(lines)
+	header := fmt.Sprintf("%d modules (%d enabled, %d disabled)\n\n", len(states), enabled, disabled)
+	return s.textResult(id, header+strings.Join(lines, "\n"))
+}
+
+func (s *Server) toolToggleModule(id any, args json.RawMessage) *jsonRPCResponse {
+	if s.toggle == nil {
+		return s.textResult(id, "Module management not available in this configuration.")
+	}
+	var a struct {
+		Name    string `json:"name"`
+		Enabled bool   `json:"enabled"`
+	}
+	if err := json.Unmarshal(args, &a); err != nil {
+		return &jsonRPCResponse{JSONRPC: "2.0", ID: id, Error: &rpcError{Code: -32602, Message: "invalid arguments"}}
+	}
+	s.toggle.Set(a.Name, a.Enabled)
+	// Persist to DB if available
+	if s.db != nil {
+		enabled := 0
+		if a.Enabled {
+			enabled = 1
+		}
+		s.db.Exec(`INSERT INTO proxy_modules (name, enabled, updated_at) VALUES (?, ?, datetime('now'))
+			ON CONFLICT(name) DO UPDATE SET enabled = excluded.enabled, updated_at = excluded.updated_at`, a.Name, enabled)
+	}
+	action := "disabled"
+	if a.Enabled {
+		action = "enabled"
+	}
+	return s.textResult(id, fmt.Sprintf("Module %q %s.", a.Name, action))
+}
+
+func (s *Server) toolRecentTraces(id any, args json.RawMessage) *jsonRPCResponse {
+	if s.db == nil {
+		return s.textResult(id, "Trace data not available in this configuration.")
+	}
+	limit := 20
+	if args != nil {
+		var a struct{ Limit int `json:"limit"` }
+		json.Unmarshal(args, &a)
+		if a.Limit > 0 && a.Limit <= 100 {
+			limit = a.Limit
+		}
+	}
+
+	rows, err := s.db.Query(`SELECT model, provider, status, cost_usd, latency_ms, input_tokens, output_tokens, timestamp
+		FROM requests ORDER BY timestamp DESC LIMIT ?`, limit)
+	if err != nil {
+		return s.textResult(id, "Failed to query traces.")
+	}
+	defer rows.Close()
+
+	var lines []string
+	var totalCost float64
+	count := 0
+	for rows.Next() {
+		var model, prov, status, ts string
+		var cost float64
+		var latency, tokIn, tokOut int
+		if err := rows.Scan(&model, &prov, &status, &cost, &latency, &tokIn, &tokOut, &ts); err != nil {
+			continue
+		}
+		lines = append(lines, fmt.Sprintf("  %s | %s/%s | %dms | $%.4f | %d→%d tok",
+			ts[:19], prov, model, latency, cost, tokIn, tokOut))
+		totalCost += cost
+		count++
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
+
+	header := fmt.Sprintf("Last %d requests (total cost: $%.4f)\n\n", count, totalCost)
+	if len(lines) == 0 {
+		return s.textResult(id, "No recent traces found.")
+	}
+	return s.textResult(id, header+strings.Join(lines, "\n"))
+}
+
+func (s *Server) toolSpendSummary(id any) *jsonRPCResponse {
+	if s.db == nil {
+		return s.textResult(id, "Spend data not available in this configuration.")
+	}
+
+	var cost24h, cost30d float64
+	var reqs24h, reqs30d int
+	s.db.QueryRow(`SELECT COALESCE(SUM(cost_usd),0), COUNT(*) FROM requests WHERE timestamp > datetime('now', '-1 day')`).Scan(&cost24h, &reqs24h)
+	s.db.QueryRow(`SELECT COALESCE(SUM(cost_usd),0), COUNT(*) FROM requests WHERE timestamp > datetime('now', '-30 days')`).Scan(&cost30d, &reqs30d)
+
+	text := fmt.Sprintf("Spend Summary\n\n  Last 24h: $%.4f (%d requests)\n  Last 30d: $%.4f (%d requests)",
+		cost24h, reqs24h, cost30d, reqs30d)
+
+	// Per-model breakdown for last 24h
+	rows, err := s.db.Query(`SELECT model, COUNT(*), COALESCE(SUM(cost_usd),0) FROM requests
+		WHERE timestamp > datetime('now', '-1 day') AND model != '' GROUP BY model ORDER BY SUM(cost_usd) DESC LIMIT 10`)
+	if err == nil {
+		defer rows.Close()
+		text += "\n\n  Top models (24h):"
+		for rows.Next() {
+			var model string
+			var cnt int
+			var cost float64
+			if rows.Scan(&model, &cnt, &cost) == nil {
+				text += fmt.Sprintf("\n    %s: $%.4f (%d reqs)", model, cost, cnt)
+			}
+		}
+		if err := rows.Err(); err != nil {
+			log.Printf("[db] rows iteration error: %v", err)
+		}
+	}
+
+	return s.textResult(id, text)
+}
+
+func (s *Server) toolListProviders(id any) *jsonRPCResponse {
+	pricing := provider.ListPricing()
+	providers := make(map[string]int)
+	for _, p := range pricing {
+		providers[p.Provider]++
+	}
+
+	var lines []string
+	for name, count := range providers {
+		lines = append(lines, fmt.Sprintf("  %s: %d models", name, count))
+	}
+	sort.Strings(lines)
+	header := fmt.Sprintf("%d providers configured\n\n", len(providers))
+	return s.textResult(id, header+strings.Join(lines, "\n"))
+}
+
+// textResult builds an MCP text content result.
+func (s *Server) textResult(id any, text string) *jsonRPCResponse {
 	return &jsonRPCResponse{
 		JSONRPC: "2.0",
-		ID:      req.ID,
+		ID:      id,
 		Result: map[string]any{
-			"content": []map[string]any{
-				{
-					"type": "text",
-					"text": content,
-				},
-			},
+			"content": []map[string]any{{"type": "text", "text": text}},
 			"isError": false,
 		},
 	}

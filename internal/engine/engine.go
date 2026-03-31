@@ -491,6 +491,8 @@ func Boot(pc ProductConfig) {
 
 	// MCP server (SSE transport for MCP-compatible editors)
 	mcpServer := mcp.NewServer(handler)
+	mcpServer.SetDB(db.Conn())
+	mcpServer.SetToggle(toggleReg)
 	mcpServer.Register(srv.Mux())
 
 	// Status collector (real-time metrics for /api/status)
