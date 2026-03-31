@@ -231,7 +231,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/docs/forge/", "/docs/exchange/", "/docs/team/", "/docs/memory/", "/docs/api/",
 		"/docs/ops/",
 		"/docs/config/",
-		"/vs/litellm/", "/vs/helicone/", "/vs/portkey/", "/vs/langfuse/",
+		"/vs/litellm/", "/vs/helicone/", "/vs/portkey/", "/vs/langfuse/", "/vs/openrouter/", "/vs/tensorzero/",
 		"/blog/", "/blog/why-i-built-stockyard/",
 		"/blog/architecture-decisions/", "/blog/134-tools-one-binary/",
 		"/blog/why-go-sqlite/",

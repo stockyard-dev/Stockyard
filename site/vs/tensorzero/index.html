@@ -6,15 +6,15 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Stockyard vs Helicone — Stockyard">
-<meta property="og:description" content="Comparing Stockyard and Helicone after the Mintlify acquisition. Active development vs maintenance mode.">
-<meta property="og:url" content="https://stockyard.dev/vs/helicone/">
+<meta property="og:title" content="Stockyard vs TensorZero — Stockyard">
+<meta property="og:description" content="Two self-hosted LLM gateways, different philosophies. Built-in caching and guardrails vs auto-optimization loop.">
+<meta property="og:url" content="https://stockyard.dev/vs/tensorzero/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Stockyard vs Helicone — LLM Proxy Comparison (2026)</title>
-<meta name="description" content="Stockyard vs Helicone: self-hosted LLM proxy comparison. Helicone was acquired by Mintlify in March 2026 and is in maintenance mode. Compare features, pricing, and architecture.">
-<link rel="canonical" href="https://stockyard.dev/vs/helicone/">
+<title>Stockyard vs TensorZero — LLM Gateway Comparison (2026)</title>
+<meta name="description" content="Stockyard vs TensorZero: self-hosted LLM gateways compared. Go binary with 40+ providers and built-in caching vs Rust gateway with auto-optimization loop.">
+<link rel="canonical" href="https://stockyard.dev/vs/tensorzero/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -56,10 +56,10 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 .explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Helicone still maintained?","acceptedAnswer":{"@type":"Answer","text":"Helicone was acquired by Mintlify in March 2026. The project is in maintenance mode, receiving security patches and bug fixes but no new features."}},{"@type":"Question","name":"Can I migrate from Helicone to Stockyard?","acceptedAnswer":{"@type":"Answer","text":"Yes. Both support OpenAI-compatible APIs. Change your base URL from Helicone to Stockyard and your application code works without changes. Stockyard includes built-in observability (Lookout) so you do not need a separate tool."}},{"@type":"Question","name":"How does Stockyard pricing compare to Helicone?","acceptedAnswer":{"@type":"Answer","text":"Stockyard's free tier has no request limit. Helicone's free tier caps at 10,000 requests per month. Stockyard's first paid tier is $29.99/mo vs Helicone's Pro at $79/mo."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is TensorZero free?","acceptedAnswer":{"@type":"Answer","text":"Yes, TensorZero is fully free and open source under Apache 2.0. There is no paid tier. Stockyard's proxy core is also Apache 2.0, but the full platform with advanced features starts at $29.99/mo."}},{"@type":"Question","name":"Does TensorZero have caching?","acceptedAnswer":{"@type":"Answer","text":"No. TensorZero does not include built-in caching, rate limiting, or guardrails. Stockyard includes all three as part of its 76 middleware modules."}},{"@type":"Question","name":"Can I migrate from TensorZero to Stockyard?","acceptedAnswer":{"@type":"Answer","text":"Both expose OpenAI-compatible APIs. Changing the base URL in your application is the primary migration step. You would gain caching, rate limiting, and guardrails but lose TensorZero's automatic optimization loop."}},{"@type":"Question","name":"How does TensorZero's performance compare?","acceptedAnswer":{"@type":"Answer","text":"TensorZero advertises less than 1ms p99 latency. Stockyard's 76-module middleware chain adds approximately 400 nanoseconds. Both are negligible compared to LLM provider response times of 1-30 seconds."}}]}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Compare","item":"https://stockyard.dev/vs/"},{"@type":"ListItem","position":3,"name":"vs Helicone","item":"https://stockyard.dev/vs/helicone/"}]}
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Compare","item":"https://stockyard.dev/vs/"},{"@type":"ListItem","position":3,"name":"vs TensorZero","item":"https://stockyard.dev/vs/tensorzero/"}]}
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
@@ -78,42 +78,44 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 </nav>
 
 <header class="hero">
-  <h1>Stockyard <span class="vs">vs</span> <span class="them">Helicone</span></h1>
-  <p class="sub">Helicone was acquired by Mintlify in March 2026 and is now in maintenance mode. Stockyard is actively developed.</p>
+  <h1>Stockyard <span class="vs">vs</span> <span class="them">TensorZero</span></h1>
+  <p class="sub">Two self-hosted LLM gateways with different philosophies. TensorZero optimizes automatically. Stockyard gives you manual control with more built-in features.</p>
 </header>
 
 <section class="section">
-  <p>Helicone built a strong LLM observability platform that processed 14.2 trillion tokens. In March 2026, Mintlify acquired them and moved the project to maintenance mode, meaning security patches and bug fixes only, no new features.</p><p>If you are starting a new project, Helicone is a risky bet. If you are already using Helicone, you should evaluate alternatives before the platform stagnates further.</p>
+  <p>TensorZero is a Rust-based LLM gateway backed by FirstMark and Bessemer ($7.3M seed). It is fully free and open source under Apache 2.0. The standout feature is TensorZero Autopilot, which automatically optimizes your LLM setup based on observed performance.</p><p>Stockyard is a Go-based proxy with 40+ providers, 76 middleware modules, and embedded SQLite. It focuses on operational features like caching, rate limiting, guardrails, and audit trails that TensorZero does not include.</p><p>Both are self-hosted and both are fast. The question is whether you want automatic optimization or manual control with more built-in tooling.</p>
 
   <table class="ct">
-    <tr><th>Feature</th><th class="us">Stockyard</th><th>Helicone</th></tr>
-    <tr><td>Status</td><td class="us">Active development</td><td class="them">Maintenance mode (acquired by Mintlify, March 2026)</td></tr>
-    <tr><td>Deployment</td><td class="us">Single ~25MB Go binary</td><td class="them">Docker: ClickHouse + Postgres required</td></tr>
-    <tr><td>External deps</td><td class="us">None (embedded SQLite)</td><td class="them">ClickHouse + Postgres</td></tr>
-    <tr><td>Self-hosted</td><td class="us">Yes, any tier</td><td class="them">Enterprise only</td></tr>
-    <tr><td>Open source</td><td class="us">Proxy: Apache 2.0 / Platform: BSL 1.1</td><td class="them">MIT (5.4k stars)</td></tr>
-    <tr><td>Providers</td><td class="us">40+</td><td class="them">Any OpenAI-compatible via headers</td></tr>
-    <tr><td>Pricing</td><td class="us">Free unlimited, paid from $29.99/mo</td><td class="them">Free 10k req/mo, Pro $79/mo, Team $799/mo</td></tr>
-    <tr><td>Cost tracking</td><td class="us">&#10003; Per-request</td><td class="them">&#10003; Per-request</td></tr>
-    <tr><td>Caching</td><td class="us">&#10003; Built-in</td><td class="them">&#10003; Via gateway</td></tr>
-    <tr><td>Rate limiting</td><td class="us">&#10003; Built-in</td><td class="them">&#10003; Via gateway</td></tr>
-    <tr><td>Failover</td><td class="us">&#10003; Built-in</td><td class="them">Not built-in</td></tr>
-    <tr><td>Model aliasing</td><td class="us">&#10003;</td><td class="them">Not built-in</td></tr>
-    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">Request logs</td></tr>
-    <tr><td>Red-team testing</td><td class="us">&#10003; Feral (5 free / 29 paid)</td><td class="them">None</td></tr>
-    <tr><td>Prompt management</td><td class="us">&#10003; Tack Room</td><td class="them">&#10003; Prompts</td></tr>
+    <tr><th>Feature</th><th class="us">Stockyard</th><th>TensorZero</th></tr>
+    <tr><td>Language</td><td class="us">Go (compiled binary)</td><td class="them">Rust (compiled binary)</td></tr>
+    <tr><td>Deployment</td><td class="us">Single binary, embedded SQLite</td><td class="them">Docker, Postgres + ClickHouse optional</td></tr>
+    <tr><td>External deps</td><td class="us">None</td><td class="them">None required (Postgres/ClickHouse optional for persistence)</td></tr>
+    <tr><td>Open source</td><td class="us">Proxy: Apache 2.0 / Platform: BSL 1.1</td><td class="them">Apache 2.0 (11.2k stars)</td></tr>
+    <tr><td>Pricing</td><td class="us">Free unlimited, paid from $29.99/mo</td><td class="them">Fully free, no paid tier</td></tr>
+    <tr><td>Providers</td><td class="us">40+</td><td class="them">~15</td></tr>
+    <tr><td>Latency overhead</td><td class="us">~400ns (76 modules)</td><td class="them"><1ms p99</td></tr>
+    <tr><td>Caching</td><td class="us">&#10003; Built-in</td><td class="them">None</td></tr>
+    <tr><td>Rate limiting</td><td class="us">&#10003; Built-in</td><td class="them">None</td></tr>
+    <tr><td>Failover</td><td class="us">&#10003; Built-in</td><td class="them">Fallback support</td></tr>
+    <tr><td>Guardrails</td><td class="us">&#10003; 76 middleware modules</td><td class="them">None</td></tr>
+    <tr><td>Auto-optimization</td><td class="us">Manual (Drover routing)</td><td class="them">&#10003; Autopilot (automatic)</td></tr>
+    <tr><td>A/B testing</td><td class="us">&#10003; Tack Room</td><td class="them">&#10003; Experimentation</td></tr>
+    <tr><td>Evaluations</td><td class="us">Via Tack Room</td><td class="them">&#10003; Built-in evaluations</td></tr>
+    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">None</td></tr>
+    <tr><td>Red-team testing</td><td class="us">&#10003; Feral</td><td class="them">None</td></tr>
+    <tr><td>VC backing</td><td class="us">Bootstrapped</td><td class="them">$7.3M seed (FirstMark, Bessemer)</td></tr>
   </table>
   <p style="font-size:0.78rem;color:var(--cream-muted);text-align:center">Data reflects publicly available documentation as of March 2026.</p>
 
   <h2>Why Stockyard</h2>
-  <p>Stockyard is actively developed. Helicone is not. That alone is a strong reason to choose Stockyard for new projects.</p><p>Beyond the acquisition, Stockyard ships as a single binary with embedded SQLite. No ClickHouse cluster to manage, no Postgres connection pool to tune. The hash-chained audit ledger and built-in red-team testing (Feral) have no Helicone equivalent.</p><p>Stockyard also costs less. The free tier has no request limit, and the first paid tier is $29.99/mo vs Helicone's $79/mo Pro.</p>
+  <p>More built-in features. TensorZero is a gateway and optimization engine. Stockyard is a gateway plus caching, rate limiting, guardrails, PII redaction, audit trail, red-team testing, prompt management, and request replay. If you need any of these, you would need to add separate tools on top of TensorZero.</p><p>More providers. Stockyard supports 40+ providers out of the box. TensorZero supports approximately 15. If you use providers like Cohere, xAI, or smaller regional providers, Stockyard covers them.</p><p>Zero external dependencies. TensorZero works without Postgres and ClickHouse, but then you lose observability data persistence. Stockyard persists everything to embedded SQLite automatically.</p>
 
-  <h2>When Helicone might be better</h2>
-  <p>If you are already running Helicone in production and it meets your needs, there is no urgent reason to migrate today. The maintenance mode commitment covers security patches, so it will not suddenly stop working.</p><p>Helicone also has a more mature observability UI with features like HQL (Helicone Query Language), sessions, and a playground that Stockyard's Lookout dashboard has not fully replicated yet. If observability depth is your primary concern and you are comfortable with the acquisition risk, Helicone still works.</p>
+  <h2>When TensorZero might be better</h2>
+  <p>If automatic optimization is your priority, TensorZero is purpose-built for it. Autopilot observes your request patterns and automatically optimizes your LLM configuration. Stockyard has Drover for cost-optimized routing, but it is not as deeply integrated as TensorZero's optimization loop.</p><p>TensorZero is fully free and fully Apache 2.0. No BSL, no paid tiers, no enterprise upsell. If budget is zero and you want a gateway with an optimization loop, TensorZero costs nothing.</p><p>TensorZero has Fortune 10 customers and $7.3M in VC backing. It is a well-funded project with strong institutional support. Stockyard is bootstrapped by a solo founder.</p>
 
   <div class="verdict">
     <div class="verdict-label">The bottom line</div>
-    <p>Helicone is a proven platform, but it is no longer being actively developed. Stockyard is younger but actively shipping features weekly. For new projects, Stockyard is the safer long-term bet.</p>
+    <p>TensorZero is the better choice if auto-optimization is your primary need and you do not need caching, rate limiting, or guardrails. Stockyard is the better choice if you want a full operational toolkit in a single binary with zero dependencies.</p>
   </div>
 
   <div class="cta-row">
@@ -122,7 +124,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <a href="/pricing/" class="cta cta-ghost">See pricing</a>
   </div>
 
-  <div class="also">Also compare: <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/openrouter/">vs OpenRouter</a> &nbsp;&middot;&nbsp; <a href="/vs/langfuse/">vs Langfuse</a> &nbsp;&middot;&nbsp; <a href="/vs/tensorzero/">vs TensorZero</a></div>
+  <div class="also">Also compare: <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/openrouter/">vs OpenRouter</a> &nbsp;&middot;&nbsp; <a href="/vs/langfuse/">vs Langfuse</a></div>
 </section>
 
 <div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/providers/openai/">OpenAI proxy</a> &middot; <a href="/guide/">Install guide</a></div>

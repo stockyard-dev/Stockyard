@@ -6,38 +6,37 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Stockyard vs Langfuse -- Stockyard">
-<meta property="og:description" content="Langfuse is dedicated LLM observability. Stockyard is a proxy with observability built in. Different tools, different deployment models, overlapping jobs.">
+<meta property="og:title" content="Stockyard vs Langfuse — Stockyard">
+<meta property="og:description" content="LLM proxy with built-in observability vs dedicated tracing platform. They solve different problems.">
 <meta property="og:url" content="https://stockyard.dev/vs/langfuse/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Stockyard vs Langfuse -- Langfuse Alternative</title>
-<meta name="description" content="Stockyard vs Langfuse: honest comparison. Stockyard is a self-hosted LLM proxy with built-in tracing. Langfuse is a dedicated observability platform with deeper evaluation tools. Different architecture, overlapping jobs.">
+<title>Stockyard vs Langfuse — LLM Observability Comparison (2026)</title>
+<meta name="description" content="Stockyard vs Langfuse: proxy with built-in observability vs dedicated LLM tracing platform. Different tools for different problems. Honest comparison.">
+<link rel="canonical" href="https://stockyard.dev/vs/langfuse/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green:#4a8c5c;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
-.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
 .hero{text-align:center;padding:4rem 2rem 3rem}
-.hero h1{font-size:2.2rem;margin-bottom:0.8rem;line-height:1.3}.hero h1 .vs{color:var(--leather);font-size:1.6rem}.hero h1 .them{color:var(--cream-dim)}
+.hero h1{font-size:2.2rem;margin-bottom:0.8rem;line-height:1.3}
+.hero h1 .vs{color:var(--leather);font-size:1.6rem}
+.hero h1 .them{color:var(--cream-dim)}
 .hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:620px;margin:0 auto}
 .section{max-width:800px;margin:0 auto;padding:0 2rem 3rem}
-.section-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.5rem}
 .ct{width:100%;border-collapse:collapse;margin:0 0 2rem;font-size:0.85rem}
 .ct th,.ct td{padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--bg3)}
 .ct th{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light)}
 .ct th.us{color:var(--rust-light);font-weight:700}
 .ct td:first-child{color:var(--cream-dim);font-family:var(--font-mono);font-size:0.78rem}
-.ct .us{color:var(--green-light);font-weight:600}
-.ct .them{color:var(--cream-dim)}
-.ct .tie{color:var(--leather-light)}
+.ct .us{color:var(--green-light);font-weight:600}.ct .them{color:var(--cream-dim)}.ct .tie{color:var(--leather-light)}
 p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
 h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
 code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
@@ -50,117 +49,91 @@ code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding
 .cta-ghost{border:1px solid var(--bg3);color:var(--cream-dim)}.cta-ghost:hover{border-color:var(--rust);color:var(--cream)}
 .also{text-align:center;margin:2rem 0;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)}.also a{color:var(--cream-dim)}.also a:hover{color:var(--rust-light)}
 footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:3rem}
+.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
 footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
-@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}}
-@media(max-width:600px){.hero h1{font-size:1.6rem}.ct{font-size:0.75rem}.ct th,.ct td{padding:0.5rem}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}}
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
-.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
+@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:3rem 1.5rem 2rem}.hero h1{font-size:1.6rem}.ct{font-size:0.75rem}.ct th,.ct td{padding:0.5rem 0.6rem}}
+.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
 </style>
-<link rel="canonical" href="https://stockyard.dev/vs/langfuse/">
-<!-- Google Analytics -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Langfuse an LLM proxy?","acceptedAnswer":{"@type":"Answer","text":"No. Langfuse is an observability and evaluation platform. It does not proxy, cache, rate-limit, or fail over requests. It requires SDK integration in your application code. Stockyard is a proxy that includes observability."}},{"@type":"Question","name":"Can I use Langfuse and Stockyard together?","acceptedAnswer":{"@type":"Answer","text":"Yes. Many teams use Stockyard as the proxy layer and Langfuse for evaluation. Stockyard handles routing, caching, and cost tracking. Langfuse handles annotation, scoring, and experiment tracking."}},{"@type":"Question","name":"Which is easier to set up?","acceptedAnswer":{"@type":"Answer","text":"Stockyard requires changing one URL (your API base). Langfuse requires adding their SDK to your application and instrumenting each LLM call. For basic observability, Stockyard is faster to deploy."}}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Compare","item":"https://stockyard.dev/vs/"},{"@type":"ListItem","position":3,"name":"vs Langfuse","item":"https://stockyard.dev/vs/langfuse/"}]}
+</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Stockyard vs Langfuse","item":"https://stockyard.dev/vs/langfuse/"}]}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Langfuse open source?","acceptedAnswer":{"@type":"Answer","text":"Yes, Langfuse is open source. Self-hosting requires Docker with Postgres. Stockyard is a single Go binary with embedded SQLite and no Docker requirement."}},{"@type":"Question","name":"What is the difference between Langfuse and Stockyard?","acceptedAnswer":{"@type":"Answer","text":"Langfuse is focused on LLM observability and evaluation. Stockyard is a full proxy platform that includes observability plus routing, caching, cost control, audit trails, and 76 middleware modules in a single binary."}},{"@type":"Question","name":"Does Langfuse work as an LLM proxy?","acceptedAnswer":{"@type":"Answer","text":"Langfuse is primarily an observability tool, not a proxy. It requires SDK integration in your application code. Stockyard works as a transparent proxy that sits between your app and providers, requiring only a base URL change."}}]}
-</script>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
-
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <a href="/" class="nav-brand">&#9651; Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
   <div class="nav-overlay" onclick="toggleNav()"></div>
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
-    <a href="/products/">Products</a>
     <a href="/docs/">Docs</a>
-    <a href="/benchmarks/">Benchmarks</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/playground/">Playground</a>
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+    <a href="/blog/">Blog</a>
+    <a href="/guide/" class="cta cta-primary" style="padding:0.4rem 1rem">Install</a>
   </div>
 </nav>
 
-<div class="hero">
+<header class="hero">
   <h1>Stockyard <span class="vs">vs</span> <span class="them">Langfuse</span></h1>
-  <p class="sub">Langfuse is a dedicated LLM observability platform with deep evaluation tools. Stockyard is a self-hosted <a href="/what-is-llm-proxy/">LLM proxy</a> that includes observability alongside routing, caching, and guardrails. Different tools that overlap on tracing and cost tracking.</p>
-</div>
+  <p class="sub">These tools solve different problems. Langfuse is observability. Stockyard is a proxy with observability built in.</p>
+</header>
 
-<section class="section" id="main">
-  <div class="section-label">Side-by-side</div>
+<section class="section">
+  <p>Langfuse is an LLM observability and evaluation platform. It does not proxy requests, cache responses, rate-limit users, or fail over between providers. It instruments your code to capture traces.</p><p>Stockyard is an LLM proxy that includes observability. It sits between your app and providers, routing requests through a middleware chain. Tracing happens automatically because every request passes through the proxy.</p><p>Many teams use both: Stockyard for routing and Langfuse for deep evaluation. But if you want observability without adding an SDK to your application, Stockyard gives you that out of the box.</p>
+
   <table class="ct">
-    <tr><th></th><th class="us">Stockyard</th><th>Langfuse</th></tr>
-    <tr><td>Primary job</td><td class="us">LLM proxy + observability + controls</td><td class="them">LLM observability + evaluation</td></tr>
-    <tr><td>Language</td><td class="us">Go &mdash; single static binary</td><td class="them">TypeScript &mdash; multi-service</td></tr>
-    <tr><td>Database</td><td class="us">Embedded SQLite</td><td class="them">PostgreSQL + ClickHouse</td></tr>
-    <tr><td>Self-hosting</td><td class="us">One binary, one file</td><td class="them">Docker Compose or Kubernetes (Helm chart)</td></tr>
-    <tr><td>Instrumentation</td><td class="us">Automatic &mdash; proxy captures everything</td><td class="them">SDK decorators or OpenTelemetry integration</td></tr>
-    <tr><td>Proxy / gateway</td><td class="us">Built-in (76 middleware modules)</td><td class="them">None &mdash; pair with LiteLLM or other proxy</td></tr>
-    <tr><td>Cost tracking</td><td class="tie">Automatic per-request</td><td class="tie">Automatic per-trace</td></tr>
-    <tr><td>Tracing</td><td class="tie">Request-level traces with middleware chain</td><td class="tie">Hierarchical traces with nested spans</td></tr>
-    <tr><td>Evaluations</td><td class="tie">Basic trace querying</td><td class="tie">LLM-as-a-judge, datasets, experiments, scoring</td></tr>
-    <tr><td>Prompt management</td><td class="tie">Versioned templates</td><td class="tie">Versioned prompts with caching</td></tr>
-    <tr><td>Caching</td><td class="us">Built-in (exact + semantic)</td><td class="them">None</td></tr>
-    <tr><td>Guardrails</td><td class="us">PII redaction, prompt injection, content filtering</td><td class="them">None</td></tr>
-    <tr><td>Failover</td><td class="us">Model-aware routing with circuit breakers</td><td class="them">None (use a separate proxy)</td></tr>
-    <tr><td>Audit trail</td><td class="us">Hash-chained tamper-evident ledger</td><td class="them">Logging only</td></tr>
-    <tr><td>SDK integrations</td><td class="tie">OpenAI-compatible SDK (any language)</td><td class="tie">Python, JS/TS, LangChain, LlamaIndex, Vercel AI</td></tr>
-    <tr><td>Community</td><td class="tie">Early stage</td><td class="tie">Large &mdash; ~24K GitHub stars, acquired by ClickHouse</td></tr>
-    <tr><td>License</td><td class="us">Apache 2.0 (proxy) / BSL 1.1 (platform)</td><td class="tie">MIT (core)</td></tr>
+    <tr><th>Feature</th><th class="us">Stockyard</th><th>Langfuse</th></tr>
+    <tr><td>Primary function</td><td class="us">LLM proxy + observability</td><td class="them">LLM observability + evaluation</td></tr>
+    <tr><td>Proxies requests</td><td class="us">&#10003; Yes</td><td class="them">No (SDK instrumentation)</td></tr>
+    <tr><td>Deployment</td><td class="us">Single ~25MB Go binary</td><td class="them">Docker: Postgres required, ClickHouse recommended</td></tr>
+    <tr><td>External deps</td><td class="us">None (embedded SQLite)</td><td class="them">Postgres (required)</td></tr>
+    <tr><td>Open source</td><td class="us">Proxy: Apache 2.0 / Platform: BSL 1.1</td><td class="them">MIT (24k stars)</td></tr>
+    <tr><td>Providers</td><td class="us">40+ (routes requests)</td><td class="them">N/A (does not route)</td></tr>
+    <tr><td>Pricing (cloud)</td><td class="us">Free unlimited, paid from $29.99/mo</td><td class="them">Free 50k units/mo, Core $29/mo, Pro $199/mo</td></tr>
+    <tr><td>Tracing</td><td class="us">&#10003; Automatic (every proxied request)</td><td class="them">&#10003; Via SDK integration</td></tr>
+    <tr><td>Evaluations</td><td class="us">Via Tack Room experiments</td><td class="them">&#10003; Deep eval framework, annotation queues</td></tr>
+    <tr><td>Caching</td><td class="us">&#10003; Built-in</td><td class="them">No</td></tr>
+    <tr><td>Rate limiting</td><td class="us">&#10003; Built-in</td><td class="them">No</td></tr>
+    <tr><td>Failover</td><td class="us">&#10003; Built-in</td><td class="them">No</td></tr>
+    <tr><td>Prompt management</td><td class="us">&#10003; Tack Room</td><td class="them">&#10003; Prompt management</td></tr>
+    <tr><td>Datasets</td><td class="us">Via Lasso replay</td><td class="them">&#10003; Dataset management</td></tr>
+    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">No</td></tr>
+    <tr><td>Integration effort</td><td class="us">Change one URL</td><td class="them">Add SDK + instrument code</td></tr>
   </table>
+  <p style="font-size:0.78rem;color:var(--cream-muted);text-align:center">Data reflects publicly available documentation as of March 2026.</p>
 
-  <h2>The key difference</h2>
-  <p>Langfuse is an observability platform. Stockyard is a proxy that includes observability. This means they solve the tracing problem in fundamentally different ways.</p>
-  <p>With Langfuse, you add SDK decorators to your application code or configure OpenTelemetry export. Traces are sent asynchronously to Langfuse's backend where they are stored, queried, and evaluated. Your LLM requests still go directly from your app to the provider.</p>
-  <p>With Stockyard, you point your app at the proxy. Every request that passes through is traced automatically. There is no SDK integration, no decorators, no callbacks. Observability is a side effect of routing through the proxy.</p>
-  <p>This also means Stockyard can do things Langfuse cannot: cache responses, enforce rate limits, redact PII, detect prompt injection, and fail over between providers. Those capabilities require being in the request path, which a tracing backend is not.</p>
+  <h2>Why Stockyard</h2>
+  <p>Zero-effort observability. Change your base URL to Stockyard and every request is automatically traced with cost, latency, tokens, and provider info. Langfuse requires adding their SDK to your application and instrumenting each call.</p><p>Proxy features included. Stockyard is not just observability. It is a full proxy with caching, failover, rate limiting, model aliasing, and guardrails. Langfuse does none of these.</p><p>No external database. Stockyard uses embedded SQLite. Langfuse requires Postgres and recommends ClickHouse for production workloads.</p>
 
-  <h2>Where Langfuse wins</h2>
-  <p><strong style="color:var(--cream)">Evaluation and experimentation.</strong> Langfuse has purpose-built tools for LLM evaluation: LLM-as-a-judge scoring, datasets for benchmarking, structured experiments, and quality metrics. If you need to systematically measure and improve output quality, Langfuse is significantly more capable here.</p>
-  <p><strong style="color:var(--cream)">SDK ecosystem.</strong> Langfuse integrates with LangChain, LlamaIndex, Vercel AI SDK, and the broader Python/TypeScript ecosystem through decorators and callbacks. If your application is built on these frameworks, Langfuse drops in with minimal friction.</p>
-  <p><strong style="color:var(--cream)">Community and maturity.</strong> Langfuse has a large open-source community, was acquired by ClickHouse in early 2026, and is used in production by many teams. There are more resources, more integrations, and more people who can help.</p>
-  <p><strong style="color:var(--cream)">Deeper trace model.</strong> Langfuse's hierarchical trace model with nested spans, sessions, and user-level grouping is more expressive than Stockyard's request-level tracing. For complex multi-step agent workflows, Langfuse captures more structure.</p>
-  <p><strong style="color:var(--cream)">MIT license.</strong> Langfuse's core is MIT-licensed. Stockyard's proxy core is Apache 2.0, and the full platform is BSL 1.1.</p>
-
-  <h2>Where Stockyard wins</h2>
-  <p><strong style="color:var(--cream)">Zero-instrumentation observability.</strong> Route through the proxy and tracing happens automatically. No SDK, no decorators, no code changes beyond swapping one base URL. This matters when you want observability without touching application code.</p>
-  <p><strong style="color:var(--cream)">Proxy capabilities.</strong> Caching, rate limiting, failover, guardrails, <a href="/what-is-model-aliasing/">model aliasing</a>, and cost caps are all built in. Langfuse does not sit in the request path, so it cannot provide these. To get proxy features alongside Langfuse, you typically pair it with LiteLLM, which means running and maintaining two services.</p>
-  <p><strong style="color:var(--cream)">Simpler self-hosting.</strong> Stockyard is one binary with embedded SQLite. Langfuse requires PostgreSQL and ClickHouse, typically deployed via Docker Compose or Kubernetes. The operational surface area is meaningfully different.</p>
-  <p><strong style="color:var(--cream)">Audit trail.</strong> Stockyard's hash-chained ledger creates a tamper-evident record of every request. Langfuse logs traces but does not provide cryptographic integrity guarantees.</p>
-
-  <h2>Can you use both?</h2>
-  <p>Yes. Stockyard exports OTEL spans. If you set <code>OTEL_EXPORTER_OTLP_ENDPOINT</code> to point at Langfuse's OpenTelemetry endpoint, you can use Stockyard as the proxy layer and Langfuse for deeper evaluation and analysis. You get automatic tracing from the proxy plus Langfuse's evaluation tools.</p>
+  <h2>When Langfuse might be better</h2>
+  <p>If evaluation is your primary workflow, Langfuse is significantly more capable. Annotation queues, dataset management, scoring pipelines, and experiment tracking are features Stockyard's Tack Room has not matched yet.</p><p>Langfuse's SDK integration gives you deeper traces than proxy-level observability. You can trace individual function calls, retrieval steps, and chain execution, not just the final LLM call. If you need sub-request granularity, Langfuse is the better tool.</p><p>Langfuse is fully MIT-licensed. If your organization requires MIT for everything, Langfuse is a cleaner licensing story.</p><p>Many teams use both: Stockyard as the proxy layer (routing, caching, cost tracking) and Langfuse for evaluation and experimentation. They are complementary, not exclusive.</p>
 
   <div class="verdict">
     <div class="verdict-label">The bottom line</div>
-    <p>If your primary need is deep observability with evaluation, experimentation, and quality scoring, Langfuse is the stronger tool. If you want a self-hosted proxy that handles routing, caching, guardrails, and tracing in one binary, Stockyard covers more of the stack. If you want both, they can work together via OpenTelemetry.</p>
+    <p>These are different tools. Langfuse is an observability and evaluation platform. Stockyard is a proxy that includes observability. If you need deep evals, use Langfuse. If you need a proxy with automatic tracing, use Stockyard. If you need both, they work together.</p>
   </div>
 
   <div class="cta-row">
-    <a href="/docs/quickstart/" class="cta cta-primary">Try Stockyard &rarr;</a>
-    <a href="/single-binary/" class="cta cta-ghost">Why single binary?</a>
+    <a href="/guide/" class="cta cta-primary">Try Stockyard &rarr;</a>
+    <a href="/proxy-only/" class="cta cta-ghost">Proxy-only mode</a>
     <a href="/pricing/" class="cta cta-ghost">See pricing</a>
   </div>
 
-  <div class="also">Also compare: <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/braintrust/">vs Braintrust</a> &nbsp;&middot;&nbsp; <a href="/vs/kong/">vs Kong</a></div>
+  <div class="also">Also compare: <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/openrouter/">vs OpenRouter</a> &nbsp;&middot;&nbsp; <a href="/vs/tensorzero/">vs TensorZero</a></div>
 </section>
 
-<div class="explore-bar">Explore: <a href="/openai-compatible-proxy/">OpenAI-compatible</a> &middot; <a href="/model-aliasing/">Model aliasing</a> &middot; <a href="/providers/openai/">Openai proxy</a> &middot; <a href="/providers/anthropic/">Anthropic proxy</a></div>
+<div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/providers/openai/">OpenAI proxy</a> &middot; <a href="/guide/">Install guide</a></div>
 <footer>
-  <p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard.</p>
-  <p style="margin-top:0.5rem">Where AI infrastructure gets sorted.</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
+  <p class="sig">Stockyard.</p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a></p>
 </footer>
-
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
-
 </body>
 </html>

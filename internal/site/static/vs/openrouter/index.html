@@ -6,15 +6,15 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Stockyard vs Helicone — Stockyard">
-<meta property="og:description" content="Comparing Stockyard and Helicone after the Mintlify acquisition. Active development vs maintenance mode.">
-<meta property="og:url" content="https://stockyard.dev/vs/helicone/">
+<meta property="og:title" content="Stockyard vs OpenRouter — Stockyard">
+<meta property="og:description" content="Self-hosted LLM proxy vs cloud API marketplace. Different models, different tradeoffs.">
+<meta property="og:url" content="https://stockyard.dev/vs/openrouter/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>Stockyard vs Helicone — LLM Proxy Comparison (2026)</title>
-<meta name="description" content="Stockyard vs Helicone: self-hosted LLM proxy comparison. Helicone was acquired by Mintlify in March 2026 and is in maintenance mode. Compare features, pricing, and architecture.">
-<link rel="canonical" href="https://stockyard.dev/vs/helicone/">
+<title>Stockyard vs OpenRouter — LLM Routing Comparison (2026)</title>
+<meta name="description" content="Stockyard vs OpenRouter: self-hosted open source proxy vs cloud-only API aggregator. Keep your data on your servers with no platform fee. Compare features and pricing.">
+<link rel="canonical" href="https://stockyard.dev/vs/openrouter/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -56,10 +56,10 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 .explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Helicone still maintained?","acceptedAnswer":{"@type":"Answer","text":"Helicone was acquired by Mintlify in March 2026. The project is in maintenance mode, receiving security patches and bug fixes but no new features."}},{"@type":"Question","name":"Can I migrate from Helicone to Stockyard?","acceptedAnswer":{"@type":"Answer","text":"Yes. Both support OpenAI-compatible APIs. Change your base URL from Helicone to Stockyard and your application code works without changes. Stockyard includes built-in observability (Lookout) so you do not need a separate tool."}},{"@type":"Question","name":"How does Stockyard pricing compare to Helicone?","acceptedAnswer":{"@type":"Answer","text":"Stockyard's free tier has no request limit. Helicone's free tier caps at 10,000 requests per month. Stockyard's first paid tier is $29.99/mo vs Helicone's Pro at $79/mo."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does OpenRouter charge a fee?","acceptedAnswer":{"@type":"Answer","text":"Yes, OpenRouter adds a 5.5% platform fee on top of provider pricing. Stockyard has no per-request fees. You pay LLM providers directly at their published rates."}},{"@type":"Question","name":"Can I self-host OpenRouter?","acceptedAnswer":{"@type":"Answer","text":"No, OpenRouter is cloud-only. Stockyard is self-hosted by default and ships as a single binary that runs on any server."}},{"@type":"Question","name":"Does Stockyard support as many models as OpenRouter?","acceptedAnswer":{"@type":"Answer","text":"OpenRouter supports 300+ models from 60+ providers. Stockyard supports 40+ providers covering all major models (GPT-4o, Claude, Gemini, Llama, etc.). For most teams, the provider coverage is equivalent for the models that matter."}},{"@type":"Question","name":"Can I use Stockyard and OpenRouter together?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can configure OpenRouter as one of Stockyard's providers. Requests routed to OpenRouter go through Stockyard's middleware chain first, getting cost tracking, caching, and guardrails before hitting OpenRouter's API."}}]}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Compare","item":"https://stockyard.dev/vs/"},{"@type":"ListItem","position":3,"name":"vs Helicone","item":"https://stockyard.dev/vs/helicone/"}]}
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Compare","item":"https://stockyard.dev/vs/"},{"@type":"ListItem","position":3,"name":"vs OpenRouter","item":"https://stockyard.dev/vs/openrouter/"}]}
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
@@ -78,42 +78,43 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 </nav>
 
 <header class="hero">
-  <h1>Stockyard <span class="vs">vs</span> <span class="them">Helicone</span></h1>
-  <p class="sub">Helicone was acquired by Mintlify in March 2026 and is now in maintenance mode. Stockyard is actively developed.</p>
+  <h1>Stockyard <span class="vs">vs</span> <span class="them">OpenRouter</span></h1>
+  <p class="sub">OpenRouter is a cloud API marketplace. Stockyard is a self-hosted proxy. They solve the same problem from opposite directions.</p>
 </header>
 
 <section class="section">
-  <p>Helicone built a strong LLM observability platform that processed 14.2 trillion tokens. In March 2026, Mintlify acquired them and moved the project to maintenance mode, meaning security patches and bug fixes only, no new features.</p><p>If you are starting a new project, Helicone is a risky bet. If you are already using Helicone, you should evaluate alternatives before the platform stagnates further.</p>
+  <p>OpenRouter aggregates 300+ models from 60+ providers into a single API. You send requests to OpenRouter, they route to the provider. Simple, no infrastructure, massive model catalog.</p><p>Stockyard sits on your infrastructure. You download a binary, point your app at it, and requests route through your own server to providers. Your data never touches a third party.</p><p>The tradeoff is convenience vs control. OpenRouter is easier. Stockyard gives you more.</p>
 
   <table class="ct">
-    <tr><th>Feature</th><th class="us">Stockyard</th><th>Helicone</th></tr>
-    <tr><td>Status</td><td class="us">Active development</td><td class="them">Maintenance mode (acquired by Mintlify, March 2026)</td></tr>
-    <tr><td>Deployment</td><td class="us">Single ~25MB Go binary</td><td class="them">Docker: ClickHouse + Postgres required</td></tr>
-    <tr><td>External deps</td><td class="us">None (embedded SQLite)</td><td class="them">ClickHouse + Postgres</td></tr>
-    <tr><td>Self-hosted</td><td class="us">Yes, any tier</td><td class="them">Enterprise only</td></tr>
-    <tr><td>Open source</td><td class="us">Proxy: Apache 2.0 / Platform: BSL 1.1</td><td class="them">MIT (5.4k stars)</td></tr>
-    <tr><td>Providers</td><td class="us">40+</td><td class="them">Any OpenAI-compatible via headers</td></tr>
-    <tr><td>Pricing</td><td class="us">Free unlimited, paid from $29.99/mo</td><td class="them">Free 10k req/mo, Pro $79/mo, Team $799/mo</td></tr>
-    <tr><td>Cost tracking</td><td class="us">&#10003; Per-request</td><td class="them">&#10003; Per-request</td></tr>
-    <tr><td>Caching</td><td class="us">&#10003; Built-in</td><td class="them">&#10003; Via gateway</td></tr>
-    <tr><td>Rate limiting</td><td class="us">&#10003; Built-in</td><td class="them">&#10003; Via gateway</td></tr>
-    <tr><td>Failover</td><td class="us">&#10003; Built-in</td><td class="them">Not built-in</td></tr>
-    <tr><td>Model aliasing</td><td class="us">&#10003;</td><td class="them">Not built-in</td></tr>
-    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">Request logs</td></tr>
-    <tr><td>Red-team testing</td><td class="us">&#10003; Feral (5 free / 29 paid)</td><td class="them">None</td></tr>
-    <tr><td>Prompt management</td><td class="us">&#10003; Tack Room</td><td class="them">&#10003; Prompts</td></tr>
+    <tr><th>Feature</th><th class="us">Stockyard</th><th>OpenRouter</th></tr>
+    <tr><td>Architecture</td><td class="us">Self-hosted proxy on your servers</td><td class="them">Cloud API marketplace</td></tr>
+    <tr><td>Self-hosted</td><td class="us">&#10003; Default</td><td class="them">No, cloud only</td></tr>
+    <tr><td>Data residency</td><td class="us">Your infrastructure</td><td class="them">Passes through OpenRouter servers</td></tr>
+    <tr><td>Providers</td><td class="us">40+</td><td class="them">60+ providers, 300+ models</td></tr>
+    <tr><td>Platform fee</td><td class="us">None</td><td class="them">5.5% on all requests</td></tr>
+    <tr><td>Pricing</td><td class="us">Free unlimited, paid from $29.99/mo</td><td class="them">Pay-as-you-go + 5.5% fee</td></tr>
+    <tr><td>Free models</td><td class="us">Via Ollama (local)</td><td class="them">25+ free hosted models</td></tr>
+    <tr><td>Open source</td><td class="us">Proxy: Apache 2.0</td><td class="them">Proprietary</td></tr>
+    <tr><td>Cost tracking</td><td class="us">&#10003; Per-request</td><td class="them">&#10003; Activity logs</td></tr>
+    <tr><td>Caching</td><td class="us">&#10003; Built-in</td><td class="them">&#10003; Prompt caching</td></tr>
+    <tr><td>Rate limiting</td><td class="us">&#10003; Per-team/user</td><td class="them">Account-level</td></tr>
+    <tr><td>Failover</td><td class="us">&#10003; Cross-provider</td><td class="them">Managed by OpenRouter</td></tr>
+    <tr><td>Guardrails</td><td class="us">&#10003; 76 middleware modules</td><td class="them">None</td></tr>
+    <tr><td>Audit trail</td><td class="us">&#10003; Hash-chained</td><td class="them">Activity logs</td></tr>
+    <tr><td>Red-team testing</td><td class="us">&#10003; Feral</td><td class="them">None</td></tr>
+    <tr><td>Compliance</td><td class="us">Full data control</td><td class="them">Data transits third-party servers</td></tr>
   </table>
   <p style="font-size:0.78rem;color:var(--cream-muted);text-align:center">Data reflects publicly available documentation as of March 2026.</p>
 
   <h2>Why Stockyard</h2>
-  <p>Stockyard is actively developed. Helicone is not. That alone is a strong reason to choose Stockyard for new projects.</p><p>Beyond the acquisition, Stockyard ships as a single binary with embedded SQLite. No ClickHouse cluster to manage, no Postgres connection pool to tune. The hash-chained audit ledger and built-in red-team testing (Feral) have no Helicone equivalent.</p><p>Stockyard also costs less. The free tier has no request limit, and the first paid tier is $29.99/mo vs Helicone's $79/mo Pro.</p>
+  <p>No platform fee. OpenRouter charges 5.5% on every request. On a $1,000/month API bill, that is $55/month to OpenRouter for routing. Stockyard has zero per-request fees. You pay providers directly at their published rates.</p><p>Data stays on your servers. With OpenRouter, every prompt and completion passes through their infrastructure. With Stockyard, your data never leaves your network. For teams with compliance requirements, this is non-negotiable.</p><p>Open source. Stockyard's proxy core is Apache 2.0. You can audit the code, modify it, and run it anywhere. OpenRouter is proprietary.</p><p>Built-in security. Stockyard includes guardrails, PII redaction, and red-team testing. OpenRouter is a routing layer with no content safety features.</p>
 
-  <h2>When Helicone might be better</h2>
-  <p>If you are already running Helicone in production and it meets your needs, there is no urgent reason to migrate today. The maintenance mode commitment covers security patches, so it will not suddenly stop working.</p><p>Helicone also has a more mature observability UI with features like HQL (Helicone Query Language), sessions, and a playground that Stockyard's Lookout dashboard has not fully replicated yet. If observability depth is your primary concern and you are comfortable with the acquisition risk, Helicone still works.</p>
+  <h2>When OpenRouter might be better</h2>
+  <p>If you want zero infrastructure and access to 300+ models including free ones, OpenRouter is hard to beat. No binary to install, no server to manage, no provider keys to configure for most models.</p><p>OpenRouter's scale (5M+ users, 30T monthly tokens) means reliability is battle-tested. They handle provider outages, rate limits, and routing automatically.</p><p>If you are prototyping and want to try many different models quickly without setting up accounts with each provider, OpenRouter's marketplace model is faster to start with.</p>
 
   <div class="verdict">
     <div class="verdict-label">The bottom line</div>
-    <p>Helicone is a proven platform, but it is no longer being actively developed. Stockyard is younger but actively shipping features weekly. For new projects, Stockyard is the safer long-term bet.</p>
+    <p>OpenRouter is the fastest way to access hundreds of models with zero setup. Stockyard is the right choice when you need data residency, no platform fees, and the security features that come with self-hosting.</p>
   </div>
 
   <div class="cta-row">
@@ -122,7 +123,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
     <a href="/pricing/" class="cta cta-ghost">See pricing</a>
   </div>
 
-  <div class="also">Also compare: <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/openrouter/">vs OpenRouter</a> &nbsp;&middot;&nbsp; <a href="/vs/langfuse/">vs Langfuse</a> &nbsp;&middot;&nbsp; <a href="/vs/tensorzero/">vs TensorZero</a></div>
+  <div class="also">Also compare: <a href="/vs/helicone/">vs Helicone</a> &nbsp;&middot;&nbsp; <a href="/vs/litellm/">vs LiteLLM</a> &nbsp;&middot;&nbsp; <a href="/vs/portkey/">vs Portkey</a> &nbsp;&middot;&nbsp; <a href="/vs/langfuse/">vs Langfuse</a> &nbsp;&middot;&nbsp; <a href="/vs/tensorzero/">vs TensorZero</a></div>
 </section>
 
 <div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/providers/openai/">OpenAI proxy</a> &middot; <a href="/guide/">Install guide</a></div>
