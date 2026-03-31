@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Fence Docs — Stockyard</title>
+<meta name="description" content="API key vault for teams. Encrypted storage, scoped tokens, rotation, and audit log.">
+<meta property="og:title" content="Fence Docs — Stockyard">
+<meta property="og:url" content="https://stockyard.dev/docs/fence/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/docs/fence/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#b8a898;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.docs-layout{display:grid;grid-template-columns:220px 1fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 60px)}
+.sidebar{padding:2rem 1.5rem;border-right:1px solid var(--bg3);position:sticky;top:0;height:fit-content}
+.sidebar-section{margin-bottom:2rem}
+.sidebar-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem}
+.sidebar a{display:block;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);padding:0.3rem 0}
+.sidebar a:hover,.sidebar a.active{color:var(--rust-light)}
+.sidebar a.active{border-left:2px solid var(--rust);padding-left:0.5rem}
+.content{padding:3rem 2.5rem}
+.content h1{font-size:2rem;margin-bottom:0.5rem}
+.content .subtitle{font-size:1rem;color:var(--cream-dim);font-style:italic;margin-bottom:3rem}
+.content h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-top:3rem;margin-bottom:1rem;padding-top:2rem;border-top:1px solid var(--bg3)}
+.content h2:first-of-type{margin-top:0;padding-top:0;border:none}
+.content p{color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.content code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
+.content pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
+.content ul{color:var(--cream-dim);margin:0 0 1rem 1.5rem;line-height:1.9}
+.content .note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:0.85rem;color:var(--cream-dim)}
+.endpoint-row{border-top:1px solid var(--bg3);padding:0.8rem 0}
+.ep-method{font-family:var(--font-mono);font-size:0.75rem;color:var(--green-light);display:inline-block;width:60px}
+.ep-path{font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)}
+.ep-desc{font-size:0.82rem;color:var(--cream-dim);margin-top:0.2rem}
+@media(max-width:700px){.docs-layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:2rem 1.5rem}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/docs/">Docs</a>
+    <a href="/fence/">Product page</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/stockyard-fence">GitHub</a>
+  </div>
+</nav>
+<div class="docs-layout" id="main">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Getting Started</div>
+      <a href="#overview">Overview</a>
+      <a href="#install">Install</a>
+      <a href="#quickstart">Quickstart</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Reference</div>
+      <a href="#env-vars">Environment Variables</a>
+      <a href="#api">API Reference</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Stockyard Family</div>
+      <a href="/docs/corral/">Corral</a>
+      <a href="/docs/gate/">Gate</a>
+      <a href="/docs/trough/">Trough</a>
+      <a href="/docs/fence/">Fence</a>
+      <a href="/docs/brand/">Brand</a>
+      <a href="/docs/">Stockyard Platform</a>
+    </div>
+  </aside>
+  <main class="content">
+    <h1>Fence Docs</h1>
+    <p class="subtitle">API key vault for teams. Encrypted storage, scoped tokens, rotation, and audit log.</p>
+
+    <h2 id="overview">Overview</h2>
+    <p>API key vault for teams. Encrypted storage, scoped tokens, rotation, and audit log. License: BSL 1.1. Default port: 8770.</p>
+    <p>Part of the <a href="/">Stockyard</a> family of developer tools. <a href="/fence/">See the product page &rarr;</a></p>
+
+    <h2 id="install">Install</h2>
+    <pre>curl -fsSL https://stockyard.dev/fence/install.sh | sh</pre>
+    <p>Or download a release binary from <a href="https://github.com/stockyard-dev/stockyard-fence/releases">GitHub Releases</a>.</p>
+
+    <h2 id="quickstart">Quickstart</h2>
+    <pre># Install
+curl -fsSL https://stockyard.dev/fence/install.sh | sh
+
+# Generate encryption key
+export ENC_KEY=$(openssl rand -hex 32)
+
+# Run
+FENCE_ADMIN_KEY=secret FENCE_ENCRYPTION_KEY=$ENC_KEY fence
+
+# Create vault + store key
+curl -s -X POST http://localhost:8770/api/vaults \
+  -H 'Authorization: Bearer secret' -d '{"name":"prod"}'
+
+curl -s -X POST http://localhost:8770/api/vaults/{vault_id}/keys \
+  -H 'Authorization: Bearer secret' \
+  -d '{"name":"openai","value":"sk-...","provider":"openai"}'
+
+# Issue token to a team member
+curl -s -X POST http://localhost:8770/api/vaults/{vault_id}/tokens \
+  -H 'Authorization: Bearer secret' \
+  -d '{"member_id":"{mid}","name":"alice"}'
+# Save the fence_... token — shown only once
+
+# Team member resolves key at runtime
+curl -s http://localhost:8770/api/resolve/openai \
+  -H 'Authorization: Bearer fence_...'</pre>
+
+    <h2 id="env-vars">Environment Variables</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;margin:1rem 0">
+      <tr style="border-bottom:1px solid var(--bg3)">
+        <th style="text-align:left;padding:0.4rem 0.6rem 0.4rem 0;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);text-transform:uppercase;letter-spacing:1px">Variable</th>
+        <th style="text-align:left;padding:0.4rem 0.6rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);text-transform:uppercase;letter-spacing:1px">Description</th>
+        <th style="text-align:left;padding:0.4rem 0;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);text-transform:uppercase;letter-spacing:1px">Default</th>
+      </tr>
+      <tr><td style='font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)'>PORT</td><td style='font-size:0.82rem;color:var(--cream-dim)'>HTTP listen port</td><td style='font-family:var(--font-mono);font-size:0.72rem;color:var(--leather-light)'>8770</td></tr><tr><td style='font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)'>DATA_DIR</td><td style='font-size:0.82rem;color:var(--cream-dim)'>SQLite data directory</td><td style='font-family:var(--font-mono);font-size:0.72rem;color:var(--leather-light)'>./data</td></tr><tr><td style='font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)'>FENCE_ADMIN_KEY</td><td style='font-size:0.82rem;color:var(--cream-dim)'>Admin key (required)</td><td style='font-family:var(--font-mono);font-size:0.72rem;color:var(--leather-light)'>required</td></tr><tr><td style='font-family:var(--font-mono);font-size:0.78rem;color:var(--cream)'>FENCE_ENCRYPTION_KEY</td><td style='font-size:0.82rem;color:var(--cream-dim)'>32-byte hex AES key. Derives from admin key if unset.</td><td style='font-family:var(--font-mono);font-size:0.72rem;color:var(--leather-light)'></td></tr>
+    </table>
+
+    <h2 id="api">API Reference</h2>
+    <div class="endpoint-row"><span class="ep-method">GET</span><span class="ep-path">/api/vaults</span><div class="ep-desc">List vaults (admin)</div></div><div class="endpoint-row"><span class="ep-method">POST</span><span class="ep-path">/api/vaults</span><div class="ep-desc">Create vault (admin)</div></div><div class="endpoint-row"><span class="ep-method">POST</span><span class="ep-path">/api/vaults/{id}/keys</span><div class="ep-desc">Store an encrypted key (admin)</div></div><div class="endpoint-row"><span class="ep-method">POST</span><span class="ep-path">/api/vaults/{id}/keys/{kid}/rotate</span><div class="ep-desc">Rotate a key value (admin)</div></div><div class="endpoint-row"><span class="ep-method">GET</span><span class="ep-path">/api/vaults/{id}/members</span><div class="ep-desc">List vault members (admin)</div></div><div class="endpoint-row"><span class="ep-method">POST</span><span class="ep-path">/api/vaults/{id}/members</span><div class="ep-desc">Add a member (admin)</div></div><div class="endpoint-row"><span class="ep-method">POST</span><span class="ep-path">/api/vaults/{id}/tokens</span><div class="ep-desc">Issue a member token (admin)</div></div><div class="endpoint-row"><span class="ep-method">DELETE</span><span class="ep-path">/api/vaults/{id}/tokens/{tid}</span><div class="ep-desc">Revoke a token (admin)</div></div><div class="endpoint-row"><span class="ep-method">GET</span><span class="ep-path">/api/vaults/{id}/audit</span><div class="ep-desc">Access log (admin)</div></div><div class="endpoint-row"><span class="ep-method">GET</span><span class="ep-path">/api/resolve/{name}</span><div class="ep-desc">Resolve key by name (token auth)</div></div><div class="endpoint-row"><span class="ep-method">GET</span><span class="ep-path">/health</span><div class="ep-desc">Health check</div></div>
+
+    <div class="note">
+      <strong>Note</strong> — Admin endpoints require <code>Authorization: Bearer &lt;admin-key&gt;</code>. The admin key is set via the environment variable for this tool.
+    </div>
+
+    <h2>Deployment</h2>
+    <p>Run the binary directly or use the provided Dockerfile. Set <code>DATA_DIR</code> to a persistent volume path. The binary is statically linked with no external dependencies.</p>
+    <pre>docker build -t fence .
+docker run -e FENCE_ADMIN_KEY=secret -v /data:/data -p 8770:8770 fence</pre>
+
+    <h2>When to use Stockyard instead</h2>
+    <p>If you're building LLM-powered applications and need request tracing, cost tracking across 16 LLM providers, model routing, prompt management, and team collaboration tools — <a href="/">Stockyard</a> is the full platform. It includes capabilities from across the focused tools family in one binary.</p>
+  </main>
+</div>
+<footer style="text-align:center;padding:2rem;font-size:0.7rem;color:var(--cream-muted);font-family:var(--font-mono);border-top:1px solid var(--bg3)">
+  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/fence/" style="color:var(--cream-muted)">Fence product page</a></p>
+</footer>
+</body>
+</html>

@@ -338,6 +338,18 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/tools/trough/",
 		"/tools/gate/",
 		"/tools/brand-standalone/",
+		// Product family landing pages
+		"/corral/",
+		"/gate/",
+		"/trough/",
+		"/fence/",
+		"/brand/",
+		// Product docs
+		"/docs/corral/",
+		"/docs/gate/",
+		"/docs/trough/",
+		"/docs/fence/",
+		"/docs/brand/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
