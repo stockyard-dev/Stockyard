@@ -31,16 +31,23 @@ func NewAlertEvaluator(conn *sql.DB) *AlertEvaluator {
 // Start runs the evaluation loop until ctx is cancelled.
 func (e *AlertEvaluator) Start(ctx context.Context) {
 	log.Println("[observe] alert evaluator started (60s interval)")
-	t := time.NewTicker(e.tick)
-	defer t.Stop()
+	alertTick := time.NewTicker(e.tick)
+	anomalyTick := time.NewTicker(5 * time.Minute)
+	defer alertTick.Stop()
+	defer anomalyTick.Stop()
+
+	// Run anomaly detection once at startup
+	e.detectAnomalies()
 
 	for {
 		select {
 		case <-ctx.Done():
 			log.Println("[observe] alert evaluator stopped")
 			return
-		case <-t.C:
+		case <-alertTick.C:
 			e.evaluate()
+		case <-anomalyTick.C:
+			e.detectAnomalies()
 		}
 	}
 }
@@ -259,4 +266,208 @@ func (e *AlertEvaluator) deliverWebhook(channelCfg, name, metric string, value, 
 	}
 	resp.Body.Close()
 	log.Printf("[observe] webhook delivered for %q → %s (status %d)", name, cfg.URL, resp.StatusCode)
+}
+
+// detectAnomalies runs z-score anomaly detection across cost, latency, and error rate.
+// Writes results to observe_anomalies. Runs every 5 minutes from the Start loop.
+func (e *AlertEvaluator) detectAnomalies() {
+	e.detectCostAnomalies()
+	e.detectLatencyAnomalies()
+	e.detectErrorRateAnomalies()
+}
+
+func (e *AlertEvaluator) detectCostAnomalies() {
+	// Compare today's cost so far to the average daily cost over last 14 days
+	rows, err := e.conn.Query(`
+		SELECT date(created_at) as d, SUM(cost_usd) as daily_cost
+		FROM observe_traces
+		WHERE created_at >= datetime('now', '-14 days')
+		  AND date(created_at) < date('now')
+		GROUP BY d ORDER BY d`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var costs []float64
+	var sum float64
+	for rows.Next() {
+		var d string
+		var c float64
+		if err := rows.Scan(&d, &c); err != nil {
+			continue
+		}
+		costs = append(costs, c)
+		sum += c
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
+	if len(costs) < 5 {
+		return // need 5+ days of history
+	}
+
+	mean, stddev := meanStddev(costs, sum)
+	if stddev == 0 {
+		return
+	}
+
+	// Get today's cost so far
+	var todayCost float64
+	e.conn.QueryRow(`SELECT COALESCE(SUM(cost_usd),0) FROM observe_traces WHERE date(created_at) = date('now')`).Scan(&todayCost)
+
+	zscore := (todayCost - mean) / stddev
+	if zscore > 2.0 {
+		severity := "warning"
+		if zscore > 3.0 {
+			severity = "critical"
+		}
+		msg := fmt.Sprintf("Daily cost $%.4f is %.1f std devs above average ($%.4f avg, $%.4f stddev)", todayCost, zscore, mean, stddev)
+		e.insertAnomaly("daily_cost", mean, todayCost, zscore, severity, msg)
+	}
+}
+
+func (e *AlertEvaluator) detectLatencyAnomalies() {
+	// Compare last hour's avg latency to the 24-hour average
+	rows, err := e.conn.Query(`
+		SELECT strftime('%H', created_at) as h, AVG(duration_ms) as avg_ms
+		FROM observe_traces
+		WHERE created_at >= datetime('now', '-24 hours')
+		  AND strftime('%H:%M', created_at) < strftime('%H:%M', 'now')
+		GROUP BY h ORDER BY h`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var latencies []float64
+	var sum float64
+	for rows.Next() {
+		var h string
+		var ms float64
+		if err := rows.Scan(&h, &ms); err != nil {
+			continue
+		}
+		latencies = append(latencies, ms)
+		sum += ms
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
+	if len(latencies) < 4 {
+		return
+	}
+
+	mean, stddev := meanStddev(latencies, sum)
+	if stddev == 0 {
+		return
+	}
+
+	// Get last hour's avg latency
+	var recentMs float64
+	e.conn.QueryRow(`SELECT COALESCE(AVG(duration_ms),0) FROM observe_traces WHERE created_at >= datetime('now', '-1 hour')`).Scan(&recentMs)
+
+	zscore := (recentMs - mean) / stddev
+	if zscore > 2.0 {
+		severity := "warning"
+		if zscore > 3.0 {
+			severity = "critical"
+		}
+		msg := fmt.Sprintf("Avg latency %.0fms is %.1f std devs above normal (%.0fms avg)", recentMs, zscore, mean)
+		e.insertAnomaly("latency_avg", mean, recentMs, zscore, severity, msg)
+	}
+}
+
+func (e *AlertEvaluator) detectErrorRateAnomalies() {
+	// Compare last hour's error rate to the 24-hour average
+	var totalHour, errorsHour float64
+	e.conn.QueryRow(`SELECT COUNT(*), COALESCE(SUM(CASE WHEN status != 'ok' THEN 1 ELSE 0 END),0)
+		FROM observe_traces WHERE created_at >= datetime('now', '-1 hour')`).Scan(&totalHour, &errorsHour)
+	if totalHour < 10 {
+		return // not enough data
+	}
+	currentRate := (errorsHour / totalHour) * 100
+
+	// Get hourly error rates over last 24h
+	rows, err := e.conn.Query(`
+		SELECT strftime('%H', created_at) as h,
+			CAST(SUM(CASE WHEN status != 'ok' THEN 1 ELSE 0 END) AS REAL) / COUNT(*) * 100 as err_pct
+		FROM observe_traces
+		WHERE created_at >= datetime('now', '-24 hours')
+		GROUP BY h`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var rates []float64
+	var sum float64
+	for rows.Next() {
+		var h string
+		var rate float64
+		if err := rows.Scan(&h, &rate); err != nil {
+			continue
+		}
+		rates = append(rates, rate)
+		sum += rate
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("[db] rows iteration error: %v", err)
+	}
+	if len(rates) < 4 {
+		return
+	}
+
+	mean, stddev := meanStddev(rates, sum)
+	if stddev == 0 {
+		return
+	}
+
+	zscore := (currentRate - mean) / stddev
+	if zscore > 2.0 {
+		severity := "warning"
+		if zscore > 3.0 {
+			severity = "critical"
+		}
+		msg := fmt.Sprintf("Error rate %.1f%% is %.1f std devs above normal (%.1f%% avg)", currentRate, zscore, mean)
+		e.insertAnomaly("error_rate", mean, currentRate, zscore, severity, msg)
+	}
+}
+
+func (e *AlertEvaluator) insertAnomaly(metric string, expected, actual, zscore float64, severity, msg string) {
+	// Debounce: don't insert if same metric anomaly was detected in last 30 minutes
+	var recent int
+	e.conn.QueryRow(`SELECT COUNT(*) FROM observe_anomalies
+		WHERE metric = ? AND detected_at >= datetime('now', '-30 minutes')`, metric).Scan(&recent)
+	if recent > 0 {
+		return
+	}
+	_, err := e.conn.Exec(`INSERT INTO observe_anomalies (metric, expected, actual, z_score, severity, message)
+		VALUES (?, ?, ?, ?, ?, ?)`, metric, expected, actual, zscore, severity, msg)
+	if err != nil {
+		log.Printf("[observe] anomaly insert error: %v", err)
+		return
+	}
+	log.Printf("[observe] anomaly detected: %s (z=%.2f, %s)", metric, zscore, severity)
+}
+
+// meanStddev computes mean and population standard deviation.
+func meanStddev(data []float64, sum float64) (float64, float64) {
+	n := float64(len(data))
+	mean := sum / n
+	var sumSq float64
+	for _, v := range data {
+		d := v - mean
+		sumSq += d * d
+	}
+	variance := sumSq / n
+	// Newton's method sqrt
+	if variance <= 0 {
+		return mean, 0
+	}
+	s := variance
+	for i := 0; i < 20; i++ {
+		s = (s + variance/s) / 2
+	}
+	return mean, s
 }
