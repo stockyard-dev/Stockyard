@@ -184,6 +184,10 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/forge/batch", a.handleListBatch)
 	mux.HandleFunc("POST /api/forge/batch", a.handleSubmitBatch)
 
+	// Workflow templates
+	mux.HandleFunc("GET /api/forge/templates", a.handleListTemplates)
+	mux.HandleFunc("POST /api/forge/templates/{slug}/clone", a.handleCloneTemplate)
+
 	// Status
 	mux.HandleFunc("GET /api/forge/status", a.handleStatus)
 
@@ -633,6 +637,153 @@ func (a *App) handleSubmitBatch(w http.ResponseWriter, r *http.Request) {
 	}
 	a.conn.Exec("INSERT INTO forge_batch_jobs (id, type, input_json, priority) VALUES (?,?,?,?)", id, req.Type, string(inputJSON), req.Priority)
 	writeJSON(w, map[string]any{"status": "queued", "id": id})
+}
+
+// --- Workflow Templates ---
+
+// builtinTemplates are pre-built workflow patterns users can clone.
+var builtinTemplates = []map[string]any{
+	{
+		"slug":        "summarize-and-classify",
+		"name":        "Summarize & Classify",
+		"description": "Summarize input text, then classify the summary into categories.",
+		"steps": []map[string]any{
+			{"id": "summarize", "name": "Summarize", "type": "llm", "config": map[string]any{
+				"model": "gpt-4o-mini", "prompt": "Summarize the following text in 2-3 sentences:\n\n{{input}}",
+			}},
+			{"id": "classify", "name": "Classify", "type": "llm", "depends_on": []string{"summarize"}, "config": map[string]any{
+				"model": "gpt-4o-mini", "prompt": "Classify this summary into one category (bug, feature, question, billing, other). Reply with ONLY the category.\n\n{{steps.summarize.output}}",
+			}},
+		},
+	},
+	{
+		"slug":        "translate-chain",
+		"name":        "Translate Chain",
+		"description": "Translate text to a target language, then back-translate to verify quality.",
+		"steps": []map[string]any{
+			{"id": "translate", "name": "Translate", "type": "llm", "config": map[string]any{
+				"model": "gpt-4o-mini", "prompt": "Translate the following text to Spanish. Output only the translation.\n\n{{input}}",
+			}},
+			{"id": "backtranslate", "name": "Back-translate", "type": "llm", "depends_on": []string{"translate"}, "config": map[string]any{
+				"model": "gpt-4o-mini", "prompt": "Translate the following Spanish text back to English. Output only the translation.\n\n{{steps.translate.output}}",
+			}},
+			{"id": "compare", "name": "Compare", "type": "transform", "depends_on": []string{"backtranslate"}, "config": map[string]any{
+				"expression": "concat",
+			}},
+		},
+	},
+	{
+		"slug":        "multi-model-compare",
+		"name":        "Multi-Model Compare",
+		"description": "Send the same prompt to 3 models in parallel, then pick the best response.",
+		"steps": []map[string]any{
+			{"id": "gpt4o", "name": "GPT-4o", "type": "llm", "config": map[string]any{
+				"model": "gpt-4o", "prompt": "{{input}}",
+			}},
+			{"id": "claude", "name": "Claude", "type": "llm", "config": map[string]any{
+				"model": "claude-sonnet-4-5-20250929", "prompt": "{{input}}",
+			}},
+			{"id": "gemini", "name": "Gemini", "type": "llm", "config": map[string]any{
+				"model": "gemini-2.0-flash", "prompt": "{{input}}",
+			}},
+			{"id": "judge", "name": "Judge", "type": "llm", "depends_on": []string{"gpt4o", "claude", "gemini"}, "config": map[string]any{
+				"model": "gpt-4o", "prompt": "You are a response quality judge. Compare these three responses and pick the best one. Explain why in one sentence, then output WINNER: [model name].\n\nResponse A (GPT-4o):\n{{steps.gpt4o.output}}\n\nResponse B (Claude):\n{{steps.claude.output}}\n\nResponse C (Gemini):\n{{steps.gemini.output}}",
+			}},
+		},
+	},
+	{
+		"slug":        "extract-and-validate",
+		"name":        "Extract & Validate",
+		"description": "Extract structured data from text, then validate the extraction.",
+		"steps": []map[string]any{
+			{"id": "extract", "name": "Extract", "type": "llm", "config": map[string]any{
+				"model": "gpt-4o-mini", "prompt": "Extract all named entities (people, companies, locations, dates) from this text. Return as JSON with keys: people, companies, locations, dates.\n\n{{input}}",
+			}},
+			{"id": "validate", "name": "Validate", "type": "gate", "depends_on": []string{"extract"}, "config": map[string]any{
+				"condition": "json_field", "threshold": "people",
+				"if_true": "valid", "if_false": "invalid: missing people field",
+			}},
+			{"id": "enrich", "name": "Enrich", "type": "llm", "depends_on": []string{"validate"}, "config": map[string]any{
+				"model": "gpt-4o-mini", "prompt": "Given this extracted data, add a one-line context description for each entity.\n\n{{steps.extract.output}}",
+			}},
+		},
+	},
+	{
+		"slug":        "content-pipeline",
+		"name":        "Content Pipeline",
+		"description": "Generate content, check for issues, and produce a final polished version.",
+		"steps": []map[string]any{
+			{"id": "draft", "name": "Draft", "type": "llm", "config": map[string]any{
+				"model": "gpt-4o", "prompt": "Write a short blog post about the following topic:\n\n{{input}}",
+			}},
+			{"id": "review", "name": "Review", "type": "llm", "depends_on": []string{"draft"}, "config": map[string]any{
+				"model": "gpt-4o", "prompt": "Review this blog post for factual accuracy, clarity, and tone. List any issues found. If none, say 'No issues found.'\n\n{{steps.draft.output}}",
+			}},
+			{"id": "polish", "name": "Polish", "type": "llm", "depends_on": []string{"draft", "review"}, "config": map[string]any{
+				"model": "gpt-4o", "prompt": "Here is a draft blog post and reviewer feedback. Produce a final polished version incorporating the feedback.\n\nDraft:\n{{steps.draft.output}}\n\nReview:\n{{steps.review.output}}",
+			}},
+		},
+	},
+}
+
+func (a *App) handleListTemplates(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, map[string]any{"templates": builtinTemplates, "count": len(builtinTemplates)})
+}
+
+func (a *App) handleCloneTemplate(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+
+	// Find template
+	var tmpl map[string]any
+	for _, t := range builtinTemplates {
+		if t["slug"] == slug {
+			tmpl = t
+			break
+		}
+	}
+	if tmpl == nil {
+		w.WriteHeader(404)
+		writeJSON(w, map[string]string{"error": "template not found"})
+		return
+	}
+
+	// Allow custom name/slug
+	var req struct {
+		Name string `json:"name"`
+		Slug string `json:"slug"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.Name == "" {
+		req.Name = tmpl["name"].(string)
+	}
+	if req.Slug == "" {
+		req.Slug = slug + "-" + time.Now().Format("20060102-150405")
+	}
+
+	stepsJSON, _ := json.Marshal(tmpl["steps"])
+	desc := ""
+	if d, ok := tmpl["description"].(string); ok {
+		desc = d
+	}
+
+	_, err := a.conn.Exec(`INSERT INTO forge_workflows (slug, name, description, steps_json) VALUES (?,?,?,?)`,
+		req.Slug, req.Name, desc, string(stepsJSON))
+	if err != nil {
+		w.WriteHeader(400)
+		writeJSON(w, map[string]string{"error": "slug already exists or DB error"})
+		return
+	}
+
+	if a.audit != nil {
+		a.audit("forge_event", "forge", "workflow:"+req.Slug, "cloned_from_template", map[string]string{"template": slug})
+	}
+
+	writeJSON(w, map[string]any{
+		"status":   "created",
+		"slug":     req.Slug,
+		"name":     req.Name,
+		"template": slug,
+	})
 }
 
 // --- Status ---

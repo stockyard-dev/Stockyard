@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -78,11 +79,13 @@ func mustParseCIDR(s string) *net.IPNet {
 
 // Step defines a single node in the workflow DAG.
 type Step struct {
-	ID        string     `json:"id"`
-	Name      string     `json:"name"`
-	Type      string     `json:"type"`       // "llm", "tool", "transform"
-	DependsOn []string   `json:"depends_on"` // IDs of steps this depends on
-	Config    StepConfig `json:"config"`
+	ID           string     `json:"id"`
+	Name         string     `json:"name"`
+	Type         string     `json:"type"`            // "llm", "tool", "transform"
+	DependsOn    []string   `json:"depends_on"`      // IDs of steps this depends on
+	MaxRetries   int        `json:"max_retries"`     // 0 = no retry, 1-5 = retry on error
+	RetryBackoff int        `json:"retry_backoff_ms"` // backoff between retries in ms (default 1000)
+	Config       StepConfig `json:"config"`
 }
 
 // StepConfig holds the configuration for a step.
@@ -174,62 +177,216 @@ func Execute(ctx context.Context, conn *sql.DB, runID string, steps []Step, inpu
 		Conn:     conn,
 	}
 
-	// Build dependency graph and find execution order
-	order, err := topoSort(steps)
+	// Build dependency graph and find execution tiers
+	tiers, err := tieredSort(steps)
 	if err != nil {
 		log.Printf("[forge] run %s: invalid DAG: %v", runID, err)
 		failRun(conn, runID, "invalid workflow DAG")
 		return
 	}
 
-	log.Printf("[forge] run %s: executing %d steps", runID, len(order))
+	totalSteps := len(steps)
+	completed := 0
 
-	for i, step := range order {
+	log.Printf("[forge] run %s: executing %d steps in %d tiers", runID, totalSteps, len(tiers))
+
+	var mu sync.Mutex // protects rc.Results
+
+	for tierIdx, tier := range tiers {
 		// Check context cancellation
 		if ctx.Err() != nil {
 			failRun(conn, runID, "cancelled")
 			return
 		}
 
-		// Check dependencies succeeded
-		skip := false
-		for _, depID := range step.DependsOn {
-			if r, ok := rc.Results[depID]; ok && r.Status != "success" {
-				skip = true
-				break
+		if len(tier) == 1 {
+			// Single step — run sequentially (common case, no goroutine overhead)
+			step := tier[0]
+			result := e_executeStepWithDeps(ctx, rc, conn, runID, step, &mu)
+			mu.Lock()
+			rc.Results[step.ID] = result
+			mu.Unlock()
+			completed++
+			updateProgress(conn, runID, completed)
+
+			if result.Status == "error" {
+				failRun(conn, runID, fmt.Sprintf("step %s failed: %s", step.ID, result.Error))
+				saveResults(conn, runID, rc.Results)
+				return
+			}
+			log.Printf("[forge] run %s: tier %d step %s (%s) → %s (%dms)",
+				runID, tierIdx, step.ID, step.Type, result.Status, result.LatencyMS)
+		} else {
+			// Multiple steps in tier — run in parallel
+			log.Printf("[forge] run %s: tier %d running %d steps in parallel", runID, tierIdx, len(tier))
+			var wg sync.WaitGroup
+			tierResults := make([]*StepResult, len(tier))
+
+			for i, step := range tier {
+				wg.Add(1)
+				go func(idx int, s Step) {
+					defer wg.Done()
+					result := e_executeStepWithDeps(ctx, rc, conn, runID, s, &mu)
+					tierResults[idx] = result
+				}(i, step)
+			}
+			wg.Wait()
+
+			// Collect results and check for errors
+			var firstErr string
+			for i, step := range tier {
+				result := tierResults[i]
+				mu.Lock()
+				rc.Results[step.ID] = result
+				mu.Unlock()
+				completed++
+				updateProgress(conn, runID, completed)
+
+				log.Printf("[forge] run %s: tier %d step %s (%s) → %s (%dms)",
+					runID, tierIdx, step.ID, step.Type, result.Status, result.LatencyMS)
+
+				if result.Status == "error" && firstErr == "" {
+					firstErr = fmt.Sprintf("step %s failed: %s", step.ID, result.Error)
+				}
+			}
+			if firstErr != "" {
+				failRun(conn, runID, firstErr)
+				saveResults(conn, runID, rc.Results)
+				return
 			}
 		}
-		if skip {
-			rc.Results[step.ID] = &StepResult{StepID: step.ID, Status: "skipped", Error: "dependency failed"}
-			logStep(conn, runID, step, rc.Results[step.ID])
-			updateProgress(conn, runID, i+1)
-			continue
-		}
-
-		// Log step start
-		logStepStart(conn, runID, step)
-
-		// Execute the step
-		result := executeStep(ctx, rc, step)
-		rc.Results[step.ID] = result
-
-		// Log step completion
-		logStep(conn, runID, step, result)
-		updateProgress(conn, runID, i+1)
-
-		if result.Status == "error" {
-			// Fail fast — stop the workflow on first error
-			failRun(conn, runID, fmt.Sprintf("step %s failed: %s", step.ID, result.Error))
-			saveResults(conn, runID, rc.Results)
-			return
-		}
-
-		log.Printf("[forge] run %s: step %s (%s) → %s (%d→%d tokens, %dms)",
-			runID, step.ID, step.Type, result.Status, result.TokensIn, result.TokensOut, result.LatencyMS)
 	}
 
 	// All steps completed successfully
 	completeRun(conn, runID, rc.Results)
+}
+
+// e_executeStepWithDeps checks dependencies, handles retries, and executes a step.
+func e_executeStepWithDeps(ctx context.Context, rc *RunContext, conn *sql.DB, runID string, step Step, mu *sync.Mutex) *StepResult {
+	// Check dependencies succeeded
+	mu.Lock()
+	skip := false
+	for _, depID := range step.DependsOn {
+		if r, ok := rc.Results[depID]; ok && r.Status != "success" {
+			skip = true
+			break
+		}
+	}
+	mu.Unlock()
+
+	if skip {
+		result := &StepResult{StepID: step.ID, Status: "skipped", Error: "dependency failed"}
+		logStep(conn, runID, step, result)
+		return result
+	}
+
+	logStepStart(conn, runID, step)
+
+	// Execute with retry
+	maxAttempts := 1
+	if step.MaxRetries > 0 && step.MaxRetries <= 5 {
+		maxAttempts = 1 + step.MaxRetries
+	}
+	backoff := time.Duration(step.RetryBackoff) * time.Millisecond
+	if backoff <= 0 {
+		backoff = 1 * time.Second
+	}
+
+	var result *StepResult
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if attempt > 0 {
+			log.Printf("[forge] run %s: step %s retry %d/%d (backoff %s)",
+				runID, step.ID, attempt, step.MaxRetries, backoff)
+			select {
+			case <-ctx.Done():
+				return &StepResult{StepID: step.ID, Status: "error", Error: "cancelled during retry"}
+			case <-time.After(backoff):
+			}
+			backoff *= 2 // exponential backoff
+		}
+
+		result = executeStep(ctx, rc, step)
+		if result.Status == "success" {
+			break
+		}
+		if attempt < maxAttempts-1 {
+			log.Printf("[forge] run %s: step %s attempt %d failed: %s", runID, step.ID, attempt+1, result.Error)
+		}
+	}
+
+	logStep(conn, runID, step, result)
+	return result
+}
+
+// tieredSort groups steps into execution tiers using Kahn's algorithm.
+// Steps within the same tier have no dependencies on each other and can run in parallel.
+func tieredSort(steps []Step) ([][]Step, error) {
+	byID := make(map[string]*Step)
+	for i := range steps {
+		if steps[i].ID == "" {
+			steps[i].ID = fmt.Sprintf("step_%d", i)
+		}
+		byID[steps[i].ID] = &steps[i]
+	}
+
+	// No dependencies? Return all in one tier
+	hasDeps := false
+	for _, s := range steps {
+		if len(s.DependsOn) > 0 {
+			hasDeps = true
+			break
+		}
+	}
+	if !hasDeps {
+		return [][]Step{steps}, nil
+	}
+
+	// Kahn's algorithm with tier grouping
+	inDegree := make(map[string]int)
+	for _, s := range steps {
+		inDegree[s.ID] = len(s.DependsOn)
+	}
+
+	// Find initial tier (zero in-degree)
+	var queue []string
+	for _, s := range steps {
+		if inDegree[s.ID] == 0 {
+			queue = append(queue, s.ID)
+		}
+	}
+
+	var tiers [][]Step
+	processed := 0
+	for len(queue) > 0 {
+		// All items in current queue form one tier
+		var tier []Step
+		var nextQueue []string
+
+		for _, id := range queue {
+			tier = append(tier, *byID[id])
+			processed++
+
+			// Reduce in-degree for dependents
+			for _, s := range steps {
+				for _, dep := range s.DependsOn {
+					if dep == id {
+						inDegree[s.ID]--
+						if inDegree[s.ID] == 0 {
+							nextQueue = append(nextQueue, s.ID)
+						}
+					}
+				}
+			}
+		}
+
+		tiers = append(tiers, tier)
+		queue = nextQueue
+	}
+
+	if processed != len(steps) {
+		return nil, fmt.Errorf("cycle detected in workflow DAG")
+	}
+	return tiers, nil
 }
 
 // executeStep dispatches to the right executor based on step type.
@@ -665,72 +822,6 @@ func resolveTemplate(tmpl string, rc *RunContext) string {
 		}
 	}
 	return result
-}
-
-// topoSort returns steps in valid execution order. Returns error if cycle detected.
-func topoSort(steps []Step) ([]Step, error) {
-	byID := make(map[string]*Step)
-	for i := range steps {
-		if steps[i].ID == "" {
-			steps[i].ID = fmt.Sprintf("step_%d", i)
-		}
-		byID[steps[i].ID] = &steps[i]
-	}
-
-	// No dependencies? Return in original order
-	hasDeps := false
-	for _, s := range steps {
-		if len(s.DependsOn) > 0 {
-			hasDeps = true
-			break
-		}
-	}
-	if !hasDeps {
-		return steps, nil
-	}
-
-	// Kahn's algorithm
-	inDegree := make(map[string]int)
-	for _, s := range steps {
-		inDegree[s.ID] = 0
-	}
-	for _, s := range steps {
-		for _, dep := range s.DependsOn {
-			inDegree[s.ID]++
-			_ = dep // validate dep exists
-		}
-	}
-
-	var queue []string
-	for _, s := range steps {
-		if inDegree[s.ID] == 0 {
-			queue = append(queue, s.ID)
-		}
-	}
-
-	var order []Step
-	for len(queue) > 0 {
-		id := queue[0]
-		queue = queue[1:]
-		order = append(order, *byID[id])
-
-		// Reduce in-degree for dependents
-		for _, s := range steps {
-			for _, dep := range s.DependsOn {
-				if dep == id {
-					inDegree[s.ID]--
-					if inDegree[s.ID] == 0 {
-						queue = append(queue, s.ID)
-					}
-				}
-			}
-		}
-	}
-
-	if len(order) != len(steps) {
-		return nil, fmt.Errorf("cycle detected in workflow DAG")
-	}
-	return order, nil
 }
 
 // DB helpers
