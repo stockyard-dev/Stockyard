@@ -391,8 +391,7 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	licProduct := product
 	var licenseKey string
 
-	toolProducts := map[string]bool{"corral": true, "gate": true, "trough": true, "fence": true, "brand": true}
-	if toolProducts[product] && wh.toolsPrivKey != "" {
+	if isKnownTool(product) && wh.toolsPrivKey != "" {
 		// Issue an Ed25519 tool license key (offline-verifiable by the tool binary)
 		key, err := issueToolLicenseKey(wh.toolsPrivKey, product, customerID)
 		if err != nil {

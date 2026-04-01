@@ -1,5 +1,7 @@
 package apiserver
 
+import "strings"
+
 // ─── Pricing Plans ─────────────────────────────────────────────────────
 // Stockyard uses a 4-tier pricing model:
 //   Free (self-hosted) → Pro ($29/mo cloud) → Team ($99/mo) → Enterprise ($299/mo)
@@ -249,10 +251,26 @@ func ToolPlans() []ToolPlan {
 }
 
 // ToolPlanBySlug returns a tool plan by slug (e.g. "corral-pro").
+// Checks hardcoded plans first, then falls back to the tool price table
+// for dynamically registered tools.
 func ToolPlanBySlug(slug string) *ToolPlan {
 	for _, p := range ToolPlans() {
 		if p.Slug == slug {
 			return &p
+		}
+	}
+	// Dynamic: if slug matches "{tool}-pro" and tool has prices, create a plan
+	if strings.HasSuffix(slug, "-pro") {
+		tool := strings.TrimSuffix(slug, "-pro")
+		if isKnownTool(tool) {
+			return &ToolPlan{
+				Slug:        slug,
+				Name:        tool + " Pro",
+				Tool:        tool,
+				PriceCents:  99, // default; actual price comes from Stripe price object
+				AnnualCents: 990,
+				PageURL:     "https://stockyard.dev/" + tool + "/",
+			}
 		}
 	}
 	return nil

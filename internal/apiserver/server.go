@@ -998,35 +998,88 @@ func (s *Server) seedExchange() {
 
 // --- Helpers ---
 
+// toolPriceMap caches the parsed STRIPE_TOOL_PRICE_MAP env var (overrides compiled table).
+var toolPriceMap map[string]map[string]string // tool → interval → price_id
+var toolPriceMapLoaded bool
+
+func loadToolPriceMap() {
+	if toolPriceMapLoaded {
+		return
+	}
+	toolPriceMapLoaded = true
+	raw := os.Getenv("STRIPE_TOOL_PRICE_MAP")
+	if raw == "" {
+		return
+	}
+	toolPriceMap = make(map[string]map[string]string)
+	if err := json.Unmarshal([]byte(raw), &toolPriceMap); err != nil {
+		log.Printf("WARNING: failed to parse STRIPE_TOOL_PRICE_MAP: %v", err)
+	}
+}
+
+// toolPriceForSlug checks the env var override first, then the compiled table.
+func toolPriceForSlug(tool, interval string) string {
+	t := strings.ToLower(tool)
+	i := strings.ToLower(interval)
+	// Check env var override first
+	loadToolPriceMap()
+	if toolPriceMap != nil {
+		if prices, ok := toolPriceMap[t]; ok {
+			if pid, ok := prices[i]; ok && pid != "" {
+				return pid
+			}
+		}
+	}
+	// Check compiled table
+	if prices, ok := toolPriceTable[t]; ok {
+		if pid, ok := prices[i]; ok && pid != "" {
+			return pid
+		}
+	}
+	return ""
+}
+
+// isKnownTool returns true if the tool slug has Stripe prices configured.
+func isKnownTool(tool string) bool {
+	t := strings.ToLower(tool)
+	if _, ok := toolPriceTable[t]; ok {
+		return true
+	}
+	loadToolPriceMap()
+	if toolPriceMap != nil {
+		if _, ok := toolPriceMap[t]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 func getPriceID(product, tier, interval string) string {
-	// Convention: STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}
-	// e.g., STRIPE_PRICE_STOCKYARD_PRO_MONTHLY, STRIPE_PRICE_STOCKYARD_TEAM_ANNUAL
-	//
-	// Tiers: free, pro, team, enterprise
-	//
 	// Fallback chain:
+	//   0. Tool price table / STRIPE_TOOL_PRICE_MAP (all 150 tools)
 	//   1. STRIPE_PRICE_{PRODUCT}_{TIER}_{INTERVAL}
-	//   2. STRIPE_PRICE_{PRODUCT}_{TIER} (backward compat, assumes monthly)
+	//   2. STRIPE_PRICE_{PRODUCT}_{TIER} (backward compat)
 	//   3. STRIPE_PRICE_DEFAULT_{TIER}_{INTERVAL}
 	//   4. STRIPE_PRICE_DEFAULT_{TIER}
+
+	// Check tool prices first
+	if pid := toolPriceForSlug(product, interval); pid != "" {
+		return pid
+	}
 
 	p := strings.ToUpper(product)
 	t := strings.ToUpper(tier)
 	i := strings.ToUpper(interval)
 
-	// Try product + tier + interval
 	if v := os.Getenv(fmt.Sprintf("STRIPE_PRICE_%s_%s_%s", p, t, i)); v != "" {
 		return v
 	}
-	// Fallback: product + tier (no interval — backward compat)
 	if v := os.Getenv(fmt.Sprintf("STRIPE_PRICE_%s_%s", p, t)); v != "" {
 		return v
 	}
-	// Fallback: default + tier + interval
 	if v := os.Getenv(fmt.Sprintf("STRIPE_PRICE_DEFAULT_%s_%s", t, i)); v != "" {
 		return v
 	}
-	// Fallback: default + tier
 	return os.Getenv(fmt.Sprintf("STRIPE_PRICE_DEFAULT_%s", t))
 }
 
