@@ -6,17 +6,17 @@
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Stockyard Salt Lick — Self-hosted feature flag service</title>
-<meta name="description" content="Manage feature flags, roll out changes gradually, target users by segment. Self-hosted LaunchDarkly alternative. Free tier for 10 flags, Pro at $0.99/mo for unlimited.">
-<meta property="og:title" content="Stockyard Salt Lick — Self-hosted feature flag service">
-<meta property="og:description" content="Manage feature flags, roll out changes gradually, target users by segment. Self-hosted LaunchDarkly alternative. Free tier for 10 flags, Pro at $0.99/mo for unlimited.">
+<title>Stockyard Post — Self-hosted blog engine</title>
+<meta name="description" content="Write posts in Markdown, publish them, set a custom domain. Ghost without the $25/mo hosting. Free tier for 10 posts, Pro at $0.99/mo for unlimited.">
+<meta property="og:title" content="Stockyard Post — Self-hosted blog engine">
+<meta property="og:description" content="Write posts in Markdown, publish them, set a custom domain. Ghost without the $25/mo hosting. Free tier for 10 posts, Pro at $0.99/mo for unlimited.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://stockyard.dev/saltlick/">
+<meta property="og:url" content="https://stockyard.dev/post/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stockyard Salt Lick — Self-hosted feature flag service">
-<meta name="twitter:description" content="Manage feature flags, roll out changes gradually, target users by segment. Self-hosted LaunchDarkly alternative. Free tier for 10 flags, Pro at $0.99/mo for unlimited.">
-<link rel="canonical" href="https://stockyard.dev/saltlick/">
+<meta name="twitter:title" content="Stockyard Post — Self-hosted blog engine">
+<meta name="twitter:description" content="Write posts in Markdown, publish them, set a custom domain. Ghost without the $25/mo hosting. Free tier for 10 posts, Pro at $0.99/mo for unlimited.">
+<link rel="canonical" href="https://stockyard.dev/post/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -131,10 +131,10 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 <section class="hero">
   <div class="eyebrow">Focused Tool &middot; Single Binary &middot; Self-Hosted</div>
-  <h1>Self-hosted <span class="accent">feature flags.</span><br>Ship, toggle, roll back.</h1>
-  <p class="sub">Manage feature flags, roll out changes gradually, target users by segment. The LaunchDarkly alternative that runs on your infrastructure. No per-seat pricing, no cloud dependency.</p>
+  <h1>Self-hosted <span class="accent">blog engine.</span><br>Write, publish, own it.</h1>
+  <p class="sub">Write posts in Markdown, publish them on your own domain. Ghost without the $25/mo hosting bill. Your blog, your data, no platform risk, no algorithmic distribution you don't control.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Salt Lick Free</a>
+    <a href="#install" class="btn btn-primary">Install Post Free</a>
     <a href="#pricing" class="btn btn-secondary" style="border-color:var(--gold);color:var(--gold)">Pro &mdash; $0.99/mo</a>
     <a href="https://github.com/stockyard-dev/Stockyard" class="btn btn-secondary">GitHub</a>
   </div>
@@ -145,31 +145,23 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
     <div class="section-label">Quickstart</div>
     <h2>Running in under 60 seconds.</h2>
     <div class="pre-label">Install</div>
-    <pre>curl -fsSL https://stockyard.dev/saltlick/install.sh | sh</pre>
+    <pre>curl -fsSL https://stockyard.dev/post/install.sh | sh</pre>
     <div class="pre-label">Run</div>
-    <pre>DATA_DIR=./data saltlick
+    <pre>DATA_DIR=./data post
 
-  Flag eval:   http://localhost:9000/api/flags/{key}/evaluate
-  Dashboard:   http://localhost:9000/ui
-  API:         http://localhost:9000/api</pre>
-    <div class="pre-label">Create and evaluate a feature flag</div>
-    <pre>curl -s -X POST http://localhost:9000/api/flags \
+  Blog:      http://localhost:8940
+  Editor:    http://localhost:8940/ui
+  RSS:       http://localhost:8940/feed.xml</pre>
+    <div class="pre-label">Publish your first post</div>
+    <pre>curl -s -X POST http://localhost:8940/api/posts \
   -H 'Content-Type: application/json' \
   -d '{
-    "key": "new-checkout-flow",
-    "type": "boolean",
-    "default_value": false,
-    "description": "Enable the redesigned checkout page"
+    "title": "Hello World",
+    "slug": "hello-world",
+    "body": "# Welcome\n\nThis is my first post.",
+    "status": "published"
   }'
-
-# Evaluate the flag for a user
-curl -s http://localhost:9000/api/flags/new-checkout-flow/evaluate?user=user_123
-# → {"key": "new-checkout-flow", "value": false}
-
-# Toggle the flag on
-curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
-  -H 'Content-Type: application/json' \
-  -d '{"default_value": true}'</pre>
+# → Post live at http://localhost:8940/hello-world</pre>
   </div>
 </section>
 
@@ -177,9 +169,9 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
   <div class="section-label">Use cases</div>
   <h2>Three things people use this for.</h2>
   <div class="uc-grid">
-    <div class="uc-card"><div class="uc-name">Gradual feature rollout</div><div class="uc-desc">Ship new features behind a flag. Roll out to 5% of users, monitor, then increase. If something breaks, toggle off instantly without a deploy.</div></div>
-    <div class="uc-card"><div class="uc-name">Kill switch for production</div><div class="uc-desc">Wrap risky code paths in a flag. When the on-call gets paged, they flip the flag instead of scrambling to revert and redeploy.</div></div>
-    <div class="uc-card"><div class="uc-name">A/B testing and experimentation</div><div class="uc-desc">Use percentage rollouts to split traffic between variants. Measure which version performs better without a separate experimentation platform.</div></div>
+    <div class="uc-card"><div class="uc-name">Personal dev blog</div><div class="uc-desc">Write about what you're building. Markdown in, HTML out. Deploys with a single binary, no Node.js, no build step, no CMS to maintain.</div></div>
+    <div class="uc-card"><div class="uc-name">Company engineering blog</div><div class="uc-desc">Host your team's technical writing on your own domain. No Medium paywall, no Substack algorithm. Readers get your content directly.</div></div>
+    <div class="uc-card"><div class="uc-name">Documentation site</div><div class="uc-desc">Use Post as a lightweight docs site. Markdown posts with categories, full-text search, and a clean reading experience.</div></div>
   </div>
 </section>
 
@@ -193,13 +185,13 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
       <div class="pricing-card-period">forever, self-hosted</div>
       <div class="pricing-card-for">Best for: solo devs and small projects</div>
       <ul>
-          <li>10 feature flags</li>
-          <li>Boolean flags (on/off)</li>
-          <li>Global targeting</li>
-          <li>JSON API for flag evaluation</li>
-          <li>Basic dashboard</li>
-          <li>Instant toggle</li>
-          <li>Flag history (last 10 changes)</li>
+          <li>10 published posts</li>
+          <li>Markdown editor</li>
+          <li>Default theme</li>
+          <li>RSS feed</li>
+          <li>Basic SEO (title, description)</li>
+          <li>Static asset hosting</li>
+          <li>Public post listing</li>
       </ul>
       <a href="#install" class="cta">Get started &rarr;</a>
     </div>
@@ -209,19 +201,20 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
       <div class="pricing-card-period">per month</div>
       <div class="pricing-card-for">Best for: teams and production use</div>
       <ul>
-          <li>Unlimited flags</li>
-          <li>Multivariate flags (string, number, JSON)</li>
-          <li>User segment targeting</li>
-          <li>Percentage rollouts</li>
-          <li>Scheduled flag changes</li>
-          <li>Audit log of all changes</li>
-          <li>SDK support (JS, Go, Python)</li>
-          <li>Webhook on flag change</li>
-          <li>Environment support (dev, staging, prod)</li>
+          <li>Unlimited posts</li>
+          <li>Custom domain support</li>
+          <li>Multiple themes</li>
+          <li>RSS + Atom feeds</li>
+          <li>Email subscriber collection</li>
+          <li>Draft/scheduled publishing</li>
+          <li>Custom CSS injection</li>
+          <li>OG image generation</li>
+          <li>Full-text search</li>
+          <li>Analytics dashboard</li>
       </ul>
       <div style="display:flex;gap:.6rem;flex-direction:column">
-  <button id="checkout-btn-monthly" onclick="startCheckout('saltlick-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $0.99/mo</button>
-  <button id="checkout-btn-annual" onclick="startCheckout('saltlick-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $9.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
+  <button id="checkout-btn-monthly" onclick="startCheckout('post-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $0.99/mo</button>
+  <button id="checkout-btn-annual" onclick="startCheckout('post-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $9.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
 </div>
     </div>
   </div>
@@ -230,8 +223,8 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
 <section class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Scope</div>
-    <h2>When Salt Lick is the right tool.</h2>
-    <p>Salt Lick solves one problem: managing feature flags on your own infrastructure. If you want LaunchDarkly-style flag management without the per-seat pricing, it does the job. Free covers 10 boolean flags with global targeting. Pro ($0.99/mo) adds unlimited flags, user segments, percentage rollouts, and SDKs.</p>
+    <h2>When Post is the right tool.</h2>
+    <p>Post solves one problem: publishing a blog you own. If you want Markdown-in, HTML-out on your own domain without Ghost's hosting bill, it does the job. Free covers 10 posts with a default theme. Pro ($0.99/mo) adds unlimited posts, custom domains, subscriber collection, and themes.</p>
   </div>
 </section>
 
@@ -240,7 +233,7 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
   <h2>Part of the Stockyard family.</h2>
   <div class="stockyard-banner">
     <strong>Stockyard Platform</strong><br>
-    Salt Lick is a standalone tool from the Stockyard family. If you need the full LLM control plane with request tracing, cost control, prompt management, and model routing, or want all 150 tools in one bundle, check out <a href="/complete/">Stockyard Complete</a> or the <a href="/platform/">Stockyard Platform</a>.
+    Post is a standalone tool from the Stockyard family. If you need the full LLM control plane with request tracing, cost control, prompt management, and model routing, or want all 150 tools in one bundle, check out <a href="/complete/">Stockyard Complete</a> or the <a href="/platform/">Stockyard Platform</a>.
   </div>
   <a href="/" class="btn btn-secondary">Learn about Stockyard &rarr;</a>
 </section>
@@ -249,11 +242,11 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
   <div class="section-label gold">After you upgrade</div>
   <h2>How Pro gets activated.</h2>
   <p>When your payment goes through, you'll receive an email at the address you used at checkout. The email contains your license key.</p>
-  <p>Set it as an environment variable before starting Salt Lick:</p>
-  <pre>SALTLICK_LICENSE_KEY=stockyard_your_key_here saltlick
+  <p>Set it as an environment variable before starting Post:</p>
+  <pre>POST_LICENSE_KEY=stockyard_your_key_here post
 
   License:   Pro (your-email@example.com)
-  Dashboard: http://localhost:9000/ui</pre>
+  Dashboard: http://localhost:8940/ui</pre>
   <p>That's it. Pro features unlock immediately on startup. No restart required, no account to log into, no phone-home check. The key is verified locally.</p>
   <div style="background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--leather);padding:1rem 1.2rem;font-size:.85rem;margin-top:1rem">
     <strong style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--leather-light)">Didn't get the email?</strong><br>
@@ -264,20 +257,20 @@ curl -s -X PATCH http://localhost:9000/api/flags/new-checkout-flow \
 <section class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">FAQ</div>
-  <div class="faq-item"><div class="faq-q">What counts as a flag?</div><div class="faq-a">A flag is a named toggle with a key, a type (boolean, string, number, JSON), and targeting rules. Each flag evaluates independently.</div></div>
-  <div class="faq-item"><div class="faq-q">Does Salt Lick require Docker or a database?</div><div class="faq-a">No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary.</div></div>
-  <div class="faq-item"><div class="faq-q">How do I evaluate flags in my app?</div><div class="faq-a">Hit the JSON API at <code>/api/flags/{key}/evaluate?user=user_123</code> or use one of the Pro SDKs for local evaluation with caching.</div></div>
-  <div class="faq-item"><div class="faq-q">How does percentage rollout work?</div><div class="faq-a">Pro feature. Set a percentage and Salt Lick hashes the user ID to deterministically assign them to a bucket. Same user always gets the same result.</div></div>
-  <div class="faq-item"><div class="faq-q">What's the license?</div><div class="faq-a">BSL 1.1. Free to self-host and use. Pro license removes limits and adds targeting.</div></div>
+  <div class="faq-item"><div class="faq-q">How do I write posts?</div><div class="faq-a">Create Markdown files or use the built-in editor at <code>/ui</code>. Posts support front matter for title, date, tags, and description.</div></div>
+  <div class="faq-item"><div class="faq-q">Does Post require Docker or a database?</div><div class="faq-a">No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary.</div></div>
+  <div class="faq-item"><div class="faq-q">Can I use my own domain?</div><div class="faq-a">Pro feature. Set <code>CUSTOM_DOMAIN=blog.example.com</code> and point your DNS. Post handles the rest.</div></div>
+  <div class="faq-item"><div class="faq-q">How does RSS work?</div><div class="faq-a">Automatic. Your feed is available at <code>/feed.xml</code> as soon as you publish your first post.</div></div>
+  <div class="faq-item"><div class="faq-q">What's the license?</div><div class="faq-a">BSL 1.1. Free to self-host and use. Pro license removes limits and adds custom domains.</div></div>
   </div>
 </section>
 
 <section class="cta-strip">
   <div class="section-label">Get started</div>
-  <h2>Try Salt Lick in 30 seconds.</h2>
+  <h2>Try Post in 30 seconds.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Single binary. Free to start. $0.99/mo for unlimited.</p>
   <div class="cta-group">
-    <a href="#install" class="btn btn-primary">Install Salt Lick Free</a>
+    <a href="#install" class="btn btn-primary">Install Post Free</a>
     <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Upgrade to Pro</a>
   </div>
   <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Need the full stack? &rarr; <a href="/complete/">Stockyard Complete</a></p>
@@ -311,7 +304,7 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav()}})
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as a flag?", "acceptedAnswer": {"@type": "Answer", "text": "A flag is a named toggle with a key, a type (boolean, string, number, JSON), and targeting rules. Each flag evaluates independently."}}, {"@type": "Question", "name": "Does Salt Lick require Docker or a database?", "acceptedAnswer": {"@type": "Answer", "text": "No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary."}}, {"@type": "Question", "name": "How do I evaluate flags in my app?", "acceptedAnswer": {"@type": "Answer", "text": "Hit the JSON API at <code>/api/flags/{key}/evaluate?user=user_123</code> or use one of the Pro SDKs for local evaluation with caching."}}, {"@type": "Question", "name": "How does percentage rollout work?", "acceptedAnswer": {"@type": "Answer", "text": "Pro feature. Set a percentage and Salt Lick hashes the user ID to deterministically assign them to a bucket. Same user always gets the same result."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "BSL 1.1. Free to self-host and use. Pro license removes limits and adds targeting."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I write posts?", "acceptedAnswer": {"@type": "Answer", "text": "Create Markdown files or use the built-in editor at <code>/ui</code>. Posts support front matter for title, date, tags, and description."}}, {"@type": "Question", "name": "Does Post require Docker or a database?", "acceptedAnswer": {"@type": "Answer", "text": "No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary."}}, {"@type": "Question", "name": "Can I use my own domain?", "acceptedAnswer": {"@type": "Answer", "text": "Pro feature. Set <code>CUSTOM_DOMAIN=blog.example.com</code> and point your DNS. Post handles the rest."}}, {"@type": "Question", "name": "How does RSS work?", "acceptedAnswer": {"@type": "Answer", "text": "Automatic. Your feed is available at <code>/feed.xml</code> as soon as you publish your first post."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "BSL 1.1. Free to self-host and use. Pro license removes limits and adds custom domains."}}]}
 </script>
 <script>
 async function startCheckout(plan, interval) {
