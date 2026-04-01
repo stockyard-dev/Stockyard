@@ -1,0 +1,1178 @@
+[
+  {
+    "stockyard_tool": "headcount",
+    "stockyard_name": "Headcount",
+    "stockyard_tagline": "Self-hosted user analytics",
+    "stockyard_free": "10,000 events/mo",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited events, funnels, retention, custom properties, 90-day history",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/headcount/install.sh | sh",
+    "stockyard_port": 8690,
+    "competitor_name": "Plausible",
+    "competitor_slug": "plausible",
+    "competitor_url": "https://plausible.io",
+    "competitor_price": "$9/mo (10k pageviews)",
+    "competitor_pricing_note": "Scales: $19/mo at 100k, $69/mo at 1M pageviews",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Plausible CE requires Docker, Postgres, and Clickhouse",
+    "strengths_stockyard": [
+      "Single binary, no Docker or Postgres or Clickhouse",
+      "Free tier covers 10,000 events/mo",
+      "Data stays on your server \u2014 no third-party analytics scripts",
+      "$1.99/mo Pro vs $9/mo minimum for Plausible Cloud"
+    ],
+    "strengths_competitor": [
+      "Purpose-built for web analytics with cleaner dashboards",
+      "Larger community, more integrations",
+      "Managed cloud option \u2014 zero ops if you want it",
+      "More established \u2014 has been around since 2019"
+    ],
+    "honest_verdict": "If you want managed web analytics with a polished UI and zero ops work, Plausible is excellent. If you already have a server and want private analytics as a single binary, Headcount installs in 30 seconds with no dependencies.",
+    "seo_title": "Headcount vs Plausible \u2014 Self-hosted analytics alternative",
+    "seo_description": "Plausible starts at $9/mo. Headcount is self-hosted user analytics \u2014 single binary, no Docker. Free to start, $1.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Headcount a Plausible alternative?",
+        "a": "Both track user activity with privacy in mind. Headcount runs as a self-hosted single binary with embedded SQLite. Plausible offers a managed cloud service and a self-hosted version that requires Docker and Clickhouse."
+      },
+      {
+        "q": "Does Headcount require Docker?",
+        "a": "No. Headcount is a single Go binary with embedded SQLite. No Docker, no Postgres, no Clickhouse, no Redis."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "headcount",
+    "stockyard_name": "Headcount",
+    "stockyard_tagline": "Self-hosted user analytics",
+    "stockyard_free": "10,000 events/mo",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited events, funnels, retention, custom properties",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/headcount/install.sh | sh",
+    "stockyard_port": 8690,
+    "competitor_name": "Google Analytics",
+    "competitor_slug": "google-analytics",
+    "competitor_url": "https://analytics.google.com",
+    "competitor_price": "Free (with your data)",
+    "competitor_pricing_note": "GA4 is free but Google owns and uses your visitor data for advertising",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Your data stays on your server \u2014 Google never sees it",
+      "No cookie consent banner needed",
+      "No third-party scripts on your site",
+      "Simple, fast \u2014 not bloated with enterprise features you don't need"
+    ],
+    "strengths_competitor": [
+      "Completely free for any traffic volume",
+      "Deepest integration with Google Ads ecosystem",
+      "Most advanced attribution and conversion modeling",
+      "Industry standard \u2014 every marketer knows it"
+    ],
+    "honest_verdict": "If you need advanced attribution, Google Ads integration, or have a marketing team that thinks in GA terms, Google Analytics is hard to replace. If you want simple, private analytics without giving Google your visitor data, Headcount does the job.",
+    "seo_title": "Headcount vs Google Analytics \u2014 Private self-hosted alternative",
+    "seo_description": "Google Analytics is free but Google owns your data. Headcount is self-hosted analytics \u2014 your server, your data. Single binary, no cookies.",
+    "faq": [
+      {
+        "q": "Why switch from Google Analytics?",
+        "a": "Google Analytics sends all your visitor data to Google's servers where it's used for advertising. Headcount keeps data on your server. No cookies, no consent banners, no third-party scripts."
+      },
+      {
+        "q": "Is Headcount free?",
+        "a": "Free tier covers 10,000 events/mo. Pro at $1.99/mo for unlimited events."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "headcount",
+    "stockyard_name": "Headcount",
+    "stockyard_tagline": "Self-hosted user analytics",
+    "stockyard_free": "10,000 events/mo",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited events, funnels, retention",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/headcount/install.sh | sh",
+    "stockyard_port": 8690,
+    "competitor_name": "Fathom",
+    "competitor_slug": "fathom",
+    "competitor_url": "https://usefathom.com",
+    "competitor_price": "$14/mo (100k pageviews)",
+    "competitor_pricing_note": "$14/mo for 100k, $24/mo for 200k, scales up from there",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Fathom Lite (v1) was open source but discontinued",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 data never leaves your server",
+      "Free tier included",
+      "$1.99/mo vs $14/mo minimum for Fathom",
+      "Single binary, no managed service dependency"
+    ],
+    "strengths_competitor": [
+      "Managed service \u2014 no server needed",
+      "Polished dashboard with email reports",
+      "EU isolation option for GDPR",
+      "Established privacy-first brand"
+    ],
+    "honest_verdict": "Fathom is a polished managed analytics service with strong privacy credentials. Headcount is the self-hosted option for teams who want full data ownership at a lower cost.",
+    "seo_title": "Headcount vs Fathom \u2014 Self-hosted analytics at $1.99/mo",
+    "seo_description": "Fathom starts at $14/mo. Headcount is self-hosted user analytics \u2014 single binary, free to start, $1.99/mo Pro. Your data stays on your server.",
+    "faq": [
+      {
+        "q": "Is Headcount a Fathom alternative?",
+        "a": "Both are privacy-first analytics. Headcount is self-hosted (single binary, your server). Fathom is a managed cloud service."
+      },
+      {
+        "q": "How does pricing compare?",
+        "a": "Headcount: free to 10k events, $1.99/mo Pro. Fathom: from $14/mo for 100k pageviews."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "paddock",
+    "stockyard_name": "Paddock",
+    "stockyard_tagline": "Self-hosted public status page",
+    "stockyard_free": "3 components",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited components, subscriber notifications, custom domain, 90-day history",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/paddock/install.sh | sh",
+    "stockyard_port": 8920,
+    "competitor_name": "UptimeRobot",
+    "competitor_slug": "uptime-robot",
+    "competitor_url": "https://uptimerobot.com",
+    "competitor_price": "$7/mo (Pro)",
+    "competitor_pricing_note": "Free tier: 50 monitors, 5-min intervals. Pro: $7/mo for 1-min intervals",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 data on your server",
+      "$0.99/mo vs $7/mo",
+      "Status page included \u2014 not just monitoring",
+      "Single binary, no dependencies"
+    ],
+    "strengths_competitor": [
+      "Active monitoring from external locations (detects outages you can't see from inside your network)",
+      "50-monitor free tier",
+      "SMS and voice call alerts",
+      "Mobile app with push notifications"
+    ],
+    "honest_verdict": "UptimeRobot monitors your services from the outside \u2014 it can detect outages your own server can't see. Paddock is a status page tool for communicating service health to customers. They solve related but different problems. Many teams use both.",
+    "seo_title": "Paddock vs UptimeRobot \u2014 Self-hosted status page alternative",
+    "seo_description": "UptimeRobot is $7/mo for monitoring. Paddock is a self-hosted public status page \u2014 single binary, $0.99/mo Pro. Communicate outages on your domain.",
+    "faq": [
+      {
+        "q": "Is Paddock an UptimeRobot replacement?",
+        "a": "Paddock is a status page tool for publishing service health. UptimeRobot is an external uptime monitor. Paddock replaces Statuspage.io more directly than UptimeRobot."
+      },
+      {
+        "q": "Can Paddock monitor uptime?",
+        "a": "Paddock focuses on status communication. For external uptime monitoring, you would pair it with a monitoring tool."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "paddock",
+    "stockyard_name": "Paddock",
+    "stockyard_tagline": "Self-hosted public status page",
+    "stockyard_free": "3 components",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited components, subscriber notifications, custom domain",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/paddock/install.sh | sh",
+    "stockyard_port": 8920,
+    "competitor_name": "Statuspage",
+    "competitor_slug": "statuspage",
+    "competitor_url": "https://www.atlassian.com/software/statuspage",
+    "competitor_price": "$79/mo (Startup)",
+    "competitor_pricing_note": "$79/mo Startup, $399/mo Business, $1,499/mo Enterprise",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 Atlassian managed only",
+    "strengths_stockyard": [
+      "$0.99/mo vs $79/mo minimum",
+      "Self-hosted \u2014 your domain, your data",
+      "Single binary, no vendor lock-in",
+      "No Atlassian account or ecosystem needed"
+    ],
+    "strengths_competitor": [
+      "Deep Atlassian/Jira integration",
+      "Third-party component monitoring integrations",
+      "Custom email templates for subscriber notifications",
+      "Established \u2014 trusted by large enterprises"
+    ],
+    "honest_verdict": "Statuspage.io is the enterprise standard with deep Atlassian integration. If you need that ecosystem or your compliance team mandates it, that is what it is. For everyone else, Paddock does the same job for $0.99/mo on your own server.",
+    "seo_title": "Paddock vs Statuspage \u2014 Status page at $0.99/mo vs $79/mo",
+    "seo_description": "Atlassian Statuspage starts at $79/mo. Paddock is a self-hosted status page \u2014 single binary, $0.99/mo Pro. Same job, your server.",
+    "faq": [
+      {
+        "q": "Is Paddock a Statuspage.io alternative?",
+        "a": "Yes. Both let you publish a public status page with component status, incidents, and subscriber notifications. Paddock is self-hosted at $0.99/mo. Statuspage starts at $79/mo."
+      },
+      {
+        "q": "Does Paddock integrate with Jira?",
+        "a": "Not directly. If deep Atlassian integration is a requirement, Statuspage is the better choice."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "paddock",
+    "stockyard_name": "Paddock",
+    "stockyard_tagline": "Self-hosted public status page",
+    "stockyard_free": "3 components",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited components, subscriber notifications, custom domain",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/paddock/install.sh | sh",
+    "stockyard_port": 8920,
+    "competitor_name": "Better Stack",
+    "competitor_slug": "betterstack",
+    "competitor_url": "https://betterstack.com",
+    "competitor_price": "$24/mo (monitoring)",
+    "competitor_pricing_note": "Monitoring from $24/mo. Status pages from $20/mo. Logging separate.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "$0.99/mo vs $24+/mo",
+      "Self-hosted single binary",
+      "No vendor dependency",
+      "Combined status page and component tracking in one tool"
+    ],
+    "strengths_competitor": [
+      "Full observability suite (monitoring + logs + status page)",
+      "External uptime checks from multiple regions",
+      "On-call scheduling and escalation",
+      "Beautiful default status page themes"
+    ],
+    "honest_verdict": "Better Stack is a full observability platform \u2014 monitoring, logging, and status pages combined. If you need the complete suite, it is well-built. If you just need a status page, Paddock does that specific job for $0.99/mo.",
+    "seo_title": "Paddock vs Better Stack \u2014 Self-hosted status page alternative",
+    "seo_description": "Better Stack charges $24+/mo for monitoring and status pages. Paddock is a self-hosted status page \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Paddock a Better Stack alternative?",
+        "a": "Paddock replaces the status page portion of Better Stack. For full monitoring and logging, you would need additional tools."
+      },
+      {
+        "q": "Does Paddock include uptime monitoring?",
+        "a": "Paddock focuses on public status pages and incident communication. For external uptime checks, pair it with a monitoring tool."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "saltlick",
+    "stockyard_name": "Salt Lick",
+    "stockyard_tagline": "Self-hosted feature flag service",
+    "stockyard_free": "10 flags",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited flags, user segments, percentage rollouts, scheduled changes, SDKs",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/saltlick/install.sh | sh",
+    "stockyard_port": 9000,
+    "competitor_name": "LaunchDarkly",
+    "competitor_slug": "launchdarkly",
+    "competitor_url": "https://launchdarkly.com",
+    "competitor_price": "$10/seat/mo (Pro)",
+    "competitor_pricing_note": "$10/seat/mo Pro, enterprise pricing negotiated. Minimum spend adds up fast with teams.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 cloud only",
+    "strengths_stockyard": [
+      "$0.99/mo flat vs $10/seat/mo",
+      "Self-hosted \u2014 flag data stays on your server",
+      "No per-seat pricing \u2014 same cost for 1 or 100 developers",
+      "Single binary, no dependencies"
+    ],
+    "strengths_competitor": [
+      "Industry leader with deep SDK ecosystem",
+      "Advanced targeting rules and experimentation",
+      "Audit logs, approval workflows, change management",
+      "Enterprise compliance features (SOC 2 Type II, HIPAA)"
+    ],
+    "honest_verdict": "LaunchDarkly is the enterprise standard for feature flags with the deepest SDK ecosystem and targeting rules. If you need per-seat approval workflows and your company will pay enterprise pricing, it is the safe choice. For teams who want simple flags without per-seat costs, Salt Lick does the job.",
+    "seo_title": "Salt Lick vs LaunchDarkly \u2014 Feature flags at $0.99/mo vs $10/seat",
+    "seo_description": "LaunchDarkly charges $10/seat/mo. Salt Lick is self-hosted feature flags \u2014 single binary, $0.99/mo flat. No per-seat pricing.",
+    "faq": [
+      {
+        "q": "Is Salt Lick a LaunchDarkly alternative?",
+        "a": "Both manage feature flags. Salt Lick is self-hosted at $0.99/mo flat. LaunchDarkly is cloud-only at $10/seat/mo. Salt Lick covers boolean, multivariate, percentage rollouts, and user targeting."
+      },
+      {
+        "q": "Does Salt Lick support percentage rollouts?",
+        "a": "Yes, Pro tier supports percentage rollouts with deterministic user bucketing, user segment targeting, and scheduled flag changes."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "saltlick",
+    "stockyard_name": "Salt Lick",
+    "stockyard_tagline": "Self-hosted feature flag service",
+    "stockyard_free": "10 flags",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited flags, user segments, percentage rollouts, SDKs",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/saltlick/install.sh | sh",
+    "stockyard_port": 9000,
+    "competitor_name": "Flagsmith",
+    "competitor_slug": "flagsmith",
+    "competitor_url": "https://flagsmith.com",
+    "competitor_price": "$45/mo (Startup)",
+    "competitor_pricing_note": "Open source self-hosted option available. Cloud from $45/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, self-hostable but requires Postgres and Docker",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker or Postgres",
+      "$0.99/mo vs $45/mo cloud",
+      "Simpler to operate for small teams",
+      "Embedded SQLite \u2014 no external database"
+    ],
+    "strengths_competitor": [
+      "Open source with active community",
+      "Rich API and SDK ecosystem",
+      "Remote config (not just flags)",
+      "Self-hosted option with more features"
+    ],
+    "honest_verdict": "Flagsmith is a solid open-source option with a richer feature set including remote config. If you want the full feature set and don't mind running Docker + Postgres, Flagsmith self-hosted is strong. If you want the simplest possible setup, Salt Lick is one binary with SQLite.",
+    "seo_title": "Salt Lick vs Flagsmith \u2014 Simpler self-hosted feature flags",
+    "seo_description": "Flagsmith requires Docker and Postgres to self-host. Salt Lick is a single binary with embedded SQLite. $0.99/mo Pro vs $45/mo Flagsmith Cloud.",
+    "faq": [
+      {
+        "q": "How does Salt Lick compare to Flagsmith?",
+        "a": "Both are self-hostable feature flag tools. Flagsmith requires Docker and Postgres. Salt Lick is a single Go binary with embedded SQLite \u2014 simpler to deploy and operate."
+      },
+      {
+        "q": "Does Salt Lick support remote config?",
+        "a": "Salt Lick focuses on feature flags (boolean, multivariate, percentage rollouts). For general remote config, Flagsmith has broader capabilities."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "corral",
+    "stockyard_name": "Corral",
+    "stockyard_tagline": "Self-hosted webhook inbox",
+    "stockyard_free": "3 endpoints, 1,000 events/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited endpoints, 90-day retention, retry, event search, export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/corral/install.sh | sh",
+    "stockyard_port": 8760,
+    "competitor_name": "Svix",
+    "competitor_slug": "svix",
+    "competitor_url": "https://svix.com",
+    "competitor_price": "$60/mo (Starter)",
+    "competitor_pricing_note": "$60/mo Starter, $250/mo Business. Open source option available.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, self-hostable but requires Postgres, Redis, and Docker",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Postgres, Redis, or Docker",
+      "$0.99/mo vs $60/mo",
+      "Focused on capture/replay, not webhook sending",
+      "Simpler to operate"
+    ],
+    "strengths_competitor": [
+      "Designed for sending webhooks (outbound), not just receiving",
+      "Customer-facing webhook dashboard",
+      "Retry logic with exponential backoff built in",
+      "Open source with active community"
+    ],
+    "honest_verdict": "Svix is primarily a webhook sending platform \u2014 it helps you deliver webhooks to your customers reliably. Corral is a webhook receiving tool \u2014 it captures incoming webhooks for inspection and replay. They solve different sides of the webhook problem.",
+    "seo_title": "Corral vs Svix \u2014 Self-hosted webhook inbox alternative",
+    "seo_description": "Svix is for sending webhooks ($60/mo). Corral captures and replays incoming webhooks. Self-hosted single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Corral a Svix alternative?",
+        "a": "They solve different problems. Svix helps you send webhooks to customers. Corral captures and replays incoming webhooks for development and debugging."
+      },
+      {
+        "q": "Can Corral send webhooks?",
+        "a": "Corral forwards captured webhooks to other endpoints (fan-out), but it is not designed as a webhook delivery platform like Svix."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "corral",
+    "stockyard_name": "Corral",
+    "stockyard_tagline": "Self-hosted webhook inbox",
+    "stockyard_free": "3 endpoints, 1,000 events/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited endpoints, 90-day retention, retry, event search, export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/corral/install.sh | sh",
+    "stockyard_port": 8760,
+    "competitor_name": "Pipedream",
+    "competitor_slug": "pipedream",
+    "competitor_url": "https://pipedream.com",
+    "competitor_price": "Free (limited) / $19/mo",
+    "competitor_pricing_note": "Free tier: 100 events/day. Pro: $19/mo for 2,000 events/day.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 webhook data stays on your server",
+      "$0.99/mo vs $19/mo",
+      "No event-per-day limits on Pro",
+      "Focused tool \u2014 not trying to be a workflow platform"
+    ],
+    "strengths_competitor": [
+      "Full workflow automation platform (like Zapier for developers)",
+      "Code-based transforms between steps",
+      "Huge library of pre-built integrations",
+      "Free tier for light usage"
+    ],
+    "honest_verdict": "Pipedream is a full workflow automation platform \u2014 webhooks are just the trigger. If you need multi-step workflows with transforms and integrations, Pipedream is the right tool. If you just need to capture, inspect, and replay webhooks, Corral is focused and self-hosted.",
+    "seo_title": "Corral vs Pipedream \u2014 Self-hosted webhook capture alternative",
+    "seo_description": "Pipedream is a workflow platform at $19/mo. Corral is focused webhook capture and replay \u2014 self-hosted, single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Corral a Pipedream alternative?",
+        "a": "Corral focuses on webhook capture, inspection, and replay. Pipedream is a full workflow automation platform. They overlap on webhook receiving but serve different purposes."
+      },
+      {
+        "q": "Can Corral run workflows?",
+        "a": "No. Corral captures and replays webhooks. For multi-step workflows, use Pipedream, Temporal, or a similar tool."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "seismograph",
+    "stockyard_name": "Seismograph",
+    "stockyard_tagline": "Self-hosted error tracker",
+    "stockyard_free": "5,000 errors/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited errors, 90-day retention, alerts, source maps, stack grouping",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/seismograph/install.sh | sh",
+    "stockyard_port": 9680,
+    "competitor_name": "Sentry",
+    "competitor_slug": "sentry",
+    "competitor_url": "https://sentry.io",
+    "competitor_price": "$26/mo (Team)",
+    "competitor_pricing_note": "Free: 5k errors. Team: $26/mo. Business: $80/mo. Volume pricing above that.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hosted option exists but requires Docker, Postgres, Redis, Kafka, Clickhouse",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker, Postgres, Redis, Kafka, or Clickhouse",
+      "$0.99/mo vs $26/mo",
+      "Data stays on your server",
+      "Simpler to operate for small teams"
+    ],
+    "strengths_competitor": [
+      "Industry standard with deepest SDK coverage (50+ platforms)",
+      "Performance monitoring, profiling, and session replay",
+      "Rich issue grouping, assignment, and workflow features",
+      "Large community and extensive documentation"
+    ],
+    "honest_verdict": "Sentry is the industry standard for error tracking with an incredibly deep feature set. If you need performance monitoring, session replay, or have a large team with complex workflows, Sentry is hard to beat. If you want simple error tracking on your own server without running Kafka and Clickhouse, Seismograph does the core job.",
+    "seo_title": "Seismograph vs Sentry \u2014 Self-hosted error tracking alternative",
+    "seo_description": "Sentry self-hosted requires Kafka, Clickhouse, Postgres, and Redis. Seismograph is one binary with SQLite. $0.99/mo Pro vs $26/mo Sentry Team.",
+    "faq": [
+      {
+        "q": "Is Seismograph a Sentry alternative?",
+        "a": "Both track application errors. Seismograph is a focused self-hosted error tracker (single binary). Sentry is a full observability platform with performance monitoring, profiling, and session replay."
+      },
+      {
+        "q": "Does Seismograph support source maps?",
+        "a": "Pro tier supports source map uploads for JavaScript stack trace deobfuscation."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "seismograph",
+    "stockyard_name": "Seismograph",
+    "stockyard_tagline": "Self-hosted error tracker",
+    "stockyard_free": "5,000 errors/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited errors, 90-day retention, alerts, source maps",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/seismograph/install.sh | sh",
+    "stockyard_port": 9680,
+    "competitor_name": "Rollbar",
+    "competitor_slug": "rollbar",
+    "competitor_url": "https://rollbar.com",
+    "competitor_price": "$13/mo (Essentials)",
+    "competitor_pricing_note": "Free: 5k events/mo. Essentials: $13/mo. Advanced: $25/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 error data stays on your server",
+      "$0.99/mo vs $13/mo",
+      "Single binary, no dependencies",
+      "No event volume pricing surprises"
+    ],
+    "strengths_competitor": [
+      "Managed service \u2014 no server to maintain",
+      "AI-assisted error grouping",
+      "Deploy tracking and version comparison",
+      "Established error tracking platform"
+    ],
+    "honest_verdict": "Rollbar is a solid managed error tracker with good AI-assisted grouping. If you don't want to run infrastructure, it works well. If you want your error data on your own server at a lower cost, Seismograph does the core job.",
+    "seo_title": "Seismograph vs Rollbar \u2014 Self-hosted error tracking at $0.99/mo",
+    "seo_description": "Rollbar starts at $13/mo. Seismograph is self-hosted error tracking \u2014 single binary, $0.99/mo Pro. Your error data stays on your server.",
+    "faq": [
+      {
+        "q": "Is Seismograph a Rollbar alternative?",
+        "a": "Both track application errors and group them for debugging. Seismograph is self-hosted (single binary). Rollbar is a managed cloud service."
+      },
+      {
+        "q": "How does pricing compare?",
+        "a": "Seismograph: free to 5k errors/mo, $0.99/mo Pro. Rollbar: free to 5k, $13/mo Essentials."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "wrangler",
+    "stockyard_name": "Wrangler",
+    "stockyard_tagline": "Self-hosted ETL and data pipeline runner",
+    "stockyard_free": "2 pipelines",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited pipelines, cron scheduling, custom transforms, retry, full run history",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/wrangler/install.sh | sh",
+    "stockyard_port": 9060,
+    "competitor_name": "Airbyte",
+    "competitor_slug": "airbyte",
+    "competitor_url": "https://airbyte.com",
+    "competitor_price": "$50/mo (Cloud)",
+    "competitor_pricing_note": "Cloud from $50/mo based on sync volume. Open source option requires Docker, Postgres, and significant setup.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "OSS version requires Docker Compose with 7+ containers",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker Compose, no 7-container stack",
+      "$1.99/mo vs $50/mo",
+      "Simple config-based pipelines",
+      "Fast to set up and run"
+    ],
+    "strengths_competitor": [
+      "300+ pre-built source/destination connectors",
+      "Visual pipeline builder",
+      "CDC (change data capture) support",
+      "Active open-source community with frequent updates"
+    ],
+    "honest_verdict": "Airbyte is the most comprehensive open-source ETL tool with 300+ connectors. If you need a specific connector or CDC support, Airbyte is likely the better choice. If you want simple pipeline definitions without running a 7-container Docker stack, Wrangler handles the basics.",
+    "seo_title": "Wrangler vs Airbyte \u2014 Simple self-hosted ETL pipelines",
+    "seo_description": "Airbyte self-hosted needs 7+ Docker containers. Wrangler is one binary with SQLite. $1.99/mo Pro vs $50/mo Airbyte Cloud.",
+    "faq": [
+      {
+        "q": "Is Wrangler an Airbyte alternative?",
+        "a": "Wrangler handles simple ETL pipelines (source, transform, destination) as a single binary. Airbyte offers 300+ connectors and a visual builder but requires a complex Docker setup to self-host."
+      },
+      {
+        "q": "Does Wrangler support database CDC?",
+        "a": "Not currently. For change data capture, Airbyte or Debezium are better choices. Wrangler focuses on scheduled extract-transform-load workflows."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "wrangler",
+    "stockyard_name": "Wrangler",
+    "stockyard_tagline": "Self-hosted ETL and data pipeline runner",
+    "stockyard_free": "2 pipelines",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited pipelines, scheduling, transforms, retry",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/wrangler/install.sh | sh",
+    "stockyard_port": 9060,
+    "competitor_name": "Inngest",
+    "competitor_slug": "inngest",
+    "competitor_url": "https://inngest.com",
+    "competitor_price": "$50/mo (Pro)",
+    "competitor_pricing_note": "Free: 5k runs/mo. Pro: $50/mo. Volume pricing above.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 cloud only",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 pipeline data stays on your server",
+      "$1.99/mo vs $50/mo",
+      "Config-based pipelines (no code required)",
+      "Single binary, no vendor dependency"
+    ],
+    "strengths_competitor": [
+      "Durable functions with automatic retry and replay",
+      "Event-driven architecture built in",
+      "TypeScript-native developer experience",
+      "Step functions with sleep, wait, and fan-out"
+    ],
+    "honest_verdict": "Inngest is a durable function execution platform \u2014 much more than ETL. If you need event-driven step functions with automatic retry, Inngest is purpose-built for that. If you need simple scheduled data pipelines, Wrangler is simpler and self-hosted.",
+    "seo_title": "Wrangler vs Inngest \u2014 Self-hosted data pipelines",
+    "seo_description": "Inngest is $50/mo for durable functions. Wrangler is self-hosted ETL pipelines \u2014 single binary, $1.99/mo Pro. Simple config-based data movement.",
+    "faq": [
+      {
+        "q": "Is Wrangler an Inngest alternative?",
+        "a": "They solve different problems. Wrangler runs scheduled ETL pipelines. Inngest runs event-driven durable functions. Wrangler is simpler; Inngest is more powerful for complex workflows."
+      },
+      {
+        "q": "Does Wrangler support event-driven triggers?",
+        "a": "Wrangler focuses on scheduled (cron) pipelines. For event-driven execution, tools like Inngest or Temporal are better suited."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "gate",
+    "stockyard_name": "Gate",
+    "stockyard_tagline": "Self-hosted reverse proxy and auth gateway",
+    "stockyard_free": "1 upstream, 5 users",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited upstreams, users, per-route limits, IP allowlists, log export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/gate/install.sh | sh",
+    "stockyard_port": 8650,
+    "competitor_name": "Authelia",
+    "competitor_slug": "authelia",
+    "competitor_url": "https://www.authelia.com",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Fully open source, no paid tier",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Requires Docker, Postgres/MySQL, Redis, and a reverse proxy (Traefik/Nginx)",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker, Postgres, Redis, or separate reverse proxy",
+      "Built-in reverse proxy \u2014 Gate IS the proxy, not a middleware layer",
+      "$2.99/mo Pro for team features",
+      "Simpler to set up and operate"
+    ],
+    "strengths_competitor": [
+      "Full SSO with LDAP, OIDC, and SAML",
+      "Two-factor authentication built in",
+      "Active open-source community",
+      "More granular access control policies"
+    ],
+    "honest_verdict": "Authelia is a mature SSO portal with LDAP, OIDC, and 2FA. If you need enterprise SSO integration, Authelia is the more complete solution. If you want a simple auth proxy that IS the reverse proxy (no Traefik/Nginx layer), Gate is one binary.",
+    "seo_title": "Gate vs Authelia \u2014 Simpler self-hosted auth proxy",
+    "seo_description": "Authelia requires Docker, Postgres, Redis, and a separate reverse proxy. Gate is a single binary that IS the auth proxy. $2.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Gate an Authelia alternative?",
+        "a": "Both protect internal tools with authentication. Gate is a single binary that includes the reverse proxy. Authelia requires Docker, a database, Redis, and a separate reverse proxy like Traefik."
+      },
+      {
+        "q": "Does Gate support SSO?",
+        "a": "Gate focuses on API key auth, IP allowlists, and rate limiting. For LDAP/OIDC/SAML SSO, Authelia or Authentik are more complete."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "gate",
+    "stockyard_name": "Gate",
+    "stockyard_tagline": "Self-hosted reverse proxy and auth gateway",
+    "stockyard_free": "1 upstream, 5 users",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited upstreams, users, per-route limits, IP allowlists",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/gate/install.sh | sh",
+    "stockyard_port": 8650,
+    "competitor_name": "OAuth2 Proxy",
+    "competitor_slug": "oauth2-proxy",
+    "competitor_url": "https://oauth2-proxy.github.io/oauth2-proxy/",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Open source, no paid tier",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Single binary, but requires an external OAuth2 provider and a reverse proxy",
+    "strengths_stockyard": [
+      "Built-in reverse proxy \u2014 no separate Nginx/Traefik needed",
+      "API key auth without an OAuth2 provider",
+      "Built-in dashboard at /ui",
+      "Rate limiting and IP allowlists included"
+    ],
+    "strengths_competitor": [
+      "Integrates with any OAuth2/OIDC provider (Google, GitHub, Azure AD)",
+      "Well-established in the Kubernetes ecosystem",
+      "Completely free and open source",
+      "Supports cookie-based sessions"
+    ],
+    "honest_verdict": "OAuth2 Proxy is purpose-built for OAuth2/OIDC authentication and works well in Kubernetes. If your auth is Google/GitHub/Azure AD, it is the natural choice. Gate is for teams who want API key auth, rate limiting, and IP allowlists in a single binary without an external OAuth provider.",
+    "seo_title": "Gate vs OAuth2 Proxy \u2014 Self-hosted auth gateway",
+    "seo_description": "OAuth2 Proxy requires an external OAuth provider. Gate includes auth, rate limiting, and reverse proxy in one binary. $2.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Gate an OAuth2 Proxy alternative?",
+        "a": "They serve different auth models. OAuth2 Proxy delegates to external OAuth providers (Google, GitHub). Gate provides API key auth, rate limiting, and IP allowlists without an external provider."
+      },
+      {
+        "q": "Does Gate support Google/GitHub login?",
+        "a": "Not currently. Gate focuses on API key auth and IP-based access control. For OAuth2 login, use OAuth2 Proxy or Authelia."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "strongbox",
+    "stockyard_name": "Strongbox",
+    "stockyard_tagline": "Self-hosted secret manager",
+    "stockyard_free": "25 secrets, 1 vault",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited secrets, vaults, team access, audit log, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/strongbox/install.sh | sh",
+    "stockyard_port": 8610,
+    "competitor_name": "HashiCorp Vault",
+    "competitor_slug": "hashicorp-vault",
+    "competitor_url": "https://www.hashicorp.com/products/vault",
+    "competitor_price": "$1.58/hr (HCP)",
+    "competitor_pricing_note": "OSS is free but complex to operate. HCP Vault from $1.58/hr (~$1,150/mo)",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, but requires significant operational expertise, unsealing, HA setup",
+    "strengths_stockyard": [
+      "Single binary with embedded SQLite \u2014 running in 30 seconds",
+      "$1.99/mo vs $1,150/mo for HCP Vault",
+      "No unsealing ceremony required",
+      "Simple API \u2014 HTTP GET/PUT for secrets"
+    ],
+    "strengths_competitor": [
+      "Industry standard for enterprise secret management",
+      "Dynamic secrets, PKI, database credential rotation",
+      "Transit encryption (encrypt/decrypt as a service)",
+      "Deep integrations with Kubernetes, Terraform, CI/CD"
+    ],
+    "honest_verdict": "HashiCorp Vault is the enterprise standard with features like dynamic secrets, PKI, and transit encryption that Strongbox does not attempt to replicate. If you need those, Vault is the only real option. If you need a simple, self-hosted place to store API keys and credentials without running a Vault cluster, Strongbox is dramatically simpler.",
+    "seo_title": "Strongbox vs HashiCorp Vault \u2014 Simple self-hosted secrets",
+    "seo_description": "Vault is powerful but complex (unsealing, HA, PKI). Strongbox is a single binary secret manager with SQLite. $1.99/mo Pro. Running in 30 seconds.",
+    "faq": [
+      {
+        "q": "Is Strongbox a Vault alternative?",
+        "a": "Strongbox handles basic secret storage (API keys, credentials, env vars) as a single binary. Vault is an enterprise secret management platform with dynamic secrets, PKI, and transit encryption."
+      },
+      {
+        "q": "Does Strongbox support dynamic secrets?",
+        "a": "No. Strongbox stores static secrets. For dynamic secret generation and credential rotation, HashiCorp Vault is the right tool."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "strongbox",
+    "stockyard_name": "Strongbox",
+    "stockyard_tagline": "Self-hosted secret manager",
+    "stockyard_free": "25 secrets, 1 vault",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited secrets, vaults, team access, audit log",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/strongbox/install.sh | sh",
+    "stockyard_port": 8610,
+    "competitor_name": "Doppler",
+    "competitor_slug": "doppler",
+    "competitor_url": "https://doppler.com",
+    "competitor_price": "$6/user/mo (Team)",
+    "competitor_pricing_note": "Free for 1 user. Team: $6/user/mo. Enterprise: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 secrets never leave your server",
+      "$1.99/mo flat vs $6/user/mo",
+      "No per-seat pricing",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Managed service \u2014 no infrastructure to run",
+      "CLI integration with every CI/CD platform",
+      "Automatic secret rotation for some services",
+      "Clean UI with environment management"
+    ],
+    "honest_verdict": "Doppler is a polished managed secrets platform with great CI/CD integration. If you want managed secret sync across environments with no ops work, Doppler is well-designed. If you want secrets on your own server at a flat price, Strongbox is simpler and cheaper.",
+    "seo_title": "Strongbox vs Doppler \u2014 Self-hosted secret management",
+    "seo_description": "Doppler charges $6/user/mo. Strongbox is self-hosted \u2014 single binary, $1.99/mo flat. Your secrets stay on your server.",
+    "faq": [
+      {
+        "q": "Is Strongbox a Doppler alternative?",
+        "a": "Both manage secrets and environment variables. Strongbox is self-hosted (single binary, your server). Doppler is a managed cloud service with CI/CD integrations."
+      },
+      {
+        "q": "Does Strongbox sync with CI/CD?",
+        "a": "Strongbox provides an HTTP API for secret retrieval. You can integrate it with any CI/CD system that can make HTTP requests."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "trough",
+    "stockyard_name": "Trough",
+    "stockyard_tagline": "Self-hosted LLM API cost monitor",
+    "stockyard_free": "1 service, 10,000 requests/mo",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited services, anomaly detection, spend alerts, 90-day history",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/trough/install.sh | sh",
+    "stockyard_port": 8670,
+    "competitor_name": "Helicone",
+    "competitor_slug": "helicone",
+    "competitor_url": "https://helicone.ai",
+    "competitor_price": "$20/mo (Pro)",
+    "competitor_pricing_note": "Free: 10k requests. Pro: $20/mo. Note: Helicone acquired by Mintlify in March 2026 \u2014 future uncertain.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source but requires Postgres, Clickhouse, and Docker",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Clickhouse or Postgres",
+      "$2.99/mo vs $20/mo",
+      "No acquisition uncertainty",
+      "Data stays on your server"
+    ],
+    "strengths_competitor": [
+      "More advanced analytics and dashboards (when maintained)",
+      "Request caching and custom properties",
+      "User tracking and feedback collection",
+      "Open source with community contributions"
+    ],
+    "honest_verdict": "Helicone was excellent LLM observability, but was acquired by Mintlify in March 2026 and is in maintenance mode. If you are starting fresh, Trough is actively maintained and self-hosted. If you have an existing Helicone setup that works, there is no rush to migrate.",
+    "seo_title": "Trough vs Helicone \u2014 Self-hosted LLM cost tracking",
+    "seo_description": "Helicone was acquired and is in maintenance mode. Trough is actively maintained self-hosted LLM cost tracking \u2014 single binary, $2.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Trough a Helicone alternative?",
+        "a": "Both track LLM API costs. Trough is a self-hosted single binary. Helicone was acquired by Mintlify in March 2026 and is in maintenance mode."
+      },
+      {
+        "q": "What happened to Helicone?",
+        "a": "Helicone was acquired by Mintlify in March 2026. The product is in maintenance mode with no new features planned."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "trough",
+    "stockyard_name": "Trough",
+    "stockyard_tagline": "Self-hosted LLM API cost monitor",
+    "stockyard_free": "1 service, 10,000 requests/mo",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited services, anomaly detection, spend alerts",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/trough/install.sh | sh",
+    "stockyard_port": 8670,
+    "competitor_name": "Langfuse",
+    "competitor_slug": "langfuse",
+    "competitor_url": "https://langfuse.com",
+    "competitor_price": "$59/mo (Pro)",
+    "competitor_pricing_note": "Free: 50k observations. Pro: $59/mo. Team: $119/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, self-hostable with Docker and Postgres",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker or Postgres",
+      "$2.99/mo vs $59/mo",
+      "Focused on cost tracking (does one thing well)",
+      "Data stays on your server"
+    ],
+    "strengths_competitor": [
+      "Full LLM observability (traces, spans, evaluations)",
+      "Prompt management and versioning",
+      "Dataset management for fine-tuning",
+      "Active open-source community"
+    ],
+    "honest_verdict": "Langfuse is a full LLM observability platform \u2014 tracing, evaluations, prompt management. If you need all of that, Langfuse is excellent. If you primarily want to track what you are spending on LLM APIs, Trough is focused and simpler.",
+    "seo_title": "Trough vs Langfuse \u2014 Self-hosted LLM cost tracking",
+    "seo_description": "Langfuse is full LLM observability at $59/mo. Trough focuses on cost tracking \u2014 single binary, $2.99/mo Pro. Know exactly what you spend.",
+    "faq": [
+      {
+        "q": "Is Trough a Langfuse alternative?",
+        "a": "Trough focuses specifically on LLM API cost tracking. Langfuse is broader \u2014 tracing, evaluations, and prompt management. They can complement each other."
+      },
+      {
+        "q": "Does Trough support prompt versioning?",
+        "a": "No. Trough tracks costs. For prompt management, use Langfuse, Humanloop, or the Stockyard platform."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "lasso",
+    "stockyard_name": "Lasso",
+    "stockyard_tagline": "Self-hosted link shortener",
+    "stockyard_free": "50 links",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited links, full analytics, custom domain, QR codes, UTM builder, CSV export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/lasso/install.sh | sh",
+    "stockyard_port": 8890,
+    "competitor_name": "Bitly",
+    "competitor_slug": "bitly",
+    "competitor_url": "https://bitly.com",
+    "competitor_price": "$35/mo (Growth)",
+    "competitor_pricing_note": "Free: 10 links/mo with bit.ly branding. Core: $8/mo. Growth: $35/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 click data stays on your server",
+      "$0.99/mo vs $35/mo",
+      "Custom domain included in Pro",
+      "No per-link limits on Pro"
+    ],
+    "strengths_competitor": [
+      "Established brand \u2014 bit.ly links are widely recognized",
+      "QR code generator with branding options",
+      "Link-in-bio pages",
+      "Enterprise-grade analytics and reporting"
+    ],
+    "honest_verdict": "Bitly is the most recognized link shortener with strong brand recognition. If you need the bit.ly brand or enterprise reporting, Bitly is the standard. If you want link shortening on your own domain with your own analytics, Lasso does the job for a fraction of the cost.",
+    "seo_title": "Lasso vs Bitly \u2014 Self-hosted link shortener at $0.99/mo",
+    "seo_description": "Bitly Growth is $35/mo. Lasso is self-hosted link shortening on your domain \u2014 single binary, $0.99/mo Pro. Your click data stays private.",
+    "faq": [
+      {
+        "q": "Is Lasso a Bitly alternative?",
+        "a": "Both shorten URLs and track clicks. Lasso is self-hosted on your domain. Bitly is a managed service with the bit.ly brand."
+      },
+      {
+        "q": "Can I use my own domain with Lasso?",
+        "a": "Yes, Pro tier supports custom domains. Set your DNS and Lasso handles the rest."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "lasso",
+    "stockyard_name": "Lasso",
+    "stockyard_tagline": "Self-hosted link shortener",
+    "stockyard_free": "50 links",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited links, analytics, custom domain, QR codes",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/lasso/install.sh | sh",
+    "stockyard_port": 8890,
+    "competitor_name": "Dub",
+    "competitor_slug": "dub",
+    "competitor_url": "https://dub.co",
+    "competitor_price": "$24/mo (Pro)",
+    "competitor_pricing_note": "Free: 25 links. Pro: $24/mo for 1,000 links.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, self-hostable but requires Planetscale/MySQL, Redis, and Vercel",
+    "strengths_stockyard": [
+      "Single binary \u2014 no MySQL, Redis, or Vercel",
+      "$0.99/mo vs $24/mo",
+      "No link caps on Pro",
+      "Simpler to self-host"
+    ],
+    "strengths_competitor": [
+      "Modern UI with beautiful link previews",
+      "Built-in analytics dashboard",
+      "Open source with active development",
+      "Referral tracking and conversion analytics"
+    ],
+    "honest_verdict": "Dub is a modern, well-designed link management platform with great analytics. If you want a polished managed experience or are willing to self-host with Vercel + MySQL, Dub is excellent. If you want a simple binary with no external dependencies, Lasso is easier to run.",
+    "seo_title": "Lasso vs Dub \u2014 Simpler self-hosted link shortener",
+    "seo_description": "Dub requires MySQL, Redis, and Vercel to self-host. Lasso is one binary with SQLite. $0.99/mo Pro vs $24/mo Dub Pro.",
+    "faq": [
+      {
+        "q": "Is Lasso a Dub alternative?",
+        "a": "Both are link shorteners with analytics. Lasso is a single Go binary with embedded SQLite. Dub requires MySQL, Redis, and ideally Vercel to self-host."
+      },
+      {
+        "q": "How does pricing compare?",
+        "a": "Lasso: free to 50 links, $0.99/mo Pro (unlimited). Dub: free to 25 links, $24/mo Pro (1,000 links)."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "post",
+    "stockyard_name": "Post",
+    "stockyard_tagline": "Self-hosted blog engine",
+    "stockyard_free": "10 posts",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited posts, custom domain, RSS, email subscribers, themes",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/post/install.sh | sh",
+    "stockyard_port": 8940,
+    "competitor_name": "Ghost",
+    "competitor_slug": "ghost",
+    "competitor_url": "https://ghost.org",
+    "competitor_price": "$25/mo (Starter)",
+    "competitor_pricing_note": "$25/mo for 500 members. $50/mo for 1,000. Self-hosted free but requires Node.js and MySQL.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hosted option requires Node.js, MySQL, and ongoing maintenance",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Node.js or MySQL",
+      "$0.99/mo vs $25/mo for Ghost Pro",
+      "Embedded SQLite \u2014 no database to manage",
+      "Simpler deployment and maintenance"
+    ],
+    "strengths_competitor": [
+      "Mature publishing platform with membership and payments",
+      "Beautiful themes and visual editor",
+      "Built-in newsletter and member management",
+      "Large plugin and integration ecosystem"
+    ],
+    "honest_verdict": "Ghost is a full publishing platform with membership, payments, and newsletter features. If you are building a paid newsletter or membership site, Ghost is purpose-built for that. If you want a simple blog on your own domain without a $25/mo hosting bill, Post does the basics.",
+    "seo_title": "Post vs Ghost \u2014 Self-hosted blog engine at $0.99/mo",
+    "seo_description": "Ghost Pro starts at $25/mo. Post is a self-hosted blog engine \u2014 single binary with SQLite, $0.99/mo Pro. Markdown in, HTML out.",
+    "faq": [
+      {
+        "q": "Is Post a Ghost alternative?",
+        "a": "Post handles basic blogging (Markdown posts, RSS, custom domain). Ghost is a full publishing platform with membership, payments, and newsletters."
+      },
+      {
+        "q": "Does Post support paid memberships?",
+        "a": "Not currently. Post focuses on publishing blog posts. For paid memberships, Ghost or Substack are better choices."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "surveyor",
+    "stockyard_name": "Surveyor",
+    "stockyard_tagline": "Self-hosted form builder and survey tool",
+    "stockyard_free": "3 forms, 100 responses",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited forms, responses, file uploads, webhook notifications, CSV export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/surveyor/install.sh | sh",
+    "stockyard_port": 9290,
+    "competitor_name": "Typeform",
+    "competitor_slug": "typeform",
+    "competitor_url": "https://typeform.com",
+    "competitor_price": "$25/mo (Basic)",
+    "competitor_pricing_note": "$25/mo Basic (100 responses). $50/mo Plus. $83/mo Business.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 form data stays on your server",
+      "$0.99/mo vs $25/mo",
+      "No response limits on Pro",
+      "Single binary, no dependencies"
+    ],
+    "strengths_competitor": [
+      "Beautiful conversational form UX",
+      "Logic jumps and conditional branching",
+      "Payment collection integration",
+      "Extensive template library"
+    ],
+    "honest_verdict": "Typeform invented the conversational form experience and it is still the best at it. If beautiful, interactive forms are a core part of your product, Typeform is hard to beat. If you need basic forms and surveys with your data on your own server, Surveyor does the job.",
+    "seo_title": "Surveyor vs Typeform \u2014 Self-hosted forms at $0.99/mo",
+    "seo_description": "Typeform starts at $25/mo with response limits. Surveyor is self-hosted \u2014 single binary, $0.99/mo Pro. Unlimited responses. Your data.",
+    "faq": [
+      {
+        "q": "Is Surveyor a Typeform alternative?",
+        "a": "Both create forms and surveys. Surveyor is self-hosted (single binary, your server). Typeform is a managed service with a conversational UI."
+      },
+      {
+        "q": "Does Surveyor support conditional logic?",
+        "a": "Basic conditional logic is supported. For complex branching workflows, Typeform is more capable."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "dossier",
+    "stockyard_name": "Dossier",
+    "stockyard_tagline": "Self-hosted contact and CRM manager",
+    "stockyard_free": "100 contacts",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited contacts, pipeline management, email tracking, notes, tags, CSV import/export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/dossier/install.sh | sh",
+    "stockyard_port": 9080,
+    "competitor_name": "HubSpot CRM",
+    "competitor_slug": "hubspot",
+    "competitor_url": "https://www.hubspot.com/products/crm",
+    "competitor_price": "Free (limited) / $45/mo (Starter)",
+    "competitor_pricing_note": "Free CRM is generous but limited. Starter: $45/mo. Professional: $450/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 contact data stays on your server",
+      "$0.99/mo vs $45/mo for Starter features",
+      "No per-seat pricing",
+      "Single binary, no vendor lock-in"
+    ],
+    "strengths_competitor": [
+      "Full marketing, sales, and service platform",
+      "Email sequences, landing pages, and forms built in",
+      "Extensive integration marketplace",
+      "Free tier is genuinely useful for small teams"
+    ],
+    "honest_verdict": "HubSpot is a full GTM platform \u2014 CRM, marketing automation, sales tools, and service desk. If you need all of that, HubSpot is the industry standard. If you need a simple CRM for managing contacts and deals without giving your customer data to a third party, Dossier does the basics on your own server.",
+    "seo_title": "Dossier vs HubSpot \u2014 Self-hosted CRM at $0.99/mo",
+    "seo_description": "HubSpot Starter is $45/mo. Dossier is self-hosted CRM \u2014 single binary, $0.99/mo Pro. Contacts and deals on your server.",
+    "faq": [
+      {
+        "q": "Is Dossier a HubSpot alternative?",
+        "a": "Dossier handles contact management, deal pipeline, and basic CRM features. HubSpot is a full GTM platform with marketing automation, email sequences, and more."
+      },
+      {
+        "q": "Can Dossier do email sequences?",
+        "a": "Not currently. Dossier focuses on contact and pipeline management. For email sequences, use HubSpot, Mailchimp, or a dedicated email tool."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "billfold",
+    "stockyard_name": "Billfold",
+    "stockyard_tagline": "Self-hosted invoice generator",
+    "stockyard_free": "5 invoices/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited invoices, recurring billing, PDF export, client portal, late payment reminders",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/billfold/install.sh | sh",
+    "stockyard_port": 9070,
+    "competitor_name": "FreshBooks",
+    "competitor_slug": "freshbooks",
+    "competitor_url": "https://freshbooks.com",
+    "competitor_price": "$15/mo (Lite)",
+    "competitor_pricing_note": "$15/mo Lite (5 clients). $30/mo Plus. $55/mo Premium.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 financial data stays on your server",
+      "$0.99/mo vs $15/mo",
+      "No client limits on Pro",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Full accounting with double-entry bookkeeping",
+      "Expense tracking with receipt capture",
+      "Time tracking built in",
+      "Tax preparation and reporting"
+    ],
+    "honest_verdict": "FreshBooks is a full accounting platform with expense tracking, time tracking, and tax prep. If you need comprehensive accounting, FreshBooks or QuickBooks is the right choice. If you just need to create and send invoices, Billfold does that on your own server.",
+    "seo_title": "Billfold vs FreshBooks \u2014 Self-hosted invoicing at $0.99/mo",
+    "seo_description": "FreshBooks starts at $15/mo. Billfold is self-hosted invoicing \u2014 single binary, $0.99/mo Pro. Unlimited invoices, your data.",
+    "faq": [
+      {
+        "q": "Is Billfold a FreshBooks alternative?",
+        "a": "Billfold handles invoicing (create, send, track). FreshBooks is a full accounting platform with expense tracking, time tracking, and tax features."
+      },
+      {
+        "q": "Does Billfold handle taxes?",
+        "a": "Billfold generates invoices. For tax preparation and reporting, use FreshBooks, QuickBooks, or an accountant."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ponyexpress",
+    "stockyard_name": "Pony Express",
+    "stockyard_tagline": "Self-hosted transactional email sender",
+    "stockyard_free": "500 emails/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited emails, templates, delivery tracking, webhook notifications",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ponyexpress/install.sh | sh",
+    "stockyard_port": 8930,
+    "competitor_name": "Mailchimp Transactional",
+    "competitor_slug": "mailchimp-transactional",
+    "competitor_url": "https://mailchimp.com/features/transactional-email/",
+    "competitor_price": "$20/mo (25k emails)",
+    "competitor_pricing_note": "$20/mo for first 25k. Additional blocks of 1k for $0.80-$1.20.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 email logs stay on your server",
+      "$0.99/mo vs $20/mo",
+      "No per-email pricing on Pro",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Established deliverability reputation",
+      "Detailed analytics and A/B testing",
+      "Pre-built email templates",
+      "IP warm-up and dedicated IPs"
+    ],
+    "honest_verdict": "Mailchimp Transactional (formerly Mandrill) has years of deliverability reputation and infrastructure. If email deliverability is critical to your business, a managed service with established IP reputation is the safer choice. If you send moderate volumes and want to control your email infrastructure, Pony Express is simpler and cheaper.",
+    "seo_title": "Pony Express vs Mailchimp \u2014 Self-hosted transactional email",
+    "seo_description": "Mailchimp Transactional is $20/mo. Pony Express is self-hosted \u2014 single binary, $0.99/mo Pro. Send receipts and notifications from your server.",
+    "faq": [
+      {
+        "q": "Is Pony Express a Mailchimp Transactional alternative?",
+        "a": "Both send transactional emails (receipts, notifications, alerts). Pony Express is self-hosted. Mailchimp Transactional is managed with established deliverability."
+      },
+      {
+        "q": "Will emails from Pony Express land in inbox?",
+        "a": "Deliverability depends on your server's IP reputation, SPF/DKIM setup, and sending volume. Managed services have an advantage here for high-volume senders."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "bandolier",
+    "stockyard_name": "Bandolier",
+    "stockyard_tagline": "Self-hosted environment variable manager",
+    "stockyard_free": "2 environments, 20 vars",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited environments, vars, version history, team access, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/bandolier/install.sh | sh",
+    "stockyard_port": 9990,
+    "competitor_name": "Infisical",
+    "competitor_slug": "infisical",
+    "competitor_url": "https://infisical.com",
+    "competitor_price": "$6/user/mo (Pro)",
+    "competitor_pricing_note": "Free: 5 users. Pro: $6/user/mo. Enterprise: custom.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, self-hostable with Docker, Postgres, and Redis",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker, Postgres, or Redis",
+      "$0.99/mo flat vs $6/user/mo",
+      "No per-seat pricing",
+      "Simpler to deploy and operate"
+    ],
+    "strengths_competitor": [
+      "Full secret management platform (not just env vars)",
+      "Native integrations with every CI/CD platform",
+      "Secret rotation and dynamic secrets",
+      "Kubernetes operator for automatic sync"
+    ],
+    "honest_verdict": "Infisical is a full secret management platform with CI/CD integrations and Kubernetes operators. If you need deep platform integration and secret rotation, Infisical is more complete. If you want a simple way to manage env vars across environments without per-seat pricing, Bandolier is simpler.",
+    "seo_title": "Bandolier vs Infisical \u2014 Self-hosted env var management",
+    "seo_description": "Infisical charges $6/user/mo. Bandolier is self-hosted env var management \u2014 single binary, $0.99/mo flat. No per-seat pricing.",
+    "faq": [
+      {
+        "q": "Is Bandolier an Infisical alternative?",
+        "a": "Both manage environment variables and secrets. Bandolier is a single binary focused on env vars. Infisical is a broader secret management platform with CI/CD integrations."
+      },
+      {
+        "q": "Does Bandolier support secret rotation?",
+        "a": "Bandolier stores and serves env vars with version history. For automatic secret rotation, Infisical or HashiCorp Vault are more capable."
+      }
+    ]
+  }
+]
