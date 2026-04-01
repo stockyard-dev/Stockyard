@@ -172,6 +172,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <main class="content" id="main">
     <h1>Quickstart</h1>
     <p class="subtitle">Zero to first proxied request in under 5 minutes.</p>
+    <div class="note" style="border-left-color:var(--green-light)"><strong style="color:var(--green-light)">License note:</strong> The proxy core is <strong>Apache 2.0</strong>. The full platform (tracing, prompt management, routing apps) is BSL 1.1. To run just the Apache 2.0 proxy binary, see <a href="/docs/proxy/">stockyard-proxy</a>.</div>
 
     <h2 id="install"><span class="step-num">1</span> Install</h2>
     <p>Stockyard ships as a single binary. No runtime, no dependencies, no package manager.</p>
@@ -199,8 +200,9 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">stockyard</span>
 
 <span class="comment"># Listening on :7749</span>
-<span class="comment"># 76 modules loaded</span>
-<span class="comment"># 29 products active</span>
+<span class="comment"># Proxy: http://localhost:7749/v1  (OpenAI-compatible)</span>
+<span class="comment"># 76 middleware modules loaded</span>
+<span class="comment"># Dashboard: http://localhost:7749/ui</span>
 </pre>
     <div class="note"><strong>Key detection</strong><br>Stockyard recognizes key prefixes automatically: <code>sk-</code> &rarr; OpenAI, <code>sk-ant-</code> &rarr; Anthropic, <code>gsk_</code> &rarr; Groq, <code>AI</code> &rarr; Google, and so on. Set multiple keys to enable failover and multi-provider routing.</div>
 
@@ -242,9 +244,9 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">export STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
 <span class="cmd">curl http://localhost:7749/api/platform/health \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY"</span>
-<span class="comment"># {"status":"ok","products":29,"active":29,"healthy":29,...}</span>
+<span class="comment"># {"status":"ok","proxy":"healthy","modules":76,"providers":["openai","anthropic",...]}</span>
 </pre>
-    <p>Open <code>http://localhost:7749/ui</code> for the web console. It shows modules, providers, traces, costs, and all 29 products in real time. No separate install, no external dependencies.</p>
+    <p>Open <code>http://localhost:7749/ui</code> for the web console. It shows traces, costs, module status, and provider health in real time. No separate install, no external dependencies.</p>
 
     <h2 id="enable-module"><span class="step-num">5</span> Enable a module</h2>
     <p>The proxy starts with a default module set. You can toggle individual modules at runtime without restarting.</p>
@@ -353,10 +355,10 @@ modules:
       <tr><th>Topic</th><th>What you&rsquo;ll learn</th></tr>
       <tr><td><a href="/proxy-only/">Use as proxy only</a></td><td>Run Stockyard as a transparent proxy without adopting the full platform</td></tr>
       <tr><td><a href="/docs/auth/">Auth &amp; Config</a></td><td>API key management, provider keys, YAML configuration</td></tr>
-      <tr><td><a href="/docs/proxy/">Chute</a></td><td>All 76 modules, provider setup, failover, streaming</td></tr>
+      <tr><td><a href="/docs/proxy/">Proxy modules (Chute)</a></td><td>All 76 modules, provider setup, failover, streaming</td></tr>
       <tr><td><a href="/model-aliasing/">Model Aliasing</a></td><td>Map model names so you can swap providers without changing app code</td></tr>
-      <tr><td><a href="/docs/observe/">Lookout</a></td><td>Traces, cost dashboards, usage alerts</td></tr>
-      <tr><td><a href="/docs/trust/">Brand</a></td><td>Guardrails, PII redaction, audit ledger</td></tr>
+      <tr><td><a href="/docs/observe/">Tracing &amp; costs (Lookout)</a></td><td>Traces, cost dashboards, usage alerts</td></tr>
+      <tr><td><a href="/docs/trust/">Guardrails &amp; audit (Brand)</a></td><td>Guardrails, PII redaction, audit ledger</td></tr>
       <tr><td><a href="/openai-compatible-proxy/">OpenAI-compatible proxy</a></td><td>Works with any OpenAI SDK &mdash; Python, Node, Go, curl</td></tr>
     </table>
 

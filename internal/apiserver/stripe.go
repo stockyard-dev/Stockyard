@@ -114,7 +114,15 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 
 	successURL := s.config.SuccessURL
 	if successURL == "" {
-		successURL = "https://stockyard.dev/success?session_id={CHECKOUT_SESSION_ID}"
+		successURL = "https://stockyard.dev/billing/success/"
+	}
+	// Append product slug so billing/success page shows the correct env var
+	if product != "" && product != "stockyard" {
+		if strings.Contains(successURL, "?") {
+			successURL += "&product=" + product
+		} else {
+			successURL += "?product=" + product
+		}
 	}
 	cancelURL := s.config.CancelURL
 	if cancelURL == "" {

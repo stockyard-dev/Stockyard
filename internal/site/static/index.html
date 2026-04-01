@@ -296,15 +296,15 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
         <div class="dx-nav-sep"></div>
         <div class="dx-nav-sec">Core</div>
         <div class="dx-nav-item">&#9656; Overview</div>
-        <div class="dx-nav-item">&#8942; Chute</div>
-        <div class="dx-nav-item dx-active">&#9673; Lookout</div>
-        <div class="dx-nav-item">&#9670; Brand</div>
+        <div class="dx-nav-item">&#8942; Proxy</div>
+        <div class="dx-nav-item dx-active">&#9673; Tracing</div>
+        <div class="dx-nav-item">&#9670; Guardrails</div>
         <div class="dx-nav-sep"></div>
         <div class="dx-nav-sec">Products</div>
-        <div class="dx-nav-item">&#10138; Drover</div>
-        <div class="dx-nav-item">&#8635; Lasso</div>
-        <div class="dx-nav-item">&#9760; Feral</div>
-        <div class="dx-nav-item">&#9733; Breed</div>
+        <div class="dx-nav-item">&#10138; Auto-routing</div>
+        <div class="dx-nav-item">&#8635; Replay</div>
+        <div class="dx-nav-item">&#9760; Red-team</div>
+        <div class="dx-nav-item">&#9733; Optimization</div>
         <div class="dx-nav-sep"></div>
         <div class="dx-nav-ver">v1.7.0 &middot; Dev</div>
       </div>
@@ -313,7 +313,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
       <div class="dx-content">
         <!-- Page head -->
         <div class="dx-page-head">
-          <div class="dx-eyebrow">&#9135; Lookout</div>
+          <div class="dx-eyebrow">&#9135; Tracing &amp; Costs</div>
           <div class="dx-h2">Analytics &amp; Traces</div>
         </div>
 
@@ -363,7 +363,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
             <div class="dx-td-row"><span class="dx-td-label">Latency</span><span class="dx-mono" id="dx-d-lat">624ms</span></div>
             <div class="dx-td-row"><span class="dx-td-label">Cost</span><span class="dx-mono dx-gold" id="dx-d-cost">$0.0018</span></div>
             <div class="dx-td-row"><span class="dx-td-label">Status</span><span class="dx-mono" id="dx-d-status">ok</span></div>
-            <div class="dx-td-row" id="dx-d-drover-row" style="display:none"><span class="dx-td-label">Drover</span><span class="dx-mono dx-gold" id="dx-d-drover"></span></div>
+            <div class="dx-td-row" id="dx-d-drover-row" style="display:none"><span class="dx-td-label">Routing</span><span class="dx-mono dx-gold" id="dx-d-drover"></span></div>
             <div class="dx-td-section"><div class="dx-td-label">Request</div><pre class="dx-td-pre" id="dx-d-req"></pre></div>
             <div class="dx-td-section"><div class="dx-td-label">Response</div><pre class="dx-td-pre" id="dx-d-resp"></pre></div>
             <div id="dx-d-insights"></div>
@@ -452,7 +452,7 @@ var dxDemos = [
     prompt:'Summarize Q1 2026 earnings for Acme Corp: revenue $48M (+22% YoY), net income $9.6M, 410 enterprise customers, ARR crossed $180M.',
     response:'Acme Corp posted strong Q1 2026 results: revenue hit $48M, up 22% year-over-year, with net income of $9.6M. The company now serves 410 enterprise customers and has crossed $180M in ARR.',
     insights:[
-      {type:'save',title:'Drover routed gpt-4o → gpt-4o-mini',desc:'Quality 0.91 — 6.6x cheaper. ~$300/mo saved at 1K req/day.'},
+      {type:'save',title:'Auto-routing: gpt-4o → gpt-4o-mini',desc:'Quality 0.91 — 6.6x cheaper. ~$300/mo saved at 1K req/day.'},
     ]
   },
   {
@@ -473,7 +473,7 @@ var dxDemos = [
     prompt:'Write a PostgreSQL query: users signed up last 90 days, made a purchase, haven\'t logged in for 30 days. Include email, last login, total spend, days inactive.',
     response:'SELECT u.email, u.last_login_at,\n  SUM(o.total_amount) AS total_spend,\n  EXTRACT(DAY FROM NOW() - u.last_login_at) AS days_inactive\nFROM users u JOIN orders o ON o.user_id = u.id\nWHERE u.created_at >= NOW() - INTERVAL \'90 days\'\n  AND u.last_login_at < NOW() - INTERVAL \'30 days\'\nGROUP BY u.id, u.email, u.last_login_at\nHAVING COUNT(o.id) >= 1\nORDER BY total_spend DESC;',
     insights:[
-      {type:'save',title:'Drover kept gpt-4o',desc:'Code tasks score 0.71 on mini, 0.58 on nano — below threshold. Correctly kept flagship.'},
+      {type:'save',title:'Auto-routing kept gpt-4o',desc:'Code tasks score 0.71 on mini, 0.58 on nano — below threshold. Correctly kept flagship.'},
     ]
   },
   {
@@ -610,9 +610,9 @@ dxPick(0);
   <h2 class="section-label gold">Add specialized tools when a real need shows up</h2>
   <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 0.5rem;font-size:0.95rem;text-align:center">Keep the core stack free. Unlock products by the problem they solve.</p>
   <div class="problems-grid">
-    <div class="problem-card"><div class="problem-label">Compare &amp; replay</div><div class="problem-name">Re-run requests across models</div><div class="problem-products">Lasso replays any logged request against different models. Compare cost, latency, and output side by side before committing.</div></div>
-    <div class="problem-card"><div class="problem-label">Auto-route for cost or speed</div><div class="problem-name">Route to the cheapest model that works</div><div class="problem-products">Drover routes each request to the cheapest model that meets your quality floor. Three modes: cost, speed, balanced. 100 free decisions per day.</div></div>
-    <div class="problem-card"><div class="problem-label">Red-team &amp; stress test</div><div class="problem-name">Find safety gaps before users do</div><div class="problem-products">Feral runs adversarial probes against your prompts. Free 5-probe quickscan on any tier. Stampede floods your stack with synthetic traffic.</div></div>
+    <div class="problem-card"><div class="problem-label">Compare &amp; replay</div><div class="problem-name">Re-run requests across models</div><div class="problem-products">The replay tool replays any logged request against different models. Compare cost, latency, and output side by side before committing.</div></div>
+    <div class="problem-card"><div class="problem-label">Auto-route for cost or speed</div><div class="problem-name">Route to the cheapest model that works</div><div class="problem-products">Auto-routing sends each request to the cheapest model that meets your quality floor. Three modes: cost, speed, balanced. 100 free decisions per day.</div></div>
+    <div class="problem-card"><div class="problem-label">Red-team &amp; stress test</div><div class="problem-name">Find safety gaps before users do</div><div class="problem-products">Red-team testing runs adversarial probes against your prompts. Free 5-probe quickscan on any tier. Stampede floods your stack with synthetic traffic.</div></div>
     <div class="problem-card"><div class="problem-label">Evolve &amp; enforce quality</div><div class="problem-name">Breed better prompts, gate outputs</div><div class="problem-products">Breed evolves prompt populations through genetic optimization. Verdikt evaluates outputs before they reach users. Crucible scores confidence.</div></div>
   </div>
   <p style="text-align:center;margin-top:2rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">All 29 products &rarr;</a> &nbsp;&middot;&nbsp; <a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">See what unlocks at each tier &rarr;</a></p>
