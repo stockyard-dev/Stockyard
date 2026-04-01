@@ -318,6 +318,10 @@ func isPublicRoute(method, path string) bool {
 	if method == "POST" && path == "/api/checkout" {
 		return true
 	}
+	// Waitlist — public, unauthenticated, rate-limited in handler
+	if method == "POST" && path == "/api/waitlist" {
+		return true
+	}
 	// Stripe webhooks (signature-verified, not admin-key-verified)
 	if method == "POST" && path == "/webhooks/stripe" {
 		return true
