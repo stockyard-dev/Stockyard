@@ -190,6 +190,22 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   <p class="sub">76 modules and 40 providers, free. Paid tiers unlock 29 products as your needs grow.</p>
 </section>
 
+
+<div style="max-width:1100px;margin:2rem auto 0;padding:0 2rem">
+  <div style="background:#241e18;border:2px solid #d4a843;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:#d4a843;margin-bottom:.5rem">NEW &mdash; Stockyard Complete</div>
+      <div style="font-size:1.15rem;font-weight:700;color:var(--cream);margin-bottom:.3rem">All 150 focused tools. One price.</div>
+      <div style="font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)">Webhook inboxes, cron schedulers, NPS trackers, home inventories &mdash; 150 single-binary tools, all Pro.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;flex-shrink:0;text-align:center">
+      <button id="complete-btn-monthly" onclick="startCompleteCheckout('monthly')" style="font-family:var(--font-mono);font-size:.82rem;padding:.7rem 1.8rem;background:#d4a843;color:#1a1410;border:2px solid #d4a843;cursor:pointer;font-weight:600">All 150 Tools &mdash; $29/mo</button>
+      <button id="complete-btn-annual" onclick="startCompleteCheckout('annual')" style="font-family:var(--font-mono);font-size:.75rem;padding:.5rem 1.5rem;background:transparent;color:var(--cream-dim);border:1px solid #4a3520;cursor:pointer">Annual &mdash; $249/yr &nbsp;<span style="color:#5ba86e">save $99</span></button>
+      <a href="/tools/" style="font-family:var(--font-mono);font-size:.62rem;color:#c4a87a">Browse all 150 tools &rarr;</a>
+    </div>
+  </div>
+</div>
+
 <div class="billing-toggle">
   <span id="label-monthly" class="active" onclick="setBilling('monthly')">Monthly</span>
   <div id="toggle-track" class="toggle-track" onclick="toggleBilling()">
@@ -702,6 +718,24 @@ function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.quer
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
 <noscript><p class="annual-note">Annual billing saves 2 months. Enable JavaScript to toggle between monthly and annual pricing.</p></noscript>
+
+
+<script>
+async function startCompleteCheckout(interval) {
+  const btn = document.getElementById('complete-btn-' + interval);
+  if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
+  try {
+    const r = await fetch('https://stockyard.dev/api/checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({plan: 'complete', interval: interval})
+    });
+    const d = await r.json();
+    if (d.url) { window.location.href = d.url; }
+    else { alert('Checkout error: ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'All 150 Tools'; btn.style.opacity = '1'; } }
+  } catch(e) { alert('Network error'); if (btn) { btn.textContent = 'All 150 Tools'; btn.style.opacity = '1'; } }
+}
+</script>
 
 </body>
 </html>

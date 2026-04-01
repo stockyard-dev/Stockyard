@@ -91,6 +91,7 @@ func (s *Server) registerRoutes() {
 	// Public API — product catalog
 	s.mux.HandleFunc("GET /api/products", s.handleProducts)
 	s.mux.HandleFunc("GET /api/tools", s.handleToolPlans)
+	s.mux.HandleFunc("POST /api/waitlist", s.handleWaitlist)
 	s.mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
 	s.mux.HandleFunc("GET /api/plans", s.handlePlans)
 

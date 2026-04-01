@@ -235,6 +235,16 @@ func ToolPlans() []ToolPlan {
 			ProSummary:  "Unlimited events, 90-day retention, policy templates, signed bundles",
 			PageURL:     "https://stockyard.dev/brand/",
 		},
+		{
+			Slug:        "complete",
+			Name:        "Stockyard Complete",
+			Tool:        "complete",
+			PriceCents:  2900,
+			AnnualCents: 24900,
+			FreeSummary: "Try any tool free",
+			ProSummary:  "All 150 tools, unlimited Pro on everything",
+			PageURL:     "https://stockyard.dev/complete/",
+		},
 	}
 }
 

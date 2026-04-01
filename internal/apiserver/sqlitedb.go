@@ -84,7 +84,7 @@ func (db *SqliteDB) migrate() error {
 		return err
 	}
 
-	migrations := []string{apiMigrationV1, apiMigrationV2}
+	migrations := []string{apiMigrationV1, apiMigrationV2, apiMigrationV3}
 
 	for i, m := range migrations {
 		v := i + 1
@@ -205,6 +205,20 @@ CREATE TABLE IF NOT EXISTS exchange_stars (
 // After this migration, api_key stores the SHA-256 hash and key_prefix stores "sk_sy_xxxx...yyyy".
 const apiMigrationV2 = `
 ALTER TABLE cloud_tenants ADD COLUMN key_prefix TEXT DEFAULT '';
+`
+
+
+// apiMigrationV3 adds the waitlist table for tool pre-launch signups.
+const apiMigrationV3 = `
+CREATE TABLE IF NOT EXISTS waitlist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    tool TEXT NOT NULL DEFAULT '',
+    ip TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(email, tool)
+);
+CREATE INDEX IF NOT EXISTS idx_waitlist_tool ON waitlist(tool);
 `
 
 // migrateHashCloudKeys hashes any plaintext API keys left in the api_key column.
