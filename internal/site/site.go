@@ -332,6 +332,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/providers/xai/",
 		"/llm-proxy-for-cursor/",
 		"/llm-proxy-for-teams/",
+		"/llm-proxy/",
 		"/how-to-reduce-llm-costs/",
 		"/llm-request-replay/",
 		"/prompt-version-control/",

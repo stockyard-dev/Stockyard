@@ -7,10 +7,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<title>Stockyard — Self-Hosted LLM Proxy, Tracing &amp; Security in One Binary</title>
-<meta name="description" content="Self-hosted LLM proxy with tracing, adversarial testing, and automatic routing. One Go binary, zero dependencies, 40 providers. Free to start, unlock more when you need it.">
-<meta property="og:title" content="Stockyard — Self-Hosted LLM Proxy, Tracing &amp; Security in One Binary">
-<meta property="og:description" content="Point your app at Stockyard to trace requests, control spend, and harden your LLM stack. One binary, five minutes, free to start.">
+<title>Stockyard — Wrangle your Stack. 30 Self-Hosted Developer Tools.</title>
+<meta name="description" content="30 self-hosted developer tools. LLM proxy, webhooks, analytics, CRM, invoicing, uptime monitoring, and more. Each one is a single Go binary with embedded SQLite. Zero dependencies. Your server, your data, your rules.">
+<meta property="og:title" content="Stockyard — Wrangle your Stack.">
+<meta property="og:description" content="30 self-hosted developer tools. Single binary each, embedded SQLite, zero dependencies. Own your infrastructure.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -18,8 +18,8 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@Stockyard_dev">
-<meta name="twitter:title" content="Stockyard — Self-Hosted LLM Proxy, Tracing &amp; Security in One Binary">
-<meta name="twitter:description" content="Point your app at Stockyard to trace requests, control spend, and harden your LLM stack. One binary, five minutes, free to start.">
+<meta name="twitter:title" content="Stockyard — Wrangle your Stack.">
+<meta name="twitter:description" content="30 self-hosted developer tools. Single binary each, embedded SQLite, zero dependencies. Own your infrastructure.">
 <meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <link rel="canonical" href="https://stockyard.dev/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -189,6 +189,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .problem-label{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem}
 .problem-name{font-family:var(--font-mono);font-size:0.9rem;color:var(--cream);margin-bottom:0.5rem;font-weight:600}
 .problem-products{font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.7}
+.family-card{display:block;padding:0.8rem 1rem;border:1px solid var(--bg3);background:var(--bg);text-decoration:none;transition:border-color 0.2s}
+.family-card:hover{border-color:var(--rust)}
+.fc-name{font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);display:block;margin-bottom:0.2rem}
+.fc-desc{font-size:0.72rem;color:var(--cream-dim);font-style:italic;display:block}
 </style>
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
@@ -206,11 +210,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
       <div class="nav-drop-menu">
         <div class="drop-section">Platform</div>
         <a href="/">Stockyard</a>
+        <a href="/tools/">All 30 Tools</a>
         <div class="drop-section">Focused Tools</div>
         <a href="/corral/">Corral</a>
         <a href="/gate/">Gate</a>
-        <a href="/trough/">Trough</a>
         <a href="/fence/">Fence</a>
+        <a href="/trough/">Trough</a>
         <a href="/brand/">Brand</a>
       </div>
     </div>
@@ -225,26 +230,79 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <!-- 1. Hero -->
 <section class="hero" id="main">
-  <div class="hero-eyebrow">Open Source Proxy &middot; Zero Dependencies &middot; Apache 2.0</div>
-  <h1>Self-hosted LLM proxy, tracing, and security <span class="accent">in one binary.</span></h1>
-  <p class="hero-sub">Change one URL in your app. Instantly see what every LLM request costs, cache the repeated ones, and swap providers without redeploying. One binary, installs in 60 seconds, runs on your machine.</p>
+  <div class="hero-eyebrow">Wrangle your Stack</div>
+  <h1>Own your infrastructure. <span class="accent">All of it.</span></h1>
+  <p class="hero-sub">30 self-hosted developer tools. Each one ships as a single Go binary with embedded SQLite. No Docker required. No external databases. No vendor lock-in. Your server, your data, your rules.</p>
   <div class="hero-stats">
-    <div class="stat"><span class="stat-num">~25MB</span><span class="stat-label">Single Binary</span></div>
-    <div class="stat"><span class="stat-num">40</span><span class="stat-label">Providers</span></div>
-    <a href="/benchmarks/" style="text-decoration:none;color:inherit" class="stat"><span class="stat-num">400ns</span><span class="stat-label">Overhead</span></a>
-    <div class="stat"><span class="stat-num">5 min</span><span class="stat-label">To First Trace</span></div>
+    <div class="stat"><span class="stat-num">30</span><span class="stat-label">Tools</span></div>
+    <div class="stat"><span class="stat-num">~13MB</span><span class="stat-label">Per Binary</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Dependencies</span></div>
+    <div class="stat"><span class="stat-num">Free</span><span class="stat-label">To Start</span></div>
   </div>
   <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Install Stockyard</a>
-    <a href="#demo" class="btn btn-secondary">See how it works</a>
-  </div>
-  <div class="install-cmd" style="margin-top:1.5rem" onclick="copyInstall()" title="Click to copy">
-    <span>curl -fsSL stockyard.dev/install.sh | sh</span>
-    <span style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem" id="copy-hint">click to copy</span>
+    <a href="/tools/" class="btn btn-primary">Browse all 30 tools</a>
+    <a href="/guide/" class="btn btn-secondary">Install the platform</a>
   </div>
 </section>
 
-<!-- 2. Proxy-only entry wedge -->
+<!-- 2. The Family — all 30 tools -->
+<section class="section-alt" style="border-bottom:1px solid var(--bg3)">
+  <div class="section-alt-inner">
+    <h2 class="section-label leather">The Family</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2rem;font-size:0.95rem;text-align:center">30 tools. Each one is a single binary, free to start, runs on your hardware. Pick the ones you need, ignore the rest.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8rem">
+      <a href="/corral/" class="family-card"><span class="fc-name">Corral</span><span class="fc-desc">Webhook capture &amp; replay</span></a>
+      <a href="/gate/" class="family-card"><span class="fc-name">Gate</span><span class="fc-desc">Auth proxy for services</span></a>
+      <a href="/trough/" class="family-card"><span class="fc-name">Trough</span><span class="fc-desc">API cost monitor</span></a>
+      <a href="/fence/" class="family-card"><span class="fc-name">Fence</span><span class="fc-desc">API key vault</span></a>
+      <a href="/brand/" class="family-card"><span class="fc-name">Brand</span><span class="fc-desc">Verifiable audit trail</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-saltlick" class="family-card"><span class="fc-name">Saltlick</span><span class="fc-desc">Feature flags</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-paddock" class="family-card"><span class="fc-name">Paddock</span><span class="fc-desc">Uptime monitor</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-wrangler" class="family-card"><span class="fc-name">Wrangler</span><span class="fc-desc">Background job queue</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-post" class="family-card"><span class="fc-name">Post</span><span class="fc-desc">Form backend</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-rangeland" class="family-card"><span class="fc-name">Rangeland</span><span class="fc-desc">Privacy-first web analytics</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-telegraph" class="family-card"><span class="fc-name">Telegraph</span><span class="fc-desc">Webhook sender</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-cipher" class="family-card"><span class="fc-name">Cipher</span><span class="fc-desc">Secrets manager for CI/CD</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-lasso" class="family-card"><span class="fc-name">Lasso</span><span class="fc-desc">Link shortener</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-dispatch" class="family-card"><span class="fc-name">Dispatch</span><span class="fc-desc">Email list &amp; newsletter</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-stampede" class="family-card"><span class="fc-name">Stampede</span><span class="fc-desc">Load tester</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-spur" class="family-card"><span class="fc-name">Spur</span><span class="fc-desc">API mock server</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-almanac" class="family-card"><span class="fc-name">Almanac</span><span class="fc-desc">Changelog &amp; release notes</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-pulpit" class="family-card"><span class="fc-name">Pulpit</span><span class="fc-desc">Blogging platform</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-ledger" class="family-card"><span class="fc-name">Ledger</span><span class="fc-desc">Invoicing</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-roster" class="family-card"><span class="fc-name">Roster</span><span class="fc-desc">CRM for solo founders</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-muster" class="family-card"><span class="fc-name">Muster</span><span class="fc-desc">On-call schedule</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-chalkboard" class="family-card"><span class="fc-name">Chalkboard</span><span class="fc-desc">Internal wiki</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-saddlebag" class="family-card"><span class="fc-name">Saddlebag</span><span class="fc-desc">File sharing</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-rustler" class="family-card"><span class="fc-name">Rustler</span><span class="fc-desc">Dead link checker</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-homestead" class="family-card"><span class="fc-name">Homestead</span><span class="fc-desc">Personal dashboard</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-wateringhole" class="family-card"><span class="fc-name">Watering Hole</span><span class="fc-desc">Link-in-bio pages</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-ponyexpress" class="family-card"><span class="fc-name">Pony Express</span><span class="fc-desc">Transactional email relay</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-ticker" class="family-card"><span class="fc-name">Ticker</span><span class="fc-desc">Personal finance tracker</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-campfire" class="family-card"><span class="fc-name">Campfire</span><span class="fc-desc">Community forum</span></a>
+      <a href="https://github.com/stockyard-dev/stockyard-brandingiron" class="family-card"><span class="fc-name">Branding Iron</span><span class="fc-desc">OG image API</span></a>
+    </div>
+    <p style="text-align:center;margin-top:1.5rem"><a href="/tools/" style="font-family:var(--font-mono);font-size:0.8rem">Full catalog with pricing &rarr;</a></p>
+  </div>
+</section>
+
+<!-- The Flagship: LLM Platform -->
+<section class="section" style="text-align:center">
+  <h2 class="section-label gold">The Flagship</h2>
+  <div style="max-width:700px;margin:0 auto;padding:2rem;border:2px solid var(--rust);background:var(--bg2)">
+    <div style="font-family:var(--font-mono);font-size:1.2rem;color:var(--cream);margin-bottom:0.5rem">Stockyard LLM Platform</div>
+    <p style="color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem">Self-hosted LLM proxy, tracing, and security. 40 providers, 400ns overhead, one binary. The tool that started it all.</p>
+    <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather-light);margin-bottom:1.5rem">
+      <span>40 providers</span><span>400ns overhead</span><span>~25MB binary</span><span>76 middleware modules</span>
+    </div>
+    <div class="cta-group">
+      <a href="/guide/" class="btn btn-primary">Install</a>
+      <a href="/llm-proxy/" class="btn btn-secondary">Learn more</a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Proxy-only entry wedge -->
 <section class="proxy-wedge">
   <h2 class="section-label">Use Stockyard as just a proxy</h2>
   <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2rem;font-size:0.95rem;text-align:center">Point your app at one endpoint, route requests through it, and stop there if that&rsquo;s all you need. No forced stack adoption.</p>
@@ -618,39 +676,13 @@ dxPick(0);
   <p style="text-align:center;margin-top:2rem"><a href="/products/" style="font-family:var(--font-mono);font-size:0.8rem">All 29 products &rarr;</a> &nbsp;&middot;&nbsp; <a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">See what unlocks at each tier &rarr;</a></p>
 </div>
 
-<!-- 7b. Stockyard Family Tools -->
+<!-- 7b. Full tool catalog link -->
 <section class="section-alt" style="border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)">
-  <div class="section-alt-inner">
-    <h2 class="section-label leather">Focused tools from the Stockyard family</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 1.5rem;font-size:0.95rem;text-align:center">Standalone tools for specific infrastructure problems. Each one is a single binary, free to start, and built to work alongside Stockyard or on its own.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:1rem">
-      <a href="/corral/" style="display:block;padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">
-        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.3rem">Corral</span>
-        <span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.5;display:block;margin-bottom:0.5rem">Webhook capture and replay</span>
-        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--green-light)">Free &middot; $0.99/mo Pro</span>
-      </a>
-      <a href="/gate/" style="display:block;padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">
-        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.3rem">Gate</span>
-        <span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.5;display:block;margin-bottom:0.5rem">Auth gateway for internal tools</span>
-        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--green-light)">Free &middot; $2.99/mo Pro</span>
-      </a>
-      <a href="/trough/" style="display:block;padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">
-        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.3rem">Trough</span>
-        <span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.5;display:block;margin-bottom:0.5rem">API cost monitor</span>
-        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--green-light)">Free &middot; $2.99/mo Pro</span>
-      </a>
-      <a href="/fence/" style="display:block;padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">
-        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.3rem">Fence</span>
-        <span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.5;display:block;margin-bottom:0.5rem">API key vault for teams</span>
-        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--gold)">Free &middot; $4.99/mo Pro</span>
-      </a>
-      <a href="/brand/" style="display:block;padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg);text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">
-        <span style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.3rem">Brand</span>
-        <span style="font-size:0.78rem;color:var(--cream-dim);font-style:italic;line-height:1.5;display:block;margin-bottom:0.5rem">Verifiable audit trail</span>
-        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--gold)">Free &middot; $4.99/mo Pro</span>
-      </a>
-    </div>
-    <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">Each tool ships as a single Go binary &middot; Embedded SQLite &middot; Apache 2.0 or BSL 1.1</p>
+  <div class="section-alt-inner" style="text-align:center">
+    <h2 class="section-label leather">30 tools and counting</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto 1.5rem;font-size:0.95rem">LLM proxy, webhooks, analytics, feature flags, uptime monitors, CRM, invoicing, load testing, blogging, forums, and more. Every tool follows the same architecture: single binary, embedded SQLite, free to start.</p>
+    <a href="/tools/" class="btn btn-primary">Browse all 30 tools</a>
+    <p style="margin-top:1rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)">Each tool ships as a single Go binary &middot; Embedded SQLite &middot; Apache 2.0</p>
   </div>
 </section>
 
@@ -702,7 +734,7 @@ dxPick(0);
       <div class="tier"><div class="t-name">Individual</div><div class="t-price">$29.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 5 products</div><div class="t-desc">Lasso replay, Auction bidding, Doubt, Verdikt, Relic provenance.</div><a href="/pricing/" class="t-cta">Start Individual</a></div>
       <div class="tier tier-highlight"><div class="t-name">Pro</div><div class="t-price">$99.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 12 products</div><div class="t-desc">Drover autopilot, Breed evolution, Stampede load testing, Fault chaos.</div><a href="/pricing/" class="t-cta">Go Pro</a></div>
       <div class="tier"><div class="t-name">Team</div><div class="t-price">$299.99</div><div class="t-period">per month</div><div class="t-unlock">Unlocks 23 products</div><div class="t-desc">Feral red-team, Phantom personas, Crucible scoring, full analytics.</div><a href="/pricing/" class="t-cta">Start Team</a></div>
-      <div class="tier"><div class="t-name">Enterprise</div><div class="t-price">$499.99</div><div class="t-period">per month</div><div class="t-unlock">All 29 products</div><div class="t-desc">Cortex, Mycelium, Spore, Molt. SSO. SLA. Dedicated support.</div><a href="/pricing/" class="t-cta">Contact sales</a></div>
+      <div class="tier"><div class="t-name">Enterprise</div><div class="t-price">$499.99</div><div class="t-period">per month</div><div class="t-unlock">All 30 products</div><div class="t-desc">Cortex, Mycelium, Spore, Molt. SSO. SLA. Dedicated support.</div><a href="/pricing/" class="t-cta">Contact sales</a></div>
     </div>
     <p style="text-align:center;margin-top:1.5rem"><a href="/pricing/" style="font-family:var(--font-mono);font-size:0.8rem">Full pricing comparison &rarr;</a></p>
   </div>
@@ -745,7 +777,7 @@ dxPick(0);
 <footer style="border-top:1px solid var(--bg3);padding:2.5rem 2rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">
   <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2rem;margin-bottom:2rem">
     <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Platform</div><a href="/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Stockyard</a><a href="/pricing/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Pricing</a><a href="/docs/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Docs</a><a href="/products/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">All Products</a><a href="https://github.com/stockyard-dev/Stockyard" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">GitHub</a></div>
-    <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Tools</div><a href="/corral/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Corral</a><a href="/gate/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Gate</a><a href="/trough/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Trough</a><a href="/fence/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Fence</a><a href="/brand/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Brand</a></div>
+    <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Tools</div><a href="/tools/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">All 30 Tools</a><a href="/corral/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Corral</a><a href="/gate/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Gate</a><a href="/trough/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Trough</a><a href="/fence/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Fence</a><a href="/brand/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Brand</a></div>
     <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Learn</div><a href="/what-is-llm-proxy/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">What is an LLM proxy?</a><a href="/llm-gateway-vs-proxy/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Gateway vs proxy</a><a href="/benchmarks/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Benchmarks</a><a href="/blog/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Blog</a></div>
     <div><div style="color:var(--leather-light);margin-bottom:0.8rem;letter-spacing:1px;text-transform:uppercase">Company</div><a href="/privacy/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Privacy</a><a href="/terms/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Terms</a><a href="/security/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Security</a><a href="/changelog/" style="display:block;padding:0.2rem 0;color:var(--cream-muted)">Changelog</a></div>
   </div>

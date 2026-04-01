@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Self-Hosted LLM Proxy — Stockyard</title>
+<meta name="description" content="Self-hosted LLM proxy. One Go binary, zero dependencies, 40 providers, 400ns overhead. Route, trace, and secure every LLM request. Free to start.">
+<meta property="og:title" content="Self-Hosted LLM Proxy. One Binary. Zero Dependencies.">
+<meta property="og:description" content="Route, trace, and secure every LLM request through one endpoint. 40 providers, 400ns overhead. Install in 60 seconds.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/llm-proxy/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.hero{max-width:800px;margin:0 auto;padding:6rem 2rem 4rem;text-align:center}
+.hero-ey{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
+.hero-ey::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:1.5rem}
+.hero h1 .a{color:var(--rust-light)}
+.hero-sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto 2.5rem;line-height:1.8}
+.stats{display:flex;gap:3rem;justify-content:center;margin-bottom:3rem;flex-wrap:wrap}
+.stat{text-align:center}.stat-n{font-family:var(--font-mono);font-size:2rem;font-weight:700;display:block}.stat-l{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather)}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-p{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-p:hover{background:var(--rust-light);border-color:var(--rust-light)}
+.btn-s{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-s:hover{border-color:var(--cream)}
+.cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cmd{font-family:var(--font-mono);font-size:0.82rem;color:var(--leather-light);background:var(--bg2);padding:0.6rem 1.5rem;display:inline-block;border:1px solid var(--bg3);margin-top:1.5rem;cursor:pointer}
+.section{padding:4rem 2rem;max-width:800px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:800px;margin:0 auto}
+.label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1.5rem}
+@media(max-width:600px){.grid3{grid-template-columns:1fr}}
+.card{padding:1.5rem;border:1px solid var(--bg3);text-align:center}
+.card-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);display:block;margin-bottom:0.4rem}
+.card-desc{font-size:0.8rem;color:var(--cream-dim);font-style:italic}
+.code{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.82rem;color:var(--leather-light);margin:1.5rem 0;line-height:1.8}
+footer{text-align:center;padding:3rem 2rem;font-size:0.7rem;color:var(--cream-muted);font-family:var(--font-mono);border-top:1px solid var(--bg3)}
+footer a{color:var(--cream-muted)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+
+<section class="hero">
+  <a href="/" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem"><svg viewBox="0 0 64 64" width="20" height="20" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="hero-ey">Self-Hosted LLM Proxy</div>
+  <h1>One binary. <span class="a">Zero dependencies.</span></h1>
+  <p class="hero-sub">Point your app at one endpoint. Route requests across 40 LLM providers. See what every request costs. Swap models without redeploying. Installs in 60 seconds, runs on your machine.</p>
+  <div class="stats">
+    <div class="stat"><span class="stat-n">~25MB</span><span class="stat-l">Single Binary</span></div>
+    <div class="stat"><span class="stat-n">40</span><span class="stat-l">Providers</span></div>
+    <div class="stat"><span class="stat-n">400ns</span><span class="stat-l">Overhead</span></div>
+    <div class="stat"><span class="stat-n">76</span><span class="stat-l">Modules</span></div>
+  </div>
+  <div class="cta">
+    <a href="/guide/" class="btn btn-p">Install Stockyard</a>
+    <a href="/docs/quickstart/" class="btn btn-s">Quickstart guide</a>
+  </div>
+  <div class="cmd" onclick="navigator.clipboard.writeText('curl -fsSL stockyard.dev/install.sh | sh');this.querySelector('.hint').textContent='copied!'">
+    <span>curl -fsSL stockyard.dev/install.sh | sh</span>
+    <span class="hint" style="margin-left:0.8rem;opacity:0.4;font-size:0.7rem">click to copy</span>
+  </div>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <h2 class="label">Change one URL. Own your entire LLM stack.</h2>
+    <div class="grid3">
+      <div class="card"><span class="card-name">One stable endpoint</span><span class="card-desc">OpenAI-compatible across 40 providers</span></div>
+      <div class="card"><span class="card-name">Model aliasing</span><span class="card-desc">Swap models, keep app-facing names stable</span></div>
+      <div class="card"><span class="card-name">Zero dependencies</span><span class="card-desc">One binary, one SQLite file. No Redis, no Postgres.</span></div>
+    </div>
+    <div class="code">curl -fsSL stockyard.dev/install.sh | sh<br>stockyard start</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;font-family:var(--font-mono);font-size:0.7rem">
+      <div style="background:var(--bg);border:1px solid var(--bg3);padding:0.8rem"><div style="color:var(--leather);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Python</div><span style="color:var(--cream-dim)">base_url=</span><span style="color:var(--green-light)">"localhost:7749/v1"</span></div>
+      <div style="background:var(--bg);border:1px solid var(--bg3);padding:0.8rem"><div style="color:var(--leather);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Node</div><span style="color:var(--cream-dim)">baseURL:</span> <span style="color:var(--green-light)">"localhost:7749/v1"</span></div>
+      <div style="background:var(--bg);border:1px solid var(--bg3);padding:0.8rem"><div style="color:var(--leather);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Cursor / Editors</div><span style="color:var(--green-light)">localhost:7749/v1</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="text-align:center">
+  <h2 class="label">What you get free</h2>
+  <div class="grid3">
+    <div class="card"><span class="card-name">Full proxy</span><span class="card-desc">Route all LLM requests through one endpoint</span></div>
+    <div class="card"><span class="card-name">Tracing</span><span class="card-desc">See cost, latency, tokens on every request</span></div>
+    <div class="card"><span class="card-name">Model aliasing</span><span class="card-desc">Swap providers without changing app code</span></div>
+  </div>
+  <div style="margin-top:2.5rem">
+    <a href="/guide/" class="btn btn-p">Install now</a>
+    <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted);margin-top:1rem">No signup. No credit card. Self-hosted on your machine.</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Stockyard &middot; <a href="/">Home</a> &middot; <a href="/tools/">All 30 Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a></p>
+</footer>
+</body>
+</html>

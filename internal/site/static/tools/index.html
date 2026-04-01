@@ -4,77 +4,102 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<title>Stockyard Tools -- Self-Hosted Dev Tools, Single Binary</title>
-<meta name="description" content="Five self-hosted dev tools. API key vault, webhook debugger, cost monitor, auth proxy, audit trail. Single binary, zero dependencies.">
+<title>All 30 Tools — Stockyard</title>
+<meta name="description" content="30 self-hosted developer tools. LLM proxy, webhooks, analytics, feature flags, uptime monitoring, CRM, invoicing, and more. Single binary each, embedded SQLite, zero dependencies.">
 <link rel="canonical" href="https://stockyard.dev/tools/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
-body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
 .nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
-.hero{max-width:720px;margin:0 auto;padding:5rem 2rem 2.5rem;text-align:center}
-.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
-.hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
-.hero h1{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.2;margin-bottom:1rem}.hero h1 .accent{color:var(--rust-light)}
-.hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto}
-.section{padding:2.5rem 2rem;max-width:800px;margin:0 auto}
-.section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;padding-top:1.5rem;border-top:1px solid var(--bg3)}
-.section h2:first-child{border-top:none;padding-top:0}
-.section p{font-size:0.92rem;color:var(--cream-dim);margin-bottom:1rem}
-code{font-family:var(--font-mono);font-size:0.85em;background:var(--bg2);padding:0.15rem 0.4rem;color:var(--leather-light)}
-pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0 1.5rem}
-pre .cmd{color:var(--cream)}pre .comment{color:var(--cream-muted)}pre .output{color:var(--green-light)}
-.cta-box{text-align:center;padding:3rem 2rem;margin:2rem 0;border:1px solid var(--bg3);background:var(--bg2)}
-.cta-box p{color:var(--cream-dim);margin-bottom:1.5rem;font-size:0.92rem}
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);border-top:1px solid var(--bg3)}footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
-@media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000}.nav-links.open{display:flex}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
-.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem}.explore-bar a:hover{color:var(--rust-light)}
-
-.pricing-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
-.price-card{border:1px solid var(--bg3);padding:1.5rem;text-align:center}
-.price-card .tier{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.5rem}
-.price-card .amount{font-size:1.8rem;color:var(--cream);font-family:var(--font-mono);margin-bottom:0.3rem}
-.price-card .period{font-size:0.75rem;color:var(--cream-muted);font-family:var(--font-mono)}
-.price-card ul{text-align:left;list-style:none;margin-top:1rem;font-size:0.82rem;color:var(--cream-dim)}
-.price-card ul li::before{content:'\2713 ';color:var(--green-light)}
-.more-tools{padding:2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem}
-.more-tools a{color:var(--cream-dim);margin:0 0.5rem}.more-tools a:hover{color:var(--rust-light)}
-@media(max-width:768px){.pricing-row{grid-template-columns:1fr}}</style>
+.hero{max-width:900px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}
+.hero-ey{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.hero-ey::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.hero h1 .a{color:var(--rust-light)}
+.hero-sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:580px;margin:0 auto}
+.cl{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--rust);margin:3rem 0 1.5rem;padding-bottom:0.8rem;border-bottom:1px solid var(--bg3)}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;max-width:1100px;margin:0 auto;padding:0 2rem}
+.t{display:block;padding:1.2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);text-decoration:none;transition:border-color 0.2s}
+.t:hover{border-color:var(--rust)}
+.th{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.3rem}
+.tn{font-family:var(--font-mono);font-size:0.92rem;color:var(--cream)}
+.tp{font-family:var(--font-mono);font-size:0.62rem;color:var(--gold)}
+.td{font-size:0.8rem;color:var(--cream-dim);font-style:italic;margin-bottom:0.5rem;line-height:1.5}
+.tf{font-family:var(--font-mono);font-size:0.62rem;color:var(--green-light)}
+footer{text-align:center;padding:3rem 2rem 2rem;font-size:0.7rem;color:var(--cream-muted);font-family:var(--font-mono);border-top:1px solid var(--bg3);margin-top:3rem}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+@media(max-width:600px){.g{grid-template-columns:1fr}}
+</style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand">&#9651; Stockyard</a>
-  <div class="nav-links"><a href="/tools/">Tools</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/blog/">Blog</a></div>
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/tools/">Tools</a>
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </div>
 </nav>
 <section class="hero">
-  <div class="eyebrow">Stockyard Tools</div>
-  <h1>Self-Hosted Dev Tools. <span class="accent">Single Binary.</span></h1>
-  <p class="sub">Every tool ships as one binary with embedded SQLite and zero dependencies. Free tiers on everything.</p>
+  <div class="hero-ey">The Full Catalog</div>
+  <h1><span class="a">30</span> self-hosted developer tools</h1>
+  <p class="hero-sub">Each one ships as a single Go binary with embedded SQLite. No Docker required, no external databases. Free to start, Pro unlocks limits.</p>
 </section>
-<section class="section">
-<a href="/tools/fence/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Fence</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">API Key Vault <span class='accent'>for Teams</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">Store, rotate, and audit API keys. One binary. Every access logged.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $9/mo</div></a>
-<a href="/tools/corral/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Corral</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">Webhook <span class='accent'>Debugger &amp; Relay</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">Receive, inspect, replay, and forward webhooks. Self-hosted RequestBin in a single binary.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $9/mo</div></a>
-<a href="/tools/trough/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Trough</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">API Cost Monitor <span class='accent'>for Any API</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">See what every API call costs. Not just LLMs. Any HTTP API.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $14/mo</div></a>
-<a href="/tools/gate/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Gate</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">Auth Proxy <span class='accent'>for Internal Tools</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">Put auth in front of anything. No code changes to the upstream app.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $9/mo</div></a>
-<a href="/tools/brand-standalone/" style="display:block;padding:1.2rem;border:1px solid var(--bg3);margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Brand</div><div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">Audit Trail <span class='accent'>for Any App</span></div><div style="font-size:0.82rem;color:var(--cream-dim)">SHA-256 hash-chained ledger. Tamper-evident. POST events, export evidence packs.</div><div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green-light);margin-top:0.5rem">Free tier &middot; From $19/mo</div></a>
 
-<div style="text-align:center;margin-top:2rem;padding:1.5rem;border:1px solid var(--bg3)">
-  <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.3rem">Stockyard Proxy</div>
-  <div style="font-size:1.05rem;color:var(--cream);margin-bottom:0.3rem">The LLM Proxy That Started It All</div>
-  <div style="font-size:0.82rem;color:var(--cream-dim)">40+ providers, 76 middleware modules, built-in cost tracking and audit trail.</div>
-  <div style="margin-top:0.8rem"><a href="/" class="btn btn-primary" style="padding:0.5rem 1.5rem;font-size:0.78rem">Learn More</a></div>
+<div style="max-width:1100px;margin:0 auto;padding:0 2rem"><div class="cl">Developer Infrastructure</div></div>
+<div class="g">
+  <a href="/guide/" class="t"><div class="th"><span class="tn">Stockyard Platform</span><span class="tp">Free / $29.99+</span></div><div class="td">LLM proxy, tracing, and security. 40 providers, 76 middleware modules.</div><span class="tf">Full proxy + tracing free</span></a>
+  <a href="/corral/" class="t"><div class="th"><span class="tn">Corral</span><span class="tp">$0.99/mo</span></div><div class="td">Webhook capture and replay.</div><span class="tf">Free: 3 endpoints, 1K events/mo</span></a>
+  <a href="/gate/" class="t"><div class="th"><span class="tn">Gate</span><span class="tp">$2.99/mo</span></div><div class="td">Auth proxy for internal services.</div><span class="tf">Free: 1 upstream, 5 users</span></a>
+  <a href="/fence/" class="t"><div class="th"><span class="tn">Fence</span><span class="tp">$4.99/mo</span></div><div class="td">API key vault. AES-256-GCM encryption.</div><span class="tf">Free: 10 keys, 2 members</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-cipher" class="t"><div class="th"><span class="tn">Cipher</span><span class="tp">$2.99/mo</span></div><div class="td">Secrets manager for CI/CD.</div><span class="tf">Free: 20 secrets</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-saltlick" class="t"><div class="th"><span class="tn">Saltlick</span><span class="tp">$2.99/mo</span></div><div class="td">Feature flags with percentage rollout.</div><span class="tf">Free: 10 flags</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-spur" class="t"><div class="th"><span class="tn">Spur</span><span class="tp">$2.99/mo</span></div><div class="td">API mock server.</div><span class="tf">Free: 2 projects, 10 endpoints</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-wrangler" class="t"><div class="th"><span class="tn">Wrangler</span><span class="tp">$4.99/mo</span></div><div class="td">Background job queue with retries.</div><span class="tf">Free: 3 queues, 500 jobs/day</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-telegraph" class="t"><div class="th"><span class="tn">Telegraph</span><span class="tp">$2.99/mo</span></div><div class="td">Webhook sender with HMAC signing.</div><span class="tf">Free: 3 targets, 500 sends/mo</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-lasso" class="t"><div class="th"><span class="tn">Lasso</span><span class="tp">$1.99/mo</span></div><div class="td">Link shortener with click tracking.</div><span class="tf">Free: 25 links</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-post" class="t"><div class="th"><span class="tn">Post</span><span class="tp">$1.99/mo</span></div><div class="td">Form backend with spam filtering.</div><span class="tf">Free: 3 forms, 100 submissions/mo</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-rustler" class="t"><div class="th"><span class="tn">Rustler</span><span class="tp">$2.99/mo</span></div><div class="td">Dead link and SSL checker.</div><span class="tf">Free: 10 scans</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-brandingiron" class="t"><div class="th"><span class="tn">Branding Iron</span><span class="tp">$4.99/mo</span></div><div class="td">OG image generation API.</div><span class="tf">Free: 3 templates</span></a>
 </div>
-</section>
-<footer><p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a></p></footer>
+<div style="max-width:1100px;margin:0 auto;padding:0 2rem"><div class="cl">Operations</div></div>
+<div class="g">
+  <a href="/trough/" class="t"><div class="th"><span class="tn">Trough</span><span class="tp">$2.99/mo</span></div><div class="td">API cost monitor.</div><span class="tf">Free: 1 service, 10K requests/mo</span></a>
+  <a href="/brand/" class="t"><div class="th"><span class="tn">Brand</span><span class="tp">$4.99/mo</span></div><div class="td">Verifiable audit trail.</div><span class="tf">Free: 10K events/mo</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-paddock" class="t"><div class="th"><span class="tn">Paddock</span><span class="tp">$2.99/mo</span></div><div class="td">Uptime monitor with status page.</div><span class="tf">Free: 5 monitors</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-muster" class="t"><div class="th"><span class="tn">Muster</span><span class="tp">$4.99/mo</span></div><div class="td">On-call schedule and incident log.</div><span class="tf">Free: 5 members, 20 incidents</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-stampede" class="t"><div class="th"><span class="tn">Stampede</span><span class="tp">$4.99/mo</span></div><div class="td">Load tester with live stats.</div><span class="tf">Free: 5 tests, 10 workers</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-rangeland" class="t"><div class="th"><span class="tn">Rangeland</span><span class="tp">$4.99/mo</span></div><div class="td">Privacy-first web analytics.</div><span class="tf">Free: 1 site, 10K pageviews/mo</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-ticker" class="t"><div class="th"><span class="tn">Ticker</span><span class="tp">$2.99/mo</span></div><div class="td">Personal finance tracker.</div><span class="tf">Free: 3 accounts</span></a>
+</div>
+<div style="max-width:1100px;margin:0 auto;padding:0 2rem"><div class="cl">Creator &amp; Business</div></div>
+<div class="g">
+  <a href="https://github.com/stockyard-dev/stockyard-pulpit" class="t"><div class="th"><span class="tn">Pulpit</span><span class="tp">$2.99/mo</span></div><div class="td">Blogging platform with RSS.</div><span class="tf">Free: 10 posts</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-almanac" class="t"><div class="th"><span class="tn">Almanac</span><span class="tp">$1.99/mo</span></div><div class="td">Changelog and release notes.</div><span class="tf">Free: 20 entries</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-dispatch" class="t"><div class="th"><span class="tn">Dispatch</span><span class="tp">$4.99/mo</span></div><div class="td">Email list and newsletter.</div><span class="tf">Free: 1 list, 100 subs</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-ponyexpress" class="t"><div class="th"><span class="tn">Pony Express</span><span class="tp">$4.99/mo</span></div><div class="td">Transactional email relay.</div><span class="tf">Free: 100 emails/day</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-chalkboard" class="t"><div class="th"><span class="tn">Chalkboard</span><span class="tp">$4.99/mo</span></div><div class="td">Internal wiki with search.</div><span class="tf">Free: 20 pages</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-campfire" class="t"><div class="th"><span class="tn">Campfire</span><span class="tp">$4.99/mo</span></div><div class="td">Community forum.</div><span class="tf">Free: 3 categories, 50 threads</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-ledger" class="t"><div class="th"><span class="tn">Ledger</span><span class="tp">$2.99/mo</span></div><div class="td">Invoicing for freelancers.</div><span class="tf">Free: 5 clients, 20 invoices</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-roster" class="t"><div class="th"><span class="tn">Roster</span><span class="tp">$2.99/mo</span></div><div class="td">CRM for solo founders.</div><span class="tf">Free: 25 contacts</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-wateringhole" class="t"><div class="th"><span class="tn">Watering Hole</span><span class="tp">$2.99/mo</span></div><div class="td">Link-in-bio page builder.</div><span class="tf">Free: 1 profile, 10 links</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-homestead" class="t"><div class="th"><span class="tn">Homestead</span><span class="tp">$1.99/mo</span></div><div class="td">Personal dashboard.</div><span class="tf">Free: 20 bookmarks, 10 notes</span></a>
+  <a href="https://github.com/stockyard-dev/stockyard-saddlebag" class="t"><div class="th"><span class="tn">Saddlebag</span><span class="tp">$2.99/mo</span></div><div class="td">File sharing with expiry.</div><span class="tf">Free: 10 files, 50MB</span></a>
+</div>
+<footer>
+  <p>Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem">&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a></p>
+</footer>
 </body>
 </html>
