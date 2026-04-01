@@ -60,6 +60,8 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 .pricing-card ul li::before{content:'&#10003;';position:absolute;left:0;color:var(--gold)}
 .family-banner{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem 2rem;margin-top:2rem;text-align:center;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)}
 .family-banner a{color:var(--rust-light)}
+
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
 </head>
 <body>
@@ -69,10 +71,28 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
     Stockyard
   </a>
   <div class="nav-links">
-    <a href="/tools/">All Tools</a>
-    <a href="/complete/">Complete Bundle</a>
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <a href="/tools/?category=finance">Finance</a>
+        <a href="/tools/?category=personal">Personal</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/rangeland/">Rangeland</a>
+        <a href="/saltlick/">Saltlick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
     <a href="/pricing/">Pricing</a>
+    <a href="/platform/">Platform</a>
     <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
 
@@ -81,7 +101,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
   <h1><span class="accent">Self-hosted</span> link tracker<br>&amp; UTM builder</h1>
   <p class="sub">Build UTM-tagged links, track clicks and conversions, see which channels drive traffic. Your own campaign link manager without Bitly's analytics paywall.</p>
   <div class="cta-group">
-    <a href="https://github.com/stockyard-dev/stockyard-saltlick" class="btn btn-primary">Install Salt Lick Free</a>
+    <a href="https://github.com/stockyard-dev/Stockyard" class="btn btn-primary">Install Salt Lick Free</a>
     <a href="/complete/" class="btn btn-secondary">Complete &mdash; all 150 tools $29/mo</a>
   </div>
 </div>
@@ -122,14 +142,14 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
     </div>
     <div class="pricing-card pro">
       <div class="pricing-card-label pro">Pro</div>
-      <div class="pricing-card-price">$$0.99</div>
+      <div class="pricing-card-price">$0.99</div>
       <div class="pricing-card-period">per month</div>
       <ul>
         <li>Unlimited links, conversion tracking, UTM builder, channel reports</li>
         <li>License key, no cloud dependency</li>
         <li>Email support</li>
       </ul>
-      <button id="checkout-btn-monthly" onclick="startCheckout('saltlick-pro','monthly')" class="btn btn-primary" style="width:100%;margin-bottom:.5rem">Upgrade to Pro &mdash; $$0.99/mo</button>
+      <button id="checkout-btn-monthly" onclick="startCheckout('saltlick-pro','monthly')" class="btn btn-primary" style="width:100%;margin-bottom:.5rem">Upgrade to Pro &mdash; $0.99/mo</button>
       <button id="checkout-btn-annual" onclick="startCheckout('saltlick-pro','annual')" class="btn btn-secondary" style="width:100%;font-size:.75rem">Annual &mdash; save ~2 months</button>
     </div>
   </div>
@@ -166,5 +186,25 @@ async function startCheckout(plan, interval) {
   } catch(e) { alert('Network error'); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
 }
 </script>
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
+</footer>
 </body>
 </html>
