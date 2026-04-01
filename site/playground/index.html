@@ -212,6 +212,19 @@ a{color:var(--rust-light);text-decoration:none}
 .nav-mobile-back{display:none;align-items:center;gap:0.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);text-decoration:none}
 .nav-mobile-back:hover{color:var(--rust-light)}
 .nav-mobile-back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+.nav-links>a.nav-complete{color:var(--gold)}.nav-links>a.nav-complete:hover{color:var(--leather-light)}
+.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
+.drop-arrow{font-size:0.65rem;margin-left:2px}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + 0.8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:200px;padding:0.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+.nav-drop-menu.open{display:block}
+.nav-drop-menu a{display:block;padding:0.4rem 1.2rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
+.drop-section{padding:0.3rem 1.2rem;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:0.3rem}
+@media(max-width:768px){.nav-drop-trigger{font-size:1.05rem;padding:0.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:0.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:0.95rem;padding:0.3rem 0}}
+
+footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <link rel="canonical" href="https://stockyard.dev/playground/">
@@ -228,7 +241,7 @@ a{color:var(--rust-light);text-decoration:none}
   </div>
   <div class="nav-right">
     <a href="/" class="nav-mobile-back"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>stockyard.dev</a>
-    <a href="/products/" class="nav-link">Platform</a>
+    <a href="/tools/" class="nav-link">Platform</a>
     <a href="/docs/quickstart/" class="nav-link">Quickstart</a>
     <a href="/pricing/" class="nav-link">Pricing</a>
     <a href="/docs/" class="nav-link">Docs</a>
@@ -1322,6 +1335,29 @@ function loadSharedStack() {
 loadSharedSession();
 loadSharedStack();
 initSetup();
+
+function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
+document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
+</footer>
 </body>
 </html>

@@ -73,11 +73,27 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
   <a href="/" class="nav-brand">Stockyard</a>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
-    <a href="/products/">Products</a>
-    <a href="/docs/">Docs</a>
-    <a href="/benchmarks/">Benchmarks</a>
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <a href="/tools/?category=finance">Finance</a>
+        <a href="/tools/?category=personal">Personal</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/rangeland/">Rangeland</a>
+        <a href="/saltlick/">Saltlick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/blog/">Blog</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
@@ -211,7 +227,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <p>Try it: <code>curl -sSL stockyard.dev/install.sh | sh</code></p>
 
-  <div class="sig">Stockyard. Wrangle your Stack..</div>
+  <div class="sig">Stockyard. Wrangle your Stack.</div>
 
   <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-top:2rem;text-align:center">
     <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.5rem">Cut your LLM bill with Stockyard</div>
@@ -246,9 +262,25 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </div>
 
 <div class="explore-bar">Explore: <a href="/llm-cost-tracking/">Cost tracking</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/guide/">Install guide</a> &middot; <a href="/why-sqlite/">Why SQLite</a></div>
-<footer style="padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)">
-  <p style="font-style:italic;font-family:var(--font-serif)">Stockyard.</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
 </footer>
 
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');}}</script>

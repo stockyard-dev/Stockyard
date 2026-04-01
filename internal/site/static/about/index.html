@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>About | Stockyard</title>
-<meta name="description" content="The story behind Stockyard. One developer, one binary, one vision for AI infrastructure.">
+<meta name="description" content="Stockyard builds self-hosted developer infrastructure tools. 150 tools, single binary each, SQLite storage. Wrangle your Stack.">
 <meta property="og:title" content="About Stockyard">
 <meta property="og:description" content="The story behind Stockyard. One developer, one binary, one vision for AI infrastructure.">
 <meta property="og:type" content="website">
@@ -47,6 +47,10 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav-toggle{display:none}
 @media(max-width:768px){.nav-links{display:none}.content{padding:4rem 1.5rem 3rem}.stats{grid-template-columns:repeat(2,1fr)}}
 .explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
+
+footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
 <script type="application/ld+json">
 {
@@ -71,19 +75,35 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
-    <a href="/products/">Products</a>
-    <a href="/docs/">Docs</a>
-    <a href="/benchmarks/">Benchmarks</a>
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <a href="/tools/?category=finance">Finance</a>
+        <a href="/tools/?category=personal">Personal</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/rangeland/">Rangeland</a>
+        <a href="/saltlick/">Saltlick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/playground/">Playground</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
 
 <div class="content">
-  <h1>74,000 lines of Go. <span class="accent">One developer.</span></h1>
+  <h1>We build the tools you should own.</h1>
 
-  <p>My name is Michael. I built Stockyard alone.</p>
+  <p>Stockyard is a family of 150 self-hosted developer tools. Single binary. SQLite. Your data, your server, your rules.</p>
 
   <p>In early 2026, I was building an app with the OpenAI API. Within the first week, three things went wrong: an uncapped test run cost me $47, a provider outage took down my demo, and I had no way to prove to a client that their data hadn&rsquo;t been logged. I needed a proxy, a cost tracker, an audit trail, and a cache. Four tools, four configs, four points of failure.</p>
 
@@ -129,13 +149,29 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <p>Every commit is public. The <a href="/blog/">blog</a> explains the engineering tradeoffs. The <a href="/changelog/">changelog</a> tracks every ship. The <a href="/benchmarks/">benchmarks</a> are reproducible with a single <code>go test</code> command. Transparency isn&rsquo;t a marketing strategy. It&rsquo;s how trust is built.</p>
 
-  <p style="margin-top:3rem;font-family:var(--font-mono);font-size:0.85rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a> &middot; <a href="/benchmarks/">Benchmarks</a></p>
+  <p style="margin-top:3rem;font-family:var(--font-mono);font-size:0.85rem"><a href="/">Home</a> &middot; <a href="/tools/">Products</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a> &middot; <a href="/benchmarks/">Benchmarks</a></p>
 </div>
 
 <div class="explore-bar">Explore: <a href="/model-aliasing/">Model aliasing</a> &middot; <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a></div>
 <footer>
-  <p style="font-family:var(--font-serif);color:var(--leather-light);font-style:italic;text-align:center;padding:2rem;border-top:1px solid var(--bg3)">Stockyard.</p>
-  <p style="text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);padding:0 2rem 2rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Developers</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
 </footer>
 </body>
 </html>

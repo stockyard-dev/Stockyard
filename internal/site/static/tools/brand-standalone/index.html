@@ -50,14 +50,41 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 .price-card ul li::before{content:'\2713 ';color:var(--green-light)}
 .more-tools{padding:2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem}
 .more-tools a{color:var(--cream-dim);margin:0 0.5rem}.more-tools a:hover{color:var(--rust-light)}
-@media(max-width:768px){.pricing-row{grid-template-columns:1fr}}</style>
+@media(max-width:768px){.pricing-row{grid-template-columns:1fr}}
+footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
+</style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <nav class="nav">
   <a href="/" class="nav-brand">&#9651; Stockyard</a>
-  <div class="nav-links"><a href="/tools/">Tools</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/blog/">Blog</a></div>
+  <div class="nav-links">
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <a href="/tools/?category=finance">Finance</a>
+        <a href="/tools/?category=personal">Personal</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/rangeland/">Rangeland</a>
+        <a href="/saltlick/">Saltlick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </div>
 </nav>
 <section class="hero">
   <div class="eyebrow">Stockyard Brand</div>
@@ -86,6 +113,25 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p style="margin-top:1.5rem;margin-bottom:0;font-size:0.82rem;color:var(--cream-muted)">Part of the <a href="/">Stockyard</a> family.</p>
 </div>
 <div class="more-tools">More tools: <a href="/tools/fence/">Stockyard Fence</a> &middot; <a href="/tools/corral/">Stockyard Corral</a> &middot; <a href="/tools/trough/">Stockyard Trough</a> &middot; <a href="/tools/gate/">Stockyard Gate</a> &middot; <a href="/">Stockyard Proxy</a></div>
-<footer><p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a></p></footer>
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
+</footer>
 </body>
 </html>

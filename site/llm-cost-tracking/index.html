@@ -61,6 +61,10 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
 @media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:4rem 1.5rem 2rem}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+
+footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
@@ -73,7 +77,30 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-overlay" onclick="toggleNav()"></div>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-  <div class="nav-links"><a href="/products/">Products</a><a href="/docs/">Docs</a><a href="/pricing/">Pricing</a><a href="/playground/">Playground</a><a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></div>
+  <div class="nav-links">
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <a href="/tools/?category=finance">Finance</a>
+        <a href="/tools/?category=personal">Personal</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/rangeland/">Rangeland</a>
+        <a href="/saltlick/">Saltlick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </div>
 </nav>
 
 <div class="hero">
@@ -106,7 +133,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p>All of this runs locally. No data leaves your network. No SaaS dependency. No per-seat pricing for your observability tool.</p>
 
   <h2>Cost optimization built in</h2>
-  <p>Stockyard does not just track costs. The <a href="/products/">Drover autopilot</a> can automatically route requests to cheaper models when quality thresholds are met. Semantic caching deduplicates identical prompts. Spend caps prevent runaway costs before they hit your provider bill.</p>
+  <p>Stockyard does not just track costs. The <a href="/tools/">Drover autopilot</a> can automatically route requests to cheaper models when quality thresholds are met. Semantic caching deduplicates identical prompts. Spend caps prevent runaway costs before they hit your provider bill.</p>
 
   <div class="cta-box">
     <p>Stop guessing what your LLM API costs. Start tracking per-request.</p>
@@ -118,8 +145,26 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does Stockyard calculate LLM costs?","acceptedAnswer":{"@type":"Answer","text":"Stockyard counts input and output tokens per request and multiplies by the provider pricing for that model. Costs are calculated in real time and stored in the local SQLite database."}},{"@type":"Question","name":"Can I set spend limits per user or team?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard supports daily and monthly spend caps per API key, per user, and per team. When a cap is reached, requests are blocked or routed to a cheaper model depending on configuration."}},{"@type":"Question","name":"Does cost tracking require sending data to a third party?","acceptedAnswer":{"@type":"Answer","text":"No. All cost data is stored in embedded SQLite on your own infrastructure. No prompts, completions, or cost data leaves your network."}}]}
 </script>
 <div class="explore-bar">Explore: <a href="/pricing/">Stockyard pricing</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/deepseek/">Deepseek</a></div>
+<div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 150 focused self-hosted tools &mdash; <a href="/tools/" style="color:var(--leather-light)">browse the catalog</a> or <a href="/complete/" style="color:var(--gold)">get everything for $29/mo</a>.</div>
 <footer>
-  <p>&copy; 2026 Stockyard &middot; <a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 </body>

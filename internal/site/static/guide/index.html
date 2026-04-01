@@ -204,11 +204,27 @@ footer a:hover{color:var(--rust-light)}
   <div class="nav-overlay" onclick="toggleNav()"></div>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
-    <a href="/products/">Products</a>
-    <a href="/docs/">Docs</a>
-    <a href="/benchmarks/">Benchmarks</a>
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <a href="/tools/?category=finance">Finance</a>
+        <a href="/tools/?category=personal">Personal</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/rangeland/">Rangeland</a>
+        <a href="/saltlick/">Saltlick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/playground/">Playground</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
@@ -629,18 +645,33 @@ document.getElementById('guide-email').addEventListener('keydown',function(e){if
   <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:1.5rem">Everything you just saw is free &mdash; including 100 Drover autopilot requests per day and a 5-probe Feral security quickscan. See your real savings and security grade before you pay anything. When you're ready for unlimited routing, the full 29-probe red-team suite, prompt evolution (Breed), or any of the 29 products &mdash; upgrade in one click.</p>
   <div style="display:flex;gap:1rem;flex-wrap:wrap">
     <a href="/pricing/" style="display:inline-block;padding:0.6rem 1.5rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;border:none;text-decoration:none">See plans from $29.99/mo &rarr;</a>
-    <a href="/products/" style="display:inline-block;padding:0.6rem 1.5rem;background:transparent;color:var(--cream-dim);font-family:var(--font-mono);font-size:0.85rem;border:1px solid var(--bg3);text-decoration:none">Explore all 29 products</a>
+    <a href="/tools/" style="display:inline-block;padding:0.6rem 1.5rem;background:transparent;color:var(--cream-dim);font-family:var(--font-mono);font-size:0.85rem;border:1px solid var(--bg3);text-decoration:none">Explore all 29 products</a>
   </div>
 </section>
 
 </main>
 
 <div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a> &middot; <a href="/model-aliasing/">Model aliasing</a></div>
+<div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 150 focused self-hosted tools &mdash; <a href="/tools/" style="color:var(--leather-light)">browse the catalog</a> or <a href="/complete/" style="color:var(--gold)">get everything for $29/mo</a>.</div>
 <footer>
-  <p class="sig">Stockyard.</p>
-  <p style="margin-top:0.5rem">Wrangle your Stack..</p>
-  <p style="margin-top:0.5rem"><a href="/">Home</a> &middot; <a href="/products/">Products</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/benchmarks/">Benchmarks</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)"><a href="/privacy/" style="color:var(--cream-muted)">Privacy</a> &middot; <a href="/terms/" style="color:var(--cream-muted)">Terms</a> &middot; <a href="/changelog/" style="color:var(--cream-muted)">Changelog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a></p>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem">
+    <a href="/tools/">Tools</a> &middot;
+    <a href="/complete/">Complete</a> &middot;
+    <a href="/platform/">Platform</a> &middot;
+    <a href="/pricing/">Pricing</a> &middot;
+    <a href="/docs/">Docs</a> &middot;
+    <a href="/blog/">Blog</a> &middot;
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </p>
+  <p style="margin-top:0.3rem">
+    <a href="/privacy/">Privacy</a> &middot;
+    <a href="/terms/">Terms</a> &middot;
+    <a href="/changelog/">Changelog</a>
+  </p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
+    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
+  </p>
 </footer>
 
 <script>
