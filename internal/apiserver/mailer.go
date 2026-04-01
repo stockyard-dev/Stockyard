@@ -77,30 +77,40 @@ func SMTPMailerFromEnv() *SMTPMailer {
 func (m *SMTPMailer) SendLicenseKey(to, productName, tier, licenseKey string) error {
 	subject := fmt.Sprintf("Your %s license key", productName)
 
+	// Determine the correct env var name for this product
+	envVar := "STOCKYARD_LICENSE_KEY"
+	slug := strings.ToLower(productName)
+	slug = strings.ReplaceAll(slug, " ", "")
+	if isKnownTool(slug) {
+		envVar = strings.ToUpper(slug) + "_LICENSE_KEY"
+	}
+
 	body := fmt.Sprintf(`Hey!
 
-Thanks for subscribing to %s (%s tier). Here's your license key:
+Thanks for subscribing to Stockyard %s (%s tier). Here's your license key:
 
 %s
 
-To activate, set this environment variable:
+To activate, set this environment variable before starting:
 
-  export STOCKYARD_LICENSE_KEY=%s
+  %s=%s %s
 
-Or add it to your shell profile (~/.bashrc, ~/.zshrc) for persistence.
+Or export it in your shell profile (~/.bashrc, ~/.zshrc):
 
-That's it. Your proxy will pick it up on next start and unlock %s features.
+  export %s=%s
+
+The key is verified locally — no network call, no phone-home.
 
 Quick links:
+- Your tool page: https://stockyard.dev/%s/
 - Docs: https://stockyard.dev/docs
-- Dashboard: http://localhost:PORT/ui (after starting your product)
-- Support: support@stockyard.dev
+- Support: hello@stockyard.dev
 - Manage subscription: https://stockyard.dev/account
 
 If you have any questions, just reply to this email.
 
 — Stockyard
-Where LLM traffic gets sorted.`, productName, tier, licenseKey, licenseKey, tier)
+Wrangle your Stack.`, productName, tier, licenseKey, envVar, licenseKey, slug, envVar, licenseKey, slug)
 
 	return m.send(to, subject, body)
 }
@@ -208,10 +218,17 @@ type ResendMailer struct {
 
 // SendLicenseKey sends via Resend.
 func (m *ResendMailer) SendLicenseKey(to, productName, tier, licenseKey string) error {
+	// Determine the correct env var name
+	envVar := "STOCKYARD_LICENSE_KEY"
+	slug := strings.ToLower(productName)
+	slug = strings.ReplaceAll(slug, " ", "")
+	if isKnownTool(slug) {
+		envVar = strings.ToUpper(slug) + "_LICENSE_KEY"
+	}
 	return m.sendResend(to,
 		fmt.Sprintf("Your %s license key", productName),
-		fmt.Sprintf("Thanks for subscribing to %s (%s)!\n\nYour license key:\n\n%s\n\nActivate with:\n  export STOCKYARD_LICENSE_KEY=%s\n\nDocs: https://stockyard.dev/docs\n\n— Stockyard",
-			productName, tier, licenseKey, licenseKey),
+		fmt.Sprintf("Thanks for subscribing to Stockyard %s (%s)!\n\nYour license key:\n\n%s\n\nActivate with:\n  %s=%s %s\n\nOr export it:\n  export %s=%s\n\nDocs: https://stockyard.dev/docs\n\n— Stockyard\nWrangle your Stack.",
+			productName, tier, licenseKey, envVar, licenseKey, slug, envVar, licenseKey),
 	)
 }
 

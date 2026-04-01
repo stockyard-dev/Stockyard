@@ -442,6 +442,13 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	productName := product
 	if productInfo != nil {
 		productName = productInfo.Name
+	} else if tp := ToolPlanByTool(product); tp != nil {
+		productName = tp.Name
+	} else {
+		// Capitalize slug as fallback (e.g. "paddock" → "Paddock")
+		if len(product) > 0 {
+			productName = strings.ToUpper(product[:1]) + product[1:]
+		}
 	}
 
 	if wh.mailer != nil {
