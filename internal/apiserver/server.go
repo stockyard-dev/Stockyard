@@ -145,6 +145,7 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	// Product catalog + pricing
 	mux.HandleFunc("GET /api/products", s.handleProducts)
 	mux.HandleFunc("GET /api/tools", s.handleToolPlans)
+	mux.HandleFunc("POST /api/waitlist", s.handleWaitlist)
 	mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
 	mux.HandleFunc("GET /api/plans", s.handlePlans)
 
