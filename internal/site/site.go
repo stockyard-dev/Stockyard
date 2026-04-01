@@ -346,6 +346,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		// Product family landing pages
 		"/corral/",
 		"/gate/",
+		"/paddock/",
 		"/trough/",
 		"/fence/",
 		"/brand/",
