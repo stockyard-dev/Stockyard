@@ -337,6 +337,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/llm-request-replay/",
 		"/prompt-version-control/",
 		"/tools/",
+		"/platform/",
 		"/tools/fence/",
 		"/tools/corral/",
 		"/tools/trough/",
