@@ -3439,5 +3439,426 @@
         "a": "No. Spur handles release notes and changelogs. For roadmap planning, Productboard, Linear, or Canny are more appropriate."
       }
     ]
+  },
+  {
+    "stockyard_tool": "cipher",
+    "stockyard_name": "Cipher",
+    "stockyard_tagline": "Self-hosted password manager",
+    "stockyard_free": "50 entries",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited entries, vaults, sharing, 2FA, browser extension",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/cipher/install.sh | sh",
+    "stockyard_port": 10450,
+    "competitor_name": "Bitwarden",
+    "competitor_slug": "bitwarden",
+    "competitor_url": "https://bitwarden.com",
+    "competitor_price": "$10/yr (Premium)",
+    "competitor_pricing_note": "Free: unlimited passwords. Premium: $10/yr. Families: $40/yr. Teams: $4/user/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hostable via Vaultwarden (unofficial) or official server (requires Docker + MSSQL)",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker or MSSQL",
+      "Simpler self-hosted deployment",
+      "$0.99/mo vs $4/user/mo for teams"
+    ],
+    "strengths_competitor": [
+      "Best-in-class password manager",
+      "Apps for every platform",
+      "Browser extensions for all browsers",
+      "End-to-end encryption with zero-knowledge architecture",
+      "Bitwarden Send for secure sharing"
+    ],
+    "honest_verdict": "Bitwarden is the best open-source password manager. The free tier is incredibly generous, the apps are excellent, and Vaultwarden makes self-hosting practical. If you want a password manager, use Bitwarden. Cipher is for teams that want a simpler self-hosted deployment without Docker.",
+    "seo_title": "Cipher vs Bitwarden \u2014 Self-hosted password management",
+    "seo_description": "Bitwarden Teams is $4/user/mo. Cipher is self-hosted \u2014 single binary, $0.99/mo flat. Password management without Docker.",
+    "faq": [
+      {
+        "q": "Is Cipher a Bitwarden alternative?",
+        "a": "Bitwarden is the best password manager available. Cipher is a simpler self-hosted option. For most people, Bitwarden (free or Premium) is the better choice."
+      },
+      {
+        "q": "Should I use Cipher instead of Bitwarden?",
+        "a": "Probably not. Bitwarden's free tier is excellent and Vaultwarden makes self-hosting easy. Use Cipher only if you need a single-binary deployment without Docker."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "roster",
+    "stockyard_name": "Roster",
+    "stockyard_tagline": "Self-hosted team directory",
+    "stockyard_free": "20 members",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited members, departments, org chart, search, CSV import/export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/roster/install.sh | sh",
+    "stockyard_port": 10500,
+    "competitor_name": "BambooHR",
+    "competitor_slug": "bamboohr",
+    "competitor_url": "https://bamboohr.com",
+    "competitor_price": "$6/employee/mo",
+    "competitor_pricing_note": "Essentials: $6/employee/mo. Advantage: $8/employee/mo. Custom pricing for 25+ employees.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 employee data stays private",
+      "$0.99/mo flat vs $6/employee/mo",
+      "No per-employee pricing",
+      "Single binary, no HR platform needed"
+    ],
+    "strengths_competitor": [
+      "Full HRIS with payroll integration",
+      "Time-off tracking and approval",
+      "Performance management",
+      "Onboarding workflows and document storage"
+    ],
+    "honest_verdict": "BambooHR is a full HRIS platform. If you need payroll integration, time-off management, and performance reviews, BambooHR is purpose-built. If you just need a team directory and org chart on your own server, Roster does that one thing.",
+    "seo_title": "Roster vs BambooHR \u2014 Self-hosted team directory",
+    "seo_description": "BambooHR charges $6/employee/mo. Roster is a self-hosted team directory \u2014 single binary, $0.99/mo flat. Org chart and directory on your server.",
+    "faq": [
+      {
+        "q": "Is Roster a BambooHR alternative?",
+        "a": "BambooHR is a full HRIS. Roster is a team directory. Very different scope \u2014 Roster handles the org chart, not payroll or PTO."
+      },
+      {
+        "q": "Does Roster handle payroll?",
+        "a": "No. Roster is a team directory and org chart only. For payroll, use BambooHR, Gusto, or your existing payroll provider."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "pasture",
+    "stockyard_name": "Pasture",
+    "stockyard_tagline": "Self-hosted social media scheduler",
+    "stockyard_free": "3 accounts, 10 posts/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited accounts, scheduled posts, analytics, queue",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/pasture/install.sh | sh",
+    "stockyard_port": 10550,
+    "competitor_name": "Buffer",
+    "competitor_slug": "buffer",
+    "competitor_url": "https://buffer.com",
+    "competitor_price": "$15/mo (Essentials)",
+    "competitor_pricing_note": "Free: 3 channels. Essentials: $15/mo for 1 channel. Team: $30/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 social content stays private",
+      "$0.99/mo vs $15/mo per channel",
+      "No per-channel pricing",
+      "Schedule posts without a third-party app"
+    ],
+    "strengths_competitor": [
+      "Direct API integration with all major platforms",
+      "AI assistant for content creation",
+      "Analytics and engagement tracking",
+      "Link in bio pages"
+    ],
+    "honest_verdict": "Buffer connects directly to social media APIs and handles posting, analytics, and engagement. If you actively manage social media for a business, Buffer's integrations save time. If you want to schedule posts from your own server without giving Buffer access to your accounts, Pasture is self-hosted.",
+    "seo_title": "Pasture vs Buffer \u2014 Self-hosted social scheduling",
+    "seo_description": "Buffer Essentials is $15/mo per channel. Pasture is self-hosted \u2014 single binary, $0.99/mo. Schedule posts without third-party access.",
+    "faq": [
+      {
+        "q": "Is Pasture a Buffer alternative?",
+        "a": "Buffer connects directly to social platforms. Pasture schedules posts on your server. Buffer is more integrated; Pasture keeps your content private."
+      },
+      {
+        "q": "Does Pasture post directly to Twitter/X?",
+        "a": "Pasture schedules and queues posts. Direct posting to platforms requires API keys for each platform, which Pasture supports in Pro."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "mainspring",
+    "stockyard_name": "Mainspring",
+    "stockyard_tagline": "Self-hosted cron and scheduled task manager",
+    "stockyard_free": "5 jobs",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited jobs, cron + interval scheduling, retry, logs, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/mainspring/install.sh | sh",
+    "stockyard_port": 10600,
+    "competitor_name": "Cronhub",
+    "competitor_slug": "cronhub",
+    "competitor_url": "https://cronhub.io",
+    "competitor_price": "$7/mo (Starter)",
+    "competitor_pricing_note": "Free: 1 monitor. Starter: $7/mo. Pro: $19/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 job data stays private",
+      "$0.99/mo vs $7/mo",
+      "Runs jobs AND monitors them",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Managed cron monitoring from external locations",
+      "Slack, PagerDuty, email notifications",
+      "Failure detection without running jobs",
+      "Simple setup for existing cron jobs"
+    ],
+    "honest_verdict": "Cronhub monitors existing cron jobs \u2014 it does not run them. If you have cron jobs on a server and want external failure detection, Cronhub is simple and effective. Mainspring both runs and monitors scheduled tasks from a single dashboard.",
+    "seo_title": "Mainspring vs Cronhub \u2014 Self-hosted task scheduling",
+    "seo_description": "Cronhub is $7/mo for cron monitoring. Mainspring runs AND monitors scheduled tasks \u2014 single binary, $0.99/mo. All-in-one task scheduler.",
+    "faq": [
+      {
+        "q": "Is Mainspring a Cronhub alternative?",
+        "a": "Cronhub monitors existing cron jobs. Mainspring runs AND monitors scheduled tasks. Cronhub is external monitoring; Mainspring is the scheduler itself."
+      },
+      {
+        "q": "Can Mainspring replace system cron?",
+        "a": "Yes. Mainspring manages scheduled tasks with a dashboard, logging, and retry. It replaces crontab with a visible, manageable interface."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "saddlebag",
+    "stockyard_name": "Saddlebag",
+    "stockyard_tagline": "Self-hosted file sharing",
+    "stockyard_free": "1GB storage",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited storage, upload links, password protection, expiry, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/saddlebag/install.sh | sh",
+    "stockyard_port": 10650,
+    "competitor_name": "WeTransfer",
+    "competitor_slug": "wetransfer",
+    "competitor_url": "https://wetransfer.com",
+    "competitor_price": "$12/mo (Pro)",
+    "competitor_pricing_note": "Free: 2GB per transfer. Pro: $12/mo. Premium: $23/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 files stay on your server",
+      "$0.99/mo vs $12/mo",
+      "No file size limits on Pro",
+      "Password protection and expiry dates"
+    ],
+    "strengths_competitor": [
+      "No signup needed for recipients",
+      "Beautiful transfer experience",
+      "4TB of storage on Premium",
+      "Reviews and approval workflows"
+    ],
+    "honest_verdict": "WeTransfer is the easiest way to send large files to anyone. The recipient experience is unmatched \u2014 no signup, just a download link. If you need to send files to external people with zero friction, WeTransfer is hard to beat. If your files are sensitive and cannot leave your server, Saddlebag is self-hosted.",
+    "seo_title": "Saddlebag vs WeTransfer \u2014 Self-hosted file sharing",
+    "seo_description": "WeTransfer Pro is $12/mo. Saddlebag is self-hosted \u2014 single binary, $0.99/mo. Share files from your server with password protection.",
+    "faq": [
+      {
+        "q": "Is Saddlebag a WeTransfer alternative?",
+        "a": "WeTransfer excels at frictionless file sharing with external people. Saddlebag is for self-hosted file sharing where files must stay on your server."
+      },
+      {
+        "q": "Can recipients download without an account?",
+        "a": "Yes. Saddlebag generates download links that work without authentication. Password protection is optional."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "dividend",
+    "stockyard_name": "Dividend",
+    "stockyard_tagline": "Self-hosted recurring revenue tracker",
+    "stockyard_free": "10 subscriptions",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited subscriptions, MRR/ARR charts, churn tracking, forecasting",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/dividend/install.sh | sh",
+    "stockyard_port": 10700,
+    "competitor_name": "Baremetrics",
+    "competitor_slug": "baremetrics",
+    "competitor_url": "https://baremetrics.com",
+    "competitor_price": "$108/mo (basic)",
+    "competitor_pricing_note": "Starts at $108/mo for up to $10K MRR. Scales with revenue.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 revenue data stays private",
+      "$0.99/mo vs $108/mo minimum",
+      "Fixed pricing regardless of revenue",
+      "Single binary, no Stripe integration required"
+    ],
+    "strengths_competitor": [
+      "Direct Stripe/Paddle/Recurly integration",
+      "Automated MRR, churn, LTV calculations",
+      "Cancellation insights and recovery",
+      "Beautiful public dashboard option"
+    ],
+    "honest_verdict": "Baremetrics connects directly to your payment processor and automatically calculates every SaaS metric. If you use Stripe and want automatic revenue analytics, Baremetrics is excellent. If you want to track revenue manually on your own server without sharing payment data, Dividend is self-hosted.",
+    "seo_title": "Dividend vs Baremetrics \u2014 Self-hosted revenue tracking",
+    "seo_description": "Baremetrics starts at $108/mo. Dividend is self-hosted \u2014 single binary, $0.99/mo. Track MRR, churn, and ARR on your server.",
+    "faq": [
+      {
+        "q": "Is Dividend a Baremetrics alternative?",
+        "a": "Baremetrics auto-syncs with Stripe. Dividend tracks revenue manually or via API. Baremetrics is automated; Dividend is self-hosted and private."
+      },
+      {
+        "q": "Does Dividend connect to Stripe?",
+        "a": "Dividend accepts data via API. For automatic Stripe integration, Baremetrics pulls data directly from your Stripe account."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "herald",
+    "stockyard_name": "Herald",
+    "stockyard_tagline": "Self-hosted RSS reader",
+    "stockyard_free": "20 feeds",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited feeds, categories, search, OPML import/export, read-later",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/herald/install.sh | sh",
+    "stockyard_port": 10750,
+    "competitor_name": "Feedly",
+    "competitor_slug": "feedly",
+    "competitor_url": "https://feedly.com",
+    "competitor_price": "$6/mo (Pro)",
+    "competitor_pricing_note": "Free: 100 sources, 3 feeds. Pro: $6/mo. Pro+: $8.25/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 reading habits stay private",
+      "$0.99/mo vs $6/mo",
+      "No feed count limits on Pro",
+      "No AI training on your reading data"
+    ],
+    "strengths_competitor": [
+      "Beautiful, polished reading experience",
+      "AI-powered article summaries and highlights",
+      "Team sharing and collaboration",
+      "Mobile apps for iOS and Android"
+    ],
+    "honest_verdict": "Feedly is the most polished RSS reader with AI features and a great mobile experience. If you read RSS feeds daily, Feedly's apps are worth the price. If you want a private, self-hosted reader where your reading habits are not tracked, Herald runs on your server.",
+    "seo_title": "Herald vs Feedly \u2014 Self-hosted RSS reader",
+    "seo_description": "Feedly Pro is $6/mo. Herald is self-hosted \u2014 single binary, $0.99/mo. Read RSS feeds privately on your own server.",
+    "faq": [
+      {
+        "q": "Is Herald a Feedly alternative?",
+        "a": "Feedly has AI features and polished apps. Herald is a self-hosted RSS reader for privacy. Different priorities."
+      },
+      {
+        "q": "Does Herald have a mobile app?",
+        "a": "Herald has a responsive web dashboard. For native mobile RSS reading, Feedly has dedicated iOS and Android apps."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "wateringhole",
+    "stockyard_name": "Watering Hole",
+    "stockyard_tagline": "Self-hosted community forum",
+    "stockyard_free": "3 categories",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited categories, threads, users, moderation tools, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/wateringhole/install.sh | sh",
+    "stockyard_port": 10800,
+    "competitor_name": "Discourse",
+    "competitor_slug": "discourse",
+    "competitor_url": "https://discourse.org",
+    "competitor_price": "$50/mo (Basic hosted)",
+    "competitor_pricing_note": "Self-hosted free (requires Docker, Postgres, Redis). Hosted: $50-$300/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hosted requires Docker, Postgres, Redis, and 2GB+ RAM",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker, Postgres, or Redis",
+      "$0.99/mo vs $50/mo hosted",
+      "Under 50MB RAM vs 2GB+",
+      "Simpler to deploy and maintain"
+    ],
+    "strengths_competitor": [
+      "Best open-source forum software",
+      "Rich plugin ecosystem",
+      "SEO-optimized and Google-indexed",
+      "Trust levels and gamification",
+      "Used by major open source projects"
+    ],
+    "honest_verdict": "Discourse is the gold standard for community forums. If you are building a serious community, Discourse's features, plugins, and SEO optimization are unmatched. If you want a simple forum without the Docker/Postgres/Redis stack, Watering Hole is dramatically lighter.",
+    "seo_title": "Watering Hole vs Discourse \u2014 Self-hosted forum without Docker",
+    "seo_description": "Discourse hosted is $50/mo. Self-hosted needs Docker + Postgres + Redis. Watering Hole is one binary \u2014 $0.99/mo. Simple forum, no stack.",
+    "faq": [
+      {
+        "q": "Is Watering Hole a Discourse alternative?",
+        "a": "Discourse is the best forum software available. Watering Hole is a simpler self-hosted forum for teams that do not want the Docker/Postgres/Redis stack."
+      },
+      {
+        "q": "Does Watering Hole support plugins?",
+        "a": "No. Watering Hole is intentionally simple. For a plugin ecosystem and advanced features, Discourse is necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "muster",
+    "stockyard_name": "Muster",
+    "stockyard_tagline": "Self-hosted event and RSVP manager",
+    "stockyard_free": "3 events",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited events, RSVP tracking, waitlist, reminders, CSV export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/muster/install.sh | sh",
+    "stockyard_port": 10850,
+    "competitor_name": "Eventbrite",
+    "competitor_slug": "eventbrite",
+    "competitor_url": "https://eventbrite.com",
+    "competitor_price": "3.7% + $1.79 per ticket",
+    "competitor_pricing_note": "Free events free. Paid events: 3.7% + $1.79 per ticket. Flex: 6.95% + $0.99.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 attendee data stays private",
+      "$0.99/mo flat vs per-ticket fees",
+      "No percentage-based pricing",
+      "Full control over the event page"
+    ],
+    "strengths_competitor": [
+      "Built-in ticketing and payment processing",
+      "Event discovery and promotion",
+      "Mobile check-in app",
+      "Professional event pages with marketing tools"
+    ],
+    "honest_verdict": "Eventbrite handles ticketing, payments, and event discovery. If you sell tickets and want people to find your events, Eventbrite's marketplace is valuable. If you manage internal events or free meetups and want RSVP tracking on your own server, Muster is self-hosted.",
+    "seo_title": "Muster vs Eventbrite \u2014 Self-hosted event management",
+    "seo_description": "Eventbrite charges 3.7% per ticket. Muster is self-hosted \u2014 single binary, $0.99/mo. RSVP tracking and event management on your server.",
+    "faq": [
+      {
+        "q": "Is Muster an Eventbrite alternative?",
+        "a": "Eventbrite is a marketplace with ticketing and payments. Muster is self-hosted RSVP and event management. Different use cases."
+      },
+      {
+        "q": "Can Muster sell tickets?",
+        "a": "Muster tracks RSVPs and waitlists. For paid ticketing with payment processing, Eventbrite or Luma are necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "rustler",
+    "stockyard_name": "Rustler",
+    "stockyard_tagline": "Self-hosted web scraper",
+    "stockyard_free": "5 scrapers",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited scrapers, scheduling, CSS selectors, JSON export, webhooks",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/rustler/install.sh | sh",
+    "stockyard_port": 10900,
+    "competitor_name": "Apify",
+    "competitor_slug": "apify",
+    "competitor_url": "https://apify.com",
+    "competitor_price": "$49/mo (Starter)",
+    "competitor_pricing_note": "Free: $5 platform credits. Starter: $49/mo. Scale: $499/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable (Apify SDK is open source but cloud execution requires subscription)",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 scraped data stays on your server",
+      "$0.99/mo vs $49/mo",
+      "No compute-time pricing",
+      "Runs on your hardware, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Full web scraping platform with headless browsers",
+      "Pre-built scrapers for popular sites",
+      "Proxy rotation and anti-blocking",
+      "Cloud execution with auto-scaling"
+    ],
+    "honest_verdict": "Apify is the most capable web scraping platform with headless browsers, proxy rotation, and pre-built scrapers. If you scrape at scale and need anti-blocking features, Apify handles the complexity. If you need simple CSS-based scraping on your own server, Rustler does the basics.",
+    "seo_title": "Rustler vs Apify \u2014 Self-hosted web scraping",
+    "seo_description": "Apify starts at $49/mo. Rustler is self-hosted \u2014 single binary, $0.99/mo. Simple web scraping with CSS selectors on your server.",
+    "faq": [
+      {
+        "q": "Is Rustler an Apify alternative?",
+        "a": "Apify is a full scraping platform with headless browsers and proxy rotation. Rustler does CSS-based scraping as a single binary. Very different capability."
+      },
+      {
+        "q": "Does Rustler handle JavaScript-rendered pages?",
+        "a": "Rustler scrapes static HTML with CSS selectors. For JavaScript-rendered pages, Apify or Puppeteer are necessary."
+      }
+    ]
   }
 ]
