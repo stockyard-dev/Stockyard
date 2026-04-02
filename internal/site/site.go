@@ -479,6 +479,9 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/quiver/vs-notion/",
 		"/switchman/vs-cloudflare-workers/",
 		"/waystation/vs-aws-api-gateway/",
+		"/blog/saas-stack-cost-calculator/",
+		"/blog/single-binary-developer-tools/",
+		"/blog/replace-saas-save-money/",
 		// How-to, what-is, GDPR pages
 "/gdpr-compliant-analytics/",
 		"/how-to-replace-google-analytics/",
