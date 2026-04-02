@@ -33,14 +33,14 @@ curl -fsSL https://stockyard.dev/install.sh | sh
 # Start (all services on one port)
 export OPENAI_API_KEY=sk-...
 stockyard start
-# → Stockyard running on :7749
-# → Proxy:     http://localhost:7749/v1
-# → Dashboard: http://localhost:7749/ui
+# → Stockyard running on :4200
+# → Proxy:     http://localhost:4200/v1
+# → Dashboard: http://localhost:4200/ui
 ```
 
 ```bash
 # Send a request through the proxy
-curl http://localhost:7749/v1/chat/completions \
+curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -53,16 +53,16 @@ That request just flowed through 76 middleware modules — rate limiter, cost tr
 
 ```bash
 # See the trace (cost, latency, tokens, provider)
-curl http://localhost:7749/api/lookout/traces?limit=1
+curl http://localhost:4200/api/lookout/traces?limit=1
 
 # See the audit event (hash-chained, tamper-evident)
-curl http://localhost:7749/api/brand/ledger?limit=1
+curl http://localhost:4200/api/brand/ledger?limit=1
 
 # See cost attribution
-curl http://localhost:7749/api/lookout/costs
+curl http://localhost:4200/api/lookout/costs
 ```
 
-Or open `http://localhost:7749/ui` for the full dashboard.
+Or open `http://localhost:4200/ui` for the full dashboard.
 
 ## What's Free
 
@@ -120,7 +120,7 @@ Paid tiers add capabilities, not capacity. See [stockyard.dev/pricing](https://s
 Your App (OpenAI SDK)
         │
         ▼
-┌─── STOCKYARD (:7749) ──────────────────────────┐
+┌─── STOCKYARD (:4200) ──────────────────────────┐
 │                                                  │
 │  Request → [76 middleware modules] → Provider    │
 │            rate limit → cache → safety →         │
@@ -151,7 +151,7 @@ Your App (OpenAI SDK)
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:7749/v1",
+    base_url="http://localhost:4200/v1",
     api_key="your-openai-key"
 )
 
@@ -169,23 +169,23 @@ Give each team or project its own API keys. Requests are automatically isolated 
 
 ```bash
 # Create a team
-curl -X POST http://localhost:7749/api/teams \
+curl -X POST http://localhost:4200/api/teams \
   -H "X-Admin-Key: $ADMIN_KEY" \
   -d '{"name": "Frontend"}'
 
 # Generate a team key
-curl -X POST http://localhost:7749/api/teams/1/keys \
+curl -X POST http://localhost:4200/api/teams/1/keys \
   -H "X-Admin-Key: $ADMIN_KEY" \
   -d '{"name": "production"}'
 # → {"key": "sk-sy-...", "team_id": 1, ...}
 
 # Use the team key — requests are automatically scoped
-curl http://localhost:7749/v1/chat/completions \
+curl http://localhost:4200/v1/chat/completions \
   -H "Authorization: Bearer sk-sy-TEAM_KEY" \
   -d '{"model": "gpt-4o", "messages": [...]}'
 
 # View team-scoped spend
-curl http://localhost:7749/api/teams/1/spend \
+curl http://localhost:4200/api/teams/1/spend \
   -H "X-Admin-Key: $ADMIN_KEY"
 ```
 
