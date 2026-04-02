@@ -13,6 +13,8 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"sync"
+	"time"
 )
 
 //go:embed static
@@ -199,6 +201,33 @@ func servePage(w http.ResponseWriter, r *http.Request, data []byte, cacheControl
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", cacheControl)
 	w.Write(data)
+}
+
+
+// installRateLimit tracks install requests per IP to prevent abuse.
+var (
+	installLimiter   = make(map[string]int64)
+	installLimiterMu sync.Mutex
+)
+
+func checkInstallRateLimit(ip string) bool {
+	installLimiterMu.Lock()
+	defer installLimiterMu.Unlock()
+	now := time.Now().Unix()
+	// Clean old entries every 100 checks
+	if len(installLimiter) > 1000 {
+		for k, v := range installLimiter {
+			if now-v > 60 {
+				delete(installLimiter, k)
+			}
+		}
+	}
+	last, exists := installLimiter[ip]
+	if exists && now-last < 2 { // Max 1 request per 2 seconds per IP
+		return false
+	}
+	installLimiter[ip] = now
+	return true
 }
 
 // Register mounts the site routes on the given ServeMux.

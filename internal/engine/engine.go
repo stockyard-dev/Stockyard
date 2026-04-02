@@ -307,6 +307,53 @@ Docs:      https://stockyard.dev/docs
 		os.Exit(0)
 	}
 
+
+	// Handle config export/import
+	if len(os.Args) > 1 && (os.Args[1] == "config") {
+		if len(os.Args) < 3 {
+			fmt.Println("Usage: stockyard config [export|import] [path]")
+			os.Exit(1)
+		}
+		dataDir := os.Getenv("DATA_DIR")
+		if dataDir == "" {
+			home, _ := os.UserHomeDir()
+			dataDir = home + "/.stockyard"
+		}
+		switch os.Args[2] {
+		case "export":
+			cfgData, err := os.ReadFile(dataDir + "/config.yaml")
+			if err != nil {
+				// No config file — export defaults
+				cfgData = []byte("# Stockyard configuration\n# See https://stockyard.dev/docs/configuration/\nport: 4200\ndata_dir: " + dataDir + "\n")
+			}
+			if len(os.Args) > 3 {
+				os.WriteFile(os.Args[3], cfgData, 0644)
+				fmt.Printf("Config exported to %s\n", os.Args[3])
+			} else {
+				os.Stdout.Write(cfgData)
+			}
+		case "import":
+			if len(os.Args) < 4 {
+				fmt.Println("Usage: stockyard config import <path>")
+				os.Exit(1)
+			}
+			data, err := os.ReadFile(os.Args[3])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Cannot read %s: %v\n", os.Args[3], err)
+				os.Exit(1)
+			}
+			os.MkdirAll(dataDir, 0755)
+			if err := os.WriteFile(dataDir+"/config.yaml", data, 0644); err != nil {
+				fmt.Fprintf(os.Stderr, "Cannot write config: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf("Config imported from %s to %s/config.yaml\n", os.Args[3], dataDir)
+		default:
+			fmt.Println("Usage: stockyard config [export|import] [path]")
+		}
+		os.Exit(0)
+	}
+
 	// Handle --health flag (for Homebrew test, scripts, etc.)
 	if len(os.Args) > 1 && (os.Args[1] == "--health" || os.Args[1] == "health") {
 		fmt.Println("ok")

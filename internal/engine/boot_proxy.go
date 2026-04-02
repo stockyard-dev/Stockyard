@@ -8,6 +8,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net"
 	"log"
 	"net/http"
 	"os"
@@ -31,6 +33,8 @@ import (
 
 // ProxyConfig defines the OSS proxy configuration.
 type ProxyConfig struct {
+	Name    string
+	Product string
 	Version string
 }
 
@@ -47,6 +51,143 @@ func BootProxy(pc ProxyConfig) {
 
 	if len(os.Args) > 1 && (os.Args[1] == "--health" || os.Args[1] == "health") {
 		fmt.Println("ok")
+		os.Exit(0)
+	}
+
+
+	// Handle --help / -h / help
+	if len(os.Args) > 1 && (os.Args[1] == "--help" || os.Args[1] == "-h" || os.Args[1] == "help") {
+		binary := "stockyard-proxy"
+		if pc.Product != "" {
+			binary = "stockyard-" + pc.Product
+		}
+		fmt.Printf(`%s %s
+
+Usage:
+  %s              Start the service
+  %s doctor       Check environment
+  %s backup [path] Backup database
+  %s --version    Print version
+  %s --health     Quick health check
+
+Environment:
+  PORT       HTTP port (default: from config)
+  DATA_DIR   Data directory (default: ~/.stockyard)
+
+Dashboard: http://localhost:PORT/ui
+API:       http://localhost:PORT/api
+Docs:      https://stockyard.dev/%s/
+`, pc.Name, pc.Version, binary, binary, binary, binary, binary, pc.Product)
+		os.Exit(0)
+	}
+
+	// Handle doctor subcommand
+	if len(os.Args) > 1 && (os.Args[1] == "doctor" || os.Args[1] == "--doctor") {
+		binary := "stockyard-proxy"
+		if pc.Product != "" {
+			binary = "stockyard-" + pc.Product
+		}
+		dataDir := os.Getenv("DATA_DIR")
+		if dataDir == "" {
+			home, _ := os.UserHomeDir()
+			dataDir = home + "/.stockyard"
+		}
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "9700"
+		}
+		
+		fmt.Printf("\n  %s Doctor\n\n", pc.Name)
+		
+		// Check binary
+		fmt.Printf("    ✓ Binary           %s\n", binary)
+		
+		// Check data dir
+		if _, err := os.Stat(dataDir); err == nil {
+			fmt.Printf("    ✓ Data directory   %s\n", dataDir)
+		} else {
+			fmt.Printf("    ! Data directory   %s (will be created on first run)\n", dataDir)
+		}
+		
+		// Check port
+		ln, err := net.Listen("tcp", ":"+port)
+		if err != nil {
+			fmt.Printf("    ✗ Port             :%s in use\n", port)
+		} else {
+			ln.Close()
+			fmt.Printf("    ✓ Port             :%s available\n", port)
+		}
+		
+		// Check disk
+		f, err := os.CreateTemp(dataDir, ".doctor-check-*")
+		if err != nil {
+			os.MkdirAll(dataDir, 0755)
+			f, err = os.CreateTemp(dataDir, ".doctor-check-*")
+		}
+		if err != nil {
+			fmt.Printf("    ✗ Disk             Not writable\n")
+		} else {
+			f.Close()
+			os.Remove(f.Name())
+			fmt.Printf("    ✓ Disk             Writable\n")
+		}
+		
+		fmt.Println()
+		os.Exit(0)
+	}
+
+	// Handle backup subcommand
+	if len(os.Args) > 1 && (os.Args[1] == "backup" || os.Args[1] == "--backup") {
+		product := pc.Product
+		if product == "" {
+			product = "proxy"
+		}
+		dataDir := os.Getenv("DATA_DIR")
+		if dataDir == "" {
+			home, _ := os.UserHomeDir()
+			dataDir = home + "/.stockyard"
+		}
+		dbPath := dataDir + "/stockyard-" + product + ".db"
+		
+		// Try common DB names
+		if _, err := os.Stat(dbPath); err != nil {
+			dbPath = dataDir + "/" + product + ".db"
+		}
+		if _, err := os.Stat(dbPath); err != nil {
+			// Find any .db file
+			entries, _ := os.ReadDir(dataDir)
+			for _, e := range entries {
+				if strings.HasSuffix(e.Name(), ".db") && !strings.HasSuffix(e.Name(), "-shm") && !strings.HasSuffix(e.Name(), "-wal") {
+					dbPath = dataDir + "/" + e.Name()
+					break
+				}
+			}
+		}
+		
+		backupPath := ""
+		if len(os.Args) > 2 {
+			backupPath = os.Args[2]
+		} else {
+			now := time.Now().Format("20060102-150405")
+			backupPath = fmt.Sprintf("%s-backup-%s.db", product, now)
+		}
+		
+		src, err := os.Open(dbPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot open database: %v\nExpected at: %s\n", err, dbPath)
+			os.Exit(1)
+		}
+		defer src.Close()
+		
+		dst, err := os.Create(backupPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot create backup: %v\n", err)
+			os.Exit(1)
+		}
+		defer dst.Close()
+		
+		n, _ := io.Copy(dst, src)
+		fmt.Printf("Backed up %s → %s (%d bytes)\n", dbPath, backupPath, n)
 		os.Exit(0)
 	}
 
