@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -26,6 +27,7 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
+	"github.com/stockyard-dev/stockyard/internal/discovery"
 	"github.com/stockyard-dev/stockyard/internal/connect"
 	"github.com/stockyard-dev/stockyard/internal/cortex"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
@@ -227,6 +229,81 @@ func Boot(pc ProductConfig) {
 			v = "dev"
 		}
 		fmt.Printf("%s %s\n", pc.Product, v)
+		os.Exit(0)
+	}
+
+
+	// Handle --help / -h / help
+	if len(os.Args) > 1 && (os.Args[1] == "--help" || os.Args[1] == "-h" || os.Args[1] == "help") {
+		v := pc.Version
+		if v == "" {
+			v = "dev"
+		}
+		fmt.Printf(`%s %s
+
+Usage:
+  %s                  Start the platform
+  %s doctor           Check environment and configuration
+  %s doctor --json    Machine-readable doctor output
+  %s --version        Print version and exit
+  %s --health         Quick health check (prints "ok")
+  %s backup [path]    Backup SQLite database
+  %s products         List platform products and tiers
+
+Environment:
+  PORT                 HTTP port (default: 4200)
+  DATA_DIR             Data directory (default: ~/.stockyard)
+  OPENAI_API_KEY       OpenAI provider key
+  ANTHROPIC_API_KEY    Anthropic provider key
+  STOCKYARD_ADMIN_KEY  Admin API key
+
+Dashboard: http://localhost:PORT/ui
+Proxy:     http://localhost:PORT/v1
+Docs:      https://stockyard.dev/docs
+`, pc.Name, v, pc.Product, pc.Product, pc.Product, pc.Product, pc.Product, pc.Product, pc.Product)
+		os.Exit(0)
+	}
+
+	// Handle backup subcommand
+	if len(os.Args) > 1 && (os.Args[1] == "backup" || os.Args[1] == "--backup") {
+		dataDir := os.Getenv("DATA_DIR")
+		if dataDir == "" {
+			home, _ := os.UserHomeDir()
+			dataDir = home + "/.stockyard"
+		}
+		dbPath := dataDir + "/stockyard.db"
+		
+		// Determine backup path
+		backupPath := ""
+		if len(os.Args) > 2 {
+			backupPath = os.Args[2]
+		} else {
+			now := time.Now().Format("20060102-150405")
+			backupPath = fmt.Sprintf("stockyard-backup-%s.db", now)
+		}
+		
+		src, err := os.Open(dbPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot open database: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Database expected at: %s\n", dbPath)
+			os.Exit(1)
+		}
+		defer src.Close()
+		
+		dst, err := os.Create(backupPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot create backup: %v\n", err)
+			os.Exit(1)
+		}
+		defer dst.Close()
+		
+		n, err := io.Copy(dst, src)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Backup failed: %v\n", err)
+			os.Exit(1)
+		}
+		
+		fmt.Printf("Backed up %s → %s (%d bytes)\n", dbPath, backupPath, n)
 		os.Exit(0)
 	}
 
@@ -1820,6 +1897,9 @@ func Boot(pc ProductConfig) {
 			log.Fatalf("server: %v", err)
 		}
 	}()
+
+	// Register with discovery for Hub auto-detection
+	discovery.Register(pc.Product, pc.Name, cfg.Port, pc.Version)
 
 	log.Printf("")
 	log.Printf("  ╔══════════════════════════════════════════════╗")
