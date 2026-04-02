@@ -669,6 +669,13 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/silo/",
 		"/ledger2/",
 
+
+		// Tutorial pages
+		"/how-to-self-host-analytics/",
+		"/how-to-self-host-error-tracking/",
+		"/how-to-self-host-feature-flags/",
+		"/how-to-self-host-a-status-page/",
+		"/how-to-self-host-a-wiki/",
 		// Category hub pages
 		"/developer-tools/",
 		"/operations-tools/",
