@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Surveyor is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/responses</code> &mdash; list all responses with optional search and filter query parameters</li><li><code>POST /api/responses</code> &mdash; create a new formresponse record</li><li><code>GET /api/responses/{id}</code> &mdash; retrieve a single formresponse by ID</li><li><code>PUT /api/responses/{id}</code> &mdash; update an existing formresponse</li><li><code>DELETE /api/responses/{id}</code> &mdash; remove a formresponse</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Every formresponse your team creates contains context that matters — name, respondent, answers, score, status. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Surveyor keeps it local.</p>
+</div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any formresponse to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/responses</code>. Responses are JSON. Authentication is handled at the network level — put Surveyor behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A distributed team of eight uses Surveyor alongside their existing project management tool. Surveyor handles the responses that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/responses</code> — List all responses. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/responses</code> — Create a new formresponse. Send JSON with at least <code>name</code></li><li><code>GET /api/responses/{id}</code> — Fetch one formresponse by ID</li><li><code>PUT /api/responses/{id}</code> — Update fields on an existing formresponse</li><li><code>DELETE /api/responses/{id}</code> — Remove a formresponse</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

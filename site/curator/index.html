@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Curator is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/recipes</code> &mdash; list all recipes with optional search and filter query parameters</li><li><code>POST /api/recipes</code> &mdash; create a new recipe record</li><li><code>GET /api/recipes/{id}</code> &mdash; retrieve a single recipe by ID</li><li><code>PUT /api/recipes/{id}</code> &mdash; update an existing recipe</li><li><code>DELETE /api/recipes/{id}</code> &mdash; remove a recipe</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your recipe and meal planner</div>
+  <p>If you have ever exported recipes from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Curator stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A three-person startup uses Curator to track recipes without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their recipes workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">How Curator runs</div>
+  <p>Point <code>curl</code> at <code>/api/recipes</code> to interact with Curator programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/recipes</code> — List all recipes. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/recipes</code> — Create a new recipe. Send JSON with at least <code>title</code></li><li><code>GET /api/recipes/{id}</code> — Fetch one recipe by ID</li><li><code>PUT /api/recipes/{id}</code> — Update fields on an existing recipe</li><li><code>DELETE /api/recipes/{id}</code> — Remove a recipe</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A distributed team of eight uses Deposition alongside their existing project management tool. Deposition handles the records that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+</div></div><div class="section">
+  <div class="section-label">What Deposition replaces</div>
+  <p>Self-hosting used to mean spending a weekend configuring Docker, Postgres, Redis, and an Nginx reverse proxy. Deposition skips all of that. It compiles to a static binary with an embedded database, so there is nothing to install and nothing to maintain.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/records</code> — List all records. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/records</code> — Create a new record. Send JSON with at least <code>name</code></li><li><code>GET /api/records/{id}</code> — Fetch one record by ID</li><li><code>PUT /api/records/{id}</code> — Update fields on an existing record</li><li><code>DELETE /api/records/{id}</code> — Remove a record</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How Deposition runs</div>
+  <p>Start Deposition with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create records through the web interface or POST JSON to the API. Filter by hash, prev hash, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

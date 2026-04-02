@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Grubstake is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/campaigns</code> &mdash; list all campaigns with optional search and filter query parameters</li><li><code>POST /api/campaigns</code> &mdash; create a new campaign record</li><li><code>GET /api/campaigns/{id}</code> &mdash; retrieve a single campaign by ID</li><li><code>PUT /api/campaigns/{id}</code> &mdash; update an existing campaign</li><li><code>DELETE /api/campaigns/{id}</code> &mdash; remove a campaign</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">What Grubstake replaces</div>
+  <p>Self-hosting used to mean spending a weekend configuring Docker, Postgres, Redis, and an Nginx reverse proxy. Grubstake skips all of that. It compiles to a static binary with an embedded database, so there is nothing to install and nothing to maintain.</p>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>Start Grubstake with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create campaigns through the web interface or POST JSON to the API. Filter by description, goal amount, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who runs this</div>
+  <p>A regulated company runs Grubstake inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/campaigns</code> — List all campaigns. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/campaigns</code> — Create a new campaign. Send JSON with at least <code>title</code></li><li><code>GET /api/campaigns/{id}</code> — Fetch one campaign by ID</li><li><code>PUT /api/campaigns/{id}</code> — Update fields on an existing campaign</li><li><code>DELETE /api/campaigns/{id}</code> — Remove a campaign</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>Self-hosting used to mean spending a weekend configuring Docker, Postgres, Redis, and an Nginx reverse proxy. Scribe skips all of that. It compiles to a static binary with an embedded database, so there is nothing to install and nothing to maintain.</p>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>Install Scribe with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating recordings. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who runs this</div>
+  <p>A freelance consultant keeps Scribe running on a home server. Client recordings stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/recordings</code> — List all recordings. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/recordings</code> — Create a new recording. Send JSON with at least <code>title</code></li><li><code>GET /api/recordings/{id}</code> — Fetch one recording by ID</li><li><code>PUT /api/recordings/{id}</code> — Update fields on an existing recording</li><li><code>DELETE /api/recordings/{id}</code> — Remove a recording</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

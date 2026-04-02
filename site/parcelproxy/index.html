@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Parcel Proxy is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/upstreams</code> &mdash; list all upstreams with optional search and filter query parameters</li><li><code>POST /api/upstreams</code> &mdash; create a new upstream record</li><li><code>GET /api/upstreams/{id}</code> &mdash; retrieve a single upstream by ID</li><li><code>PUT /api/upstreams/{id}</code> &mdash; update an existing upstream</li><li><code>DELETE /api/upstreams/{id}</code> &mdash; remove a upstream</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Teams outgrow spreadsheet-based upstreams tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Parcel Proxy is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any upstream to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/upstreams</code>. Responses are JSON. Authentication is handled at the network level — put Parcel Proxy behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Parcel Proxy</div>
+  <p>A regulated company runs Parcel Proxy inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/upstreams</code> — List all upstreams. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/upstreams</code> — Create a new upstream. Send JSON with at least <code>name</code></li><li><code>GET /api/upstreams/{id}</code> — Fetch one upstream by ID</li><li><code>PUT /api/upstreams/{id}</code> — Update fields on an existing upstream</li><li><code>DELETE /api/upstreams/{id}</code> — Remove a upstream</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

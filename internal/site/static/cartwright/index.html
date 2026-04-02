@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Cartwright is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/reports</code> &mdash; list all reports with optional search and filter query parameters</li><li><code>POST /api/reports</code> &mdash; create a new report record</li><li><code>GET /api/reports/{id}</code> &mdash; retrieve a single report by ID</li><li><code>PUT /api/reports/{id}</code> &mdash; update an existing report</li><li><code>DELETE /api/reports/{id}</code> &mdash; remove a report</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>Most reports tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Cartwright exists because neither option makes sense when you just need a reliable dashboard and report builder under your own control.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A devops team integrates Cartwright into their CI pipeline. A post-deploy hook creates a report record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches reports by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">How Cartwright runs</div>
+  <p>Deploy Cartwright as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and reports count, which you can wire into your existing monitoring stack.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/reports</code> — List all reports. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/reports</code> — Create a new report. Send JSON with at least <code>title</code></li><li><code>GET /api/reports/{id}</code> — Fetch one report by ID</li><li><code>PUT /api/reports/{id}</code> — Update fields on an existing report</li><li><code>DELETE /api/reports/{id}</code> — Remove a report</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

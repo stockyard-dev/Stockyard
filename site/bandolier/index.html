@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Bandolier is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/env_vars</code> &mdash; list all env_vars with optional search and filter query parameters</li><li><code>POST /api/env_vars</code> &mdash; create a new envvar record</li><li><code>GET /api/env_vars/{id}</code> &mdash; retrieve a single envvar by ID</li><li><code>PUT /api/env_vars/{id}</code> &mdash; update an existing envvar</li><li><code>DELETE /api/env_vars/{id}</code> &mdash; remove a envvar</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your environment variable manager</div>
+  <p>The moment you store env vars in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Bandolier puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Bandolier</div>
+  <p>A freelance consultant keeps Bandolier running on a home server. Client env vars stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
+</div></div><div class="section">
+  <div class="section-label">How Bandolier runs</div>
+  <p>Start Bandolier with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create env vars through the web interface or POST JSON to the API. Filter by value, environment, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts for monitoring.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/env_vars</code> — List all env vars. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/env_vars</code> — Create a new envvar. Send JSON with at least <code>key</code></li><li><code>GET /api/env_vars/{id}</code> — Fetch one envvar by ID</li><li><code>PUT /api/env_vars/{id}</code> — Update fields on an existing envvar</li><li><code>DELETE /api/env_vars/{id}</code> — Remove a envvar</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

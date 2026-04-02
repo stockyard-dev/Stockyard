@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Plumb is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/migrations</code> &mdash; list all migrations with optional search and filter query parameters</li><li><code>POST /api/migrations</code> &mdash; create a new migration record</li><li><code>GET /api/migrations/{id}</code> &mdash; retrieve a single migration by ID</li><li><code>PUT /api/migrations/{id}</code> &mdash; update an existing migration</li><li><code>DELETE /api/migrations/{id}</code> &mdash; remove a migration</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Teams outgrow spreadsheet-based migrations tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Plumb is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>Deploy Plumb as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and migrations count, which you can wire into your existing monitoring stack.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A three-person startup uses Plumb to track migrations without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their migrations workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/migrations</code> — List all migrations. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/migrations</code> — Create a new migration. Send JSON with at least <code>name</code></li><li><code>GET /api/migrations/{id}</code> — Fetch one migration by ID</li><li><code>PUT /api/migrations/{id}</code> — Update fields on an existing migration</li><li><code>DELETE /api/migrations/{id}</code> — Remove a migration</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

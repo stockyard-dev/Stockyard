@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Waystation is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/trips</code> &mdash; list all trips with optional search and filter query parameters</li><li><code>POST /api/trips</code> &mdash; create a new trip record</li><li><code>GET /api/trips/{id}</code> &mdash; retrieve a single trip by ID</li><li><code>PUT /api/trips/{id}</code> &mdash; update an existing trip</li><li><code>DELETE /api/trips/{id}</code> &mdash; remove a trip</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your travel and trip planner</div>
+  <p>If you have ever exported trips from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Waystation stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section">
+  <div class="section-label">How Waystation runs</div>
+  <p>Point <code>curl</code> at <code>/api/trips</code> to interact with Waystation programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>An agency managing trips for multiple clients runs one Waystation instance per client on isolated VMs. Each instance gets its own data directory. There is no shared database, no multi-tenant risk, no worry about one client's data appearing in another client's export.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/trips</code> — List all trips. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/trips</code> — Create a new trip. Send JSON with at least <code>name</code></li><li><code>GET /api/trips/{id}</code> — Fetch one trip by ID</li><li><code>PUT /api/trips/{id}</code> — Update fields on an existing trip</li><li><code>DELETE /api/trips/{id}</code> — Remove a trip</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

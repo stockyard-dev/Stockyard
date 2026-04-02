@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A non-profit with no DevOps budget downloads the Assay binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
+</div></div><div class="section">
+  <div class="section-label">Why self-host your API testing suite</div>
+  <p>Privacy-conscious teams often build internal test cases workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Assay gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/test_cases</code> — List all test cases. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/test_cases</code> — Create a new testcase. Send JSON with at least <code>name</code></li><li><code>GET /api/test_cases/{id}</code> — Fetch one testcase by ID</li><li><code>PUT /api/test_cases/{id}</code> — Update fields on an existing testcase</li><li><code>DELETE /api/test_cases/{id}</code> — Remove a testcase</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How Assay runs</div>
+  <p>On first launch, Assay initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a testcase is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

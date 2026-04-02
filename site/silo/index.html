@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Silo is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/partitions</code> &mdash; list all partitions with optional search and filter query parameters</li><li><code>POST /api/partitions</code> &mdash; create a new partition record</li><li><code>GET /api/partitions/{id}</code> &mdash; retrieve a single partition by ID</li><li><code>PUT /api/partitions/{id}</code> &mdash; update an existing partition</li><li><code>DELETE /api/partitions/{id}</code> &mdash; remove a partition</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your data isolation and partitioning layer</div>
+  <p>If you have ever exported partitions from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Silo stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A freelance consultant keeps Silo running on a home server. Client partitions stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
+</div></div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>Install Silo with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating partitions. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/partitions</code> — List all partitions. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/partitions</code> — Create a new partition. Send JSON with at least <code>name</code></li><li><code>GET /api/partitions/{id}</code> — Fetch one partition by ID</li><li><code>PUT /api/partitions/{id}</code> — Update fields on an existing partition</li><li><code>DELETE /api/partitions/{id}</code> — Remove a partition</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

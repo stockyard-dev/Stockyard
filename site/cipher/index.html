@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Cipher is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/secrets</code> &mdash; list all secrets with optional search and filter query parameters</li><li><code>POST /api/secrets</code> &mdash; create a new secret record</li><li><code>GET /api/secrets/{id}</code> &mdash; retrieve a single secret by ID</li><li><code>PUT /api/secrets/{id}</code> &mdash; update an existing secret</li><li><code>DELETE /api/secrets/{id}</code> &mdash; remove a secret</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">What Cipher replaces</div>
+  <p>If you have ever exported secrets from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Cipher stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who runs this</div>
+  <p>A distributed team of eight uses Cipher alongside their existing project management tool. Cipher handles the secrets that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+</div></div><div class="section">
+  <div class="section-label">How Cipher runs</div>
+  <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any secret to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/secrets</code>. Responses are JSON. Authentication is handled at the network level — put Cipher behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/secrets</code> — List all secrets. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/secrets</code> — Create a new secret. Send JSON with at least <code>name</code></li><li><code>GET /api/secrets/{id}</code> — Fetch one secret by ID</li><li><code>PUT /api/secrets/{id}</code> — Update fields on an existing secret</li><li><code>DELETE /api/secrets/{id}</code> — Remove a secret</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

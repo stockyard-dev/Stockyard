@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Rampart is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/block_rules</code> &mdash; list all block_rules with optional search and filter query parameters</li><li><code>POST /api/block_rules</code> &mdash; create a new blockrule record</li><li><code>GET /api/block_rules/{id}</code> &mdash; retrieve a single blockrule by ID</li><li><code>PUT /api/block_rules/{id}</code> &mdash; update an existing blockrule</li><li><code>DELETE /api/block_rules/{id}</code> &mdash; remove a blockrule</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>The overhead of managing block rules tends to grow quietly until someone asks why the team is paying four different subscriptions for overlapping features. Rampart replaces that stack with a single process that starts in under a second.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A devops team integrates Rampart into their CI pipeline. A post-deploy hook creates a blockrule record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches block rules by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>Start Rampart with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create block rules through the web interface or POST JSON to the API. Filter by reason, source, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts for monitoring.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/block_rules</code> — List all block rules. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/block_rules</code> — Create a new blockrule. Send JSON with at least <code>cidr</code></li><li><code>GET /api/block_rules/{id}</code> — Fetch one blockrule by ID</li><li><code>PUT /api/block_rules/{id}</code> — Update fields on an existing blockrule</li><li><code>DELETE /api/block_rules/{id}</code> — Remove a blockrule</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

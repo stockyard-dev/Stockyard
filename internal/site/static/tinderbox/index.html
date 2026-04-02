@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Tinderbox is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/experiments</code> &mdash; list all experiments with optional search and filter query parameters</li><li><code>POST /api/experiments</code> &mdash; create a new experiment record</li><li><code>GET /api/experiments/{id}</code> &mdash; retrieve a single experiment by ID</li><li><code>PUT /api/experiments/{id}</code> &mdash; update an existing experiment</li><li><code>DELETE /api/experiments/{id}</code> &mdash; remove a experiment</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>The moment you store experiments in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Tinderbox puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>An agency managing experiments for multiple clients runs one Tinderbox instance per client on isolated VMs. Each instance gets its own data directory. There is no shared database, no multi-tenant risk, no worry about one client's data appearing in another client's export.</p>
+</div></div><div class="section">
+  <div class="section-label">How Tinderbox runs</div>
+  <p>Each experiment record carries fields for name, hypothesis, variant a, variant b, traffic pct. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering through the lifecycle. Backups are a file copy of the SQLite database in the data directory.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/experiments</code> — List all experiments. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/experiments</code> — Create a new experiment. Send JSON with at least <code>name</code></li><li><code>GET /api/experiments/{id}</code> — Fetch one experiment by ID</li><li><code>PUT /api/experiments/{id}</code> — Update fields on an existing experiment</li><li><code>DELETE /api/experiments/{id}</code> — Remove a experiment</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

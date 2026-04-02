@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Muster is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/attendees</code> &mdash; list all attendees with optional search and filter query parameters</li><li><code>POST /api/attendees</code> &mdash; create a new attendee record</li><li><code>GET /api/attendees/{id}</code> &mdash; retrieve a single attendee by ID</li><li><code>PUT /api/attendees/{id}</code> &mdash; update an existing attendee</li><li><code>DELETE /api/attendees/{id}</code> &mdash; remove a attendee</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who runs this</div>
+  <p>A regulated company runs Muster inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>When regulators or clients ask where your attendees data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Muster makes that answer straightforward because the data never leaves your infrastructure.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/attendees</code> — List all attendees. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/attendees</code> — Create a new attendee. Send JSON with at least <code>name</code></li><li><code>GET /api/attendees/{id}</code> — Fetch one attendee by ID</li><li><code>PUT /api/attendees/{id}</code> — Update fields on an existing attendee</li><li><code>DELETE /api/attendees/{id}</code> — Remove a attendee</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>Install Muster with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating attendees. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Viaduct is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/tunnels</code> &mdash; list all tunnels with optional search and filter query parameters</li><li><code>POST /api/tunnels</code> &mdash; create a new tunnel record</li><li><code>GET /api/tunnels/{id}</code> &mdash; retrieve a single tunnel by ID</li><li><code>PUT /api/tunnels/{id}</code> &mdash; update an existing tunnel</li><li><code>DELETE /api/tunnels/{id}</code> &mdash; remove a tunnel</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A solo developer built a weekend project that needed tunnels tracking. Instead of spinning up Postgres and writing an admin panel, they added Viaduct as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
+</div></div><div class="section">
+  <div class="section-label">Why self-host your API version router</div>
+  <p>When regulators or clients ask where your tunnels data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Viaduct makes that answer straightforward because the data never leaves your infrastructure.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/tunnels</code> — List all tunnels. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/tunnels</code> — Create a new tunnel. Send JSON with at least <code>name</code></li><li><code>GET /api/tunnels/{id}</code> — Fetch one tunnel by ID</li><li><code>PUT /api/tunnels/{id}</code> — Update fields on an existing tunnel</li><li><code>DELETE /api/tunnels/{id}</code> — Remove a tunnel</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>Point <code>curl</code> at <code>/api/tunnels</code> to interact with Viaduct programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

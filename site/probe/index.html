@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A devops team integrates Probe into their CI pipeline. A post-deploy hook creates a capture record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches captures by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">Why self-host your HTTP request inspector</div>
+  <p>Privacy-conscious teams often build internal captures workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Probe gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/captures</code> — List all captures. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/captures</code> — Create a new capture. Send JSON with at least <code>name</code></li><li><code>GET /api/captures/{id}</code> — Fetch one capture by ID</li><li><code>PUT /api/captures/{id}</code> — Update fields on an existing capture</li><li><code>DELETE /api/captures/{id}</code> — Remove a capture</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>On first launch, Probe initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a capture is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

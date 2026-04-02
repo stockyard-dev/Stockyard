@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Outfitter is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/new_hires</code> &mdash; list all new_hires with optional search and filter query parameters</li><li><code>POST /api/new_hires</code> &mdash; create a new newhire record</li><li><code>GET /api/new_hires/{id}</code> &mdash; retrieve a single newhire by ID</li><li><code>PUT /api/new_hires/{id}</code> &mdash; update an existing newhire</li><li><code>DELETE /api/new_hires/{id}</code> &mdash; remove a newhire</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Teams outgrow spreadsheet-based new hires tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Outfitter is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>Point <code>curl</code> at <code>/api/new_hires</code> to interact with Outfitter programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A three-person startup uses Outfitter to track new hires without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their new hires workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/new_hires</code> — List all new hires. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/new_hires</code> — Create a new newhire. Send JSON with at least <code>name</code></li><li><code>GET /api/new_hires/{id}</code> — Fetch one newhire by ID</li><li><code>PUT /api/new_hires/{id}</code> — Update fields on an existing newhire</li><li><code>DELETE /api/new_hires/{id}</code> — Remove a newhire</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

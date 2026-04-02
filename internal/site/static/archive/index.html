@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section">
+  <div class="section-label">The problem</div>
+  <p>Running a content archive and clipping service should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Archive is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
+</div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>Deploy Archive as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and bookmarks count, which you can wire into your existing monitoring stack.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who runs this</div>
+  <p>A regulated company runs Archive inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/bookmarks</code> — List all bookmarks. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/bookmarks</code> — Create a new bookmark. Send JSON with at least <code>title</code></li><li><code>GET /api/bookmarks/{id}</code> — Fetch one bookmark by ID</li><li><code>PUT /api/bookmarks/{id}</code> — Update fields on an existing bookmark</li><li><code>DELETE /api/bookmarks/{id}</code> — Remove a bookmark</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

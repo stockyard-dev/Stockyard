@@ -204,6 +204,20 @@ curl -s -X POST http://localhost:8790/api/upstreams/{id}/rules \
     <div class="uc-card"><div class="uc-name">Monitor internal service usage</div><div class="uc-desc">Multiple apps hit one internal API. Trough tells you which app calls which endpoints most, what the latency looks like, and flags unusual spikes.</div></div>
     <div class="uc-card"><div class="uc-name">Set spend alerts before the billing cycle</div><div class="uc-desc">Trough fires a webhook when daily or monthly spend crosses a threshold. Catch runaway usage before it shows up on an invoice.</div></div>
   </div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Teams outgrow spreadsheet-based upstreams tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Trough is a single binary that handles the same job without the recurring bill.</p>
+</div>
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Deploy Trough as a systemd service, a Docker container, or a bare process. It reads PORT and DATA_DIR. The /api/health endpoint returns status for monitoring.</p>
+</div>
+<div class="section">
+  <div class="section-label">In practice</div>
+  <p>A consultant keeps Trough running on a home server. Client upstreams stay on local disk, simplifying privacy in every contract.</p>
+</div>
+
 </section>
 
 <!-- D. Free vs Pro -->

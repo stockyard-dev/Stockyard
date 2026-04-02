@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A regulated company runs Typeset inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">What Typeset replaces</div>
+  <p>The moment you store pages in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Typeset puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/pages</code> — List all pages. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/pages</code> — Create a new page. Send JSON with at least <code>title</code></li><li><code>GET /api/pages/{id}</code> — Fetch one page by ID</li><li><code>PUT /api/pages/{id}</code> — Update fields on an existing page</li><li><code>DELETE /api/pages/{id}</code> — Remove a page</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>Start Typeset with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create pages through the web interface or POST JSON to the API. Filter by body, site id, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

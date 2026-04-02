@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Pennant is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/members</code> &mdash; list all members with optional search and filter query parameters</li><li><code>POST /api/members</code> &mdash; create a new member record</li><li><code>GET /api/members/{id}</code> &mdash; retrieve a single member by ID</li><li><code>PUT /api/members/{id}</code> &mdash; update an existing member</li><li><code>DELETE /api/members/{id}</code> &mdash; remove a member</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Self-hosting used to mean spending a weekend configuring Docker, Postgres, Redis, and an Nginx reverse proxy. Pennant skips all of that. It compiles to a static binary with an embedded database, so there is nothing to install and nothing to maintain.</p>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>Start Pennant with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create members through the web interface or POST JSON to the API. Filter by email, points, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts for monitoring.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A regulated company runs Pennant inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/members</code> — List all members. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/members</code> — Create a new member. Send JSON with at least <code>name</code></li><li><code>GET /api/members/{id}</code> — Fetch one member by ID</li><li><code>PUT /api/members/{id}</code> — Update fields on an existing member</li><li><code>DELETE /api/members/{id}</code> — Remove a member</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Almanac III is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/schemas</code> &mdash; list all schemas with optional search and filter query parameters</li><li><code>POST /api/schemas</code> &mdash; create a new schema record</li><li><code>GET /api/schemas/{id}</code> &mdash; retrieve a single schema by ID</li><li><code>PUT /api/schemas/{id}</code> &mdash; update an existing schema</li><li><code>DELETE /api/schemas/{id}</code> &mdash; remove a schema</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>The overhead of managing schemas tends to grow quietly until someone asks why the team is paying four different subscriptions for overlapping features. Almanac III replaces that stack with a single process that starts in under a second.</p>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>The data model stores each schema with 7 fields: name, database, table name, columns, description. All fields are queryable through the search API. The dashboard renders schemas as cards with inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A regulated company runs Almanac III inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/schemas</code> — List all schemas. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/schemas</code> — Create a new schema. Send JSON with at least <code>name</code></li><li><code>GET /api/schemas/{id}</code> — Fetch one schema by ID</li><li><code>PUT /api/schemas/{id}</code> — Update fields on an existing schema</li><li><code>DELETE /api/schemas/{id}</code> — Remove a schema</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

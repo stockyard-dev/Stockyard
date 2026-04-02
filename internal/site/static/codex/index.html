@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>An agency managing snippets for multiple clients runs one Codex instance per client on isolated VMs. Each instance gets its own data directory. There is no shared database, no multi-tenant risk, no worry about one client's data appearing in another client's export.</p>
+</div></div><div class="section">
+  <div class="section-label">What Codex replaces</div>
+  <p>Teams outgrow spreadsheet-based snippets tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Codex is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/snippets</code> — List all snippets. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/snippets</code> — Create a new snippet. Send JSON with at least <code>title</code></li><li><code>GET /api/snippets/{id}</code> — Fetch one snippet by ID</li><li><code>PUT /api/snippets/{id}</code> — Update fields on an existing snippet</li><li><code>DELETE /api/snippets/{id}</code> — Remove a snippet</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>On first launch, Codex initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a snippet is a POST with JSON — the only required field is title. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

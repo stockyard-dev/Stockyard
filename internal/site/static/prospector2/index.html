@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Prospector II is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/leads</code> &mdash; list all leads with optional search and filter query parameters</li><li><code>POST /api/leads</code> &mdash; create a new lead record</li><li><code>GET /api/leads/{id}</code> &mdash; retrieve a single lead by ID</li><li><code>PUT /api/leads/{id}</code> &mdash; update an existing lead</li><li><code>DELETE /api/leads/{id}</code> &mdash; remove a lead</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>Self-hosting used to mean spending a weekend configuring Docker, Postgres, Redis, and an Nginx reverse proxy. Prospector II skips all of that. It compiles to a static binary with an embedded database, so there is nothing to install and nothing to maintain.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A devops team integrates Prospector II into their CI pipeline. A post-deploy hook creates a lead record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches leads by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any lead to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/leads</code>. Responses are JSON. Authentication is handled at the network level — put Prospector II behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/leads</code> — List all leads. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/leads</code> — Create a new lead. Send JSON with at least <code>name</code></li><li><code>GET /api/leads/{id}</code> — Fetch one lead by ID</li><li><code>PUT /api/leads/{id}</code> — Update fields on an existing lead</li><li><code>DELETE /api/leads/{id}</code> — Remove a lead</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

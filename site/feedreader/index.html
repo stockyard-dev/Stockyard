@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Feedreader is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/feeds</code> &mdash; list all feeds with optional search and filter query parameters</li><li><code>POST /api/feeds</code> &mdash; create a new feed record</li><li><code>GET /api/feeds/{id}</code> &mdash; retrieve a single feed by ID</li><li><code>PUT /api/feeds/{id}</code> &mdash; update an existing feed</li><li><code>DELETE /api/feeds/{id}</code> &mdash; remove a feed</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A devops team integrates Feedreader into their CI pipeline. A post-deploy hook creates a feed record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches feeds by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">Why self-host your RSS and news aggregator</div>
+  <p>Every feed your team creates contains context that matters — title, url, site url, category, item count. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Feedreader keeps it local.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/feeds</code> — List all feeds. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/feeds</code> — Create a new feed. Send JSON with at least <code>title</code></li><li><code>GET /api/feeds/{id}</code> — Fetch one feed by ID</li><li><code>PUT /api/feeds/{id}</code> — Update fields on an existing feed</li><li><code>DELETE /api/feeds/{id}</code> — Remove a feed</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How it works</div>
+  <p>Point <code>curl</code> at <code>/api/feeds</code> to interact with Feedreader programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Announcements is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/announcements</code> &mdash; list all announcements with optional search and filter query parameters</li><li><code>POST /api/announcements</code> &mdash; create a new announcement record</li><li><code>GET /api/announcements/{id}</code> &mdash; retrieve a single announcement by ID</li><li><code>PUT /api/announcements/{id}</code> &mdash; update an existing announcement</li><li><code>DELETE /api/announcements/{id}</code> &mdash; remove a announcement</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your internal announcement board</div>
+  <p>Most announcements tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Announcements exists because neither option makes sense when you just need a reliable internal announcement board under your own control.</p>
+</div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>Each announcement record carries fields for title, body, author, priority, channel. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering. Backups are a file copy of the SQLite database in the data directory.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A solo developer built a weekend project that needed announcements tracking. Instead of spinning up Postgres and writing an admin panel, they added Announcements as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/announcements</code> — List all announcements. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/announcements</code> — Create a new announcement. Send JSON with at least <code>title</code></li><li><code>GET /api/announcements/{id}</code> — Fetch one announcement by ID</li><li><code>PUT /api/announcements/{id}</code> — Update fields on an existing announcement</li><li><code>DELETE /api/announcements/{id}</code> — Remove a announcement</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

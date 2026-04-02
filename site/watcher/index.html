@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Watcher</div>
+  <p>A devops team integrates Watcher into their CI pipeline. A post-deploy hook creates a watchconfig record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches watch configs by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Running a file change monitor should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Watcher is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/watch_configs</code> — List all watch configs. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/watch_configs</code> — Create a new watchconfig. Send JSON with at least <code>name</code></li><li><code>GET /api/watch_configs/{id}</code> — Fetch one watchconfig by ID</li><li><code>PUT /api/watch_configs/{id}</code> — Update fields on an existing watchconfig</li><li><code>DELETE /api/watch_configs/{id}</code> — Remove a watchconfig</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>On first launch, Watcher initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a watchconfig is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

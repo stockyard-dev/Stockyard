@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Crucible is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/test_runs</code> &mdash; list all test_runs with optional search and filter query parameters</li><li><code>POST /api/test_runs</code> &mdash; create a new testrun record</li><li><code>GET /api/test_runs/{id}</code> &mdash; retrieve a single testrun by ID</li><li><code>PUT /api/test_runs/{id}</code> &mdash; update an existing testrun</li><li><code>DELETE /api/test_runs/{id}</code> &mdash; remove a testrun</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A solo developer built a weekend project that needed test runs tracking. Instead of spinning up Postgres and writing an admin panel, they added Crucible as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
+</div></div><div class="section">
+  <div class="section-label">The problem</div>
+  <p>Every testrun your team creates contains context that matters — name, suite, passed, failed, skipped. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Crucible keeps it local.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/test_runs</code> — List all test runs. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/test_runs</code> — Create a new testrun. Send JSON with at least <code>name</code></li><li><code>GET /api/test_runs/{id}</code> — Fetch one testrun by ID</li><li><code>PUT /api/test_runs/{id}</code> — Update fields on an existing testrun</li><li><code>DELETE /api/test_runs/{id}</code> — Remove a testrun</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How Crucible runs</div>
+  <p>The data model stores each testrun with 7 fields: name, suite, passed, failed, skipped. All fields are queryable through the search API. The dashboard renders test runs as cards with color-coded status indicators and inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section">
+  <div class="section-label">The problem</div>
+  <p>If you have ever exported mock services from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Mirage stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>The data model stores each mockservice with 7 fields: name, path, method, response body, status code. All fields are queryable through the search API. The dashboard renders mock services as cards with color-coded status indicators and inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A three-person startup uses Mirage to track mock services without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their mock services workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/mock_services</code> — List all mock services. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/mock_services</code> — Create a new mockservice. Send JSON with at least <code>name</code></li><li><code>GET /api/mock_services/{id}</code> — Fetch one mockservice by ID</li><li><code>PUT /api/mock_services/{id}</code> — Update fields on an existing mockservice</li><li><code>DELETE /api/mock_services/{id}</code> — Remove a mockservice</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

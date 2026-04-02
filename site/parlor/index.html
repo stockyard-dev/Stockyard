@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Parlor is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/conversations</code> &mdash; list all conversations with optional search and filter query parameters</li><li><code>POST /api/conversations</code> &mdash; create a new conversation record</li><li><code>GET /api/conversations/{id}</code> &mdash; retrieve a single conversation by ID</li><li><code>PUT /api/conversations/{id}</code> &mdash; update an existing conversation</li><li><code>DELETE /api/conversations/{id}</code> &mdash; remove a conversation</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">The problem</div>
+  <p>Privacy-conscious teams often build internal conversations workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Parlor gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
+</div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>Deploy Parlor as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and conversations count, which you can wire into your existing monitoring stack.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A regulated company runs Parlor inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/conversations</code> — List all conversations. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/conversations</code> — Create a new conversation. Send JSON with at least <code>visitor_name</code></li><li><code>GET /api/conversations/{id}</code> — Fetch one conversation by ID</li><li><code>PUT /api/conversations/{id}</code> — Update fields on an existing conversation</li><li><code>DELETE /api/conversations/{id}</code> — Remove a conversation</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Archivist is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/documents</code> &mdash; list all documents with optional search and filter query parameters</li><li><code>POST /api/documents</code> &mdash; create a new document record</li><li><code>GET /api/documents/{id}</code> &mdash; retrieve a single document by ID</li><li><code>PUT /api/documents/{id}</code> &mdash; update an existing document</li><li><code>DELETE /api/documents/{id}</code> &mdash; remove a document</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">The problem</div>
+  <p>Every document your team creates contains context that matters — title, filename, mime type, size bytes, folder. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Archivist keeps it local.</p>
+</div><div class="section">
+  <div class="section-label">How Archivist runs</div>
+  <p>Point <code>curl</code> at <code>/api/documents</code> to interact with Archivist programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A regulated company runs Archivist inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/documents</code> — List all documents. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/documents</code> — Create a new document. Send JSON with at least <code>title</code></li><li><code>GET /api/documents/{id}</code> — Fetch one document by ID</li><li><code>PUT /api/documents/{id}</code> — Update fields on an existing document</li><li><code>DELETE /api/documents/{id}</code> — Remove a document</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

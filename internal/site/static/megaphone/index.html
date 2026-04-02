@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Megaphone is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/incidents</code> &mdash; list all incidents with optional search and filter query parameters</li><li><code>POST /api/incidents</code> &mdash; create a new incident record</li><li><code>GET /api/incidents/{id}</code> &mdash; retrieve a single incident by ID</li><li><code>PUT /api/incidents/{id}</code> &mdash; update an existing incident</li><li><code>DELETE /api/incidents/{id}</code> &mdash; remove a incident</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A three-person startup uses Megaphone to track incidents without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their incidents workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>Teams outgrow spreadsheet-based incidents tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Megaphone is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/incidents</code> — List all incidents. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/incidents</code> — Create a new incident. Send JSON with at least <code>title</code></li><li><code>GET /api/incidents/{id}</code> — Fetch one incident by ID</li><li><code>PUT /api/incidents/{id}</code> — Update fields on an existing incident</li><li><code>DELETE /api/incidents/{id}</code> — Remove a incident</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>Deploy Megaphone as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and incidents count, which you can wire into your existing monitoring stack.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -207,6 +207,20 @@ curl -s "http://localhost:8750/api/evidence/export?from=2026-01-01" \
     <div class="uc-card"><div class="uc-name">Tamper-evident application logs</div><div class="uc-desc">Standard DB logs can be modified without detection. Brand's hash chain means any deleted or altered record breaks verification immediately, with an exact pointer to where.</div></div>
     <div class="uc-card"><div class="uc-name">EU AI Act compliance logging</div><div class="uc-desc">Apply the eu_ai_act policy template and Brand tracks all AI inference calls, automated decisions, and human overrides — the records the regulation requires.</div></div>
   </div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Most audit entries tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Brand exists because neither option makes sense when you just need a reliable audit trail and compliance log under your own control.</p>
+</div>
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Deploy Brand as a systemd service, a Docker container, or a bare process. It reads PORT and DATA_DIR. The /api/health endpoint returns status for monitoring.</p>
+</div>
+<div class="section">
+  <div class="section-label">In practice</div>
+  <p>A small team uses Brand to track audit entries without another SaaS subscription. The API feeds data into automation scripts. Total cost: a $5 VPS.</p>
+</div>
+
 </section>
 
 <!-- D. Free vs Pro -->

@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Teams outgrow spreadsheet-based secrets tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Strongbox is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Strongbox</div>
+  <p>A solo developer built a weekend project that needed secrets tracking. Instead of spinning up Postgres and writing an admin panel, they added Strongbox as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
+</div></div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>Deploy Strongbox as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and secrets count, which you can wire into your existing monitoring stack.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/secrets</code> — List all secrets. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/secrets</code> — Create a new secret. Send JSON with at least <code>name</code></li><li><code>GET /api/secrets/{id}</code> — Fetch one secret by ID</li><li><code>PUT /api/secrets/{id}</code> — Update fields on an existing secret</li><li><code>DELETE /api/secrets/{id}</code> — Remove a secret</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Chalkboard is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/lessons</code> &mdash; list all lessons with optional search and filter query parameters</li><li><code>POST /api/lessons</code> &mdash; create a new lesson record</li><li><code>GET /api/lessons/{id}</code> &mdash; retrieve a single lesson by ID</li><li><code>PUT /api/lessons/{id}</code> &mdash; update an existing lesson</li><li><code>DELETE /api/lessons/{id}</code> &mdash; remove a lesson</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>A three-person startup uses Chalkboard to track lessons without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their lessons workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">The problem</div>
+  <p>The overhead of managing lessons tends to grow quietly until someone asks why the team is paying four different subscriptions for overlapping features. Chalkboard replaces that stack with a single process that starts in under a second.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/lessons</code> — List all lessons. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/lessons</code> — Create a new lesson. Send JSON with at least <code>title</code></li><li><code>GET /api/lessons/{id}</code> — Fetch one lesson by ID</li><li><code>PUT /api/lessons/{id}</code> — Update fields on an existing lesson</li><li><code>DELETE /api/lessons/{id}</code> — Remove a lesson</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>Deploy Chalkboard as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and lessons count, which you can wire into your existing monitoring stack.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

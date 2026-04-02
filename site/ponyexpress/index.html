@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Pony Express is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/deliveries</code> &mdash; list all deliveries with optional search and filter query parameters</li><li><code>POST /api/deliveries</code> &mdash; create a new delivery record</li><li><code>GET /api/deliveries/{id}</code> &mdash; retrieve a single delivery by ID</li><li><code>PUT /api/deliveries/{id}</code> &mdash; update an existing delivery</li><li><code>DELETE /api/deliveries/{id}</code> &mdash; remove a delivery</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">What Pony Express replaces</div>
+  <p>If you have ever exported deliveries from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Pony Express stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Pony Express</div>
+  <p>A non-profit with no DevOps budget downloads the Pony Express binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
+</div></div><div class="section">
+  <div class="section-label">Architecture</div>
+  <p>Start Pony Express with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create deliveries through the web interface or POST JSON to the API. Filter by channel, subject, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/deliveries</code> — List all deliveries. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/deliveries</code> — Create a new delivery. Send JSON with at least <code>recipient</code></li><li><code>GET /api/deliveries/{id}</code> — Fetch one delivery by ID</li><li><code>PUT /api/deliveries/{id}</code> — Update fields on an existing delivery</li><li><code>DELETE /api/deliveries/{id}</code> — Remove a delivery</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

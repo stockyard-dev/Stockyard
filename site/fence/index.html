@@ -212,6 +212,20 @@ curl http://localhost:8770/api/resolve/openai \
     <div class="uc-card"><div class="uc-name">Rotate keys without app restarts</div><div class="uc-desc">Rotate a key in Fence and every app that resolves it at runtime gets the new value immediately. No redeploys, no coordinating restarts across services.</div></div>
     <div class="uc-card"><div class="uc-name">Audit who accessed what</div><div class="uc-desc">Compliance review asks which employees had access to the Stripe key last quarter. Fence has a complete log of every resolution: who, when, from where.</div></div>
   </div>
+
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>The moment you store keys in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Fence puts that decision back in your hands.</p>
+</div>
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Start Fence with a port and a data directory. It creates its SQLite database on first run. Create keys through the web interface or POST JSON to the API. Filter and search by keyword.</p>
+</div>
+<div class="section">
+  <div class="section-label">In practice</div>
+  <p>A consultant keeps Fence running on a home server. Client keys stay on local disk, simplifying privacy in every contract.</p>
+</div>
+
 </section>
 
 <!-- D. Free vs Pro -->

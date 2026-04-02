@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Rangeland is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/zones</code> &mdash; list all zones with optional search and filter query parameters</li><li><code>POST /api/zones</code> &mdash; create a new zone record</li><li><code>GET /api/zones/{id}</code> &mdash; retrieve a single zone by ID</li><li><code>PUT /api/zones/{id}</code> &mdash; update an existing zone</li><li><code>DELETE /api/zones/{id}</code> &mdash; remove a zone</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>Every zone your team creates contains context that matters — name, region, type, capacity, used count. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Rangeland keeps it local.</p>
+</div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>Point <code>curl</code> at <code>/api/zones</code> to interact with Rangeland programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>An agency managing zones for multiple clients runs one Rangeland instance per client on isolated VMs. Each instance gets its own data directory. There is no shared database, no multi-tenant risk, no worry about one client's data appearing in another client's export.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/zones</code> — List all zones. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/zones</code> — Create a new zone. Send JSON with at least <code>name</code></li><li><code>GET /api/zones/{id}</code> — Fetch one zone by ID</li><li><code>PUT /api/zones/{id}</code> — Update fields on an existing zone</li><li><code>DELETE /api/zones/{id}</code> — Remove a zone</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section">
+  <div class="section-label">Why this exists</div>
+  <p>Teams outgrow spreadsheet-based tests tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Barrage is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">A typical setup</div>
+  <p>An agency managing tests for multiple clients runs one Barrage instance per client on isolated VMs. Each instance gets its own data directory. There is no shared database, no multi-tenant risk, no worry about one client's data appearing in another client's export.</p>
+</div></div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>On first launch, Barrage initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a test is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/tests</code> — List all tests. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/tests</code> — Create a new test. Send JSON with at least <code>name</code></li><li><code>GET /api/tests/{id}</code> — Fetch one test by ID</li><li><code>PUT /api/tests/{id}</code> — Update fields on an existing test</li><li><code>DELETE /api/tests/{id}</code> — Remove a test</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

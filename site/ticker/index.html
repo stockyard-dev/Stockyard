@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Ticker is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/prices</code> &mdash; list all prices with optional search and filter query parameters</li><li><code>POST /api/prices</code> &mdash; create a new price record</li><li><code>GET /api/prices/{id}</code> &mdash; retrieve a single price by ID</li><li><code>PUT /api/prices/{id}</code> &mdash; update an existing price</li><li><code>DELETE /api/prices/{id}</code> &mdash; remove a price</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your metrics and time series dashboard</div>
+  <p>Running a metrics and time series dashboard should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Ticker is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
+</div><div class="section">
+  <div class="section-label">How Ticker runs</div>
+  <p>On first launch, Ticker initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a price is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A regulated company runs Ticker inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/prices</code> — List all prices. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/prices</code> — Create a new price. Send JSON with at least <code>name</code></li><li><code>GET /api/prices/{id}</code> — Fetch one price by ID</li><li><code>PUT /api/prices/{id}</code> — Update fields on an existing price</li><li><code>DELETE /api/prices/{id}</code> — Remove a price</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

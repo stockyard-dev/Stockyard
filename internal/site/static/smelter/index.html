@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Smelter is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/transforms</code> &mdash; list all transforms with optional search and filter query parameters</li><li><code>POST /api/transforms</code> &mdash; create a new transform record</li><li><code>GET /api/transforms/{id}</code> &mdash; retrieve a single transform by ID</li><li><code>PUT /api/transforms/{id}</code> &mdash; update an existing transform</li><li><code>DELETE /api/transforms/{id}</code> &mdash; remove a transform</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your data transformation API</div>
+  <p>The moment you store transforms in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Smelter puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
+</div><div class="section">
+  <div class="section-label">How Smelter runs</div>
+  <p>Point <code>curl</code> at <code>/api/transforms</code> to interact with Smelter programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A freelance consultant keeps Smelter running on a home server. Client transforms stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/transforms</code> — List all transforms. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/transforms</code> — Create a new transform. Send JSON with at least <code>name</code></li><li><code>GET /api/transforms/{id}</code> — Fetch one transform by ID</li><li><code>PUT /api/transforms/{id}</code> — Update fields on an existing transform</li><li><code>DELETE /api/transforms/{id}</code> — Remove a transform</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Grapevine is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/articles</code> &mdash; list all articles with optional search and filter query parameters</li><li><code>POST /api/articles</code> &mdash; create a new article record</li><li><code>GET /api/articles/{id}</code> &mdash; retrieve a single article by ID</li><li><code>PUT /api/articles/{id}</code> &mdash; update an existing article</li><li><code>DELETE /api/articles/{id}</code> &mdash; remove a article</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your knowledge base and FAQ</div>
+  <p>The overhead of managing articles tends to grow quietly until someone asks why the team is paying four different subscriptions for overlapping features. Grapevine replaces that stack with a single process that starts in under a second.</p>
+</div><div class="section">
+  <div class="section-label">Setup and daily use</div>
+  <p>Each article record carries fields for title, body, category, tags, slug. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering through the lifecycle. Backups are a file copy of the SQLite database in the data directory.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">In practice</div>
+  <p>A distributed team of eight uses Grapevine alongside their existing project management tool. Grapevine handles the articles that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/articles</code> — List all articles. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/articles</code> — Create a new article. Send JSON with at least <code>title</code></li><li><code>GET /api/articles/{id}</code> — Fetch one article by ID</li><li><code>PUT /api/articles/{id}</code> — Update fields on an existing article</li><li><code>DELETE /api/articles/{id}</code> — Remove a article</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

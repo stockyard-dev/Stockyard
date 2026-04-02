@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Billfold II is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/timesheets</code> &mdash; list all timesheets with optional search and filter query parameters</li><li><code>POST /api/timesheets</code> &mdash; create a new timesheet record</li><li><code>GET /api/timesheets/{id}</code> &mdash; retrieve a single timesheet by ID</li><li><code>PUT /api/timesheets/{id}</code> &mdash; update an existing timesheet</li><li><code>DELETE /api/timesheets/{id}</code> &mdash; remove a timesheet</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Billfold II</div>
+  <p>A devops team integrates Billfold II into their CI pipeline. A post-deploy hook creates a timesheet record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches timesheets by keyword to find related records without switching tools.</p>
+</div></div><div class="section">
+  <div class="section-label">The case for owning your data</div>
+  <p>The moment you store timesheets in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Billfold II puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/timesheets</code> — List all timesheets. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/timesheets</code> — Create a new timesheet. Send JSON with at least <code>name</code></li><li><code>GET /api/timesheets/{id}</code> — Fetch one timesheet by ID</li><li><code>PUT /api/timesheets/{id}</code> — Update fields on an existing timesheet</li><li><code>DELETE /api/timesheets/{id}</code> — Remove a timesheet</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div><div class="section">
+  <div class="section-label">How Billfold II runs</div>
+  <p>On first launch, Billfold II initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a timesheet is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

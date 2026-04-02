@@ -112,6 +112,21 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+<div class="section">
+  <div class="section-label">What Trailhead replaces</div>
+  <p>Most habits tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Trailhead exists because neither option makes sense when you just need a reliable habit and goal tracker under your own control.</p>
+</div><div class="section">
+  <div class="section-label">Under the hood</div>
+  <p>On first launch, Trailhead initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a habit is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Real-world usage</div>
+  <p>A distributed team of eight uses Trailhead alongside their existing project management tool. Trailhead handles the habits that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+</div></div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/habits</code> — List all habits. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/habits</code> — Create a new habit. Send JSON with at least <code>name</code></li><li><code>GET /api/habits/{id}</code> — Fetch one habit by ID</li><li><code>PUT /api/habits/{id}</code> — Update fields on an existing habit</li><li><code>DELETE /api/habits/{id}</code> — Remove a habit</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>

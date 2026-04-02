@@ -112,6 +112,30 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 
+
+
+  <h2>Full REST API</h2>
+  <p>Every operation in Exchequer is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
+    <li><code>GET /api/budgets</code> &mdash; list all budgets with optional search and filter query parameters</li><li><code>POST /api/budgets</code> &mdash; create a new budget record</li><li><code>GET /api/budgets/{id}</code> &mdash; retrieve a single budget by ID</li><li><code>PUT /api/budgets/{id}</code> &mdash; update an existing budget</li><li><code>DELETE /api/budgets/{id}</code> &mdash; remove a budget</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">Why self-host your budget tracker</div>
+  <p>If you have ever exported budgets from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Exchequer stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+</div><div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">How teams use Exchequer</div>
+  <p>A three-person startup uses Exchequer to track budgets without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their budgets workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+</div></div><div class="section">
+  <div class="section-label">How Exchequer runs</div>
+  <p>Install Exchequer with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating budgets. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
+</div><div class="section">
+  <div class="section-label">Endpoints</div>
+  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
+    <li><code>GET /api/budgets</code> — List all budgets. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/budgets</code> — Create a new budget. Send JSON with at least <code>name</code></li><li><code>GET /api/budgets/{id}</code> — Fetch one budget by ID</li><li><code>PUT /api/budgets/{id}</code> — Update fields on an existing budget</li><li><code>DELETE /api/budgets/{id}</code> — Remove a budget</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
+  </ul>
+</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
