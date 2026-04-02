@@ -417,6 +417,15 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/surveyor/vs-tally/",
 		"/trough/vs-braintrust/",
 		"/wrangler/vs-fivetran/",
+		// Best-of, persona, pricing attack pages
+"/best-self-hosted-developer-tools/",
+		"/bitly-pricing-alternative/",
+		"/datadog-pricing-alternative/",
+		"/for-freelancers/",
+		"/for-startups/",
+		"/launchdarkly-pricing-alternative/",
+		"/sentry-pricing-alternative/",
+		"/statuspage-pricing-alternative/",
 		// Intent/category landing pages
 		"/open-source-saas-alternatives/",
 		"/replace-saas-self-hosted/",
