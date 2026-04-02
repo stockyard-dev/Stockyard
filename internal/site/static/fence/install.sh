@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="stockyard-dev/stockyard-fence"
-BINARY="fence"
+BINARY="stockyard-fence"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -18,7 +18,15 @@ if [ -z "$TAG" ]; then
   TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name"' | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
 fi
 if [ -z "$TAG" ]; then
-  echo "Could not determine latest version. Set VERSION=vX.Y.Z to specify one."
+  echo "Could not determine latest version."
+  echo "Trying go install..."
+  if command -v go &>/dev/null; then
+    CGO_ENABLED=0 GOBIN="${INSTALL_DIR}" go install "github.com/${REPO}/cmd/fence@latest"
+    echo "  Installed via go install"
+    exit 0
+  fi
+  echo "Install Go from https://go.dev or download from:"
+  echo "  https://github.com/${REPO}/releases"
   exit 1
 fi
 
@@ -30,13 +38,22 @@ echo "Installing Stockyard Fence ${TAG} (${OS}/${ARCH})..."
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-curl -fsSL "$URL" -o "${TMP}/${FILENAME}"
-tar -xzf "${TMP}/${FILENAME}" -C "$TMP"
-install -m755 "${TMP}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
+if curl -fsSL "$URL" -o "${TMP}/${FILENAME}" 2>/dev/null; then
+  tar -xzf "${TMP}/${FILENAME}" -C "$TMP"
+  install -m755 "${TMP}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
+else
+  echo "Release not found. Trying go install..."
+  if command -v go &>/dev/null; then
+    CGO_ENABLED=0 GOBIN="${INSTALL_DIR}" go install "github.com/${REPO}/cmd/fence@latest"
+  else
+    echo "Install Go from https://go.dev or download from:"
+    echo "  https://github.com/${REPO}/releases"
+    exit 1
+  fi
+fi
 
 echo ""
-echo "  Stockyard Fence ${TAG} installed to ${INSTALL_DIR}/${BINARY}"
-echo ""
-echo "  Quick start:"
-echo "    FENCE_ADMIN_KEY=secret fence"
+echo "  Stockyard Fence installed to ${INSTALL_DIR}/${BINARY}"
+echo "  Quick start:  DATA_DIR=./data stockyard-fence"
+echo "  Dashboard:    http://localhost:9700/ui"
 echo ""
