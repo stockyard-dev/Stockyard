@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your blog engine</div>
+  <p>Ghost Pro charges $25 per month for a blog. WordPress.com charges $8. Medium takes a cut of your subscriber revenue and controls your distribution. Self-hosted blog engines exist because writing should not require a monthly subscription or a dependency on someone else's algorithm. When you host your own blog, you control the URL structure, the page speed, the design, and the monetization. If you decide to move, your content is files on your filesystem, not an export button that may or may not preserve formatting.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted blog engine should support Markdown or rich text editing, scheduled publishing, and custom slugs. It should generate clean HTML that loads fast without a JavaScript framework on the frontend. It should have an RSS feed for subscribers who use feed readers. And it should not require a database server — if you need Postgres to run a blog, the operational cost exceeds the problem being solved.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Post stores articles in SQLite with fields for title, body (Markdown or HTML), author, slug, category, and publish date. Articles move through a draft-to-published workflow. The API supports full-text search across titles and bodies. You can filter by category, author, or status. The dashboard provides an editor, article list with status indicators, and publishing controls. No themes, no plugins, no PHP — just a binary that serves your content.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Hosted blog platforms charge monthly fees, own your content distribution, and can change terms at any time. Self-hosted means your blog runs on your server, on your domain, with no platform risk and no monthly fee beyond hosting.</p>
     <p>Replaces: Ghost Pro ($25/mo), WordPress.com, Medium</p>

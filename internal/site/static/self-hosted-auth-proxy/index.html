@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your auth proxy</div>
+  <p>Every internal tool, admin panel, and staging environment needs authentication. The default approach is to bolt a login page onto each service individually, which means maintaining session logic, password hashing, and token validation in every codebase. An auth proxy sits in front of all your services and handles authentication at the network level. Requests arrive at the proxy, the proxy checks credentials, and only authenticated traffic reaches the upstream service. The upstream never sees unauthenticated requests and never needs its own login code.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted auth proxy should support multiple authentication methods — at minimum, API keys for machine-to-machine traffic and session cookies for browser access. It should add identity headers to forwarded requests so upstream services know who is making each request. It should log access attempts for security audits. And it should be simple to configure: one upstream URL, one set of credentials, one process to manage.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Gate is a reverse proxy that authenticates every request before forwarding it to your upstream service. It supports API key authentication (pass a Bearer token), session-based login (username and password through a browser form), and IP allow/deny lists. Rate limiting is built in — configure requests per minute per IP. The admin API lets you manage users, keys, and access logs programmatically. The access log records every request with timestamps, IP addresses, and user identifiers.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Most auth proxies require a separate reverse proxy (Traefik or Nginx), a database, and Redis. Gate IS the reverse proxy with auth built in. One binary, no additional infrastructure.</p>
     <p>Replaces: Authelia (complex), OAuth2 Proxy, Traefik Forward Auth</p>

@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your error tracking</div>
+  <p>Error tracking services see every exception your application throws — including the request data, user context, and environment variables attached to each event. Sentry, Rollbar, and Bugsnag process millions of these events and price accordingly: Sentry's Team plan starts at $26 per month for 50,000 events. High-traffic applications routinely exceed plan limits and face overage charges or dropped events. Self-hosted error tracking removes both the privacy concern and the volume pricing. Your exceptions stay on your server, and the only limit is your disk space.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted error tracker should accept events via a standard HTTP API so you can send errors from any language or framework. It should deduplicate repeated errors automatically — seeing the same NullPointerException 10,000 times is noise, not signal. It should support severity levels so you can filter critical errors from warnings. And it should provide enough context per event (stack trace, request data, timestamps) to actually diagnose the problem.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Seismograph accepts error events via POST, deduplicates them by message signature, and groups related events for analysis. Each event carries fields for name, source, severity, payload (stack traces, request context), and tags. The dashboard surfaces top error types, error frequency over time, and lets you acknowledge events to track resolution. The API supports search by keyword and filtering by severity or source.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Self-hosted Sentry requires Kafka, Clickhouse, Postgres, and Redis. That is a lot of infrastructure just to track errors. If you want error tracking without running a distributed system, a single binary handles the core use case.</p>
     <p>Replaces: Sentry, Rollbar, Bugsnag</p>

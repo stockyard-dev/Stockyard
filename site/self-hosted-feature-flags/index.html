@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your feature flags</div>
+  <p>LaunchDarkly charges $10 per seat per month. At 20 developers, that is $200 per month for the ability to wrap code in if statements. Feature flags are conceptually simple — a key, a boolean, and maybe some targeting rules. The complexity in LaunchDarkly and similar services comes from multi-environment management, percentage rollouts, and analytics integrations that most teams never use. If you need a way to turn features on and off without redeploying, a self-hosted flag service does that at a fraction of the cost.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted feature flag service should provide a fast evaluation endpoint that your application can call on every request without adding latency. It should support boolean flags at minimum, with optional percentage rollouts for gradual launches. It should have a dashboard for non-engineers to toggle flags. And it should work without client-side SDKs — a simple HTTP check keeps your integration lightweight and language-agnostic.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Salt Lick stores flags with key, enabled status, description, and optional conditions. The evaluate endpoint accepts a flag key and returns the current state — your application calls this on each request. Batch evaluation checks multiple flags in a single call. The dashboard lets anyone toggle flags without touching code. The API supports listing all flags, filtering by status, and searching by key name.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Feature flag services charge per seat. A 10-person team on LaunchDarkly pays $100/mo just for flags. Self-hosted flags mean one flat price, your data stays private, and flags evaluate locally with no external API call in the critical path.</p>
     <p>Replaces: LaunchDarkly, Flagsmith, GrowthBook</p>

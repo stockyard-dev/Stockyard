@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your status page</div>
+  <p>Statuspage.io charges $79 per month for a public status page. Better Stack and Instatus offer lower tiers but still host your incident data on their infrastructure. Your status page is the first place customers check during an outage — and it is also a record of your reliability history. Self-hosted status pages keep incident data and uptime history on your server. You control the branding, the URL, and the retention period. If your status page provider goes down during your outage, the irony is real and the impact is worse.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted status page should display current service status, active incidents with updates, and historical uptime. It should support multiple services so you can show which parts of your infrastructure are affected. It should allow incident updates without redeploying — a dashboard or API call should be enough to post an update during an outage when you need speed over ceremony.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Paddock tracks services with individual status indicators, manages incidents through an investigating-to-resolved workflow, and provides an uptime history. The dashboard lets you create incidents, post updates, and resolve them in real time. The API supports all operations programmatically — integrate incident creation into your alerting pipeline so a PagerDuty alert automatically creates a Paddock incident.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Statuspage.io starts at $79/mo. That is a lot for what is essentially a static page with component status and incident updates. Self-hosted status pages run on your domain, cost a fraction of the price, and your incident data stays on your infrastructure.</p>
     <p>Replaces: Statuspage.io ($79/mo), Instatus, Better Stack</p>

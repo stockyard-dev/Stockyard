@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your etl pipeline</div>
+  <p>ETL pipeline services charge based on the volume of data you move. Fivetran's pricing scales with monthly active rows. Airbyte Cloud starts at $50 per month. These costs compound as your data grows — the more successful your product, the more expensive your data infrastructure. Self-hosted ETL removes the volume tax. Move as much data as your server can handle, run transforms as often as you need, and pay nothing beyond the compute. For teams with predictable data volumes, self-hosted ETL is dramatically cheaper within six months.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted ETL tool should support configurable source and destination connectors, scheduled execution, and error handling with retries. It should log every run with success/failure status and row counts so you can monitor pipeline health. It should not require a JVM or a Kubernetes cluster — complexity in the ETL layer defeats the purpose of simplifying data movement.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Wrangler defines pipelines as source-destination pairs with configurable steps and schedules. Each pipeline tracks run history, success/failure status, run count, and failure count. The API lets you trigger runs on demand or set a cron schedule. The dashboard visualizes pipeline status, recent runs, and failure rates. No Spark, no Airflow, no Docker Compose — one binary that moves data between systems.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Airbyte self-hosted requires a 7-container Docker Compose stack. Managed ETL services charge based on sync volume and can get expensive fast. Simple ETL needs — pulling from an API, transforming data, pushing to a database — do not require a distributed system.</p>
     <p>Replaces: Airbyte ($50/mo), Fivetran, Stitch</p>

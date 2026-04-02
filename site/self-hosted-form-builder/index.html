@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your form builder</div>
+  <p>Typeform charges $25 per month for 100 responses. Google Forms is free but sends every response to Google's servers. Tally is more generous but still cloud-hosted. For surveys, intake forms, registration pages, and feedback collection, self-hosted form builders keep response data on your infrastructure. This matters in healthcare (HIPAA), finance (SOX), education (FERPA), and any context where form responses contain personally identifiable information that should not leave your network.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted form builder should let you create forms with multiple field types, collect responses with timestamps, and export data in CSV or JSON. It should serve a public submission endpoint that you can embed in any website. Webhook support is a bonus — triggering an action when a response arrives eliminates the need to poll for new data.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Surveyor creates forms with customizable fields, collects responses through a public-facing endpoint, and stores everything in embedded SQLite. Each response includes the respondent identifier, answers as structured JSON, a score field for NPS-style surveys, and submission timestamp. The API supports listing responses with search and status filtering. Export responses by querying the API and formatting the JSON however your downstream system expects.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Form builders charge per response. Typeform caps you at 100 responses on the $25/mo plan. Self-hosted forms mean unlimited responses at a flat price, and your respondent data stays on your server.</p>
     <p>Replaces: Typeform ($25/mo), Google Forms, Tally</p>

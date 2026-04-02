@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your secret management</div>
+  <p>API keys, database passwords, encryption keys, and service tokens are the most sensitive data in any infrastructure. HashiCorp Vault solves this problem comprehensively but requires a cluster, an unsealing process, and operational expertise that most teams do not have. Doppler and 1Password charge per user per month and store your secrets on their servers. Self-hosted secret management puts your credentials on your infrastructure in encrypted storage, accessible only to the processes that need them.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted secret manager should encrypt values at rest — not just store them in plaintext in a database. It should support access controls so different services can read different secrets. It should provide a simple retrieval API that a shell script or application can call. And it should keep an audit log of every access so you can answer the question: who accessed which secret, and when.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Strongbox encrypts every secret value with AES-256-GCM before storing it in the embedded SQLite database. The listing endpoint shows secret names and metadata without exposing values. The resolve endpoint decrypts and returns a specific secret by name. The audit log records every access with timestamp and requesting IP. Categories and tags let you organize secrets by service, environment, or team.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>HashiCorp Vault is powerful but operationally complex — unsealing, HA configuration, and a learning curve measured in weeks. Managed services like Doppler charge per seat. Self-hosted secret management can be simpler for teams that need basic secret storage without enterprise complexity.</p>
     <p>Replaces: HashiCorp Vault, 1Password Teams ($19.95/mo), Doppler ($6/user/mo)</p>

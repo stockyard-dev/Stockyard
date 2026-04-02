@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your analytics</div>
+  <p>Web analytics data is a map of how your users think. Every page view, click path, and referrer tells you what people want and where they get stuck. When that data lives in Google Analytics or Mixpanel, it also trains their ad targeting models, gets sampled at high volumes, and disappears behind consent banners that half your visitors reject. Self-hosted analytics avoids all three problems. You see 100% of your traffic because there are no third-party scripts for ad blockers to strip out. You keep raw data indefinitely because nobody is charging you per event. And you skip the GDPR consent banner entirely because the data never leaves your infrastructure.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted analytics tool should be lightweight enough to run alongside your application server without competing for resources. It should accept events over a simple HTTP API so you can instrument backends, not just browsers. It should store data locally with no external database requirement. And it should give you the three numbers that actually matter: unique visitors, top pages, and referral sources. Anything beyond that is a bonus.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Headcount tracks page views, sessions, unique visitors, top referrers, and custom events through a single JavaScript snippet or server-side API. Events land in an embedded SQLite database — no Clickhouse cluster, no Postgres, no Redis. The dashboard shows real-time traffic with daily, weekly, and monthly rollups. You can filter by path, referrer, or custom properties. The stats endpoint returns JSON, so building a custom dashboard or piping data into a reporting tool is a single API call.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Your analytics data is some of the most sensitive information about your users. Every page view, click, and session recorded by a third-party service is data you no longer control. Self-hosted analytics means your visitor data never leaves your server. No cookies, no consent banners, no third-party scripts loading on your pages.</p>
     <p>Replaces: Mixpanel, Plausible, Google Analytics</p>

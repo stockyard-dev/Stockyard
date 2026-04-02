@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your link shortener</div>
+  <p>Bitly charges $35 per month for branded short links. Dub and Short.io offer lower tiers but still host your redirect data on their servers. Every click through a hosted shortener gives the provider analytics about your audience — where they are, what devices they use, when they click. Self-hosted link shortening keeps that click data private and eliminates the monthly cost. For marketing teams sending links in emails, social posts, and print materials, the volume savings add up quickly.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted link shortener should create slugs instantly, redirect visitors with minimal latency (301 or 302), and track click counts with basic metadata (timestamp, referrer, user agent). It should serve redirects from your own domain for brand consistency. It should not require a CDN or edge network — a properly configured binary handles thousands of redirects per second from a single server.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Lasso creates short links with custom or auto-generated slugs, redirects visitors to the target URL, and logs every click with IP, user agent, and referrer. The dashboard shows total clicks per link, recent click activity, and lets you create or disable links. The API supports CRUD operations on links plus click analytics. Filter links by status to find active, disabled, or high-traffic redirects.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Link shorteners see every click your audience makes. That is valuable data that most teams hand to Bitly without thinking. Self-hosted link shortening means click analytics stay on your server, you use your own domain, and you pay a flat fee instead of per-link pricing.</p>
     <p>Replaces: Bitly ($35/mo), Dub, Short.io</p>

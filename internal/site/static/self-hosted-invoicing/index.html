@@ -114,7 +114,25 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 
 <section class="section-alt">
   <div class="section-alt-inner">
-    <div class="section-label">Why self-hosted</div>
+    
+<div class="section">
+  <div class="section-label">Why self-host your invoicing</div>
+  <p>Invoicing software sees every transaction between you and your clients — amounts, payment terms, client addresses, tax IDs. FreshBooks at $15 per month and QuickBooks at $30 per month store all of this on their servers. For freelancers and small agencies, that data is the financial backbone of the business. Self-hosted invoicing keeps it local. No vendor has access to your client list, your pricing, or your revenue numbers. If the SaaS provider gets acquired, raises prices, or shuts down, your billing records are still a file on your disk.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">What to look for</div>
+    <p>A self-hosted invoicing tool should handle line items, totals, tax, due dates, and payment status at minimum. It should support multiple clients without per-client fees. It should let you export invoices in a format your accountant can process. And it should track payment status so you know which invoices are outstanding without maintaining a separate spreadsheet.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">How it works</div>
+  <p>Billfold creates invoices with client name, line items (stored as JSON), total amount, due date, and payment status. Invoices move through a draft-to-paid workflow. The API supports full CRUD plus filtering by status (draft, sent, paid, overdue). The stats endpoint returns totals and status breakdown — how much is outstanding, how much has been paid. The dashboard shows an invoice list with status indicators, search, and a create form.</p>
+</div>
+
+<div class="section-label">Why self-hosted</div>
     <h2>Your data. Your server. Your rules.</h2>
     <p>Invoice tools charge per client or per feature tier. Your financial data — what you charge, who pays you, and when — sits on someone else&#x27;s server. Self-hosted invoicing keeps your financial data private and costs a flat fee.</p>
     <p>Replaces: FreshBooks ($15/mo), Wave, Invoice Ninja</p>
