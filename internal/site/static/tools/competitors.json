@@ -5203,5 +5203,2693 @@
         "a": "For most teams, no. Gitea is free and more capable. Use Git Host only if you want the absolute simplest Git hosting with embedded SQLite."
       }
     ]
+  },
+  {
+    "stockyard_tool": "almanac3",
+    "stockyard_name": "Almanac III",
+    "stockyard_tagline": "Self-hosted data dictionary",
+    "stockyard_free": "10 schemas",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited schemas, versioning, ownership tracking",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/almanac3/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Atlan",
+    "competitor_slug": "atlan",
+    "competitor_url": "https://atlan.com",
+    "competitor_price": "Custom pricing (enterprise)",
+    "competitor_pricing_note": "Typically $30,000+/year",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, no infrastructure",
+      "Free tier for small teams",
+      "Data stays on your server",
+      "$0.99/mo vs enterprise pricing"
+    ],
+    "strengths_competitor": [
+      "Full data catalog with lineage",
+      "Integrations with Snowflake, BigQuery, dbt",
+      "Collaboration features for large data teams",
+      "Enterprise support and SSO"
+    ],
+    "honest_verdict": "Atlan is a full data catalog for large data teams. Almanac III is a lightweight schema registry for teams that need to document their data models without enterprise pricing.",
+    "seo_title": "Almanac III vs Atlan \u2014 Self-hosted data dictionary alternative",
+    "seo_description": "Atlan costs $30K+/year. Almanac III is a self-hosted data dictionary \u2014 single binary, free to start, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Almanac III an Atlan alternative?",
+        "a": "Both help teams document data schemas. Almanac III is a self-hosted single binary. Atlan is an enterprise cloud platform with lineage and governance features."
+      },
+      {
+        "q": "Does Almanac III track data lineage?",
+        "a": "Almanac III tracks schema definitions, ownership, and versions. For full data lineage across pipelines, Atlan or similar enterprise tools offer more."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "announcements",
+    "stockyard_name": "Announcements",
+    "stockyard_tagline": "Self-hosted announcement board",
+    "stockyard_free": "10 announcements",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited announcements, channels, pinning",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/announcements/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Slack",
+    "competitor_slug": "slack",
+    "competitor_url": "https://slack.com",
+    "competitor_price": "$7.25/user/mo (Pro)",
+    "competitor_pricing_note": "Free plan limits message history to 90 days",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Dedicated announcement channel without chat noise",
+      "No per-seat pricing",
+      "Data stays on your server",
+      "Priority and pinning built in"
+    ],
+    "strengths_competitor": [
+      "Real-time messaging and channels",
+      "Thousands of integrations",
+      "Mobile apps and desktop clients",
+      "Industry standard for team communication"
+    ],
+    "honest_verdict": "Slack is a communication platform. Announcements is a focused tool for broadcasting important updates without them getting buried in chat. They solve different problems.",
+    "seo_title": "Announcements vs Slack \u2014 Self-hosted announcement board",
+    "seo_description": "Important announcements get lost in Slack channels. Announcements is a self-hosted board for broadcasts that need visibility.",
+    "faq": [
+      {
+        "q": "Why not just use a Slack channel?",
+        "a": "Slack channels mix announcements with discussion. A dedicated announcement board ensures important updates are visible, pinnable, and searchable without noise."
+      },
+      {
+        "q": "Does Announcements integrate with Slack?",
+        "a": "You can send announcement notifications to Slack via webhook. Announcements stores the canonical record on your server."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "bellwether",
+    "stockyard_name": "Bellwether",
+    "stockyard_tagline": "Self-hosted uptime monitor",
+    "stockyard_free": "3 checks",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited checks, TCP/DNS, incident history",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/bellwether/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "UptimeRobot",
+    "competitor_slug": "uptimerobot",
+    "competitor_url": "https://uptimerobot.com",
+    "competitor_price": "$7/mo (Pro)",
+    "competitor_pricing_note": "Free tier: 50 monitors, 5-min intervals",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 monitor from inside your network",
+      "HTTP, TCP, and DNS checks",
+      "No data sent to third party",
+      "$0.99/mo vs $7/mo"
+    ],
+    "strengths_competitor": [
+      "50 free monitors",
+      "SMS and phone call alerts",
+      "Status pages included",
+      "Multi-location monitoring"
+    ],
+    "honest_verdict": "UptimeRobot monitors from external locations, which catches network-level outages. Bellwether monitors from inside your network, which catches application-level issues. Some teams run both.",
+    "seo_title": "Bellwether vs UptimeRobot \u2014 Self-hosted uptime monitor",
+    "seo_description": "UptimeRobot is $7/mo. Bellwether is a self-hosted uptime monitor \u2014 HTTP, TCP, DNS checks from your own infrastructure.",
+    "faq": [
+      {
+        "q": "Can Bellwether monitor from multiple locations?",
+        "a": "Bellwether runs from one location \u2014 your server. For multi-location external monitoring, UptimeRobot or similar services complement it well."
+      },
+      {
+        "q": "Does Bellwether send alerts?",
+        "a": "Bellwether tracks incidents and status changes. Pair it with a webhook to send alerts to Slack, PagerDuty, or email."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "bounty",
+    "stockyard_name": "Bounty",
+    "stockyard_tagline": "Self-hosted bug tracker",
+    "stockyard_free": "3 projects, 2 users",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited projects, users, milestones, labels",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/bounty/install.sh | sh",
+    "stockyard_port": 9320,
+    "competitor_name": "Linear",
+    "competitor_slug": "linear",
+    "competitor_url": "https://linear.app",
+    "competitor_price": "$8/user/mo",
+    "competitor_pricing_note": "Free tier for up to 250 issues",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 issue data stays private",
+      "No per-seat pricing",
+      "Single binary, zero ops",
+      "$0.99/mo flat vs $8/user/mo"
+    ],
+    "strengths_competitor": [
+      "Best-in-class UI and keyboard shortcuts",
+      "Git integration with PR linking",
+      "Cycles and roadmap planning",
+      "Real-time collaboration"
+    ],
+    "honest_verdict": "Linear is the best-designed issue tracker on the market. Bounty is for teams that need issue tracking on their own server \u2014 private repos, regulated environments, or teams that refuse per-seat pricing.",
+    "seo_title": "Bounty vs Linear \u2014 Self-hosted bug tracker alternative",
+    "seo_description": "Linear is $8/user/mo. Bounty is a self-hosted bug tracker \u2014 single binary, no per-seat pricing, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Bounty a Linear alternative?",
+        "a": "Both track issues and bugs. Bounty runs on your server as a single binary. Linear is a cloud service with a polished UI and git integration."
+      },
+      {
+        "q": "Does Bounty have a command-line interface?",
+        "a": "Bounty has a full REST API. Any CLI tool that speaks HTTP can interact with it. There is no dedicated CLI client yet."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "notebook",
+    "stockyard_name": "Notebook",
+    "stockyard_tagline": "Self-hosted note-taking app",
+    "stockyard_free": "3 notebooks",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited notebooks, tags, full-text search",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/notebook/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Obsidian",
+    "competitor_slug": "obsidian",
+    "competitor_url": "https://obsidian.md",
+    "competitor_price": "$4/mo (Sync)",
+    "competitor_pricing_note": "App is free, Sync and Publish are paid",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Web-based \u2014 accessible from any device with a browser",
+      "Built-in sync (it is the server)",
+      "REST API for automation",
+      "No Electron app required"
+    ],
+    "strengths_competitor": [
+      "Local-first with offline support",
+      "Plugin ecosystem with 1,000+ plugins",
+      "Graph view for linked thinking",
+      "Markdown files you own"
+    ],
+    "honest_verdict": "Obsidian is a local-first note app with an exceptional plugin ecosystem. Notebook is a web-based note server for teams that want browser access and API integration without managing file sync.",
+    "seo_title": "Notebook vs Obsidian \u2014 Self-hosted note-taking alternative",
+    "seo_description": "Obsidian Sync costs $4/mo. Notebook is a self-hosted note-taking server with web access, search, and a REST API.",
+    "faq": [
+      {
+        "q": "Is Notebook like Obsidian?",
+        "a": "Both store notes in a searchable format. Obsidian works with local Markdown files and offers plugins. Notebook is a web server with an API."
+      },
+      {
+        "q": "Can I import Obsidian notes into Notebook?",
+        "a": "Notebook accepts Markdown content through its API. A migration script that reads .md files and POSTs them is straightforward to write."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "handbook",
+    "stockyard_name": "Handbook",
+    "stockyard_tagline": "Self-hosted internal wiki",
+    "stockyard_free": "2 spaces",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited spaces, versioning, comments",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/handbook/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Notion",
+    "competitor_slug": "notion",
+    "competitor_url": "https://notion.so",
+    "competitor_price": "$8/user/mo (Plus)",
+    "competitor_pricing_note": "Free for personal use, team plans start at $8/user",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 wiki data stays internal",
+      "No per-seat pricing",
+      "Version history built in",
+      "Single binary, zero configuration"
+    ],
+    "strengths_competitor": [
+      "Databases, kanban, calendars, docs in one tool",
+      "Real-time collaboration",
+      "Extensive template gallery",
+      "Mobile apps"
+    ],
+    "honest_verdict": "Notion is a full workspace platform. Handbook is a focused wiki for teams that want internal documentation on their own server without per-seat pricing.",
+    "seo_title": "Handbook vs Notion \u2014 Self-hosted wiki alternative",
+    "seo_description": "Notion charges $8/user/mo. Handbook is a self-hosted wiki with versioning and comments \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Handbook a Notion alternative?",
+        "a": "Handbook covers the wiki/docs portion of Notion. For databases, kanban boards, and calendars, Notion offers more. For internal documentation only, Handbook is simpler and self-hosted."
+      },
+      {
+        "q": "Does Handbook support Markdown?",
+        "a": "Handbook stores content as HTML or Markdown. The API accepts both formats."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "quarry",
+    "stockyard_name": "Quarry",
+    "stockyard_tagline": "Self-hosted log aggregator",
+    "stockyard_free": "7-day retention",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "90-day retention, structured search, alerting",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/quarry/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Logtail",
+    "competitor_slug": "logtail",
+    "competitor_url": "https://betterstack.com/logtail",
+    "competitor_price": "$24/mo (1 GB/mo)",
+    "competitor_pricing_note": "Scales with log volume \u2014 $0.25/GB after included quota",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 logs never leave your network",
+      "No volume-based pricing",
+      "Structured search built in",
+      "Single binary, embedded storage"
+    ],
+    "strengths_competitor": [
+      "Managed service with zero ops",
+      "Live tail and alerting",
+      "Integrations with Better Stack uptime monitoring",
+      "Dashboard builder"
+    ],
+    "honest_verdict": "Logtail is a managed log service with live tail and integrations. Quarry is for teams that cannot or prefer not to send logs to a third party.",
+    "seo_title": "Quarry vs Logtail \u2014 Self-hosted log aggregator alternative",
+    "seo_description": "Logtail charges per GB. Quarry is a self-hosted log aggregator \u2014 structured search, retention policies, no volume pricing.",
+    "faq": [
+      {
+        "q": "Can Quarry handle high log volume?",
+        "a": "Quarry stores logs in embedded SQLite with WAL mode. It handles typical application log volumes well. For massive scale (TB/day), dedicated systems like Elasticsearch are more appropriate."
+      },
+      {
+        "q": "Does Quarry support structured logging?",
+        "a": "Quarry accepts structured JSON log entries and supports field-level search and filtering."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "inquest",
+    "stockyard_name": "Inquest",
+    "stockyard_tagline": "Self-hosted incident manager",
+    "stockyard_free": "5 incidents",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited incidents, postmortems, MTTR tracking",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/inquest/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Rootly",
+    "competitor_slug": "rootly",
+    "competitor_url": "https://rootly.com",
+    "competitor_price": "Custom pricing",
+    "competitor_pricing_note": "Typically $10,000+/year for mid-size teams",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 incident data stays private",
+      "Severity workflows and auto-timeline",
+      "Postmortem templates built in",
+      "$0.99/mo vs enterprise pricing"
+    ],
+    "strengths_competitor": [
+      "Slack-native incident management",
+      "Automated runbooks and workflows",
+      "On-call scheduling integration",
+      "Enterprise support and SOC 2"
+    ],
+    "honest_verdict": "Rootly is an enterprise incident management platform built around Slack. Inquest is a self-hosted incident tracker for teams that want structured incident response without enterprise pricing.",
+    "seo_title": "Inquest vs Rootly \u2014 Self-hosted incident manager alternative",
+    "seo_description": "Rootly costs $10K+/year. Inquest is a self-hosted incident manager with severity workflows, timelines, and postmortems at $0.99/mo.",
+    "faq": [
+      {
+        "q": "Does Inquest integrate with PagerDuty?",
+        "a": "Inquest has a REST API. You can create incidents from PagerDuty webhooks and update status programmatically."
+      },
+      {
+        "q": "Does Inquest track MTTR?",
+        "a": "Yes. Inquest calculates mean time to resolution from incident creation to resolution timestamps."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "books",
+    "stockyard_name": "Books",
+    "stockyard_tagline": "Self-hosted bookkeeping",
+    "stockyard_free": "5 accounts",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited accounts, P&L reports, multi-currency",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/books/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Wave",
+    "competitor_slug": "wave",
+    "competitor_url": "https://waveapps.com",
+    "competitor_price": "Free (ad-supported)",
+    "competitor_pricing_note": "Payment processing at 2.9% + $0.60 per transaction",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 financial data stays private",
+      "No ads, no data mining",
+      "Double-entry bookkeeping",
+      "No transaction fees"
+    ],
+    "strengths_competitor": [
+      "Free with full accounting features",
+      "Invoice sending and payment processing",
+      "Receipt scanning",
+      "Bank connections and auto-import"
+    ],
+    "honest_verdict": "Wave is free and full-featured but ad-supported and cloud-only. Books is for users who want double-entry bookkeeping on their own server without their financial data in someone else's cloud.",
+    "seo_title": "Books vs Wave \u2014 Self-hosted bookkeeping alternative",
+    "seo_description": "Wave is free but ad-supported and cloud-only. Books is self-hosted double-entry bookkeeping \u2014 your financial data on your server.",
+    "faq": [
+      {
+        "q": "Is Books a full accounting system?",
+        "a": "Books handles double-entry bookkeeping with accounts, transactions, and P&L reports. For payroll, tax filing, and bank connections, Wave or QuickBooks offers more."
+      },
+      {
+        "q": "Can Books import from QuickBooks or Wave?",
+        "a": "Books accepts transactions through its API. Export from your current system as CSV and POST each transaction to the Books API."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "archive",
+    "stockyard_name": "Archive",
+    "stockyard_tagline": "Self-hosted content archive",
+    "stockyard_free": "100 bookmarks",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited bookmarks, annotations, full-text search",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/archive/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Pocket",
+    "competitor_slug": "pocket",
+    "competitor_url": "https://getpocket.com",
+    "competitor_price": "$4.99/mo (Premium)",
+    "competitor_pricing_note": "Free tier with ads and limited features",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 reading list stays private",
+      "No ads or tracking",
+      "Annotation and tagging",
+      "Full-text search across saved content"
+    ],
+    "strengths_competitor": [
+      "Browser extension for one-click saving",
+      "Offline reading on mobile",
+      "Content recommendations",
+      "Mozilla-backed, widely used"
+    ],
+    "honest_verdict": "Pocket is a polished read-later service with mobile apps and recommendations. Archive is for users who want their reading list on their own server with no tracking or ads.",
+    "seo_title": "Archive vs Pocket \u2014 Self-hosted content archive alternative",
+    "seo_description": "Pocket Premium is $4.99/mo. Archive is a self-hosted content archive with annotations, tags, and full-text search.",
+    "faq": [
+      {
+        "q": "Does Archive save full page content?",
+        "a": "Archive stores URLs, excerpts, tags, and annotations. For full-page archival, pair it with a tool like SingleFile or Monolith."
+      },
+      {
+        "q": "Can I import my Pocket bookmarks?",
+        "a": "Export from Pocket as HTML, parse the links, and POST each to Archive's API. A migration script takes about 20 lines."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "apothecary",
+    "stockyard_name": "Apothecary",
+    "stockyard_tagline": "Self-hosted health and medication tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/apothecary/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Medisafe",
+    "competitor_slug": "medisafe",
+    "competitor_url": "https://medisafe.com",
+    "competitor_price": "Free (Premium $4.99/mo)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (Premium $4.99/mo)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Medisafe is a more mature product with broader features. Apothecary is for teams that want medication tracking with reminders and refill alerts on their own server without vendor dependency.",
+    "seo_title": "Apothecary vs Medisafe \u2014 Self-hosted alternative",
+    "seo_description": "Medisafe costs Free (Premium $4.99/mo). Apothecary is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Apothecary a Medisafe alternative?",
+        "a": "Both handle medication tracking with reminders and refill alerts. Apothecary runs as a self-hosted single binary. Medisafe is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Apothecary require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "archivist",
+    "stockyard_name": "Archivist",
+    "stockyard_tagline": "Self-hosted personal document manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/archivist/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Google Drive",
+    "competitor_slug": "google-drive",
+    "competitor_url": "https://drive.google.com",
+    "competitor_price": "$2/mo (100GB)",
+    "competitor_pricing_note": "Free: 15GB shared across Google services",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $2/mo (100GB)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Google Drive is a more mature product with broader features. Archivist is for teams that want personal document management with search and organization on their own server without vendor dependency.",
+    "seo_title": "Archivist vs Google Drive \u2014 Self-hosted alternative",
+    "seo_description": "Google Drive costs $2/mo (100GB). Archivist is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Archivist a Google Drive alternative?",
+        "a": "Both handle personal document management with search and organization. Archivist runs as a self-hosted single binary. Google Drive is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Archivist require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "assay",
+    "stockyard_name": "Assay",
+    "stockyard_tagline": "Self-hosted API testing suite",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/assay/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Postman",
+    "competitor_slug": "postman",
+    "competitor_url": "https://postman.com",
+    "competitor_price": "$14/user/mo (Professional)",
+    "competitor_pricing_note": "Free tier for 3 users",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $14/user/mo (Professional)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Postman is a more mature product with broader features. Assay is for teams that want api testing and contract validation on their own server without vendor dependency.",
+    "seo_title": "Assay vs Postman \u2014 Self-hosted alternative",
+    "seo_description": "Postman costs $14/user/mo (Professional). Assay is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Assay a Postman alternative?",
+        "a": "Both handle api testing and contract validation. Assay runs as a self-hosted single binary. Postman is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Assay require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "assay2",
+    "stockyard_name": "Assay II",
+    "stockyard_tagline": "Self-hosted API contract tester",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/assay2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Pact",
+    "competitor_slug": "pact",
+    "competitor_url": "https://pact.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "SaaS: PactFlow from $99/mo",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Pact can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Pact is a more mature product with broader features. Assay II is for teams that want consumer-driven contract testing on their own server without vendor dependency.",
+    "seo_title": "Assay II vs Pact \u2014 Self-hosted alternative",
+    "seo_description": "Pact costs Free (open source). Assay II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Assay II a Pact alternative?",
+        "a": "Both handle consumer-driven contract testing. Assay II runs as a self-hosted single binary. Pact is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Assay II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "assayer",
+    "stockyard_name": "Assayer",
+    "stockyard_tagline": "Self-hosted revenue and subscription tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/assayer/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Baremetrics",
+    "competitor_slug": "baremetrics2",
+    "competitor_url": "https://baremetrics.com",
+    "competitor_price": "$108/mo (up to $10K MRR)",
+    "competitor_pricing_note": "Scales with MRR \u2014 $208/mo at $50K MRR",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $108/mo (up to $10K MRR)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Baremetrics is a more mature product with broader features. Assayer is for teams that want revenue and subscription analytics on their own server without vendor dependency.",
+    "seo_title": "Assayer vs Baremetrics \u2014 Self-hosted alternative",
+    "seo_description": "Baremetrics costs $108/mo (up to $10K MRR). Assayer is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Assayer a Baremetrics alternative?",
+        "a": "Both handle revenue and subscription analytics. Assayer runs as a self-hosted single binary. Baremetrics is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Assayer require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "bellringer",
+    "stockyard_name": "Bellringer",
+    "stockyard_tagline": "Self-hosted web push notification server",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/bellringer/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "OneSignal",
+    "competitor_slug": "onesignal",
+    "competitor_url": "https://onesignal.com",
+    "competitor_price": "Free (10K subscribers)",
+    "competitor_pricing_note": "Growth: $9/mo for 1K subscribers",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (10K subscribers)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "OneSignal is a more mature product with broader features. Bellringer is for teams that want web and mobile push notifications on their own server without vendor dependency.",
+    "seo_title": "Bellringer vs OneSignal \u2014 Self-hosted alternative",
+    "seo_description": "OneSignal costs Free (10K subscribers). Bellringer is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Bellringer a OneSignal alternative?",
+        "a": "Both handle web and mobile push notifications. Bellringer runs as a self-hosted single binary. OneSignal is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Bellringer require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "billfold2",
+    "stockyard_name": "Billfold II",
+    "stockyard_tagline": "Self-hosted contractor timesheet and billing",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/billfold2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Harvest",
+    "competitor_slug": "harvest",
+    "competitor_url": "https://getharvest.com",
+    "competitor_price": "$10.80/seat/mo",
+    "competitor_pricing_note": "Free tier for 1 seat, 2 projects",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $10.80/seat/mo",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Harvest is a more mature product with broader features. Billfold II is for teams that want contractor timesheet tracking and invoicing on their own server without vendor dependency.",
+    "seo_title": "Billfold II vs Harvest \u2014 Self-hosted alternative",
+    "seo_description": "Harvest costs $10.80/seat/mo. Billfold II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Billfold II a Harvest alternative?",
+        "a": "Both handle contractor timesheet tracking and invoicing. Billfold II runs as a self-hosted single binary. Harvest is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Billfold II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "brand",
+    "stockyard_name": "Brand",
+    "stockyard_tagline": "Self-hosted audit trail and compliance log",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/brand/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Vanta",
+    "competitor_slug": "vanta",
+    "competitor_url": "https://vanta.com",
+    "competitor_price": "Custom ($10K+/year)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom ($10K+/year)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Vanta is a more mature product with broader features. Brand is for teams that want audit trail and compliance automation on their own server without vendor dependency.",
+    "seo_title": "Brand vs Vanta \u2014 Self-hosted alternative",
+    "seo_description": "Vanta costs Custom ($10K+/year). Brand is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Brand a Vanta alternative?",
+        "a": "Both handle audit trail and compliance automation. Brand runs as a self-hosted single binary. Vanta is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Brand require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "brander",
+    "stockyard_name": "Brander",
+    "stockyard_tagline": "Self-hosted brand asset manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/brander/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Brandfolder",
+    "competitor_slug": "brandfolder",
+    "competitor_url": "https://brandfolder.com",
+    "competitor_price": "Custom pricing",
+    "competitor_pricing_note": "Typically $1,000+/mo",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom pricing",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Brandfolder is a more mature product with broader features. Brander is for teams that want brand asset management and distribution on their own server without vendor dependency.",
+    "seo_title": "Brander vs Brandfolder \u2014 Self-hosted alternative",
+    "seo_description": "Brandfolder costs Custom pricing. Brander is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Brander a Brandfolder alternative?",
+        "a": "Both handle brand asset management and distribution. Brander runs as a self-hosted single binary. Brandfolder is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Brander require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "broadside",
+    "stockyard_name": "Broadside",
+    "stockyard_tagline": "Self-hosted press release tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/broadside/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "PR Newswire",
+    "competitor_slug": "prnewswire",
+    "competitor_url": "https://prnewswire.com",
+    "competitor_price": "$350+ per release",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $350+ per release",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "PR Newswire is a more mature product with broader features. Broadside is for teams that want press release distribution and tracking on their own server without vendor dependency.",
+    "seo_title": "Broadside vs PR Newswire \u2014 Self-hosted alternative",
+    "seo_description": "PR Newswire costs $350+ per release. Broadside is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Broadside a PR Newswire alternative?",
+        "a": "Both handle press release distribution and tracking. Broadside runs as a self-hosted single binary. PR Newswire is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Broadside require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "cartograph",
+    "stockyard_name": "Cartograph",
+    "stockyard_tagline": "Self-hosted sitemap generator and crawler",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/cartograph/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Screaming Frog",
+    "competitor_slug": "screaming-frog",
+    "competitor_url": "https://screamingfrog.co.uk",
+    "competitor_price": "$259/year",
+    "competitor_pricing_note": "Free: 500 URL limit",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $259/year",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Screaming Frog is a more mature product with broader features. Cartograph is for teams that want sitemap generation and site crawling on their own server without vendor dependency.",
+    "seo_title": "Cartograph vs Screaming Frog \u2014 Self-hosted alternative",
+    "seo_description": "Screaming Frog costs $259/year. Cartograph is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Cartograph a Screaming Frog alternative?",
+        "a": "Both handle sitemap generation and site crawling. Cartograph runs as a self-hosted single binary. Screaming Frog is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Cartograph require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "cartridge",
+    "stockyard_name": "Cartridge",
+    "stockyard_tagline": "Self-hosted config and settings manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/cartridge/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "AWS Systems Manager",
+    "competitor_slug": "aws-ssm",
+    "competitor_url": "https://aws.amazon.com/systems-manager",
+    "competitor_price": "Pay per parameter ($0.05/param/mo)",
+    "competitor_pricing_note": "Free tier: 10K standard params",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Pay per parameter ($0.05/param/mo)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "AWS Systems Manager is a more mature product with broader features. Cartridge is for teams that want configuration and settings management on their own server without vendor dependency.",
+    "seo_title": "Cartridge vs AWS Systems Manager \u2014 Self-hosted alternative",
+    "seo_description": "AWS Systems Manager costs Pay per parameter ($0.05/param/mo). Cartridge is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Cartridge a AWS Systems Manager alternative?",
+        "a": "Both handle configuration and settings management. Cartridge runs as a self-hosted single binary. AWS Systems Manager is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Cartridge require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "cartwright",
+    "stockyard_name": "Cartwright",
+    "stockyard_tagline": "Self-hosted dashboard and report builder",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/cartwright/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Metabase",
+    "competitor_slug": "metabase",
+    "competitor_url": "https://metabase.com",
+    "competitor_price": "$85/user/mo (Pro)",
+    "competitor_pricing_note": "Free self-hosted (requires Java + Postgres)",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Metabase can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $85/user/mo (Pro)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Metabase is a more mature product with broader features. Cartwright is for teams that want dashboard and report builder on their own server without vendor dependency.",
+    "seo_title": "Cartwright vs Metabase \u2014 Self-hosted alternative",
+    "seo_description": "Metabase costs $85/user/mo (Pro). Cartwright is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Cartwright a Metabase alternative?",
+        "a": "Both handle dashboard and report builder. Cartwright runs as a self-hosted single binary. Metabase is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Cartwright require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "cellar",
+    "stockyard_name": "Cellar",
+    "stockyard_tagline": "Self-hosted wine and spirits inventory",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/cellar/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Vivino",
+    "competitor_slug": "vivino",
+    "competitor_url": "https://vivino.com",
+    "competitor_price": "Free",
+    "competitor_pricing_note": "Premium features in-app",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Vivino is a more mature product with broader features. Cellar is for teams that want wine inventory and rating on their own server without vendor dependency.",
+    "seo_title": "Cellar vs Vivino \u2014 Self-hosted alternative",
+    "seo_description": "Vivino costs Free. Cellar is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Cellar a Vivino alternative?",
+        "a": "Both handle wine inventory and rating. Cellar runs as a self-hosted single binary. Vivino is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Cellar require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "courier",
+    "stockyard_name": "Courier",
+    "stockyard_tagline": "Self-hosted internal message queue",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/courier/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Amazon SQS",
+    "competitor_slug": "amazon-sqs",
+    "competitor_url": "https://aws.amazon.com/sqs",
+    "competitor_price": "$0.40/million messages",
+    "competitor_pricing_note": "Free tier: 1M messages/mo",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $0.40/million messages",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Amazon SQS is a more mature product with broader features. Courier is for teams that want managed message queue service on their own server without vendor dependency.",
+    "seo_title": "Courier vs Amazon SQS \u2014 Self-hosted alternative",
+    "seo_description": "Amazon SQS costs $0.40/million messages. Courier is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Courier a Amazon SQS alternative?",
+        "a": "Both handle managed message queue service. Courier runs as a self-hosted single binary. Amazon SQS is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Courier require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "covenant",
+    "stockyard_name": "Covenant",
+    "stockyard_tagline": "Self-hosted policy and compliance manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/covenant/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Drata",
+    "competitor_slug": "drata",
+    "competitor_url": "https://drata.com",
+    "competitor_price": "Custom ($10K+/year)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom ($10K+/year)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Drata is a more mature product with broader features. Covenant is for teams that want policy and compliance management on their own server without vendor dependency.",
+    "seo_title": "Covenant vs Drata \u2014 Self-hosted alternative",
+    "seo_description": "Drata costs Custom ($10K+/year). Covenant is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Covenant a Drata alternative?",
+        "a": "Both handle policy and compliance management. Covenant runs as a self-hosted single binary. Drata is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Covenant require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "crucible2",
+    "stockyard_name": "Crucible II",
+    "stockyard_tagline": "Self-hosted code review checklist manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/crucible2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "GitHub Pull Requests",
+    "competitor_slug": "github-prs",
+    "competitor_url": "https://github.com",
+    "competitor_price": "$4/user/mo (Teams)",
+    "competitor_pricing_note": "Free for public repos",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $4/user/mo (Teams)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "GitHub Pull Requests is a more mature product with broader features. Crucible II is for teams that want code review with inline comments and approvals on their own server without vendor dependency.",
+    "seo_title": "Crucible II vs GitHub Pull Requests \u2014 Self-hosted alternative",
+    "seo_description": "GitHub Pull Requests costs $4/user/mo (Teams). Crucible II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Crucible II a GitHub Pull Requests alternative?",
+        "a": "Both handle code review with inline comments and approvals. Crucible II runs as a self-hosted single binary. GitHub Pull Requests is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Crucible II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "deed",
+    "stockyard_name": "Deed",
+    "stockyard_tagline": "Self-hosted digital asset and license registry",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/deed/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Auth0",
+    "competitor_slug": "auth0",
+    "competitor_url": "https://auth0.com",
+    "competitor_price": "Free (7,500 MAU)",
+    "competitor_pricing_note": "$23/mo for 1,000 MAU (Essentials)",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (7,500 MAU)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Auth0 is a more mature product with broader features. Deed is for teams that want api key and identity management on their own server without vendor dependency.",
+    "seo_title": "Deed vs Auth0 \u2014 Self-hosted alternative",
+    "seo_description": "Auth0 costs Free (7,500 MAU). Deed is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Deed a Auth0 alternative?",
+        "a": "Both handle api key and identity management. Deed runs as a self-hosted single binary. Auth0 is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Deed require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "deposition",
+    "stockyard_name": "Deposition",
+    "stockyard_tagline": "Self-hosted tamper-evident audit log",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/deposition/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Chronicle SIEM",
+    "competitor_slug": "google-chronicle",
+    "competitor_url": "https://cloud.google.com/chronicle",
+    "competitor_price": "Custom pricing",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom pricing",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Chronicle SIEM is a more mature product with broader features. Deposition is for teams that want tamper-evident audit logging and siem on their own server without vendor dependency.",
+    "seo_title": "Deposition vs Chronicle SIEM \u2014 Self-hosted alternative",
+    "seo_description": "Chronicle SIEM costs Custom pricing. Deposition is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Deposition a Chronicle SIEM alternative?",
+        "a": "Both handle tamper-evident audit logging and siem. Deposition runs as a self-hosted single binary. Chronicle SIEM is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Deposition require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "drifter",
+    "stockyard_name": "Drifter",
+    "stockyard_tagline": "Self-hosted database browser",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/drifter/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "TablePlus",
+    "competitor_slug": "tableplus2",
+    "competitor_url": "https://tableplus.com",
+    "competitor_price": "$89 one-time",
+    "competitor_pricing_note": "Free tier with limitations",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $89 one-time",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "TablePlus is a more mature product with broader features. Drifter is for teams that want database browser and gui on their own server without vendor dependency.",
+    "seo_title": "Drifter vs TablePlus \u2014 Self-hosted alternative",
+    "seo_description": "TablePlus costs $89 one-time. Drifter is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Drifter a TablePlus alternative?",
+        "a": "Both handle database browser and gui. Drifter runs as a self-hosted single binary. TablePlus is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Drifter require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "embargo",
+    "stockyard_name": "Embargo",
+    "stockyard_tagline": "Self-hosted feature flag manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/embargo/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Unleash",
+    "competitor_slug": "unleash",
+    "competitor_url": "https://getunleash.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Pro: $80/mo for 5 envs",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Unleash can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Unleash is a more mature product with broader features. Embargo is for teams that want feature flag management with targeting on their own server without vendor dependency.",
+    "seo_title": "Embargo vs Unleash \u2014 Self-hosted alternative",
+    "seo_description": "Unleash costs Free (open source). Embargo is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Embargo a Unleash alternative?",
+        "a": "Both handle feature flag management with targeting. Embargo runs as a self-hosted single binary. Unleash is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Embargo require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "escrow",
+    "stockyard_name": "Escrow",
+    "stockyard_tagline": "Self-hosted approval workflow engine",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/escrow/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Jira Service Management",
+    "competitor_slug": "jira-sm",
+    "competitor_url": "https://atlassian.com/software/jira/service-management",
+    "competitor_price": "$22/agent/mo (Premium)",
+    "competitor_pricing_note": "Free for 3 agents",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $22/agent/mo (Premium)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Jira Service Management is a more mature product with broader features. Escrow is for teams that want approval workflow and service desk on their own server without vendor dependency.",
+    "seo_title": "Escrow vs Jira Service Management \u2014 Self-hosted alternative",
+    "seo_description": "Jira Service Management costs $22/agent/mo (Premium). Escrow is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Escrow a Jira Service Management alternative?",
+        "a": "Both handle approval workflow and service desk. Escrow runs as a self-hosted single binary. Jira Service Management is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Escrow require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "glossary",
+    "stockyard_name": "Glossary",
+    "stockyard_tagline": "Self-hosted term and jargon manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/glossary/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Notion",
+    "competitor_slug": "notion-glossary",
+    "competitor_url": "https://notion.so",
+    "competitor_price": "$8/user/mo (Plus)",
+    "competitor_pricing_note": "Free for personal use",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $8/user/mo (Plus)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Notion is a more mature product with broader features. Glossary is for teams that want knowledge base with searchable terms on their own server without vendor dependency.",
+    "seo_title": "Glossary vs Notion \u2014 Self-hosted alternative",
+    "seo_description": "Notion costs $8/user/mo (Plus). Glossary is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Glossary a Notion alternative?",
+        "a": "Both handle knowledge base with searchable terms. Glossary runs as a self-hosted single binary. Notion is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Glossary require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "granary",
+    "stockyard_name": "Granary",
+    "stockyard_tagline": "Self-hosted object and file storage",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/granary/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "MinIO",
+    "competitor_slug": "minio",
+    "competitor_url": "https://min.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Enterprise: custom pricing",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "MinIO can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "MinIO is a more mature product with broader features. Granary is for teams that want s3-compatible object storage on their own server without vendor dependency.",
+    "seo_title": "Granary vs MinIO \u2014 Self-hosted alternative",
+    "seo_description": "MinIO costs Free (open source). Granary is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Granary a MinIO alternative?",
+        "a": "Both handle s3-compatible object storage. Granary runs as a self-hosted single binary. MinIO is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Granary require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "grapevine",
+    "stockyard_name": "Grapevine",
+    "stockyard_tagline": "Self-hosted knowledge base and FAQ",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/grapevine/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Zendesk Guide",
+    "competitor_slug": "zendesk-guide",
+    "competitor_url": "https://zendesk.com",
+    "competitor_price": "$55/agent/mo (Suite)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $55/agent/mo (Suite)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Zendesk Guide is a more mature product with broader features. Grapevine is for teams that want knowledge base and faq with analytics on their own server without vendor dependency.",
+    "seo_title": "Grapevine vs Zendesk Guide \u2014 Self-hosted alternative",
+    "seo_description": "Zendesk Guide costs $55/agent/mo (Suite). Grapevine is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Grapevine a Zendesk Guide alternative?",
+        "a": "Both handle knowledge base and faq with analytics. Grapevine runs as a self-hosted single binary. Zendesk Guide is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Grapevine require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "grubstake",
+    "stockyard_name": "Grubstake",
+    "stockyard_tagline": "Self-hosted crowdfunding and pre-orders",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/grubstake/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Kickstarter",
+    "competitor_slug": "kickstarter",
+    "competitor_url": "https://kickstarter.com",
+    "competitor_price": "5% platform fee + payment fees",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs 5% platform fee + payment fees",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Kickstarter is a more mature product with broader features. Grubstake is for teams that want crowdfunding platform for creative projects on their own server without vendor dependency.",
+    "seo_title": "Grubstake vs Kickstarter \u2014 Self-hosted alternative",
+    "seo_description": "Kickstarter costs 5% platform fee + payment fees. Grubstake is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Grubstake a Kickstarter alternative?",
+        "a": "Both handle crowdfunding platform for creative projects. Grubstake runs as a self-hosted single binary. Kickstarter is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Grubstake require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "hub",
+    "stockyard_name": "Hub",
+    "stockyard_tagline": "Self-hosted request relay and inspector",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/hub/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Portainer",
+    "competitor_slug": "portainer",
+    "competitor_url": "https://portainer.io",
+    "competitor_price": "Free (Community)",
+    "competitor_pricing_note": "Business: $60/yr/node",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Portainer can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (Community)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Portainer is a more mature product with broader features. Hub is for teams that want container and service management dashboard on their own server without vendor dependency.",
+    "seo_title": "Hub vs Portainer \u2014 Self-hosted alternative",
+    "seo_description": "Portainer costs Free (Community). Hub is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Hub a Portainer alternative?",
+        "a": "Both handle container and service management dashboard. Hub runs as a self-hosted single binary. Portainer is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Hub require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ledger2",
+    "stockyard_name": "Ledger II",
+    "stockyard_tagline": "Self-hosted personal finance tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ledger2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "YNAB",
+    "competitor_slug": "ynab",
+    "competitor_url": "https://ynab.com",
+    "competitor_price": "$14.99/mo",
+    "competitor_pricing_note": "34-day free trial",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $14.99/mo",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "YNAB is a more mature product with broader features. Ledger II is for teams that want personal finance and budgeting on their own server without vendor dependency.",
+    "seo_title": "Ledger II vs YNAB \u2014 Self-hosted alternative",
+    "seo_description": "YNAB costs $14.99/mo. Ledger II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Ledger II a YNAB alternative?",
+        "a": "Both handle personal finance and budgeting. Ledger II runs as a self-hosted single binary. YNAB is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Ledger II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "mailbag",
+    "stockyard_name": "Mailbag",
+    "stockyard_tagline": "Self-hosted email archive",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/mailbag/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "ProtonMail",
+    "competitor_slug": "protonmail",
+    "competitor_url": "https://proton.me",
+    "competitor_price": "$3.99/mo (Plus)",
+    "competitor_pricing_note": "Free tier: 1GB, 1 address",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $3.99/mo (Plus)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "ProtonMail is a more mature product with broader features. Mailbag is for teams that want encrypted email with archival on their own server without vendor dependency.",
+    "seo_title": "Mailbag vs ProtonMail \u2014 Self-hosted alternative",
+    "seo_description": "ProtonMail costs $3.99/mo (Plus). Mailbag is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Mailbag a ProtonMail alternative?",
+        "a": "Both handle encrypted email with archival. Mailbag runs as a self-hosted single binary. ProtonMail is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Mailbag require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "manifest",
+    "stockyard_name": "Manifest",
+    "stockyard_tagline": "Self-hosted dependency manifest tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/manifest/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Snyk",
+    "competitor_slug": "snyk2",
+    "competitor_url": "https://snyk.io",
+    "competitor_price": "Free (200 tests/mo)",
+    "competitor_pricing_note": "Team: $25/dev/mo",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (200 tests/mo)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Snyk is a more mature product with broader features. Manifest is for teams that want dependency scanning and vulnerability tracking on their own server without vendor dependency.",
+    "seo_title": "Manifest vs Snyk \u2014 Self-hosted alternative",
+    "seo_description": "Snyk costs Free (200 tests/mo). Manifest is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Manifest a Snyk alternative?",
+        "a": "Both handle dependency scanning and vulnerability tracking. Manifest runs as a self-hosted single binary. Snyk is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Manifest require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "meridian",
+    "stockyard_name": "Meridian",
+    "stockyard_tagline": "Self-hosted life dashboard",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/meridian/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Notion",
+    "competitor_slug": "notion-life",
+    "competitor_url": "https://notion.so",
+    "competitor_price": "$8/user/mo (Plus)",
+    "competitor_pricing_note": "Free for personal use",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $8/user/mo (Plus)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Notion is a more mature product with broader features. Meridian is for teams that want personal dashboard and goal tracking on their own server without vendor dependency.",
+    "seo_title": "Meridian vs Notion \u2014 Self-hosted alternative",
+    "seo_description": "Notion costs $8/user/mo (Plus). Meridian is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Meridian a Notion alternative?",
+        "a": "Both handle personal dashboard and goal tracking. Meridian runs as a self-hosted single binary. Notion is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Meridian require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "metrics",
+    "stockyard_name": "Metrics",
+    "stockyard_tagline": "Self-hosted real-time metrics dashboard",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/metrics/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Grafana Cloud",
+    "competitor_slug": "grafana-cloud",
+    "competitor_url": "https://grafana.com/products/cloud",
+    "competitor_price": "Free (10K metrics)",
+    "competitor_pricing_note": "Pro: $29/mo",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (10K metrics)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Grafana Cloud is a more mature product with broader features. Metrics is for teams that want metrics collection and visualization on their own server without vendor dependency.",
+    "seo_title": "Metrics vs Grafana Cloud \u2014 Self-hosted alternative",
+    "seo_description": "Grafana Cloud costs Free (10K metrics). Metrics is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Metrics a Grafana Cloud alternative?",
+        "a": "Both handle metrics collection and visualization. Metrics runs as a self-hosted single binary. Grafana Cloud is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Metrics require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "notebook",
+    "stockyard_name": "Notebook",
+    "stockyard_tagline": "Self-hosted personal note-taking app",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/notebook/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Notion",
+    "competitor_slug": "notion-notes",
+    "competitor_url": "https://notion.so",
+    "competitor_price": "$8/user/mo",
+    "competitor_pricing_note": "Free for personal use",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $8/user/mo",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Notion is a more mature product with broader features. Notebook is for teams that want note-taking and knowledge management on their own server without vendor dependency.",
+    "seo_title": "Notebook vs Notion \u2014 Self-hosted alternative",
+    "seo_description": "Notion costs $8/user/mo. Notebook is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Notebook a Notion alternative?",
+        "a": "Both handle note-taking and knowledge management. Notebook runs as a self-hosted single binary. Notion is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Notebook require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "outfitter",
+    "stockyard_name": "Outfitter",
+    "stockyard_tagline": "Self-hosted employee onboarding manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/outfitter/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "BambooHR",
+    "competitor_slug": "bamboohr2",
+    "competitor_url": "https://bamboohr.com",
+    "competitor_price": "Custom ($6-9/employee/mo)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom ($6-9/employee/mo)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "BambooHR is a more mature product with broader features. Outfitter is for teams that want employee onboarding and hr management on their own server without vendor dependency.",
+    "seo_title": "Outfitter vs BambooHR \u2014 Self-hosted alternative",
+    "seo_description": "BambooHR costs Custom ($6-9/employee/mo). Outfitter is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Outfitter a BambooHR alternative?",
+        "a": "Both handle employee onboarding and hr management. Outfitter runs as a self-hosted single binary. BambooHR is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Outfitter require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "paddock2",
+    "stockyard_name": "Paddock II",
+    "stockyard_tagline": "Self-hosted plant and garden tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/paddock2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Planta",
+    "competitor_slug": "planta",
+    "competitor_url": "https://planta.app",
+    "competitor_price": "$35.99/year (Premium)",
+    "competitor_pricing_note": "Free tier with basic features",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $35.99/year (Premium)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Planta is a more mature product with broader features. Paddock II is for teams that want plant care tracking and watering reminders on their own server without vendor dependency.",
+    "seo_title": "Paddock II vs Planta \u2014 Self-hosted alternative",
+    "seo_description": "Planta costs $35.99/year (Premium). Paddock II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Paddock II a Planta alternative?",
+        "a": "Both handle plant care tracking and watering reminders. Paddock II runs as a self-hosted single binary. Planta is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Paddock II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "parcelproxy",
+    "stockyard_name": "Parcel Proxy",
+    "stockyard_tagline": "Self-hosted package registry proxy",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/parcelproxy/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Nexus Repository",
+    "competitor_slug": "nexus",
+    "competitor_url": "https://sonatype.com/products/sonatype-nexus-repository",
+    "competitor_price": "Free (OSS)",
+    "competitor_pricing_note": "Pro: $120/user/year",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Nexus Repository can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (OSS)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Nexus Repository is a more mature product with broader features. Parcel Proxy is for teams that want package registry proxy and caching on their own server without vendor dependency.",
+    "seo_title": "Parcel Proxy vs Nexus Repository \u2014 Self-hosted alternative",
+    "seo_description": "Nexus Repository costs Free (OSS). Parcel Proxy is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Parcel Proxy a Nexus Repository alternative?",
+        "a": "Both handle package registry proxy and caching. Parcel Proxy runs as a self-hosted single binary. Nexus Repository is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Parcel Proxy require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "pipeline",
+    "stockyard_name": "Pipeline",
+    "stockyard_tagline": "Self-hosted data pipeline orchestrator",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/pipeline/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Prefect",
+    "competitor_slug": "prefect",
+    "competitor_url": "https://prefect.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Cloud: $100/mo",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Prefect can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Prefect is a more mature product with broader features. Pipeline is for teams that want data pipeline orchestration and scheduling on their own server without vendor dependency.",
+    "seo_title": "Pipeline vs Prefect \u2014 Self-hosted alternative",
+    "seo_description": "Prefect costs Free (open source). Pipeline is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Pipeline a Prefect alternative?",
+        "a": "Both handle data pipeline orchestration and scheduling. Pipeline runs as a self-hosted single binary. Prefect is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Pipeline require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "presskit",
+    "stockyard_name": "Presskit",
+    "stockyard_tagline": "Self-hosted press kit and media page",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/presskit/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Press Kit Hero",
+    "competitor_slug": "presskithero",
+    "competitor_url": "https://presskithero.com",
+    "competitor_price": "$49/year",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $49/year",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Press Kit Hero is a more mature product with broader features. Presskit is for teams that want press kit hosting and media page builder on their own server without vendor dependency.",
+    "seo_title": "Presskit vs Press Kit Hero \u2014 Self-hosted alternative",
+    "seo_description": "Press Kit Hero costs $49/year. Presskit is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Presskit a Press Kit Hero alternative?",
+        "a": "Both handle press kit hosting and media page builder. Presskit runs as a self-hosted single binary. Press Kit Hero is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Presskit require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "probe",
+    "stockyard_name": "Probe",
+    "stockyard_tagline": "Self-hosted HTTP request inspector",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/probe/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "RequestBin",
+    "competitor_slug": "requestbin2",
+    "competitor_url": "https://requestbin.com",
+    "competitor_price": "Free (limited)",
+    "competitor_pricing_note": "$12/mo for private bins",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (limited)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "RequestBin is a more mature product with broader features. Probe is for teams that want http request inspection and debugging on their own server without vendor dependency.",
+    "seo_title": "Probe vs RequestBin \u2014 Self-hosted alternative",
+    "seo_description": "RequestBin costs Free (limited). Probe is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Probe a RequestBin alternative?",
+        "a": "Both handle http request inspection and debugging. Probe runs as a self-hosted single binary. RequestBin is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Probe require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "prospector2",
+    "stockyard_name": "Prospector II",
+    "stockyard_tagline": "Self-hosted lead scoring engine",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/prospector2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Clearbit",
+    "competitor_slug": "clearbit2",
+    "competitor_url": "https://clearbit.com",
+    "competitor_price": "Custom pricing",
+    "competitor_pricing_note": "Typically $12K+/year for enrichment",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom pricing",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Clearbit is a more mature product with broader features. Prospector II is for teams that want lead scoring and data enrichment on their own server without vendor dependency.",
+    "seo_title": "Prospector II vs Clearbit \u2014 Self-hosted alternative",
+    "seo_description": "Clearbit costs Custom pricing. Prospector II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Prospector II a Clearbit alternative?",
+        "a": "Both handle lead scoring and data enrichment. Prospector II runs as a self-hosted single binary. Clearbit is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Prospector II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "pulpit",
+    "stockyard_name": "Pulpit",
+    "stockyard_tagline": "Self-hosted presentation tool",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/pulpit/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Prezi",
+    "competitor_slug": "prezi",
+    "competitor_url": "https://prezi.com",
+    "competitor_price": "$7/mo (Standard)",
+    "competitor_pricing_note": "Free tier with limited features",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $7/mo (Standard)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Prezi is a more mature product with broader features. Pulpit is for teams that want presentation creation and sharing on their own server without vendor dependency.",
+    "seo_title": "Pulpit vs Prezi \u2014 Self-hosted alternative",
+    "seo_description": "Prezi costs $7/mo (Standard). Pulpit is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Pulpit a Prezi alternative?",
+        "a": "Both handle presentation creation and sharing. Pulpit runs as a self-hosted single binary. Prezi is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Pulpit require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "quartermaster",
+    "stockyard_name": "Quartermaster",
+    "stockyard_tagline": "Self-hosted home inventory manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/quartermaster/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Sortly",
+    "competitor_slug": "sortly",
+    "competitor_url": "https://sortly.com",
+    "competitor_price": "$49/mo (Advanced)",
+    "competitor_pricing_note": "Free: 100 items",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $49/mo (Advanced)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Sortly is a more mature product with broader features. Quartermaster is for teams that want home and business inventory management on their own server without vendor dependency.",
+    "seo_title": "Quartermaster vs Sortly \u2014 Self-hosted alternative",
+    "seo_description": "Sortly costs $49/mo (Advanced). Quartermaster is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Quartermaster a Sortly alternative?",
+        "a": "Both handle home and business inventory management. Quartermaster runs as a self-hosted single binary. Sortly is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Quartermaster require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "rangeland",
+    "stockyard_name": "Rangeland",
+    "stockyard_tagline": "Self-hosted multi-tenant workspace manager",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/rangeland/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Workspace ONE",
+    "competitor_slug": "workspace-one",
+    "competitor_url": "https://www.vmware.com/products/workspace-one",
+    "competitor_price": "Custom pricing",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Custom pricing",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Workspace ONE is a more mature product with broader features. Rangeland is for teams that want multi-tenant workspace management on their own server without vendor dependency.",
+    "seo_title": "Rangeland vs Workspace ONE \u2014 Self-hosted alternative",
+    "seo_description": "Workspace ONE costs Custom pricing. Rangeland is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Rangeland a Workspace ONE alternative?",
+        "a": "Both handle multi-tenant workspace management. Rangeland runs as a self-hosted single binary. Workspace ONE is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Rangeland require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "registry",
+    "stockyard_name": "Registry",
+    "stockyard_tagline": "Self-hosted container and package registry",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/registry/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Harbor",
+    "competitor_slug": "harbor",
+    "competitor_url": "https://goharbor.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Harbor can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Harbor is a more mature product with broader features. Registry is for teams that want container registry with vulnerability scanning on their own server without vendor dependency.",
+    "seo_title": "Registry vs Harbor \u2014 Self-hosted alternative",
+    "seo_description": "Harbor costs Free (open source). Registry is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Registry a Harbor alternative?",
+        "a": "Both handle container registry with vulnerability scanning. Registry runs as a self-hosted single binary. Harbor is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Registry require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "scaffold",
+    "stockyard_name": "Scaffold",
+    "stockyard_tagline": "Self-hosted project scaffolding server",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/scaffold/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Yeoman",
+    "competitor_slug": "yeoman",
+    "competitor_url": "https://yeoman.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Yeoman can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Yeoman is a more mature product with broader features. Scaffold is for teams that want project scaffolding and code generation on their own server without vendor dependency.",
+    "seo_title": "Scaffold vs Yeoman \u2014 Self-hosted alternative",
+    "seo_description": "Yeoman costs Free (open source). Scaffold is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Scaffold a Yeoman alternative?",
+        "a": "Both handle project scaffolding and code generation. Scaffold runs as a self-hosted single binary. Yeoman is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Scaffold require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "scribe",
+    "stockyard_name": "Scribe",
+    "stockyard_tagline": "Self-hosted transcription and note taker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/scribe/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Otter.ai",
+    "competitor_slug": "otter-ai",
+    "competitor_url": "https://otter.ai",
+    "competitor_price": "$8.33/user/mo (Pro)",
+    "competitor_pricing_note": "Free: 300 min/mo",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $8.33/user/mo (Pro)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Otter.ai is a more mature product with broader features. Scribe is for teams that want transcription and meeting notes on their own server without vendor dependency.",
+    "seo_title": "Scribe vs Otter.ai \u2014 Self-hosted alternative",
+    "seo_description": "Otter.ai costs $8.33/user/mo (Pro). Scribe is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Scribe a Otter.ai alternative?",
+        "a": "Both handle transcription and meeting notes. Scribe runs as a self-hosted single binary. Otter.ai is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Scribe require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "silo",
+    "stockyard_name": "Silo",
+    "stockyard_tagline": "Self-hosted data isolation and partitioning layer",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/silo/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "AWS Lake Formation",
+    "competitor_slug": "aws-lake-formation",
+    "competitor_url": "https://aws.amazon.com/lake-formation",
+    "competitor_price": "Pay per use",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Pay per use",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "AWS Lake Formation is a more mature product with broader features. Silo is for teams that want data isolation and access control on their own server without vendor dependency.",
+    "seo_title": "Silo vs AWS Lake Formation \u2014 Self-hosted alternative",
+    "seo_description": "AWS Lake Formation costs Pay per use. Silo is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Silo a AWS Lake Formation alternative?",
+        "a": "Both handle data isolation and access control. Silo runs as a self-hosted single binary. AWS Lake Formation is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Silo require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "stampede",
+    "stockyard_name": "Stampede",
+    "stockyard_tagline": "Self-hosted load balancer and traffic router",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/stampede/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Locust",
+    "competitor_slug": "locust",
+    "competitor_url": "https://locust.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Cloud: $200/mo",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Locust can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Locust is a more mature product with broader features. Stampede is for teams that want load testing and traffic simulation on their own server without vendor dependency.",
+    "seo_title": "Stampede vs Locust \u2014 Self-hosted alternative",
+    "seo_description": "Locust costs Free (open source). Stampede is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Stampede a Locust alternative?",
+        "a": "Both handle load testing and traffic simulation. Stampede runs as a self-hosted single binary. Locust is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Stampede require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "surveyor2",
+    "stockyard_name": "Surveyor II",
+    "stockyard_tagline": "Self-hosted NPS and satisfaction tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/surveyor2/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Delighted",
+    "competitor_slug": "delighted",
+    "competitor_url": "https://delighted.com",
+    "competitor_price": "Free (250 surveys/mo)",
+    "competitor_pricing_note": "Premium: $224/mo",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (250 surveys/mo)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Delighted is a more mature product with broader features. Surveyor II is for teams that want nps and customer satisfaction surveys on their own server without vendor dependency.",
+    "seo_title": "Surveyor II vs Delighted \u2014 Self-hosted alternative",
+    "seo_description": "Delighted costs Free (250 surveys/mo). Surveyor II is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Surveyor II a Delighted alternative?",
+        "a": "Both handle nps and customer satisfaction surveys. Surveyor II runs as a self-hosted single binary. Delighted is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Surveyor II require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "switchboard",
+    "stockyard_name": "Switchboard",
+    "stockyard_tagline": "Self-hosted service registry and discovery",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/switchboard/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Consul",
+    "competitor_slug": "consul",
+    "competitor_url": "https://consul.io",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Enterprise: custom pricing",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Consul can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Consul is a more mature product with broader features. Switchboard is for teams that want service registry and discovery on their own server without vendor dependency.",
+    "seo_title": "Switchboard vs Consul \u2014 Self-hosted alternative",
+    "seo_description": "Consul costs Free (open source). Switchboard is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Switchboard a Consul alternative?",
+        "a": "Both handle service registry and discovery. Switchboard runs as a self-hosted single binary. Consul is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Switchboard require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "tally",
+    "stockyard_name": "Tally",
+    "stockyard_tagline": "Self-hosted counter and gauge API",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/tally/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "StatsD",
+    "competitor_slug": "statsd",
+    "competitor_url": "https://github.com/statsd/statsd",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Managed: Datadog from $15/host/mo",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "StatsD can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "StatsD is a more mature product with broader features. Tally is for teams that want counter and metrics collection on their own server without vendor dependency.",
+    "seo_title": "Tally vs StatsD \u2014 Self-hosted alternative",
+    "seo_description": "StatsD costs Free (open source). Tally is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Tally a StatsD alternative?",
+        "a": "Both handle counter and metrics collection. Tally runs as a self-hosted single binary. StatsD is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Tally require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "trailhead",
+    "stockyard_name": "Trailhead",
+    "stockyard_tagline": "Self-hosted habit and goal tracker",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/trailhead/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Habitica",
+    "competitor_slug": "habitica",
+    "competitor_url": "https://habitica.com",
+    "competitor_price": "Free",
+    "competitor_pricing_note": "$5/mo (subscriber perks)",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Habitica is a more mature product with broader features. Trailhead is for teams that want gamified habit tracking on their own server without vendor dependency.",
+    "seo_title": "Trailhead vs Habitica \u2014 Self-hosted alternative",
+    "seo_description": "Habitica costs Free. Trailhead is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Trailhead a Habitica alternative?",
+        "a": "Both handle gamified habit tracking. Trailhead runs as a self-hosted single binary. Habitica is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Trailhead require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "typeset",
+    "stockyard_name": "Typeset",
+    "stockyard_tagline": "Self-hosted documentation generator",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/typeset/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "GitBook",
+    "competitor_slug": "gitbook",
+    "competitor_url": "https://gitbook.com",
+    "competitor_price": "$6.70/user/mo (Plus)",
+    "competitor_pricing_note": "Free for personal use",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs $6.70/user/mo (Plus)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Managed hosting option",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "GitBook is a more mature product with broader features. Typeset is for teams that want documentation hosting and generation on their own server without vendor dependency.",
+    "seo_title": "Typeset vs GitBook \u2014 Self-hosted alternative",
+    "seo_description": "GitBook costs $6.70/user/mo (Plus). Typeset is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Typeset a GitBook alternative?",
+        "a": "Both handle documentation hosting and generation. Typeset runs as a self-hosted single binary. GitBook is a cloud service with managed hosting."
+      },
+      {
+        "q": "Does Typeset require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "watcher",
+    "stockyard_name": "Watcher",
+    "stockyard_tagline": "Self-hosted file change monitor",
+    "stockyard_free": "Free tier included",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited usage, full features",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/watcher/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Watchman",
+    "competitor_slug": "watchman",
+    "competitor_url": "https://facebook.github.io/watchman",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Watchman can be self-hosted but requires more infrastructure.",
+    "strengths_stockyard": [
+      "Single binary, zero dependencies",
+      "Self-hosted \u2014 data stays on your server",
+      "$0.99/mo vs Free (open source)",
+      "No per-seat or per-usage pricing"
+    ],
+    "strengths_competitor": [
+      "Established product with larger community",
+      "More features and integrations",
+      "Active open-source community",
+      "Mobile apps or native clients"
+    ],
+    "honest_verdict": "Watchman is a more mature product with broader features. Watcher is for teams that want file system change monitoring on their own server without vendor dependency.",
+    "seo_title": "Watcher vs Watchman \u2014 Self-hosted alternative",
+    "seo_description": "Watchman costs Free (open source). Watcher is a self-hosted alternative \u2014 single binary, $0.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Watcher a Watchman alternative?",
+        "a": "Both handle file system change monitoring. Watcher runs as a self-hosted single binary. Watchman is an open-source project that requires more infrastructure."
+      },
+      {
+        "q": "Does Watcher require Docker?",
+        "a": "No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies."
+      }
+    ]
   }
 ]
