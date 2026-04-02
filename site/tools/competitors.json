@@ -2977,5 +2977,215 @@
         "a": "Mirage supports endpoint creation via API. For visual OpenAPI import, Mockoon has a dedicated feature."
       }
     ]
+  },
+  {
+    "stockyard_tool": "saloon",
+    "stockyard_name": "Saloon",
+    "stockyard_tagline": "Self-hosted team chat",
+    "stockyard_free": "3 channels, 10 users",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited channels, users, file sharing, search, threads",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/saloon/install.sh | sh",
+    "stockyard_port": 10000,
+    "competitor_name": "Slack",
+    "competitor_slug": "slack",
+    "competitor_url": "https://slack.com",
+    "competitor_price": "$7.25/user/mo (Pro)",
+    "competitor_pricing_note": "Free: 90-day message history. Pro: $7.25/user/mo. Business+: $12.50/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 messages stay on your server",
+      "$1.99/mo flat vs $7.25/user/mo",
+      "No per-seat pricing",
+      "Full message history on free tier"
+    ],
+    "strengths_competitor": [
+      "Industry standard for team communication",
+      "10,000+ app integrations",
+      "Huddles, clips, and canvas",
+      "Enterprise security and compliance"
+    ],
+    "honest_verdict": "Slack is where most teams communicate. Its integration ecosystem is unmatched. If your team already uses Slack and relies on integrations, switching is impractical. If you need a private team chat where messages never leave your server, Saloon is self-hosted and flat-priced.",
+    "seo_title": "Saloon vs Slack \u2014 Self-hosted team chat at $1.99/mo",
+    "seo_description": "Slack charges $7.25/user/mo. Saloon is self-hosted team chat \u2014 single binary, $1.99/mo flat. Your messages stay on your server.",
+    "faq": [
+      {
+        "q": "Is Saloon a Slack alternative?",
+        "a": "Slack has 10,000+ integrations and is the industry standard. Saloon is self-hosted team chat for teams that need message privacy. Very different ecosystems."
+      },
+      {
+        "q": "Can Saloon replace Slack for a large team?",
+        "a": "For large teams dependent on Slack integrations, no. For small teams wanting private, self-hosted chat, Saloon works."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "scout",
+    "stockyard_name": "Scout",
+    "stockyard_tagline": "Self-hosted dependency scanner",
+    "stockyard_free": "1 project",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited projects, CVE database, scheduled scans, alerts",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/scout/install.sh | sh",
+    "stockyard_port": 10050,
+    "competitor_name": "Snyk",
+    "competitor_slug": "snyk",
+    "competitor_url": "https://snyk.io",
+    "competitor_price": "$25/mo (Team)",
+    "competitor_pricing_note": "Free: 200 tests/mo. Team: $25/developer/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable (CLI is local but results go to Snyk cloud)",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 scan results stay private",
+      "$0.99/mo vs $25/developer/mo",
+      "No per-developer pricing",
+      "Scans without sending code to a third party"
+    ],
+    "strengths_competitor": [
+      "Industry-leading vulnerability database",
+      "Fix PRs generated automatically",
+      "Container and IaC scanning",
+      "IDE integrations and CI/CD plugins"
+    ],
+    "honest_verdict": "Snyk has the deepest vulnerability database and auto-fix capabilities. If security is critical and you need automatic fix PRs, Snyk is the leader. If you want basic dependency scanning without sending your dependency tree to a third party, Scout runs locally.",
+    "seo_title": "Scout vs Snyk \u2014 Self-hosted dependency scanning",
+    "seo_description": "Snyk charges $25/developer/mo. Scout is self-hosted \u2014 single binary, $0.99/mo. Scan dependencies without sending data to Snyk's cloud.",
+    "faq": [
+      {
+        "q": "Is Scout a Snyk alternative?",
+        "a": "Snyk is a full security platform with auto-fix PRs. Scout is basic dependency scanning on your own server. Different depth, different price."
+      },
+      {
+        "q": "Does Scout scan containers?",
+        "a": "Scout focuses on dependency manifests (package.json, go.mod, requirements.txt). For container scanning, Snyk or Trivy are more comprehensive."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "barrage",
+    "stockyard_name": "Barrage",
+    "stockyard_tagline": "Self-hosted load testing",
+    "stockyard_free": "1 test, 100 VUs",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited tests, VUs, scheduled runs, result history, dashboards",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/barrage/install.sh | sh",
+    "stockyard_port": 10100,
+    "competitor_name": "k6 Cloud",
+    "competitor_slug": "k6-cloud",
+    "competitor_url": "https://k6.io",
+    "competitor_price": "$29/mo (Team)",
+    "competitor_pricing_note": "k6 OSS is free. Cloud: $29/mo Team. Pro: $99/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "k6 CLI is open source. Cloud features (results storage, team sharing) require subscription.",
+    "strengths_stockyard": [
+      "All-in-one: test runner + result storage + dashboard",
+      "$0.99/mo vs $29/mo for cloud features",
+      "No separate Grafana/InfluxDB stack needed",
+      "Single binary with built-in result history"
+    ],
+    "strengths_competitor": [
+      "Industry-standard load testing tool",
+      "JavaScript test scripting",
+      "Cloud execution from multiple regions",
+      "Grafana integration for dashboards"
+    ],
+    "honest_verdict": "k6 OSS is the best open-source load testing tool. The CLI is free and excellent. k6 Cloud adds team features and cloud execution. If you already use k6 CLI and just need result storage without the cloud subscription, Barrage is a self-hosted alternative for the dashboard/history part.",
+    "seo_title": "Barrage vs k6 Cloud \u2014 Self-hosted load test dashboard",
+    "seo_description": "k6 Cloud is $29/mo. Barrage is self-hosted load testing with built-in results \u2014 single binary, $0.99/mo. No Grafana stack needed.",
+    "faq": [
+      {
+        "q": "Is Barrage a k6 alternative?",
+        "a": "k6 CLI is free and excellent for writing tests. Barrage is for teams that want a self-hosted results dashboard without k6 Cloud's subscription."
+      },
+      {
+        "q": "Can Barrage run k6 scripts?",
+        "a": "Barrage has its own test format. For k6 JavaScript tests, use the k6 CLI and pipe results to Barrage for storage."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "parcel",
+    "stockyard_name": "Parcel",
+    "stockyard_tagline": "Self-hosted artifact registry",
+    "stockyard_free": "1GB storage",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited storage, Docker/npm/pip registries, access control",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/parcel/install.sh | sh",
+    "stockyard_port": 10150,
+    "competitor_name": "JFrog Artifactory",
+    "competitor_slug": "artifactory",
+    "competitor_url": "https://jfrog.com/artifactory/",
+    "competitor_price": "$98/mo (Cloud Pro)",
+    "competitor_pricing_note": "Free: 2GB, 5 users. Pro: $98/mo. Enterprise: custom.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hosted requires Java and a database",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Java or database needed",
+      "$1.99/mo vs $98/mo",
+      "Simpler to operate",
+      "No per-user pricing"
+    ],
+    "strengths_competitor": [
+      "Universal package management (30+ formats)",
+      "Enterprise security scanning",
+      "Replication and high availability",
+      "Industry standard for artifact management"
+    ],
+    "honest_verdict": "Artifactory is the enterprise standard for artifact management with 30+ package formats and security scanning. If your organization needs enterprise artifact governance, Artifactory is necessary. For basic Docker/npm/pip registry hosting, Parcel is dramatically simpler.",
+    "seo_title": "Parcel vs Artifactory \u2014 Self-hosted artifact registry",
+    "seo_description": "Artifactory Cloud Pro is $98/mo. Parcel is a self-hosted registry \u2014 single binary, $1.99/mo. Docker, npm, pip on your server.",
+    "faq": [
+      {
+        "q": "Is Parcel an Artifactory alternative?",
+        "a": "Artifactory supports 30+ formats with enterprise security. Parcel handles Docker, npm, and pip as a single binary. Different scale."
+      },
+      {
+        "q": "Does Parcel support Maven?",
+        "a": "Parcel focuses on Docker, npm, and pip registries. For Maven, Gradle, or NuGet, Artifactory is more comprehensive."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "codex",
+    "stockyard_name": "Codex",
+    "stockyard_tagline": "Self-hosted code snippet manager",
+    "stockyard_free": "50 snippets",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited snippets, syntax highlighting, search, tags, sharing",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/codex/install.sh | sh",
+    "stockyard_port": 10200,
+    "competitor_name": "GitHub Gist",
+    "competitor_slug": "github-gist",
+    "competitor_url": "https://gist.github.com",
+    "competitor_price": "Free / $4/mo (Pro)",
+    "competitor_pricing_note": "Public gists free. Private gists require GitHub Pro ($4/mo).",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 snippets stay on your server",
+      "Search and organize with tags and folders",
+      "$0.99/mo vs $4/mo for private snippets",
+      "No GitHub account needed"
+    ],
+    "strengths_competitor": [
+      "Free for public snippets",
+      "Git-backed version history",
+      "Embedded in the GitHub ecosystem",
+      "Forking and commenting"
+    ],
+    "honest_verdict": "GitHub Gist is free for public snippets and deeply integrated with GitHub. If your snippets are public and you use GitHub, Gist is hard to beat. If you need private snippets on your own server with better organization than Gist offers, Codex adds folders and tags.",
+    "seo_title": "Codex vs GitHub Gist \u2014 Self-hosted snippet manager",
+    "seo_description": "GitHub Gist Pro is $4/mo. Codex is self-hosted \u2014 single binary, $0.99/mo. Private snippets with tags and folders on your server.",
+    "faq": [
+      {
+        "q": "Is Codex a GitHub Gist alternative?",
+        "a": "Gist is free for public snippets and Git-backed. Codex is self-hosted with better organization (folders, tags). Different use cases."
+      },
+      {
+        "q": "Does Codex support Git versioning?",
+        "a": "Codex stores snippets in SQLite with revision history. For Git-backed version control, GitHub Gist is native."
+      }
+    ]
   }
 ]
