@@ -166,6 +166,24 @@ ul.prose{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9}
   </p>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Technical differences</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Corral runs as a single binary on your server. Webhooks arrive at your endpoint, get logged to embedded SQLite, and optionally get forwarded to your application. Hookdeck is a cloud service — webhooks route through their infrastructure before reaching yours. For payment webhooks containing transaction amounts and customer data, the distinction between self-hosted and cloud-routed is a compliance question, not just a preference.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Data portability</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Every webhook Corral captures is stored in a SQLite database on your server. Export captured webhooks by querying the database directly or through the API. Replay any historical webhook to test updated handler code. With Hookdeck, your captured webhooks live on their servers — if you stop paying or they change their retention policy, that history disappears.</p>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">When to switch</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">If you are building webhook integrations and need a capture tool during development, try Corral alongside Hookdeck. Point your webhook source at both endpoints for a week. If Corral handles your workflow — capture, inspect, replay, forward — switch over fully. The migration is instant because webhook endpoints are just URLs you configure in the sending service.</p>
+</section>
+
 <section class="cta-strip">
   <div class="section-label">Get started</div>
   <h2>Self-host your webhook inbox in 30 seconds.</h2>

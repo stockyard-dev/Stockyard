@@ -137,6 +137,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   <div class="faq-item"><div class="faq-q">Is Courier a Amazon SQS alternative?</div><div class="faq-a">Both handle managed message queue service. Courier runs as a self-hosted single binary. Amazon SQS is a cloud service with managed hosting.</div></div><div class="faq-item"><div class="faq-q">Does Courier require Docker?</div><div class="faq-a">No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies.</div></div>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">How they compare architecturally</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Courier runs as a single static binary — one file, one process, one SQLite database. There is no application server to configure, no cache layer to tune, no background worker to monitor. Amazon SQS runs on distributed cloud infrastructure with managed databases, CDNs, and multi-region redundancy. The tradeoff is clear: Amazon SQS handles more complexity out of the box, while Courier handles the same core workflow with dramatically less operational surface area.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Data portability</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The exit story matters more than most teams realize when choosing tools. Amazon SQS locks your data behind their API and export format. Courier stores everything in a standard SQLite file you can query with any database tool. If you outgrow Courier, your data migrates with a SQL query. If you outgrow Amazon SQS, your data migrates through whatever export process they provide — which may or may not preserve everything.</p>
+</section>
+
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">The right time to move</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Do not switch during a sprint deadline or a product launch. The ideal window is a quiet period where your team can absorb the transition without pressure. Install Courier, migrate a subset of your data, and let the team use both tools simultaneously. When everyone is comfortable with Courier, cut over fully and cancel Amazon SQS. The parallel-run period is the insurance policy that makes the switch low-risk.</p>
+</section>
+
 <section class="section" style="padding:2rem;max-width:820px;margin:0 auto;text-align:center">
   <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Get started</div>
   <h2 style="font-size:1.3rem;margin-bottom:.8rem">Self-hosted internal message queue in 30 seconds.</h2>

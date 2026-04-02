@@ -137,6 +137,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   <div class="faq-item"><div class="faq-q">Is Ledger II a YNAB alternative?</div><div class="faq-a">Both handle personal finance and budgeting. Ledger II runs as a self-hosted single binary. YNAB is a cloud service with managed hosting.</div></div><div class="faq-item"><div class="faq-q">Does Ledger II require Docker?</div><div class="faq-a">No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies.</div></div>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">How they compare architecturally</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The architectural difference between Ledger II and YNAB shows up most during setup and maintenance. YNAB is a managed service — you create an account and start using it. Ledger II is a binary you download and run. The setup takes 30 seconds. The maintenance is a file backup. When YNAB has an outage, you wait. When Ledger II has a problem, you restart the process or restore from backup. The failure mode is different, and for many teams, a local failure they can fix is preferable to a remote failure they cannot.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Data portability</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Consider what happens when your needs change. With YNAB, switching means exporting data (if possible), finding a new tool, importing (if compatible), and accepting whatever data loss occurs in translation. With Ledger II, switching means copying the SQLite file and writing a migration script against a standard database format. The data portability difference compounds over time as your dataset grows.</p>
+</section>
+
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">The right time to move</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">If you are currently locked into an annual YNAB contract, use the remaining months to evaluate Ledger II in parallel. By the time your contract renews, you will know whether Ledger II covers your needs. If it does, do not renew. If it does not, you have identified exactly which features you depend on — information that helps you negotiate with YNAB or evaluate other alternatives more precisely.</p>
+</section>
+
 <section class="section" style="padding:2rem;max-width:820px;margin:0 auto;text-align:center">
   <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Get started</div>
   <h2 style="font-size:1.3rem;margin-bottom:.8rem">Self-hosted personal finance tracker in 30 seconds.</h2>

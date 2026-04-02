@@ -137,6 +137,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   <div class="faq-item"><div class="faq-q">Why not just use a Slack channel?</div><div class="faq-a">Slack channels mix announcements with discussion. A dedicated announcement board ensures important updates are visible, pinnable, and searchable without noise.</div></div><div class="faq-item"><div class="faq-q">Does Announcements integrate with Slack?</div><div class="faq-a">You can send announcement notifications to Slack via webhook. Announcements stores the canonical record on your server.</div></div>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">How they compare architecturally</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">From an operational standpoint, Announcements and Slack represent opposite ends of the self-hosted versus managed spectrum. Slack at $7.25/user/mo (Pro) buys you managed hosting, automatic updates, and customer support. Announcements at $0.99/mo buys you data ownership, deployment flexibility, and independence from a vendor's business decisions. Neither is universally better — the right choice depends on whether your team values convenience or control.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">What you keep</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The exit story matters more than most teams realize when choosing tools. Slack locks your data behind their API and export format. Announcements stores everything in a standard SQLite file you can query with any database tool. If you outgrow Announcements, your data migrates with a SQL query. If you outgrow Slack, your data migrates through whatever export process they provide — which may or may not preserve everything.</p>
+</section>
+
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">The right time to move</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The best time to evaluate Announcements is before your Slack bill crosses a threshold you are uncomfortable with. Set up Announcements on a test server, run it alongside Slack for two weeks, and compare the experience. If Announcements handles your daily workflow without friction, migrate before the next renewal. If it does not, you have lost nothing beyond the compute for a trial server. The worst time to switch is during an incident or a billing dispute — evaluate tools when you have the luxury of time.</p>
+</section>
+
 <section class="section" style="padding:2rem;max-width:820px;margin:0 auto;text-align:center">
   <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Get started</div>
   <h2 style="font-size:1.3rem;margin-bottom:.8rem">Self-hosted announcement board in 30 seconds.</h2>

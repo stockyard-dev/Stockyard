@@ -137,6 +137,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   <div class="faq-item"><div class="faq-q">Is Registry a Harbor alternative?</div><div class="faq-a">Both handle container registry with vulnerability scanning. Registry runs as a self-hosted single binary. Harbor is an open-source project that requires more infrastructure.</div></div><div class="faq-item"><div class="faq-q">Does Registry require Docker?</div><div class="faq-a">No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies.</div></div>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Under the hood</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">From an operational standpoint, Registry and Harbor represent opposite ends of the self-hosted versus managed spectrum. Harbor at Free (open source) buys you managed hosting, automatic updates, and customer support. Registry at $0.99/mo buys you data ownership, deployment flexibility, and independence from a vendor's business decisions. Neither is universally better — the right choice depends on whether your team values convenience or control. While Harbor offers a self-hosted option, the infrastructure requirements are substantially higher. Harbor can be self-hosted but requires more infrastructure. Registry runs on any machine that can execute a Linux binary, including a Raspberry Pi.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">What you keep</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">When you stop paying for Harbor, your access ends. Exports are available but vary in completeness — some services export everything, others lose metadata, relationships, or historical context. When you stop paying for Registry, the binary still runs and the SQLite database still holds all your data. There is no export because the data was never somewhere else. This matters less in month one and more in month thirty-six, when you have years of container and package registry history you do not want to recreate.</p>
+</section>
+
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">When to switch</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Do not switch during a sprint deadline or a product launch. The ideal window is a quiet period where your team can absorb the transition without pressure. Install Registry, migrate a subset of your data, and let the team use both tools simultaneously. When everyone is comfortable with Registry, cut over fully and cancel Harbor. The parallel-run period is the insurance policy that makes the switch low-risk.</p>
+</section>
+
 <section class="section" style="padding:2rem;max-width:820px;margin:0 auto;text-align:center">
   <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Get started</div>
   <h2 style="font-size:1.3rem;margin-bottom:.8rem">Self-hosted container and package registry in 30 seconds.</h2>

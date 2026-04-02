@@ -137,6 +137,19 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   <div class="faq-item"><div class="faq-q">Is Cartwright a Metabase alternative?</div><div class="faq-a">Both handle dashboard and report builder. Cartwright runs as a self-hosted single binary. Metabase is an open-source project that requires more infrastructure.</div></div><div class="faq-item"><div class="faq-q">Does Cartwright require Docker?</div><div class="faq-a">No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies.</div></div>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Technical differences</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The architectural difference between Cartwright and Metabase shows up most during setup and maintenance. Metabase is a managed service — you create an account and start using it. Cartwright is a binary you download and run. The setup takes 30 seconds. The maintenance is a file backup. When Metabase has an outage, you wait. When Cartwright has a problem, you restart the process or restore from backup. The failure mode is different, and for many teams, a local failure they can fix is preferable to a remote failure they cannot. While Metabase offers a self-hosted option, the infrastructure requirements are substantially higher. Metabase can be self-hosted but requires more infrastructure. Cartwright runs on any machine that can execute a Linux binary, including a Raspberry Pi.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">The exit question</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">When you stop paying for Metabase, your access ends. Exports are available but vary in completeness — some services export everything, others lose metadata, relationships, or historical context. When you stop paying for Cartwright, the binary still runs and the SQLite database still holds all your data. There is no export because the data was never somewhere else. This matters less in month one and more in month thirty-six, when you have years of dashboard and report builder history you do not want to recreate.</p>
+</section>
+
 <section class="section" style="padding:2rem;max-width:820px;margin:0 auto;text-align:center">
   <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Get started</div>
   <h2 style="font-size:1.3rem;margin-bottom:.8rem">Self-hosted dashboard and report builder in 30 seconds.</h2>

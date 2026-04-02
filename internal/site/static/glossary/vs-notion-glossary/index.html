@@ -137,6 +137,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   <div class="faq-item"><div class="faq-q">Is Glossary a Notion alternative?</div><div class="faq-a">Both handle knowledge base with searchable terms. Glossary runs as a self-hosted single binary. Notion is a cloud service with managed hosting.</div></div><div class="faq-item"><div class="faq-q">Does Glossary require Docker?</div><div class="faq-a">No. It is a single Go binary with embedded SQLite. No Docker, no Postgres, no external dependencies.</div></div>
 </section>
 
+
+<section class="section-alt" style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Under the hood</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The architectural difference between Glossary and Notion shows up most during setup and maintenance. Notion is a managed service — you create an account and start using it. Glossary is a binary you download and run. The setup takes 30 seconds. The maintenance is a file backup. When Notion has an outage, you wait. When Glossary has a problem, you restart the process or restore from backup. The failure mode is different, and for many teams, a local failure they can fix is preferable to a remote failure they cannot.</p>
+  </div>
+</section>
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Data portability</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">When you stop paying for Notion, your access ends. Exports are available but vary in completeness — some services export everything, others lose metadata, relationships, or historical context. When you stop paying for Glossary, the binary still runs and the SQLite database still holds all your data. There is no export because the data was never somewhere else. This matters less in month one and more in month thirty-six, when you have years of term and jargon manager history you do not want to recreate.</p>
+</section>
+
+
+<section class="section" style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Timing the switch</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Teams typically switch from Notion to Glossary for one of three reasons: the bill got too high, a compliance requirement mandated self-hosting, or the team simply wanted more control over their term and jargon manager data. Whatever the trigger, the migration itself is mechanical — export data from Notion, import via Glossary's API. The harder part is building the habit of using a new tool. Give your team two weeks to adjust before drawing conclusions.</p>
+</section>
+
 <section class="section" style="padding:2rem;max-width:820px;margin:0 auto;text-align:center">
   <div class="section-label" style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Get started</div>
   <h2 style="font-size:1.3rem;margin-bottom:.8rem">Self-hosted term and jargon manager in 30 seconds.</h2>
