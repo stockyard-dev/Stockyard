@@ -5036,5 +5036,172 @@
         "a": "No. Consortium manages tenant data isolation. For SSO (SAML/OIDC), WorkOS or Authentik are necessary."
       }
     ]
+  },
+  {
+    "stockyard_tool": "crucible",
+    "stockyard_name": "Crucible",
+    "stockyard_tagline": "Self-hosted code review tool",
+    "stockyard_free": "3 repos",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited repos, inline comments, approval flows, diff viewer",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/crucible/install.sh | sh",
+    "stockyard_port": 12350,
+    "competitor_name": "GitHub Pull Requests",
+    "competitor_slug": "github-prs",
+    "competitor_url": "https://github.com",
+    "competitor_price": "$4/user/mo (Team)",
+    "competitor_pricing_note": "Free for public repos. Team: $4/user/mo. Enterprise: $21/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "GitHub Enterprise Server is self-hostable ($21/user/yr min)",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 code review data stays private",
+      "$0.99/mo flat, no per-user pricing",
+      "Works with any Git host",
+      "Single binary"
+    ],
+    "strengths_competitor": [
+      "Deeply integrated with GitHub repos",
+      "CI/CD triggers on PR events",
+      "Code owners and branch protection",
+      "Massive ecosystem and community"
+    ],
+    "honest_verdict": "GitHub PRs are the standard for code review. If your code is on GitHub, PRs are the natural choice. Crucible is for teams using self-hosted Git (Gitea, GitLab) that want a lightweight review tool without GitHub's ecosystem.",
+    "seo_title": "Crucible \u2014 Self-hosted code review tool",
+    "seo_description": "Self-hosted code review \u2014 single binary, $0.99/mo. Inline comments, approval flows, diff viewer. Works with any Git host.",
+    "faq": [
+      {
+        "q": "Is Crucible a GitHub PR alternative?",
+        "a": "GitHub PRs are tightly integrated with GitHub. Crucible is standalone code review that works with any Git host."
+      },
+      {
+        "q": "Does Crucible integrate with GitHub?",
+        "a": "Crucible connects to any Git repo via URL. For GitHub-native features like code owners and checks, use GitHub PRs."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ordnance",
+    "stockyard_name": "Ordnance",
+    "stockyard_tagline": "Self-hosted penetration testing toolkit",
+    "stockyard_free": "5 scans",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited scans, scheduled scanning, vulnerability database, reports",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ordnance/install.sh | sh",
+    "stockyard_port": 12400,
+    "competitor_name": "Burp Suite",
+    "competitor_slug": "burp-suite",
+    "competitor_url": "https://portswigger.net/burp",
+    "competitor_price": "$449/yr (Professional)",
+    "competitor_pricing_note": "Community: free (limited). Professional: $449/yr. Enterprise: $3,999/yr.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Desktop app, runs locally",
+    "strengths_stockyard": [
+      "$1.99/mo vs $449/yr",
+      "Web-based dashboard (no Java desktop app)",
+      "Scheduled automated scanning",
+      "Single binary, API-driven"
+    ],
+    "strengths_competitor": [
+      "Industry standard for web security testing",
+      "Manual testing tools (Repeater, Intruder)",
+      "Extensive extension marketplace",
+      "Professional certification ecosystem"
+    ],
+    "honest_verdict": "Burp Suite is the industry standard for web application security testing. For professional penetration testing, Burp is essential. Ordnance handles automated vulnerability scanning for teams that want basic security checks without Burp's price or Java dependency.",
+    "seo_title": "Ordnance vs Burp Suite \u2014 Self-hosted security scanning",
+    "seo_description": "Burp Suite Professional is $449/yr. Ordnance is self-hosted scanning \u2014 single binary, $1.99/mo. Automated vulnerability detection.",
+    "faq": [
+      {
+        "q": "Is Ordnance a Burp Suite alternative?",
+        "a": "Burp Suite is for professional pen testing. Ordnance does automated scanning. Very different depth."
+      },
+      {
+        "q": "Does Ordnance do manual testing?",
+        "a": "No. Ordnance runs automated scans. For manual testing (Repeater, Intruder), Burp Suite is necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "rampart",
+    "stockyard_name": "Rampart",
+    "stockyard_tagline": "Self-hosted web application firewall",
+    "stockyard_free": "3 rules",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited rules, OWASP top 10 protection, rate limiting, geo blocking",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/rampart/install.sh | sh",
+    "stockyard_port": 12450,
+    "competitor_name": "Cloudflare WAF",
+    "competitor_slug": "cloudflare-waf",
+    "competitor_url": "https://cloudflare.com/waf/",
+    "competitor_price": "$20/mo (Pro)",
+    "competitor_pricing_note": "Free: 5 WAF rules. Pro: $20/mo. Business: $200/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 runs on Cloudflare's edge",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 traffic analysis stays private",
+      "$1.99/mo vs $20/mo",
+      "No DNS change required",
+      "Runs in front of any server"
+    ],
+    "strengths_competitor": [
+      "Global edge network blocks attacks at the perimeter",
+      "DDoS protection included",
+      "Managed rulesets updated automatically",
+      "Bot management and rate limiting"
+    ],
+    "honest_verdict": "Cloudflare WAF blocks attacks at the edge before they reach your server. For DDoS protection and global bot management, Cloudflare is essential. Rampart is a local WAF for teams that want application-layer protection without routing traffic through a third party.",
+    "seo_title": "Rampart vs Cloudflare WAF \u2014 Self-hosted web firewall",
+    "seo_description": "Cloudflare WAF Pro is $20/mo. Rampart is self-hosted \u2014 single binary, $1.99/mo. OWASP protection without DNS changes.",
+    "faq": [
+      {
+        "q": "Is Rampart a Cloudflare alternative?",
+        "a": "Cloudflare provides edge-level DDoS protection and WAF. Rampart is a local WAF. Cloudflare blocks at the perimeter; Rampart protects at the application level."
+      },
+      {
+        "q": "Does Rampart stop DDoS attacks?",
+        "a": "Rampart handles application-layer attacks (SQL injection, XSS). For volumetric DDoS protection, Cloudflare or AWS Shield are necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "githost",
+    "stockyard_name": "Git Host",
+    "stockyard_tagline": "Self-hosted Git repository hosting",
+    "stockyard_free": "5 repos",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited repos, users, SSH + HTTPS, web viewer, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/githost/install.sh | sh",
+    "stockyard_port": 12500,
+    "competitor_name": "Gitea",
+    "competitor_slug": "gitea",
+    "competitor_url": "https://gitea.com",
+    "competitor_price": "Free (OSS)",
+    "competitor_pricing_note": "Self-hosted: free. Gitea Cloud: $9/mo for 5 users.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hostable, single binary (Go), but uses external database for production",
+    "strengths_stockyard": [
+      "Embedded SQLite \u2014 no external database",
+      "Simpler setup than Gitea",
+      "Focused on Git hosting only"
+    ],
+    "strengths_competitor": [
+      "Full GitHub-like platform (issues, PRs, CI, wiki, packages)",
+      "Active community and development",
+      "Migration tools from GitHub/GitLab",
+      "OAuth and LDAP authentication"
+    ],
+    "honest_verdict": "Gitea is the best self-hosted Git platform \u2014 it does everything GitHub does for free. If you want self-hosted Git hosting, use Gitea. Git Host is a simpler option if you literally just need Git push/pull with a web viewer and nothing else.",
+    "seo_title": "Git Host vs Gitea \u2014 Minimal self-hosted Git hosting",
+    "seo_description": "Gitea is a full Git platform. Git Host is minimal Git hosting \u2014 single binary with SQLite. For teams that just need push and pull.",
+    "faq": [
+      {
+        "q": "Is Git Host a Gitea alternative?",
+        "a": "Gitea is a full GitHub-like platform with issues, PRs, and CI. Git Host just hosts Git repos with a web viewer. Gitea is far more capable."
+      },
+      {
+        "q": "Should I use Git Host instead of Gitea?",
+        "a": "For most teams, no. Gitea is free and more capable. Use Git Host only if you want the absolute simplest Git hosting with embedded SQLite."
+      }
+    ]
   }
 ]

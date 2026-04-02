@@ -491,6 +491,10 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/blog/self-hosted-tools-2026-guide/",
 		"/blog/helicone-alternative-2026/",
 		"/blog/litellm-supply-chain-attack/",
+		"/crucible/vs-github-prs/",
+		"/githost/vs-gitea/",
+		"/ordnance/vs-burp-suite/",
+		"/rampart/vs-cloudflare-waf/",
 		// How-to, what-is, GDPR pages
 "/gdpr-compliant-analytics/",
 		"/how-to-replace-google-analytics/",
