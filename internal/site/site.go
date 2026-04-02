@@ -697,6 +697,10 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/github-alternative/",
 		"/api-key-generator/",
 		"/budibase-alternative/",
+		"/datadog-alternative/",
+		"/notion-alternative/",
+		"/pagerduty-alternative/",
+		"/localstack-alternative/",
 		// Alternative-to pages
 		"/sentry-alternative/",
 		"/launchdarkly-alternative/",

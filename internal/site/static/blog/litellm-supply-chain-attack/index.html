@@ -109,35 +109,58 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 <section class="section" style="padding-top:5rem">
   <div class="section-label">April 2, 2026</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:1rem">The LiteLLM supply chain attack and what it means</h1>
-  <p style="font-style:italic;color:var(--cream-dim);margin-bottom:2rem">In March 2026, LiteLLM's PyPI package was compromised. Here is what happened and how to think about LLM proxy security.</p>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:1rem">The LiteLLM Supply Chain Attack and What It Means for LLM Proxies</h1>
+  <p style="font-style:italic;color:var(--cream-dim);margin-bottom:2rem">In March 2026, LiteLLM's PyPI package was compromised in a supply chain attack. Here is what happened, why LLM proxies are high-value targets, and how architectural choices affect your exposure.</p>
 
-  <p>LiteLLM is a popular Python-based LLM proxy that routes requests across multiple providers. In March 2026, the project was hit by a supply chain attack via PyPI — the Python package registry. Malicious code was injected into a dependency, which meant anyone who ran <code>pip install litellm</code> during the window of compromise potentially ran the attacker's code.</p>
+  <h2 style="margin-top:2rem">What happened</h2>
 
-  <p>This is not a criticism of the LiteLLM team. Supply chain attacks are a systemic problem in package manager ecosystems. PyPI, npm, and RubyGems have all been targets. The LiteLLM team responded quickly once the attack was discovered.</p>
+  <p>LiteLLM is a popular Python-based LLM proxy that unifies API calls across OpenAI, Anthropic, Google, and dozens of other providers behind a single interface. In March 2026, the project was hit by a supply chain attack through PyPI — the Python Package Index. The compromised package version was available for download before the team detected and removed it.</p>
 
-  <h2 style="margin-top:2rem">Why this matters for LLM proxies</h2>
+  <p>The specifics of supply chain attacks vary, but the mechanism is consistent: an attacker gains the ability to publish a modified version of a package, either through compromised maintainer credentials, a typosquatting package name, or a dependency confusion attack. The modified package contains additional code that exfiltrates data, installs backdoors, or modifies behavior in ways the user does not expect.</p>
 
-  <p>An LLM proxy is a particularly high-value target for supply chain attacks. It sees every API key, every prompt, every response. If an attacker compromises the proxy, they can exfiltrate API keys (OpenAI, Anthropic), read sensitive prompts, modify responses, or route traffic through their own servers.</p>
+  <p>This is not a criticism of the LiteLLM team. Supply chain attacks are a systemic problem in package manager ecosystems. PyPI, npm, and RubyGems have all seen significant attacks. The LiteLLM team responded and patched the issue. But the incident highlights a structural risk that applies to every Python-based LLM proxy.</p>
 
-  <p>Python-based proxies inherit the full PyPI dependency tree. LiteLLM's requirements.txt pulls in dozens of packages, each with their own dependencies. Any one of those dependencies is a potential attack vector.</p>
+  <h2 style="margin-top:2rem">Why LLM proxies are high-value targets</h2>
 
-  <h2 style="margin-top:2rem">The single-binary approach</h2>
+  <p>An LLM proxy is one of the highest-value targets in a modern application stack. It sees every API key for every provider. It sees every prompt — which often contains proprietary business logic, customer data, and internal context. It sees every response, which may contain generated code, analysis, or sensitive information. And it handles billing credentials that control spend across multiple providers.</p>
 
-  <p>A single compiled Go binary has no runtime dependencies. There is no package manager to compromise, no dependency tree to audit, no pip install that pulls code from the internet. The binary you download is the entire application — what you see is what you run.</p>
+  <p>Compromising an LLM proxy gives an attacker access to all of this simultaneously. A single successful supply chain attack against a widely-used LLM proxy library potentially exposes the API keys, prompts, and response data of every application that installed the compromised version. The blast radius is not one application — it is every application that pulled the update during the window of compromise.</p>
 
-  <p>This is not a theoretical advantage. The LiteLLM attack demonstrated exactly why runtime dependency management is a risk for security-sensitive infrastructure like LLM proxies.</p>
+  <h2 style="margin-top:2rem">The dependency tree problem</h2>
 
-  <p>The <a href="/platform/">Stockyard LLM proxy</a> ships as a single Go binary (~25MB). It compiles all 76 middleware modules, 16 provider adapters, and the web dashboard into one file. No pip, no npm, no external packages at runtime.</p>
+  <p>Python-based proxies inherit the full PyPI dependency tree. Every package in <code>requirements.txt</code> is a potential attack surface. And those packages have their own dependencies, which have their own dependencies. A typical Python LLM proxy pulls in 50 to 100 transitive dependencies. Each one is maintained by a different person or team, each with their own security practices, credential management, and vulnerability exposure.</p>
 
-  <h2 style="margin-top:2rem">What to do</h2>
+  <p>You do not need to compromise the main package. Compromising any package in the dependency tree is sufficient. If a proxy depends on a utility library that depends on a YAML parser that gets compromised, the attack flows through the dependency chain into the proxy. The maintainers of the main project may never know — the compromised code runs in a transitive dependency they do not directly audit.</p>
 
-  <p>If you use LiteLLM, audit your installation and update to the latest patched version. If you are evaluating LLM proxies, consider the supply chain attack surface as part of your decision. A compiled binary eliminates an entire category of risk.</p>
+  <p>Package pinning and lock files reduce but do not eliminate this risk. They protect against new malicious versions being pulled automatically, but they do not protect against the version that was already compromised at the time you pinned it. And in practice, many teams run <code>pip install --upgrade</code> regularly, which pulls whatever the latest version is at that moment.</p>
 
-  <div class="banner" style="margin-top:2rem">
-    <strong style="color:var(--gold)">Single binary LLM proxy</strong><br>
-    <span style="color:var(--cream-dim)">No pip. No npm. No supply chain risk. <a href="/platform/">Stockyard Platform</a> — one binary, 76 modules, 16 providers.</span>
-  </div>
+  <h2 style="margin-top:2rem">How compiled binaries avoid this</h2>
+
+  <p>A single compiled Go binary has no runtime dependencies. There is no package manager involved at install time. There is no dependency tree that could be compromised between when you download the binary and when you run it. The binary is a self-contained executable — all dependencies were resolved and compiled in at build time, in a controlled environment.</p>
+
+  <p>The attack surface for a Go binary is the download itself. If you verify the checksum of the binary against a known-good value, you have cryptographic assurance that the binary has not been modified. There is no equivalent assurance for a Python package installed via pip, because pip resolves and installs transitive dependencies at install time — each one a separate download from a separate source.</p>
+
+  <p>This is not a theoretical distinction. The LiteLLM attack demonstrated exactly the failure mode that compiled binaries are immune to. The attack vector — compromised package in a package manager — does not exist when there is no package manager in the deployment chain.</p>
+
+  <h2 style="margin-top:2rem">The Stockyard approach</h2>
+
+  <p>The Stockyard LLM proxy ships as a single Go binary, approximately 25MB. It compiles all 76 middleware modules, 16 provider adapters, and the full dashboard into one file. Install it with <code>curl</code>, run it, and point your application's base URL at it. No pip, no npm, no Docker, no runtime dependency resolution.</p>
+
+  <pre>curl -fsSL https://stockyard.dev/install.sh | sh
+export OPENAI_API_KEY=sk-...
+stockyard
+# Proxy: http://localhost:4200/v1
+# Dashboard: http://localhost:4200/ui</pre>
+
+  <p>The security properties are inherent to the architecture, not bolted on. There is no dependency tree to audit because there are no runtime dependencies. There is no package manager to compromise because installation is a file download. The binary is the same on every machine that downloads it — verifiable by checksum.</p>
+
+  <h2 style="margin-top:2rem">What to do now</h2>
+
+  <p>If you currently use LiteLLM, audit your installation. Verify you are running the patched version. Check your API keys for unexpected usage. Review your logs for unusual request patterns during the window of compromise.</p>
+
+  <p>If you are evaluating LLM proxies for a new project, the supply chain attack changes the calculus. The question is not just "which proxy has the features I need" but "what is the blast radius if this proxy's distribution mechanism is compromised." A Python proxy running through pip has a fundamentally different risk profile than a compiled binary downloaded from a verified source.</p>
+
+  <p>Neither approach is perfect. Compiled binaries can be trojaned at the source. Build pipelines can be compromised. But the attack surface is narrower — one binary from one source, rather than dozens of packages from dozens of sources — and the verification mechanism is simpler: one checksum to check instead of trusting an entire package manager ecosystem.</p>
 </section>
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>

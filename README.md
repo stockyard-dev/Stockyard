@@ -64,6 +64,31 @@ curl http://localhost:4200/api/lookout/costs
 
 Or open `http://localhost:4200/ui` for the full dashboard.
 
+### Docker
+
+```bash
+docker run -d -p 4200:4200 -e OPENAI_API_KEY=sk-... ghcr.io/stockyard-dev/stockyard:latest
+```
+
+### Multi-Tool Installer
+
+Install individual tools as standalone binaries:
+
+```bash
+# Install specific tools
+curl -fsSL stockyard.dev/install-tools.sh | sh -s -- bounty headcount strongbox
+
+# Or use a preset bundle
+curl -fsSL stockyard.dev/install-tools.sh | sh -s -- --starter    # 5 popular tools
+curl -fsSL stockyard.dev/install-tools.sh | sh -s -- --devtools   # 8 developer tools
+```
+
+### Interactive Menu
+
+```bash
+curl -fsSL stockyard.dev/install-menu.sh | sh
+```
+
 ## What's Free
 
 ### Open Source Proxy (Apache 2.0)
