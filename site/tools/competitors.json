@@ -2011,5 +2011,551 @@
         "a": "Sundial has a web dashboard. For native mobile time tracking, Toggl has dedicated apps for iOS and Android."
       }
     ]
+  },
+  {
+    "stockyard_tool": "wrangler",
+    "stockyard_name": "Wrangler",
+    "stockyard_tagline": "Self-hosted ETL and data pipeline runner",
+    "stockyard_free": "2 pipelines",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited pipelines, scheduling, transforms, retry",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/wrangler/install.sh | sh",
+    "stockyard_port": 9060,
+    "competitor_name": "Stitch",
+    "competitor_slug": "stitch",
+    "competitor_url": "https://www.stitchdata.com",
+    "competitor_price": "$100/mo (Standard)",
+    "competitor_pricing_note": "Free: 5 sources, 10M rows. Standard: $100/mo. Advanced: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 Talend-owned cloud only",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 data never leaves your network",
+      "$1.99/mo vs $100/mo",
+      "No row-based pricing surprises",
+      "Single binary, runs anywhere"
+    ],
+    "strengths_competitor": [
+      "100+ pre-built source connectors",
+      "Fully automated replication",
+      "Schema detection and handling",
+      "Part of Talend ecosystem"
+    ],
+    "honest_verdict": "Stitch is a managed replication service with 100+ connectors. If you need automated replication from SaaS tools to a warehouse, Stitch handles it without code. If you have simpler data movement needs, Wrangler is self-hosted at a fraction of the cost.",
+    "seo_title": "Wrangler vs Stitch \u2014 Self-hosted ETL at $1.99/mo",
+    "seo_description": "Stitch starts at $100/mo. Wrangler is self-hosted ETL \u2014 single binary, $1.99/mo Pro. Your data stays in your network.",
+    "faq": [
+      {
+        "q": "Is Wrangler a Stitch alternative?",
+        "a": "Stitch automates data replication with 100+ connectors. Wrangler handles config-based ETL pipelines as a single binary. Stitch is more automated; Wrangler is simpler and self-hosted."
+      },
+      {
+        "q": "Does Wrangler charge per row?",
+        "a": "No. Wrangler Pro is $1.99/mo flat regardless of data volume."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ledger",
+    "stockyard_name": "Ledger",
+    "stockyard_tagline": "Self-hosted double-entry bookkeeping",
+    "stockyard_free": "100 transactions/mo",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited transactions, reports, multi-currency, CSV import/export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ledger/install.sh | sh",
+    "stockyard_port": 8900,
+    "competitor_name": "Wave",
+    "competitor_slug": "wave",
+    "competitor_url": "https://waveapps.com",
+    "competitor_price": "Free (ad-supported)",
+    "competitor_pricing_note": "Free accounting. Payments: 2.9% + $0.60 per transaction. Payroll: $20/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 financial data on your server",
+      "No ads or upselling",
+      "Data stays completely private",
+      "Single binary, no account needed"
+    ],
+    "strengths_competitor": [
+      "Completely free accounting and invoicing",
+      "Bank feed connections",
+      "Receipt scanning",
+      "Payroll add-on available"
+    ],
+    "honest_verdict": "Wave is genuinely free accounting software \u2014 hard to beat on price. The trade-off is ads and your financial data on their servers. If free managed accounting works for you, Wave is solid. If you want your financial data private and on your own server, Ledger costs $2.99/mo.",
+    "seo_title": "Ledger vs Wave \u2014 Self-hosted bookkeeping for data privacy",
+    "seo_description": "Wave is free but ad-supported and cloud-hosted. Ledger is self-hosted bookkeeping \u2014 your financial data stays private. $2.99/mo Pro.",
+    "faq": [
+      {
+        "q": "Is Ledger a Wave alternative?",
+        "a": "Wave is free cloud-hosted accounting with ads. Ledger is self-hosted double-entry bookkeeping at $2.99/mo \u2014 no ads, your data stays on your server."
+      },
+      {
+        "q": "Why pay for Ledger when Wave is free?",
+        "a": "Data privacy. Wave hosts your financial data on their servers and shows ads. Ledger keeps everything on your own server."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "billfold",
+    "stockyard_name": "Billfold",
+    "stockyard_tagline": "Self-hosted invoice generator",
+    "stockyard_free": "5 invoices/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited invoices, recurring, PDF export, client portal",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/billfold/install.sh | sh",
+    "stockyard_port": 9070,
+    "competitor_name": "Zoho Invoice",
+    "competitor_slug": "zoho-invoice",
+    "competitor_url": "https://www.zoho.com/invoice/",
+    "competitor_price": "Free (limited) / $9/mo",
+    "competitor_pricing_note": "Free: 5 customers. Standard: $9/mo. Professional: $19/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 invoice data stays private",
+      "$0.99/mo vs $9/mo",
+      "No customer limits on Pro",
+      "Single binary, no Zoho ecosystem needed"
+    ],
+    "strengths_competitor": [
+      "Part of the Zoho suite (CRM, books, projects)",
+      "Online payment acceptance",
+      "Automated payment reminders",
+      "Multi-currency and multi-language"
+    ],
+    "honest_verdict": "Zoho Invoice is part of a massive business suite. If you use other Zoho products, the integration is seamless. If you want standalone invoicing on your own server without an ecosystem dependency, Billfold is simpler.",
+    "seo_title": "Billfold vs Zoho Invoice \u2014 Self-hosted invoicing at $0.99/mo",
+    "seo_description": "Zoho Invoice starts at $9/mo. Billfold is self-hosted \u2014 single binary, $0.99/mo Pro. Create invoices on your server.",
+    "faq": [
+      {
+        "q": "Is Billfold a Zoho Invoice alternative?",
+        "a": "Both create and send invoices. Billfold is self-hosted (single binary). Zoho Invoice is part of the Zoho cloud suite."
+      },
+      {
+        "q": "Does Billfold accept online payments?",
+        "a": "Billfold generates and tracks invoices. For integrated payment processing, Zoho Invoice or FreshBooks with Stripe are more complete."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "gate",
+    "stockyard_name": "Gate",
+    "stockyard_tagline": "Self-hosted reverse proxy and auth gateway",
+    "stockyard_free": "1 upstream, 5 users",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited upstreams, users, per-route limits, IP allowlists",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/gate/install.sh | sh",
+    "stockyard_port": 8650,
+    "competitor_name": "Traefik Forward Auth",
+    "competitor_slug": "traefik-forward-auth",
+    "competitor_url": "https://github.com/thomseddon/traefik-forward-auth",
+    "competitor_price": "Free (open source)",
+    "competitor_pricing_note": "Open source, no paid tier",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Requires Traefik proxy and an OAuth2 provider (Google, OIDC)",
+    "strengths_stockyard": [
+      "Built-in reverse proxy \u2014 no separate Traefik needed",
+      "API key auth without an OAuth2 provider",
+      "Rate limiting and IP allowlists included",
+      "Dashboard at /ui"
+    ],
+    "strengths_competitor": [
+      "Works with any OAuth2/OIDC provider",
+      "Lightweight \u2014 single purpose middleware",
+      "Well-tested in Docker/Kubernetes environments",
+      "Completely free"
+    ],
+    "honest_verdict": "Traefik Forward Auth is a lightweight auth middleware for teams already running Traefik with OAuth2/OIDC. If you have that stack, it is the natural choice. Gate is for teams that want auth + proxy in one binary without running Traefik or configuring an OAuth provider.",
+    "seo_title": "Gate vs Traefik Forward Auth \u2014 All-in-one auth proxy",
+    "seo_description": "Traefik Forward Auth needs Traefik + OAuth2 provider. Gate is one binary: proxy + auth + rate limiting. No external dependencies.",
+    "faq": [
+      {
+        "q": "Is Gate a Traefik Forward Auth alternative?",
+        "a": "Traefik Forward Auth is middleware for Traefik. Gate is a standalone proxy with auth built in \u2014 no Traefik or OAuth provider needed."
+      },
+      {
+        "q": "Does Gate work with Traefik?",
+        "a": "Gate is its own reverse proxy. You would use Gate instead of Traefik, not alongside it."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "strongbox",
+    "stockyard_name": "Strongbox",
+    "stockyard_tagline": "Self-hosted secret manager",
+    "stockyard_free": "25 secrets, 1 vault",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited secrets, vaults, team access, audit log",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/strongbox/install.sh | sh",
+    "stockyard_port": 8610,
+    "competitor_name": "Infisical",
+    "competitor_slug": "infisical",
+    "competitor_url": "https://infisical.com",
+    "competitor_price": "$6/user/mo (Pro)",
+    "competitor_pricing_note": "Free: 5 users. Pro: $6/user/mo. Enterprise: custom.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source, self-hostable with Docker, Postgres, and Redis",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Docker, Postgres, or Redis",
+      "$1.99/mo flat vs $6/user/mo",
+      "Simpler to deploy and operate",
+      "No per-seat pricing"
+    ],
+    "strengths_competitor": [
+      "Full secret management with rotation",
+      "Native CI/CD integrations (GitHub Actions, GitLab, etc.)",
+      "Kubernetes operator for auto-sync",
+      "Secret versioning and rollback"
+    ],
+    "honest_verdict": "Infisical is a modern secret management platform with deep CI/CD integration and a Kubernetes operator. If you need automatic secret sync to CI/CD and Kubernetes, Infisical is more capable. If you want simple secret storage without per-seat pricing, Strongbox is lighter.",
+    "seo_title": "Strongbox vs Infisical \u2014 Simpler self-hosted secrets",
+    "seo_description": "Infisical requires Docker, Postgres, and Redis. Strongbox is one binary. $1.99/mo flat vs $6/user/mo. No per-seat pricing.",
+    "faq": [
+      {
+        "q": "Is Strongbox an Infisical alternative?",
+        "a": "Both manage secrets. Infisical has deeper CI/CD integration and a Kubernetes operator. Strongbox is simpler \u2014 one binary, HTTP API, no external dependencies."
+      },
+      {
+        "q": "Does Strongbox have a Kubernetes operator?",
+        "a": "No. Strongbox provides an HTTP API. For Kubernetes-native secret sync, Infisical or external-secrets operator are more integrated."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ponyexpress",
+    "stockyard_name": "Pony Express",
+    "stockyard_tagline": "Self-hosted transactional email sender",
+    "stockyard_free": "500 emails/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited emails, templates, delivery tracking, webhooks",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ponyexpress/install.sh | sh",
+    "stockyard_port": 8930,
+    "competitor_name": "Resend",
+    "competitor_slug": "resend",
+    "competitor_url": "https://resend.com",
+    "competitor_price": "Free (100/day) / $20/mo",
+    "competitor_pricing_note": "Free: 100 emails/day, 3k/mo. Pro: $20/mo for 50k/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 email logs on your server",
+      "$0.99/mo vs $20/mo",
+      "No daily send limits on Pro",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Beautiful developer experience and docs",
+      "React email template support",
+      "Excellent deliverability infrastructure",
+      "Webhook events for delivery tracking"
+    ],
+    "honest_verdict": "Resend has the best developer experience in email \u2014 clean API, React templates, excellent docs. If developer experience and deliverability matter most, Resend is outstanding. If you want email sending on your own server at a lower cost, Pony Express is the self-hosted option.",
+    "seo_title": "Pony Express vs Resend \u2014 Self-hosted transactional email",
+    "seo_description": "Resend Pro is $20/mo. Pony Express is self-hosted \u2014 single binary, $0.99/mo Pro. Send transactional emails from your server.",
+    "faq": [
+      {
+        "q": "Is Pony Express a Resend alternative?",
+        "a": "Both send transactional emails via API. Pony Express is self-hosted. Resend is managed with excellent DX and deliverability."
+      },
+      {
+        "q": "How does deliverability compare?",
+        "a": "Managed services like Resend have established IP reputation. Self-hosted email requires your own IP warm-up and SPF/DKIM setup."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ponyexpress",
+    "stockyard_name": "Pony Express",
+    "stockyard_tagline": "Self-hosted transactional email sender",
+    "stockyard_free": "500 emails/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited emails, templates, delivery tracking",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ponyexpress/install.sh | sh",
+    "stockyard_port": 8930,
+    "competitor_name": "SendGrid",
+    "competitor_slug": "sendgrid",
+    "competitor_url": "https://sendgrid.com",
+    "competitor_price": "Free (100/day) / $19.95/mo",
+    "competitor_pricing_note": "Free: 100/day. Essentials: $19.95/mo for 50k. Pro: $89.95/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 no Twilio data processing",
+      "$0.99/mo vs $19.95/mo",
+      "No per-email overage charges on Pro",
+      "Single binary, no account required"
+    ],
+    "strengths_competitor": [
+      "Massive sending infrastructure (billions/month)",
+      "Email validation and analytics",
+      "Marketing campaigns alongside transactional",
+      "Dedicated IP addresses available"
+    ],
+    "honest_verdict": "SendGrid handles billions of emails per month with enterprise-grade infrastructure. If you send at scale and need dedicated IPs, SendGrid is built for that. If you send moderate volumes and want to avoid Twilio's data processing, Pony Express is self-hosted.",
+    "seo_title": "Pony Express vs SendGrid \u2014 Self-hosted email sender",
+    "seo_description": "SendGrid starts at $19.95/mo. Pony Express is self-hosted transactional email \u2014 single binary, $0.99/mo. No Twilio data processing.",
+    "faq": [
+      {
+        "q": "Is Pony Express a SendGrid alternative?",
+        "a": "SendGrid is enterprise email infrastructure. Pony Express is self-hosted for teams sending moderate volumes who want control over their email data."
+      },
+      {
+        "q": "Can Pony Express handle millions of emails?",
+        "a": "Pony Express is designed for moderate volumes. For millions of emails per month, managed infrastructure like SendGrid is more appropriate."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "telegraph",
+    "stockyard_name": "Telegraph",
+    "stockyard_tagline": "Self-hosted notification hub",
+    "stockyard_free": "500 notifications/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited notifications, multiple channels, templates, delivery tracking",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/telegraph/install.sh | sh",
+    "stockyard_port": 9030,
+    "competitor_name": "Courier",
+    "competitor_slug": "courier",
+    "competitor_url": "https://courier.com",
+    "competitor_price": "Free (10k) / $35/mo",
+    "competitor_pricing_note": "Free: 10k notifications/mo. Business: $35/mo for 100k.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 notification data stays private",
+      "$0.99/mo vs $35/mo",
+      "No per-notification pricing on Pro",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Multi-channel orchestration (email, SMS, push, in-app)",
+      "Visual notification designer",
+      "Preference management for end users",
+      "Brand and template management"
+    ],
+    "honest_verdict": "Courier is a full notification orchestration platform with visual design and multi-channel delivery. If you need sophisticated notification routing across channels, Courier is purpose-built. If you want a simple notification hub on your own server, Telegraph handles the basics.",
+    "seo_title": "Telegraph vs Courier \u2014 Self-hosted notification hub",
+    "seo_description": "Courier is $35/mo for notification orchestration. Telegraph is self-hosted \u2014 single binary, $0.99/mo. Send notifications from your server.",
+    "faq": [
+      {
+        "q": "Is Telegraph a Courier alternative?",
+        "a": "Courier is full notification orchestration (email, SMS, push). Telegraph is a simpler self-hosted notification hub focused on webhook-style delivery."
+      },
+      {
+        "q": "Does Telegraph support SMS?",
+        "a": "Telegraph focuses on webhook and email notifications. For SMS, use Courier or a dedicated SMS provider like Twilio."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ticker",
+    "stockyard_name": "Ticker",
+    "stockyard_tagline": "Self-hosted metrics and time series dashboard",
+    "stockyard_free": "10 metrics, 24h retention",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited metrics, 90-day retention, alerts, custom dashboards",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ticker/install.sh | sh",
+    "stockyard_port": 9040,
+    "competitor_name": "Datadog",
+    "competitor_slug": "datadog",
+    "competitor_url": "https://datadoghq.com",
+    "competitor_price": "$15/host/mo (Infrastructure)",
+    "competitor_pricing_note": "$15/host infra. $31/host APM. $12/mil log events. Adds up fast.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 metrics stay on your server",
+      "$0.99/mo vs $15/host/mo (and growing)",
+      "No per-host pricing surprises",
+      "Single binary with embedded storage"
+    ],
+    "strengths_competitor": [
+      "Full observability platform (metrics, APM, logs, synthetics)",
+      "700+ integrations",
+      "Real-time dashboards and alerting",
+      "Industry standard for large-scale monitoring"
+    ],
+    "honest_verdict": "Datadog is the most comprehensive observability platform available. If you need APM, distributed tracing, log management, and 700+ integrations, Datadog is the industry standard. If you want simple metrics dashboards on your own server without per-host pricing, Ticker covers the basics.",
+    "seo_title": "Ticker vs Datadog \u2014 Self-hosted metrics at $0.99/mo",
+    "seo_description": "Datadog charges $15/host/mo and costs escalate fast. Ticker is self-hosted metrics \u2014 single binary, $0.99/mo flat. Simple dashboards, your server.",
+    "faq": [
+      {
+        "q": "Is Ticker a Datadog alternative?",
+        "a": "Datadog is a full observability platform. Ticker is a simple self-hosted metrics dashboard. If you need APM and log management, Datadog is necessary."
+      },
+      {
+        "q": "How many metrics can Ticker handle?",
+        "a": "Free: 10 metrics with 24h retention. Pro: unlimited metrics with 90-day retention. For thousands of high-cardinality metrics, Prometheus or Datadog are more appropriate."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "homestead",
+    "stockyard_name": "Homestead",
+    "stockyard_tagline": "Self-hosted server inventory and monitor",
+    "stockyard_free": "5 servers",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited servers, alerts, uptime history, custom checks",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/homestead/install.sh | sh",
+    "stockyard_port": 8880,
+    "competitor_name": "Netdata",
+    "competitor_slug": "netdata",
+    "competitor_url": "https://netdata.cloud",
+    "competitor_price": "Free (OSS) / $19/mo (Cloud)",
+    "competitor_pricing_note": "Agent is free OSS. Cloud: free to 5 nodes, $19/mo Homelab, $69/mo Business.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Agent is open source. Cloud features require Netdata Cloud account.",
+    "strengths_stockyard": [
+      "Single binary \u2014 the monitor IS the dashboard",
+      "$0.99/mo vs $19/mo for cloud features",
+      "Server inventory with asset tracking",
+      "Simpler to deploy across servers"
+    ],
+    "strengths_competitor": [
+      "Incredible real-time monitoring detail (1-second granularity)",
+      "Auto-detection of 800+ metrics",
+      "Beautiful, fast dashboard",
+      "Large open-source community"
+    ],
+    "honest_verdict": "Netdata is the best real-time server monitoring tool available \u2014 the level of detail and auto-detection is unmatched. If you want deep, real-time server metrics, install Netdata. If you want a simple server inventory with basic health monitoring, Homestead is lighter.",
+    "seo_title": "Homestead vs Netdata \u2014 Simple server inventory and monitoring",
+    "seo_description": "Netdata Cloud is $19/mo. Homestead is self-hosted server inventory \u2014 single binary, $0.99/mo. Track servers and basic health.",
+    "faq": [
+      {
+        "q": "Is Homestead a Netdata alternative?",
+        "a": "Netdata provides deep real-time monitoring with 800+ auto-detected metrics. Homestead is a server inventory tool with basic health monitoring. Different depth, different purpose."
+      },
+      {
+        "q": "Does Homestead do real-time monitoring?",
+        "a": "Homestead tracks server health and uptime at configurable intervals. For 1-second real-time monitoring, Netdata is significantly more detailed."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "brandingiron",
+    "stockyard_name": "Branding Iron",
+    "stockyard_tagline": "Self-hosted release notes manager",
+    "stockyard_free": "10 posts",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited posts, custom domain, email subscribers, widget embed",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/brandingiron/install.sh | sh",
+    "stockyard_port": 8840,
+    "competitor_name": "Beamer",
+    "competitor_slug": "beamer",
+    "competitor_url": "https://getbeamer.com",
+    "competitor_price": "$49/mo (Starter)",
+    "competitor_pricing_note": "$49/mo Starter. $99/mo Pro. $249/mo Scale.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 changelog data on your server",
+      "$0.99/mo vs $49/mo",
+      "No per-user or per-view pricing",
+      "Single binary, embeddable widget"
+    ],
+    "strengths_competitor": [
+      "In-app notification widget with segmentation",
+      "NPS surveys and feedback collection",
+      "Push notifications to users",
+      "A/B testing for announcements"
+    ],
+    "honest_verdict": "Beamer is a product communication platform \u2014 changelog, in-app notifications, NPS, and feedback. If you need all of that, Beamer is well-designed. If you just need a changelog and release notes page, Branding Iron does that for $0.99/mo.",
+    "seo_title": "Branding Iron vs Beamer \u2014 Self-hosted release notes at $0.99/mo",
+    "seo_description": "Beamer starts at $49/mo. Branding Iron is self-hosted release notes \u2014 single binary, $0.99/mo. Changelog, email subscribers, embed widget.",
+    "faq": [
+      {
+        "q": "Is Branding Iron a Beamer alternative?",
+        "a": "Beamer is a full product communication platform. Branding Iron focuses on release notes and changelogs as a self-hosted tool."
+      },
+      {
+        "q": "Does Branding Iron have an in-app widget?",
+        "a": "Pro tier includes an embeddable changelog widget. For in-app notifications with segmentation, Beamer is more capable."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "steward",
+    "stockyard_name": "Steward",
+    "stockyard_tagline": "Self-hosted expense tracker",
+    "stockyard_free": "50 expenses/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited expenses, categories, reports, receipt storage, CSV export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/steward/install.sh | sh",
+    "stockyard_port": 9810,
+    "competitor_name": "Expensify",
+    "competitor_slug": "expensify",
+    "competitor_url": "https://expensify.com",
+    "competitor_price": "$5/user/mo (Collect)",
+    "competitor_pricing_note": "Collect: $5/user/mo. Control: $9/user/mo. Enterprise: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 expense data stays private",
+      "$0.99/mo flat vs $5/user/mo",
+      "No per-seat pricing",
+      "Single binary, no account required"
+    ],
+    "strengths_competitor": [
+      "SmartScan receipt OCR",
+      "Credit card integration",
+      "Approval workflows",
+      "Accounting system integrations (QBO, Xero, NetSuite)"
+    ],
+    "honest_verdict": "Expensify is purpose-built for corporate expense management with receipt scanning, credit card feeds, and approval workflows. If your company needs that, Expensify is the standard. If you want simple personal or small-team expense tracking on your own server, Steward does the basics.",
+    "seo_title": "Steward vs Expensify \u2014 Self-hosted expense tracking",
+    "seo_description": "Expensify charges $5/user/mo. Steward is self-hosted expense tracking \u2014 single binary, $0.99/mo flat. Your expense data stays private.",
+    "faq": [
+      {
+        "q": "Is Steward an Expensify alternative?",
+        "a": "Expensify is corporate expense management with receipt OCR and approval workflows. Steward is simple self-hosted expense tracking for individuals and small teams."
+      },
+      {
+        "q": "Does Steward scan receipts?",
+        "a": "Steward stores receipt images but does not have OCR. For automated receipt scanning, Expensify is more capable."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "podium",
+    "stockyard_name": "Podium",
+    "stockyard_tagline": "Self-hosted product feedback tool",
+    "stockyard_free": "3 boards",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited boards, voting, roadmap, custom domain, SSO",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/podium/install.sh | sh",
+    "stockyard_port": 9470,
+    "competitor_name": "Canny",
+    "competitor_slug": "canny",
+    "competitor_url": "https://canny.io",
+    "competitor_price": "$79/mo (Starter)",
+    "competitor_pricing_note": "Free: 1 board. Starter: $79/mo. Growth: $359/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 feedback data on your server",
+      "$0.99/mo vs $79/mo",
+      "No board limits on Pro",
+      "Single binary, no cloud dependency"
+    ],
+    "strengths_competitor": [
+      "Polished UI with public roadmap",
+      "Changelog integration",
+      "Jira, Linear, and Asana sync",
+      "User segmentation and prioritization"
+    ],
+    "honest_verdict": "Canny is a polished feedback management platform with deep project management integrations. If you need Jira sync and user segmentation for feedback prioritization, Canny is well-designed. If you want a simple feedback board on your own server, Podium does the basics.",
+    "seo_title": "Podium vs Canny \u2014 Self-hosted feedback at $0.99/mo vs $79/mo",
+    "seo_description": "Canny starts at $79/mo. Podium is self-hosted product feedback \u2014 single binary, $0.99/mo. Feature voting and roadmap on your server.",
+    "faq": [
+      {
+        "q": "Is Podium a Canny alternative?",
+        "a": "Both collect product feedback with voting. Podium is self-hosted. Canny is managed with Jira/Linear integration and user segmentation."
+      },
+      {
+        "q": "Does Podium integrate with Jira?",
+        "a": "Not directly. Podium focuses on feedback collection and voting. For project management sync, Canny is more integrated."
+      }
+    ]
   }
 ]
