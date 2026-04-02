@@ -87,8 +87,8 @@ ul.prose{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9}
         <div class="drop-section">Popular</div>
         <a href="/corral/">Corral</a>
         <a href="/gate/">Gate</a>
-        <a href="/rangeland/">Rangeland</a>
-        <a href="/saltlick/">Saltlick</a>
+        <a href="/headcount/">Headcount</a>
+        <a href="/saltlick/">Salt Lick</a>
       </div>
     </div>
     <a href="/complete/" style="color:var(--gold)">Complete</a>
@@ -140,7 +140,7 @@ curl -s -X POST http://localhost:8790/api/upstreams/{id}/rules \
 
   <p>Export to CSV for finance teams: <code>GET /api/export.csv</code>. Pro adds 90-day history, spend alerts, and anomaly detection when a route spends more than 2x its 7-day average.</p>
 
-  <div class="note"><strong>Note on LLM cost tracking:</strong> Trough tracks at the request level, not at the token level. For per-token cost tracking across 40 providers with model-aware pricing, <a href="/">Stockyard</a> includes that built in alongside request tracing, cost routing, and prompt management.</div>
+  <div class="note"><strong>Note on LLM cost tracking:</strong> Trough tracks at the request level, not at the token level. For per-token cost tracking across 16 providers with model-aware pricing, <a href="/">Stockyard</a> includes that built in alongside request tracing, cost routing, and prompt management.</div>
 </section>
 
 <section class="section-alt">

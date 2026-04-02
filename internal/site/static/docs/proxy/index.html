@@ -7,13 +7,13 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Proxy Docs: 76 Middleware Modules — Stockyard">
-<meta property="og:description" content="Stockyard proxy: 76 middleware modules, 40 providers, routing, and runtime toggles.">
+<meta property="og:description" content="Stockyard proxy: 76 middleware modules, 16 providers, routing, and runtime toggles.">
 <meta property="og:url" content="https://stockyard.dev/docs/proxy/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 <title>Proxy Docs: 76 Middleware Modules — Stockyard</title>
-<meta name="description" content="Stockyard proxy: 76 middleware modules, 40 providers, LLM cache, rate limiting, routing, and runtime toggles.">
+<meta name="description" content="Stockyard proxy: 76 middleware modules, 16 providers, LLM cache, rate limiting, routing, and runtime toggles.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -138,8 +138,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
         <div class="drop-section">Popular</div>
         <a href="/corral/">Corral</a>
         <a href="/gate/">Gate</a>
-        <a href="/rangeland/">Rangeland</a>
-        <a href="/saltlick/">Saltlick</a>
+        <a href="/headcount/">Headcount</a>
+        <a href="/saltlick/">Salt Lick</a>
       </div>
     </div>
     <a href="/complete/" style="color:var(--gold)">Complete</a>
@@ -198,7 +198,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>Chute</h1>
-    <p class="subtitle">Proxy & middleware. 76 modules, 40 providers, runtime toggles.</p>
+    <p class="subtitle">Proxy & middleware. 76 modules, 16 providers, runtime toggles.</p>
 
     <h2 id="overview">Overview</h2>
     <p>The proxy is the gateway layer. Every LLM request passes through a middleware chain of 76 toggleable modules. The proxy is <a href="/openai-compatible-proxy/">OpenAI API-compatible</a> &mdash; any SDK that talks to <code>/v1/chat/completions</code> works out of the box.</p>

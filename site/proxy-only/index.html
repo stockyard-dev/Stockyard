@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>LLM Proxy-Only Mode — Route Requests Without the Full Platform — Stockyard</title>
-<meta name="description" content="Use Stockyard as just an LLM proxy. One endpoint across 40 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies.">
+<meta name="description" content="Use Stockyard as just an LLM proxy. One endpoint across 16 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies.">
 <meta property="og:title" content="Use Stockyard as Just a Proxy">
 <meta property="og:description" content="One endpoint for 40 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
 <meta property="og:type" content="website">
@@ -90,8 +90,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
         <div class="drop-section">Popular</div>
         <a href="/corral/">Corral</a>
         <a href="/gate/">Gate</a>
-        <a href="/rangeland/">Rangeland</a>
-        <a href="/saltlick/">Saltlick</a>
+        <a href="/headcount/">Headcount</a>
+        <a href="/saltlick/">Salt Lick</a>
       </div>
     </div>
     <a href="/complete/" style="color:var(--gold)">Complete</a>
@@ -235,7 +235,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <div class="section">
   <h2 class="section-label">What you gain vs what you give up</h2>
-  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 40 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 16 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
   <p style="font-size:0.95rem;color:var(--cream-dim)"><strong style="color:var(--cream)">What you give up:</strong> roughly 200ms of added latency per request (the middleware chain). Your requests route through one more hop. If you need sub-millisecond proxy overhead or horizontal scaling across many nodes, a lighter proxy or direct provider calls may be a better fit.</p>
 </div>
 
@@ -333,7 +333,7 @@ providers:
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Stockyard LLM Proxy",
-  "description": "Self-hosted LLM proxy with 76 middleware modules, 40 providers, caching, rate limiting, and cost tracking. One binary, zero dependencies.",
+  "description": "Self-hosted LLM proxy with 76 middleware modules, 16 providers, caching, rate limiting, and cost tracking. One binary, zero dependencies.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Linux, macOS, Windows",
   "url": "https://stockyard.dev/proxy-only/",
