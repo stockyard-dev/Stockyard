@@ -3229,5 +3229,215 @@
         "a": "No. Sidekiq with Redis handles millions of jobs/sec. Drover with SQLite handles thousands/sec. For most applications, thousands/sec is sufficient."
       }
     ]
+  },
+  {
+    "stockyard_tool": "cutoff",
+    "stockyard_name": "Cutoff",
+    "stockyard_tagline": "Self-hosted API rate limiter",
+    "stockyard_free": "3 rules",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited rules, sliding window, IP/key/path limiting, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/cutoff/install.sh | sh",
+    "stockyard_port": 10250,
+    "competitor_name": "Kong Rate Limiting",
+    "competitor_slug": "kong-rate-limiting",
+    "competitor_url": "https://konghq.com",
+    "competitor_price": "$250/mo (Kong Plus)",
+    "competitor_pricing_note": "Kong OSS rate limiting is basic. Advanced rate limiting requires Plus ($250/mo) or Enterprise.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Kong OSS is self-hostable but advanced features need paid license",
+    "strengths_stockyard": [
+      "$0.99/mo vs $250/mo for advanced rate limiting",
+      "Single binary \u2014 no Lua, Postgres, or Cassandra",
+      "Purpose-built for rate limiting only",
+      "Simpler to configure and operate"
+    ],
+    "strengths_competitor": [
+      "Full API gateway with plugins",
+      "Distributed rate limiting across nodes",
+      "Service mesh capabilities",
+      "Enterprise support and SLA"
+    ],
+    "honest_verdict": "Kong is a full API gateway. If you need traffic management, authentication, and rate limiting in one platform, Kong makes sense. If you specifically need rate limiting as a standalone service, Cutoff does that one thing as a single binary.",
+    "seo_title": "Cutoff vs Kong \u2014 Self-hosted rate limiting at $0.99/mo",
+    "seo_description": "Kong Plus is $250/mo for advanced rate limiting. Cutoff is a standalone rate limiter \u2014 single binary, $0.99/mo. Sliding window, IP/key limiting.",
+    "faq": [
+      {
+        "q": "Is Cutoff a Kong alternative?",
+        "a": "Kong is a full API gateway. Cutoff is specifically a rate limiter. If you only need rate limiting, Cutoff is dramatically simpler and cheaper."
+      },
+      {
+        "q": "Does Cutoff work with Kong?",
+        "a": "Cutoff is a standalone rate limiter, not a Kong plugin. Use Cutoff as a sidecar or reverse proxy in front of your API."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "dispatch",
+    "stockyard_name": "Dispatch",
+    "stockyard_tagline": "Self-hosted task router",
+    "stockyard_free": "100 tasks/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited tasks, routing rules, retry, webhooks, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/dispatch/install.sh | sh",
+    "stockyard_port": 8560,
+    "competitor_name": "Temporal",
+    "competitor_slug": "temporal",
+    "competitor_url": "https://temporal.io",
+    "competitor_price": "$25/mo (Cloud Starter)",
+    "competitor_pricing_note": "OSS free. Cloud: $25/mo starter. Cloud Pro: custom.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "OSS requires Cassandra/Postgres, Elasticsearch, and multiple services",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Cassandra, Elasticsearch, or multi-service stack",
+      "$0.99/mo vs $25/mo cloud",
+      "Much simpler to deploy and operate",
+      "HTTP-based, any language"
+    ],
+    "strengths_competitor": [
+      "Durable execution and workflows",
+      "Event-driven architecture at scale",
+      "Versioned workflows with replay",
+      "Used by Stripe, Netflix, Snap"
+    ],
+    "honest_verdict": "Temporal is the most powerful workflow orchestration platform available. If you need durable execution with replay and versioning, Temporal is in a class of its own. If you need simple task routing and dispatch without a distributed system, Dispatch handles the basics.",
+    "seo_title": "Dispatch vs Temporal \u2014 Simple task routing vs workflow orchestration",
+    "seo_description": "Temporal Cloud starts at $25/mo and self-hosted needs Cassandra. Dispatch is a single binary for task routing \u2014 $0.99/mo.",
+    "faq": [
+      {
+        "q": "Is Dispatch a Temporal alternative?",
+        "a": "Temporal handles durable workflow orchestration. Dispatch routes tasks to workers. Temporal is far more capable; Dispatch is far simpler."
+      },
+      {
+        "q": "Does Dispatch support durable execution?",
+        "a": "No. Dispatch routes tasks with retry. For durable execution with replay, Temporal is necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "exchequer",
+    "stockyard_name": "Exchequer",
+    "stockyard_tagline": "Self-hosted subscription billing",
+    "stockyard_free": "10 customers",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited customers, plans, invoicing, usage metering, webhooks",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/exchequer/install.sh | sh",
+    "stockyard_port": 10300,
+    "competitor_name": "Stripe Billing",
+    "competitor_slug": "stripe-billing",
+    "competitor_url": "https://stripe.com/billing",
+    "competitor_price": "0.5% of billing volume",
+    "competitor_pricing_note": "Stripe Billing: 0.5% of recurring revenue on top of standard Stripe processing fees (2.9% + 30c).",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Fixed $2.99/mo vs percentage of revenue",
+      "No revenue-based pricing",
+      "Self-hosted billing data",
+      "Single binary, no Stripe dependency for billing logic"
+    ],
+    "strengths_competitor": [
+      "Handles actual payment processing",
+      "Tax calculation and compliance",
+      "Customer portal",
+      "Revenue recognition and reporting"
+    ],
+    "honest_verdict": "Stripe Billing handles the entire billing lifecycle including payment processing, tax, and compliance. If you need to actually charge customers, you need Stripe or a payment processor. Exchequer manages subscription logic, plan definitions, and usage metering on your server \u2014 you still need a payment processor for the actual charges.",
+    "seo_title": "Exchequer vs Stripe Billing \u2014 Self-hosted subscription management",
+    "seo_description": "Stripe Billing charges 0.5% of revenue. Exchequer is self-hosted subscription management \u2014 $2.99/mo flat. Manage plans and usage on your server.",
+    "faq": [
+      {
+        "q": "Does Exchequer replace Stripe?",
+        "a": "No. Exchequer manages subscription logic and usage metering. You still need Stripe or another payment processor for actual charges."
+      },
+      {
+        "q": "Why use Exchequer if I need Stripe anyway?",
+        "a": "Exchequer keeps your billing logic and customer data on your server. Stripe handles payments. The 0.5% Billing fee is on top of processing fees \u2014 Exchequer removes that layer."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "crossroads",
+    "stockyard_name": "Crossroads",
+    "stockyard_tagline": "Self-hosted URL redirect manager",
+    "stockyard_free": "50 redirects",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited redirects, bulk import, regex rules, analytics",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/crossroads/install.sh | sh",
+    "stockyard_port": 10350,
+    "competitor_name": "Redirect.pizza",
+    "competitor_slug": "redirect-pizza",
+    "competitor_url": "https://redirect.pizza",
+    "competitor_price": "$3/mo (Basic)",
+    "competitor_pricing_note": "Free: 3 redirects. Basic: $3/mo. Pro: $9/mo. Business: $19/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 redirect rules on your server",
+      "$0.99/mo vs $3/mo",
+      "No redirect limits on Pro",
+      "Regex pattern matching"
+    ],
+    "strengths_competitor": [
+      "Managed service with global CDN",
+      "Domain forwarding built in",
+      "SSL certificates handled automatically",
+      "Simple UI for non-technical users"
+    ],
+    "honest_verdict": "Redirect.pizza is simple managed URL redirecting. If you need quick domain forwarding without running a server, it works well. If you manage many redirects and want them on your own infrastructure with regex support, Crossroads is self-hosted.",
+    "seo_title": "Crossroads vs Redirect.pizza \u2014 Self-hosted URL redirects",
+    "seo_description": "Redirect.pizza is $3/mo. Crossroads is self-hosted \u2014 single binary, $0.99/mo. Manage URL redirects on your server with regex support.",
+    "faq": [
+      {
+        "q": "Is Crossroads a redirect manager?",
+        "a": "Yes. Crossroads manages URL redirects with regex support, bulk import, and analytics. Self-hosted on your server."
+      },
+      {
+        "q": "Does Crossroads handle SSL?",
+        "a": "You handle SSL via your reverse proxy (Caddy, Nginx). Redirect.pizza manages SSL certificates automatically."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "spur",
+    "stockyard_name": "Spur",
+    "stockyard_tagline": "Self-hosted changelog and release notes",
+    "stockyard_free": "10 entries",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited entries, email subscribers, widget embed, custom domain",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/spur/install.sh | sh",
+    "stockyard_port": 10400,
+    "competitor_name": "Productboard",
+    "competitor_slug": "productboard",
+    "competitor_url": "https://productboard.com",
+    "competitor_price": "$20/maker/mo (Essentials)",
+    "competitor_pricing_note": "Essentials: $20/maker/mo. Pro: $60/maker/mo. Enterprise: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "$0.99/mo flat vs $20/maker/mo",
+      "Self-hosted \u2014 product data stays private",
+      "No per-seat pricing",
+      "Focused on changelog and release notes"
+    ],
+    "strengths_competitor": [
+      "Full product management platform",
+      "Customer feedback collection and prioritization",
+      "Roadmap planning with objectives",
+      "Integrations with Jira, Zendesk, Salesforce"
+    ],
+    "honest_verdict": "Productboard is a full product management platform \u2014 feedback, prioritization, roadmaps. If you need end-to-end product management, Productboard is comprehensive. If you specifically need a changelog and release notes page, Spur does that one thing for $0.99/mo.",
+    "seo_title": "Spur vs Productboard \u2014 Self-hosted changelog at $0.99/mo",
+    "seo_description": "Productboard is $20/maker/mo. Spur is a self-hosted changelog \u2014 single binary, $0.99/mo. Release notes and email subscribers.",
+    "faq": [
+      {
+        "q": "Is Spur a Productboard alternative?",
+        "a": "Productboard is a full product management platform. Spur focuses specifically on changelog and release notes. Very different scope."
+      },
+      {
+        "q": "Does Spur support roadmaps?",
+        "a": "No. Spur handles release notes and changelogs. For roadmap planning, Productboard, Linear, or Canny are more appropriate."
+      }
+    ]
   }
 ]

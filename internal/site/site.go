@@ -442,6 +442,11 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/saloon/vs-slack/",
 		"/scout/vs-snyk/",
 		"/drover/vs-sidekiq/",
+		"/crossroads/vs-redirect-pizza/",
+		"/cutoff/vs-kong-rate-limiting/",
+		"/dispatch/vs-temporal/",
+		"/exchequer/vs-stripe-billing/",
+		"/spur/vs-productboard/",
 		// How-to, what-is, GDPR pages
 "/gdpr-compliant-analytics/",
 		"/how-to-replace-google-analytics/",
