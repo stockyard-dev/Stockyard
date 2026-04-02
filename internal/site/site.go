@@ -460,6 +460,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/docs/brand/",
 		"/complete/",
 		"/hub/",
+		"/hub/",
 		"/saltlick/",
 		"/wrangler/",
 		"/post/",
