@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host a Status Page — Stockyard</title>
-<meta name="description" content="Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.">
-<meta property="og:title" content="How to Self-Host a Status Page">
-<meta property="og:description" content="Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.">
-<link rel="canonical" href="https://stockyard.dev/how-to-self-host-a-status-page/">
+<title>How to Self-Host a CRM — Stockyard</title>
+<meta name="description" content="Step-by-step guide to running Dossier as a self-hosted CRM on your own server. Install, configure, import contacts, and set up backups in under 15 minutes.">
+<meta property="og:title" content="How to Self-Host a CRM">
+<meta property="og:description" content="Step-by-step guide to running Dossier as a self-hosted CRM on your own server. Install, configure, import contacts, and set up backups in under 15 minutes.">
+<link rel="canonical" href="https://stockyard.dev/how-to-self-host-a-crm/">
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,10 +64,10 @@ code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg
 h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Status Page","description":"Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.","tool":{"@type":"SoftwareApplication","name":"Stockyard Paddock"}}
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a CRM","description":"Step-by-step guide to running Dossier as a self-hosted CRM on your own server. Install, configure, import contacts, and set up backups in under 15 minutes.","tool":{"@type":"SoftwareApplication","name":"Stockyard Dossier"}}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host a Status Page"}]}
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host a CRM"}]}
 </script>
 </head>
 <body>
@@ -99,46 +99,82 @@ h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
 
 <article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Status Page</h1>
-  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.</p>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a CRM</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Step-by-step guide to running Dossier as a self-hosted CRM on your own server. Install, configure, import contacts, and set up backups in under 15 minutes.</p>
   
   <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
     
-<p>This guide sets up Paddock — a self-hosted status page that tracks services, manages incidents, and provides uptime history. Unlike Statuspage.io ($79/mo), Paddock runs on your infrastructure, so your status page stays up even if your status page provider goes down.</p>
+<p>This guide walks you through setting up Dossier — a self-hosted CRM that runs as a single binary with embedded SQLite. By the end, you will have a working CRM with contacts, deal tracking, and search running on your server with automatic backups.</p>
+
+<h2>Prerequisites</h2>
+<p>A Linux server (Ubuntu 22.04+, Debian 12+, or any modern distro) with shell access. Dossier uses about 20MB of disk and negligible RAM. Any VPS, home server, or Raspberry Pi will work.</p>
 
 <h2>Step 1: Install</h2>
-<pre>curl -fsSL https://stockyard.dev/paddock/install.sh | sh
-PORT=9700 DATA_DIR=/var/lib/paddock ./paddock</pre>
+<p>Download and install the binary with the one-line installer:</p>
+<pre>curl -fsSL https://stockyard.dev/dossier/install.sh | sh</pre>
+<p>This downloads the static binary to your current directory. No package manager, no Docker, no dependencies.</p>
 
-<h2>Step 2: Add your services</h2>
-<pre># Add services to monitor
-curl -X POST http://localhost:9700/api/services \
-  -H 'Content-Type: application/json' \
-  -d '{"name": "API", "status": "operational"}'
+<h2>Step 2: Run as a systemd service</h2>
+<p>For production use, run Dossier as a systemd service so it starts on boot and restarts on failure:</p>
+<pre>sudo mv dossier /usr/local/bin/
+sudo mkdir -p /var/lib/dossier
 
-curl -X POST http://localhost:9700/api/services \
-  -H 'Content-Type: application/json' \
-  -d '{"name": "Dashboard", "status": "operational"}'</pre>
+cat &lt;&lt;EOF | sudo tee /etc/systemd/system/dossier.service
+[Unit]
+Description=Dossier CRM
+After=network.target
 
-<h2>Step 3: Create incidents from your alerting pipeline</h2>
-<p>When PagerDuty or your monitoring tool fires, create an incident automatically:</p>
-<pre># In your PagerDuty webhook handler:
-curl -X POST http://localhost:9700/api/incidents \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "title": "API latency elevated",
-    "severity": "minor",
-    "status": "investigating",
-    "affected_services": "API",
-    "message": "We are investigating increased latency on the API."
-  }'</pre>
-<p>Update the incident as you progress through investigation, identification, and resolution — each update is timestamped and visible on the public status page.</p>
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/dossier
+Environment=PORT=9700
+Environment=DATA_DIR=/var/lib/dossier
+Restart=always
+RestartSec=5
 
-<h2>Step 4: Host on a separate server</h2>
-<p>Critical detail: run your status page on a different server than your main application. If your primary infrastructure goes down, your status page should still be reachable. A $5 VPS in a different provider or region is sufficient. Paddock uses negligible resources — CPU and memory are measured in single digits.</p>
+[Install]
+WantedBy=multi-user.target
+EOF
 
-<h2>Step 5: Point your status subdomain</h2>
-<p>Set <code>status.yourdomain.com</code> → your status page server, with nginx proxying to Paddock. Your customers bookmark this URL and check it first during any perceived outage.</p>
+sudo systemctl daemon-reload
+sudo systemctl enable --now dossier</pre>
+<p>Check that it is running: <code>curl -s localhost:9700/api/health</code> should return <code>{"status":"ok"}</code>.</p>
+
+<h2>Step 3: Import your contacts</h2>
+<p>If you are migrating from HubSpot, Pipedrive, or a spreadsheet, export your contacts as CSV, then use a script to import them via the API:</p>
+<pre>#!/bin/bash
+# import_contacts.sh — reads CSV and POSTs to Dossier
+while IFS=, read -r name email company phone; do
+  curl -s -X POST http://localhost:9700/api/contacts \
+    -H 'Content-Type: application/json' \
+    -d "{"name":"$name","email":"$email","company":"$company","phone":"$phone"}"
+done &lt; contacts.csv</pre>
+
+<h2>Step 4: Set up backups</h2>
+<p>Dossier stores everything in a single SQLite file at <code>/var/lib/dossier/dossier.db</code>. Back it up with a cron job:</p>
+<pre># Daily backup at 2 AM
+echo '0 2 * * * cp /var/lib/dossier/dossier.db /var/backups/dossier-$(date +\%Y\%m\%d).db' | sudo crontab -</pre>
+<p>To restore from a backup, stop the service, replace the database file, and restart.</p>
+
+<h2>Step 5: Put it behind a reverse proxy</h2>
+<p>For HTTPS access, put Dossier behind nginx with a Let's Encrypt certificate:</p>
+<pre>server {
+    listen 443 ssl;
+    server_name crm.yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/crm.yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/crm.yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:9700;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}</pre>
+
+<h2>Step 6: Use it</h2>
+<p>Open <code>https://crm.yourdomain.com/ui</code> in your browser. The dashboard lets you create contacts, search by name or company, filter by status, and manage deals. Double-click any contact to edit it. The stats panel shows total contacts and breakdown by status.</p>
+<p>Every operation is also available through the REST API at <code>/api/contacts</code>, so you can integrate Dossier with your email client, marketing tools, or automation scripts.</p>
 
   </div>
 </article>
@@ -146,7 +182,7 @@ curl -X POST http://localhost:9700/api/incidents \
 <section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
   <div style="max-width:820px;margin:0 auto;text-align:center">
     <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Related</div>
-    <p style="font-size:.85rem"><a href="/paddock/">Paddock overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
+    <p style="font-size:.85rem"><a href="/dossier/">Dossier overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
 

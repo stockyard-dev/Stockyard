@@ -682,6 +682,13 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/finance-tools/",
 		"/creator-tools/",
 		"/personal-tools/",
+		// How-to tutorial pages
+		"/how-to-self-host-a-crm/",
+		"/how-to-self-host-error-tracking/",
+		"/how-to-self-host-feature-flags/",
+		"/how-to-self-host-analytics/",
+		"/how-to-self-host-a-status-page/",
+		"/how-to-self-host-invoicing/",
 		// New comparison pages (auto-generated)
 		"/almanac3/vs-atlan/",
 		"/announcements/vs-slack/",

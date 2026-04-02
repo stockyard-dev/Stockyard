@@ -3,17 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host Analytics with Headcount — Stockyard</title>
-<meta name="description" content="Step-by-step guide to setting up self-hosted web analytics. Install Headcount in 30 seconds, add the tracking snippet, and see your first page views.">
-<meta property="og:title" content="How to Self-Host Analytics with Headcount">
-<meta property="og:description" content="Step-by-step guide to setting up self-hosted web analytics. Install Headcount in 30 seconds, add the tracking snippet, and see your first page views.">
+<title>How to Self-Host Web Analytics — Stockyard</title>
+<meta name="description" content="Set up Headcount as a self-hosted Google Analytics alternative. Track page views, referrers, and sessions without third-party scripts or consent banners.">
+<meta property="og:title" content="How to Self-Host Web Analytics">
+<meta property="og:description" content="Set up Headcount as a self-hosted Google Analytics alternative. Track page views, referrers, and sessions without third-party scripts or consent banners.">
 <link rel="canonical" href="https://stockyard.dev/how-to-self-host-analytics/">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Analytics with Headcount","description":"Step-by-step guide to setting up self-hosted web analytics. Install Headcount in 30 seconds, add the tracking snippet, and see your first page views."}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://stockyard.dev/docs/"},{"@type":"ListItem","position":3,"name":"How to Self-Host Analytics with Headcount"}]}
-</script>
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,6 +58,17 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 .cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
+<style>
+pre{background:var(--bg2,#241e18);border:1px solid var(--bg3,#2e261e);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);overflow-x:auto;margin:1rem 0;line-height:1.6}
+code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg2,#241e18);padding:.15rem .4rem;border-radius:2px}
+h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Web Analytics","description":"Set up Headcount as a self-hosted Google Analytics alternative. Track page views, referrers, and sessions without third-party scripts or consent banners.","tool":{"@type":"SoftwareApplication","name":"Stockyard Headcount"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host Web Analytics"}]}
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -92,108 +97,64 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
   </div>
 </nav>
 
-<section style="max-width:820px;margin:0 auto;padding:4rem 2rem 1rem;text-align:center">
+<article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Analytics with Headcount</h1>
-  <p style="font-size:.9rem;color:var(--cream-dim,#bfb5a3);font-style:italic">5 minutes · No Docker · No external dependencies</p>
-</section>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Web Analytics</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Headcount as a self-hosted Google Analytics alternative. Track page views, referrers, and sessions without third-party scripts or consent banners.</p>
+  
+  <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
+    
+<p>This guide sets up Headcount — a self-hosted analytics tool that tracks page views, sessions, unique visitors, and referral sources. Because the data stays on your server, you skip the GDPR consent banner and see 100% of your traffic (no ad blockers stripping your tracking script).</p>
 
+<h2>Step 1: Install and start</h2>
+<pre>curl -fsSL https://stockyard.dev/headcount/install.sh | sh
+sudo mv headcount /usr/local/bin/
+sudo mkdir -p /var/lib/headcount
+# Start as systemd service (recommended) or directly:
+PORT=8690 DATA_DIR=/var/lib/headcount headcount</pre>
 
-<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:2rem">This guide walks through setting up private web analytics on your own server. By the end, you will have a running analytics dashboard that tracks page views, unique visitors, referrers, and custom events — without sending any data to Google or any third party.</p>
+<h2>Step 2: Add the tracking snippet</h2>
+<p>Add a single script tag to your website. This sends a page view event on each load:</p>
+<pre>&lt;script&gt;
+fetch('https://analytics.yourdomain.com/api/events', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    name: 'pageview',
+    path: window.location.pathname,
+    referrer: document.referrer
+  })
+});
+&lt;/script&gt;</pre>
+<p>Because this is a first-party request to your own domain (not a third-party script like Google Analytics), ad blockers do not strip it. You see every visitor.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Prerequisites</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">A Linux server (Ubuntu 22.04+, Debian, or any distro with systemd). Any VPS with 512MB RAM is enough. Headcount adds negligible load — it typically uses less than 20MB of memory.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 1: Install Headcount</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Download the binary with the install script. This places a single file in your current directory.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -fsSL https://stockyard.dev/headcount/install.sh | sh</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">Verify the binary runs:</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">./headcount --version</pre>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 2: Create a systemd service</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">For production use, run Headcount as a systemd service so it starts on boot and restarts on failure.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">sudo mkdir -p /opt/headcount /var/lib/headcount
-sudo cp headcount /opt/headcount/
-sudo tee /etc/systemd/system/headcount.service &gt; /dev/null &lt;&lt;'EOF'
-[Unit]
-Description=Headcount Analytics
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=/opt/headcount/headcount
-Environment=PORT=8690
-Environment=DATA_DIR=/var/lib/headcount
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable headcount
-sudo systemctl start headcount</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">Check that it is running:</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl http://localhost:8690/api/health
-# Expected: {"status":"ok","events":0}</pre>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 3: Set up a reverse proxy</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Put Headcount behind nginx with HTTPS so the tracking snippet works on your production site.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">sudo tee /etc/nginx/sites-available/analytics &gt; /dev/null &lt;&lt;'EOF'
-server {
+<h2>Step 3: Set up the subdomain</h2>
+<p>Point <code>analytics.yourdomain.com</code> to your server and proxy to Headcount:</p>
+<pre>server {
     listen 443 ssl;
     server_name analytics.yourdomain.com;
-
-    ssl_certificate /etc/letsencrypt/live/analytics.yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/analytics.yourdomain.com/privkey.pem;
-
+    # ... SSL config ...
     location / {
         proxy_pass http://127.0.0.1:8690;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        add_header Access-Control-Allow-Origin "https://yourdomain.com";
     }
-}
-EOF
+}</pre>
 
-sudo ln -sf /etc/nginx/sites-available/analytics /etc/nginx/sites-enabled/
-sudo nginx -t &amp;&amp; sudo systemctl reload nginx</pre>
+<h2>Step 4: Read your data</h2>
+<p>Open <code>/ui</code> for the dashboard — top pages, referral sources, unique visitors by day. The API at <code>/api/stats</code> returns JSON you can pipe into Grafana, a static site dashboard, or a weekly email report.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 4: Add the tracking snippet</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Add a single line to your website's HTML. Replace the URL with your Headcount instance.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">&lt;script defer src="https://analytics.yourdomain.com/js/headcount.js"&gt;&lt;/script&gt;</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">Alternatively, track events server-side by POSTing directly to the API:</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -X POST https://analytics.yourdomain.com/api/events \
-  -H "Content-Type: application/json" \
-  -d '{"name":"pageview","path":"/pricing","referrer":"https://google.com"}'</pre>
+<h2>Why this matters for GDPR</h2>
+<p>When analytics data never leaves your server, there is no third-party data processor. No Data Processing Agreement, no cookie consent banner (first-party analytics using server-side events do not require consent under most GDPR interpretations), and no risk of your analytics provider being acquired and changing their privacy policy. The data is a SQLite file on your disk. Your privacy policy can say exactly where the data lives because you chose the server.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 5: Verify and view your dashboard</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Open <code>https://analytics.yourdomain.com/ui</code> in your browser. You should see the Headcount dashboard with your first page view recorded. The dashboard shows unique visitors, top pages, referral sources, and session counts with daily rollups.</p>
+  </div>
+</article>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 6: Backups</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">All data lives in a single SQLite file. Set up a daily backup with a cron job:</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0"># Add to crontab: daily backup at 2 AM
-0 2 * * * sqlite3 /var/lib/headcount/headcount.db ".backup /var/backups/headcount-$(date +\%Y\%m\%d).db"</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">To restore from a backup, stop Headcount, copy the backup file to the data directory, and restart. That is the entire disaster recovery procedure.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">What you have now</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">A private analytics server that tracks every page view without sending data to Google. No cookies, no consent banners, no sampled data. The SQLite database will handle millions of events before you need to think about scaling. Total infrastructure cost: whatever your VPS costs per month.</p>
-</section>
-
-<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto">
-  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-    <a href="/headcount/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);border:2px solid var(--rust);text-decoration:none">Headcount Overview</a>
-    <a href="/complete/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:transparent;color:var(--cream,#f0e6d3);border:2px solid var(--leather,#a0845c);text-decoration:none">All 150 Tools · $29/mo</a>
+<section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
+  <div style="max-width:820px;margin:0 auto;text-align:center">
+    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Related</div>
+    <p style="font-size:.85rem"><a href="/headcount/">Headcount overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
-
-<div class="related-section" style="padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3,#2e261e)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.5rem">More tutorials</div>
-  <div><a href="/how-to-self-host-error-tracking/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Error Tracking</a>  ·  <a href="/how-to-self-host-feature-flags/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Feature Flags</a>  ·  <a href="/how-to-self-host-a-status-page/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Status Page</a>  ·  <a href="/how-to-self-host-a-wiki/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Wiki</a></div>
-</div>
 
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>

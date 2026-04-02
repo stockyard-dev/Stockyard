@@ -3,17 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host Error Tracking with Seismograph — Stockyard</title>
-<meta name="description" content="Set up self-hosted error tracking in 5 minutes. Install Seismograph, send your first error, and start catching bugs without Sentry's per-event pricing.">
-<meta property="og:title" content="How to Self-Host Error Tracking with Seismograph">
-<meta property="og:description" content="Set up self-hosted error tracking in 5 minutes. Install Seismograph, send your first error, and start catching bugs without Sentry's per-event pricing.">
+<title>How to Self-Host Error Tracking — Stockyard</title>
+<meta name="description" content="Set up Seismograph as a self-hosted Sentry alternative. Capture exceptions, deduplicate errors, and track resolution — all on your own server.">
+<meta property="og:title" content="How to Self-Host Error Tracking">
+<meta property="og:description" content="Set up Seismograph as a self-hosted Sentry alternative. Capture exceptions, deduplicate errors, and track resolution — all on your own server.">
 <link rel="canonical" href="https://stockyard.dev/how-to-self-host-error-tracking/">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Error Tracking with Seismograph","description":"Set up self-hosted error tracking in 5 minutes. Install Seismograph, send your first error, and start catching bugs without Sentry's per-event pricing."}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://stockyard.dev/docs/"},{"@type":"ListItem","position":3,"name":"How to Self-Host Error Tracking with Seismograph"}]}
-</script>
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,6 +58,17 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 .cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
+<style>
+pre{background:var(--bg2,#241e18);border:1px solid var(--bg3,#2e261e);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);overflow-x:auto;margin:1rem 0;line-height:1.6}
+code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg2,#241e18);padding:.15rem .4rem;border-radius:2px}
+h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Error Tracking","description":"Set up Seismograph as a self-hosted Sentry alternative. Capture exceptions, deduplicate errors, and track resolution — all on your own server.","tool":{"@type":"SoftwareApplication","name":"Stockyard Seismograph"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host Error Tracking"}]}
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -92,90 +97,79 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
   </div>
 </nav>
 
-<section style="max-width:820px;margin:0 auto;padding:4rem 2rem 1rem;text-align:center">
+<article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Error Tracking with Seismograph</h1>
-  <p style="font-size:.9rem;color:var(--cream-dim,#bfb5a3);font-style:italic">5 minutes · No Docker · No external dependencies</p>
-</section>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Error Tracking</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Seismograph as a self-hosted Sentry alternative. Capture exceptions, deduplicate errors, and track resolution — all on your own server.</p>
+  
+  <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
+    
+<p>This guide sets up Seismograph — a self-hosted error tracking tool that captures exceptions, deduplicates repeated errors, and groups them for analysis. Unlike Sentry, it runs as a single binary with no Docker, Postgres, Kafka, or Clickhouse.</p>
 
+<h2>Prerequisites</h2>
+<p>A Linux server with shell access. Seismograph uses minimal resources — it runs comfortably on a $5/mo VPS alongside your application.</p>
 
-<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:2rem">This guide sets up private error tracking that captures exceptions from any language or framework. No Docker, no Postgres, no event volume limits. Your error payloads — which often contain customer data, API keys in stack traces, and internal URLs — stay on your server.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Prerequisites</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">A Linux server with 512MB+ RAM. Seismograph is a single binary — it uses approximately 15MB of memory at rest and handles thousands of errors per second.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 1: Install and start</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -fsSL https://stockyard.dev/seismograph/install.sh | sh
-sudo mkdir -p /opt/seismograph /var/lib/seismograph
-sudo cp seismograph /opt/seismograph/</pre>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 2: Create a systemd service</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">sudo tee /etc/systemd/system/seismograph.service &gt; /dev/null &lt;&lt;'EOF'
+<h2>Step 1: Install and start</h2>
+<pre>curl -fsSL https://stockyard.dev/seismograph/install.sh | sh
+sudo mv seismograph /usr/local/bin/
+sudo mkdir -p /var/lib/seismograph</pre>
+<p>Create a systemd service (same pattern as any Stockyard tool):</p>
+<pre>cat &lt;&lt;EOF | sudo tee /etc/systemd/system/seismograph.service
 [Unit]
-Description=Seismograph Error Tracker
+Description=Seismograph Error Tracking
 After=network.target
-
 [Service]
 Type=simple
-ExecStart=/opt/seismograph/seismograph
+ExecStart=/usr/local/bin/seismograph
 Environment=PORT=9700
 Environment=DATA_DIR=/var/lib/seismograph
 Restart=always
-RestartSec=5
-
 [Install]
 WantedBy=multi-user.target
 EOF
+sudo systemctl enable --now seismograph</pre>
 
-sudo systemctl daemon-reload
-sudo systemctl enable seismograph
-sudo systemctl start seismograph</pre>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 3: Send your first error</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Seismograph accepts errors via a simple POST. No SDK required — any HTTP client works.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -X POST http://localhost:9700/api/events \
-  -H "Content-Type: application/json" \
+<h2>Step 2: Send your first error</h2>
+<p>Send an error event from any language using a simple HTTP POST:</p>
+<pre># From your application's error handler
+curl -X POST http://localhost:9700/api/events \
+  -H 'Content-Type: application/json' \
   -d '{
-    "name": "NullPointerException",
-    "source": "api-service",
+    "name": "NullPointerException in PaymentService.process",
+    "source": "payment-api",
     "severity": "error",
-    "payload": "{"stack":"at com.app.UserService.getUser(UserService.java:42)","user_id":"12345"}",
-    "tags": "java,production"
+    "payload": "{"stack_trace": "...", "request_id": "abc-123"}"
   }'</pre>
+<p>In Python, wrap this in your exception handler:</p>
+<pre>import requests, traceback, json
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 4: Integrate with your application</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">In your application's global error handler, POST the exception to Seismograph. Here is a Python example:</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">import requests, traceback
-
-def report_error(exception):
-    requests.post("https://errors.yourdomain.com/api/events", json={
-        "name": type(exception).__name__,
-        "source": "web-app",
+def report_error(e, context=None):
+    requests.post("http://localhost:9700/api/events", json={
+        "name": f"{type(e).__name__}: {str(e)}",
+        "source": "my-app",
         "severity": "error",
-        "payload": traceback.format_exc(),
-        "tags": "python,production"
+        "payload": json.dumps({
+            "traceback": traceback.format_exc(),
+            "context": context or {}
+        })
     })</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">The same pattern works in any language — it is a single HTTP POST with JSON. No vendor SDK to install, no dependency to keep updated.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 5: View the dashboard</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Open <code>http://localhost:9700/ui</code> to see errors grouped by name, filtered by source and severity. The stats endpoint at <code>/api/stats</code> returns error counts with status breakdown — wire this into Grafana or your existing monitoring for error rate alerts.</p>
+<h2>Step 3: Monitor and resolve</h2>
+<p>Open <code>/ui</code> to see your error dashboard. Errors are grouped by name and sorted by frequency. The stats endpoint at <code>/api/stats</code> returns counts by severity — wire this into Grafana or your alerting system to get notified when error rates spike.</p>
+<p>Search by keyword to find related errors across services. Filter by severity to focus on critical issues. The API supports all operations, so you can build custom dashboards or pipe error data into your incident management workflow.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 6: Production hardening</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Put Seismograph behind nginx with HTTPS (same pattern as any reverse proxy — proxy_pass to 127.0.0.1:9700). Set up daily SQLite backups. The database grows roughly 1KB per error event, so even at 10,000 errors per day, you will use about 10MB per day — a 10GB disk holds three years of error history.</p>
-</section>
+<h2>Backup and maintenance</h2>
+<p>Back up <code>/var/lib/seismograph/seismograph.db</code> daily. The database grows with your error volume — at typical rates (hundreds of errors per day), expect single-digit megabytes per month. For high-volume applications, use the retention API to prune old events periodically.</p>
 
-<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto">
-  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-    <a href="/seismograph/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);border:2px solid var(--rust);text-decoration:none">Seismograph Overview</a>
-    <a href="/complete/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:transparent;color:var(--cream,#f0e6d3);border:2px solid var(--leather,#a0845c);text-decoration:none">All 150 Tools · $29/mo</a>
+  </div>
+</article>
+
+<section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
+  <div style="max-width:820px;margin:0 auto;text-align:center">
+    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Related</div>
+    <p style="font-size:.85rem"><a href="/seismograph/">Seismograph overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
-
-<div class="related-section" style="padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3,#2e261e)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.5rem">More tutorials</div>
-  <div><a href="/how-to-self-host-analytics/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Analytics</a>  ·  <a href="/how-to-self-host-feature-flags/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Feature Flags</a>  ·  <a href="/how-to-self-host-a-status-page/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Status Page</a>  ·  <a href="/how-to-self-host-a-wiki/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Wiki</a></div>
-</div>
 
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>

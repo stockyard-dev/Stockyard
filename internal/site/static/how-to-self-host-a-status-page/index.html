@@ -3,17 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host a Status Page with Paddock — Stockyard</title>
-<meta name="description" content="Build a self-hosted status page in 5 minutes. Track services, manage incidents, and keep your uptime history on your own server.">
-<meta property="og:title" content="How to Self-Host a Status Page with Paddock">
-<meta property="og:description" content="Build a self-hosted status page in 5 minutes. Track services, manage incidents, and keep your uptime history on your own server.">
+<title>How to Self-Host a Status Page — Stockyard</title>
+<meta name="description" content="Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.">
+<meta property="og:title" content="How to Self-Host a Status Page">
+<meta property="og:description" content="Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.">
 <link rel="canonical" href="https://stockyard.dev/how-to-self-host-a-status-page/">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Status Page with Paddock","description":"Build a self-hosted status page in 5 minutes. Track services, manage incidents, and keep your uptime history on your own server."}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://stockyard.dev/docs/"},{"@type":"ListItem","position":3,"name":"How to Self-Host a Status Page with Paddock"}]}
-</script>
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,6 +58,17 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 .cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
+<style>
+pre{background:var(--bg2,#241e18);border:1px solid var(--bg3,#2e261e);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);overflow-x:auto;margin:1rem 0;line-height:1.6}
+code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg2,#241e18);padding:.15rem .4rem;border-radius:2px}
+h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Status Page","description":"Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.","tool":{"@type":"SoftwareApplication","name":"Stockyard Paddock"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host a Status Page"}]}
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -92,68 +97,58 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
   </div>
 </nav>
 
-<section style="max-width:820px;margin:0 auto;padding:4rem 2rem 1rem;text-align:center">
+<article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Status Page with Paddock</h1>
-  <p style="font-size:.9rem;color:var(--cream-dim,#bfb5a3);font-style:italic">5 minutes · No Docker · No external dependencies</p>
-</section>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Status Page</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.</p>
+  
+  <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
+    
+<p>This guide sets up Paddock — a self-hosted status page that tracks services, manages incidents, and provides uptime history. Unlike Statuspage.io ($79/mo), Paddock runs on your infrastructure, so your status page stays up even if your status page provider goes down.</p>
 
+<h2>Step 1: Install</h2>
+<pre>curl -fsSL https://stockyard.dev/paddock/install.sh | sh
+PORT=9700 DATA_DIR=/var/lib/paddock ./paddock</pre>
 
-<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:2rem">A status page tells your customers whether your service is up and provides a timeline during incidents. This guide sets up a self-hosted status page that you control — so it stays up even when your monitoring vendor does not.</p>
+<h2>Step 2: Add your services</h2>
+<pre># Add services to monitor
+curl -X POST http://localhost:9700/api/services \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "API", "status": "operational"}'
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 1: Install and run</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -fsSL https://stockyard.dev/paddock/install.sh | sh
-sudo mkdir -p /opt/paddock /var/lib/paddock
-sudo cp paddock /opt/paddock/
+curl -X POST http://localhost:9700/api/services \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "Dashboard", "status": "operational"}'</pre>
 
-sudo tee /etc/systemd/system/paddock.service &gt; /dev/null &lt;&lt;'EOF'
-[Unit]
-Description=Paddock Status Page
-After=network.target
+<h2>Step 3: Create incidents from your alerting pipeline</h2>
+<p>When PagerDuty or your monitoring tool fires, create an incident automatically:</p>
+<pre># In your PagerDuty webhook handler:
+curl -X POST http://localhost:9700/api/incidents \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "API latency elevated",
+    "severity": "minor",
+    "status": "investigating",
+    "affected_services": "API",
+    "message": "We are investigating increased latency on the API."
+  }'</pre>
+<p>Update the incident as you progress through investigation, identification, and resolution — each update is timestamped and visible on the public status page.</p>
 
-[Service]
-Type=simple
-ExecStart=/opt/paddock/paddock
-Environment=PORT=9700
-Environment=DATA_DIR=/var/lib/paddock
-Restart=always
+<h2>Step 4: Host on a separate server</h2>
+<p>Critical detail: run your status page on a different server than your main application. If your primary infrastructure goes down, your status page should still be reachable. A $5 VPS in a different provider or region is sufficient. Paddock uses negligible resources — CPU and memory are measured in single digits.</p>
 
-[Install]
-WantedBy=multi-user.target
-EOF
+<h2>Step 5: Point your status subdomain</h2>
+<p>Set <code>status.yourdomain.com</code> → your status page server, with nginx proxying to Paddock. Your customers bookmark this URL and check it first during any perceived outage.</p>
 
-sudo systemctl daemon-reload
-sudo systemctl enable paddock
-sudo systemctl start paddock</pre>
+  </div>
+</article>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 2: Add your services</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -X POST http://localhost:9700/api/incidents \
-  -H "Content-Type: application/json" \
-  -d '{"title":"API","status":"investigating","severity":"major","affected_services":"api,webhooks"}'</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">Or use the dashboard at <code>/ui</code> to add services and manage incidents with a visual interface. During an outage, update the incident status through the dashboard — no code deployment needed.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 3: Point your status subdomain at it</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Set up <code>status.yourdomain.com</code> with nginx reverse proxy and Let's Encrypt. The same nginx configuration pattern applies: proxy_pass to 127.0.0.1:9700, add SSL, and reload. Your customers now have a branded status page at a URL you own.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 4: Automate incident creation</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Wire your alerting system (PagerDuty, Grafana, or custom monitors) to create incidents automatically when an alert fires. A webhook that POSTs to Paddock's API creates the incident in real time — no human needs to remember to update the status page during a stressful outage.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Hosting strategy</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Run Paddock on a separate server from your main infrastructure. If your application servers go down, your status page should still be reachable. A $5 VPS in a different data center is enough. This separation is the primary advantage over Statuspage.io — your status page's uptime is independent of both your infrastructure and the vendor's infrastructure.</p>
-</section>
-
-<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto">
-  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-    <a href="/paddock/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);border:2px solid var(--rust);text-decoration:none">Paddock Overview</a>
-    <a href="/complete/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:transparent;color:var(--cream,#f0e6d3);border:2px solid var(--leather,#a0845c);text-decoration:none">All 150 Tools · $29/mo</a>
+<section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
+  <div style="max-width:820px;margin:0 auto;text-align:center">
+    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Related</div>
+    <p style="font-size:.85rem"><a href="/paddock/">Paddock overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
-
-<div class="related-section" style="padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3,#2e261e)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.5rem">More tutorials</div>
-  <div><a href="/how-to-self-host-analytics/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Analytics</a>  ·  <a href="/how-to-self-host-error-tracking/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Error Tracking</a>  ·  <a href="/how-to-self-host-feature-flags/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Feature Flags</a>  ·  <a href="/how-to-self-host-a-wiki/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Wiki</a></div>
-</div>
 
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>

@@ -3,17 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host Feature Flags with Salt Lick — Stockyard</title>
-<meta name="description" content="Set up self-hosted feature flags in under 5 minutes. Create a flag, evaluate it from your app, and toggle features without redeploying.">
-<meta property="og:title" content="How to Self-Host Feature Flags with Salt Lick">
-<meta property="og:description" content="Set up self-hosted feature flags in under 5 minutes. Create a flag, evaluate it from your app, and toggle features without redeploying.">
+<title>How to Self-Host Feature Flags — Stockyard</title>
+<meta name="description" content="Set up Salt Lick as a self-hosted LaunchDarkly alternative. Toggle features without redeploying, no per-seat pricing, no SDK required.">
+<meta property="og:title" content="How to Self-Host Feature Flags">
+<meta property="og:description" content="Set up Salt Lick as a self-hosted LaunchDarkly alternative. Toggle features without redeploying, no per-seat pricing, no SDK required.">
 <link rel="canonical" href="https://stockyard.dev/how-to-self-host-feature-flags/">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Feature Flags with Salt Lick","description":"Set up self-hosted feature flags in under 5 minutes. Create a flag, evaluate it from your app, and toggle features without redeploying."}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://stockyard.dev/docs/"},{"@type":"ListItem","position":3,"name":"How to Self-Host Feature Flags with Salt Lick"}]}
-</script>
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,6 +58,17 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 .cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
+<style>
+pre{background:var(--bg2,#241e18);border:1px solid var(--bg3,#2e261e);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);overflow-x:auto;margin:1rem 0;line-height:1.6}
+code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg2,#241e18);padding:.15rem .4rem;border-radius:2px}
+h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Feature Flags","description":"Set up Salt Lick as a self-hosted LaunchDarkly alternative. Toggle features without redeploying, no per-seat pricing, no SDK required.","tool":{"@type":"SoftwareApplication","name":"Stockyard Salt Lick"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host Feature Flags"}]}
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -92,72 +97,58 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
   </div>
 </nav>
 
-<section style="max-width:820px;margin:0 auto;padding:4rem 2rem 1rem;text-align:center">
+<article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Feature Flags with Salt Lick</h1>
-  <p style="font-size:.9rem;color:var(--cream-dim,#bfb5a3);font-style:italic">5 minutes · No Docker · No external dependencies</p>
-</section>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Feature Flags</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Salt Lick as a self-hosted LaunchDarkly alternative. Toggle features without redeploying, no per-seat pricing, no SDK required.</p>
+  
+  <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
+    
+<p>This guide sets up Salt Lick — a self-hosted feature flag service that lets you toggle features without redeploying. No LaunchDarkly SDK, no per-seat pricing, no vendor dependency. Your application checks a flag by making a single HTTP request.</p>
 
+<h2>Step 1: Install</h2>
+<pre>curl -fsSL https://stockyard.dev/saltlick/install.sh | sh
+PORT=9700 DATA_DIR=/var/lib/saltlick ./saltlick</pre>
 
-<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:2rem">Feature flags let you deploy code with new features hidden behind a toggle. Enable the feature for internal testers, then roll it out gradually, then turn it on for everyone — all without redeploying. This guide sets up a self-hosted flag service that your application checks via HTTP.</p>
+<h2>Step 2: Create your first flag</h2>
+<pre># Create a feature flag
+curl -X POST http://localhost:9700/api/flags \
+  -H 'Content-Type: application/json' \
+  -d '{"name": "new-checkout", "enabled": false, "description": "New checkout flow"}'</pre>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 1: Install Salt Lick</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -fsSL https://stockyard.dev/saltlick/install.sh | sh
-PORT=9700 DATA_DIR=./flags ./saltlick &amp;</pre>
+<h2>Step 3: Check flags in your application</h2>
+<p>No SDK needed. A single HTTP GET returns the flag state:</p>
+<pre># In your application code
+response = requests.get("http://localhost:9700/api/flags")
+flags = {f["name"]: f["enabled"] for f in response.json()["flags"]}
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 2: Create your first flag</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -X POST http://localhost:9700/api/flags \
-  -H "Content-Type: application/json" \
-  -d '{"name":"new-checkout","enabled":0,"description":"New checkout flow"}'
-
-# Response: {"id":"...","name":"new-checkout","enabled":0,...}</pre>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 3: Check the flag from your application</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Your application makes a GET request to check if the flag is enabled. No SDK — just HTTP.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0"># Check a flag
-curl http://localhost:9700/api/flags?q=new-checkout
-
-# In your code (Python example):
-import requests
-
-def is_enabled(flag_name):
-    r = requests.get(f"http://flags.internal:9700/api/flags?q={flag_name}")
-    flags = r.json().get("flags", [])
-    return any(f["enabled"] == 1 and f["name"] == flag_name for f in flags)
-
-if is_enabled("new-checkout"):
-    show_new_checkout()
+if flags.get("new-checkout"):
+    render_new_checkout()
 else:
-    show_old_checkout()</pre>
+    render_old_checkout()</pre>
+<p>The request adds single-digit milliseconds of latency. For performance-critical paths, cache the flag values for 30 seconds and refresh in the background.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 4: Toggle the flag</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Enable the feature by updating the flag. No redeployment, no code change.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0"># Enable it
+<h2>Step 4: Toggle without deploying</h2>
+<p>Enable the flag through the dashboard at <code>/ui</code> or via the API:</p>
+<pre># Enable the new checkout for everyone
 curl -X PUT http://localhost:9700/api/flags/{id} \
-  -H "Content-Type: application/json" \
-  -d '{"enabled":1}'
+  -H 'Content-Type: application/json' \
+  -d '{"enabled": true}'</pre>
+<p>The change takes effect immediately. No deployment, no restart, no cache invalidation. To roll back, set <code>enabled</code> back to <code>false</code>.</p>
 
-# Or use the dashboard at http://localhost:9700/ui</pre>
+<h2>Step 5: Production setup</h2>
+<p>For production, run Salt Lick as a systemd service behind your reverse proxy. The flag data is a single SQLite file — back it up daily. The entire flag service typically uses less than 10MB of disk and negligible CPU.</p>
+<p>For teams with multiple environments, run one Salt Lick instance per environment (staging, production). Each instance gets its own data directory and port. Flag state is independent per instance, so you can test flags in staging without affecting production.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 5: Production setup</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">For production, run Salt Lick as a systemd service on the same network as your application servers. Use an internal DNS name like <code>flags.internal</code> so your applications can reach it without traversing the public internet. The flag check adds single-digit milliseconds of latency — well within acceptable limits for any web request. Back up the SQLite file daily. The entire flag state is a single file under 1MB even with hundreds of flags.</p>
+  </div>
+</article>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">What you have now</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">A private feature flag service that your entire team can use without per-seat pricing. Toggle features from the dashboard or API. No LaunchDarkly SDK in your codebase, no vendor dependency in your deploy pipeline, no $10 per seat per month. The flag evaluation is a simple HTTP GET — if Salt Lick goes down, your application falls back to the default (flag disabled), so there is no single point of failure.</p>
-</section>
-
-<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto">
-  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-    <a href="/saltlick/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);border:2px solid var(--rust);text-decoration:none">Salt Lick Overview</a>
-    <a href="/complete/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:transparent;color:var(--cream,#f0e6d3);border:2px solid var(--leather,#a0845c);text-decoration:none">All 150 Tools · $29/mo</a>
+<section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
+  <div style="max-width:820px;margin:0 auto;text-align:center">
+    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Related</div>
+    <p style="font-size:.85rem"><a href="/saltlick/">Salt Lick overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
-
-<div class="related-section" style="padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3,#2e261e)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.5rem">More tutorials</div>
-  <div><a href="/how-to-self-host-analytics/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Analytics</a>  ·  <a href="/how-to-self-host-error-tracking/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Error Tracking</a>  ·  <a href="/how-to-self-host-a-status-page/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Status Page</a>  ·  <a href="/how-to-self-host-a-wiki/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Wiki</a></div>
-</div>
 
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host a Status Page — Stockyard</title>
-<meta name="description" content="Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.">
-<meta property="og:title" content="How to Self-Host a Status Page">
-<meta property="og:description" content="Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.">
-<link rel="canonical" href="https://stockyard.dev/how-to-self-host-a-status-page/">
+<title>How to Self-Host Invoicing — Stockyard</title>
+<meta name="description" content="Set up Billfold as a self-hosted FreshBooks alternative. Create invoices, track payments, and keep your financial data private.">
+<meta property="og:title" content="How to Self-Host Invoicing">
+<meta property="og:description" content="Set up Billfold as a self-hosted FreshBooks alternative. Create invoices, track payments, and keep your financial data private.">
+<link rel="canonical" href="https://stockyard.dev/how-to-self-host-invoicing/">
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,10 +64,10 @@ code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg
 h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Status Page","description":"Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.","tool":{"@type":"SoftwareApplication","name":"Stockyard Paddock"}}
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Invoicing","description":"Set up Billfold as a self-hosted FreshBooks alternative. Create invoices, track payments, and keep your financial data private.","tool":{"@type":"SoftwareApplication","name":"Stockyard Billfold"}}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host a Status Page"}]}
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides"},{"@type":"ListItem","position":3,"name":"How to Self-Host Invoicing"}]}
 </script>
 </head>
 <body>
@@ -99,46 +99,44 @@ h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
 
 <article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Status Page</h1>
-  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Paddock as a self-hosted Statuspage alternative. Track services, manage incidents, and show uptime history — on your own infrastructure.</p>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Invoicing</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Billfold as a self-hosted FreshBooks alternative. Create invoices, track payments, and keep your financial data private.</p>
   
   <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
     
-<p>This guide sets up Paddock — a self-hosted status page that tracks services, manages incidents, and provides uptime history. Unlike Statuspage.io ($79/mo), Paddock runs on your infrastructure, so your status page stays up even if your status page provider goes down.</p>
+<p>This guide sets up Billfold — a self-hosted invoicing tool for freelancers and small businesses. Create invoices, track payment status, and keep your client financial data on your own server instead of FreshBooks or QuickBooks.</p>
 
 <h2>Step 1: Install</h2>
-<pre>curl -fsSL https://stockyard.dev/paddock/install.sh | sh
-PORT=9700 DATA_DIR=/var/lib/paddock ./paddock</pre>
+<pre>curl -fsSL https://stockyard.dev/billfold/install.sh | sh
+PORT=9700 DATA_DIR=/var/lib/billfold ./billfold</pre>
 
-<h2>Step 2: Add your services</h2>
-<pre># Add services to monitor
-curl -X POST http://localhost:9700/api/services \
-  -H 'Content-Type: application/json' \
-  -d '{"name": "API", "status": "operational"}'
-
-curl -X POST http://localhost:9700/api/services \
-  -H 'Content-Type: application/json' \
-  -d '{"name": "Dashboard", "status": "operational"}'</pre>
-
-<h2>Step 3: Create incidents from your alerting pipeline</h2>
-<p>When PagerDuty or your monitoring tool fires, create an incident automatically:</p>
-<pre># In your PagerDuty webhook handler:
-curl -X POST http://localhost:9700/api/incidents \
+<h2>Step 2: Create your first invoice</h2>
+<pre>curl -X POST http://localhost:9700/api/invoices \
   -H 'Content-Type: application/json' \
   -d '{
-    "title": "API latency elevated",
-    "severity": "minor",
-    "status": "investigating",
-    "affected_services": "API",
-    "message": "We are investigating increased latency on the API."
+    "name": "Acme Corp",
+    "amount": 250000,
+    "line_items": "[{"description": "Consulting - March 2026", "hours": 40, "rate": 6250}]",
+    "due_date": "2026-04-30",
+    "status": "sent"
   }'</pre>
-<p>Update the incident as you progress through investigation, identification, and resolution — each update is timestamped and visible on the public status page.</p>
+<p>Amounts are stored in cents to avoid floating-point issues. $2,500.00 = 250000 cents.</p>
 
-<h2>Step 4: Host on a separate server</h2>
-<p>Critical detail: run your status page on a different server than your main application. If your primary infrastructure goes down, your status page should still be reachable. A $5 VPS in a different provider or region is sufficient. Paddock uses negligible resources — CPU and memory are measured in single digits.</p>
+<h2>Step 3: Track payments</h2>
+<p>When a client pays, update the invoice status:</p>
+<pre>curl -X PUT http://localhost:9700/api/invoices/{id} \
+  -H 'Content-Type: application/json' \
+  -d '{"status": "paid"}'</pre>
+<p>The stats endpoint at <code>/api/stats</code> shows total invoiced, total paid, and outstanding amounts broken down by status. Use this for monthly revenue reporting.</p>
 
-<h2>Step 5: Point your status subdomain</h2>
-<p>Set <code>status.yourdomain.com</code> → your status page server, with nginx proxying to Paddock. Your customers bookmark this URL and check it first during any perceived outage.</p>
+<h2>Step 4: Backup your financial records</h2>
+<p>Financial records are the data you least want to lose. Set up hourly backups during business hours and daily backups overnight:</p>
+<pre># Hourly during business hours, daily otherwise
+echo '0 8-18 * * 1-5 cp /var/lib/billfold/billfold.db /var/backups/billfold-$(date +\%Y\%m\%d-\%H).db' | crontab -</pre>
+<p>Keep 90 days of backups. The database file is typically under 1MB even with thousands of invoices.</p>
+
+<h2>Privacy advantage</h2>
+<p>Your invoices contain client names, amounts, payment terms, and tax IDs. With FreshBooks, all of this lives on Intuit's servers. With Billfold, it is a file on your server. When a client asks where their financial data is stored, you can give a specific answer — not a link to a privacy policy.</p>
 
   </div>
 </article>
@@ -146,7 +144,7 @@ curl -X POST http://localhost:9700/api/incidents \
 <section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
   <div style="max-width:820px;margin:0 auto;text-align:center">
     <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Related</div>
-    <p style="font-size:.85rem"><a href="/paddock/">Paddock overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
+    <p style="font-size:.85rem"><a href="/billfold/">Billfold overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
 
