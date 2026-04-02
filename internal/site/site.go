@@ -684,15 +684,10 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/personal-tools/",
 		// How-to tutorial pages
 		"/how-to-self-host-a-crm/",
-		"/how-to-self-host-error-tracking/",
-		"/how-to-self-host-feature-flags/",
-		"/how-to-self-host-analytics/",
-		"/how-to-self-host-a-status-page/",
 		"/how-to-self-host-invoicing/",
 		"/how-to-self-host-link-shortening/",
 		"/how-to-self-host-webhook-testing/",
 		"/how-to-self-host-secret-management/",
-		"/how-to-self-host-a-wiki/",
 		// Alternative-to pages
 		"/sentry-alternative/",
 		"/launchdarkly-alternative/",
