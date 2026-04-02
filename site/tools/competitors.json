@@ -3693,48 +3693,6 @@
     ]
   },
   {
-    "stockyard_tool": "herald",
-    "stockyard_name": "Herald",
-    "stockyard_tagline": "Self-hosted RSS reader",
-    "stockyard_free": "20 feeds",
-    "stockyard_pro_price": "$0.99",
-    "stockyard_pro_summary": "Unlimited feeds, categories, search, OPML import/export, read-later",
-    "stockyard_install": "curl -fsSL https://stockyard.dev/herald/install.sh | sh",
-    "stockyard_port": 10750,
-    "competitor_name": "Feedly",
-    "competitor_slug": "feedly",
-    "competitor_url": "https://feedly.com",
-    "competitor_price": "$6/mo (Pro)",
-    "competitor_pricing_note": "Free: 100 sources, 3 feeds. Pro: $6/mo. Pro+: $8.25/mo.",
-    "competitor_self_hostable": false,
-    "competitor_self_host_note": "Not self-hostable",
-    "strengths_stockyard": [
-      "Self-hosted \u2014 reading habits stay private",
-      "$0.99/mo vs $6/mo",
-      "No feed count limits on Pro",
-      "No AI training on your reading data"
-    ],
-    "strengths_competitor": [
-      "Beautiful, polished reading experience",
-      "AI-powered article summaries and highlights",
-      "Team sharing and collaboration",
-      "Mobile apps for iOS and Android"
-    ],
-    "honest_verdict": "Feedly is the most polished RSS reader with AI features and a great mobile experience. If you read RSS feeds daily, Feedly's apps are worth the price. If you want a private, self-hosted reader where your reading habits are not tracked, Herald runs on your server.",
-    "seo_title": "Herald vs Feedly \u2014 Self-hosted RSS reader",
-    "seo_description": "Feedly Pro is $6/mo. Herald is self-hosted \u2014 single binary, $0.99/mo. Read RSS feeds privately on your own server.",
-    "faq": [
-      {
-        "q": "Is Herald a Feedly alternative?",
-        "a": "Feedly has AI features and polished apps. Herald is a self-hosted RSS reader for privacy. Different priorities."
-      },
-      {
-        "q": "Does Herald have a mobile app?",
-        "a": "Herald has a responsive web dashboard. For native mobile RSS reading, Feedly has dedicated iOS and Android apps."
-      }
-    ]
-  },
-  {
     "stockyard_tool": "wateringhole",
     "stockyard_name": "Watering Hole",
     "stockyard_tagline": "Self-hosted community forum",
@@ -4908,48 +4866,6 @@
       {
         "q": "Does Notify support iOS/Android?",
         "a": "Notify handles web push notifications. For native mobile push, OneSignal or Firebase Cloud Messaging are necessary."
-      }
-    ]
-  },
-  {
-    "stockyard_tool": "flume",
-    "stockyard_name": "Flume",
-    "stockyard_tagline": "Self-hosted event streaming",
-    "stockyard_free": "1 stream, 10K events/mo",
-    "stockyard_pro_price": "$1.99",
-    "stockyard_pro_summary": "Unlimited streams, consumers, replay, retention, dashboard",
-    "stockyard_install": "curl -fsSL https://stockyard.dev/flume/install.sh | sh",
-    "stockyard_port": 12200,
-    "competitor_name": "Apache Kafka",
-    "competitor_slug": "kafka",
-    "competitor_url": "https://kafka.apache.org",
-    "competitor_price": "Free (OSS) / $0.11/GB (Confluent)",
-    "competitor_pricing_note": "Kafka OSS free but complex. Confluent Cloud: $0.11/GB + $0.10/partition/hr.",
-    "competitor_self_hostable": true,
-    "competitor_self_host_note": "Self-hostable but requires ZooKeeper/KRaft, significant ops overhead",
-    "strengths_stockyard": [
-      "Single binary \u2014 no ZooKeeper, no cluster",
-      "$1.99/mo flat vs complex ops costs",
-      "Installs in 30 seconds",
-      "Simple HTTP API for produce/consume"
-    ],
-    "strengths_competitor": [
-      "Industry standard for event streaming",
-      "Handles millions of events per second",
-      "Exactly-once semantics",
-      "Massive ecosystem (Connect, Streams, ksqlDB)"
-    ],
-    "honest_verdict": "Kafka is the industry standard for event streaming at scale. If you process millions of events per second, Kafka is necessary. Flume handles simple event streaming for applications that need pub/sub without running a Kafka cluster.",
-    "seo_title": "Flume vs Kafka \u2014 Self-hosted event streaming without the cluster",
-    "seo_description": "Kafka requires ZooKeeper and cluster management. Flume is a single binary for event streaming \u2014 $1.99/mo. Simple pub/sub.",
-    "faq": [
-      {
-        "q": "Is Flume a Kafka alternative?",
-        "a": "Kafka handles millions of events/sec across clusters. Flume handles simple event streaming as a single binary. Very different scale."
-      },
-      {
-        "q": "Does Flume support exactly-once?",
-        "a": "Flume provides at-least-once delivery. For exactly-once semantics, Kafka with idempotent producers is necessary."
       }
     ]
   },

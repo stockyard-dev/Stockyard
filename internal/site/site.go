@@ -449,7 +449,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/spur/vs-productboard/",
 		"/cipher/vs-bitwarden/",
 		"/dividend/vs-baremetrics/",
-		"/herald/vs-feedly/",
 		"/mainspring/vs-cronhub/",
 		"/muster/vs-eventbrite/",
 		"/pasture/vs-buffer/",
@@ -485,7 +484,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/conduit/vs-rabbitmq/",
 		"/consortium/vs-workos/",
 		"/decisionlog/vs-confluence/",
-		"/flume/vs-kafka/",
 		"/hearthside/vs-easyretro/",
 		"/notify/vs-onesignal/",
 		"/blog/self-hosted-tools-2026-guide/",
@@ -670,6 +668,13 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/outfitter/",
 		"/silo/",
 		"/ledger2/",
+
+		// Category hub pages
+		"/developer-tools/",
+		"/operations-tools/",
+		"/finance-tools/",
+		"/creator-tools/",
+		"/personal-tools/",
 		// New comparison pages (auto-generated)
 		"/almanac3/vs-atlan/",
 		"/announcements/vs-slack/",

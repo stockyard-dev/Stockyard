@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Self-Hosted Developer Tools — Stockyard</title>
+<meta name="description" content="61 self-hosted developer tools — bug trackers, load testers, API mocking, feature flags, and more. Single binary, embedded SQLite, zero dependencies.">
+<meta property="og:title" content="Self-Hosted Developer Tools — Stockyard">
+<meta property="og:description" content="61 self-hosted developer tools — bug trackers, load testers, API mocking, feature flags, and more. Single binary, embedded SQLite, zero dependencies.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/developer-tools/">
+<style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3);position:relative;z-index:200}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono);align-items:center}
+.nav-links>a{color:var(--cream-dim)}.nav-links>a:hover{color:var(--rust-light)}
+.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
+.drop-arrow{font-size:.65rem;margin-left:2px}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nav-drop-menu.open{display:block}
+.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)}
+.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
+.drop-section{padding:.3rem 1.2rem;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:.3rem}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all .3s}
+@media(max-width:768px){.nav{padding:.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,.5)}.nav-links.open{display:flex}.nav-links>a{font-size:1.05rem;padding:.4rem 0}.nav-drop-trigger{font-size:1.05rem;padding:.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
+.hero{max-width:820px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.2rem}
+.eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1rem}
+h1{font-size:clamp(1.8rem,4.5vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.accent{color:var(--rust-light)}
+.sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:580px;margin:0 auto 2rem;line-height:1.8}
+.btn{font-family:var(--font-mono);font-size:.85rem;padding:.75rem 1.8rem;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.section{padding:4rem 2rem;max-width:820px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:820px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem}
+.section-label.gold{color:var(--gold)}.section-label.leather{color:var(--leather-light)}
+h2{font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:.8rem;line-height:1.3}
+p{color:var(--cream-dim);line-height:1.8;margin-bottom:1rem}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0}
+.tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}@media(max-width:560px){.tier-grid{grid-template-columns:1fr}}
+.tier{padding:2rem;border:1px solid var(--bg3);background:var(--bg)}
+.tier.pro{border-color:var(--gold)}
+.tier-name{font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem}
+.tier-name.free{color:var(--green-light)}.tier-name.pro{color:var(--gold)}
+.tier-price{font-family:var(--font-mono);font-size:2rem;font-weight:700;margin-bottom:.3rem}
+.tier-detail{font-family:var(--font-mono);font-size:.7rem;color:var(--leather)}
+.banner{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0;font-size:.9rem}
+.banner strong{font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust-light)}
+.cta-strip{padding:5rem 2rem;text-align:center;max-width:700px;margin:0 auto}
+.cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
+</style>
+<style>.related-section{padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3)}.related-group{margin-bottom:.8rem}.related-label{font-family:var(--font-mono,monospace);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.3rem}.related-group a{font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none}.related-group a:hover{color:var(--rust-light,#e8753a)}</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/saltlick/">Salt Lick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </div>
+</nav>
+
+<section style="max-width:820px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center">
+  <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">61 tools</div>
+  <h1 style="font-size:clamp(1.8rem,4.5vw,2.8rem);margin-bottom:1.2rem;line-height:1.15">Self-Hosted Developer Tools</h1>
+  <p style="font-size:1.05rem;color:var(--cream-dim,#bfb5a3);font-style:italic;max-width:580px;margin:0 auto;line-height:1.8">Every tool is a single binary with embedded SQLite. No Docker, no Postgres, no external dependencies.</p>
+</section>
+
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8;margin-bottom:1.5rem">Most developer tool spending goes to SaaS platforms that charge per seat. At 20 engineers using Linear, Sentry, LaunchDarkly, and Datadog, the monthly bill lands between $500 and $2,000 — for tools that store your proprietary code context, error payloads, and infrastructure topology on someone else's servers. Self-hosted developer tools eliminate both the per-seat cost and the data residency concern. Each Stockyard developer tool runs as a single Go binary with embedded SQLite. No Docker, no Postgres, no Redis. Install one, install ten — the operational overhead is the same because each tool is self-contained.</p>
+</section>
+
+<section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
+  <div style="max-width:820px;margin:0 auto">
+    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Where to start</div>
+    <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">If you are setting up a development team's tooling from scratch, start with Bounty (issues), Strongbox (secrets), Bellwether (monitoring), and Salt Lick (feature flags). These four cover the workflows that generate the highest SaaS bills and the most sensitive data.</p>
+  </div>
+</section>
+
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:2rem">Browse by use case</div>
+  
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">Issue Tracking & Project Management</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/bounty/" style="font-size:.9rem;font-weight:bold">Bounty</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/bounty/vs-linear/">vs Linear</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">bug tracker and issue manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/roundup/" style="font-size:.9rem;font-weight:bold">Roundup</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/roundup/vs-linear/">vs Linear</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">task manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/prairie/" style="font-size:.9rem;font-weight:bold">Prairie</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/prairie/vs-trello/">vs Trello</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">kanban project board</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/crucible/" style="font-size:.9rem;font-weight:bold">Crucible</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/crucible/vs-github-prs/">vs GitHub Pull Requests</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">A/B testing engine</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/crucible2/" style="font-size:.9rem;font-weight:bold">Crucible II</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/crucible2/vs-github-prs/">vs GitHub Pull Requests</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">code review checklist manager</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">Testing & Quality</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/assay/" style="font-size:.9rem;font-weight:bold">Assay</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/assay/vs-postman/">vs Postman</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">API testing suite</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/assay2/" style="font-size:.9rem;font-weight:bold">Assay II</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/assay2/vs-pact/">vs Pact</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">API contract tester</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/barrage/" style="font-size:.9rem;font-weight:bold">Barrage</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/barrage/vs-k6-cloud/">vs k6 Cloud</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">load tester</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/mirage/" style="font-size:.9rem;font-weight:bold">Mirage</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/mirage/vs-mockoon/">vs Mockoon</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">mock server</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/stampede/" style="font-size:.9rem;font-weight:bold">Stampede</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/stampede/vs-locust/">vs Locust</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">load balancer and traffic router</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">Configuration & Secrets</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/cartridge/" style="font-size:.9rem;font-weight:bold">Cartridge</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/cartridge/vs-aws-ssm/">vs AWS Systems Manager</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">config and settings manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/bandolier/" style="font-size:.9rem;font-weight:bold">Bandolier</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/bandolier/vs-infisical/">vs Infisical</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">environment variable manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/strongbox/" style="font-size:.9rem;font-weight:bold">Strongbox</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/strongbox/vs-hashicorp-vault/">vs HashiCorp Vault</a> · <a href="/strongbox/vs-doppler/">vs Doppler</a> · <a href="/strongbox/vs-infisical/">vs Infisical</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">secret manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/embargo/" style="font-size:.9rem;font-weight:bold">Embargo</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/embargo/vs-unleash/">vs Unleash</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">feature flag manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/saltlick/" style="font-size:.9rem;font-weight:bold">Salt Lick</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/saltlick/vs-launchdarkly/">vs LaunchDarkly</a> · <a href="/saltlick/vs-flagsmith/">vs Flagsmith</a> · <a href="/saltlick/vs-growthbook/">vs GrowthBook</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">feature flag service</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">Monitoring & Observability</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/bellwether/" style="font-size:.9rem;font-weight:bold">Bellwether</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/bellwether/vs-uptimerobot/">vs UptimeRobot</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">uptime and health monitor</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/outpost/" style="font-size:.9rem;font-weight:bold">Outpost</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/outpost/vs-uptimerobot/">vs UptimeRobot</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">remote server monitor</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/quarry/" style="font-size:.9rem;font-weight:bold">Quarry</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/quarry/vs-logtail/">vs Logtail</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">log aggregator and search</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/chronicle/" style="font-size:.9rem;font-weight:bold">Chronicle</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/chronicle/vs-loggly/">vs Loggly</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">event log</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/sentinel/" style="font-size:.9rem;font-weight:bold">Sentinel</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/sentinel/vs-pagerduty/">vs PagerDuty</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">alert manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/headcount/" style="font-size:.9rem;font-weight:bold">Headcount</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/headcount/vs-plausible/">vs Plausible</a> · <a href="/headcount/vs-google-analytics/">vs Google Analytics</a> · <a href="/headcount/vs-fathom/">vs Fathom</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">user analytics</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">CI/CD & Deployment</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/pipeline/" style="font-size:.9rem;font-weight:bold">Pipeline</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/pipeline/vs-prefect/">vs Prefect</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">data pipeline orchestrator</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/switchman/" style="font-size:.9rem;font-weight:bold">Switchman</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/switchman/vs-cloudflare-workers/">vs Cloudflare Workers</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">blue-green deploy manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/ironworks/" style="font-size:.9rem;font-weight:bold">Ironworks</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/ironworks/vs-github-actions/">vs GitHub Actions</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">build artifact storage</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/scaffold/" style="font-size:.9rem;font-weight:bold">Scaffold</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/scaffold/vs-yeoman/">vs Yeoman</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">project scaffolding server</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/wrangler/" style="font-size:.9rem;font-weight:bold">Wrangler</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/wrangler/vs-airbyte/">vs Airbyte</a> · <a href="/wrangler/vs-inngest/">vs Inngest</a> · <a href="/wrangler/vs-fivetran/">vs Fivetran</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">ETL and data pipeline runner</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">APIs & Networking</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/relay/" style="font-size:.9rem;font-weight:bold">Relay</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/relay/vs-ngrok/">vs ngrok</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">webhook relay</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/probe/" style="font-size:.9rem;font-weight:bold">Probe</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/probe/vs-requestbin2/">vs RequestBin</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">HTTP request inspector</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/corral/" style="font-size:.9rem;font-weight:bold">Corral</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/corral/vs-svix/">vs Svix</a> · <a href="/corral/vs-pipedream/">vs Pipedream</a> · <a href="/corral/vs-requestbin/">vs RequestBin</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">webhook inbox</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/spur/" style="font-size:.9rem;font-weight:bold">Spur</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/spur/vs-productboard/">vs Productboard</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">task runner and automation</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/crossroads/" style="font-size:.9rem;font-weight:bold">Crossroads</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/crossroads/vs-redirect-pizza/">vs Redirect.pizza</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">URL shortener</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/cutoff/" style="font-size:.9rem;font-weight:bold">Cutoff</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/cutoff/vs-kong-rate-limiting/">vs Kong Rate Limiting</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">API rate limiter</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/pathfinder/" style="font-size:.9rem;font-weight:bold">Pathfinder</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/pathfinder/vs-intercom/">vs Intercom</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">URL routing and proxy rules manager</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">Data & Storage</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/granary/" style="font-size:.9rem;font-weight:bold">Granary</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/granary/vs-minio/">vs MinIO</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">object and file storage</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/drifter/" style="font-size:.9rem;font-weight:bold">Drifter</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/drifter/vs-tableplus2/">vs TablePlus</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">database browser</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/almanac3/" style="font-size:.9rem;font-weight:bold">Almanac III</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/almanac3/vs-atlan/">vs Atlan</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">data dictionary and schema registry</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/manifest/" style="font-size:.9rem;font-weight:bold">Manifest</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/manifest/vs-snyk2/">vs Snyk</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">dependency manifest tracker</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/tally/" style="font-size:.9rem;font-weight:bold">Tally</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/tally/vs-statsd/">vs StatsD</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">counter and gauge API</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/deposition/" style="font-size:.9rem;font-weight:bold">Deposition</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/deposition/vs-google-chronicle/">vs Chronicle SIEM</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">tamper-evident audit log</div>
+            </div>
+</div>
+<div style="margin-bottom:2rem">
+  <h3 style="font-size:1rem;color:var(--leather,#a0845c);margin-bottom:.6rem;font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:2px;text-transform:uppercase">Developer Utilities</h3>
+  <div style="margin-bottom:.8rem">
+              <a href="/codex/" style="font-size:.9rem;font-weight:bold">Codex</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/codex/vs-github-gist/">vs GitHub Gist</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">code snippet manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/glossary/" style="font-size:.9rem;font-weight:bold">Glossary</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/glossary/vs-notion-glossary/">vs Notion</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">term and jargon manager</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/notebook/" style="font-size:.9rem;font-weight:bold">Notebook</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/notebook/vs-obsidian/">vs Obsidian</a> · <a href="/notebook/vs-notion-notes/">vs Notion</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">personal note-taking app</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/typeset/" style="font-size:.9rem;font-weight:bold">Typeset</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/typeset/vs-gitbook/">vs GitBook</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">documentation generator</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/cartograph/" style="font-size:.9rem;font-weight:bold">Cartograph</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/cartograph/vs-screaming-frog/">vs Screaming Frog</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">sitemap generator and crawler</div>
+            </div><div style="margin-bottom:.8rem">
+              <a href="/deed/" style="font-size:.9rem;font-weight:bold">Deed</a> <span style="font-size:.72rem;color:var(--cm,#7a7060)"><a href="/deed/vs-auth0/">vs Auth0</a></span>
+              <div style="font-size:.8rem;color:var(--cream-dim,#bfb5a3);margin-top:.15rem">digital asset and license registry</div>
+            </div>
+</div>
+</section>
+
+<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto">
+  <h2 style="font-size:1.3rem;margin-bottom:.8rem">All 61 tools. $29/mo.</h2>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:1.5rem">Or start free — every tool has a free tier.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+    <a href="/tools/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);border:2px solid var(--rust);text-decoration:none">Browse All 150 Tools</a>
+    <a href="/complete/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:transparent;color:var(--cream,#f0e6d3);border:2px solid var(--leather,#a0845c);text-decoration:none">Complete Bundle $29/mo</a>
+  </div>
+</section>
+
+<div class="related-section">
+  <div class="related-label">Other categories</div>
+  <div class="related-group">
+    <a href="/operations-tools/">Self-Hosted Operations Tools</a>  · <a href="/finance-tools/">Self-Hosted Finance & Business Tools</a>  · <a href="/creator-tools/">Self-Hosted Creator & Marketing Tools</a>  · <a href="/personal-tools/">Self-Hosted Personal Tools</a>
+  </div>
+</div>
+
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem"><a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard</p>
+</footer>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':''}}
+function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
+document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
+</script>
+</body>
+</html>
+</body>
+</html>
