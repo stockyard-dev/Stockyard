@@ -641,15 +641,24 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		servePage(w, r, data, "public, max-age=60")
 	})
 
-	// Product tool install scripts
-	for _, tool := range []string{"corral", "gate", "trough", "fence", "brand"} {
-		t := tool
+	// Product tool install scripts — serve /{tool}/install.sh for every tool with download tracking
+	toolInstallDirs, _ := fs.ReadDir(sub, ".")
+	for _, entry := range toolInstallDirs {
+		if !entry.IsDir() {
+			continue
+		}
+		t := entry.Name()
+		// Check if this dir has an install.sh
+		if _, err := fs.ReadFile(sub, t+"/install.sh"); err != nil {
+			continue
+		}
 		mux.HandleFunc("GET /"+t+"/install.sh", func(w http.ResponseWriter, r *http.Request) {
 			data, err := fs.ReadFile(sub, t+"/install.sh")
 			if err != nil {
 				http.NotFound(w, r)
 				return
 			}
+			recordInstall(db, r, "/"+t+"/install.sh")
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			w.Header().Set("Cache-Control", "public, max-age=300")
 			w.Write(data)

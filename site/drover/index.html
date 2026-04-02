@@ -110,7 +110,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
     <div class="stat"><span class="stat-num">7</span><span class="stat-label">Calibrations Run</span></div>
   </div>
   <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Try Drover Free</a>
+    <a href="#install" class="btn btn-primary">Install Drover Free</a>
     <a href="/docs/api/" class="btn btn-secondary">API Reference</a>
   </div>
 </section>
@@ -246,7 +246,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p style="color:var(--cream-muted);font-size:0.9rem;margin-bottom:0.5rem">Need unlimited routing?</p>
   <span class="tier-badge">Pro &middot; $99.99/mo</span>
   <div class="cta-group" style="margin-top:2rem">
-    <a href="/guide/" class="btn btn-primary">Try Drover Free</a>
+    <a href="#install" class="btn btn-primary">Install Drover Free</a>
     <a href="/pricing/" class="btn btn-secondary">See Pro Pricing</a>
   </div>
 </section>
@@ -272,6 +272,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
     Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
   </p>
 </footer>
-<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
+<script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
+function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
+document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
+async function startCheckout(plan,interval){
+  try{var r=await fetch('https://stockyard.dev/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan,interval:interval})});var d=await r.json();if(d.url){window.location.href=d.url;}else{alert('Checkout error: '+(d.error||'try again'));}}catch(e){alert('Network error — try again');}
+}
+</script>
 </body>
 </html>
