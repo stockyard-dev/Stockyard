@@ -1,3 +1,5 @@
 [deploy]
 startCommand = "stockyard"
-restartPolicyMaxRetries = 5
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyMaxRetries = 3
