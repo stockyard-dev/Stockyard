@@ -102,6 +102,7 @@ Or export it in your shell profile (~/.bashrc, ~/.zshrc):
 The key is verified locally — no network call, no phone-home.
 
 Quick links:
+- Your Hub: https://stockyard.dev/hub/ (browse and install all tools)
 - Your tool page: https://stockyard.dev/%s/
 - Docs: https://stockyard.dev/docs
 - Support: hello@stockyard.dev
@@ -227,7 +228,7 @@ func (m *ResendMailer) SendLicenseKey(to, productName, tier, licenseKey string) 
 	}
 	return m.sendResend(to,
 		fmt.Sprintf("Your %s license key", productName),
-		fmt.Sprintf("Thanks for subscribing to Stockyard %s (%s)!\n\nYour license key:\n\n%s\n\nActivate with:\n  %s=%s %s\n\nOr export it:\n  export %s=%s\n\nDocs: https://stockyard.dev/docs\n\n— Stockyard\nWrangle your Stack.",
+		fmt.Sprintf("Thanks for subscribing to Stockyard %s (%s)!\n\nYour license key:\n\n%s\n\nActivate with:\n  %s=%s %s\n\nOr export it:\n  export %s=%s\n\nYour Hub: https://stockyard.dev/hub/\nDocs: https://stockyard.dev/docs\n\n— Stockyard\nWrangle your Stack.",
 			productName, tier, licenseKey, envVar, licenseKey, slug, envVar, licenseKey),
 	)
 }
