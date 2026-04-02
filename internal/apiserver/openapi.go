@@ -17,7 +17,7 @@ func OpenAPISpec() map[string]any {
 			"license":     map[string]string{"name": "MIT", "url": "https://github.com/stockyard-dev/stockyard/blob/main/LICENSE"},
 		},
 		"servers": []map[string]string{
-			{"url": "http://localhost:7749", "description": "Local"},
+			{"url": "http://localhost:4200", "description": "Local"},
 			{"url": "https://stockyard.dev", "description": "Cloud"},
 		},
 		"tags": []map[string]string{

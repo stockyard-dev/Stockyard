@@ -78,7 +78,7 @@ func RunDoctor(pc ProductConfig) {
 	// 5. Port availability
 	port := cfg.Port
 	if port == 0 {
-		port = 7749
+		port = 4200
 	}
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {

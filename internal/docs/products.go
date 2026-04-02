@@ -104,7 +104,7 @@ func generateProductPage(p apiserver.Product) Page {
 func usageExample(p apiserver.Product) string {
 	port := "4000"
 	portMap := map[string]string{
-		"costcap": "4100", "llmcache": "7749", "jsonguard": "4300",
+		"costcap": "4100", "llmcache": "4200", "jsonguard": "4300",
 		"routefall": "4400", "rateshield": "4500", "promptreplay": "4600",
 		"keypool": "4700", "promptguard": "4710", "modelswitch": "4720",
 		"evalgate": "4730", "usagepulse": "4740", "promptpad": "4800",

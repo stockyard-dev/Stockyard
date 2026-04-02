@@ -186,7 +186,7 @@ func (a *API) handleExportCurl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Determine the base URL — use the request's Host header or fall back
-	baseURL := "http://localhost:7749"
+	baseURL := "http://localhost:4200"
 	if r.Header.Get("X-Base-URL") != "" {
 		baseURL = strings.TrimRight(r.Header.Get("X-Base-URL"), "/")
 	}
@@ -239,7 +239,7 @@ func (a *API) handleExportPostman(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	baseURL := "http://localhost:7749"
+	baseURL := "http://localhost:4200"
 	if r.Header.Get("X-Base-URL") != "" {
 		baseURL = strings.TrimRight(r.Header.Get("X-Base-URL"), "/")
 	}

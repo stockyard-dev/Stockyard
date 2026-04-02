@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Handbook vs Confluence — Self-Hosted Alternative | Stockyard</title>
+<meta name="description" content="Confluence costs $6.05/user/mo. Handbook is a self-hosted alternative at $0.99/mo. Compare features, pricing, and architecture.">
+<link rel="canonical" href="https://stockyard.dev/handbook/vs-confluence/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3);position:relative;z-index:200}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono);align-items:center}
+.nav-links>a{color:var(--cream-dim)}.nav-links>a:hover{color:var(--rust-light)}
+.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
+.drop-arrow{font-size:.65rem;margin-left:2px}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nav-drop-menu.open{display:block}
+.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)}
+.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
+.drop-section{padding:.3rem 1.2rem;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:.3rem}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all .3s}
+@media(max-width:768px){.nav{padding:.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,.5)}.nav-links.open{display:flex}.nav-links>a{font-size:1.05rem;padding:.4rem 0}.nav-drop-trigger{font-size:1.05rem;padding:.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
+.hero{max-width:820px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.2rem}
+.eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1rem}
+h1{font-size:clamp(1.8rem,4.5vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.accent{color:var(--rust-light)}
+.sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:580px;margin:0 auto 2rem;line-height:1.8}
+.btn{font-family:var(--font-mono);font-size:.85rem;padding:.75rem 1.8rem;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.section{padding:4rem 2rem;max-width:820px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:820px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem}
+.section-label.gold{color:var(--gold)}.section-label.leather{color:var(--leather-light)}
+h2{font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:.8rem;line-height:1.3}
+p{color:var(--cream-dim);line-height:1.8;margin-bottom:1rem}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0}
+.tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}@media(max-width:560px){.tier-grid{grid-template-columns:1fr}}
+.tier{padding:2rem;border:1px solid var(--bg3);background:var(--bg)}
+.tier.pro{border-color:var(--gold)}
+.tier-name{font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem}
+.tier-name.free{color:var(--green-light)}.tier-name.pro{color:var(--gold)}
+.tier-price{font-family:var(--font-mono);font-size:2rem;font-weight:700;margin-bottom:.3rem}
+.tier-detail{font-family:var(--font-mono);font-size:.7rem;color:var(--leather)}
+.banner{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0;font-size:.9rem}
+.banner strong{font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust-light)}
+.cta-strip{padding:5rem 2rem;text-align:center;max-width:700px;margin:0 auto}
+.cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Handbook","item":"https://stockyard.dev/handbook/"},{"@type":"ListItem","position":3,"name":"vs Confluence"}]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-links">
+    <div class="nav-drop">
+      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
+      <div class="nav-drop-menu">
+        <a href="/tools/">Browse All Tools</a>
+        <div class="drop-section">By Category</div>
+        <a href="/tools/?category=developer">Developer Tools</a>
+        <a href="/tools/?category=operations">Operations</a>
+        <a href="/tools/?category=creator">Creator &amp; Business</a>
+        <div class="drop-section">Popular</div>
+        <a href="/corral/">Corral</a>
+        <a href="/gate/">Gate</a>
+        <a href="/saltlick/">Salt Lick</a>
+      </div>
+    </div>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+  </div>
+</nav>
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <h1 style="font-size:clamp(1.4rem,3.5vw,2rem);margin-bottom:.5rem">Handbook vs Confluence</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem">Confluence costs $6.05/user/mo. Handbook is a self-hosted alternative at $0.99/mo.</p>
+  
+  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Pick Handbook when</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Handbook is a single Go binary with embedded SQLite. Install with one command and you are running in under a minute. Your data stays on your server. No per-seat pricing, no cloud dependency, no vendor lock-in.</p>
+  <pre style="background:var(--bg2,#241e18);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);margin:1rem 0">curl -fsSL https://stockyard.dev/handbook/install.sh | sh</pre>
+</section>
+
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto;background:var(--bg2,#241e18);border-top:1px solid var(--bg3)">
+  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Confluence strengths</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Confluence offers a more established product with extensive documentation and community support.</p>
+</section>
+
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Making the decision</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The decision often comes down to team size and complexity. Smaller teams that need the core workflow without configuration overhead lean toward Handbook. Larger teams that need integrations, permissions, and advanced features lean toward Confluence. Neither is wrong — the cost difference just means you should be sure you need Confluence's extras before paying for them.</p>
+</section>
+
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto;background:var(--bg2,#241e18);border-top:1px solid var(--bg3)">
+  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Technical differences</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Handbook runs as a single static binary with embedded SQLite. Confluence runs on more complex infrastructure. The operational difference is significant: Handbook is a file you run, Confluence is a service you manage.</p>
+    <p>Confluence can be self-hosted, but the requirements are substantially different. Confluence Data Center requires a dedicated server cluster with Postgres. Handbook runs on any machine that can execute a Linux binary.</p>
+</section>
+
+<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
+  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">When to switch</div>
+  <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Evaluate Handbook alongside Confluence for two weeks. If Handbook handles your daily workflow, migrate before your next Confluence renewal. If it does not, you have identified exactly which features you depend on.</p>
+</section>
+
+<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3)">
+  <p style="font-size:.85rem"><a href="/handbook/">Handbook overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete $29/mo</a></p>
+</section>
+</body>
+</html>

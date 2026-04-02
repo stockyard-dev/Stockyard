@@ -87,7 +87,7 @@ func pageInstall() Page {
 
 <span class="comment"># Individual products</span>
 <span class="cmd">docker run -p 4100:4100 stockyard/costcap</span>
-<span class="cmd">docker run -p 7749:7749 stockyard/llmcache</span>
+<span class="cmd">docker run -p 4200:4200 stockyard/llmcache</span>
 
 <span class="comment"># With config file</span>
 <span class="cmd">docker run -p 4000:4000 \
@@ -154,7 +154,7 @@ func pageQuickstart() Page {
 
 <span class="comment"># Or start a specific product</span>
 <span class="cmd">costcap</span>    <span class="comment"># Cost tracking on :4100</span>
-<span class="cmd">llmcache</span>  <span class="comment"># Response caching on :7749</span></code></pre>
+<span class="cmd">llmcache</span>  <span class="comment"># Response caching on :4200</span></code></pre>
 
 <p>You should see:</p>
 

@@ -17,7 +17,7 @@ func TestDefaultConfig(t *testing.T) {
 		{"routefall", 4103},
 		{"rateshield", 4104},
 		{"promptreplay", 4105},
-		{"stockyard", 7749},
+		{"stockyard", 4200},
 	}
 
 	for _, tt := range products {

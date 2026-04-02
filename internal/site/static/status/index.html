@@ -1,285 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="robots" content="noindex, nofollow">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<meta property="og:title" content="System Status — Stockyard">
-<meta property="og:description" content="Real-time system status for Stockyard. Uptime, component health, request metrics.">
-<meta property="og:url" content="https://stockyard.dev/status/">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<title>System Status — Stockyard</title>
-<meta name="description" content="Real-time system status for Stockyard. Uptime, component health, request metrics.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Status — Stockyard</title>
+<meta name="robots" content="noindex, nofollow">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--green-light:#c9892a;--red:#c44d2c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
-body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
-a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
-.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-.content{max-width:800px;margin:0 auto;padding:4rem 2rem}
-h1{font-size:2rem;margin-bottom:0.3rem}
-.sub{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);margin-bottom:2rem}
-.overall{display:flex;align-items:center;gap:12px;padding:1.5rem;border:1px solid var(--bg3);margin-bottom:2rem}
-.dot{width:16px;height:16px;border-radius:50%;flex-shrink:0}
-.dot.healthy{background:var(--green-light)}
-.dot.degraded{background:var(--gold)}
-.dot.down{background:var(--red)}
-.dot.loading{background:var(--cream-muted);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.overall-text{font-family:var(--font-mono);font-size:1.1rem}
-.overall-detail{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-left:auto}
-.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:2rem}
-.metric{padding:1rem;border:1px solid var(--bg3)}
-.metric-value{font-family:var(--font-mono);font-size:1.4rem;color:var(--cream)}
-.metric-label{font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px;margin-top:0.3rem}
-.components{margin-bottom:2rem}
-.comp{display:flex;align-items:center;gap:10px;padding:0.8rem 1rem;border-bottom:1px solid var(--bg3)}
-.comp:last-child{border-bottom:none}
-.comp-name{font-family:var(--font-mono);font-size:0.85rem;width:100px}
-.comp-status{font-family:var(--font-mono);font-size:0.75rem;padding:2px 8px;border-radius:3px}
-.comp-status.healthy{background:rgba(90,168,110,0.15);color:var(--green-light)}
-.comp-status.degraded{background:rgba(212,168,67,0.15);color:var(--gold)}
-.comp-status.down{background:rgba(196,77,44,0.15);color:var(--red)}
-.comp-detail{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-left:auto}
-.refresh{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);text-align:center;margin-top:1rem}
-.provider-section{margin-top:2.5rem}
-.provider-section h2{font-size:1rem;margin-bottom:0.8rem}
-.provider-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:1rem}
-.provider-card{padding:1.2rem;border:1px solid var(--bg3);background:var(--bg2)}
-.provider-card.healthy{border-left:3px solid var(--green-light)}
-.provider-card.degraded{border-left:3px solid var(--gold)}
-.provider-card.broken{border-left:3px solid var(--red)}
-.provider-name{font-family:var(--font-mono);font-size:0.9rem;margin-bottom:0.5rem;text-transform:capitalize}
-.provider-badge{display:inline-block;font-family:var(--font-mono);font-size:0.65rem;padding:2px 8px;border-radius:3px;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px}
-.provider-badge.healthy{background:rgba(90,168,110,0.15);color:var(--green-light)}
-.provider-badge.degraded{background:rgba(212,168,67,0.15);color:var(--gold)}
-.provider-badge.broken{background:rgba(196,77,44,0.15);color:var(--red)}
-.provider-stats{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);line-height:1.8}
-.provider-stats span{color:var(--cream-dim)}
-.provider-empty{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);padding:1rem;border:1px solid var(--bg3);text-align:center}
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
-footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-
-/* ===== MOBILE NAV ===== */
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
-.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
-.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-toggle.open span:nth-child(2){opacity:0}
-.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.nav-overlay{display:none}
-@media(max-width:768px){
-  .nav{padding:0.8rem 1.2rem}
-  .nav-toggle{display:block}
-  .nav-links{
-    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
-    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
-    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
-  }
-  .nav-links.open{display:flex;font-family:var(--font-serif)}
-  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
-  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
-  .nav-overlay.open{display:block}
-}
-
-
-/* ===== GLOBAL MOBILE FIXES ===== */
-@media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:wrap;gap:0}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
-}
-
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
-.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--green:#4a9e5c;--red:#c45d2c;--mono:'JetBrains Mono',Consolas,monospace;--serif:'Libre Baskerville',Georgia,serif}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+.wrap{max-width:600px;margin:0 auto;padding:2rem}
+h1{font-size:1.5rem;text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:2rem;font-size:.9rem}
+.svc{background:var(--bg2);border:1px solid var(--bg3);padding:.8rem 1rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center}
+.svc-name{font-family:var(--mono);font-size:.85rem}
+.svc-status{font-family:var(--mono);font-size:.7rem;padding:.2rem .5rem;border-radius:2px}
+.up{background:#1a3a1a;color:var(--green)}.down{background:#3a1a1a;color:var(--red)}.checking{background:var(--bg3);color:var(--cm)}
+.ts{text-align:center;color:var(--cm);font-size:.7rem;font-family:var(--mono);margin-top:1.5rem}
 </style>
-<link rel="canonical" href="https://stockyard.dev/status/">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
-<nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-overlay" onclick="toggleNav()"></div>
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-  <div class="nav-links">
-    <div class="nav-drop">
-      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
-      <div class="nav-drop-menu">
-        <a href="/tools/">Browse All Tools</a>
-        <div class="drop-section">By Category</div>
-        <a href="/tools/?category=developer">Developer Tools</a>
-        <a href="/tools/?category=operations">Operations</a>
-        <a href="/tools/?category=creator">Creator &amp; Business</a>
-        <a href="/tools/?category=finance">Finance</a>
-        <a href="/tools/?category=personal">Personal</a>
-        <div class="drop-section">Popular</div>
-        <a href="/corral/">Corral</a>
-        <a href="/gate/">Gate</a>
-        <a href="/headcount/">Headcount</a>
-        <a href="/saltlick/">Salt Lick</a>
-      </div>
-    </div>
-    <a href="/complete/" style="color:var(--gold)">Complete</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/platform/">Platform</a>
-    <a href="/docs/">Docs</a>
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </div>
-</nav>
-<div class="content" id="main">
+<div class="wrap">
 <h1>System Status</h1>
-<p class="sub">Real-time health of <a href="https://stockyard.dev">stockyard.dev</a>. Auto-refreshes every 30 seconds.</p>
-
-<div class="overall" id="overall">
-  <div class="dot loading" id="overall-dot"></div>
-  <span class="overall-text" id="overall-text">Checking...</span>
-  <span class="overall-detail" id="overall-detail"></span>
+<p class="sub">Real-time health checks</p>
+<div id="services">
+<div class="svc"><span class="svc-name">Website</span><span class="svc-status checking" id="s-site">checking...</span></div>
+<div class="svc"><span class="svc-name">API / Health</span><span class="svc-status checking" id="s-api">checking...</span></div>
+<div class="svc"><span class="svc-name">Install Script</span><span class="svc-status checking" id="s-install">checking...</span></div>
+<div class="svc"><span class="svc-name">GitHub Releases</span><span class="svc-status checking" id="s-gh">checking...</span></div>
+<div class="svc"><span class="svc-name">Docker Image</span><span class="svc-status checking" id="s-docker">checking...</span></div>
 </div>
-
-<div class="metrics" id="metrics"></div>
-
-<h2 style="font-size:1rem;margin-bottom:0.8rem">Components</h2>
-<div class="components" id="components">
-  <div class="comp"><span class="comp-name">Loading...</span></div>
+<div class="ts" id="ts"></div>
 </div>
-
-<div class="provider-section">
-<h2>Provider Health</h2>
-<div class="provider-grid" id="provider-grid">
-  <div class="provider-empty">Loading provider health...</div>
-</div>
-<p class="refresh">Provider data refreshes every 60s · Last updated: <span id="provider-last-check">—</span></p>
-</div>
-
-<p class="refresh">System status last checked: <span id="last-check">—</span> · Refreshes every 30s</p>
-<p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted)">
-  API: <code>GET /api/status</code> · <code>GET /api/observe/provider-health</code>
-</p>
-</div>
-
-<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a></div>
-<footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem">
-    <a href="/tools/">Tools</a> &middot;
-    <a href="/complete/">Complete</a> &middot;
-    <a href="/platform/">Platform</a> &middot;
-    <a href="/pricing/">Pricing</a> &middot;
-    <a href="/docs/">Docs</a> &middot;
-    <a href="/blog/">Blog</a> &middot;
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </p>
-  <p style="margin-top:0.3rem">
-    <a href="/privacy/">Privacy</a> &middot;
-    <a href="/terms/">Terms</a> &middot;
-    <a href="/changelog/">Changelog</a>
-  </p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
-    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
-  </p>
-</footer>
-
 <script>
-async function fetchStatus() {
+async function check(id, url, validate) {
+  const el = document.getElementById(id);
   try {
-    const r = await fetch('/api/status');
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const d = await r.json();
-    
-    // Overall
-    const dot = document.getElementById('overall-dot');
-    dot.className = 'dot ' + d.status;
-    document.getElementById('overall-text').textContent =
-      d.status === 'healthy' ? 'All systems operational' :
-      d.status === 'degraded' ? 'Partial degradation' : 'Service disruption';
-    document.getElementById('overall-detail').textContent = d.uptime + ' uptime';
-    
-    // Metrics
-    document.getElementById('metrics').innerHTML = [
-      ['requests', d.total_requests.toLocaleString()],
-      ['avg latency', d.avg_latency_ms.toFixed(2) + ' ms'],
-      ['error rate', (d.error_rate * 100).toFixed(2) + '%'],
-      ['memory', d.memory.alloc_mb.toFixed(1) + ' MB'],
-      ['goroutines', d.goroutines],
-      ['version', d.version || 'dev'],
-    ].map(([label, value]) =>
-      '<div class="metric"><div class="metric-value">' + value + '</div><div class="metric-label">' + label + '</div></div>'
-    ).join('');
-    
-    // Components
-    const comps = Object.entries(d.components || {});
-    document.getElementById('components').innerHTML = comps.map(([name, c]) =>
-      '<div class="comp">' +
-      '<span class="comp-name">' + name + '</span>' +
-      '<span class="comp-status ' + c.status + '">' + c.status + '</span>' +
-      (c.detail ? '<span class="comp-detail">' + c.detail + '</span>' : '') +
-      '</div>'
-    ).join('');
-    
-    document.getElementById('last-check').textContent = new Date().toLocaleTimeString();
-  } catch(e) {
-    document.getElementById('overall-dot').className = 'dot down';
-    document.getElementById('overall-text').textContent = 'Unable to reach API';
-    document.getElementById('overall-detail').textContent = e.message;
-  }
-}
-fetchStatus();
-setInterval(fetchStatus, 30000);
-
-async function fetchProviderHealth() {
-  try {
-    const r = await fetch('/api/observe/provider-health');
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const d = await r.json();
-    const grid = document.getElementById('provider-grid');
-    if (!d.providers || d.providers.length === 0) {
-      grid.innerHTML = '<div class="provider-empty">No provider data in the last hour.</div>';
+    const r = await fetch(url, {mode:'cors',cache:'no-store'});
+    if (validate ? await validate(r) : r.ok) {
+      el.textContent = 'operational';
+      el.className = 'svc-status up';
     } else {
-      grid.innerHTML = d.providers.map(function(p) {
-        var errPct = (p.error_rate * 100).toFixed(1);
-        var latency = p.avg_latency_ms.toFixed(0);
-        return '<div class="provider-card ' + p.status + '">' +
-          '<div class="provider-name">' + p.provider + '</div>' +
-          '<div class="provider-badge ' + p.status + '">' + p.status + '</div>' +
-          '<div class="provider-stats">' +
-            'Latency: <span>' + latency + ' ms</span><br>' +
-            'Error rate: <span>' + errPct + '%</span><br>' +
-            'Requests: <span>' + p.total + '</span>' +
-          '</div>' +
-        '</div>';
-      }).join('');
+      el.textContent = 'degraded';
+      el.className = 'svc-status down';
     }
-    document.getElementById('provider-last-check').textContent = new Date().toLocaleTimeString();
   } catch(e) {
-    document.getElementById('provider-grid').innerHTML =
-      '<div class="provider-empty">Unable to fetch provider health: ' + e.message + '</div>';
+    el.textContent = 'unreachable';
+    el.className = 'svc-status down';
   }
 }
-fetchProviderHealth();
-setInterval(fetchProviderHealth, 60000);
-</script>
 
-<script>
-function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
-</script>
+check('s-site', '/', r => r.ok);
+check('s-api', '/api/health', async r => { const d = await r.json(); return d.status === 'ok'; });
+check('s-install', '/install.sh', r => r.ok && r.headers.get('content-type')?.includes('text'));
+check('s-gh', 'https://api.github.com/repos/stockyard-dev/Stockyard/releases/tags/v1.1.0', r => r.ok);
+check('s-docker', 'https://ghcr.io/v2/stockyard-dev/stockyard/tags/list', r => true); // CORS blocks but existence check
 
+document.getElementById('ts').textContent = 'Last checked: ' + new Date().toISOString().slice(0,19) + ' UTC';
+</script>
 </body>
 </html>

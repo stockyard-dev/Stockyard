@@ -133,7 +133,7 @@ type RunContext struct {
 	RunID    string
 	Input    string
 	Results  map[string]*StepResult // step_id → result
-	ProxyURL string                 // e.g. "http://localhost:7749"
+	ProxyURL string                 // e.g. "http://localhost:4200"
 	Conn     *sql.DB                // for tool lookups
 }
 
