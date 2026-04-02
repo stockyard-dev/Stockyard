@@ -4784,5 +4784,257 @@
         "a": "No. Quiver stores text snippets with tags and search. For relational databases and views, Notion is necessary."
       }
     ]
+  },
+  {
+    "stockyard_tool": "hearthside",
+    "stockyard_name": "Hearthside",
+    "stockyard_tagline": "Self-hosted team retrospective tool",
+    "stockyard_free": "3 retros",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited retros, templates, action items, export, anonymous mode",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/hearthside/install.sh | sh",
+    "stockyard_port": 12050,
+    "competitor_name": "EasyRetro",
+    "competitor_slug": "easyretro",
+    "competitor_url": "https://easyretro.io",
+    "competitor_price": "$25/mo (Team)",
+    "competitor_pricing_note": "Free: 3 boards. Team: $25/mo. Company: $79/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 retro data stays private",
+      "$0.99/mo vs $25/mo",
+      "No per-user limits",
+      "Single binary"
+    ],
+    "strengths_competitor": [
+      "Polished real-time collaboration",
+      "Timer and voting built in",
+      "Ice breaker activities",
+      "Integrations with Jira and Trello"
+    ],
+    "honest_verdict": "EasyRetro is the most popular retro tool with polished real-time collaboration. If your team runs retros weekly, EasyRetro's templates and voting make it smooth. For self-hosted retros where discussion data stays private, Hearthside covers the essentials.",
+    "seo_title": "Hearthside vs EasyRetro \u2014 Self-hosted retrospectives",
+    "seo_description": "EasyRetro is $25/mo. Hearthside is self-hosted retros \u2014 single binary, $0.99/mo. Keep retrospective data on your server.",
+    "faq": [
+      {
+        "q": "Is Hearthside an EasyRetro alternative?",
+        "a": "EasyRetro has polished real-time collaboration and voting. Hearthside is a simpler self-hosted retro tool."
+      },
+      {
+        "q": "Does Hearthside support real-time collaboration?",
+        "a": "Pro tier includes real-time mode. For polished facilitation tools, EasyRetro is more refined."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "decisionlog",
+    "stockyard_name": "Decision Log",
+    "stockyard_tagline": "Self-hosted decision tracker",
+    "stockyard_free": "50 decisions",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited decisions, tags, search, stakeholders, export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/decisionlog/install.sh | sh",
+    "stockyard_port": 12100,
+    "competitor_name": "Confluence",
+    "competitor_slug": "confluence",
+    "competitor_url": "https://www.atlassian.com/software/confluence",
+    "competitor_price": "$5.75/user/mo (Standard)",
+    "competitor_pricing_note": "Free: 10 users. Standard: $5.75/user/mo. Premium: $11/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Data Center (self-hosted) being phased out by Atlassian",
+    "strengths_stockyard": [
+      "$0.99/mo flat vs $5.75/user/mo",
+      "Purpose-built for decisions, not general wiki",
+      "Self-hosted \u2014 no Atlassian account needed",
+      "Single binary, no Java stack"
+    ],
+    "strengths_competitor": [
+      "Full wiki and knowledge base",
+      "Deep Jira integration",
+      "Page trees and spaces",
+      "Enterprise compliance and permissions"
+    ],
+    "honest_verdict": "Confluence is a full wiki platform. If your team uses Jira and needs a wiki, Confluence is the natural fit. Decision Log is specifically for tracking architectural and product decisions \u2014 who decided what, when, and why.",
+    "seo_title": "Decision Log vs Confluence \u2014 Self-hosted decision tracking",
+    "seo_description": "Confluence is $5.75/user/mo. Decision Log is self-hosted \u2014 single binary, $0.99/mo. Track decisions without a full wiki.",
+    "faq": [
+      {
+        "q": "Is Decision Log a Confluence alternative?",
+        "a": "Confluence is a full wiki. Decision Log specifically tracks decisions. Use Decision Log alongside your wiki, not instead of it."
+      },
+      {
+        "q": "Why not just use a Confluence page?",
+        "a": "Decision Log adds structure: status, stakeholders, alternatives considered, outcome. A wiki page can do this, but Decision Log enforces the format."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "notify",
+    "stockyard_name": "Notify",
+    "stockyard_tagline": "Self-hosted push notification service",
+    "stockyard_free": "1,000 pushes/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited pushes, web push, topics, scheduling, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/notify/install.sh | sh",
+    "stockyard_port": 12150,
+    "competitor_name": "OneSignal",
+    "competitor_slug": "onesignal",
+    "competitor_url": "https://onesignal.com",
+    "competitor_price": "Free (10K subs) / $9/mo",
+    "competitor_pricing_note": "Free: 10K subscribers. Growth: $9/mo. Professional: $99/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 subscriber data stays private",
+      "$0.99/mo vs $9/mo+",
+      "No subscriber count limits on Pro",
+      "Single binary, no third-party SDK"
+    ],
+    "strengths_competitor": [
+      "Cross-platform (web, iOS, Android)",
+      "Segmentation and A/B testing",
+      "In-app messaging and email",
+      "Journeys and automation"
+    ],
+    "honest_verdict": "OneSignal is the most popular push notification platform with cross-platform support and segmentation. If you need mobile push notifications with A/B testing, OneSignal is well-designed. For web push notifications on your own server, Notify handles the basics.",
+    "seo_title": "Notify vs OneSignal \u2014 Self-hosted push notifications",
+    "seo_description": "OneSignal Growth is $9/mo. Notify is self-hosted \u2014 single binary, $0.99/mo. Web push notifications on your server.",
+    "faq": [
+      {
+        "q": "Is Notify a OneSignal alternative?",
+        "a": "OneSignal handles web, iOS, and Android push with segmentation. Notify focuses on web push from your own server."
+      },
+      {
+        "q": "Does Notify support iOS/Android?",
+        "a": "Notify handles web push notifications. For native mobile push, OneSignal or Firebase Cloud Messaging are necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "flume",
+    "stockyard_name": "Flume",
+    "stockyard_tagline": "Self-hosted event streaming",
+    "stockyard_free": "1 stream, 10K events/mo",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited streams, consumers, replay, retention, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/flume/install.sh | sh",
+    "stockyard_port": 12200,
+    "competitor_name": "Apache Kafka",
+    "competitor_slug": "kafka",
+    "competitor_url": "https://kafka.apache.org",
+    "competitor_price": "Free (OSS) / $0.11/GB (Confluent)",
+    "competitor_pricing_note": "Kafka OSS free but complex. Confluent Cloud: $0.11/GB + $0.10/partition/hr.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hostable but requires ZooKeeper/KRaft, significant ops overhead",
+    "strengths_stockyard": [
+      "Single binary \u2014 no ZooKeeper, no cluster",
+      "$1.99/mo flat vs complex ops costs",
+      "Installs in 30 seconds",
+      "Simple HTTP API for produce/consume"
+    ],
+    "strengths_competitor": [
+      "Industry standard for event streaming",
+      "Handles millions of events per second",
+      "Exactly-once semantics",
+      "Massive ecosystem (Connect, Streams, ksqlDB)"
+    ],
+    "honest_verdict": "Kafka is the industry standard for event streaming at scale. If you process millions of events per second, Kafka is necessary. Flume handles simple event streaming for applications that need pub/sub without running a Kafka cluster.",
+    "seo_title": "Flume vs Kafka \u2014 Self-hosted event streaming without the cluster",
+    "seo_description": "Kafka requires ZooKeeper and cluster management. Flume is a single binary for event streaming \u2014 $1.99/mo. Simple pub/sub.",
+    "faq": [
+      {
+        "q": "Is Flume a Kafka alternative?",
+        "a": "Kafka handles millions of events/sec across clusters. Flume handles simple event streaming as a single binary. Very different scale."
+      },
+      {
+        "q": "Does Flume support exactly-once?",
+        "a": "Flume provides at-least-once delivery. For exactly-once semantics, Kafka with idempotent producers is necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "conduit",
+    "stockyard_name": "Conduit",
+    "stockyard_tagline": "Self-hosted message queue",
+    "stockyard_free": "3 queues",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited queues, dead letter, delayed messages, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/conduit/install.sh | sh",
+    "stockyard_port": 12250,
+    "competitor_name": "RabbitMQ",
+    "competitor_slug": "rabbitmq",
+    "competitor_url": "https://rabbitmq.com",
+    "competitor_price": "Free (OSS) / $95/mo (CloudAMQP)",
+    "competitor_pricing_note": "RabbitMQ OSS free. CloudAMQP managed: $0 (free tiny) to $95/mo+.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hostable but requires Erlang runtime",
+    "strengths_stockyard": [
+      "Single binary \u2014 no Erlang runtime",
+      "$0.99/mo flat",
+      "HTTP API (no AMQP client library needed)",
+      "Simpler to deploy and operate"
+    ],
+    "strengths_competitor": [
+      "Mature, battle-tested message broker",
+      "AMQP protocol support",
+      "Clustering and high availability",
+      "Plugin ecosystem and management UI"
+    ],
+    "honest_verdict": "RabbitMQ is the most popular message broker with AMQP support and clustering. If you need a production message queue with high availability, RabbitMQ is battle-tested. Conduit is for teams that need simple queue functionality without Erlang or AMQP.",
+    "seo_title": "Conduit vs RabbitMQ \u2014 Self-hosted message queue without Erlang",
+    "seo_description": "RabbitMQ requires Erlang. Conduit is a single binary message queue \u2014 $0.99/mo. HTTP API, dead letter queue, delayed messages.",
+    "faq": [
+      {
+        "q": "Is Conduit a RabbitMQ alternative?",
+        "a": "RabbitMQ is a full AMQP broker with clustering. Conduit is a simpler HTTP-based message queue. Different capability and complexity."
+      },
+      {
+        "q": "Does Conduit support AMQP?",
+        "a": "No. Conduit uses HTTP/JSON. For AMQP protocol support, RabbitMQ is necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "consortium",
+    "stockyard_name": "Consortium",
+    "stockyard_tagline": "Self-hosted multi-tenant SaaS kit",
+    "stockyard_free": "3 tenants",
+    "stockyard_pro_price": "$2.99",
+    "stockyard_pro_summary": "Unlimited tenants, data isolation, per-tenant config, API keys",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/consortium/install.sh | sh",
+    "stockyard_port": 12300,
+    "competitor_name": "WorkOS",
+    "competitor_slug": "workos",
+    "competitor_url": "https://workos.com",
+    "competitor_price": "Free (up to 1M MAU)",
+    "competitor_pricing_note": "Free: 1M MAU. Enterprise: custom pricing for SSO and directory sync.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 tenant data stays on your server",
+      "$2.99/mo flat",
+      "Data isolation built in",
+      "No external auth dependency"
+    ],
+    "strengths_competitor": [
+      "Enterprise SSO (SAML, OIDC) out of the box",
+      "Directory sync (SCIM)",
+      "Admin portal for customers",
+      "Compliance-ready (SOC 2, HIPAA)"
+    ],
+    "honest_verdict": "WorkOS handles enterprise authentication \u2014 SSO, directory sync, admin portal. If your SaaS sells to enterprises that require SAML SSO, WorkOS solves that. Consortium handles multi-tenant data isolation and config, not authentication.",
+    "seo_title": "Consortium vs WorkOS \u2014 Self-hosted multi-tenancy",
+    "seo_description": "WorkOS handles enterprise SSO. Consortium is self-hosted multi-tenancy \u2014 single binary, $2.99/mo. Tenant isolation and config.",
+    "faq": [
+      {
+        "q": "Is Consortium a WorkOS alternative?",
+        "a": "WorkOS does enterprise SSO and directory sync. Consortium handles multi-tenant data isolation. Different problems \u2014 you might need both."
+      },
+      {
+        "q": "Does Consortium handle SSO?",
+        "a": "No. Consortium manages tenant data isolation. For SSO (SAML/OIDC), WorkOS or Authentik are necessary."
+      }
+    ]
   }
 ]
