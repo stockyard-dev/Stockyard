@@ -688,6 +688,12 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/how-to-self-host-link-shortening/",
 		"/how-to-self-host-webhook-testing/",
 		"/how-to-self-host-secret-management/",
+		// Ad keyword landing pages
+		"/postman-alternative/",
+		"/jira-alternative/",
+		"/github-alternative/",
+		"/api-key-generator/",
+		"/budibase-alternative/",
 		// Alternative-to pages
 		"/sentry-alternative/",
 		"/launchdarkly-alternative/",
