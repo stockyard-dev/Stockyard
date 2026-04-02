@@ -2557,5 +2557,425 @@
         "a": "Not directly. Podium focuses on feedback collection and voting. For project management sync, Canny is more integrated."
       }
     ]
+  },
+  {
+    "stockyard_tool": "sentinel",
+    "stockyard_name": "Sentinel",
+    "stockyard_tagline": "Self-hosted on-call alerting",
+    "stockyard_free": "3 services, 1 schedule",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited services, schedules, escalation policies, SMS/email alerts",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/sentinel/install.sh | sh",
+    "stockyard_port": 9500,
+    "competitor_name": "PagerDuty",
+    "competitor_slug": "pagerduty",
+    "competitor_url": "https://pagerduty.com",
+    "competitor_price": "$17/user/mo (Professional)",
+    "competitor_pricing_note": "Free: up to 5 users. Professional: $17/user/mo. Business: $35/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 alert data on your server",
+      "$0.99/mo flat vs $17/user/mo",
+      "No per-seat pricing",
+      "Single binary, no dependencies"
+    ],
+    "strengths_competitor": [
+      "Industry standard for incident management",
+      "Deep integrations (400+ tools)",
+      "Intelligent noise reduction and grouping",
+      "Enterprise incident response workflows"
+    ],
+    "honest_verdict": "PagerDuty is the industry standard for on-call management with deep integrations and intelligent alert routing. If your team needs enterprise incident response workflows, PagerDuty is purpose-built. For basic on-call alerting without per-seat pricing, Sentinel does the core job.",
+    "seo_title": "Sentinel vs PagerDuty \u2014 Self-hosted alerting at $0.99/mo",
+    "seo_description": "PagerDuty charges $17/user/mo. Sentinel is self-hosted on-call alerting \u2014 single binary, $0.99/mo flat. No per-seat pricing.",
+    "faq": [
+      {
+        "q": "Is Sentinel a PagerDuty alternative?",
+        "a": "Both handle on-call alerting. Sentinel is self-hosted at $0.99/mo flat. PagerDuty is managed with 400+ integrations and $17/user/mo pricing."
+      },
+      {
+        "q": "Does Sentinel integrate with monitoring tools?",
+        "a": "Sentinel accepts alerts via webhook. PagerDuty has 400+ native integrations."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "roundup",
+    "stockyard_name": "Roundup",
+    "stockyard_tagline": "Self-hosted project tracker",
+    "stockyard_free": "3 projects, 50 issues",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited projects, issues, labels, milestones, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/roundup/install.sh | sh",
+    "stockyard_port": 9550,
+    "competitor_name": "Linear",
+    "competitor_slug": "linear",
+    "competitor_url": "https://linear.app",
+    "competitor_price": "$8/user/mo",
+    "competitor_pricing_note": "Free: up to 250 issues. Standard: $8/user/mo. Plus: $14/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 project data on your server",
+      "$0.99/mo flat vs $8/user/mo",
+      "No per-seat pricing",
+      "Single binary, runs anywhere"
+    ],
+    "strengths_competitor": [
+      "Beautiful, fast UI \u2014 best-in-class design",
+      "Keyboard-first workflow",
+      "Cycles, roadmaps, and project views",
+      "Git integration (GitHub, GitLab)"
+    ],
+    "honest_verdict": "Linear has the best UI of any project tracker. If your team values speed, design, and keyboard-driven workflows, Linear is worth the per-seat price. If you want basic issue tracking on your own server without per-seat costs, Roundup covers the essentials.",
+    "seo_title": "Roundup vs Linear \u2014 Self-hosted project tracking",
+    "seo_description": "Linear charges $8/user/mo. Roundup is self-hosted project tracking \u2014 single binary, $0.99/mo flat. Your project data stays on your server.",
+    "faq": [
+      {
+        "q": "Is Roundup a Linear alternative?",
+        "a": "Linear is a polished project tracker with cycles and roadmaps. Roundup handles basic issue tracking as a self-hosted tool. Different UX, different price."
+      },
+      {
+        "q": "Does Roundup have a Kanban board?",
+        "a": "Roundup provides list and board views. Linear's board experience is more polished with drag-and-drop and keyboard shortcuts."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "chronicle",
+    "stockyard_name": "Chronicle",
+    "stockyard_tagline": "Self-hosted log aggregator",
+    "stockyard_free": "1GB/day retention",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited retention, full-text search, alerts, dashboards",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/chronicle/install.sh | sh",
+    "stockyard_port": 9600,
+    "competitor_name": "Loggly",
+    "competitor_slug": "loggly",
+    "competitor_url": "https://loggly.com",
+    "competitor_price": "$79/mo (Standard)",
+    "competitor_pricing_note": "Lite: free (200MB/day). Standard: $79/mo. Pro: $159/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 logs never leave your network",
+      "$1.99/mo vs $79/mo",
+      "No volume-based pricing surprises",
+      "Single binary with embedded storage"
+    ],
+    "strengths_competitor": [
+      "Managed service with no infrastructure to maintain",
+      "Powerful search and analytics",
+      "Anomaly detection",
+      "200+ integration sources"
+    ],
+    "honest_verdict": "Loggly is a managed log service with powerful search and anomaly detection. If you want zero-maintenance log aggregation, Loggly handles it. If your logs contain sensitive data that cannot leave your network, Chronicle keeps everything on your server.",
+    "seo_title": "Chronicle vs Loggly \u2014 Self-hosted log aggregation",
+    "seo_description": "Loggly starts at $79/mo. Chronicle is self-hosted \u2014 single binary, $1.99/mo. Your logs stay on your server.",
+    "faq": [
+      {
+        "q": "Is Chronicle a Loggly alternative?",
+        "a": "Both aggregate and search logs. Chronicle is self-hosted for sensitive data. Loggly is managed with anomaly detection."
+      },
+      {
+        "q": "Does Chronicle support syslog?",
+        "a": "Chronicle accepts logs via HTTP API and syslog protocol. Loggly has 200+ native integrations."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "relay",
+    "stockyard_name": "Relay",
+    "stockyard_tagline": "Self-hosted tunnel and port forwarder",
+    "stockyard_free": "1 tunnel",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited tunnels, custom domains, TLS, access control",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/relay/install.sh | sh",
+    "stockyard_port": 9650,
+    "competitor_name": "ngrok",
+    "competitor_slug": "ngrok",
+    "competitor_url": "https://ngrok.com",
+    "competitor_price": "$8/mo (Personal)",
+    "competitor_pricing_note": "Free: 1 static domain. Personal: $8/mo. Pro: $20/mo. Enterprise: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 traffic does not route through a third party",
+      "$0.99/mo vs $8/mo",
+      "No bandwidth limits",
+      "Your own domain, your own server"
+    ],
+    "strengths_competitor": [
+      "Zero-config tunnel setup (one command)",
+      "Global edge network for low latency",
+      "Traffic inspection and replay",
+      "OAuth and webhook verification built in"
+    ],
+    "honest_verdict": "ngrok is the easiest way to expose a local service to the internet. If you need a quick tunnel for development or demos, ngrok is unbeatable. If you want a permanent, self-hosted tunnel without routing traffic through a third party, Relay runs on your infrastructure.",
+    "seo_title": "Relay vs ngrok \u2014 Self-hosted tunnels at $0.99/mo",
+    "seo_description": "ngrok charges $8/mo. Relay is self-hosted tunneling \u2014 single binary, $0.99/mo. Your traffic stays on your infrastructure.",
+    "faq": [
+      {
+        "q": "Is Relay an ngrok alternative?",
+        "a": "ngrok is the fastest way to get a tunnel running. Relay is self-hosted for teams that need permanent tunnels without third-party traffic routing."
+      },
+      {
+        "q": "Does Relay have a global edge?",
+        "a": "No. Relay runs on your server. For global edge performance, ngrok's infrastructure is hard to beat."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "prairie",
+    "stockyard_name": "Prairie",
+    "stockyard_tagline": "Self-hosted kanban board",
+    "stockyard_free": "3 boards",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited boards, lists, cards, labels, assignments, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/prairie/install.sh | sh",
+    "stockyard_port": 9700,
+    "competitor_name": "Trello",
+    "competitor_slug": "trello",
+    "competitor_url": "https://trello.com",
+    "competitor_price": "$5/user/mo (Standard)",
+    "competitor_pricing_note": "Free: 10 boards. Standard: $5/user/mo. Premium: $10/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 board data on your server",
+      "$0.99/mo flat vs $5/user/mo",
+      "No per-seat pricing",
+      "Single binary, no Atlassian account"
+    ],
+    "strengths_competitor": [
+      "Polished drag-and-drop UI",
+      "Power-Ups ecosystem (100+ integrations)",
+      "Butler automation",
+      "Mobile apps for iOS and Android"
+    ],
+    "honest_verdict": "Trello is the most widely used kanban tool with a polished UI and massive integration ecosystem. If your team lives in Trello and uses Power-Ups, it is hard to replace. If you want basic kanban boards on your own server without per-seat pricing, Prairie covers the essentials.",
+    "seo_title": "Prairie vs Trello \u2014 Self-hosted kanban at $0.99/mo",
+    "seo_description": "Trello charges $5/user/mo. Prairie is self-hosted kanban \u2014 single binary, $0.99/mo flat. Boards, lists, cards on your server.",
+    "faq": [
+      {
+        "q": "Is Prairie a Trello alternative?",
+        "a": "Both provide kanban boards. Prairie is self-hosted. Trello has Power-Ups, Butler automation, and mobile apps."
+      },
+      {
+        "q": "Does Prairie have a mobile app?",
+        "a": "Prairie has a responsive web dashboard. For native mobile kanban, Trello has dedicated iOS and Android apps."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "outpost",
+    "stockyard_name": "Outpost",
+    "stockyard_tagline": "Self-hosted uptime monitor",
+    "stockyard_free": "5 monitors",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited monitors, 30-second checks, SMS/email alerts, status page integration",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/outpost/install.sh | sh",
+    "stockyard_port": 9750,
+    "competitor_name": "UptimeRobot",
+    "competitor_slug": "uptimerobot",
+    "competitor_url": "https://uptimerobot.com",
+    "competitor_price": "$7/mo (Pro)",
+    "competitor_pricing_note": "Free: 50 monitors, 5-min interval. Pro: $7/mo, 60-sec interval.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 monitoring from your own network",
+      "$0.99/mo vs $7/mo",
+      "Monitor internal services not exposed to the internet",
+      "Single binary, no account needed"
+    ],
+    "strengths_competitor": [
+      "Monitoring from multiple global locations",
+      "Free tier with 50 monitors",
+      "Status page included",
+      "SMS and voice call alerts"
+    ],
+    "honest_verdict": "UptimeRobot monitors your services from external locations \u2014 which is the whole point of uptime monitoring. Self-hosted monitoring checks from inside your network, which is useful for internal services but does not verify external accessibility. For public-facing uptime, UptimeRobot is more appropriate.",
+    "seo_title": "Outpost vs UptimeRobot \u2014 Self-hosted uptime monitoring",
+    "seo_description": "UptimeRobot Pro is $7/mo. Outpost is self-hosted monitoring \u2014 single binary, $0.99/mo. Monitor internal services from your network.",
+    "faq": [
+      {
+        "q": "Is Outpost an UptimeRobot alternative?",
+        "a": "UptimeRobot monitors from external locations. Outpost monitors from your server. For external uptime checks, UptimeRobot is more appropriate. For internal service health, Outpost works."
+      },
+      {
+        "q": "Can Outpost monitor from multiple locations?",
+        "a": "No. Outpost monitors from the server it runs on. For multi-location monitoring, UptimeRobot or Better Stack are necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "campfire",
+    "stockyard_name": "Campfire",
+    "stockyard_tagline": "Self-hosted async standup tool",
+    "stockyard_free": "1 team, 5 members",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited teams, members, custom questions, reports, integrations",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/campfire/install.sh | sh",
+    "stockyard_port": 9800,
+    "competitor_name": "Geekbot",
+    "competitor_slug": "geekbot",
+    "competitor_url": "https://geekbot.com",
+    "competitor_price": "$3/user/mo",
+    "competitor_pricing_note": "Starter: $3/user/mo. Scale: $5/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 standup data stays private",
+      "$0.99/mo flat vs $3/user/mo",
+      "No per-seat pricing",
+      "Single binary, no Slack dependency"
+    ],
+    "strengths_competitor": [
+      "Native Slack and Microsoft Teams integration",
+      "AI-powered insights and summaries",
+      "Mood tracking and engagement analytics",
+      "Enterprise compliance features"
+    ],
+    "honest_verdict": "Geekbot works inside Slack and Teams \u2014 where your team already is. If your standups happen in Slack, Geekbot is seamless. If you want standalone async standups without a Slack dependency or per-seat costs, Campfire runs independently.",
+    "seo_title": "Campfire vs Geekbot \u2014 Self-hosted standups at $0.99/mo",
+    "seo_description": "Geekbot charges $3/user/mo. Campfire is self-hosted async standups \u2014 single binary, $0.99/mo flat. No Slack required.",
+    "faq": [
+      {
+        "q": "Is Campfire a Geekbot alternative?",
+        "a": "Geekbot runs inside Slack. Campfire is a standalone self-hosted standup tool. Different delivery, same purpose."
+      },
+      {
+        "q": "Does Campfire integrate with Slack?",
+        "a": "Campfire has webhook support for posting summaries. For native Slack standup bots, Geekbot is more integrated."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "chalkboard",
+    "stockyard_name": "Chalkboard",
+    "stockyard_tagline": "Self-hosted whiteboard and diagramming",
+    "stockyard_free": "3 boards",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited boards, real-time collaboration, export, templates",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/chalkboard/install.sh | sh",
+    "stockyard_port": 9850,
+    "competitor_name": "Miro",
+    "competitor_slug": "miro",
+    "competitor_url": "https://miro.com",
+    "competitor_price": "$8/user/mo (Starter)",
+    "competitor_pricing_note": "Free: 3 boards. Starter: $8/user/mo. Business: $16/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 whiteboard data stays private",
+      "$0.99/mo flat vs $8/user/mo",
+      "No per-seat pricing",
+      "Single binary, no vendor lock-in"
+    ],
+    "strengths_competitor": [
+      "Best-in-class infinite canvas with rich media",
+      "1000+ templates and frameworks",
+      "Video chat and screen sharing built in",
+      "Integrations with Jira, Confluence, Figma"
+    ],
+    "honest_verdict": "Miro is the most feature-rich collaborative whiteboard available. If your team uses whiteboards for workshops, strategy, and design thinking, Miro's template library and integrations are unmatched. For basic diagramming on your own server, Chalkboard handles the core use case.",
+    "seo_title": "Chalkboard vs Miro \u2014 Self-hosted whiteboard at $0.99/mo",
+    "seo_description": "Miro charges $8/user/mo. Chalkboard is self-hosted whiteboarding \u2014 single binary, $0.99/mo flat. Your diagrams stay private.",
+    "faq": [
+      {
+        "q": "Is Chalkboard a Miro alternative?",
+        "a": "Miro is a full collaboration platform with video chat and 1000+ templates. Chalkboard is a simpler self-hosted whiteboard for diagramming."
+      },
+      {
+        "q": "Does Chalkboard support real-time collaboration?",
+        "a": "Pro tier supports real-time collaboration. For video chat and screen sharing during whiteboard sessions, Miro is more integrated."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "almanac",
+    "stockyard_name": "Almanac",
+    "stockyard_tagline": "Self-hosted daily journal",
+    "stockyard_free": "30 entries",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited entries, search, tags, export, encrypted at rest",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/almanac/install.sh | sh",
+    "stockyard_port": 9900,
+    "competitor_name": "Day One",
+    "competitor_slug": "day-one",
+    "competitor_url": "https://dayoneapp.com",
+    "competitor_price": "$34.99/yr (Premium)",
+    "competitor_pricing_note": "Free: 1 journal. Premium: $34.99/yr or $2.92/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 journal stays on your server",
+      "$0.99/mo vs $2.92/mo",
+      "No cloud sync (your data, your control)",
+      "Single binary, works offline"
+    ],
+    "strengths_competitor": [
+      "Beautiful native apps (iOS, Mac, Android)",
+      "End-to-end encryption",
+      "Photo and video attachments",
+      "On-this-day memories and maps"
+    ],
+    "honest_verdict": "Day One is the most polished journaling app with beautiful native apps and rich media support. If you journal on your phone with photos and videos, Day One is excellent. If you want a text-based journal that stays on your own server, Almanac is simpler and self-hosted.",
+    "seo_title": "Almanac vs Day One \u2014 Self-hosted journal at $0.99/mo",
+    "seo_description": "Day One Premium is $35/yr. Almanac is a self-hosted journal \u2014 single binary, $0.99/mo. Your journal stays on your server.",
+    "faq": [
+      {
+        "q": "Is Almanac a Day One alternative?",
+        "a": "Day One has native apps with photo support. Almanac is a text-based self-hosted journal. Day One is more polished; Almanac keeps data on your server."
+      },
+      {
+        "q": "Does Almanac sync across devices?",
+        "a": "Almanac runs on one server. Access it from any device via the web dashboard. Day One syncs natively across Apple devices."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "mirage",
+    "stockyard_name": "Mirage",
+    "stockyard_tagline": "Self-hosted API mock server",
+    "stockyard_free": "5 endpoints",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited endpoints, dynamic responses, latency simulation, recording",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/mirage/install.sh | sh",
+    "stockyard_port": 9950,
+    "competitor_name": "Mockoon",
+    "competitor_slug": "mockoon",
+    "competitor_url": "https://mockoon.com",
+    "competitor_price": "$9/mo (Cloud)",
+    "competitor_pricing_note": "Desktop app free. Cloud: $9/mo for team sync.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Desktop app is local. Cloud sync requires subscription.",
+    "strengths_stockyard": [
+      "Server-based \u2014 accessible to all team members",
+      "$0.99/mo vs $9/mo cloud",
+      "No desktop app needed \u2014 runs as a service",
+      "API for programmatic mock creation"
+    ],
+    "strengths_competitor": [
+      "Beautiful desktop app with visual mock builder",
+      "Request logging and auto-mocking",
+      "OpenAPI import",
+      "Free desktop version"
+    ],
+    "honest_verdict": "Mockoon's desktop app is the fastest way to create API mocks locally. If you work solo and want a visual mock builder, Mockoon desktop is free and excellent. If you need a shared mock server accessible to your whole team, Mirage runs as a service on your server.",
+    "seo_title": "Mirage vs Mockoon \u2014 Self-hosted API mocking",
+    "seo_description": "Mockoon Cloud is $9/mo. Mirage is a self-hosted mock server \u2014 single binary, $0.99/mo. Shared API mocks for your team.",
+    "faq": [
+      {
+        "q": "Is Mirage a Mockoon alternative?",
+        "a": "Mockoon is a desktop app for local API mocking. Mirage is a server-based mock service for shared team use."
+      },
+      {
+        "q": "Can Mirage import OpenAPI specs?",
+        "a": "Mirage supports endpoint creation via API. For visual OpenAPI import, Mockoon has a dedicated feature."
+      }
+    ]
   }
 ]
