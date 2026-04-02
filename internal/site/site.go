@@ -473,6 +473,12 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/signalman/vs-webhook-site/",
 		"/smelter/vs-retool/",
 		"/soapbox/vs-convertkit/",
+		"/agora/vs-sharetribe/",
+		"/pathfinder/vs-intercom/",
+		"/plumb/vs-svix/",
+		"/quiver/vs-notion/",
+		"/switchman/vs-cloudflare-workers/",
+		"/waystation/vs-aws-api-gateway/",
 		// How-to, what-is, GDPR pages
 "/gdpr-compliant-analytics/",
 		"/how-to-replace-google-analytics/",

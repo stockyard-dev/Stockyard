@@ -4532,5 +4532,257 @@
         "a": "No. Semaphore manages deployments via SSH. For CDN and edge hosting, Vercel or Cloudflare Pages are purpose-built."
       }
     ]
+  },
+  {
+    "stockyard_tool": "agora",
+    "stockyard_name": "Agora",
+    "stockyard_tagline": "Self-hosted marketplace builder",
+    "stockyard_free": "10 listings",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited listings, categories, search, user accounts, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/agora/install.sh | sh",
+    "stockyard_port": 11750,
+    "competitor_name": "Sharetribe",
+    "competitor_slug": "sharetribe",
+    "competitor_url": "https://sharetribe.com",
+    "competitor_price": "$39/mo (Starter)",
+    "competitor_pricing_note": "Starter: $39/mo. Growth: $99/mo. Scale: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 marketplace data on your server",
+      "$1.99/mo vs $39/mo",
+      "No transaction fees",
+      "Single binary, full control"
+    ],
+    "strengths_competitor": [
+      "Purpose-built marketplace platform",
+      "Payment processing with Stripe Connect",
+      "User verification and reviews",
+      "Mobile-responsive templates"
+    ],
+    "honest_verdict": "Sharetribe is a complete marketplace platform with payments, reviews, and templates. If you are building a two-sided marketplace, Sharetribe handles the hard parts. Agora provides listing management for teams that want marketplace functionality on their own server.",
+    "seo_title": "Agora vs Sharetribe \u2014 Self-hosted marketplace",
+    "seo_description": "Sharetribe starts at $39/mo. Agora is self-hosted \u2014 single binary, $1.99/mo. Build a marketplace on your server.",
+    "faq": [
+      {
+        "q": "Is Agora a Sharetribe alternative?",
+        "a": "Sharetribe is a full marketplace platform with payments. Agora handles listing management on your server. Sharetribe is more complete."
+      },
+      {
+        "q": "Does Agora handle payments?",
+        "a": "Agora manages listings and categories. For payment processing, connect Stripe or another payment provider."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "switchman",
+    "stockyard_name": "Switchman",
+    "stockyard_tagline": "Self-hosted traffic router",
+    "stockyard_free": "3 routes",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited routes, A/B splitting, header-based routing, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/switchman/install.sh | sh",
+    "stockyard_port": 11800,
+    "competitor_name": "Cloudflare Workers",
+    "competitor_slug": "cloudflare-workers",
+    "competitor_url": "https://workers.cloudflare.com",
+    "competitor_price": "$5/mo (Paid)",
+    "competitor_pricing_note": "Free: 100K requests/day. Paid: $5/mo for 10M requests.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 runs on Cloudflare's edge",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 routing logic on your server",
+      "$0.99/mo flat",
+      "No vendor lock-in to Cloudflare",
+      "Inspect routing decisions in dashboard"
+    ],
+    "strengths_competitor": [
+      "Global edge network (300+ cities)",
+      "Millisecond cold starts",
+      "KV storage and Durable Objects",
+      "Full JavaScript/TypeScript runtime"
+    ],
+    "honest_verdict": "Cloudflare Workers run code at the edge in 300+ cities with millisecond cold starts. For edge computing and global traffic manipulation, Workers are unmatched. Switchman is a simpler self-hosted traffic router for A/B splitting and header-based routing on your own server.",
+    "seo_title": "Switchman vs Cloudflare Workers \u2014 Self-hosted traffic routing",
+    "seo_description": "Cloudflare Workers is $5/mo for edge compute. Switchman is self-hosted traffic routing \u2014 single binary, $0.99/mo. Route traffic on your server.",
+    "faq": [
+      {
+        "q": "Is Switchman a Cloudflare Workers alternative?",
+        "a": "Workers run code at the global edge. Switchman routes traffic on your server. Completely different architectures for different needs."
+      },
+      {
+        "q": "Does Switchman run at the edge?",
+        "a": "No. Switchman runs on your server. For global edge routing, Cloudflare Workers or similar edge platforms are necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "pathfinder",
+    "stockyard_name": "Pathfinder",
+    "stockyard_tagline": "Self-hosted user onboarding",
+    "stockyard_free": "3 flows",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited flows, steps, branching, progress tracking, analytics",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/pathfinder/install.sh | sh",
+    "stockyard_port": 11850,
+    "competitor_name": "Intercom",
+    "competitor_slug": "intercom",
+    "competitor_url": "https://intercom.com",
+    "competitor_price": "$39/seat/mo (Essential)",
+    "competitor_pricing_note": "Essential: $39/seat/mo. Advanced: $99/seat/mo. Expert: $139/seat/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "$0.99/mo flat vs $39/seat/mo",
+      "Self-hosted \u2014 onboarding data stays private",
+      "No per-seat pricing",
+      "Focused on onboarding flows only"
+    ],
+    "strengths_competitor": [
+      "Full customer messaging platform",
+      "Live chat, bots, and help center",
+      "Product tours with visual builder",
+      "AI-powered support automation"
+    ],
+    "honest_verdict": "Intercom is a full customer messaging platform \u2014 chat, bots, help center, product tours. If you need all of that, Intercom is the industry leader. Pathfinder focuses specifically on onboarding flows and checklists without the rest of the platform.",
+    "seo_title": "Pathfinder vs Intercom \u2014 Self-hosted onboarding at $0.99/mo",
+    "seo_description": "Intercom starts at $39/seat/mo. Pathfinder is self-hosted user onboarding \u2014 single binary, $0.99/mo. Onboarding flows without the platform price.",
+    "faq": [
+      {
+        "q": "Is Pathfinder an Intercom alternative?",
+        "a": "Intercom is a full messaging platform. Pathfinder handles user onboarding flows only. Very different scope and price."
+      },
+      {
+        "q": "Does Pathfinder have live chat?",
+        "a": "No. Pathfinder manages onboarding checklists and flows. For live chat, Intercom or Crisp are more appropriate."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "waystation",
+    "stockyard_name": "Waystation",
+    "stockyard_tagline": "Self-hosted API gateway",
+    "stockyard_free": "3 upstreams",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited upstreams, rate limiting, auth, caching, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/waystation/install.sh | sh",
+    "stockyard_port": 11900,
+    "competitor_name": "AWS API Gateway",
+    "competitor_slug": "aws-api-gateway",
+    "competitor_url": "https://aws.amazon.com/api-gateway/",
+    "competitor_price": "$1/million requests",
+    "competitor_pricing_note": "REST API: $3.50/million. HTTP API: $1/million. WebSocket: $1/million + $0.25/million messages.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable \u2014 AWS managed service",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 no AWS dependency",
+      "$1.99/mo flat vs per-request pricing",
+      "Predictable costs at any volume",
+      "Single binary, no cloud account needed"
+    ],
+    "strengths_competitor": [
+      "Fully managed by AWS",
+      "Auto-scaling to any volume",
+      "IAM integration and AWS ecosystem",
+      "WebSocket and REST support"
+    ],
+    "honest_verdict": "AWS API Gateway scales automatically and integrates deeply with the AWS ecosystem. If you are on AWS, it is the natural choice. Waystation is for teams that want an API gateway on their own server with predictable pricing and no AWS dependency.",
+    "seo_title": "Waystation vs AWS API Gateway \u2014 Self-hosted API gateway",
+    "seo_description": "AWS API Gateway charges per request. Waystation is self-hosted \u2014 single binary, $1.99/mo flat. API gateway without AWS dependency.",
+    "faq": [
+      {
+        "q": "Is Waystation an AWS API Gateway alternative?",
+        "a": "AWS API Gateway is deeply integrated with AWS and auto-scales. Waystation is self-hosted with flat pricing. Choose based on your infrastructure."
+      },
+      {
+        "q": "Does Waystation auto-scale?",
+        "a": "Waystation runs on your server. For auto-scaling API gateway, AWS API Gateway or Kong are more appropriate."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "plumb",
+    "stockyard_name": "Plumb",
+    "stockyard_tagline": "Self-hosted webhook relay",
+    "stockyard_free": "5 relays",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited relays, transform, filter, retry, dashboard",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/plumb/install.sh | sh",
+    "stockyard_port": 11950,
+    "competitor_name": "Svix",
+    "competitor_slug": "svix",
+    "competitor_url": "https://svix.com",
+    "competitor_price": "$45/mo (Starter)",
+    "competitor_pricing_note": "Community (OSS) free. Starter: $45/mo. Business: $200/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source core. Advanced features require paid license.",
+    "strengths_stockyard": [
+      "$0.99/mo vs $45/mo",
+      "Single binary \u2014 no Docker or Postgres",
+      "Simpler to deploy",
+      "Built-in transform and filter"
+    ],
+    "strengths_competitor": [
+      "Purpose-built webhook delivery platform",
+      "Retry with exponential backoff",
+      "Webhook verification (signatures)",
+      "Enterprise features and SLA"
+    ],
+    "honest_verdict": "Svix is the most capable webhook delivery platform with verification, retry, and enterprise features. If you are building a product that sends webhooks to customers, Svix handles the hard parts. Plumb relays and transforms webhooks between internal services.",
+    "seo_title": "Plumb vs Svix \u2014 Self-hosted webhook relay at $0.99/mo",
+    "seo_description": "Svix Starter is $45/mo. Plumb is self-hosted webhook relay \u2014 single binary, $0.99/mo. Relay, transform, and filter webhooks.",
+    "faq": [
+      {
+        "q": "Is Plumb a Svix alternative?",
+        "a": "Svix is enterprise webhook delivery for SaaS products. Plumb relays webhooks between internal services. Different use cases."
+      },
+      {
+        "q": "Does Plumb verify webhook signatures?",
+        "a": "Plumb relays and transforms webhooks. For cryptographic webhook verification and customer-facing delivery, Svix is more appropriate."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "quiver",
+    "stockyard_name": "Quiver",
+    "stockyard_tagline": "Self-hosted knowledge snippets",
+    "stockyard_free": "50 snippets",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited snippets, categories, search, team sharing, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/quiver/install.sh | sh",
+    "stockyard_port": 12000,
+    "competitor_name": "Notion",
+    "competitor_slug": "notion",
+    "competitor_url": "https://notion.so",
+    "competitor_price": "$8/user/mo (Plus)",
+    "competitor_pricing_note": "Free: 1 user. Plus: $8/user/mo. Business: $15/user/mo.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 knowledge stays on your server",
+      "$0.99/mo flat vs $8/user/mo",
+      "No per-seat pricing",
+      "Focused on quick knowledge snippets"
+    ],
+    "strengths_competitor": [
+      "Best-in-class workspace (docs, wikis, databases, projects)",
+      "Beautiful block-based editor",
+      "Templates and integrations",
+      "AI-powered writing and search"
+    ],
+    "honest_verdict": "Notion is the most versatile workspace tool available. If you need docs, wikis, databases, and project management in one place, Notion is exceptional. Quiver is a simpler tool for storing and searching knowledge snippets on your own server.",
+    "seo_title": "Quiver vs Notion \u2014 Self-hosted knowledge base",
+    "seo_description": "Notion Plus is $8/user/mo. Quiver is self-hosted knowledge snippets \u2014 single binary, $0.99/mo. Quick knowledge capture on your server.",
+    "faq": [
+      {
+        "q": "Is Quiver a Notion alternative?",
+        "a": "Notion is a full workspace platform. Quiver stores knowledge snippets. Notion is vastly more capable; Quiver is simpler and self-hosted."
+      },
+      {
+        "q": "Does Quiver have databases like Notion?",
+        "a": "No. Quiver stores text snippets with tags and search. For relational databases and views, Notion is necessary."
+      }
+    ]
   }
 ]
