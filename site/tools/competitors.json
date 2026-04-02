@@ -3187,5 +3187,47 @@
         "a": "Codex stores snippets in SQLite with revision history. For Git-backed version control, GitHub Gist is native."
       }
     ]
+  },
+  {
+    "stockyard_tool": "drover",
+    "stockyard_name": "Drover",
+    "stockyard_tagline": "Self-hosted background job queue",
+    "stockyard_free": "1,000 jobs/mo, 1 queue",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited jobs, queues, scheduled jobs, dead letter queue",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/drover/install.sh | sh",
+    "stockyard_port": 8720,
+    "competitor_name": "Sidekiq",
+    "competitor_slug": "sidekiq",
+    "competitor_url": "https://sidekiq.org",
+    "competitor_price": "$99/mo (Pro)",
+    "competitor_pricing_note": "OSS free (Ruby+Redis). Pro: $99/mo. Enterprise: $179/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Open source but requires Ruby and Redis",
+    "strengths_stockyard": [
+      "No Ruby or Redis required \u2014 single binary",
+      "$1.99/mo vs $99/mo",
+      "Language-agnostic HTTP API",
+      "Embedded storage, no external dependencies"
+    ],
+    "strengths_competitor": [
+      "Extremely fast (millions of jobs/sec with Redis)",
+      "Battle-tested in production for 10+ years",
+      "Rich Ruby ecosystem and middleware",
+      "Reliable exactly-once processing"
+    ],
+    "honest_verdict": "Sidekiq is the gold standard for Ruby background jobs. If your app is Ruby and you need high throughput, Sidekiq with Redis is the right choice. If you want background jobs without Ruby, Redis, or the $99/mo Pro license, Drover handles the core use case as a single binary.",
+    "seo_title": "Drover vs Sidekiq \u2014 Background jobs without Ruby or Redis",
+    "seo_description": "Sidekiq Pro is $99/mo and requires Ruby + Redis. Drover is a single Go binary with SQLite \u2014 $1.99/mo. Background jobs for any language.",
+    "faq": [
+      {
+        "q": "Is Drover a Sidekiq alternative?",
+        "a": "Both process background jobs. Sidekiq requires Ruby and Redis. Drover is a single Go binary with HTTP API, usable from any language."
+      },
+      {
+        "q": "Is Drover as fast as Sidekiq?",
+        "a": "No. Sidekiq with Redis handles millions of jobs/sec. Drover with SQLite handles thousands/sec. For most applications, thousands/sec is sufficient."
+      }
+    ]
   }
 ]
