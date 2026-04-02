@@ -909,7 +909,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 	// Serve sub-sitemaps
-	for _, smName := range []string{"sitemap-tools.xml", "sitemap-comparisons.xml", "sitemap-blog.xml", "sitemap-docs.xml", "sitemap-guides.xml", "sitemap-marketing.xml", "sitemap-core.xml"} {
+	for _, smName := range []string{"sitemap-tools.xml", "sitemap-comparisons.xml", "sitemap-blog.xml", "sitemap-docs.xml", "sitemap-pages.xml"} {
 		name := smName
 		mux.HandleFunc("GET /"+name, func(w http.ResponseWriter, r *http.Request) {
 			data, err := fs.ReadFile(sub, name)
