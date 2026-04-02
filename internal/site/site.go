@@ -890,6 +890,21 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 		w.Write(data)
 	})
+	// Serve sub-sitemaps
+	for _, smName := range []string{"sitemap-tools.xml", "sitemap-comparisons.xml", "sitemap-blog.xml", "sitemap-docs.xml", "sitemap-guides.xml", "sitemap-marketing.xml", "sitemap-core.xml"} {
+		name := smName
+		mux.HandleFunc("GET /"+name, func(w http.ResponseWriter, r *http.Request) {
+			data, err := fs.ReadFile(sub, name)
+			if err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/xml")
+			w.Header().Set("Cache-Control", "public, max-age=3600")
+			w.Write(data)
+		})
+	}
+
 
 	// Serve RSS feed
 	mux.HandleFunc("GET /blog/feed.xml", func(w http.ResponseWriter, r *http.Request) {
