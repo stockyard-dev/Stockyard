@@ -426,6 +426,15 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/launchdarkly-pricing-alternative/",
 		"/sentry-pricing-alternative/",
 		"/statuspage-pricing-alternative/",
+		// How-to, what-is, GDPR pages
+"/gdpr-compliant-analytics/",
+		"/how-to-replace-google-analytics/",
+		"/how-to-replace-mailchimp/",
+		"/how-to-replace-statuspage/",
+		"/privacy-first-link-tracking/",
+		"/what-is-a-feature-flag/",
+		"/what-is-a-status-page/",
+		"/what-is-self-hosted-software/",
 		// Intent/category landing pages
 		"/open-source-saas-alternatives/",
 		"/replace-saas-self-hosted/",
