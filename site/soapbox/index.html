@@ -68,6 +68,14 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Soapbox","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free tier"},{"@type":"Offer","price":"$0.99","priceCurrency":"USD","description":"Pro monthly"}],"description":"Ask questions, answer them, vote, mark as resolved. The knowledge that lives in Slack DMs, made searchable and permanent."}</script>
+
+<style>
+.related-section{padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3)}
+.related-group{margin-bottom:.8rem}
+.related-label{font-family:var(--font-mono,var(--mono,'JetBrains Mono',monospace));font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.3rem}
+.related-group a{font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none;transition:color .15s}
+.related-group a:hover{color:var(--rust-light,var(--rl,#e8753a))}
+</style>
 </head>
 <body>
 <nav class="nav">
@@ -223,6 +231,7 @@ async function startCheckout(plan, interval) {
 }
 
 </script>
+<div class="section related-section"><div class="section-label">Related</div><div class="related-group"><div class="related-label">Comparisons</div><a href="/soapbox/vs-convertkit/">Soapbox vs ConvertKit</a></div><div class="related-group"><div class="related-label">Related tools</div><a href="/sentinel/" title="alert manager">Sentinel</a> &middot; <a href="/headcount/" title="user analytics">Headcount</a> &middot; <a href="/roundup/" title="task manager">Roundup</a> &middot; <a href="/outpost/" title="remote server monitor">Outpost</a> &middot; <a href="/mailbag/" title="email archive">Mailbag</a> &middot; <a href="/chronicle/" title="event log">Chronicle</a></div></div>
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem">
