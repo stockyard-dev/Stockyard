@@ -326,6 +326,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </section>
 
+
+<div class="section">
+  <div class="section-label">Tracing without the third-party dependency</div>
+  <p>Most LLM observability tools are SaaS products that require sending your prompts and completions to their servers. Helicone, Langfuse, and Braintrust all see your data in transit. Lookout runs inside the Stockyard proxy — traces never leave your infrastructure. Every request is automatically recorded with timing data for each middleware step, token counts for input and output, the model and provider used, and the full request and response bodies (configurable — you can redact or skip body logging for sensitive workloads).</p>
+  <p>The trace data powers three workflows. First, performance debugging: when a request takes longer than expected, the per-middleware timing breakdown shows exactly where the latency came from — was it a cache miss, a slow provider, or a guardrail evaluation? Second, cost analysis: aggregated traces show spend by model, by day, and by API key so you can identify which features cost the most. Third, quality monitoring: replay historical requests through updated middleware configurations to test changes before deploying them to production.</p>
+</div>
+
 <section class="obs-cta">
   <h2>Stop flying blind.</h2>
   <p>Lookout ships with every Stockyard instance. Self-hosted or Cloud.</p>

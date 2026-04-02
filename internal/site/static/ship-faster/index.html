@@ -184,6 +184,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </section>
 
+
+<div class="section">
+  <div class="section-label">Where teams lose time with LLMs</div>
+  <p>The latency in LLM-powered features is rarely the model itself. It is the retry logic when the provider returns a 503, the cache miss that forces a redundant API call, the manual provider switch when OpenAI's API degrades. Stockyard's middleware chain handles these patterns automatically. The cache layer stores prompt-response pairs so identical calls return instantly. The failover module detects provider degradation and reroutes to a backup within the same request. The result is that your application code stays simple — one API call, one URL — while the infrastructure handles the complexity of working with unreliable external services.</p>
+  <p>Load testing with Stampede before launch catches the performance cliffs that only appear under concurrent traffic. Most LLM applications work fine with five users and fall apart at fifty because rate limits, connection pools, and timeout settings were never tested under load. Finding these problems in staging is cheaper than finding them in production.</p>
+</div>
+
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Five minutes to your first trace.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard, send a request, watch it flow through the middleware chain. Everything on this page starts working immediately.</p>

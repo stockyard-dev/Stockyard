@@ -167,6 +167,13 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 </section>
 
 <div style="padding:1rem 2rem;max-width:820px;margin:0 auto;font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted)">Related: <a href="/seismograph/">Seismograph</a> &middot; <a href="/seismograph/vs-sentry/">Seismograph vs Sentry</a> &middot; <a href="/seismograph/vs-bugsnag/">Seismograph vs Bugsnag</a> &middot; <a href="/self-hosted-error-tracking/">Self-hosted error tracking</a> &middot; <a href="/tools/">All 150 tools</a></div>
+
+<div class="section">
+  <div class="section-label">When Sentry gets expensive</div>
+  <p>Sentry's Developer plan is free for one user with 5,000 events per month. Most production applications exceed that within the first week. The Team plan at $26 per month covers 50,000 events — enough for a low-traffic service, but a single uncaught exception in a loop can burn through that quota in hours. The Business plan at $80 per month provides 100,000 events and performance monitoring. The real trap is event volume: Sentry counts every error occurrence individually, and high-traffic applications routinely generate millions of events during an incident.</p>
+  <p>Seismograph approaches the same problem differently. It captures error events, deduplicates them by signature, and groups related errors together. There is no event volume limit because the data stays on your disk. During an incident, when error volume spikes by 100x, Seismograph does not throttle your events or send you an overage invoice — it just logs them. The SQLite database grows by a few megabytes, and you deal with the errors instead of the billing page.</p>
+</div>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>

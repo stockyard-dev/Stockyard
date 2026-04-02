@@ -167,6 +167,13 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 </section>
 
 <div style="padding:1rem 2rem;max-width:820px;margin:0 auto;font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted)">Related: <a href="/saltlick/">Salt Lick</a> &middot; <a href="/saltlick/vs-launchdarkly/">Salt Lick vs LaunchDarkly</a> &middot; <a href="/saltlick/vs-flagsmith/">Salt Lick vs Flagsmith</a> &middot; <a href="/self-hosted-feature-flags/">Self-hosted feature flags</a> &middot; <a href="/tools/">All 150 tools</a></div>
+
+<div class="section">
+  <div class="section-label">Feature flags should not cost $10 per seat</div>
+  <p>LaunchDarkly's Starter plan costs $10 per seat per month. At 10 engineers, that is $100 per month for boolean toggles. The Pro plan — required for targeting rules and metrics — costs $20 per seat. A 25-person engineering team pays $500 per month for the ability to turn features on and off without deploying. The functionality itself is straightforward: check a flag key, get a boolean, branch your code. The value LaunchDarkly provides is the management layer around that check, but $500 per month buys a lot of management layer.</p>
+  <p>Salt Lick provides flag evaluation through a single HTTP endpoint. Your application checks <code>/api/flags/evaluate?key=new-checkout</code> and gets a boolean. No SDK, no client library, no LaunchDarkly-specific code in your application. The flag evaluation adds single-digit milliseconds of latency. Toggle flags through the dashboard or the API. The total cost is the compute to run a single process — typically a $5 per month VPS — regardless of how many engineers check flags.</p>
+</div>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>

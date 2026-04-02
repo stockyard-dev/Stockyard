@@ -156,6 +156,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </section>
 
 <div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a></div>
+
+<div class="section">
+  <div class="section-label">Where LLM costs hide</div>
+  <p>The biggest LLM cost savings come from three places: caching identical requests, routing to cheaper models when accuracy requirements allow it, and catching runaway loops before they exhaust your API budget. Stockyard's cache layer eliminates redundant calls — if the same prompt-model pair has been seen before, the cached response returns in under a millisecond with zero token cost. The model aliasing system lets you route development traffic to cheaper models while keeping production on your preferred provider. Cost tracking through Trough shows spend per model, per day, and per endpoint so you can identify which features are expensive and why.</p>
+  <p>The compound effect is significant. Teams running Stockyard typically see 30 to 60 percent reduction in LLM API costs, primarily from cache hits on repeated prompts. For applications with high prompt similarity — chatbots, document processing, code generation — the cache hit rate often exceeds 40 percent, which means 40 percent fewer tokens billed.</p>
+</div>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem">

@@ -184,6 +184,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </section>
 
+
+<div class="section">
+  <div class="section-label">Safety at the infrastructure level</div>
+  <p>Application-level guardrails are one code change away from being disabled. Infrastructure-level guardrails run regardless of what the application does. Stockyard's guardrail middleware inspects every request before it reaches the LLM provider. Define blocked patterns — PII formats, prompt injection signatures, topic restrictions — and the middleware rejects matching requests with a structured error. The application never needs guardrail logic because the proxy handles it.</p>
+  <p>Rate limiting through Cutoff prevents runaway API consumption. Set a budget per endpoint, per user, or per model, and the middleware enforces it. When a limit is hit, the response explains what was exceeded and when the limit resets. Combined with cost tracking through Trough, you get both a spending cap and visibility into what drove the spending. For teams deploying LLM features to external users, this combination prevents the two most common disasters: a prompt injection that generates harmful content, and a usage spike that generates a five-figure API bill.</p>
+</div>
+
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Five minutes to your first trace.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard, send a request, watch it flow through the middleware chain. Everything on this page starts working immediately.</p>

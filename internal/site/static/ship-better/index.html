@@ -184,6 +184,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </section>
 
+
+<div class="section">
+  <div class="section-label">Observability without the blind spots</div>
+  <p>Most LLM observability tools show you what happened after the request completed. Stockyard shows you what is happening inside the request as it flows through the middleware chain. The trace module records timing for every middleware step — cache check, guardrail evaluation, provider selection, response processing — so you can see exactly where latency comes from. The replay module lets you re-run any historical request through the current middleware configuration, which is how you test guardrail changes without deploying to production.</p>
+  <p>Quality monitoring through the assay module runs automated checks against model responses. Define assertions — response must contain certain keywords, must not exceed a token count, must parse as valid JSON — and the system flags failures. This catches model regression before your users notice. Combined with prompt version control, you can track which prompt version produces which quality metrics over time, turning prompt engineering from guesswork into measurable iteration.</p>
+</div>
+
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Five minutes to your first trace.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard, send a request, watch it flow through the middleware chain. Everything on this page starts working immediately.</p>

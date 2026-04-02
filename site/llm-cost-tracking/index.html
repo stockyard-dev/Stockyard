@@ -146,6 +146,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </script>
 <div class="explore-bar">Explore: <a href="/pricing/">Stockyard pricing</a> &middot; <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/providers/openai/">Openai</a> &middot; <a href="/providers/deepseek/">Deepseek</a></div>
 <div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 150 focused self-hosted tools &mdash; <a href="/tools/" style="color:var(--leather-light)">browse the catalog</a> or <a href="/complete/" style="color:var(--gold)">get everything for $29/mo</a>.</div>
+
+<div class="section">
+  <div class="section-label">Per-request visibility changes everything</div>
+  <p>Aggregate cost dashboards tell you how much you spent last month. Per-request cost tracking tells you why. When you can see that a single customer's workflow generated $47 in API costs because of a retry loop, or that your embeddings pipeline is re-embedding documents it already processed, you can fix the problem instead of just observing the bill. Stockyard logs every request with its token count, model, provider, latency, and calculated cost in USD. The data lives in SQLite on your server, queryable through the API and visualized in the Lookout dashboard.</p>
+  <p>Cost attribution by API key lets you allocate spend to teams, projects, or customers. Set up separate keys for your production app, your staging environment, and your internal tools. The spend endpoint breaks down costs by key, by model, and by day. Export to CSV for finance reporting. Set spend caps that return a structured error when a key exceeds its budget — this prevents the runaway loop scenario where a single bug generates a four-figure bill overnight.</p>
+</div>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem">

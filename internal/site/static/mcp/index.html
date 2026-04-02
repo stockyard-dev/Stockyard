@@ -283,6 +283,13 @@ POST /mcp/message   &mdash; Message endpoint (client sends JSON-RPC here)</code>
 </div>
 
 <div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a></div>
+
+<div class="section">
+  <div class="section-label">Why route AI editors through a proxy</div>
+  <p>AI-powered editors like Cursor, Windsurf, and Claude Desktop send LLM requests directly to providers. This works until you need cost tracking across editors, guardrails that apply regardless of which tool made the request, or an audit trail of every prompt your team sends. Stockyard's MCP server sits between the editor and the provider, applying the same middleware chain to editor traffic that it applies to application traffic. Cache hits from one editor benefit all editors. Guardrails block the same patterns everywhere. Cost tracking aggregates spend from every source into a single dashboard.</p>
+  <p>The setup requires adding a single JSON block to your editor's MCP configuration — the Stockyard URL and transport type. From that point, every request from the editor flows through Stockyard's middleware. The editor does not know or care that a proxy exists. It sends requests to the MCP endpoint, and Stockyard forwards them to the configured provider after applying caching, guardrails, cost tracking, and any other active middleware modules.</p>
+</div>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem">

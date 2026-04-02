@@ -143,6 +143,26 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
   </div>
 </section>
 
+
+<div class="section">
+  <div class="section-label">What the proxy actually does</div>
+  <p>Stockyard sits between your application and the LLM provider. Your app sends requests to Stockyard's endpoint instead of directly to OpenAI, Anthropic, or Google. Stockyard forwards the request to the configured provider, applies any active middleware (caching, guardrails, cost tracking, rate limiting), and returns the response. Your application code does not change beyond updating one URL. The proxy speaks the OpenAI-compatible API format, so any SDK or HTTP client that works with OpenAI works with Stockyard without modification.</p>
+  <p>The middleware chain is where the value lives. Seventy-six modules handle caching (skip redundant API calls), failover (switch providers when one is down), cost tracking (log token counts and calculated spend), guardrails (block requests matching patterns you define), rate limiting (enforce budget caps), and audit logging (hash-chained records for compliance). Each module adds nanoseconds of latency — the full chain runs in under a microsecond. You enable the modules you need and ignore the rest.</p>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Why self-host your LLM proxy</div>
+    <p>Cloud-hosted LLM proxies route your prompts through a third party's infrastructure. Every prompt, every completion, every system message passes through their servers on the way to the provider. For applications handling customer data, medical records, legal documents, or proprietary code, this creates a compliance gap that no privacy policy can fully close. A self-hosted proxy means prompts travel from your server to the provider and back — no intermediary sees the content.</p>
+    <p>The operational argument is equally strong. Cloud proxies add a network hop and a dependency. If the proxy service goes down, your LLM features go down even if the provider is healthy. A self-hosted proxy runs on your infrastructure with your uptime guarantees. The single-binary architecture means there is no cluster to manage, no database to back up (beyond the embedded SQLite), and no container orchestration to configure.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Sixteen providers, one endpoint</div>
+  <p>Stockyard routes to OpenAI, Anthropic, Google Gemini, AWS Bedrock, Azure OpenAI, Groq, Together, Mistral, Cohere, Perplexity, DeepSeek, Fireworks, Ollama, LM Studio, vLLM, and any OpenAI-compatible endpoint. Configure multiple providers and the proxy handles model routing automatically. Use model aliasing to map friendly names to specific provider-model combinations — your application requests "fast-model" and Stockyard routes to whichever provider you configured behind that alias. Change providers by updating the alias, not your code.</p>
+</div>
+
 <section class="section" style="text-align:center">
   <h2 class="label">What you get free</h2>
   <div class="grid3">

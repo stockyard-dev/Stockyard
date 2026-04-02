@@ -122,7 +122,14 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 </section>
 
 <section class="section">
-  <div class="section-label gold">Pricing</div>
+  
+<div class="section">
+  <div class="section-label">Open source is not always free to run</div>
+  <p>The open-source alternative to most SaaS tools exists, but running it is a different story. Self-hosting Sentry requires Docker, Postgres, Redis, Kafka, Clickhouse, and a multi-gigabyte installation. Self-hosting GitLab needs at least 4 GB of RAM and a dedicated server. Self-hosting Plausible requires Docker Compose with Postgres and Clickhouse. The open-source label gets you past the license fee, but the operational cost — the time spent configuring, updating, and troubleshooting multi-service deployments — often exceeds what the SaaS subscription would have cost.</p>
+  <p>Stockyard takes a different approach to self-hosted software. Every tool compiles to a single static binary with an embedded SQLite database. No Docker, no Postgres, no Redis, no Kafka. Download the binary, set a port and data directory, run it. The total installation time is under 30 seconds. The operational burden is near zero because there is nothing to configure beyond two environment variables. This is what self-hosted software should feel like — not a weekend project, but a 30-second install.</p>
+</div>
+
+<div class="section-label gold">Pricing</div>
   <h2>Free to start. Pro when you need more.</h2>
   <div class="tier-grid">
     <div class="tier">

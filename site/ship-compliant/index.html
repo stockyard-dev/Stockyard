@@ -184,6 +184,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </section>
 
+
+<div class="section">
+  <div class="section-label">Compliance starts with data residency</div>
+  <p>When a compliance auditor asks where your LLM prompts are stored, the answer matters. If prompts flow through a third-party observability service, that service becomes part of your compliance surface. Their SOC 2 report, their data processing agreement, their breach notification timeline — all of it becomes your problem. Stockyard runs on your infrastructure, so the answer to "where is the data" is always the same: on servers you control, in a jurisdiction you chose.</p>
+  <p>The audit trail in Brand (formerly Trust) records every LLM request with its full context: prompt, completion, model, provider, active middleware, and timestamp. Records are hash-chained — each entry includes a SHA-256 hash of the previous entry, creating a tamper-evident log that satisfies audit requirements. The guardrails module blocks requests that match patterns you define before they reach the provider, so sensitive data never leaves your network in the first place. For HIPAA, SOX, GDPR, and SOC 2 environments, this architecture eliminates the compliance gap that SaaS observability tools create.</p>
+</div>
+
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
   <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Five minutes to your first trace.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Install Stockyard, send a request, watch it flow through the middleware chain. Everything on this page starts working immediately.</p>

@@ -192,6 +192,13 @@ curl -X POST http://localhost:8600/api/tools/corral/stop</pre>
     <a href="/complete/" class="btn btn-secondary" style="border-color:var(--gold);color:var(--gold)">Get Complete — $29/mo</a>
   </div>
 </section>
+
+<div class="section">
+  <div class="section-label">Managing 150 tools without 150 terminals</div>
+  <p>Each Stockyard tool runs as an independent binary. For teams using five or ten tools, managing them individually is straightforward — a systemd service file per tool, a port per tool, a data directory per tool. At twenty or thirty tools, the overhead of starting, stopping, updating, and monitoring individual processes adds up. Hub provides a single dashboard that lists all installed tools, shows their status (running, stopped, error), and lets you start or stop any tool with one click.</p>
+  <p>Hub also handles license key propagation. Set your Stockyard license key once in Hub's environment, and it distributes the key to every tool it manages. Install new tools by browsing the catalog and clicking Install — Hub downloads the binary, creates the data directory, and starts the process. The result is a package-manager-like experience for self-hosted tools without any of the dependency management complexity that makes traditional package managers painful.</p>
+</div>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>

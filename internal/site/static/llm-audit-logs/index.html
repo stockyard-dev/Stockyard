@@ -109,6 +109,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p class="sub">Every prompt, every completion, every decision. Hash-chained, tamper-evident, stored on your infrastructure. Built for teams that answer to compliance.</p>
 </div>
 
+
+<div class="section">
+  <div class="section-label">What auditors actually ask for</div>
+  <p>Compliance auditors evaluating LLM deployments ask three questions: what data was sent to the model, what the model returned, and what safeguards were in place when the request was made. Standard application logging captures some of this, but typically misses the middleware context — which guardrails were active, which model was selected, whether the request was cached or went to the provider. Stockyard's audit module captures the full request lifecycle in a single record: prompt, completion, model, provider, active middleware configuration, and a tamper-evident hash linking each record to the one before it.</p>
+  <p>The hash chain is what separates audit logging from regular logging. Each audit entry includes a SHA-256 hash of the previous entry's content. Modifying or deleting a historical record breaks the chain, which is immediately detectable through the verification endpoint. This satisfies the immutability requirement that SOC 2, HIPAA, and financial regulators expect from audit trails. The entire chain is verifiable with a single API call — no external blockchain, no third-party attestation service, just cryptographic math applied to a SQLite database on your server.</p>
+</div>
+
 <div class="section">
   <h2>Why LLM traffic needs audit logs</h2>
   <p>Regulated industries cannot deploy LLM features without proving what the model said, when it said it, and what safeguards were in place. Healthcare, finance, legal, and government teams need an audit trail that survives legal discovery.</p>
