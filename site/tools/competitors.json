@@ -4196,5 +4196,341 @@
         "a": "Curator has an API for bookmarking. For native browser extensions, Raindrop.io has extensions for all major browsers."
       }
     ]
+  },
+  {
+    "stockyard_tool": "prospector",
+    "stockyard_name": "Prospector",
+    "stockyard_tagline": "Self-hosted lead scoring",
+    "stockyard_free": "100 leads",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited leads, custom scoring rules, webhooks, CSV import/export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/prospector/install.sh | sh",
+    "stockyard_port": 11350,
+    "competitor_name": "Clearbit",
+    "competitor_slug": "clearbit",
+    "competitor_url": "https://clearbit.com",
+    "competitor_price": "Custom ($99+/mo)",
+    "competitor_pricing_note": "Usage-based pricing. Typically $99-500+/mo depending on volume.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 lead data stays private",
+      "$0.99/mo flat vs $99+/mo",
+      "Rule-based scoring without external enrichment",
+      "Single binary, no API dependency"
+    ],
+    "strengths_competitor": [
+      "Real-time data enrichment (company, role, revenue)",
+      "Intent signals from browsing behavior",
+      "Reveal anonymous website visitors",
+      "Deep Salesforce and HubSpot integration"
+    ],
+    "honest_verdict": "Clearbit enriches leads with company data, intent signals, and visitor identification. If you need data enrichment, Clearbit provides data Prospector cannot. Prospector scores leads based on rules you define from data you already have \u2014 no external enrichment, no third-party data sharing.",
+    "seo_title": "Prospector vs Clearbit \u2014 Self-hosted lead scoring",
+    "seo_description": "Clearbit costs $99+/mo for data enrichment. Prospector is self-hosted lead scoring \u2014 single binary, $0.99/mo. Score leads with your own rules.",
+    "faq": [
+      {
+        "q": "Is Prospector a Clearbit alternative?",
+        "a": "Clearbit enriches leads with external data. Prospector scores leads based on rules you define. Clearbit adds data; Prospector evaluates data you already have."
+      },
+      {
+        "q": "Does Prospector enrich lead data?",
+        "a": "No. Prospector scores leads based on properties you provide. For external data enrichment, Clearbit or Apollo are necessary."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "ironworks",
+    "stockyard_name": "Ironworks",
+    "stockyard_tagline": "Self-hosted CI/CD runner",
+    "stockyard_free": "5 pipelines",
+    "stockyard_pro_price": "$1.99",
+    "stockyard_pro_summary": "Unlimited pipelines, parallel jobs, artifact storage, webhooks",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/ironworks/install.sh | sh",
+    "stockyard_port": 11400,
+    "competitor_name": "GitHub Actions",
+    "competitor_slug": "github-actions",
+    "competitor_url": "https://github.com/features/actions",
+    "competitor_price": "Free (2,000 min/mo) / $0.008/min",
+    "competitor_pricing_note": "Free: 2,000 minutes/mo. Additional: $0.008/min Linux. Team/Enterprise: more included.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Self-hosted runners available but orchestration is GitHub-hosted",
+    "strengths_stockyard": [
+      "Fully self-hosted \u2014 build logs stay on your server",
+      "$1.99/mo flat, no per-minute pricing",
+      "No vendor lock-in to GitHub",
+      "Runs on your hardware, your speed"
+    ],
+    "strengths_competitor": [
+      "Deeply integrated with GitHub repos",
+      "Massive marketplace of pre-built actions",
+      "Matrix builds and reusable workflows",
+      "Free tier is very generous"
+    ],
+    "honest_verdict": "GitHub Actions is deeply integrated with GitHub and the marketplace has thousands of pre-built actions. If your code is on GitHub, Actions is the natural CI/CD choice. Ironworks is for teams that want CI/CD on their own infrastructure without per-minute pricing or GitHub dependency.",
+    "seo_title": "Ironworks vs GitHub Actions \u2014 Self-hosted CI/CD",
+    "seo_description": "GitHub Actions charges per minute after free tier. Ironworks is self-hosted CI/CD \u2014 single binary, $1.99/mo flat. Build on your own hardware.",
+    "faq": [
+      {
+        "q": "Is Ironworks a GitHub Actions alternative?",
+        "a": "GitHub Actions is tightly coupled to GitHub. Ironworks is standalone self-hosted CI/CD. If your code is on GitHub, Actions is more integrated."
+      },
+      {
+        "q": "Does Ironworks support Docker builds?",
+        "a": "Ironworks runs pipeline steps as shell commands. Docker builds work if Docker is installed on the host."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "dowser",
+    "stockyard_name": "Dowser",
+    "stockyard_tagline": "Self-hosted database browser",
+    "stockyard_free": "3 connections",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited connections, query editor, table browser, CSV export",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/dowser/install.sh | sh",
+    "stockyard_port": 11450,
+    "competitor_name": "TablePlus",
+    "competitor_slug": "tableplus",
+    "competitor_url": "https://tableplus.com",
+    "competitor_price": "$89 (lifetime license)",
+    "competitor_pricing_note": "Free: 2 tabs, 2 connections. Standard: $89 lifetime. Family bundle available.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Desktop app only, not web-based",
+    "strengths_stockyard": [
+      "Web-based \u2014 accessible from any browser",
+      "$0.99/mo vs $89 one-time",
+      "No desktop app install needed",
+      "Share database access with your team via URL"
+    ],
+    "strengths_competitor": [
+      "Beautiful native desktop app (Mac, Windows, Linux)",
+      "Fastest query execution",
+      "Inline editing and visual schema design",
+      "Supports 20+ database types"
+    ],
+    "honest_verdict": "TablePlus is the best database GUI available \u2014 fast, beautiful, and supports every database. The $89 lifetime license is good value. Dowser is web-based, which means team access via URL without installing software on every machine.",
+    "seo_title": "Dowser vs TablePlus \u2014 Web-based database browser",
+    "seo_description": "TablePlus is $89 lifetime. Dowser is a web-based database browser \u2014 single binary, $0.99/mo. Browse databases from any browser.",
+    "faq": [
+      {
+        "q": "Is Dowser a TablePlus alternative?",
+        "a": "TablePlus is a native desktop app. Dowser is web-based. TablePlus is faster and more polished; Dowser is accessible from any browser."
+      },
+      {
+        "q": "What databases does Dowser support?",
+        "a": "Dowser connects to SQLite, Postgres, and MySQL. TablePlus supports 20+ database types."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "smelter",
+    "stockyard_name": "Smelter",
+    "stockyard_tagline": "Self-hosted data transformer",
+    "stockyard_free": "100 transforms/mo",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited transforms, JSON/CSV/XML, JQ-like queries, scheduling",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/smelter/install.sh | sh",
+    "stockyard_port": 11500,
+    "competitor_name": "Retool",
+    "competitor_slug": "retool",
+    "competitor_url": "https://retool.com",
+    "competitor_price": "$10/user/mo (Team)",
+    "competitor_pricing_note": "Free: 5 users. Team: $10/user/mo. Business: $50/user/mo.",
+    "competitor_self_hostable": true,
+    "competitor_self_host_note": "Self-hosted available but requires Docker and Postgres",
+    "strengths_stockyard": [
+      "$0.99/mo flat vs $10/user/mo",
+      "Single binary \u2014 no Docker or Postgres",
+      "Focused on data transformation only",
+      "No per-user pricing"
+    ],
+    "strengths_competitor": [
+      "Full internal tool builder (UI + data)",
+      "Drag-and-drop interface builder",
+      "200+ database and API connectors",
+      "Workflows and automation"
+    ],
+    "honest_verdict": "Retool is a full internal tool builder \u2014 it does far more than data transformation. If you need to build internal dashboards and admin panels, Retool is the platform. Smelter specifically transforms data between formats on your server.",
+    "seo_title": "Smelter vs Retool \u2014 Self-hosted data transformation",
+    "seo_description": "Retool is $10/user/mo for internal tools. Smelter is focused data transformation \u2014 single binary, $0.99/mo. JSON, CSV, XML transforms.",
+    "faq": [
+      {
+        "q": "Is Smelter a Retool alternative?",
+        "a": "Retool builds internal tools with UIs and databases. Smelter transforms data between formats. Very different products despite both handling data."
+      },
+      {
+        "q": "Does Smelter have a visual builder?",
+        "a": "Smelter uses JQ-like queries for transformations. For visual drag-and-drop tool building, Retool is more appropriate."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "soapbox",
+    "stockyard_name": "Soapbox",
+    "stockyard_tagline": "Self-hosted newsletter platform",
+    "stockyard_free": "500 subscribers",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited subscribers, campaigns, templates, analytics, API",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/soapbox/install.sh | sh",
+    "stockyard_port": 11550,
+    "competitor_name": "ConvertKit",
+    "competitor_slug": "convertkit",
+    "competitor_url": "https://convertkit.com",
+    "competitor_price": "$25/mo (Creator, 1K subs)",
+    "competitor_pricing_note": "Free: 1,000 subscribers (limited). Creator: $25/mo. Creator Pro: $50/mo. Scales with subscribers.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 subscriber data stays private",
+      "$0.99/mo flat vs $25/mo scaling",
+      "No per-subscriber pricing",
+      "Your list, your server, no platform risk"
+    ],
+    "strengths_competitor": [
+      "Best-in-class email deliverability",
+      "Visual automation builder",
+      "Landing pages and commerce",
+      "Creator-focused features (paid newsletters, tips)"
+    ],
+    "honest_verdict": "ConvertKit is purpose-built for creators with excellent deliverability and automation. If you run a paid newsletter or need visual automations, ConvertKit is well-designed for that. If you want a private newsletter on your own server without per-subscriber pricing, Soapbox is self-hosted.",
+    "seo_title": "Soapbox vs ConvertKit \u2014 Self-hosted newsletter at $0.99/mo",
+    "seo_description": "ConvertKit starts at $25/mo. Soapbox is self-hosted \u2014 single binary, $0.99/mo. Newsletter platform without per-subscriber pricing.",
+    "faq": [
+      {
+        "q": "Is Soapbox a ConvertKit alternative?",
+        "a": "ConvertKit has deliverability infrastructure and creator commerce. Soapbox is self-hosted newsletter sending. ConvertKit is more capable; Soapbox keeps data private."
+      },
+      {
+        "q": "How does deliverability compare?",
+        "a": "ConvertKit has established IP reputation. Self-hosted email requires your own SMTP provider (Amazon SES, Postmark) for deliverability."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "gazette2",
+    "stockyard_name": "Gazette",
+    "stockyard_tagline": "Self-hosted newsletter archive",
+    "stockyard_free": "50 issues",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited issues, custom domain, SEO-friendly pages, RSS",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/gazette2/install.sh | sh",
+    "stockyard_port": 11600,
+    "competitor_name": "Substack",
+    "competitor_slug": "substack",
+    "competitor_url": "https://substack.com",
+    "competitor_price": "10% of paid subscriptions",
+    "competitor_pricing_note": "Free for free newsletters. 10% cut of paid subscription revenue.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 no 10% revenue cut",
+      "$0.99/mo flat, keep 100% of revenue",
+      "Your domain, your audience, no platform risk",
+      "Full control over subscriber data"
+    ],
+    "strengths_competitor": [
+      "Built-in audience and discovery network",
+      "Payments and paid subscriptions handled",
+      "Social features (notes, recommendations)",
+      "App with podcast support"
+    ],
+    "honest_verdict": "Substack's discovery network and built-in payments make starting a newsletter effortless. If you are building an audience from scratch, Substack's network effects help. If you already have an audience and want to keep 100% of revenue on your own domain, Gazette is self-hosted.",
+    "seo_title": "Gazette vs Substack \u2014 Self-hosted newsletter, keep 100%",
+    "seo_description": "Substack takes 10% of paid subscriptions. Gazette is self-hosted \u2014 single binary, $0.99/mo. Your newsletter, your domain, 100% of revenue.",
+    "faq": [
+      {
+        "q": "Is Gazette a Substack alternative?",
+        "a": "Substack has discovery and payments built in. Gazette is self-hosted newsletter publishing. Substack helps you find readers; Gazette keeps you independent."
+      },
+      {
+        "q": "Does Gazette handle payments?",
+        "a": "Gazette publishes newsletter archives. For paid subscriptions, connect Stripe directly or use a tool like Soapbox for the email sending part."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "signalman",
+    "stockyard_name": "Signalman",
+    "stockyard_tagline": "Self-hosted webhook debugger",
+    "stockyard_free": "5 endpoints",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited endpoints, request inspection, response mocking, replay",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/signalman/install.sh | sh",
+    "stockyard_port": 11650,
+    "competitor_name": "Webhook.site",
+    "competitor_slug": "webhook-site",
+    "competitor_url": "https://webhook.site",
+    "competitor_price": "$9/mo (Pro)",
+    "competitor_pricing_note": "Free: temporary URL, 500 requests. Pro: $9/mo for custom domains and permanent URLs.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable (open source version abandoned)",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 webhook data stays on your server",
+      "$0.99/mo vs $9/mo",
+      "Permanent endpoints on Pro",
+      "Full request body inspection and replay"
+    ],
+    "strengths_competitor": [
+      "Zero setup \u2014 instant URL in seconds",
+      "Custom actions and auto-responses",
+      "XPath/JSONPath extraction",
+      "Email and DNS testing built in"
+    ],
+    "honest_verdict": "Webhook.site is the fastest way to get a webhook endpoint for testing. Copy a URL, paste it, done. If you need quick temporary endpoints, Webhook.site is unbeatable. For permanent self-hosted webhook debugging with replay, Signalman runs on your server.",
+    "seo_title": "Signalman vs Webhook.site \u2014 Self-hosted webhook debugging",
+    "seo_description": "Webhook.site Pro is $9/mo. Signalman is self-hosted \u2014 single binary, $0.99/mo. Debug webhooks on your own server.",
+    "faq": [
+      {
+        "q": "Is Signalman a Webhook.site alternative?",
+        "a": "Webhook.site gives you instant temporary endpoints. Signalman is self-hosted for permanent webhook debugging. Both inspect requests; different deployment models."
+      },
+      {
+        "q": "How is Signalman different from Corral?",
+        "a": "Corral captures and replays webhooks for production use. Signalman is focused on debugging \u2014 response mocking, request inspection, header analysis."
+      }
+    ]
+  },
+  {
+    "stockyard_tool": "semaphore",
+    "stockyard_name": "Semaphore",
+    "stockyard_tagline": "Self-hosted deployment manager",
+    "stockyard_free": "3 projects",
+    "stockyard_pro_price": "$0.99",
+    "stockyard_pro_summary": "Unlimited projects, deployment history, rollback, SSH key management",
+    "stockyard_install": "curl -fsSL https://stockyard.dev/semaphore/install.sh | sh",
+    "stockyard_port": 11700,
+    "competitor_name": "Vercel",
+    "competitor_slug": "vercel",
+    "competitor_url": "https://vercel.com",
+    "competitor_price": "$20/user/mo (Pro)",
+    "competitor_pricing_note": "Hobby: free (personal). Pro: $20/user/mo. Enterprise: custom.",
+    "competitor_self_hostable": false,
+    "competitor_self_host_note": "Not self-hostable",
+    "strengths_stockyard": [
+      "Self-hosted \u2014 deploy to any server",
+      "$0.99/mo flat vs $20/user/mo",
+      "Deploy any stack (not just Next.js)",
+      "No vendor lock-in"
+    ],
+    "strengths_competitor": [
+      "Zero-config deployment for Next.js/React",
+      "Global edge network and CDN",
+      "Preview deployments for every PR",
+      "Analytics and speed insights"
+    ],
+    "honest_verdict": "Vercel is the best deployment platform for Next.js and React applications. The developer experience is unmatched. If you are building with Next.js, use Vercel. Semaphore deploys any application to any server via SSH \u2014 useful when Vercel's platform does not fit your stack.",
+    "seo_title": "Semaphore vs Vercel \u2014 Self-hosted deployments",
+    "seo_description": "Vercel Pro is $20/user/mo. Semaphore is self-hosted deployment management \u2014 single binary, $0.99/mo. Deploy any stack to any server.",
+    "faq": [
+      {
+        "q": "Is Semaphore a Vercel alternative?",
+        "a": "Vercel is optimized for Next.js with a global CDN. Semaphore deploys any application to any server via SSH. Different approaches to deployment."
+      },
+      {
+        "q": "Does Semaphore have a CDN?",
+        "a": "No. Semaphore manages deployments via SSH. For CDN and edge hosting, Vercel or Cloudflare Pages are purpose-built."
+      }
+    ]
   }
 ]
