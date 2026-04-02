@@ -109,38 +109,72 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 <section class="section" style="padding-top:5rem">
   <div class="section-label">April 2, 2026</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:1rem">Helicone was acquired — here are your options</h1>
-  <p style="font-style:italic;color:var(--cream-dim);margin-bottom:2rem">Helicone was acquired by Mintlify in March 2026 and entered maintenance mode. If you were using it for LLM cost tracking, here is what to do next.</p>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:1rem">Helicone Was Acquired — What Happens Now</h1>
+  <p style="font-style:italic;color:var(--cream-dim);margin-bottom:2rem">Helicone was acquired by Mintlify in March 2026 and entered maintenance mode. If you relied on it for LLM observability, here is the full picture of what happened, what it means, and where to go next.</p>
 
-  <p>Helicone was one of the best LLM observability tools available. Clean dashboard, easy integration, accurate cost tracking. When Mintlify acquired them in March 2026, the product entered maintenance mode — no new features, minimal bug fixes, future uncertain.</p>
+  <h2 style="margin-top:2rem">What happened</h2>
 
-  <p>If you are currently on Helicone or were planning to use it, here are your options.</p>
+  <p>Mintlify, the documentation platform, acquired Helicone in March 2026. The Helicone product entered maintenance mode — existing deployments continue to work, but active development stopped. No new features, no new provider integrations, and bug fixes are limited to critical security patches.</p>
 
-  <h2 style="margin-top:2rem">Option 1: Langfuse (managed, $59/mo)</h2>
+  <p>For teams that built their LLM cost tracking and observability around Helicone, this creates a concrete problem. Maintenance mode is not the same as end-of-life, but it means the tool will fall further behind as providers release new models, change pricing, and update API formats. A cost tracker that does not know about next month's new model is a cost tracker that underreports.</p>
 
-  <p>Langfuse is the most capable open-source LLM observability platform. Self-hosted version requires Docker and Postgres. Cloud version starts at $59/mo. It handles tracing, evaluation, prompt management, and cost tracking. If you need a full platform, Langfuse is the closest Helicone replacement.</p>
+  <h2 style="margin-top:2rem">What Helicone did well</h2>
 
-  <h2 style="margin-top:2rem">Option 2: Trough (self-hosted, $2.99/mo)</h2>
+  <p>Helicone was genuinely good at its job. The core workflow — drop in a proxy URL, see cost per request in a clean dashboard — was the simplest LLM observability setup available. No SDK to install, no code changes beyond swapping the base URL. It tracked cost, latency, token usage, and request volume across OpenAI, Anthropic, and other providers. The dashboard showed spend trends over time, per-model breakdowns, and individual request traces.</p>
 
-  <p><a href="/trough/">Trough</a> is a self-hosted LLM cost tracker. Single Go binary, embedded SQLite, no Docker or Postgres. It tracks per-request cost across OpenAI, Anthropic, Google, and other providers. Pro tier adds anomaly detection and spend alerts.</p>
+  <p>The things teams will miss most: the simplicity of setup (change one URL), the accuracy of cost calculations (they tracked pricing changes across providers), and the clean UI that made it easy to spot cost anomalies without configuring dashboards or writing queries.</p>
 
-  <p>Trough is simpler than Helicone was — it focuses specifically on cost tracking, not full observability. If cost monitoring was your primary use case for Helicone, Trough covers it.</p>
+  <h2 style="margin-top:2rem">Your options</h2>
+
+  <h3>Langfuse — full observability platform</h3>
+
+  <p><strong>Best for:</strong> Teams that need tracing, evaluation, prompt management, and cost tracking in one platform. Langfuse is the most feature-complete open-source LLM observability tool available. The self-hosted version requires Docker and Postgres. The cloud version starts at $59/month. If you need everything Helicone did plus prompt versioning, A/B testing, and evaluation pipelines, Langfuse is the closest full replacement.</p>
+
+  <p><strong>The tradeoff:</strong> Langfuse is more complex to self-host than Helicone was. The Docker + Postgres requirement means you are running a real database cluster, not a single binary. For teams with infrastructure experience, this is fine. For teams that liked Helicone specifically because it was simple, the operational overhead is a meaningful step up.</p>
+
+  <h3>Trough — self-hosted cost tracking</h3>
+
+  <p><strong>Best for:</strong> Teams whose primary Helicone use case was cost tracking. <a href="/trough/">Trough</a> is a self-hosted LLM cost tracker that runs as a single Go binary with embedded SQLite. No Docker, no Postgres, no Redis. Install it in 30 seconds:</p>
 
   <pre>curl -fsSL https://stockyard.dev/trough/install.sh | sh
-DATA_DIR=./data stockyard-trough</pre>
+DATA_DIR=./data stockyard-trough
+# Dashboard: http://localhost:9700/ui</pre>
 
-  <h2 style="margin-top:2rem">Option 3: The Stockyard LLM Platform</h2>
+  <p>Trough tracks per-request cost, latency, and token usage. The dashboard shows spend over time, per-model breakdowns, and anomaly detection. The API exposes all data programmatically for custom dashboards and alerting.</p>
 
-  <p>If you need more than cost tracking — full request tracing, middleware chain, guardrails, prompt caching — the <a href="/platform/">Stockyard platform</a> includes all of that as a proxy layer. Point your OpenAI API calls at Stockyard and get cost tracking, safety filters, caching, and failover automatically.</p>
+  <p><strong>The tradeoff:</strong> Trough focuses specifically on cost tracking. It does not do prompt management, evaluation, or tracing beyond what is needed for cost attribution. If cost monitoring was your primary Helicone use case, Trough covers it at $2.99/month. If you needed Helicone's full observability features, Trough alone is not a complete replacement.</p>
 
-  <h2 style="margin-top:2rem">The LiteLLM situation</h2>
+  <h3>The Stockyard LLM Proxy — full stack replacement</h3>
 
-  <p>Worth mentioning: LiteLLM also had a PyPI supply chain attack in March 2026. If you were considering LiteLLM as an alternative, the security incident is worth evaluating. A Go binary approach (like Trough or the Stockyard proxy) avoids PyPI supply chain risk entirely — no package manager, no dependencies to compromise.</p>
+  <p><strong>Best for:</strong> Teams that want Helicone's observability plus proxy features like caching, guardrails, failover, and rate limiting. The <a href="/platform/">Stockyard platform</a> sits between your application and your LLM providers. Point your OpenAI base URL at Stockyard and every request is automatically logged with cost, latency, tokens, and model information. The same dashboard that Helicone provided, plus 76 middleware modules that run on every request.</p>
 
-  <div class="banner" style="margin-top:2rem">
-    <strong style="color:var(--gold)">Migrate from Helicone</strong><br>
-    <span style="color:var(--cream-dim)"><a href="/trough/">Trough</a> tracks LLM costs from your own server. $2.99/mo Pro. <a href="/trough/vs-helicone/">See the comparison</a>.</span>
-  </div>
+  <pre>curl -fsSL https://stockyard.dev/install.sh | sh
+export OPENAI_API_KEY=sk-...
+stockyard
+# Dashboard: http://localhost:4200/ui
+# Proxy: http://localhost:4200/v1</pre>
+
+  <p>Change your application's base URL from <code>api.openai.com</code> to <code>localhost:4200</code>. Every request now flows through Stockyard's middleware chain — cost tracking, response caching, content safety filters, prompt compression, automatic failover, and audit logging. The observability dashboard shows everything Helicone showed, plus middleware-specific metrics.</p>
+
+  <h2 style="margin-top:2rem">Migrating from Helicone</h2>
+
+  <p>If your application used Helicone's proxy approach (swapping the base URL), migration is a URL change. Replace Helicone's proxy URL with Trough's or Stockyard's. Your application code does not change — the proxy handles everything transparently.</p>
+
+  <p>If you used Helicone's SDK, you will need to remove the SDK dependency and switch to the proxy approach. This is typically a smaller change than it sounds — remove the Helicone import, set the base URL to the proxy, and delete the Helicone initialization code. The proxy captures everything the SDK was reporting.</p>
+
+  <p>Historical data from Helicone does not migrate — there is no export-to-import path. Your new tool starts fresh. If you need historical cost data for reporting, export it from Helicone before their maintenance period ends.</p>
+
+  <h2 style="margin-top:2rem">The LiteLLM supply chain attack</h2>
+
+  <p>Worth noting in this context: LiteLLM also had a significant security incident in March 2026. A PyPI supply chain attack compromised the package, potentially exposing API keys and request data for users who installed the affected version. If you were evaluating LiteLLM as a Helicone alternative, this incident is relevant to your risk assessment.</p>
+
+  <p>Self-hosted Go binaries like Trough and Stockyard avoid this attack surface entirely. There is no package manager in the dependency chain — you download a compiled binary and run it. No pip, no npm, no transitive dependencies that could be compromised. This is not a theoretical advantage; it is the difference between a supply chain attack affecting you and not affecting you.</p>
+
+  <h2 style="margin-top:2rem">The broader trend</h2>
+
+  <p>Helicone's acquisition reflects a pattern in the LLM tooling market: standalone observability tools being absorbed by larger platforms. The economics are straightforward — observability alone is hard to monetize at scale, so these tools get acquired for their technology and user base rather than growing independently.</p>
+
+  <p>For teams choosing LLM tools, this pattern argues for self-hosted options where possible. A managed service can be acquired, sunset, or repriced at any time. A binary on your server runs until you decide to stop it. The Helicone acquisition is not unusual — it is the expected outcome for most venture-funded developer tools that do not reach escape velocity.</p>
 </section>
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>

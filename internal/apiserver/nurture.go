@@ -117,12 +117,12 @@ Full pricing: https://stockyard.dev/pricing
 
 Two weeks in. If you are running more than a couple of Stockyard tools, the Hub makes life easier.
 
-Stockyard Hub is a management dashboard — one binary that installs, starts, stops, and monitors all your other tools. Set your license key once and Hub propagates it to every tool automatically.
+Stockyard Hub is a management dashboard — one binary that installs, starts, stops, and monitors all your other tools. Hub discovers all installed Stockyard tools, shows their status, and lets you start, stop, and install tools from the browser.
 
   curl -fsSL https://stockyard.dev/hub/install.sh | sh
-  STOCKYARD_LICENSE_KEY=your_key stockyard-hub
+  stockyard-hub
 
-Open http://localhost:8600/ui and you see every tool in the catalog. Click Install, click Start, and the tool's dashboard loads right in the Hub panel. No new tabs, no hunting for port numbers.
+Open http://localhost:9800/ui and you see every tool in the catalog. Click Install, click Start, and the tool's dashboard loads right in the Hub panel. No new tabs, no hunting for port numbers.
 
 Hub is included with every plan, including the free Community tier.
 
