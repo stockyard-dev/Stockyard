@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Cutoff and Kong Rate Limiting, consider what happens when you need to leave. Kong Rate Limiting exports vary in completeness — some fields, some history, some metadata may not come with you. Cutoff stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Kong Rate Limiting requires you to trust their infrastructure, their security practices, and their business continuity. Cutoff requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Cutoff and Kong Rate Limiting offer self-hosted options, but the operational requirements differ. Kong OSS is self-hostable but advanced features need paid license Cutoff is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Cutoff runs on a $5 VPS with no configuration. Self-hosting Kong Rate Limiting typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Kong Rate Limiting depends on how much history you need to bring over. If you only need active records, a manual re-entry through Cutoff's dashboard might be faster than writing a migration script. If you need full history, export from Kong Rate Limiting and use Cutoff's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Cutoff a Kong alternative?</div><div class="faq-a">Kong is a full API gateway. Cutoff is specifically a rate limiter. If you only need rate limiting, Cutoff is dramatically simpler and cheaper.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Dub is a strong product. There is no point pretending otherwise. Where Lasso earns its place is in situations where Dub cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, Dub may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Dub requires you to trust their infrastructure, their security practices, and their business continuity. Lasso requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Dub can be self-hosted, but the experience differs significantly from Lasso. Open source, self-hostable but requires Planetscale/MySQL, Redis, and Vercel With Lasso, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Dub does not have to be all-or-nothing. Some teams run Lasso for new data while keeping Dub as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Lasso a Dub alternative?</div><div class="faq-a">Both are link shorteners with analytics. Lasso is a single Go binary with embedded SQLite. Dub requires MySQL, Redis, and ideally Vercel to self-host.</div></div>

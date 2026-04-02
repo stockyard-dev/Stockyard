@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Prairie and Trello changes depending on team size. Trello at $5/user/mo (Standard) is reasonable for a solo user. At ten seats, the difference compounds. Prairie is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Prairie progressively cheaper while Trello gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Prairie and Trello could not be more different. Trello runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Prairie is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Trello</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Trello does not have to be all-or-nothing. Some teams run Prairie for new data while keeping Trello as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Prairie a Trello alternative?</div><div class="faq-a">Both provide kanban boards. Prairie is self-hosted. Trello has Power-Ups, Butler automation, and mobile apps.</div></div>

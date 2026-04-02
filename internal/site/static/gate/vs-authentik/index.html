@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Authentik is a strong product. There is no point pretending otherwise. Where Gate earns its place is in situations where Authentik cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, Authentik may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Gate runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Authentik can be self-hosted, but the experience differs significantly from Gate. Requires Docker, Postgres, and Redis With Gate, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Gate</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Authentik depends on how much history you need to bring over. If you only need active records, a manual re-entry through Gate's dashboard might be faster than writing a migration script. If you need full history, export from Authentik and use Gate's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Gate an Authentik alternative?</div><div class="faq-a">Authentik is a full identity provider (SSO, LDAP, MFA). Gate is a simple auth proxy with API keys and rate limiting. Different tools for different needs.</div></div>

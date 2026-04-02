@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Traefik Forward Auth alongside Gate tend to split on two axes: feature depth and data residency. Traefik Forward Auth wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Gate wins on residency — your reverse proxy and auth gateway data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Traefik Forward Auth requires you to trust their infrastructure, their security practices, and their business continuity. Gate requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Gate and Traefik Forward Auth offer self-hosted options, but the operational requirements differ. Requires Traefik proxy and an OAuth2 provider (Google, OIDC) Gate is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Gate runs on a $5 VPS with no configuration. Self-hosting Traefik Forward Auth typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Traefik Forward Auth and considering Gate, start by running both in parallel. Install Gate on a test server, point your workflow at it for a week, and compare the experience. Gate's data directory is isolated — running a trial costs nothing beyond the compute. If Gate does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Gate a Traefik Forward Auth alternative?</div><div class="faq-a">Traefik Forward Auth is middleware for Traefik. Gate is a standalone proxy with auth built in — no Traefik or OAuth provider needed.</div></div>

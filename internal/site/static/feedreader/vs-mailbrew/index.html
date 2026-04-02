@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Feedreader and Mailbrew usually comes down to one question: do you need the breadth of features that Mailbrew offers, or would a focused tool that stays out of your way be a better fit? Mailbrew has spent years building an ecosystem around rss-to-email digest. Feedreader does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Feedreader and Mailbrew could not be more different. Mailbrew runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Feedreader is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Mailbrew depends on how much history you need to bring over. If you only need active records, a manual re-entry through Feedreader's dashboard might be faster than writing a migration script. If you need full history, export from Mailbrew and use Feedreader's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Feedreader a Mailbrew alternative?</div><div class="faq-a">Mailbrew aggregates multiple sources into beautiful digests. Feedreader focuses on RSS-to-email. Mailbrew is more polished; Feedreader is self-hosted.</div></div>

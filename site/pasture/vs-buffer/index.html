@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Pasture and Buffer changes depending on team size. Buffer at $15/mo (Essentials) is reasonable for a solo user. At ten seats, the difference compounds. Pasture is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Pasture progressively cheaper while Buffer gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Buffer requires you to trust their infrastructure, their security practices, and their business continuity. Pasture requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Buffer</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Buffer to Pasture is straightforward for most teams. Export your data from Buffer (most services offer CSV or JSON export), then POST each record to Pasture's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Pasture's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Pasture a Buffer alternative?</div><div class="faq-a">Buffer connects directly to social platforms. Pasture schedules posts on your server. Buffer is more integrated; Pasture keeps your content private.</div></div>

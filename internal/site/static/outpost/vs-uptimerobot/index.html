@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Outpost and UptimeRobot changes depending on team size. UptimeRobot at $7/mo (Pro) is reasonable for a solo user. At ten seats, the difference compounds. Outpost is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Outpost progressively cheaper while UptimeRobot gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. UptimeRobot requires you to trust their infrastructure, their security practices, and their business continuity. Outpost requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Outpost</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from UptimeRobot depends on how much history you need to bring over. If you only need active records, a manual re-entry through Outpost's dashboard might be faster than writing a migration script. If you need full history, export from UptimeRobot and use Outpost's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Outpost an UptimeRobot alternative?</div><div class="faq-a">UptimeRobot monitors from external locations. Outpost monitors from your server. For external uptime checks, UptimeRobot is more appropriate. For internal service health, Outpost works.</div></div>

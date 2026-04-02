@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Decision Log and Confluence usually comes down to one question: do you need the breadth of features that Confluence offers, or would a focused tool that stays out of your way be a better fit? Confluence has spent years building an ecosystem around decision tracker. Decision Log does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Confluence requires you to trust their infrastructure, their security practices, and their business continuity. Decision Log requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Decision Log</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Confluence does not have to be all-or-nothing. Some teams run Decision Log for new data while keeping Confluence as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Decision Log a Confluence alternative?</div><div class="faq-a">Confluence is a full wiki. Decision Log specifically tracks decisions. Use Decision Log alongside your wiki, not instead of it.</div></div>

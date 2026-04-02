@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Ledger and QuickBooks changes depending on team size. QuickBooks at $15/mo (Simple Start) is reasonable for a solo user. At ten seats, the difference compounds. Ledger is a flat $2.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Ledger progressively cheaper while QuickBooks gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. QuickBooks requires you to trust their infrastructure, their security practices, and their business continuity. Ledger requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from QuickBooks depends on how much history you need to bring over. If you only need active records, a manual re-entry through Ledger's dashboard might be faster than writing a migration script. If you need full history, export from QuickBooks and use Ledger's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Ledger a QuickBooks alternative?</div><div class="faq-a">Ledger handles double-entry bookkeeping. QuickBooks is a full accounting platform with payroll, tax filing, and bank feeds.</div></div>

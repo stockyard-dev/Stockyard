@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Pipedream is a strong product. There is no point pretending otherwise. Where Corral earns its place is in situations where Pipedream cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, Pipedream may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Corral runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Corral</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Pipedream to Corral is straightforward for most teams. Export your data from Pipedream (most services offer CSV or JSON export), then POST each record to Corral's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Corral's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Corral a Pipedream alternative?</div><div class="faq-a">Corral focuses on webhook capture, inspection, and replay. Pipedream is a full workflow automation platform. They overlap on webhook receiving but serve different purposes.</div></div>

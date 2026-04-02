@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Campfire and Geekbot, consider what happens when you need to leave. Geekbot exports vary in completeness — some fields, some history, some metadata may not come with you. Campfire stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Campfire runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Geekbot does not have to be all-or-nothing. Some teams run Campfire for new data while keeping Geekbot as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Campfire a Geekbot alternative?</div><div class="faq-a">Geekbot runs inside Slack. Campfire is a standalone self-hosted standup tool. Different delivery, same purpose.</div></div>

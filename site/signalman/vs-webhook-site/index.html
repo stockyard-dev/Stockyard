@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Signalman and Webhook.site usually comes down to one question: do you need the breadth of features that Webhook.site offers, or would a focused tool that stays out of your way be a better fit? Webhook.site has spent years building an ecosystem around webhook debugger. Signalman does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Signalman and Webhook.site could not be more different. Webhook.site runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Signalman is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Signalman</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Webhook.site to Signalman is straightforward for most teams. Export your data from Webhook.site (most services offer CSV or JSON export), then POST each record to Signalman's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Signalman's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Signalman a Webhook.site alternative?</div><div class="faq-a">Webhook.site gives you instant temporary endpoints. Signalman is self-hosted for permanent webhook debugging. Both inspect requests; different deployment models.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Paddock and Instatus usually comes down to one question: do you need the breadth of features that Instatus offers, or would a focused tool that stays out of your way be a better fit? Instatus has spent years building an ecosystem around public status page. Paddock does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Instatus requires you to trust their infrastructure, their security practices, and their business continuity. Paddock requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Paddock</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Instatus to Paddock is straightforward for most teams. Export your data from Instatus (most services offer CSV or JSON export), then POST each record to Paddock's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Paddock's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Paddock an Instatus alternative?</div><div class="faq-a">Both create public status pages. Paddock is self-hosted. Instatus is managed with monitoring integrations.</div></div>

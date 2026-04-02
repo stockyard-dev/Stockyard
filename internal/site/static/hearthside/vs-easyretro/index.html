@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Choosing between Hearthside and EasyRetro is less about which tool is better and more about what kind of infrastructure you want to maintain. EasyRetro at $25/mo (Team) handles hosting, backups, and uptime for you. Hearthside at $0.99/mo shifts that responsibility to you — but also shifts the control. If you already run servers, Hearthside adds negligible operational burden. If you do not, EasyRetro removes it entirely.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Hearthside and EasyRetro could not be more different. EasyRetro runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Hearthside is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from EasyRetro depends on how much history you need to bring over. If you only need active records, a manual re-entry through Hearthside's dashboard might be faster than writing a migration script. If you need full history, export from EasyRetro and use Hearthside's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Hearthside an EasyRetro alternative?</div><div class="faq-a">EasyRetro has polished real-time collaboration and voting. Hearthside is a simpler self-hosted retro tool.</div></div>

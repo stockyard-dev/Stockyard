@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Hotjar alongside Parlor tend to split on two axes: feature depth and data residency. Hotjar wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Parlor wins on residency — your customer feedback widget data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Parlor and Hotjar could not be more different. Hotjar runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Parlor is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Parlor</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Hotjar depends on how much history you need to bring over. If you only need active records, a manual re-entry through Parlor's dashboard might be faster than writing a migration script. If you need full history, export from Hotjar and use Parlor's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Parlor a Hotjar alternative?</div><div class="faq-a">Hotjar does heatmaps, recordings, and surveys. Parlor does feedback collection only. Different scope — Parlor is privacy-first.</div></div>

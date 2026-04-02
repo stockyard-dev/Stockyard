@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Codex and GitHub Gist changes depending on team size. GitHub Gist at Free / $4/mo (Pro) is reasonable for a solo user. At ten seats, the difference compounds. Codex is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Codex progressively cheaper while GitHub Gist gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Codex and GitHub Gist could not be more different. GitHub Gist runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Codex is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from GitHub Gist</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from GitHub Gist depends on how much history you need to bring over. If you only need active records, a manual re-entry through Codex's dashboard might be faster than writing a migration script. If you need full history, export from GitHub Gist and use Codex's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Codex a GitHub Gist alternative?</div><div class="faq-a">Gist is free for public snippets and Git-backed. Codex is self-hosted with better organization (folders, tags). Different use cases.</div></div>

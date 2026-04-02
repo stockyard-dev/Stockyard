@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating OAuth2 Proxy alongside Gate tend to split on two axes: feature depth and data residency. OAuth2 Proxy wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Gate wins on residency — your reverse proxy and auth gateway data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. OAuth2 Proxy requires you to trust their infrastructure, their security practices, and their business continuity. Gate requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Gate and OAuth2 Proxy offer self-hosted options, but the operational requirements differ. Single binary, but requires an external OAuth2 provider and a reverse proxy Gate is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Gate runs on a $5 VPS with no configuration. Self-hosting OAuth2 Proxy typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from OAuth2 Proxy to Gate is straightforward for most teams. Export your data from OAuth2 Proxy (most services offer CSV or JSON export), then POST each record to Gate's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Gate's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Gate an OAuth2 Proxy alternative?</div><div class="faq-a">They serve different auth models. OAuth2 Proxy delegates to external OAuth providers (Google, GitHub). Gate provides API key auth, rate limiting, and IP allowlists without an external provider.</div></div>

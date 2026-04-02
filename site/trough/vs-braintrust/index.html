@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Braintrust alongside Trough tend to split on two axes: feature depth and data residency. Braintrust wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Trough wins on residency — your llm api cost monitor data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Trough runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Trough</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Braintrust depends on how much history you need to bring over. If you only need active records, a manual re-entry through Trough's dashboard might be faster than writing a migration script. If you need full history, export from Braintrust and use Trough's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Trough a Braintrust alternative?</div><div class="faq-a">Braintrust is for LLM evaluation and experiment tracking. Trough focuses specifically on API cost monitoring. They solve different problems.</div></div>

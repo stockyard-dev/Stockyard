@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">BambooHR is a strong product. There is no point pretending otherwise. Where Roster earns its place is in situations where BambooHR cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, BambooHR may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Roster and BambooHR could not be more different. BambooHR runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Roster is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Roster</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using BambooHR and considering Roster, start by running both in parallel. Install Roster on a test server, point your workflow at it for a week, and compare the experience. Roster's data directory is isolated — running a trial costs nothing beyond the compute. If Roster does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Roster a BambooHR alternative?</div><div class="faq-a">BambooHR is a full HRIS. Roster is a team directory. Very different scope — Roster handles the org chart, not payroll or PTO.</div></div>

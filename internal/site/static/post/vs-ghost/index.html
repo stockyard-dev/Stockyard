@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Post and Ghost changes depending on team size. Ghost at $25/mo (Starter) is reasonable for a solo user. At ten seats, the difference compounds. Post is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Post progressively cheaper while Ghost gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Ghost requires you to trust their infrastructure, their security practices, and their business continuity. Post requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Ghost can be self-hosted, but the experience differs significantly from Post. Self-hosted option requires Node.js, MySQL, and ongoing maintenance With Post, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Post</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Ghost and considering Post, start by running both in parallel. Install Post on a test server, point your workflow at it for a week, and compare the experience. Post's data directory is isolated — running a trial costs nothing beyond the compute. If Post does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Post a Ghost alternative?</div><div class="faq-a">Post handles basic blogging (Markdown posts, RSS, custom domain). Ghost is a full publishing platform with membership, payments, and newsletters.</div></div>

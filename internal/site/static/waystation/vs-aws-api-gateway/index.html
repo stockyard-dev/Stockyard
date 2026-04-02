@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Waystation and AWS API Gateway changes depending on team size. AWS API Gateway at $1/million requests is reasonable for a solo user. At ten seats, the difference compounds. Waystation is a flat $1.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Waystation progressively cheaper while AWS API Gateway gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Waystation runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Waystation</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from AWS API Gateway does not have to be all-or-nothing. Some teams run Waystation for new data while keeping AWS API Gateway as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Waystation an AWS API Gateway alternative?</div><div class="faq-a">AWS API Gateway is deeply integrated with AWS and auto-scales. Waystation is self-hosted with flat pricing. Choose based on your infrastructure.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating SendGrid alongside Pony Express tend to split on two axes: feature depth and data residency. SendGrid wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Pony Express wins on residency — your transactional email sender data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. SendGrid requires you to trust their infrastructure, their security practices, and their business continuity. Pony Express requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from SendGrid does not have to be all-or-nothing. Some teams run Pony Express for new data while keeping SendGrid as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Pony Express a SendGrid alternative?</div><div class="faq-a">SendGrid is enterprise email infrastructure. Pony Express is self-hosted for teams sending moderate volumes who want control over their email data.</div></div>

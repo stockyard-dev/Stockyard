@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Choosing between Fence and Kong Gateway is less about which tool is better and more about what kind of infrastructure you want to maintain. Kong Gateway at $250/mo (Plus) handles hosting, backups, and uptime for you. Fence at $4.99/mo shifts that responsibility to you — but also shifts the control. If you already run servers, Fence adds negligible operational burden. If you do not, Kong Gateway removes it entirely.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Kong Gateway requires you to trust their infrastructure, their security practices, and their business continuity. Fence requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Fence and Kong Gateway offer self-hosted options, but the operational requirements differ. Open source core, but advanced features need Enterprise license Fence is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Fence runs on a $5 VPS with no configuration. Self-hosting Kong Gateway typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Kong Gateway</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Kong Gateway does not have to be all-or-nothing. Some teams run Fence for new data while keeping Kong Gateway as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Fence a Kong alternative?</div><div class="faq-a">Kong is a full API gateway. Fence focuses specifically on API key management. If you need traffic routing and plugins, Kong is necessary. If you just need key management, Fence is simpler.</div></div>

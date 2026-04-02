@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Surveyor and Tally changes depending on team size. Tally at Free (generous) / $29/mo is reasonable for a solo user. At ten seats, the difference compounds. Surveyor is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Surveyor progressively cheaper while Tally gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Surveyor runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Tally to Surveyor is straightforward for most teams. Export your data from Tally (most services offer CSV or JSON export), then POST each record to Surveyor's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Surveyor's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Surveyor a Tally alternative?</div><div class="faq-a">Tally is a free managed form builder. Surveyor is self-hosted for teams that need form data on their own server.</div></div>

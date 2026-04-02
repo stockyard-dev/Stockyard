@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Rustler and Apify, consider what happens when you need to leave. Apify exports vary in completeness — some fields, some history, some metadata may not come with you. Rustler stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Rustler and Apify could not be more different. Apify runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Rustler is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Apify</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Apify and considering Rustler, start by running both in parallel. Install Rustler on a test server, point your workflow at it for a week, and compare the experience. Rustler's data directory is isolated — running a trial costs nothing beyond the compute. If Rustler does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Rustler an Apify alternative?</div><div class="faq-a">Apify is a full scraping platform with headless browsers and proxy rotation. Rustler does CSS-based scraping as a single binary. Very different capability.</div></div>

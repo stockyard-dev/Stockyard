@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Seismograph and Rollbar changes depending on team size. Rollbar at $13/mo (Essentials) is reasonable for a solo user. At ten seats, the difference compounds. Seismograph is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Seismograph progressively cheaper while Rollbar gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Seismograph runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Rollbar does not have to be all-or-nothing. Some teams run Seismograph for new data while keeping Rollbar as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Seismograph a Rollbar alternative?</div><div class="faq-a">Both track application errors and group them for debugging. Seismograph is self-hosted (single binary). Rollbar is a managed cloud service.</div></div>

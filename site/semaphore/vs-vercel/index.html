@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Choosing between Semaphore and Vercel is less about which tool is better and more about what kind of infrastructure you want to maintain. Vercel at $20/user/mo (Pro) handles hosting, backups, and uptime for you. Semaphore at $0.99/mo shifts that responsibility to you — but also shifts the control. If you already run servers, Semaphore adds negligible operational burden. If you do not, Vercel removes it entirely.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Vercel requires you to trust their infrastructure, their security practices, and their business continuity. Semaphore requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Vercel</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Vercel depends on how much history you need to bring over. If you only need active records, a manual re-entry through Semaphore's dashboard might be faster than writing a migration script. If you need full history, export from Vercel and use Semaphore's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Semaphore a Vercel alternative?</div><div class="faq-a">Vercel is optimized for Next.js with a global CDN. Semaphore deploys any application to any server via SSH. Different approaches to deployment.</div></div>

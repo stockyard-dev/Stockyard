@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Feedly is a strong product. There is no point pretending otherwise. Where Herald earns its place is in situations where Feedly cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, Feedly may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Feedly requires you to trust their infrastructure, their security practices, and their business continuity. Herald requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Feedly</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Feedly to Herald is straightforward for most teams. Export your data from Feedly (most services offer CSV or JSON export), then POST each record to Herald's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Herald's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Herald a Feedly alternative?</div><div class="faq-a">Feedly has AI features and polished apps. Herald is a self-hosted RSS reader for privacy. Different priorities.</div></div>

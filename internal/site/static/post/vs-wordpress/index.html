@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Post and WordPress usually comes down to one question: do you need the breadth of features that WordPress offers, or would a focused tool that stays out of your way be a better fit? WordPress has spent years building an ecosystem around blog engine. Post does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. WordPress requires you to trust their infrastructure, their security practices, and their business continuity. Post requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Post and WordPress offer self-hosted options, but the operational requirements differ. Self-hosted requires PHP, MySQL, and ongoing security maintenance Post is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Post runs on a $5 VPS with no configuration. Self-hosting WordPress typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Post</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from WordPress depends on how much history you need to bring over. If you only need active records, a manual re-entry through Post's dashboard might be faster than writing a migration script. If you need full history, export from WordPress and use Post's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Post a WordPress alternative?</div><div class="faq-a">Post handles simple Markdown blogging. WordPress is a full CMS with 60,000+ plugins. If you need plugins or e-commerce, WordPress is necessary.</div></div>

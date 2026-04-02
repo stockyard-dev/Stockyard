@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Sentinel and PagerDuty, consider what happens when you need to leave. PagerDuty exports vary in completeness — some fields, some history, some metadata may not come with you. Sentinel stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Sentinel runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Sentinel</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using PagerDuty and considering Sentinel, start by running both in parallel. Install Sentinel on a test server, point your workflow at it for a week, and compare the experience. Sentinel's data directory is isolated — running a trial costs nothing beyond the compute. If Sentinel does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Sentinel a PagerDuty alternative?</div><div class="faq-a">Both handle on-call alerting. Sentinel is self-hosted at $0.99/mo flat. PagerDuty is managed with 400+ integrations and $17/user/mo pricing.</div></div>

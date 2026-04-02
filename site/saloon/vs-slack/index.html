@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Slack alongside Saloon tend to split on two axes: feature depth and data residency. Slack wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Saloon wins on residency — your team chat data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Slack requires you to trust their infrastructure, their security practices, and their business continuity. Saloon requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Saloon</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Slack does not have to be all-or-nothing. Some teams run Saloon for new data while keeping Slack as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Saloon a Slack alternative?</div><div class="faq-a">Slack has 10,000+ integrations and is the industry standard. Saloon is self-hosted team chat for teams that need message privacy. Very different ecosystems.</div></div>

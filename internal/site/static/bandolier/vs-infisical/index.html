@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Infisical alongside Bandolier tend to split on two axes: feature depth and data residency. Infisical wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Bandolier wins on residency — your environment variable manager data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Bandolier and Infisical could not be more different. Infisical runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Bandolier is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Infisical can be self-hosted, but the experience differs significantly from Bandolier. Open source, self-hostable with Docker, Postgres, and Redis With Bandolier, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Bandolier</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Infisical does not have to be all-or-nothing. Some teams run Bandolier for new data while keeping Infisical as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Bandolier an Infisical alternative?</div><div class="faq-a">Both manage environment variables and secrets. Bandolier is a single binary focused on env vars. Infisical is a broader secret management platform with CI/CD integrations.</div></div>

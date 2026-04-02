@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Notify and OneSignal changes depending on team size. OneSignal at Free (10K subs) / $9/mo is reasonable for a solo user. At ten seats, the difference compounds. Notify is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Notify progressively cheaper while OneSignal gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Notify runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from OneSignal</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using OneSignal and considering Notify, start by running both in parallel. Install Notify on a test server, point your workflow at it for a week, and compare the experience. Notify's data directory is isolated — running a trial costs nothing beyond the compute. If Notify does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Notify a OneSignal alternative?</div><div class="faq-a">OneSignal handles web, iOS, and Android push with segmentation. Notify focuses on web push from your own server.</div></div>

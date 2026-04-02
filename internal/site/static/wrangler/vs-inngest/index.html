@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Wrangler and Inngest changes depending on team size. Inngest at $50/mo (Pro) is reasonable for a solo user. At ten seats, the difference compounds. Wrangler is a flat $1.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Wrangler progressively cheaper while Inngest gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Wrangler runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Inngest</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Inngest does not have to be all-or-nothing. Some teams run Wrangler for new data while keeping Inngest as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Wrangler an Inngest alternative?</div><div class="faq-a">They solve different problems. Wrangler runs scheduled ETL pipelines. Inngest runs event-driven durable functions. Wrangler is simpler; Inngest is more powerful for complex workflows.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Beamer alongside Branding Iron tend to split on two axes: feature depth and data residency. Beamer wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Branding Iron wins on residency — your release notes manager data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Branding Iron runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Beamer</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Beamer does not have to be all-or-nothing. Some teams run Branding Iron for new data while keeping Beamer as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Branding Iron a Beamer alternative?</div><div class="faq-a">Beamer is a full product communication platform. Branding Iron focuses on release notes and changelogs as a self-hosted tool.</div></div>

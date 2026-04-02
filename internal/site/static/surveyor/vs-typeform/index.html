@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Surveyor and Typeform, consider what happens when you need to leave. Typeform exports vary in completeness — some fields, some history, some metadata may not come with you. Surveyor stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Surveyor and Typeform could not be more different. Typeform runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Surveyor is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Typeform and considering Surveyor, start by running both in parallel. Install Surveyor on a test server, point your workflow at it for a week, and compare the experience. Surveyor's data directory is isolated — running a trial costs nothing beyond the compute. If Surveyor does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Surveyor a Typeform alternative?</div><div class="faq-a">Both create forms and surveys. Surveyor is self-hosted (single binary, your server). Typeform is a managed service with a conversational UI.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Dispatch and Temporal, consider what happens when you need to leave. Temporal exports vary in completeness — some fields, some history, some metadata may not come with you. Dispatch stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Dispatch runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Temporal can be self-hosted, but the experience differs significantly from Dispatch. OSS requires Cassandra/Postgres, Elasticsearch, and multiple services With Dispatch, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Temporal</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Temporal to Dispatch is straightforward for most teams. Export your data from Temporal (most services offer CSV or JSON export), then POST each record to Dispatch's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Dispatch's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Dispatch a Temporal alternative?</div><div class="faq-a">Temporal handles durable workflow orchestration. Dispatch routes tasks to workers. Temporal is far more capable; Dispatch is far simpler.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Drover and Sidekiq changes depending on team size. Sidekiq at $99/mo (Pro) is reasonable for a solo user. At ten seats, the difference compounds. Drover is a flat $1.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Drover progressively cheaper while Sidekiq gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Drover runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Sidekiq can be self-hosted, but the experience differs significantly from Drover. Open source but requires Ruby and Redis With Drover, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Sidekiq depends on how much history you need to bring over. If you only need active records, a manual re-entry through Drover's dashboard might be faster than writing a migration script. If you need full history, export from Sidekiq and use Drover's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Drover a Sidekiq alternative?</div><div class="faq-a">Both process background jobs. Sidekiq requires Ruby and Redis. Drover is a single Go binary with HTTP API, usable from any language.</div></div>

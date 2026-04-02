@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Zoho Invoice is a strong product. There is no point pretending otherwise. Where Billfold earns its place is in situations where Zoho Invoice cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, Zoho Invoice may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Zoho Invoice requires you to trust their infrastructure, their security practices, and their business continuity. Billfold requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Zoho Invoice and considering Billfold, start by running both in parallel. Install Billfold on a test server, point your workflow at it for a week, and compare the experience. Billfold's data directory is isolated — running a trial costs nothing beyond the compute. If Billfold does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Billfold a Zoho Invoice alternative?</div><div class="faq-a">Both create and send invoices. Billfold is self-hosted (single binary). Zoho Invoice is part of the Zoho cloud suite.</div></div>

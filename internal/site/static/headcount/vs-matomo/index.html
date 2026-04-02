@@ -159,6 +159,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Headcount and Matomo usually comes down to one question: do you need the breadth of features that Matomo offers, or would a focused tool that stays out of your way be a better fit? Matomo has spent years building an ecosystem around user analytics. Headcount does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Headcount runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Headcount and Matomo offer self-hosted options, but the operational requirements differ. Self-hostable but requires PHP, MySQL, and a web server Headcount is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Headcount runs on a $5 VPS with no configuration. Self-hosting Matomo typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Matomo does not have to be all-or-nothing. Some teams run Headcount for new data while keeping Matomo as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Headcount a Matomo alternative?</div><div class="faq-a">Matomo is a full GA replacement with heatmaps and session recording. Headcount focuses on simple event tracking and funnels as a single binary.</div></div>

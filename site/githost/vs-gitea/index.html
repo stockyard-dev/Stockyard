@@ -159,6 +159,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Choosing between Git Host and Gitea is less about which tool is better and more about what kind of infrastructure you want to maintain. Gitea at Free (OSS) handles hosting, backups, and uptime for you. Git Host at $1.99/mo shifts that responsibility to you — but also shifts the control. If you already run servers, Git Host adds negligible operational burden. If you do not, Gitea removes it entirely.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Gitea requires you to trust their infrastructure, their security practices, and their business continuity. Git Host requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Gitea can be self-hosted, but the experience differs significantly from Git Host. Self-hostable, single binary (Go), but uses external database for production With Git Host, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Gitea</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Gitea and considering Git Host, start by running both in parallel. Install Git Host on a test server, point your workflow at it for a week, and compare the experience. Git Host's data directory is isolated — running a trial costs nothing beyond the compute. If Git Host does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Git Host a Gitea alternative?</div><div class="faq-a">Gitea is a full GitHub-like platform with issues, PRs, and CI. Git Host just hosts Git repos with a web viewer. Gitea is far more capable.</div></div>

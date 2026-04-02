@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Wrangler and Fivetran, consider what happens when you need to leave. Fivetran exports vary in completeness — some fields, some history, some metadata may not come with you. Wrangler stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Wrangler and Fivetran could not be more different. Fivetran runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Wrangler is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Migration path</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Fivetran to Wrangler is straightforward for most teams. Export your data from Fivetran (most services offer CSV or JSON export), then POST each record to Wrangler's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Wrangler's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Wrangler a Fivetran alternative?</div><div class="faq-a">Fivetran has 400+ connectors and zero-maintenance syncs. Wrangler is for simple, config-based ETL pipelines on your own server. Different scale, different price.</div></div>

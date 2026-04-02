@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating FreshBooks alongside Billfold tend to split on two axes: feature depth and data residency. FreshBooks wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Billfold wins on residency — your invoice generator data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. FreshBooks requires you to trust their infrastructure, their security practices, and their business continuity. Billfold requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Billfold</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from FreshBooks depends on how much history you need to bring over. If you only need active records, a manual re-entry through Billfold's dashboard might be faster than writing a migration script. If you need full history, export from FreshBooks and use Billfold's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Billfold a FreshBooks alternative?</div><div class="faq-a">Billfold handles invoicing (create, send, track). FreshBooks is a full accounting platform with expense tracking, time tracking, and tax features.</div></div>

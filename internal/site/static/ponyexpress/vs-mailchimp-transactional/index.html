@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Pony Express and Mailchimp Transactional changes depending on team size. Mailchimp Transactional at $20/mo (25k emails) is reasonable for a solo user. At ten seats, the difference compounds. Pony Express is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Pony Express progressively cheaper while Mailchimp Transactional gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Pony Express runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Mailchimp Transactional</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Mailchimp Transactional to Pony Express is straightforward for most teams. Export your data from Mailchimp Transactional (most services offer CSV or JSON export), then POST each record to Pony Express's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Pony Express's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Pony Express a Mailchimp Transactional alternative?</div><div class="faq-a">Both send transactional emails (receipts, notifications, alerts). Pony Express is self-hosted. Mailchimp Transactional is managed with established deliverability.</div></div>

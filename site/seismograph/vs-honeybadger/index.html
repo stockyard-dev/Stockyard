@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The decision between Seismograph and Honeybadger usually comes down to one question: do you need the breadth of features that Honeybadger offers, or would a focused tool that stays out of your way be a better fit? Honeybadger has spent years building an ecosystem around error tracker. Seismograph does one thing well and gives you complete control of the underlying data.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Seismograph and Honeybadger could not be more different. Honeybadger runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Seismograph is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Honeybadger</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Honeybadger to Seismograph is straightforward for most teams. Export your data from Honeybadger (most services offer CSV or JSON export), then POST each record to Seismograph's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Seismograph's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Seismograph a Honeybadger alternative?</div><div class="faq-a">Honeybadger combines errors, uptime, and check-ins. Seismograph focuses on error tracking only, self-hosted.</div></div>

@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Mockoon alongside Mirage tend to split on two axes: feature depth and data residency. Mockoon wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Mirage wins on residency — your api mock server data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Mockoon requires you to trust their infrastructure, their security practices, and their business continuity. Mirage requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Mirage and Mockoon offer self-hosted options, but the operational requirements differ. Desktop app is local. Cloud sync requires subscription. Mirage is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Mirage runs on a $5 VPS with no configuration. Self-hosting Mockoon typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Mockoon</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Mockoon does not have to be all-or-nothing. Some teams run Mirage for new data while keeping Mockoon as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Mirage a Mockoon alternative?</div><div class="faq-a">Mockoon is a desktop app for local API mocking. Mirage is a server-based mock service for shared team use.</div></div>

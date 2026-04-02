@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Choosing between Smelter and Retool is less about which tool is better and more about what kind of infrastructure you want to maintain. Retool at $10/user/mo (Team) handles hosting, backups, and uptime for you. Smelter at $0.99/mo shifts that responsibility to you — but also shifts the control. If you already run servers, Smelter adds negligible operational burden. If you do not, Retool removes it entirely.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Retool requires you to trust their infrastructure, their security practices, and their business continuity. Smelter requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Retool can be self-hosted, but the experience differs significantly from Smelter. Self-hosted available but requires Docker and Postgres With Smelter, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Smelter</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Retool to Smelter is straightforward for most teams. Export your data from Retool (most services offer CSV or JSON export), then POST each record to Smelter's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Smelter's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Smelter a Retool alternative?</div><div class="faq-a">Retool builds internal tools with UIs and databases. Smelter transforms data between formats. Very different products despite both handling data.</div></div>

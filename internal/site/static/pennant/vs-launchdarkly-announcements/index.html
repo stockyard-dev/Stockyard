@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Pennant and LaunchDarkly changes depending on team size. LaunchDarkly at $10/seat/mo is reasonable for a solo user. At ten seats, the difference compounds. Pennant is a flat $0.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Pennant progressively cheaper while LaunchDarkly gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Pennant and LaunchDarkly could not be more different. LaunchDarkly runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Pennant is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Pennant</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from LaunchDarkly does not have to be all-or-nothing. Some teams run Pennant for new data while keeping LaunchDarkly as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">What is Pennant?</div><div class="faq-a">Pennant is a self-hosted tool for managing announcement bars on your website. Create announcements, schedule them, target by URL or user segment, and track clicks.</div></div>

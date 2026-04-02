@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The pricing math between Flume and Apache Kafka changes depending on team size. Apache Kafka at Free (OSS) / $0.11/GB (Confluent) is reasonable for a solo user. At ten seats, the difference compounds. Flume is a flat $1.99/mo regardless of seats — the binary does not count how many people use it. For growing teams, this makes Flume progressively cheaper while Apache Kafka gets progressively more expensive.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Flume runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Apache Kafka can be self-hosted, but the experience differs significantly from Flume. Self-hostable but requires ZooKeeper/KRaft, significant ops overhead With Flume, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Flume</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Apache Kafka and considering Flume, start by running both in parallel. Install Flume on a test server, point your workflow at it for a week, and compare the experience. Flume's data directory is isolated — running a trial costs nothing beyond the compute. If Flume does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Flume a Kafka alternative?</div><div class="faq-a">Kafka handles millions of events/sec across clusters. Flume handles simple event streaming as a single binary. Very different scale.</div></div>

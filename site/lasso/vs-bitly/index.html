@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Bitly is a strong product. There is no point pretending otherwise. Where Lasso earns its place is in situations where Bitly cannot be used — airgapped environments, regulated industries, teams with strict data sovereignty requirements, or simply developers who prefer tools they can inspect end to end. If none of those constraints apply, Bitly may genuinely be the better choice.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Lasso and Bitly could not be more different. Bitly runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Lasso is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Lasso</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Bitly depends on how much history you need to bring over. If you only need active records, a manual re-entry through Lasso's dashboard might be faster than writing a migration script. If you need full history, export from Bitly and use Lasso's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Lasso a Bitly alternative?</div><div class="faq-a">Both shorten URLs and track clicks. Lasso is self-hosted on your domain. Bitly is a managed service with the bit.ly brand.</div></div>

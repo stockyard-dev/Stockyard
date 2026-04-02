@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating ConvertKit alongside Soapbox tend to split on two axes: feature depth and data residency. ConvertKit wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Soapbox wins on residency — your newsletter platform data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Soapbox and ConvertKit could not be more different. ConvertKit runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Soapbox is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from ConvertKit</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from ConvertKit to Soapbox is straightforward for most teams. Export your data from ConvertKit (most services offer CSV or JSON export), then POST each record to Soapbox's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Soapbox's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Soapbox a ConvertKit alternative?</div><div class="faq-a">ConvertKit has deliverability infrastructure and creator commerce. Soapbox is self-hosted newsletter sending. ConvertKit is more capable; Soapbox keeps data private.</div></div>

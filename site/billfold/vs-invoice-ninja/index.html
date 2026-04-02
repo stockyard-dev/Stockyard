@@ -159,6 +159,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Invoice Ninja alongside Billfold tend to split on two axes: feature depth and data residency. Invoice Ninja wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Billfold wins on residency — your invoice generator data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Billfold and Invoice Ninja could not be more different. Invoice Ninja runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Billfold is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Both Billfold and Invoice Ninja offer self-hosted options, but the operational requirements differ. Open source, self-hostable with PHP, MySQL, and a web server Billfold is a single binary with embedded SQLite — no containers, no external databases, no orchestration. The practical difference: Billfold runs on a $5 VPS with no configuration. Self-hosting Invoice Ninja typically requires a more substantial infrastructure investment.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Invoice Ninja</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Invoice Ninja does not have to be all-or-nothing. Some teams run Billfold for new data while keeping Invoice Ninja as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Billfold an Invoice Ninja alternative?</div><div class="faq-a">Invoice Ninja is a full invoicing platform with time tracking and payments. Billfold focuses on creating and sending invoices as a single binary.</div></div>

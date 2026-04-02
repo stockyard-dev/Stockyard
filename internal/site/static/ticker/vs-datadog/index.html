@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Deciding between the two</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Ticker and Datadog, consider what happens when you need to leave. Datadog exports vary in completeness — some fields, some history, some metadata may not come with you. Ticker stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Datadog requires you to trust their infrastructure, their security practices, and their business continuity. Ticker requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Ticker</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Moving from Datadog does not have to be all-or-nothing. Some teams run Ticker for new data while keeping Datadog as a read-only archive of historical records. The API makes it straightforward to build a sync script if you need both systems to reflect the same data during a transition period.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Ticker a Datadog alternative?</div><div class="faq-a">Datadog is a full observability platform. Ticker is a simple self-hosted metrics dashboard. If you need APM and log management, Datadog is necessary.</div></div>

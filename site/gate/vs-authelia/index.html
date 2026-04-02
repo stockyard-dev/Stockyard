@@ -159,6 +159,25 @@ ul.prose{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9}
   </p>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Gate and Authelia, consider what happens when you need to leave. Authelia exports vary in completeness — some fields, some history, some metadata may not come with you. Gate stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Gate runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Authelia can be self-hosted, but the experience differs significantly from Gate. Requires Docker, Postgres/MySQL, Redis, and a reverse proxy (Traefik/Nginx) With Gate, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Authelia</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Authelia depends on how much history you need to bring over. If you only need active records, a manual re-entry through Gate's dashboard might be faster than writing a migration script. If you need full history, export from Authelia and use Gate's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="cta-strip">
   <h2>Auth for internal tools in 60 seconds.</h2>
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem">Single binary. No config files. No Redis. Free to start.</p>

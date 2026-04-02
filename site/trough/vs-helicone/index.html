@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">Making the decision</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Choosing between Trough and Helicone is less about which tool is better and more about what kind of infrastructure you want to maintain. Helicone at $20/mo (Pro) handles hosting, backups, and uptime for you. Trough at $2.99/mo shifts that responsibility to you — but also shifts the control. If you already run servers, Trough adds negligible operational burden. If you do not, Helicone removes it entirely.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Technical differences</div>
+    <p style="color:var(--cream-dim);line-height:1.8">The operational difference is significant. Helicone requires you to trust their infrastructure, their security practices, and their business continuity. Trough requires you to run a process and keep the data directory backed up. If your server dies, restore the binary and the SQLite file to a new server. The entire recovery procedure fits in a single paragraph because there is nothing else involved.</p>
+    <p style="color:var(--cream-dim);line-height:1.8">Helicone can be self-hosted, but the experience differs significantly from Trough. Open source but requires Postgres, Clickhouse, and Docker With Trough, self-hosting means downloading one file and running it. The gap in operational complexity matters most for small teams without dedicated DevOps staff.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Trough</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Switching from Helicone to Trough is straightforward for most teams. Export your data from Helicone (most services offer CSV or JSON export), then POST each record to Trough's API. A migration script that reads the export and writes to <code>/api/</code> endpoints typically takes less than 50 lines of code. The reverse migration is equally simple — Trough's SQLite database is a standard file you can query with any SQLite client.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Trough a Helicone alternative?</div><div class="faq-a">Both track LLM API costs. Trough is a self-hosted single binary. Helicone was acquired by Mintlify in March 2026 and is in maintenance mode.</div></div>

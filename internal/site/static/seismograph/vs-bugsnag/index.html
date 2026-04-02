@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">How to choose</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Teams evaluating Bugsnag alongside Seismograph tend to split on two axes: feature depth and data residency. Bugsnag wins on feature depth — it is a mature product with integrations, mobile apps, and a dedicated support team. Seismograph wins on residency — your error tracker data lives on your server in a SQLite file you can inspect, back up, and migrate without asking anyone for permission.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">Architecture comparison</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Seismograph runs as a single static binary with an embedded SQLite database. There is no application server, no cache layer, no background worker. One process handles HTTP requests and reads from and writes to the database file directly. This simplicity is the entire point — fewer moving parts means fewer things that can break at 2 AM.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Moving to Seismograph</div>
+  <p style="color:var(--cream-dim);line-height:1.8">If you are currently using Bugsnag and considering Seismograph, start by running both in parallel. Install Seismograph on a test server, point your workflow at it for a week, and compare the experience. Seismograph's data directory is isolated — running a trial costs nothing beyond the compute. If Seismograph does not fit, delete the binary and the data directory. There is nothing else to clean up.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Seismograph a Bugsnag alternative?</div><div class="faq-a">Both track errors. Seismograph is self-hosted (single binary). Bugsnag is managed with strong mobile SDKs.</div></div>

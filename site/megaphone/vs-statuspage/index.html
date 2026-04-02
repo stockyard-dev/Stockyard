@@ -160,6 +160,25 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
   </div>
 </section>
 
+
+<section class="section">
+  <div class="section-label">The trade-off</div>
+  <p style="color:var(--cream-dim);line-height:1.8">Before choosing between Megaphone and Statuspage, consider what happens when you need to leave. Statuspage exports vary in completeness — some fields, some history, some metadata may not come with you. Megaphone stores everything in a single SQLite file. Leaving means copying that file. This is not a hypothetical concern: the average team changes tools every 18 to 24 months.</p>
+</section>
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label">How they differ under the hood</div>
+    <p style="color:var(--cream-dim);line-height:1.8">Architecturally, Megaphone and Statuspage could not be more different. Statuspage runs on distributed cloud infrastructure with load balancers, managed databases, CDNs, and redundancy across availability zones. Megaphone is a single process writing to a single file on a single disk. That sounds fragile until you realize that SQLite handles more concurrent readers than most web applications will ever need, and WAL mode means reads never block writes.</p>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Switching from Statuspage</div>
+  <p style="color:var(--cream-dim);line-height:1.8">The migration path from Statuspage depends on how much history you need to bring over. If you only need active records, a manual re-entry through Megaphone's dashboard might be faster than writing a migration script. If you need full history, export from Statuspage and use Megaphone's POST API to import records. Either way, the process is measured in hours, not weeks.</p>
+</section>
+
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Megaphone a Statuspage.io alternative?</div><div class="faq-a">Both provide public status pages with incident updates and subscriber notifications. Megaphone is self-hosted at $0.99/mo. Statuspage starts at $79/mo.</div></div>
