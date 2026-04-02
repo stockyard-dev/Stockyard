@@ -488,6 +488,9 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/flume/vs-kafka/",
 		"/hearthside/vs-easyretro/",
 		"/notify/vs-onesignal/",
+		"/blog/self-hosted-tools-2026-guide/",
+		"/blog/helicone-alternative-2026/",
+		"/blog/litellm-supply-chain-attack/",
 		// How-to, what-is, GDPR pages
 "/gdpr-compliant-analytics/",
 		"/how-to-replace-google-analytics/",
