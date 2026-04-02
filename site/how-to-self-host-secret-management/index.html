@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host a Team Wiki — Stockyard</title>
-<meta name="description" content="Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.">
-<meta property="og:title" content="How to Self-Host a Team Wiki">
-<meta property="og:description" content="Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.">
-<link rel="canonical" href="https://stockyard.dev/how-to-self-host-a-wiki/">
+<title>How to Self-Host Secret Management — Stockyard</title>
+<meta name="description" content="Set up Strongbox as a self-hosted HashiCorp Vault alternative. Store API keys and passwords with AES-256-GCM encryption.">
+<meta property="og:title" content="How to Self-Host Secret Management">
+<meta property="og:description" content="Set up Strongbox as a self-hosted HashiCorp Vault alternative. Store API keys and passwords with AES-256-GCM encryption.">
+<link rel="canonical" href="https://stockyard.dev/how-to-self-host-secret-management/">
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,7 +64,7 @@ code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg
 h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Team Wiki","description":"Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.","tool":{"@type":"SoftwareApplication","name":"Stockyard Handbook"}}
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host Secret Management","description":"Set up Strongbox as a self-hosted HashiCorp Vault alternative. Store API keys and passwords with AES-256-GCM encryption.","tool":{"@type":"SoftwareApplication","name":"Stockyard Strongbox"}}
 </script>
 </head>
 <body>
@@ -95,34 +95,37 @@ h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
 </nav>
 <article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Team Wiki</h1>
-  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.</p>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host Secret Management</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Strongbox as a self-hosted HashiCorp Vault alternative. Store API keys and passwords with AES-256-GCM encryption.</p>
   <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
-<p>This guide sets up Handbook — a self-hosted wiki for internal documentation. Create spaces for each team, write pages in Markdown, track version history, and search across all content. No Notion per-seat pricing, no Confluence complexity.</p>
+<p>This guide sets up Strongbox — a self-hosted secret manager that encrypts values at rest with AES-256-GCM. Store API keys, database passwords, and service tokens on your own server with encrypted storage and access logging.</p>
 
 <h2>Step 1: Install</h2>
-<pre>curl -fsSL https://stockyard.dev/handbook/install.sh | sh
-PORT=9700 DATA_DIR=/var/lib/handbook ./handbook</pre>
+<pre>curl -fsSL https://stockyard.dev/strongbox/install.sh | sh
+PORT=9700 DATA_DIR=/var/lib/strongbox ./strongbox</pre>
 
-<h2>Step 2: Create your first space</h2>
-<p>Spaces organize pages by team or topic. Create one for engineering, one for operations, one for onboarding:</p>
-<pre>curl -X POST http://localhost:9700/api/pages \
+<h2>Step 2: Store a secret</h2>
+<pre>curl -X POST http://localhost:9700/api/secrets \
   -H 'Content-Type: application/json' \
-  -d '{"title": "Engineering Standards", "body": "# Code Review Guidelines\n\nAll PRs require...", "space_id": "engineering"}'</pre>
+  -d '{"name": "STRIPE_API_KEY", "value": "sk_live_xxxx", "category": "payments"}'</pre>
+<p>The value is encrypted with AES-256-GCM before being written to the database. The listing endpoint shows secret names and metadata — never the decrypted values.</p>
 
-<h2>Step 3: Build your knowledge base</h2>
-<p>The dashboard at <code>/ui</code> provides a page editor, space navigation, and full-text search. Write in Markdown or HTML. Every edit is versioned automatically — roll back to any previous version if a page gets accidentally overwritten.</p>
+<h2>Step 3: Retrieve secrets in your application</h2>
+<pre># In your deploy script or application startup:
+STRIPE_KEY=$(curl -s http://localhost:9700/api/secrets/resolve?name=STRIPE_API_KEY | jq -r .value)
+export STRIPE_API_KEY="$STRIPE_KEY"</pre>
+<p>The resolve endpoint decrypts and returns the value. Every access is logged with timestamp and requesting IP for audit purposes.</p>
 
-<h2>Step 4: Make it the team's home page</h2>
-<p>Put Handbook behind your reverse proxy at <code>wiki.yourdomain.com</code> and set it as the new tab page in your team's browsers. The search endpoint makes it the fastest way to find institutional knowledge — faster than Slack search, faster than scrolling through Google Docs, faster than asking the person who wrote the original document.</p>
+<h2>Step 4: Secure the service</h2>
+<p>Strongbox should only be accessible from your internal network. Place it behind a firewall that allows connections only from your application servers. For additional security, put it behind Gate (Stockyard's auth proxy) to add API key authentication on top of network-level restrictions.</p>
 
-<h2>Why self-host your wiki</h2>
-<p>Confluence charges $6.05 per user per month. Notion charges $8. At 30 people, that is $180 to $240 per month for a wiki. But the bigger cost is lock-in — migrating out of Confluence is a multi-week project because the export format is proprietary. Handbook stores pages in SQLite. To migrate to another system, query the database and reformat. To migrate to Handbook, POST your existing content to the API.</p>
+<h2>Compared to HashiCorp Vault</h2>
+<p>Vault is a comprehensive secrets management platform with dynamic secrets, lease management, and policy engines. It also requires a cluster of 3+ nodes, an unsealing ceremony, and dedicated operational expertise. Strongbox is a single binary that encrypts values and serves them over HTTP. It handles the 80% use case — storing and retrieving secrets — without the operational complexity that makes Vault a full-time job for most teams.</p>
 </div>
 </article>
 <section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
   <div style="max-width:820px;margin:0 auto;text-align:center">
-    <p style="font-size:.85rem"><a href="/handbook/">Handbook overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
+    <p style="font-size:.85rem"><a href="/strongbox/">Strongbox overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
 <footer>

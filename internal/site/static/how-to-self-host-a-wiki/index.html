@@ -3,17 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>How to Self-Host a Wiki with Handbook — Stockyard</title>
-<meta name="description" content="Set up a private internal wiki in under 5 minutes. Install Handbook, create your first space, and start documenting — no Notion subscription required.">
-<meta property="og:title" content="How to Self-Host a Wiki with Handbook">
-<meta property="og:description" content="Set up a private internal wiki in under 5 minutes. Install Handbook, create your first space, and start documenting — no Notion subscription required.">
+<title>How to Self-Host a Team Wiki — Stockyard</title>
+<meta name="description" content="Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.">
+<meta property="og:title" content="How to Self-Host a Team Wiki">
+<meta property="og:description" content="Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.">
 <link rel="canonical" href="https://stockyard.dev/how-to-self-host-a-wiki/">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Wiki with Handbook","description":"Set up a private internal wiki in under 5 minutes. Install Handbook, create your first space, and start documenting — no Notion subscription required."}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://stockyard.dev/docs/"},{"@type":"ListItem","position":3,"name":"How to Self-Host a Wiki with Handbook"}]}
-</script>
 <style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,6 +58,14 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 .cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
+<style>
+pre{background:var(--bg2,#241e18);border:1px solid var(--bg3,#2e261e);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);overflow-x:auto;margin:1rem 0;line-height:1.6}
+code{font-family:var(--font-mono,monospace);font-size:.85rem;background:var(--bg2,#241e18);padding:.15rem .4rem;border-radius:2px}
+h2{font-size:1.2rem;margin:2rem 0 .8rem;color:var(--cream,#f0e6d3)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to Self-Host a Team Wiki","description":"Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.","tool":{"@type":"SoftwareApplication","name":"Stockyard Handbook"}}
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -91,52 +93,38 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
-
-<section style="max-width:820px;margin:0 auto;padding:4rem 2rem 1rem;text-align:center">
+<article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
   <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Tutorial</div>
-  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Wiki with Handbook</h1>
-  <p style="font-size:.9rem;color:var(--cream-dim,#bfb5a3);font-style:italic">5 minutes · No Docker · No external dependencies</p>
-</section>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem;line-height:1.2">How to Self-Host a Team Wiki</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem;line-height:1.8">Set up Handbook as a self-hosted Notion alternative for internal documentation. Organize knowledge in spaces, track versions, and search instantly.</p>
+  <div style="color:var(--cream-dim,#bfb5a3);line-height:1.8">
+<p>This guide sets up Handbook — a self-hosted wiki for internal documentation. Create spaces for each team, write pages in Markdown, track version history, and search across all content. No Notion per-seat pricing, no Confluence complexity.</p>
 
+<h2>Step 1: Install</h2>
+<pre>curl -fsSL https://stockyard.dev/handbook/install.sh | sh
+PORT=9700 DATA_DIR=/var/lib/handbook ./handbook</pre>
 
-<section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <p style="color:var(--cream-dim);line-height:1.8;margin-bottom:2rem">Internal wikis contain your team's institutional knowledge — onboarding docs, runbooks, architecture decisions, and process documentation. When this lives in Notion or Confluence, you pay per seat and depend on their uptime. This guide sets up a private wiki that your team accesses through a browser, stored on your server.</p>
+<h2>Step 2: Create your first space</h2>
+<p>Spaces organize pages by team or topic. Create one for engineering, one for operations, one for onboarding:</p>
+<pre>curl -X POST http://localhost:9700/api/pages \
+  -H 'Content-Type: application/json' \
+  -d '{"title": "Engineering Standards", "body": "# Code Review Guidelines\n\nAll PRs require...", "space_id": "engineering"}'</pre>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 1: Install Handbook</h2>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0">curl -fsSL https://stockyard.dev/handbook/install.sh | sh
-PORT=9700 DATA_DIR=./wiki ./handbook</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">Open <code>http://localhost:9700/ui</code>. You should see an empty wiki ready for content.</p>
+<h2>Step 3: Build your knowledge base</h2>
+<p>The dashboard at <code>/ui</code> provides a page editor, space navigation, and full-text search. Write in Markdown or HTML. Every edit is versioned automatically — roll back to any previous version if a page gets accidentally overwritten.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 2: Create your first space and pages</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Handbook organizes content into spaces (like folders) and pages (like documents). Create a space for each team or topic area.</p>
-  <pre style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.82rem;color:var(--cream);overflow-x:auto;margin:1rem 0"># Create a space
-curl -X POST http://localhost:9700/api/pages \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Engineering Runbooks","body":"# Runbooks\n\nOperational procedures for the engineering team.","space_id":"engineering"}'</pre>
-  <p style="color:var(--cream-dim);line-height:1.8">Pages support Markdown. Version history is automatic — every save creates a new version. Use the dashboard to create and edit pages with a visual editor.</p>
+<h2>Step 4: Make it the team's home page</h2>
+<p>Put Handbook behind your reverse proxy at <code>wiki.yourdomain.com</code> and set it as the new tab page in your team's browsers. The search endpoint makes it the fastest way to find institutional knowledge — faster than Slack search, faster than scrolling through Google Docs, faster than asking the person who wrote the original document.</p>
 
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 3: Make it accessible to your team</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">For internal use, put Handbook behind your VPN or auth proxy (Stockyard Gate works well for this). Point <code>wiki.internal</code> at the server. Team members access the wiki through their browser — no app to install, no account to create if you handle auth at the network level.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Step 4: Migrate existing docs</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">If you have existing documentation in Notion, Confluence, or Google Docs, export as Markdown or HTML and POST each page to Handbook's API. The version history starts fresh — your first version in Handbook is the migrated content, and subsequent edits build history from there.</p>
-
-  <h2 style="font-size:1.2rem;margin:2rem 0 .8rem">Why this matters</h2>
-  <p style="color:var(--cream-dim);line-height:1.8">Wiki content compounds over time. Two years of institutional knowledge is irreplaceable. When that knowledge lives in a SaaS tool, you are one pricing change or acquisition away from a painful migration. Self-hosted wikis eliminate that dependency. The data is a SQLite file. Backing it up, migrating it, or building tools on top of it requires no vendor cooperation.</p>
-</section>
-
-<section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto">
-  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-    <a href="/handbook/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:var(--rust,#c45d2c);color:var(--cream,#f0e6d3);border:2px solid var(--rust);text-decoration:none">Handbook Overview</a>
-    <a href="/complete/" style="font-family:var(--font-mono,monospace);font-size:.85rem;padding:.75rem 1.8rem;background:transparent;color:var(--cream,#f0e6d3);border:2px solid var(--leather,#a0845c);text-decoration:none">All 150 Tools · $29/mo</a>
+<h2>Why self-host your wiki</h2>
+<p>Confluence charges $6.05 per user per month. Notion charges $8. At 30 people, that is $180 to $240 per month for a wiki. But the bigger cost is lock-in — migrating out of Confluence is a multi-week project because the export format is proprietary. Handbook stores pages in SQLite. To migrate to another system, query the database and reformat. To migrate to Handbook, POST your existing content to the API.</p>
+</div>
+</article>
+<section style="padding:2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
+  <div style="max-width:820px;margin:0 auto;text-align:center">
+    <p style="font-size:.85rem"><a href="/handbook/">Handbook overview</a> · <a href="/tools/">All 150 tools</a> · <a href="/complete/">Complete bundle $29/mo</a></p>
   </div>
 </section>
-
-<div class="related-section" style="padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3,#2e261e)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:.5rem">More tutorials</div>
-  <div><a href="/how-to-self-host-analytics/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Analytics</a>  ·  <a href="/how-to-self-host-error-tracking/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Error Tracking</a>  ·  <a href="/how-to-self-host-feature-flags/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">Feature Flags</a>  ·  <a href="/how-to-self-host-a-status-page/" style="font-size:.82rem;color:var(--cream-dim,#bfb5a3);text-decoration:none">a Status Page</a></div>
-</div>
-
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
