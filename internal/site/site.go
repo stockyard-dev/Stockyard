@@ -833,6 +833,17 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 
 	// Serve install script (with persistent download tracking)
 
+
+	mux.HandleFunc("GET /install-menu.sh", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "install-menu.sh")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Write(data)
+	})
+
 	mux.HandleFunc("GET /install-tools.sh", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "install-tools.sh")
 		if err != nil {
