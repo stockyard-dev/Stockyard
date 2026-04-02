@@ -26,172 +26,151 @@ func NurtureSequence() []NurtureEmail {
 	return []NurtureEmail{
 		{
 			Day:     0,
-			Subject: "Welcome to Stockyard — here's what you just unlocked",
-			Body: `Hey!
+			Subject: "Welcome to Stockyard — here's how to get started",
+			Body: `Hey,
 
-Welcome to Stockyard. You just got access to the self-hosted LLM proxy suite — 29 products, 76 middleware modules, 40 providers, one binary.
+Welcome to Stockyard. You just got access to 150 self-hosted developer tools — each one is a single Go binary with embedded SQLite. No Docker, no Postgres, no Redis. Download, run, done.
 
-Here's the fastest way to see it in action:
+The fastest way to try one:
 
-1. Install locally in 30 seconds:
-   curl -fsSL stockyard.dev/install.sh | sh
-   stockyard
+  curl -fsSL https://stockyard.dev/corral/install.sh | sh
+  DATA_DIR=./data stockyard-corral
 
-2. Point your app at it:
-   export OPENAI_BASE_URL=http://localhost:7749/v1
+That installs Corral, a webhook capture and replay tool. Open http://localhost:8760/ui and you have a running dashboard.
 
-That's it. Your requests now flow through 76 middleware modules — caching, cost tracking, safety filters, rate limiting, observability — all running by default.
+Every tool works the same way — one curl command, one binary, one port.
 
-Quick links:
-- Docs: https://stockyard.dev/docs
-- Quickstart: https://stockyard.dev/docs/quickstart
-- Architecture: https://stockyard.dev/architecture
+A few popular ones to start with:
+- Corral (webhook inbox): stockyard.dev/corral
+- Paddock (status page): stockyard.dev/paddock
+- Salt Lick (feature flags): stockyard.dev/saltlick
+- Headcount (analytics): stockyard.dev/headcount
 
-If you have any questions, just reply to this email.
+Full catalog: https://stockyard.dev/tools
+
+If you have any questions, just reply to this email. I read every one.
 
 — Michael
-Stockyard — where LLM traffic gets sorted.`,
+Stockyard. Wrangle your Stack.`,
 		},
 		{
 			Day:     3,
-			Subject: "3 things you can do with Stockyard right now",
+			Subject: "Three tools worth trying this week",
 			Body: `Hey,
 
-You've had Stockyard for a few days. Here are 3 things worth trying:
+You have had Stockyard for a few days. Here are three tools that people tend to start with, depending on what they need:
 
-1. CHECK YOUR COSTS
-   Open the dashboard at /ui and click "Lookout" in the sidebar.
-   Every request is traced with exact token counts and cost attribution.
-   You might be surprised how much you're spending.
+IF YOU PAY FOR A STATUS PAGE
+Paddock replaces Statuspage.io ($79/mo) with a self-hosted status page at $0.99/mo. Components, incidents, subscriber notifications. Install it, add your services, point status.yourcompany.com at it.
+  stockyard.dev/paddock
 
-2. BLOCK PROMPT INJECTION
-   Stockyard ships with the promptguard module enabled by default. It
-   catches common injection patterns before they reach your provider.
-   Check the Brand ledger at /ui to see what's been flagged.
+IF YOU USE FEATURE FLAGS
+Salt Lick replaces LaunchDarkly ($10/seat/mo) with self-hosted feature flags. Boolean, multivariate, percentage rollouts. No per-seat pricing.
+  stockyard.dev/saltlick
 
-3. INSTALL A PACK
-   Go to /ui -> Trading Post and install the "Cost Control Pack" — it
-   configures rate limiting, spending caps, and cost alerts in one click.
+IF YOU TRACK ERRORS
+Seismograph replaces Sentry without requiring Kafka, Clickhouse, Postgres, and Redis. One binary. Captures errors with stack traces, groups them, sends alerts.
+  stockyard.dev/seismograph
 
-All of this works on the free Community tier. No credit card needed.
+Every tool has a free tier. Pro is $0.99-4.99/mo per tool. Or get all 150 for $29/mo with Complete.
+  stockyard.dev/complete
 
 — Michael`,
 		},
 		{
 			Day:     7,
-			Subject: "The one feature that saves teams the most money",
+			Subject: "The math on self-hosting vs SaaS",
 			Body: `Hey,
 
-After a week with Stockyard, here's the feature that consistently
-saves teams the most money: the response cache.
+One week in. Here is the math that convinced me to build Stockyard:
 
-The "cache" middleware module deduplicates identical requests. If you're
-calling GPT-4o with the same system prompt + user message, the second
-call returns instantly from cache — zero tokens, zero cost.
+A typical SaaS stack for a small team:
+- Statuspage.io: $79/mo
+- LaunchDarkly (5 seats): $50/mo
+- Sentry Team: $26/mo
+- Bitly Growth: $35/mo
+- Mixpanel: $20/mo
+- Typeform: $25/mo
+Total: $235/mo ($2,820/year)
 
-Most teams see 15-30% cache hit rates without any configuration.
+The Stockyard equivalents:
+- Paddock (status page): $0.99/mo
+- Salt Lick (feature flags): $0.99/mo
+- Seismograph (error tracking): $0.99/mo
+- Lasso (link shortener): $0.99/mo
+- Headcount (analytics): $1.99/mo
+- Surveyor (forms): $0.99/mo
+Total: $6.94/mo ($83/year)
 
-To check yours:
-1. Open /ui -> Lookout
-2. Look at the "cache_hit" column in your traces
-3. The cost dashboard shows total savings
+Or just get Complete: $29/mo for all 150 tools.
 
-Other cost-saving modules running by default:
-- tierdrop: auto-downgrades expensive models for simple queries
-- outputcap: prevents runaway token generation
-- spend: real-time cost tracking per request
+The tradeoff is real — you are running the tools yourself instead of paying someone else to. But each one is a single binary with no external dependencies. If you can run a Go binary on a $5/mo VPS, you can run all of these.
 
-All 76 modules are included in every tier, including the free
-Community tier.
+Full pricing: https://stockyard.dev/pricing
 
 — Michael`,
 		},
 		{
 			Day:     14,
-			Subject: "How teams use Stockyard in production",
+			Subject: "Manage all your tools from one dashboard",
 			Body: `Hey,
 
-Two weeks in — you're past the "trying it out" phase. Here's how teams
-typically run Stockyard in production:
+Two weeks in. If you are running more than a couple of Stockyard tools, the Hub makes life easier.
 
-DEPLOYMENT
-Most teams run Stockyard on the same server as their app, or as a
-sidecar. The binary is ~25MB and uses <50MB of memory. No external
-databases, no Redis, no Docker required.
+Stockyard Hub is a management dashboard — one binary that installs, starts, stops, and monitors all your other tools. Set your license key once and Hub propagates it to every tool automatically.
 
-MULTI-PROVIDER FAILOVER
-Set up OpenAI as primary and Anthropic as fallback. If OpenAI returns
-a 5xx or times out, Stockyard automatically retries on Claude. Zero
-code changes in your app.
+  curl -fsSL https://stockyard.dev/hub/install.sh | sh
+  STOCKYARD_LICENSE_KEY=your_key stockyard-hub
 
-TEAM KEY ISOLATION
-Create separate teams for frontend, backend, ML — each gets its own
-API keys with isolated spend tracking and request logs. No config
-sharing, no cross-contamination.
+Open http://localhost:8600/ui and you see every tool in the catalog. Click Install, click Start, and the tool's dashboard loads right in the Hub panel. No new tabs, no hunting for port numbers.
 
-AUDIT COMPLIANCE
-The Brand app maintains an append-only, hash-chained audit ledger.
-Every LLM request is logged with the exact prompt, response, cost,
-and latency. Export evidence packs for compliance reviews.
+Hub is included with every plan, including the free Community tier.
 
-Docs: https://stockyard.dev/docs
-Pricing: https://stockyard.dev/pricing
+  stockyard.dev/hub
 
 — Michael`,
 		},
 		{
 			Day:     30,
-			Subject: "Your first month with Stockyard — quick check-in",
+			Subject: "One month in — quick check-in",
 			Body: `Hey,
 
-It's been a month since you signed up. Quick check-in:
+It has been a month. Quick check-in.
 
-YOUR STATS (check at /ui -> Lookout):
-- Total requests proxied
-- Total cost tracked
-- Cache savings
-- Active providers
+If Stockyard is working for you:
+- A GitHub star helps visibility: https://github.com/stockyard-dev/Stockyard
+- Tell a friend who is paying too much for SaaS tools
+- Check out Complete ($29/mo for all 150 tools) if you are using more than a few: stockyard.dev/complete
 
-WHAT'S NEW
-We ship improvements every week. Check the changelog for what's landed
-since you signed up: https://stockyard.dev/changelog
+If it is not working for you:
+- Reply and tell me what is missing. I will either build it or point you to something better.
+- I am a solo developer and I read every email.
 
-PRICING REMINDER
-Community: free, self-hosted, everything included
-Individual: $29.99/mo
-Pro: $99.99/mo
-Team: $299.99/mo
-Enterprise: $499.99/mo
+What is new this month:
+- Changelog: https://stockyard.dev/changelog
+- New comparison pages showing exactly how each tool stacks up against the SaaS alternative: stockyard.dev/best-self-hosted-developer-tools
 
-Annual billing saves 2 months: https://stockyard.dev/pricing
-
-If Stockyard isn't the right fit, I'd genuinely like to know why.
-Just reply — I read every email.
+Thanks for trying Stockyard.
 
 — Michael`,
 		},
 		{
 			Day:     60,
-			Subject: "Last check-in — is Stockyard working for you?",
+			Subject: "Last email — is Stockyard saving you money?",
 			Body: `Hey,
 
-It's been 2 months. This is the last email in the sequence —
-I don't want to spam you.
+This is the last email in the sequence. I do not want to spam you.
 
-If Stockyard is working for you:
-- A GitHub star helps a lot: https://github.com/stockyard-dev/Stockyard
-- Tell a friend who's building with LLMs
-- Check out the paid tiers if you want extra support
+If Stockyard replaced even one SaaS tool, it was worth building. If it replaced several, I would genuinely love to hear which ones and how the switch went. Reply any time — this email address works and I read everything.
 
-If it's not working for you:
-- Reply and tell me what's missing — I'll either build it or
-  point you to something better
+If you have not tried it yet, the quickest test is still:
+  curl -fsSL https://stockyard.dev/corral/install.sh | sh
+Running in 30 seconds, no dependencies, free forever on the community tier.
 
-Thanks for trying Stockyard. I built this because I needed it,
-and I hope it saves you time too.
+Thanks for your time.
 
 — Michael
-Stockyard — where LLM traffic gets sorted.`,
+Stockyard. Wrangle your Stack.`,
 		},
 	}
 }
