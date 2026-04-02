@@ -106,18 +106,18 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2 class="section-label">Set an alias in one call</h2>
   <div class="code-block">
 <span class="comment"># Create an alias</span>
-<span class="cmd">$ curl -X PUT localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">$ curl -X PUT localhost:4200/api/proxy/aliases \</span>
 <span class="cmd">  -H "X-Admin-Key: $ADMIN_KEY" \</span>
 <span class="cmd">  -d '{"alias":"fast","target":"gpt-4o-mini"}'</span>
 <span class="output">{"alias":"fast","target":"gpt-4o-mini","created":"2026-03-27T..."}</span>
 
 <span class="comment"># Now your app sends requests to "fast"</span>
-<span class="cmd">$ curl localhost:7749/v1/chat/completions \</span>
+<span class="cmd">$ curl localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -d '{"model":"fast","messages":[{"role":"user","content":"hello"}]}'</span>
 <span class="output">→ routed to gpt-4o-mini</span>
 
 <span class="comment"># Later, swap the target without touching app code</span>
-<span class="cmd">$ curl -X PUT localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">$ curl -X PUT localhost:4200/api/proxy/aliases \</span>
 <span class="cmd">  -H "X-Admin-Key: $ADMIN_KEY" \</span>
 <span class="cmd">  -d '{"alias":"fast","target":"claude-haiku-4-5-20251001"}'</span>
 <span class="output">→ all "fast" requests now go to Claude Haiku</span>

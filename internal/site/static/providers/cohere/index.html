@@ -132,10 +132,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <span class="comment"># Start the proxy</span>
 <span class="cmd">stockyard</span>
 <span class="output"># Provider: cohere (from COHERE_API_KEY)</span>
-<span class="output"># Proxy listening on :7749</span>
+<span class="output"># Proxy listening on :4200</span>
 
 <span class="comment"># Send a request through the proxy</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"model":"command-r-plus","messages":[{"role":"user","content":"hello"}]}'</span></pre>
 
@@ -145,11 +145,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2>Embeddings + chat through one proxy</h2>
   <p>Cohere's Embed models are among the best for RAG and semantic search. With Stockyard, you can route embedding requests to Cohere and chat requests to OpenAI or Anthropic through the same endpoint:</p>
   <pre><span class="comment"># Embeddings → Cohere</span>
-<span class="cmd">curl http://localhost:7749/v1/embeddings \</span>
+<span class="cmd">curl http://localhost:4200/v1/embeddings \</span>
 <span class="cmd">  -d '{"model":"embed-english-v3.0","input":"search query"}'</span>
 
 <span class="comment"># Chat → OpenAI (same endpoint)</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -d '{"model":"gpt-4o","messages":[...]}'</span></pre>
   <p style="font-size:0.85rem">Both requests are traced, cost-tracked, and cached through the same proxy. One dashboard for everything.</p>
 </section>

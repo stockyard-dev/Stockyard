@@ -212,7 +212,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="per-team">Per-team limiting</h2>
     <p><a href="/docs/team/">Team isolation</a> includes per-team rate limits. Set custom RPM and TPM (tokens per minute) limits per team:</p>
     <pre>
-<span class="cmd">curl -X PUT http://localhost:7749/api/teams/backend \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/teams/backend \</span>
 <span class="cmd">  -d '{"rpm_limit": 100, "tpm_limit": 100000}'</span></pre>
 
     <h2 id="headers">Response headers</h2>

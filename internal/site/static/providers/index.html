@@ -426,10 +426,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <span class="comment"># Start Stockyard</span>
 <span class="cmd">stockyard</span>
 <span class="output">  Providers: 3 detected (openai, anthropic, deepseek)</span>
-<span class="output">  Proxy ready at :7749</span>
+<span class="output">  Proxy ready at :4200</span>
 
 <span class="comment"># Send requests to any detected provider</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"hello"}]}'</span>
     </div>

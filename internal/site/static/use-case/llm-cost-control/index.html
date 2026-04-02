@@ -102,7 +102,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
     <p><strong style="color:var(--cream)">1. Spending caps.</strong> Set a daily or monthly dollar limit. When the cap is hit, requests return a 429 instead of billing more tokens. You choose whether to hard-stop or switch to a cheaper model.</p>
     <div class="code-block">
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/costcap \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \</span>
 <span class="cmd">  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"enabled": true, "config": {"daily_limit_usd": 10.0}}'</span>
@@ -110,7 +110,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
     <p><strong style="color:var(--cream)">2. Response caching.</strong> Identical or semantically similar prompts return cached responses instead of making a new API call. During development, this alone can substantially reduce costs by eliminating duplicate requests.</p>
     <div class="code-block">
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \</span>
 <span class="cmd">  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"enabled": true, "config": {"ttl": 3600}}'</span>
@@ -118,7 +118,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
     <p><strong style="color:var(--cream)">3. Model aliasing.</strong> Route "smart" requests to GPT-4o and "fast" requests to GPT-4o-mini. When you realize 70% of your traffic does not need the expensive model, change one alias instead of rewriting your app.</p>
     <div class="code-block">
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/aliases \</span>
 <span class="cmd">  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"alias": "fast", "model": "gpt-4o-mini"}'</span>
@@ -126,7 +126,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
     <p><strong style="color:var(--cream)">4. Rate limiting.</strong> Cap requests per minute per key or per model. This prevents runaway loops and abusive users from draining your budget before you notice.</p>
     <div class="code-block">
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/rateshield \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/rateshield \</span>
 <span class="cmd">  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"enabled": true, "config": {"rpm": 60}}'</span>
@@ -139,7 +139,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>Stockyard tracks cost per request automatically. Every API call records the model used, tokens consumed, and estimated cost in USD. You can query cost data through the API or browse it in the web console at <code>/ui</code>.</p>
   <div class="code-block">
 <span class="comment"># Get cost summary for the last 24 hours</span>
-<span class="cmd">curl http://localhost:7749/api/observe/costs/summary \</span>
+<span class="cmd">curl http://localhost:4200/api/observe/costs/summary \</span>
 <span class="cmd">  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY"</span>
 
 <span class="comment"># Response</span>

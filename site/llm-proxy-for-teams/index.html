@@ -104,16 +104,16 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
   <h2>How it works</h2>
   <pre><span class="comment"># Create a team</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/teams \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/teams \</span>
 <span class="cmd">  -d '{"name": "backend", "daily_limit_usd": 50}'</span>
 
 <span class="comment"># Generate a team API key</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/teams/backend/keys</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/teams/backend/keys</span>
 <span class="output"># sk-sy-team-backend-a8f21c4e...</span>
 
 <span class="comment"># Each team uses their own key</span>
 <span class="cmd">export OPENAI_API_KEY=sk-sy-team-backend-a8f21c4e...</span>
-<span class="cmd">export OPENAI_BASE_URL=http://your-proxy:7749/v1</span></pre>
+<span class="cmd">export OPENAI_BASE_URL=http://your-proxy:4200/v1</span></pre>
 
   <h2>Per-team isolation</h2>
   <p><strong style="color:var(--cream)">Separate spend tracking.</strong> Each team's costs are tracked independently. The <a href="/llm-cost-tracking/">cost dashboard</a> shows per-team breakdowns by model, provider, and day.</p>

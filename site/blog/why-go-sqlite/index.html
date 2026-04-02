@@ -275,14 +275,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 stockyard
 
 # Make a request
-curl localhost:7749/v1/chat/completions \
+curl localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'
 
 # Check what happened
-curl localhost:7749/api/lookout/traces?limit=1
-curl localhost:7749/api/brand/ledger?limit=1</code></pre>
+curl localhost:4200/api/lookout/traces?limit=1
+curl localhost:4200/api/brand/ledger?limit=1</code></pre>
 
     <p>Source-available. Code on <a href="https://github.com/stockyard-dev/stockyard">GitHub</a>.</p>
 

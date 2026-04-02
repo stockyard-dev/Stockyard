@@ -247,7 +247,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Routes map model patterns to providers. When a request comes in for <code>gpt-4o</code>, the router checks the routes table and sends it to the matching provider.</p>
     <pre>
 <span class="comment"># List routes</span>
-<span class="cmd">curl http://localhost:7749/api/proxy/routes</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/routes</span>
 </pre>
 
 
@@ -255,13 +255,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Enable or disable any module at runtime without restart:</p>
     <pre>
 <span class="comment"># Enable the response cache</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'</span>
 
 <span class="comment"># Disable toxicity filtering</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/toxicfilter \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/toxicfilter \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"enabled": false}'</span>
@@ -272,7 +272,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Modules accept configuration alongside the enabled flag:</p>
     <pre>
 <span class="comment"># Configure costcap with a $10/day limit</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/costcap \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -289,7 +289,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Shim modules translate between the OpenAI API format and provider-native formats. Enable a shim and route requests to any provider using the standard OpenAI SDK:</p>
     <pre>
 <span class="comment"># Route Claude requests through the anthrofit shim</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
   -H "Authorization: Bearer sy_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -321,7 +321,7 @@ modules:
     <h2 id="streaming">Streaming</h2>
     <p>Streaming works transparently. Set <code>"stream": true</code> in the request body:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
   -H "Authorization: Bearer sy_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -335,7 +335,7 @@ modules:
     <h2 id="embeddings">Embeddings</h2>
     <p>The proxy also handles embedding requests:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/v1/embeddings \
+<span class="cmd">curl http://localhost:4200/v1/embeddings \
   -H "Authorization: Bearer sy_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -348,7 +348,7 @@ modules:
     <h2 id="list-modules">Inspecting Module State</h2>
     <p>Query the full module list with current status and config:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/proxy/modules \
+<span class="cmd">curl http://localhost:4200/api/proxy/modules \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -393,7 +393,7 @@ modules:
     <pre>
 <span class="comment"># Enable all safety modules at once</span>
 for module in promptguard toxicfilter guardrail secretscan agentguard; do
-  <span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/$module \
+  <span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/$module \
     -H "Authorization: Bearer sy_admin_..." \
     -d '{"enabled": true}'</span>
 done

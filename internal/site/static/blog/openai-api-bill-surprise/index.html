@@ -118,7 +118,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <pre>
 <span class="comment"># Example: query cost data from Stockyard</span>
-<span class="cmd">curl http://localhost:7749/api/observe/costs/summary \
+<span class="cmd">curl http://localhost:4200/api/observe/costs/summary \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY"</span>
 
 <span class="output">{"period":"24h","total_usd":4.23,"by_model":{"gpt-4o":3.41,"gpt-4o-mini":0.82},"requests":847}</span>
@@ -136,7 +136,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <pre>
 <span class="comment"># Enable caching with a 1-hour TTL</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true, "config": {"ttl": 3600}}'</span>
@@ -152,7 +152,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <pre>
 <span class="comment"># Map "fast" to the cheapest model</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/aliases \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"alias": "fast", "model": "gpt-4o-mini"}'</span>
@@ -168,7 +168,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 
   <pre>
 <span class="comment"># Set a $10/day spending cap</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/costcap \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true, "config": {"daily_limit_usd": 10.0}}'</span>

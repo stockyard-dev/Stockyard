@@ -111,7 +111,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>Caching is a middleware module. Enable it at runtime without restarting:</p>
   <div class="code-block">
 <span class="comment"># Enable caching with a 1-hour TTL</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \</span>
 <span class="cmd">  -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"enabled": true, "config": {"ttl": 3600}}'</span>

@@ -102,7 +102,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
     <h2 class="section-label">Enable it</h2>
     <div class="code-block">
 <span class="comment"># Set a global rate limit of 60 requests per minute</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/rateshield \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/rateshield \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true, "config": {"rpm": 60}}'</span>

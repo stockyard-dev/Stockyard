@@ -169,7 +169,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <div class="note">
       <strong>How it works</strong><br>
-      Set an environment variable (e.g., <code>OPENAI_API_KEY</code>). Stockyard detects it on startup and registers the provider. Send requests to <code>http://localhost:7749/v1/chat/completions</code> with the provider's model name. Stockyard routes to the right provider automatically.
+      Set an environment variable (e.g., <code>OPENAI_API_KEY</code>). Stockyard detects it on startup and registers the provider. Send requests to <code>http://localhost:4200/v1/chat/completions</code> with the provider's model name. Stockyard routes to the right provider automatically.
     </div>
 
     <!-- ═══ HOW AUTO-DETECT WORKS ═══ -->
@@ -201,7 +201,7 @@ stockyard
         <dt>Models</dt><dd>gpt-4o, gpt-4o-mini, gpt-4.1, o3, o4-mini, etc.</dd>
         <dt>Supports</dt><dd>Chat, Streaming, Embeddings, Function calling, Vision</dd>
       </dl>
-      <pre>curl http://localhost:7749/v1/chat/completions \
+      <pre>curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</pre>
     </div>
@@ -214,7 +214,7 @@ stockyard
         <dt>Models</dt><dd>claude-sonnet-4-20250514, claude-opus-4-20250514, claude-haiku, etc.</dd>
         <dt>Supports</dt><dd>Chat, Streaming, Function calling, Vision</dd>
       </dl>
-      <pre>curl http://localhost:7749/v1/chat/completions \
+      <pre>curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"hello"}]}'</pre>
       <p>Stockyard translates OpenAI-format requests to Anthropic's Messages API format automatically. You send OpenAI-shaped requests; Stockyard handles the conversion.</p>
@@ -228,7 +228,7 @@ stockyard
         <dt>Models</dt><dd>gemini-2.5-pro, gemini-2.5-flash, gemini-2.0-flash, etc.</dd>
         <dt>Supports</dt><dd>Chat, Streaming, Embeddings, Function calling, Vision</dd>
       </dl>
-      <pre>curl http://localhost:7749/v1/chat/completions \
+      <pre>curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"gemini-2.5-flash","messages":[{"role":"user","content":"hello"}]}'</pre>
     </div>
@@ -241,7 +241,7 @@ stockyard
         <dt>Models</dt><dd>llama-3.3-70b-versatile, mixtral-8x7b-32768, gemma2-9b-it, etc.</dd>
         <dt>Supports</dt><dd>Chat, Streaming, Function calling</dd>
       </dl>
-      <pre>curl http://localhost:7749/v1/chat/completions \
+      <pre>curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"llama-3.3-70b-versatile","messages":[{"role":"user","content":"hello"}]}'</pre>
     </div>
@@ -258,7 +258,7 @@ stockyard
         <dt>Base URL</dt><dd><code>https://api.deepseek.com/v1</code></dd>
         <dt>Models</dt><dd>deepseek-chat, deepseek-reasoner, deepseek-coder</dd>
       </dl>
-      <pre>curl http://localhost:7749/v1/chat/completions \
+      <pre>curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"deepseek-chat","messages":[{"role":"user","content":"hello"}]}'</pre>
     </div>
@@ -538,7 +538,7 @@ ollama serve
 ollama pull llama3.1
 
 <span class="comment"># Send through Stockyard</span>
-curl http://localhost:7749/v1/chat/completions \
+curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"llama3.1","messages":[{"role":"user","content":"hello"}]}'</pre>
     </div>
@@ -588,7 +588,7 @@ docker run --gpus all -p 8080:80 \
     <!-- ═══ CUSTOM PROVIDERS ═══ -->
     <h2 id="custom-providers">Custom providers</h2>
     <p>Any OpenAI-compatible endpoint works with Stockyard. If your provider is not in the list above but speaks the OpenAI chat completions protocol, you can add it as a custom provider through the API:</p>
-    <pre>curl -X POST http://localhost:7749/api/proxy/providers \
+    <pre>curl -X POST http://localhost:4200/api/proxy/providers \
   -H "Content-Type: application/json" \
   -H "X-Admin-Key: YOUR_ADMIN_KEY" \
   -d '{
@@ -614,7 +614,7 @@ docker run --gpus all -p 8080:80 \
     <p>The model name in your request does not match any model available at the provider. Check the provider's documentation for their exact model naming format. Some providers use prefixed names (e.g., <code>meta-llama/Llama-3.1-8B-Instruct</code> on HuggingFace) while others use short names (e.g., <code>llama3.1</code> on Ollama).</p>
 
     <h3>Checking provider health</h3>
-    <pre>curl http://localhost:7749/api/proxy/providers/health \
+    <pre>curl http://localhost:4200/api/proxy/providers/health \
   -H "X-Admin-Key: YOUR_ADMIN_KEY"</pre>
     <p>Returns per-provider status, latency, and any errors. Also available in the dashboard under the Overview page.</p>
 

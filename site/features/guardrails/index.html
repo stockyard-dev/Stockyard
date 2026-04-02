@@ -112,13 +112,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>Each guardrail is a middleware module. Toggle them at runtime without restarting:</p>
   <div class="code-block">
 <span class="comment"># Enable prompt injection detection</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/promptguard \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/promptguard \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'</span>
 
 <span class="comment"># Enable PII redaction</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/piiredact \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/piiredact \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'</span>

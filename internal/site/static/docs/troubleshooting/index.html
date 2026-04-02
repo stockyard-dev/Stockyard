@@ -196,8 +196,8 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="comment"># Shows provider connectivity, key validity, and config status</span></pre>
 
     <h2 id="port-conflict">Port already in use</h2>
-    <p><strong style="color:var(--cream)">Symptom:</strong> <code>server: listen tcp :7749: bind: address already in use</code></p>
-    <p><strong style="color:var(--cream)">Fix:</strong> Another process is using port 7749. Either stop it or change Stockyard's port:</p>
+    <p><strong style="color:var(--cream)">Symptom:</strong> <code>server: listen tcp :4200: bind: address already in use</code></p>
+    <p><strong style="color:var(--cream)">Fix:</strong> Another process is using port 4200. Either stop it or change Stockyard's port:</p>
     <pre>
 <span class="cmd">PORT=8080 stockyard</span></pre>
 

@@ -134,10 +134,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
 <span class="cmd">stockyard</span>
 <span class="output"># Provider: ollama (auto-detected at localhost:11434)</span>
-<span class="output"># Proxy listening on :7749</span>
+<span class="output"># Proxy listening on :4200</span>
 
 <span class="comment"># Send a request through the proxy</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"model":"llama3.2","messages":[{"role":"user","content":"hello"}]}'</span></pre>
 
@@ -153,7 +153,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <span class="output"># Provider: openai (from OPENAI_API_KEY)</span>
 
 <span class="comment"># Alias for automatic routing</span>
-<span class="cmd">curl -X PUT http://localhost:7749/v1/api/proxy/aliases \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/v1/api/proxy/aliases \</span>
 <span class="cmd">  -d '{"alias":"default","model":"llama3.2","fallback":"gpt-4o-mini"}'</span></pre>
   <p style="font-size:0.85rem">Requests go to Ollama first. If Ollama is down or returns an error, Stockyard retries on OpenAI. Your app sends requests to <code>default</code> and never knows which provider handled it. See <a href="/local-plus-cloud-fallback/">local + cloud fallback</a> for the full setup.</p>
 </section>

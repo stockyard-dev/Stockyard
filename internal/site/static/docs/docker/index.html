@@ -193,20 +193,20 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <pre>
 <span class="cmd">docker run -d \
   --name stockyard \
-  -p 7749:7749 \
+  -p 4200:4200 \
   -e OPENAI_API_KEY=sk-... \
   -e STOCKYARD_ADMIN_KEY=sy_admin_your_secret \
   -v stockyard-data:/data \
   ghcr.io/stockyard-dev/stockyard:latest</span>
 </pre>
-    <p>That is it. The proxy is running at <code>http://localhost:7749/v1</code>, the console is at <code>http://localhost:7749/ui</code>, and your data persists across restarts in the <code>stockyard-data</code> volume.</p>
+    <p>That is it. The proxy is running at <code>http://localhost:4200/v1</code>, the console is at <code>http://localhost:4200/ui</code>, and your data persists across restarts in the <code>stockyard-data</code> volume.</p>
     <pre>
 <span class="comment"># Verify it is running</span>
-<span class="cmd">curl http://localhost:7749/health</span>
+<span class="cmd">curl http://localhost:4200/health</span>
 <span class="comment"># {"status":"ok"}</span>
 
 <span class="comment"># Send a request through the proxy</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hello"}]}'</span>
@@ -222,7 +222,7 @@ services:
     container_name: stockyard
     restart: unless-stopped
     ports:
-      - "7749:7749"
+      - "4200:4200"
     volumes:
       - stockyard-data:/data
     environment:
@@ -282,13 +282,13 @@ FROM alpine:3.19
 RUN apk add --no-cache ca-certificates
 COPY --from=build /stockyard /usr/local/bin/stockyard
 VOLUME /data
-EXPOSE 7749
+EXPOSE 4200
 ENTRYPOINT ["stockyard"]
 </pre>
     <p>Build and run:</p>
     <pre>
 <span class="cmd">docker build -t stockyard:local .</span>
-<span class="cmd">docker run -d -p 7749:7749 -v stockyard-data:/data \
+<span class="cmd">docker run -d -p 4200:4200 -v stockyard-data:/data \
   -e OPENAI_API_KEY=sk-... stockyard:local</span>
 </pre>
     <p>The multi-stage build produces a minimal image. The final layer is Alpine with the compiled binary and CA certificates — nothing else.</p>
@@ -302,7 +302,7 @@ services:
     image: ghcr.io/stockyard-dev/stockyard:latest
     restart: unless-stopped
     ports:
-      - "7749:7749"
+      - "4200:4200"
     volumes:
       - stockyard-data:/data
     environment:
@@ -326,7 +326,7 @@ volumes:
     <pre>
 <span class="comment"># Caddyfile example</span>
 stockyard.example.com {
-    reverse_proxy stockyard:7749
+    reverse_proxy stockyard:4200
 }
 </pre>
     <pre>
@@ -397,7 +397,7 @@ STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
 <span class="cmd">docker exec stockyard ls -la /data/</span>
 <span class="comment"># Should show stockyard.db</span>
 </pre>
-    <p>If the container exits immediately, check that port 7749 is not already in use on the host, and that your provider key environment variables are set. Run <code>docker logs stockyard</code> for the specific error.</p>
+    <p>If the container exits immediately, check that port 4200 is not already in use on the host, and that your provider key environment variables are set. Run <code>docker logs stockyard</code> for the specific error.</p>
 
     <div class="pn"><a href="/docs/quickstart/">&larr; Quickstart</a><a href="/docs/auth/" class="next">Auth &amp; Configuration &rarr;</a></div>
   </main>

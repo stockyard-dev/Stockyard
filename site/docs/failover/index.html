@@ -200,7 +200,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">    - groq</span></pre>
     <p>Or enable via the API:</p>
     <pre>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/failover \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/failover \</span>
 <span class="cmd">  -d '{"enabled": true}'</span></pre>
 
     <h2 id="strategies">Routing strategies</h2>
@@ -227,7 +227,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="monitoring">Monitoring failover</h2>
     <p>Check provider health and circuit breaker state:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/diag/providers</span>
+<span class="cmd">curl http://localhost:4200/api/diag/providers</span>
 <span class="comment"># Shows status, error count, circuit state per provider</span></pre>
 
   </main>

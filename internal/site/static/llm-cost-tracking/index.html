@@ -120,11 +120,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
   <div class="code-block">
 <span class="comment"># Check spend via API</span>
-<span class="cmd">curl http://localhost:7749/api/spend</span>
+<span class="cmd">curl http://localhost:4200/api/spend</span>
 <span class="output">{"projects":{"default":{"today":0.42,"month":12.87}}}</span>
 
 <span class="comment"># Per-user spend caps</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/users/u123/spend/cap \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/users/u123/spend/cap \</span>
 <span class="cmd">  -d '{"daily_cap": 5.00, "monthly_cap": 100.00}'</span>
   </div>
 

@@ -132,7 +132,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>No <code>docker-compose.yml</code> with six services. No Helm chart. No Terraform module. No environment matrix. One binary, one environment variable for your provider key, and you have a running LLM proxy with tracing, caching, guardrails, and a web console.</p>
   <p>If you prefer Docker, that works too:</p>
   <div class="code-block">
-<span class="cmd">docker run -d -p 7749:7749 \</span>
+<span class="cmd">docker run -d -p 4200:4200 \</span>
 <span class="cmd">  -e OPENAI_API_KEY=sk-... \</span>
 <span class="cmd">  -v stockyard-data:/data \</span>
 <span class="cmd">  ghcr.io/stockyard-dev/stockyard:latest</span>

@@ -210,7 +210,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>The tradeoff: you can&rsquo;t write custom modules yet. Everything ships in the binary. This is intentional for now &mdash; we want to get the built-in modules right before opening up extension points.</p>
 
     <h2>Nine apps over six services</h2>
-    <p>Lookout, Brand, Tack Room, Forge, and Trading Post could each be separate microservices. We compiled them all into the same binary and have them share the same SQLite database and the same HTTP server on port 7749.</p>
+    <p>Lookout, Brand, Tack Room, Forge, and Trading Post could each be separate microservices. We compiled them all into the same binary and have them share the same SQLite database and the same HTTP server on port 4200.</p>
     <p>The upside: one process to manage, one port to expose, one database to back up. The proxy writes traces to Lookout and audit events to Brand automatically &mdash; no inter-service communication, no message queues, no eventual consistency.</p>
     <p>The tradeoff: you can&rsquo;t scale Lookout independently of the proxy. For most deployments (even at thousands of requests per minute), this is fine. For the rare case where it isn&rsquo;t, Stockyard Cloud runs on dedicated infrastructure.</p>
 

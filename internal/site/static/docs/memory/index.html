@@ -216,11 +216,11 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="store">Storing Memories</h2>
     <pre>
 <span class="comment"># Store a memory with 30-day TTL</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/memory/user_123 \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/memory/user_123 \</span>
 <span class="cmd">  -d '{"content":"User prefers Python for data tasks", "expires_in":"30d"}'</span>
 
 <span class="comment"># Store without expiry (persists indefinitely)</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/memory/user_123 \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/memory/user_123 \</span>
 <span class="cmd">  -d '{"content":"User works at Acme Corp in the ML team"}'</span>
 </pre>
     <p>The <code>expires_in</code> field accepts durations like <code>24h</code>, <code>7d</code>, <code>30d</code>. Omit it for permanent storage.</p>
@@ -228,7 +228,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="search">Relevance Search</h2>
     <pre>
 <span class="comment"># Find memories relevant to a query</span>
-<span class="cmd">curl "http://localhost:7749/api/memory/user_123/relevant?query=python+scripting&limit=5"</span>
+<span class="cmd">curl "http://localhost:4200/api/memory/user_123/relevant?query=python+scripting&limit=5"</span>
 
 <span class="comment"># Returns entries ranked by relevance_score (0-1)</span>
 <span class="cmd">[{"id":"me_8a4f2c","content":"User prefers Python for data tasks","relevance_score":0.87,...}]</span>
@@ -238,7 +238,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="summarize">Auto-Summarization</h2>
     <pre>
 <span class="comment"># Summarize entries older than 7 days</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/memory/user_123/summarize</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/memory/user_123/summarize</span>
 
 <span class="comment"># Old entries are combined into a summary and originals deleted</span>
 <span class="cmd">{"status":"summarized","entries_removed":12,"summary_id":"me_c91d5f"}</span>

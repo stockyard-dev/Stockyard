@@ -128,7 +128,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <span class="cmd">ss -tnp | grep stockyard</span>
 
 <span class="comment"># Or use tcpdump to see exactly what leaves your machine</span>
-<span class="cmd">sudo tcpdump -i any -n host $(hostname -I | awk '{print $1}') and not port 7749</span>
+<span class="cmd">sudo tcpdump -i any -n host $(hostname -I | awk '{print $1}') and not port 4200</span>
   </div>
   <p>You will see connections to api.openai.com, api.anthropic.com, and whichever other providers you have keys configured for. Nothing else.</p>
 </div>

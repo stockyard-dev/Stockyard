@@ -195,7 +195,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">OPENAI_BASE_URL=https://api.openai.com/v1</span>
 
 <span class="comment"># After</span>
-<span class="cmd">OPENAI_BASE_URL=http://localhost:7749/v1</span></pre>
+<span class="cmd">OPENAI_BASE_URL=http://localhost:4200/v1</span></pre>
     <p>Your application code does not change. Stockyard speaks the OpenAI-compatible API. Requests are proxied to the original provider with cost tracking, caching, and all middleware applied.</p>
 
     <h2 id="from-litellm">From LiteLLM</h2>
@@ -208,7 +208,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">OPENAI_BASE_URL=http://litellm:4000/v1</span>
 
 <span class="comment"># After (Stockyard)</span>
-<span class="cmd">OPENAI_BASE_URL=http://localhost:7749/v1</span></pre>
+<span class="cmd">OPENAI_BASE_URL=http://localhost:4200/v1</span></pre>
     <p>Virtual keys in LiteLLM map to <a href="/docs/team/">team API keys</a> in Stockyard. Budget limits map to spend caps. See <a href="/vs/litellm/">Stockyard vs LiteLLM</a> for a full feature comparison.</p>
 
     <h2 id="from-helicone">From Helicone</h2>
@@ -219,7 +219,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">HELICONE_AUTH=Bearer sk-helicone-...</span>
 
 <span class="comment"># After (Stockyard)</span>
-<span class="cmd">OPENAI_BASE_URL=http://localhost:7749/v1</span></pre>
+<span class="cmd">OPENAI_BASE_URL=http://localhost:4200/v1</span></pre>
     <p>Remove the <code>Helicone-Auth</code> header from your requests. Stockyard's <a href="/docs/observe/">Lookout</a> replaces Helicone's observability dashboard. See <a href="/vs/helicone/">Stockyard vs Helicone</a>.</p>
 
     <h2 id="from-portkey">From Portkey</h2>
@@ -229,7 +229,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">OPENAI_BASE_URL=https://api.portkey.ai/v1</span>
 
 <span class="comment"># After (Stockyard)</span>
-<span class="cmd">OPENAI_BASE_URL=http://localhost:7749/v1</span></pre>
+<span class="cmd">OPENAI_BASE_URL=http://localhost:4200/v1</span></pre>
     <p>See <a href="/vs/portkey/">Stockyard vs Portkey</a> for feature mapping.</p>
 
     <h2 id="zero-downtime">Zero-downtime migration</h2>

@@ -203,10 +203,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <pre><code>$ stockyard doctor
 
   ✓ Go runtime         go1.22.5
-  ✓ Config             port=7749
+  ✓ Config             port=4200
   ✓ Data directory     ./stockyard-data (writable)
   ✓ SQLite database    connected (76 modules)
-  ✓ Port 7749          available
+  ✓ Port 4200          available
   ✓ OpenAI API key     set
   ✓ Anthropic API key  set
   ⚠ Gemini API key     not set
@@ -220,7 +220,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="webhooks">Webhooks</h2>
     <p>Register HTTP endpoints to receive events from Stockyard: alerts firing, cost thresholds, trust policy violations, and more.</p>
     <pre><code># Register a Slack webhook
-curl -X POST localhost:7749/api/webhooks \
+curl -X POST localhost:4200/api/webhooks \
   -H "Content-Type: application/json" \
   -d '{
     "url": "https://hooks.slack.com/services/YOUR/SLACK/URL",
@@ -229,13 +229,13 @@ curl -X POST localhost:7749/api/webhooks \
   }'
 
 # List registered webhooks
-curl localhost:7749/api/webhooks
+curl localhost:4200/api/webhooks
 
 # Send a test event
-curl -X POST localhost:7749/api/webhooks/test
+curl -X POST localhost:4200/api/webhooks/test
 
 # Delete a webhook
-curl -X DELETE localhost:7749/api/webhooks/1</code></pre>
+curl -X DELETE localhost:4200/api/webhooks/1</code></pre>
 
     <h3>Event Types</h3>
     <table class="endpoint-table">
@@ -281,7 +281,7 @@ stockyard</code></pre>
 
     <h2 id="status">Status Monitoring</h2>
     <p>Real-time system health at <code>GET /api/status</code>:</p>
-    <pre><code>curl localhost:7749/api/status | jq .
+    <pre><code>curl localhost:4200/api/status | jq .
 {
   "status": "healthy",
   "uptime": "2d 5h 30m",
@@ -302,38 +302,38 @@ stockyard</code></pre>
     <h2 id="config">Config Export &amp; Import</h2>
     <p>Snapshot your entire Stockyard configuration and restore it on another instance.</p>
     <pre><code># Export current config
-curl localhost:7749/api/config/export > stockyard-config.json
+curl localhost:4200/api/config/export > stockyard-config.json
 
 # Preview changes before applying
-curl -X POST localhost:7749/api/config/diff \
+curl -X POST localhost:4200/api/config/diff \
   -d @stockyard-config.json
 
 # Import on another instance
-curl -X POST localhost:7749/api/config/import \
+curl -X POST localhost:4200/api/config/import \
   -d @stockyard-config.json</code></pre>
     <p>The export includes module states, webhooks, and trust policies. Provider API keys are never included in exports.</p>
 
     <h2 id="key-rotation">API Key Rotation</h2>
     <p>Rotate API keys without downtime — the old key is immediately revoked and a new one generated:</p>
     <pre><code># Rotate your own key
-curl -X POST localhost:7749/api/auth/me/keys/1/rotate \
+curl -X POST localhost:4200/api/auth/me/keys/1/rotate \
   -H "Authorization: Bearer sk-sy-current-key"
 # Returns: { "status": "rotated", "new_key": { "key": "sk-sy-new-...", ... } }
 
 # Admin: rotate any user's key
-curl -X POST localhost:7749/api/auth/users/1/keys/1/rotate</code></pre>
+curl -X POST localhost:4200/api/auth/users/1/keys/1/rotate</code></pre>
 
 
     <h2 id="config-export">Config Export &amp; Import</h2>
     <p>Export the full system configuration as a snapshot:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/config/export \
+<span class="cmd">curl http://localhost:4200/api/config/export \
   -H "Authorization: Bearer sy_admin_..." \
   -o stockyard-config.json</span>
 </pre>
     <p>Import a config snapshot to a different instance:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/config/import \
+<span class="cmd">curl -X POST http://localhost:4200/api/config/import \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d @stockyard-config.json</span>
@@ -342,7 +342,7 @@ curl -X POST localhost:7749/api/auth/users/1/keys/1/rotate</code></pre>
     <h2 id="config-diff">Config Diff</h2>
     <p>Before importing, diff the snapshot against the current state:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/config/diff \
+<span class="cmd">curl -X POST http://localhost:4200/api/config/diff \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d @stockyard-config.json</span>
@@ -362,7 +362,7 @@ curl -X POST localhost:7749/api/auth/users/1/keys/1/rotate</code></pre>
     <h2 id="webhooks-ops">Webhooks</h2>
     <p>Register webhooks to receive real-time notifications:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/webhooks \
+<span class="cmd">curl -X POST http://localhost:4200/api/webhooks \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -373,19 +373,19 @@ curl -X POST localhost:7749/api/auth/users/1/keys/1/rotate</code></pre>
 </pre>
     <p>Test your webhooks:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/webhooks/test \
+<span class="cmd">curl -X POST http://localhost:4200/api/webhooks/test \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="monitoring-ops">Monitoring</h2>
     <p>Health endpoint for load balancers and uptime monitors:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/health</span>
+<span class="cmd">curl http://localhost:4200/health</span>
 <span class="comment"># {"status":"ok","uptime":"48h12m","version":"1.0.0"}</span>
 </pre>
     <p>Detailed system status with component health:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/status \
+<span class="cmd">curl http://localhost:4200/api/status \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -411,7 +411,7 @@ curl -X POST localhost:7749/api/auth/users/1/keys/1/rotate</code></pre>
     <pre>
 OPENAI_API_KEY=sk-...
 STOCKYARD_ADMIN_KEY=sy_admin_...
-PORT=7749
+PORT=4200
 </pre>
     <div class="note"><strong>Timing:</strong> Railway auto-deploys from the main branch. Allow 120&ndash;180 seconds after push for the deploy to complete and circuit breakers to reset.</div>
 
@@ -419,7 +419,7 @@ PORT=7749
     <p>The SQLite database contains all traces, costs, audit logs, and configs. Back it up regularly:</p>
     <pre>
 <span class="comment"># Export config snapshot (modules, webhooks, policies)</span>
-<span class="cmd">curl http://localhost:7749/api/config/export \
+<span class="cmd">curl http://localhost:4200/api/config/export \
   -H "Authorization: Bearer sy_admin_..." > backup.json</span>
 
 <span class="comment"># Copy the SQLite database for full backup</span>

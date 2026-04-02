@@ -105,11 +105,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2>How it works in Stockyard</h2>
   <p>Every request through Stockyard is logged with the full prompt, response, model, tokens, cost, and latency. Lasso (Stockyard's replay engine) lets you pick any logged request and re-run it:</p>
   <pre><span class="comment"># Replay a request against a different model</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/replay \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/replay \</span>
 <span class="cmd">  -d '{"trace_id": "tr_a8f21c4e", "model": "claude-sonnet-4-5-20250929"}'</span>
 
 <span class="comment"># Compare the results</span>
-<span class="cmd">curl http://localhost:7749/api/replay/compare/tr_a8f21c4e</span>
+<span class="cmd">curl http://localhost:4200/api/replay/compare/tr_a8f21c4e</span>
 <span class="output"># Original: gpt-4o, $0.0045, 1.2s, 342 tokens</span>
 <span class="output"># Replay:   claude-sonnet-4-5, $0.0038, 0.9s, 318 tokens</span></pre>
 

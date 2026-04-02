@@ -97,7 +97,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p>I installed <a href="/guide/">Stockyard</a> and pointed Cursor at it. One config change in Cursor's settings:</p>
 
   <pre><span class="comment"># Cursor Settings > Models > OpenAI API Base</span>
-<span class="cmd">http://localhost:7749/v1</span></pre>
+<span class="cmd">http://localhost:4200/v1</span></pre>
 
   <p>Immediately I could see every request. Stockyard's <a href="/llm-cost-tracking/">cost dashboard</a> showed the breakdown: 73% of my spend was tab completions. They fire constantly as you type, and each one sends the entire file as context. The chat and composer features were only 27% of the bill.</p>
 
@@ -106,7 +106,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p>Tab completions resend the same context repeatedly as you edit a file. If you type three characters, Cursor sends three nearly identical requests. With <a href="/what-is-prompt-caching/">prompt caching</a> enabled, the second and third requests hit the cache and cost nothing.</p>
 
   <pre><span class="comment"># Enable caching</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cache \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cache \</span>
 <span class="cmd">  -d '{"enabled": true}'</span></pre>
 
   <p>This alone cut my daily spend by about 35%. Cache hit rate for tab completions was around 40% because so many requests share overlapping context.</p>
@@ -116,7 +116,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
   <p>Tab completions do not need GPT-4o. They need fast, cheap, good-enough completions. I set up <a href="/what-is-model-aliasing/">model aliasing</a> to route the default completion model to DeepSeek, which is roughly 20x cheaper per token:</p>
 
   <pre><span class="comment"># Route cheap completions to DeepSeek</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/aliases \</span>
 <span class="cmd">  -d '{"alias": "gpt-4o-mini", "model": "deepseek-chat"}'</span></pre>
 
   <p>Cursor still sends requests to <code>gpt-4o-mini</code> but Stockyard routes them to <a href="/providers/deepseek/">DeepSeek</a>. The completions feel the same. The cost dropped another 25%.</p>

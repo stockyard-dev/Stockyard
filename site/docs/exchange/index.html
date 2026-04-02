@@ -206,26 +206,26 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="packs">Managing Packs</h2>
     <pre>
 <span class="comment"># List available packs</span>
-<span class="cmd">curl http://localhost:7749/api/exchange/packs</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/packs</span>
 
 <span class="comment"># Install a pack</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/exchange/packs/safety-essentials/install</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/safety-essentials/install</span>
 
 <span class="comment"># View installed packs</span>
-<span class="cmd">curl http://localhost:7749/api/exchange/installed</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/installed</span>
 
 <span class="comment"># Uninstall</span>
-<span class="cmd">curl -X DELETE http://localhost:7749/api/exchange/installed/1</span>
+<span class="cmd">curl -X DELETE http://localhost:4200/api/exchange/installed/1</span>
 </pre>
     <div class="note"><strong>Starter packs</strong><br>6 packs ship by default: Safety Essentials, Cost Control, OpenAI Quickstart, Anthropic Quickstart, Multi-Provider Failover, and Evaluation Suite.</div>
 
     <h2 id="environments">Environments</h2>
     <pre>
 <span class="comment"># List environments</span>
-<span class="cmd">curl http://localhost:7749/api/exchange/environments</span>
+<span class="cmd">curl http://localhost:4200/api/exchange/environments</span>
 
 <span class="comment"># Sync environment config</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/exchange/environments/production/sync</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/environments/production/sync</span>
 </pre>
     <p>See the <a href="/exchange/">Trading Post marketplace</a> for the full pack catalog.</p>
 
@@ -233,7 +233,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="packs">Config Packs</h2>
     <p>Packs are bundles of module configs, provider settings, routes, and policies. Install a pack to configure an entire workflow in one click:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/exchange/packs \
+<span class="cmd">curl http://localhost:4200/api/exchange/packs \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -249,7 +249,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="install-pack">Installing Packs</h2>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/exchange/packs/pk_safety/install \
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/pk_safety/install \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -263,14 +263,14 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="uninstall-pack">Uninstalling Packs</h2>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/exchange/packs/pk_safety/uninstall \
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs/pk_safety/uninstall \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="create-pack">Creating Custom Packs</h2>
     <p>Bundle your current module configuration into a shareable pack:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/exchange/packs \
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -287,13 +287,13 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="pack-detail">Pack Detail</h2>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/exchange/packs/pk_safety \
+<span class="cmd">curl http://localhost:4200/api/exchange/packs/pk_safety \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
     <h2 id="exchange-status">Trading Post Status</h2>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/exchange/status \
+<span class="cmd">curl http://localhost:4200/api/exchange/status \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -389,11 +389,11 @@ prod-pack: safety-starter + cost-control + alertpulse(on)
     <p>Packs can be exported as standalone JSON files for version control or sharing outside the API:</p>
     <pre>
 <span class="comment"># Export a pack to a file</span>
-<span class="cmd">curl http://localhost:7749/api/exchange/packs/pk_safety \
+<span class="cmd">curl http://localhost:4200/api/exchange/packs/pk_safety \
   -H "Authorization: Bearer sy_admin_..." > safety-pack.json</span>
 
 <span class="comment"># Import pack from file to another instance</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/exchange/packs \
+<span class="cmd">curl -X POST http://localhost:4200/api/exchange/packs \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d @safety-pack.json</span>

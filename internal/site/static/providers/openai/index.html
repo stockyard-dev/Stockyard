@@ -132,10 +132,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <span class="comment"># Start the proxy</span>
 <span class="cmd">stockyard</span>
 <span class="output"># Provider: openai (from OPENAI_API_KEY)</span>
-<span class="output"># Proxy listening on :7749</span>
+<span class="output"># Proxy listening on :4200</span>
 
 <span class="comment"># Send a request through the proxy</span>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \</span>
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -H "Content-Type: application/json" \</span>
 <span class="cmd">  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"hello"}]}'</span></pre>
 

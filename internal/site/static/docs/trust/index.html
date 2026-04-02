@@ -206,19 +206,19 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="ledger">Audit Ledger</h2>
     <pre>
 <span class="comment"># View the audit ledger</span>
-<span class="cmd">curl http://localhost:7749/api/trust/ledger?limit=10</span>
+<span class="cmd">curl http://localhost:4200/api/trust/ledger?limit=10</span>
 
 <span class="comment"># Verify chain integrity</span>
-<span class="cmd">curl http://localhost:7749/api/trust/ledger/verify</span>
+<span class="cmd">curl http://localhost:4200/api/trust/ledger/verify</span>
 </pre>
 
     <h2 id="policies">Policies</h2>
     <pre>
 <span class="comment"># List policies</span>
-<span class="cmd">curl http://localhost:7749/api/trust/policies</span>
+<span class="cmd">curl http://localhost:4200/api/trust/policies</span>
 
 <span class="comment"># Create a block policy</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/trust/policies \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \</span>
 <span class="cmd">  -d '{"name":"block-pii-output","type":"block","pattern":"(SSN|\\d{3}-\\d{2}-\\d{4})"}'</span>
 </pre>
     <p>Policy types: <code>block</code> (reject the request), <code>warn</code> (log and continue), <code>log</code> (record silently).</p>
@@ -226,7 +226,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="evidence">Evidence Export</h2>
     <pre>
 <span class="comment"># Export evidence packs for compliance</span>
-<span class="cmd">curl http://localhost:7749/api/trust/evidence</span>
+<span class="cmd">curl http://localhost:4200/api/trust/evidence</span>
 </pre>
     <p>See the <a href="/trust/">Trust product page</a> for the ledger visualization.</p>
 
@@ -234,7 +234,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="ledger">Audit Ledger</h2>
     <p>Brand maintains a hash-chained, append-only ledger of every LLM interaction. Each entry is linked to the previous via SHA-256, making tampering detectable:</p>
     <pre>
-<span class="cmd">curl "http://localhost:7749/api/trust/ledger?limit=5" \
+<span class="cmd">curl "http://localhost:4200/api/trust/ledger?limit=5" \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
     <pre>
@@ -258,7 +258,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="policies">Brand Policies</h2>
     <p>Create policies that block, warn, or log based on content rules:</p>
     <pre>
-<span class="cmd">curl -X POST http://localhost:7749/api/trust/policies \
+<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -276,17 +276,17 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="manage-policies">Managing Policies</h2>
     <pre>
 <span class="comment"># List all policies</span>
-<span class="cmd">curl http://localhost:7749/api/trust/policies \
+<span class="cmd">curl http://localhost:4200/api/trust/policies \
   -H "Authorization: Bearer sy_admin_..."</span>
 
 <span class="comment"># Update a policy</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/trust/policies/pol_id \
+<span class="cmd">curl -X PUT http://localhost:4200/api/trust/policies/pol_id \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"action": "warn"}'</span>
 
 <span class="comment"># Delete a policy</span>
-<span class="cmd">curl -X DELETE http://localhost:7749/api/trust/policies/pol_id \
+<span class="cmd">curl -X DELETE http://localhost:4200/api/trust/policies/pol_id \
   -H "Authorization: Bearer sy_admin_..."</span>
 </pre>
 
@@ -308,18 +308,18 @@ apps:
     <p>Typical compliance setup for regulated environments:</p>
     <pre>
 <span class="comment"># 1. Enable full audit logging</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/compliancelog \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/compliancelog \
   -H "Authorization: Bearer sy_admin_..." \
   -d '{"enabled": true}'</span>
 
 <span class="comment"># 2. Block sensitive content in outputs</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/trust/policies \
+<span class="cmd">curl -X POST http://localhost:4200/api/trust/policies \
   -H "Authorization: Bearer sy_admin_..." \
   -H "Content-Type: application/json" \
   -d '{"name": "No financial advice", "action": "block", "rules": [{"field": "response.content", "pattern": "you should (buy|sell|invest)", "description": "Block financial advice patterns"}]}'</span>
 
 <span class="comment"># 3. Enable secret detection in inputs</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/secretscan \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/secretscan \
   -H "Authorization: Bearer sy_admin_..." \
   -d '{"enabled": true}'</span>
 </pre>
@@ -336,7 +336,7 @@ entry[n].hash = SHA256(entry[n].data + entry[n-1].hash)
     <p>The <code>feedbackloop</code> module captures user feedback (thumbs up/down, ratings) and links it to the original trace. This data powers quality tracking and model evaluation over time.</p>
     <pre>
 <span class="comment"># Enable feedback capture</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/feedbackloop \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/feedbackloop \
   -H "Authorization: Bearer sy_admin_..." \
   -d '{"enabled": true}'</span>
 </pre>
@@ -396,7 +396,7 @@ modules:
     <p>Export ledger entries for external compliance tools or long-term archival:</p>
     <pre>
 <span class="comment"># Export last 30 days of audit data</span>
-<span class="cmd">curl "http://localhost:7749/api/trust/ledger?days=30&limit=10000" \
+<span class="cmd">curl "http://localhost:4200/api/trust/ledger?days=30&limit=10000" \
   -H "Authorization: Bearer sy_admin_..." > audit-export.json</span>
 </pre>
     <p>The exported data includes full hash chain information, allowing independent verification of chain integrity by auditors or compliance tools.</p>

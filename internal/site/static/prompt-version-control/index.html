@@ -105,19 +105,19 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2>How Tack Room works</h2>
   <p>Tack Room is Stockyard's prompt management app. It stores prompt templates with named versions, lets you run A/B experiments between versions, and tracks which version is active in production.</p>
   <pre><span class="comment"># Create a prompt template</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/studio/templates \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \</span>
 <span class="cmd">  -d '{"name": "classify-ticket", "version": "v1",</span>
 <span class="cmd">       "system": "Classify this support ticket as: bug, feature, question",</span>
 <span class="cmd">       "model": "gpt-4o-mini"}'</span>
 
 <span class="comment"># Create a new version</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/studio/templates \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/templates \</span>
 <span class="cmd">  -d '{"name": "classify-ticket", "version": "v2",</span>
 <span class="cmd">       "system": "Classify as: bug, feature, question, billing. Reply with ONLY the category.",</span>
 <span class="cmd">       "model": "gpt-4o-mini"}'</span>
 
 <span class="comment"># A/B test: 50% traffic to each version</span>
-<span class="cmd">curl -X POST http://localhost:7749/api/studio/experiments \</span>
+<span class="cmd">curl -X POST http://localhost:4200/api/studio/experiments \</span>
 <span class="cmd">  -d '{"template": "classify-ticket", "variants": ["v1", "v2"], "split": [50, 50]}'</span></pre>
 
   <h2>What you get</h2>

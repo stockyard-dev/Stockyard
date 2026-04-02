@@ -191,7 +191,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="enable">Enable caching</h2>
     <p>Caching is disabled by default. Enable it via the API:</p>
     <pre>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cache \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cache \</span>
 <span class="cmd">  -d '{"enabled": true}'</span></pre>
     <p>Or in your config file:</p>
     <pre>
@@ -226,7 +226,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <h2 id="monitoring">Monitoring cache performance</h2>
     <p>Check cache hit rates via the API:</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/api/proxy/modules/cache</span>
+<span class="cmd">curl http://localhost:4200/api/proxy/modules/cache</span>
 <span class="comment"># Returns hit/miss counts, hit rate %, and memory usage</span></pre>
 
   </main>

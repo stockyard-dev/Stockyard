@@ -102,7 +102,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>If your application sends the same prompt more than once, you are paying for the same answer multiple times. This happens more than you think: editors re-sending file context, classification tasks with repeated inputs, RAG pipelines with overlapping queries.</p>
   <p>A <a href="/what-is-prompt-caching/">prompt cache</a> stores responses and returns them instantly for identical requests. Cache hits are free and return in milliseconds instead of seconds. For iterative development workflows, caching alone can cut costs 30-50%.</p>
   <pre><span class="comment"># Enable caching in Stockyard</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cache \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cache \</span>
 <span class="cmd">  -d '{"enabled": true}'</span>
 <span class="comment"># Next identical request returns from cache: $0.00, ~2ms</span></pre>
 
@@ -110,11 +110,11 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>Not every request needs GPT-4o. Classification, summarization, and simple completions work well with cheaper models. DeepSeek-chat costs roughly 20x less than GPT-4o per token. Gemini Flash is 10x cheaper.</p>
   <p>Use <a href="/what-is-model-aliasing/">model aliasing</a> to route different workloads to different models without changing application code:</p>
   <pre><span class="comment"># Route simple tasks to a cheap model</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/aliases \</span>
 <span class="cmd">  -d '{"alias": "fast", "model": "deepseek-chat"}'</span>
 
 <span class="comment"># Keep complex tasks on GPT-4o</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/aliases \</span>
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/aliases \</span>
 <span class="cmd">  -d '{"alias": "smart", "model": "gpt-4o"}'</span></pre>
 
   <h2>3. Set spend caps</h2>

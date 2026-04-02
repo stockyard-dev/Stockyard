@@ -215,17 +215,17 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">export OPENAI_API_KEY=sk-...</span>
 <span class="cmd">stockyard</span>
 
-<span class="comment"># Listening on :7749</span>
-<span class="comment"># Proxy: http://localhost:7749/v1  (OpenAI-compatible)</span>
+<span class="comment"># Listening on :4200</span>
+<span class="comment"># Proxy: http://localhost:4200/v1  (OpenAI-compatible)</span>
 <span class="comment"># 76 middleware modules loaded</span>
-<span class="comment"># Dashboard: http://localhost:7749/ui</span>
+<span class="comment"># Dashboard: http://localhost:4200/ui</span>
 </pre>
     <div class="note"><strong>Key detection</strong><br>Stockyard recognizes key prefixes automatically: <code>sk-</code> &rarr; OpenAI, <code>sk-ant-</code> &rarr; Anthropic, <code>gsk_</code> &rarr; Groq, <code>AI</code> &rarr; Google, and so on. Set multiple keys to enable failover and multi-provider routing.</div>
 
     <h2 id="first-request"><span class="step-num">3</span> Send a request</h2>
     <p>In a second terminal, send a chat completion through the proxy. The API is OpenAI-compatible, so any tool or SDK that speaks OpenAI works unchanged.</p>
     <pre>
-<span class="cmd">curl http://localhost:7749/v1/chat/completions \
+<span class="cmd">curl http://localhost:4200/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
@@ -253,35 +253,35 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <p>Hit the health endpoint (no auth needed) and the status endpoint (needs your admin key) to confirm everything is running:</p>
     <pre>
 <span class="comment"># Public health check</span>
-<span class="cmd">curl http://localhost:7749/health</span>
+<span class="cmd">curl http://localhost:4200/health</span>
 <span class="comment"># {"status":"ok"}</span>
 
 <span class="comment"># Full platform status (set an admin key first)</span>
 <span class="cmd">export STOCKYARD_ADMIN_KEY=sy_admin_your_secret</span>
-<span class="cmd">curl http://localhost:7749/api/platform/health \
+<span class="cmd">curl http://localhost:4200/api/platform/health \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY"</span>
 <span class="comment"># {"status":"ok","proxy":"healthy","modules":76,"providers":["openai","anthropic",...]}</span>
 </pre>
-    <p>Open <code>http://localhost:7749/ui</code> for the web console. It shows traces, costs, module status, and provider health in real time. No separate install, no external dependencies.</p>
+    <p>Open <code>http://localhost:4200/ui</code> for the web console. It shows traces, costs, module status, and provider health in real time. No separate install, no external dependencies.</p>
 
     <h2 id="enable-module"><span class="step-num">5</span> Enable a module</h2>
     <p>The proxy starts with a default module set. You can toggle individual modules at runtime without restarting.</p>
     <pre>
 <span class="comment"># Enable response caching (saves money during development)</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/cachelayer \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/cachelayer \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'</span>
 
 <span class="comment"># Set a daily spending cap</span>
-<span class="cmd">curl -X PUT http://localhost:7749/api/proxy/modules/costcap \
+<span class="cmd">curl -X PUT http://localhost:4200/api/proxy/modules/costcap \
   -H "X-Admin-Key: $STOCKYARD_ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true, "config": {"daily_limit_usd": 5.0}}'</span>
 </pre>
     <p>Changes take effect immediately. No restart, no deploy, no config file edit. See <a href="/docs/proxy/">Modules &amp; Providers</a> for the full list of 76 available modules.</p>
 
-    <div class="note"><strong>Your base URL</strong><br>Point any OpenAI-compatible SDK or tool at this URL:<br><br><code>http://localhost:7749/v1</code><br><br>That is the only change needed. Your existing code, model names, and request format stay the same.</div>
+    <div class="note"><strong>Your base URL</strong><br>Point any OpenAI-compatible SDK or tool at this URL:<br><br><code>http://localhost:4200/v1</code><br><br>That is the only change needed. Your existing code, model names, and request format stay the same.</div>
 
     <h2 id="use-your-sdk"><span class="step-num">6</span> Use your existing SDK</h2>
     <p>Stockyard is an OpenAI-compatible proxy. Point any OpenAI SDK at it by changing the base URL. That&rsquo;s the only code change.</p>
@@ -290,7 +290,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="http://localhost:7749/v1",
+    base_url="http://localhost:4200/v1",
     api_key="sk-..."   <span class="comment"># your real provider key</span>
 )
 
@@ -305,7 +305,7 @@ print(response.choices[0].message.content)
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'http://localhost:7749/v1',
+  baseURL: 'http://localhost:4200/v1',
   apiKey: 'sk-...'
 });
 
@@ -321,7 +321,7 @@ console.log(res.choices[0].message.content);
     <p>For persistent configuration, create <code>stockyard.yaml</code> in your working directory:</p>
     <pre>
 <span class="comment"># stockyard.yaml</span>
-port: 7749
+port: 4200
 admin_key: "sy_admin_your_secret"
 
 providers:
@@ -349,7 +349,7 @@ modules:
     <p>If you prefer containers:</p>
     <pre>
 <span class="cmd">docker run -d \
-  -p 7749:7749 \
+  -p 4200:4200 \
   -e OPENAI_API_KEY=sk-... \
   -e STOCKYARD_ADMIN_KEY=sy_admin_... \
   -v stockyard-data:/data \
