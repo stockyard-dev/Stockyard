@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["CGO_ENABLED=0 go build -ldflags='-s -w' -o stockyard ./cmd/stockyard/"]
+
+[start]
+cmd = "./stockyard"
