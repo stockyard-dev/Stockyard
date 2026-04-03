@@ -137,7 +137,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>Teams outgrow spreadsheet-based affiliates tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Dividend is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">Who runs this</div>
-  <p>A three-person startup uses Dividend to track affiliates without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their affiliates workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+  <p>Download the binary and run it. Dividend starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
 </div></div><div class="section">
   <div class="section-label">Setup and daily use</div>
   <p>Deploy Dividend as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and affiliates count, which you can wire into your existing monitoring stack.</p>

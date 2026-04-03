@@ -137,7 +137,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>The overhead of managing pipelines tends to grow quietly until someone asks why the team is paying four different subscriptions for overlapping features. Windmill replaces that stack with a single process that starts in under a second.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">In practice</div>
-  <p>A distributed team of eight uses Windmill alongside their existing project management tool. Windmill handles the pipelines that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+  <p>Run Windmill on any server where you can execute a binary. The dashboard is immediately available at localhost, and the REST API integrates with your existing scripts and workflows. No external dependencies to configure, no managed service to subscribe to.</p>
 </div></div><div class="section">
   <div class="section-label">How it works</div>
   <p>Start Windmill with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create pipelines through the web interface or POST JSON to the API. Filter by source, destination, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>

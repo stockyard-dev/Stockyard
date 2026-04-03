@@ -134,10 +134,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <div class="section">
   <div class="section-label">Why self-host your budget tracker</div>
-  <p>If you have ever exported budgets from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Exchequer stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+  <p>SaaS tools hold your data hostage. Export formats are incomplete, migrations are painful, and pricing changes whenever the vendor feels like it. Exchequer stores everything in SQLite on your own server. Your data is a file you control, back up, and query directly.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">How teams use Exchequer</div>
-  <p>A three-person startup uses Exchequer to track budgets without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their budgets workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+  <p>Download the binary and run it. Exchequer starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
 </div></div><div class="section">
   <div class="section-label">How Exchequer runs</div>
   <p>Install Exchequer with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating budgets. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>

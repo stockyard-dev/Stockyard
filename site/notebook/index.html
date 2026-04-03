@@ -133,7 +133,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any note to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/notes</code>. Responses are JSON. Authentication is handled at the network level — put Notebook behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">In practice</div>
-  <p>A three-person startup uses Notebook to track notes without adding another SaaS login to the pile. The founder creates records through the dashboard in the morning. The API feeds data into a nightly summary script. When an investor asks about their notes workflow, they point to a tool running on a $5 VPS — not a $50/month platform.</p>
+  <p>Download the binary and run it. Notebook starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
 </div></div><div class="section">
   <div class="section-label">Endpoints</div>
   <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">

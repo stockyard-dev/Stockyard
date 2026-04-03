@@ -130,10 +130,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>Teams outgrow spreadsheet-based events tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Headcount is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
 </div><div class="section">
   <div class="section-label">Architecture</div>
-  <p>On first launch, Headcount initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a event is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+  <p>On first launch, Headcount initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Track page views with a lightweight script tag or send custom events via the API. The dashboard shows visitors, page views, referrers, funnels, and retention cohorts. No cookies required, no GDPR banner needed.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">A typical setup</div>
-  <p>A distributed team of eight uses Headcount alongside their existing project management tool. Headcount handles the events that do not fit neatly into Jira tickets or GitHub issues. The API lets them pull data into weekly standup notes automatically.</p>
+  <p>Add the tracking snippet to your site. Headcount captures page views, unique visitors, and referral sources without sending any data to third parties. Build funnels to see where users drop off. Track retention to see who comes back. Export CSV reports when you need numbers for a board deck or investor update.</p>
 </div></div><div class="section">
   <div class="section-label">Endpoints</div>
   <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">

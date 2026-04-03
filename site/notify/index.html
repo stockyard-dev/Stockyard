@@ -134,10 +134,10 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <div class="section">
   <div class="section-label">The problem</div>
-  <p>If you have ever exported alerts from a SaaS tool and discovered the CSV was missing half your data, you understand the problem. Notify stores everything in SQLite on your filesystem. Your data is always a file copy away.</p>
+  <p>SaaS tools hold your data hostage. Export formats are incomplete, migrations are painful, and pricing changes whenever the vendor feels like it. Notify stores everything in SQLite on your own server. Your data is a file you control, back up, and query directly.</p>
 </div><div class="section">
   <div class="section-label">How Notify runs</div>
-  <p>On first launch, Notify initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a alert is a POST with JSON — the only required field is recipient. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+  <p>On first launch, Notify initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating an alert is a POST with JSON — the only required field is recipient. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">In practice</div>
   <p>A regulated company runs Notify inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>

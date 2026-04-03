@@ -140,7 +140,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <p>A freelance consultant keeps Quartermaster running on a home server. Client inventory stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
 </div></div><div class="section">
   <div class="section-label">Setup and daily use</div>
-  <p>On first launch, Quartermaster initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a inventoryitem is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
+  <p>On first launch, Quartermaster initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating an item is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
 </div><div class="section">
   <div class="section-label">Endpoints</div>
   <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
