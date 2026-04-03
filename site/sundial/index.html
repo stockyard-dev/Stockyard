@@ -66,6 +66,14 @@ input[type=email]{border-radius:0;outline:none}input[type=email]:focus{border-co
 footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
 footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
+.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nav-drop-menu.open{display:block}
+.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono,monospace);font-size:.78rem;color:var(--cream-dim)}
+.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
+.drop-section{font-family:var(--font-mono,monospace);font-size:.6rem;color:var(--cm,#7a7060);text-transform:uppercase;letter-spacing:1px;padding:.5rem 1.2rem .2rem}
+.drop-arrow{font-size:.6rem}
+@media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Sundial","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free tier"},{"@type":"Offer","price":"$0.99","priceCurrency":"USD","description":"Pro monthly"}],"description":"Start a timer, tag it to a project or client, stop it, see where your time actually goes. Toggl charges $9/mo. This is a binary with a dashboard. For freelancer"}</script>
 
@@ -80,10 +88,8 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand">
-    <svg width="20" height="20" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="4" fill="#c45d2c"/><path d="M8 28L20 12L32 28H8Z" fill="#f0e6d3"/></svg>
-    Stockyard
-  </a>
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <div class="nav-drop">
       <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
@@ -93,12 +99,9 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
         <a href="/tools/?category=developer">Developer Tools</a>
         <a href="/tools/?category=operations">Operations</a>
         <a href="/tools/?category=creator">Creator &amp; Business</a>
-        <a href="/tools/?category=finance">Finance</a>
-        <a href="/tools/?category=personal">Personal</a>
         <div class="drop-section">Popular</div>
         <a href="/corral/">Corral</a>
         <a href="/gate/">Gate</a>
-        <a href="/headcount/">Headcount</a>
         <a href="/saltlick/">Salt Lick</a>
       </div>
     </div>
@@ -254,5 +257,7 @@ async function startCheckout(plan, interval) {
   </p>
 </footer>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
+function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
 </body>
 </html>

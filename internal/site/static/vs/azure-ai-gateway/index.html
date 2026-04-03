@@ -50,6 +50,14 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle.open span:nth-child(2){opacity:0}.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}.nav-overlay{display:none}
 @media(max-width:768px){.nav{padding:0.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.5)}.nav-links.open{display:flex;font-family:var(--font-serif)}.nav-links a{font-size:1.05rem;padding:0.4rem 0}.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}.nav-overlay.open{display:block}.hero{padding:3rem 1.5rem 2rem}.hero h1{font-size:1.6rem}.ct{font-size:0.75rem}.ct th,.ct td{padding:0.5rem 0.6rem}}
 .explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.7rem}.explore-bar a{color:var(--cream-muted);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light)}
+.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nav-drop-menu.open{display:block}
+.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono,monospace);font-size:.78rem;color:var(--cream-dim)}
+.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
+.drop-section{font-family:var(--font-mono,monospace);font-size:.6rem;color:var(--cm,#7a7060);text-transform:uppercase;letter-spacing:1px;padding:.5rem 1.2rem .2rem}
+.drop-arrow{font-size:.6rem}
+@media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Kong AI Gateway free?","acceptedAnswer":{"@type":"Answer","text":"Kong Gateway OSS is free under Apache 2.0, but AI-specific features and enterprise support require Kong Enterprise, which is commercial. Stockyard's free tier includes all 76 middleware modules and 40 provider integrations."}},{"@type":"Question","name":"Can I use Kong just for LLM routing?","acceptedAnswer":{"@type":"Answer","text":"Yes, but Kong is a general-purpose API gateway. Deploying it solely for LLM routing means running Postgres and the full gateway stack. Stockyard is purpose-built for LLM routing and requires no external dependencies."}},{"@type":"Question","name":"Does Kong support model aliasing?","acceptedAnswer":{"@type":"Answer","text":"Kong's AI proxy plugin supports basic model routing. Stockyard provides full model aliasing with runtime API changes, letting you swap providers without redeploying."}}]}
@@ -157,5 +165,7 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
+function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
 </body>
 </html>
