@@ -161,7 +161,30 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 ## Shipped This Week
 
 <!-- SHIPPED-START -->
-_Auto-updated by CI. See [full changelog](https://stockyard.dev/changelog/) for details._
+**20 changes** in the last 7 days:
+
+- **fix: trailing slashes on all README links (eliminates 301 redirects)** (2026-04-03)
+- **CI + tests: version injection, expanded smoke tests** (2026-04-03)
+- **security + perf: database indexes, Content-Type validation** (2026-04-03)
+- **ops: slow request logging (>500ms with request ID)** (2026-04-03)
+- **production ops: runtime metrics, automated backups, WAL checkpoints** (2026-04-03)
+- **graceful shutdown: apiserver handles SIGTERM/SIGINT cleanly** (2026-04-03)
+- **observability: request IDs in engine, health check uptime, degraded status** (2026-04-03)
+- **technical hardening: request IDs, structured errors, SQLite pragmas, health improvements** (2026-04-03)
+- **performance + observability: SQLite pragmas, request IDs, structured errors** (2026-04-03)
+- **technical hardening: deep health check, route test, CI overhaul** (2026-04-03)
+- **fix: whitelist demo webhook endpoints in auth middleware** (2026-04-03)
+- **wild infrastructure: Docker Compose generator, live webhook demo** (2026-04-03)
+- **infra: security hardening + sitemap coverage** (2026-04-03)
+- **SaaS Graveyard: linkbait page with real documented SaaS failures** (2026-04-03)
+- **quiz + blog post: interactive tool recommender, 'Why 150 tools' post** (2026-04-03)
+- **gitignore: add DISTRIBUTION-PLAYBOOK.md** (2026-04-03)
+- **open startup page: public metrics, radical transparency** (2026-04-03)
+- **stacks page: curated tool bundles (startup, homelab, devops, creator)** (2026-04-03)
+- **migration guides + savings report + sitemap** (2026-04-03)
+- **game changers: README overhaul, shareable savings report** (2026-04-03)
+
+_See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
 
 ## Build from Source
