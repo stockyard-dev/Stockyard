@@ -107,7 +107,7 @@ func (s *StripeClient) stripeGet(endpoint string) (map[string]any, error) {
 }
 
 // CreateCheckoutSession creates a Stripe Checkout session for a product/tier.
-func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceID string) (string, error) {
+func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceID string, ref string) (string, error) {
 	if priceID == "" {
 		return "", fmt.Errorf("no Stripe price ID configured for %s/%s", product, tier)
 	}
@@ -138,8 +138,8 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 			"&metadata[product]=%s"+
 			"&metadata[tier]=%s"+
 			"&subscription_data[metadata][product]=%s"+
-			"&subscription_data[metadata][tier]=%s",
-		priceID, successURL, cancelURL, product, tier, product, tier,
+			"&subscription_data[metadata][tier]=%s&metadata[ref]=%s&subscription_data[metadata][ref]=%s",
+		priceID, successURL, cancelURL, product, tier, product, tier, ref, ref,
 	)
 
 	if email != "" {

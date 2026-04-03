@@ -741,6 +741,7 @@ function toggleBilling() {
 }
 
 async function checkout(tier, e) {
+  const ref = new URLSearchParams(window.location.search).get('ref') || '';
   const btn = e ? e.target : document.activeElement;
   const originalText = btn.textContent;
   btn.textContent = 'Redirecting...';
@@ -750,7 +751,7 @@ async function checkout(tier, e) {
     const res = await fetch(API_BASE + '/api/billing/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier: tier, period: billingMode })
+      body: JSON.stringify({ tier: tier, period: billingMode, ref: ref })
     });
 
     if (!res.ok) {
@@ -782,6 +783,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 
 <script>
 async function startCompleteCheckout(interval) {
+  const ref = new URLSearchParams(window.location.search).get('ref') || '';
   const btn = document.getElementById('complete-btn-' + interval);
   if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
   try {

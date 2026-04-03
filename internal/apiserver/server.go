@@ -286,10 +286,17 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		Tier     string `json:"tier"`     // legacy compat
 		Interval string `json:"interval"` // "monthly" (default) or "annual"
 		Email    string `json:"email"`
+		Ref      string `json:"ref"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeErr(w, http.StatusBadRequest, "invalid JSON")
 		return
+	}
+
+	// Capture referral code from request or query param
+	refCode := req.Ref
+	if refCode == "" {
+		refCode = r.URL.Query().Get("ref")
 	}
 
 	// Normalize interval
@@ -313,7 +320,7 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 					toolPlan.Tool, strings.ToUpper(toolPlan.Tool), strings.ToUpper(interval)))
 				return
 			}
-			url, err := s.stripe.CreateCheckoutSession(toolPlan.Tool, "pro", req.Email, priceID)
+			url, err := s.stripe.CreateCheckoutSession(toolPlan.Tool, "pro", req.Email, priceID, refCode)
 			if err != nil {
 				log.Printf("checkout error: %v", err)
 				writeErr(w, http.StatusInternalServerError, fmt.Sprintf("checkout: %v", err))
@@ -357,7 +364,7 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url, err := s.stripe.CreateCheckoutSession(product, tier, req.Email, priceID)
+	url, err := s.stripe.CreateCheckoutSession(product, tier, req.Email, priceID, refCode)
 	if err != nil {
 		log.Printf("checkout error: %v", err)
 		writeErr(w, http.StatusInternalServerError, fmt.Sprintf("checkout: %v", err))
@@ -820,7 +827,7 @@ func (s *Server) handleCloudUpgrade(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url, err := s.stripe.CreateCheckoutSession("cloud", "pro", tenant.Email, priceID)
+	url, err := s.stripe.CreateCheckoutSession("cloud", "pro", tenant.Email, priceID, "")
 	if err != nil {
 		writeErr(w, http.StatusInternalServerError, "failed to create checkout")
 		return

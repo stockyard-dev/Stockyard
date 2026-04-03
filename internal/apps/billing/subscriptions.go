@@ -81,8 +81,15 @@ func (a *App) handleStripeCheckout(w http.ResponseWriter, r *http.Request) {
 		Period     string `json:"period"`      // monthly, annual
 		CustomerID string `json:"customer_id"` // stockyard customer ID
 		Email      string `json:"email"`
+		Ref        string `json:"ref"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
+
+	// Capture referral code
+	refCode := req.Ref
+	if refCode == "" {
+		refCode = r.URL.Query().Get("ref")
+	}
 
 	priceKey := req.Tier + "_" + req.Period
 	priceID, ok := stripePrices[priceKey]
@@ -111,6 +118,10 @@ func (a *App) handleStripeCheckout(w http.ResponseWriter, r *http.Request) {
 	params.Set("metadata[period]", req.Period)
 	params.Set("subscription_data[metadata][stockyard_customer]", req.CustomerID)
 	params.Set("subscription_data[metadata][tier]", req.Tier)
+	if refCode != "" {
+		params.Set("metadata[ref]", refCode)
+		params.Set("subscription_data[metadata][ref]", refCode)
+	}
 
 	result, err := stripeRequest("POST", "/checkout/sessions", params)
 	if err != nil {
