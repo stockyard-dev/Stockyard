@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>What Should You Self-Host? — Stockyard Quiz</title>
+<meta name="description" content="Answer 5 questions about your setup. Get personalized self-hosted tool recommendations with install commands.">
+<meta property="og:title" content="What Should You Self-Host?">
+<meta property="og:description" content="5 questions. Personalized self-hosted tool recommendations.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/quiz/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:640px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:2.5rem}
+.q{display:none;animation:fadeIn .3s}
+.q.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.q-num{font-family:var(--mono);font-size:.65rem;color:var(--cm);text-transform:uppercase;letter-spacing:2px;margin-bottom:.8rem}
+.q-text{font-size:1.15rem;margin-bottom:1.5rem}
+.q-opts{display:flex;flex-direction:column;gap:.5rem}
+.q-opt{padding:.8rem 1.2rem;border:1px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--mono);font-size:.82rem;transition:all .15s;display:flex;align-items:center;gap:.8rem}
+.q-opt:hover{border-color:var(--rust);background:rgba(196,93,44,0.05)}
+.q-opt.selected{border-color:var(--gold);background:rgba(212,168,67,0.08)}
+.q-icon{width:18px;height:18px;border:2px solid var(--bg3);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.q-opt.selected .q-icon{border-color:var(--gold);background:var(--gold)}
+.q-opt.selected .q-icon::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--bg)}
+.progress{display:flex;gap:4px;margin-bottom:2rem}
+.progress-dot{flex:1;height:4px;background:var(--bg3);border-radius:2px}
+.progress-dot.done{background:var(--rust)}
+.progress-dot.current{background:var(--gold)}
+#results{display:none}
+.r-header{text-align:center;margin-bottom:2rem}
+.r-header h2{font-size:1.4rem;margin-bottom:.5rem}
+.r-tool{border:1px solid var(--bg3);margin-bottom:1rem;background:var(--bg2)}
+.r-tool-header{padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center}
+.r-tool-name{font-family:var(--mono);font-size:.92rem;color:var(--cream)}
+.r-tool-saves{font-family:var(--mono);font-size:.7rem;color:var(--gold)}
+.r-tool-desc{padding:0 1.2rem .8rem;font-size:.82rem;color:var(--cd);font-style:italic}
+.r-tool-cmd{padding:.6rem 1.2rem;background:#0d0b09;font-family:var(--mono);font-size:.72rem;color:var(--ll);cursor:pointer}
+.r-tool-cmd:hover{color:var(--cream)}
+.r-total{text-align:center;padding:1.5rem;border:2px solid var(--gold);margin:2rem 0}
+.r-total-label{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
+.r-total-val{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--gold)}
+.r-share{text-align:center;margin:1.5rem 0}
+.r-share input{width:100%;padding:.5rem .8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--gold);font-family:var(--mono);font-size:.72rem;text-align:center}
+.btn{font-family:var(--mono);font-size:.82rem;padding:.65rem 1.8rem;text-decoration:none;display:inline-block;cursor:pointer;border:none}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather);margin-left:.5rem}.btn-sec:hover{border-color:var(--cream)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}@media(max-width:768px){.nav-links{display:none}}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/tools/">Tools</a><a href="/complete/" style="color:var(--gold)">Complete</a><a href="/pricing/">Pricing</a></div>
+</nav>
+
+<div class="wrap">
+  <h1>What should you self-host?</h1>
+  <p class="sub">5 questions. Personalized recommendations.</p>
+
+  <div class="progress" id="progress"></div>
+
+  <div id="quiz"></div>
+
+  <div id="results">
+    <div class="r-header">
+      <h2>Your self-hosted stack</h2>
+      <p style="color:var(--cd);font-style:italic">Based on your answers, here are the tools that would save you the most.</p>
+    </div>
+    <div id="recs"></div>
+    <div class="r-total">
+      <div class="r-total-label">Estimated monthly savings</div>
+      <div class="r-total-val" id="r-savings">$0</div>
+      <div style="font-family:var(--mono);font-size:.7rem;color:var(--cd);margin-top:.3rem">vs <span id="r-saas-total">$0</span>/mo in SaaS &rarr; Stockyard Complete $29/mo</div>
+    </div>
+    <div class="r-share">
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem">Share your results</div>
+      <input id="share-url" readonly onclick="this.select()">
+      <button class="btn" style="margin-top:.5rem;padding:.4rem 1rem;background:var(--rust);color:var(--cream);font-size:.72rem" onclick="navigator.clipboard.writeText(document.getElementById('share-url').value);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy link',2000)">Copy link</button>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="/complete/" class="btn btn-gold">Get all 150 tools &mdash; $29/mo</a>
+      <a href="/stacks/" class="btn btn-sec">Browse stacks</a>
+    </div>
+    <div style="text-align:center;margin-top:1rem">
+      <button class="btn" style="background:none;color:var(--cm);border:1px solid var(--bg3);font-size:.72rem;padding:.4rem 1rem" onclick="restart()">Retake quiz</button>
+    </div>
+  </div>
+</div>
+
+<footer><a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></footer>
+
+<script>
+var questions = [
+  {q:"What's your role?", opts:[
+    {l:"Solo developer / indie hacker", tags:["dev","solo"]},
+    {l:"Developer on a team", tags:["dev","team"]},
+    {l:"DevOps / SRE", tags:["ops","team"]},
+    {l:"Non-technical founder", tags:["business","solo"]}
+  ]},
+  {q:"What do you pay the most for in SaaS?", opts:[
+    {l:"Monitoring & error tracking", tags:["monitoring"]},
+    {l:"Analytics & user tracking", tags:["analytics"]},
+    {l:"Communication & project tools", tags:["collab"]},
+    {l:"Developer infrastructure", tags:["infra"]}
+  ]},
+  {q:"Where would you run self-hosted tools?", opts:[
+    {l:"A VPS ($5-20/mo)", tags:["vps"]},
+    {l:"Home server / Raspberry Pi", tags:["homelab"]},
+    {l:"Existing cloud infrastructure (AWS, GCP)", tags:["cloud"]},
+    {l:"Not sure yet", tags:["vps"]}
+  ]},
+  {q:"How many people on your team?", opts:[
+    {l:"Just me", tags:["solo"]},
+    {l:"2-5 people", tags:["small"]},
+    {l:"6-20 people", tags:["medium"]},
+    {l:"20+", tags:["large"]}
+  ]},
+  {q:"What matters most to you?", opts:[
+    {l:"Saving money", tags:["cost"]},
+    {l:"Data privacy & ownership", tags:["privacy"]},
+    {l:"Simplicity (fewer vendors)", tags:["simple"]},
+    {l:"Not depending on SaaS uptime", tags:["reliability"]}
+  ]}
+];
+
+var allTools = [
+  {name:"Seismograph",slug:"seismograph",desc:"Error tracking and exception aggregation",saves:26,replaces:"Sentry",tags:["monitoring","dev","ops","cost"]},
+  {name:"Paddock",slug:"paddock",desc:"Public status page with incidents",saves:79,replaces:"Statuspage.io",tags:["monitoring","ops","reliability","team"]},
+  {name:"Salt Lick",slug:"saltlick",desc:"Feature flags and gradual rollouts",saves:50,replaces:"LaunchDarkly",tags:["infra","dev","team","medium"]},
+  {name:"Headcount",slug:"headcount",desc:"Privacy-first user analytics",saves:20,replaces:"Mixpanel",tags:["analytics","privacy","dev","business"]},
+  {name:"Corral",slug:"corral",desc:"Webhook capture, inspect, replay",saves:25,replaces:"Hookdeck",tags:["infra","dev","simple"]},
+  {name:"Lasso",slug:"lasso",desc:"Link shortener with analytics",saves:35,replaces:"Bitly",tags:["analytics","business","cost"]},
+  {name:"Bellwether",slug:"bellwether",desc:"Uptime monitoring and alerting",saves:15,replaces:"Better Stack",tags:["monitoring","ops","reliability","homelab"]},
+  {name:"Sentinel",slug:"sentinel",desc:"Alert manager with escalation",saves:21,replaces:"PagerDuty",tags:["monitoring","ops","team"]},
+  {name:"Strongbox",slug:"strongbox",desc:"Encrypted secret manager",saves:18,replaces:"1Password Teams",tags:["infra","ops","privacy","team"]},
+  {name:"Homestead",slug:"homestead",desc:"Server monitoring dashboard",saves:0,replaces:"",tags:["monitoring","homelab","ops","vps"]},
+  {name:"Cipher",slug:"cipher",desc:"Self-hosted password manager",saves:0,replaces:"",tags:["privacy","homelab","solo","simple"]},
+  {name:"Feedreader",slug:"feedreader",desc:"RSS reader",saves:0,replaces:"",tags:["homelab","solo","simple"]},
+  {name:"Post",slug:"post",desc:"Self-hosted blog engine",saves:15,replaces:"Ghost Pro",tags:["business","solo","simple"]},
+  {name:"Surveyor",slug:"surveyor",desc:"Forms and surveys",saves:25,replaces:"Typeform",tags:["business","analytics","collab"]},
+  {name:"Prairie",slug:"prairie",desc:"Project board and task tracking",saves:40,replaces:"Linear",tags:["collab","dev","team"]},
+  {name:"Notebook",slug:"notebook",desc:"Personal notes and knowledge base",saves:0,replaces:"",tags:["homelab","solo","simple","privacy"]},
+  {name:"Billfold",slug:"billfold",desc:"Invoice generator",saves:15,replaces:"FreshBooks",tags:["business","solo","cost"]},
+  {name:"Pony Express",slug:"ponyexpress",desc:"Newsletter and email campaigns",saves:20,replaces:"Mailchimp",tags:["business","collab","cost"]},
+];
+
+var answers = [];
+var current = 0;
+
+function render() {
+  var prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  for (var i = 0; i < questions.length; i++) {
+    var d = document.createElement('div');
+    d.className = 'progress-dot' + (i < current ? ' done' : '') + (i === current ? ' current' : '');
+    prog.appendChild(d);
+  }
+
+  var quiz = document.getElementById('quiz');
+  quiz.innerHTML = '';
+  if (current >= questions.length) { showResults(); return; }
+
+  var q = questions[current];
+  var div = document.createElement('div');
+  div.className = 'q active';
+  div.innerHTML = '<div class="q-num">Question ' + (current+1) + ' of ' + questions.length + '</div><div class="q-text">' + q.q + '</div>';
+  var opts = document.createElement('div');
+  opts.className = 'q-opts';
+  q.opts.forEach(function(o, i) {
+    var opt = document.createElement('div');
+    opt.className = 'q-opt';
+    opt.innerHTML = '<div class="q-icon"></div>' + o.l;
+    opt.onclick = function() {
+      answers.push(o.tags);
+      current++;
+      render();
+    };
+    opts.appendChild(opt);
+  });
+  div.appendChild(opts);
+  quiz.appendChild(div);
+}
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  // Flatten all tags from answers
+  var tags = {};
+  answers.forEach(function(a) { a.forEach(function(t) { tags[t] = (tags[t]||0) + 1; }); });
+
+  // Score each tool
+  var scored = allTools.map(function(t) {
+    var score = 0;
+    t.tags.forEach(function(tag) { if (tags[tag]) score += tags[tag]; });
+    return {tool: t, score: score};
+  });
+
+  // Sort by score, take top 6
+  scored.sort(function(a, b) { return b.score - a.score; });
+  var top = scored.slice(0, 6);
+
+  var recs = document.getElementById('recs');
+  recs.innerHTML = '';
+  var totalSaves = 0;
+  var totalSaas = 0;
+
+  top.forEach(function(s) {
+    var t = s.tool;
+    totalSaves += t.saves;
+    totalSaas += t.saves;
+    var div = document.createElement('div');
+    div.className = 'r-tool';
+    div.innerHTML = '<div class="r-tool-header"><span class="r-tool-name"><a href="/' + t.slug + '/">' + t.name + '</a></span>' + (t.saves ? '<span class="r-tool-saves">saves $' + t.saves + '/mo vs ' + t.replaces + '</span>' : '') + '</div>'
+      + '<div class="r-tool-desc">' + t.desc + '</div>'
+      + '<div class="r-tool-cmd" onclick="navigator.clipboard.writeText(this.textContent);this.style.color=\'var(--green)\';setTimeout(()=>this.style.color=\'\',1500)">curl -fsSL stockyard.dev/' + t.slug + '/install.sh | sh</div>';
+    recs.appendChild(div);
+  });
+
+  var save = totalSaas - 29;
+  document.getElementById('r-savings').textContent = '$' + (save > 0 ? save : 0) + '/mo';
+  document.getElementById('r-saas-total').textContent = '$' + totalSaas;
+
+  // Shareable URL
+  var encoded = answers.map(function(a,i){return i+'='+a.join(',')}).join('&');
+  document.getElementById('share-url').value = 'https://stockyard.dev/quiz/#' + btoa(encoded);
+
+  gtag('event','generate_lead',{event_category:'quiz',event_label:'completed',value:totalSaves});
+}
+
+function restart() {
+  answers = [];
+  current = 0;
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = '';
+  render();
+}
+
+render();
+</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>

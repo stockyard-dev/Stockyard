@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Why I Built 150 Tools Instead of One — Stockyard Blog</title>
+<meta name="description" content="The question I get most is 'why 150 tools instead of making one really good one?' Here's the honest answer.">
+<meta property="og:title" content="Why I Built 150 Tools Instead of One">
+<meta property="og:description" content="The honest answer to the question every developer asks.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/blog/why-150-tools/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.8}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+article{max-width:640px;margin:0 auto;padding:4rem 2rem}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.3;margin-bottom:1rem}
+.meta{font-family:var(--mono);font-size:.72rem;color:var(--cm);margin-bottom:3rem}
+p{color:var(--cd);margin-bottom:1.5rem;font-size:1.02rem}
+h2{font-size:1.2rem;margin:2.5rem 0 1rem;color:var(--cream)}
+blockquote{border-left:3px solid var(--rust);padding:.5rem 0 .5rem 1.5rem;margin:1.5rem 0;font-style:italic;color:var(--cd)}
+code{font-family:var(--mono);font-size:.88em;background:var(--bg2);padding:.1rem .3rem}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}@media(max-width:768px){.nav-links{display:none}}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/tools/">Tools</a><a href="/complete/" style="color:var(--gold)">Complete</a><a href="/blog/">Blog</a><a href="/docs/">Docs</a></div>
+</nav>
+
+<article>
+  <h1>Why I Built 150 Tools Instead of One</h1>
+  <div class="meta">Michael &middot; April 2026 &middot; 4 min read</div>
+
+  <p>The question I get most is "why 150 tools instead of making one really good one?"</p>
+
+  <p>The honest answer is that I started with one. Stockyard was originally an LLM proxy. A single Go binary that sits between your app and OpenAI, tracking costs, caching responses, and handling failover. That was the whole product.</p>
+
+  <p>Then I realized the architecture generalizes. A Go binary with embedded SQLite, an HTTP server, a REST API, and a web dashboard. That pattern applies to webhook inboxes, status pages, feature flags, error tracking, analytics, and basically any tool that stores data and shows it in a browser.</p>
+
+  <h2>The pattern</h2>
+
+  <p>Every Stockyard tool works the same way. Download a ~12MB binary. Run it. It starts an HTTP server with a dashboard at <code>/ui</code> and a REST API. Data goes in SQLite with WAL mode. No Docker required, no external database, no package manager.</p>
+
+  <p>Once I had the template, building each tool was fast. The hard parts are shared: the HTTP server, the SQLite connection pool, the dashboard framework, the license validation, the health checks. What changes per tool is the data model and the domain logic.</p>
+
+  <p>This is not a unique insight. Every SaaS tool is fundamentally "a database with a web UI." The difference is that SaaS tools run on someone else's server and charge you monthly for the privilege. Stockyard tools run on your server and store data in a file you own.</p>
+
+  <h2>The tradeoff</h2>
+
+  <p>150 tools means none of them are as deep as the dedicated SaaS version. Seismograph is not Sentry. It does not have performance monitoring, session replay, or 50 language-specific SDKs. Paddock is not Statuspage.io. It does not have managed email delivery or an Atlassian integration.</p>
+
+  <p>But for a lot of teams, "good enough and self-hosted" beats "perfect and $79/mo." Especially when the self-hosted version installs in 30 seconds and the data never leaves your server.</p>
+
+  <h2>The bundle bet</h2>
+
+  <p>The bet is that the bundle is worth more than any individual tool. If you use 6+ tools, $29/mo for all 150 is cheaper than buying them separately. And you get to cancel 6 SaaS subscriptions, which means 6 fewer vendor logins, 6 fewer privacy policies, and 6 fewer surprise price increases.</p>
+
+  <p>A typical SaaS stack for a small team: Sentry ($26), Statuspage ($79), LaunchDarkly ($50), Bitly ($35), Mixpanel ($20). That is $210/mo for 5 tools. Stockyard Complete replaces all of them for $29/mo. The savings compound fast.</p>
+
+  <h2>Where I am now</h2>
+
+  <p>Zero paying customers. $0 MRR. 12 free cloud signups. 31 installs in the last 30 days. I publish these numbers publicly at <a href="/open/">stockyard.dev/open</a> because pretending things are going better than they are is a waste of everyone's time.</p>
+
+  <p>The product works. The constraint is distribution. Getting developers to try a tool they have never heard of, from a company with no track record, is the hard part. The site is built, the tracking is wired, the conversion funnel is instrumented. What is missing is people.</p>
+
+  <h2>Should you try it?</h2>
+
+  <p>If you are curious, pick one tool that solves a problem you have right now. Install it. Use it for a week. If it works, try a second one. If it does not work, email me at <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> and tell me what broke.</p>
+
+  <p>The whole catalog is at <a href="/tools/">stockyard.dev/tools</a>. Every tool has a free tier with no time limit.</p>
+
+  <p>If you want the full story on which tools to start with, take the <a href="/quiz/">self-hosting quiz</a> or browse the <a href="/stacks/">curated stacks</a>.</p>
+</article>
+
+<footer>
+  <a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+</footer>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>
