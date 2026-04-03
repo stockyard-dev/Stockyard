@@ -99,7 +99,7 @@ func (db *SqliteDB) migrate() error {
 		return err
 	}
 
-	migrations := []string{apiMigrationV1, apiMigrationV2, apiMigrationV3}
+	migrations := []string{apiMigrationV1, apiMigrationV2, apiMigrationV3, apiMigrationV4}
 
 	for i, m := range migrations {
 		v := i + 1
@@ -234,6 +234,14 @@ CREATE TABLE IF NOT EXISTS waitlist (
     UNIQUE(email, tool)
 );
 CREATE INDEX IF NOT EXISTS idx_waitlist_tool ON waitlist(tool);
+`
+
+// apiMigrationV4 adds performance indexes for exchange queries and processed webhooks.
+const apiMigrationV4 = `
+CREATE INDEX IF NOT EXISTS idx_exchange_type ON exchange_items(type);
+CREATE INDEX IF NOT EXISTS idx_exchange_status ON exchange_items(status);
+CREATE INDEX IF NOT EXISTS idx_exchange_created ON exchange_items(created_at);
+CREATE INDEX IF NOT EXISTS idx_processed_webhooks_event ON processed_webhooks(event_id);
 `
 
 // migrateHashCloudKeys hashes any plaintext API keys left in the api_key column.

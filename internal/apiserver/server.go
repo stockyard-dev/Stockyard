@@ -323,6 +323,20 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// Validate Content-Type on mutation requests (prevent CSRF via form submissions)
+		// Exclude webhook endpoints which accept arbitrary content types from senders
+		if (r.Method == "POST" || r.Method == "PUT") && r.ContentLength > 0 &&
+			!strings.HasPrefix(r.URL.Path, "/webhooks/") &&
+			!strings.HasPrefix(r.URL.Path, "/api/demo/webhook") {
+			ct := r.Header.Get("Content-Type")
+			if ct != "" && !strings.HasPrefix(ct, "application/json") &&
+				!strings.HasPrefix(ct, "text/") &&
+				!strings.HasPrefix(ct, "application/x-www-form-urlencoded") {
+				writeErr(w, http.StatusUnsupportedMediaType, "Content-Type must be application/json")
+				return
+			}
+		}
+
 		start := time.Now()
 		next.ServeHTTP(w, r)
 		elapsed := time.Since(start)
