@@ -216,5 +216,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <script>
 function toggleNav(){document.querySelector('.nav-toggle').classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}
 </script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

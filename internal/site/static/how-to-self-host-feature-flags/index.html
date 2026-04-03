@@ -161,7 +161,9 @@ curl -X PUT http://localhost:9700/api/flags/{id} \
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

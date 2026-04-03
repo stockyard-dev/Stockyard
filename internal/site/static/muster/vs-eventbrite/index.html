@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Muster an Eventbrite alternative?","acceptedAnswer":{"@type":"Answer","text":"Eventbrite is a marketplace with ticketing and payments. Muster is self-hosted RSVP and event management. Different use cases."}},{"@type":"Question","name":"Can Muster sell tickets?","acceptedAnswer":{"@type":"Answer","text":"Muster tracks RSVPs and waitlists. For paid ticketing with payment processing, Eventbrite or Luma are necessary."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

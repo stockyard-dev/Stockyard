@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does Salt Lick compare to Flagsmith?","acceptedAnswer":{"@type":"Answer","text":"Both are self-hostable feature flag tools. Flagsmith requires Docker and Postgres. Salt Lick is a single Go binary with embedded SQLite — simpler to deploy and operate."}},{"@type":"Question","name":"Does Salt Lick support remote config?","acceptedAnswer":{"@type":"Answer","text":"Salt Lick focuses on feature flags (boolean, multivariate, percentage rollouts). For general remote config, Flagsmith has broader capabilities."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

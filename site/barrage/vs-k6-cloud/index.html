@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Barrage a k6 alternative?","acceptedAnswer":{"@type":"Answer","text":"k6 CLI is free and excellent for writing tests. Barrage is for teams that want a self-hosted results dashboard without k6 Cloud&#x27;s subscription."}},{"@type":"Question","name":"Can Barrage run k6 scripts?","acceptedAnswer":{"@type":"Answer","text":"Barrage has its own test format. For k6 JavaScript tests, use the k6 CLI and pipe results to Barrage for storage."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

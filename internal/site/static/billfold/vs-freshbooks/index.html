@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Billfold a FreshBooks alternative?","acceptedAnswer":{"@type":"Answer","text":"Billfold handles invoicing (create, send, track). FreshBooks is a full accounting platform with expense tracking, time tracking, and tax features."}},{"@type":"Question","name":"Does Billfold handle taxes?","acceptedAnswer":{"@type":"Answer","text":"Billfold generates invoices. For tax preparation and reporting, use FreshBooks, QuickBooks, or an accountant."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

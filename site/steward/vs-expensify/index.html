@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Steward an Expensify alternative?","acceptedAnswer":{"@type":"Answer","text":"Expensify is corporate expense management with receipt OCR and approval workflows. Steward is simple self-hosted expense tracking for individuals and small teams."}},{"@type":"Question","name":"Does Steward scan receipts?","acceptedAnswer":{"@type":"Answer","text":"Steward stores receipt images but does not have OCR. For automated receipt scanning, Expensify is more capable."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

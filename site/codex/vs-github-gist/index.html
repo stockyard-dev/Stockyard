@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Codex a GitHub Gist alternative?","acceptedAnswer":{"@type":"Answer","text":"Gist is free for public snippets and Git-backed. Codex is self-hosted with better organization (folders, tags). Different use cases."}},{"@type":"Question","name":"Does Codex support Git versioning?","acceptedAnswer":{"@type":"Answer","text":"Codex stores snippets in SQLite with revision history. For Git-backed version control, GitHub Gist is native."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

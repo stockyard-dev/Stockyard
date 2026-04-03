@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Ticker a Datadog alternative?","acceptedAnswer":{"@type":"Answer","text":"Datadog is a full observability platform. Ticker is a simple self-hosted metrics dashboard. If you need APM and log management, Datadog is necessary."}},{"@type":"Question","name":"How many metrics can Ticker handle?","acceptedAnswer":{"@type":"Answer","text":"Free: 10 metrics with 24h retention. Pro: unlimited metrics with 90-day retention. For thousands of high-cardinality metrics, Prometheus or Datadog are more appropriate."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

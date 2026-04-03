@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Pony Express a Resend alternative?","acceptedAnswer":{"@type":"Answer","text":"Both send transactional emails via API. Pony Express is self-hosted. Resend is managed with excellent DX and deliverability."}},{"@type":"Question","name":"How does deliverability compare?","acceptedAnswer":{"@type":"Answer","text":"Managed services like Resend have established IP reputation. Self-hosted email requires your own IP warm-up and SPF/DKIM setup."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

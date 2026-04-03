@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Lasso a Short.io alternative?","acceptedAnswer":{"@type":"Answer","text":"Both shorten URLs and track clicks. Lasso is self-hosted on your domain. Short.io is a managed service with a global CDN."}},{"@type":"Question","name":"Does Lasso have a CDN?","acceptedAnswer":{"@type":"Answer","text":"No. Lasso runs on your server. For global edge performance, you would put Cloudflare or a CDN in front of it."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

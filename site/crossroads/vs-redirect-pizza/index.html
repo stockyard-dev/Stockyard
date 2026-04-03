@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Crossroads a redirect manager?","acceptedAnswer":{"@type":"Answer","text":"Yes. Crossroads manages URL redirects with regex support, bulk import, and analytics. Self-hosted on your server."}},{"@type":"Question","name":"Does Crossroads handle SSL?","acceptedAnswer":{"@type":"Answer","text":"You handle SSL via your reverse proxy (Caddy, Nginx). Redirect.pizza manages SSL certificates automatically."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

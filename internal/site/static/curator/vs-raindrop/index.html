@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Curator a Raindrop alternative?","acceptedAnswer":{"@type":"Answer","text":"Raindrop has beautiful visual bookmarks and browser extensions. Curator is a simpler self-hosted bookmark manager. Raindrop is more polished."}},{"@type":"Question","name":"Does Curator have a browser extension?","acceptedAnswer":{"@type":"Answer","text":"Curator has an API for bookmarking. For native browser extensions, Raindrop.io has extensions for all major browsers."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

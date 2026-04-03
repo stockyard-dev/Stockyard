@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Crucible a GitHub PR alternative?","acceptedAnswer":{"@type":"Answer","text":"GitHub PRs are tightly integrated with GitHub. Crucible is standalone code review that works with any Git host."}},{"@type":"Question","name":"Does Crucible integrate with GitHub?","acceptedAnswer":{"@type":"Answer","text":"Crucible connects to any Git repo via URL. For GitHub-native features like code owners and checks, use GitHub PRs."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

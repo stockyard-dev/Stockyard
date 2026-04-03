@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Post a WordPress alternative?","acceptedAnswer":{"@type":"Answer","text":"Post handles simple Markdown blogging. WordPress is a full CMS with 60,000+ plugins. If you need plugins or e-commerce, WordPress is necessary."}},{"@type":"Question","name":"Does Post support plugins?","acceptedAnswer":{"@type":"Answer","text":"No. Post is intentionally simple — Markdown posts, RSS, custom domains. For extensibility, WordPress has no competition."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

@@ -651,5 +651,6 @@ docker run --gpus all -p 8080:80 \
 function toggleNav(){const l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay'),b=document.querySelector('.nav-toggle');l.classList.toggle('open');o.classList.toggle('open');b.classList.toggle('open')}
 document.querySelectorAll('pre').forEach(p=>{const b=document.createElement('button');b.className='copy-btn';b.textContent='Copy';b.onclick=()=>{navigator.clipboard.writeText(p.textContent.replace('Copy','').trim());b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)};p.appendChild(b)});
 </script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

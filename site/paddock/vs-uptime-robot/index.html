@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Paddock an UptimeRobot replacement?","acceptedAnswer":{"@type":"Answer","text":"Paddock is a status page tool for publishing service health. UptimeRobot is an external uptime monitor. Paddock replaces Statuspage.io more directly than UptimeRobot."}},{"@type":"Question","name":"Can Paddock monitor uptime?","acceptedAnswer":{"@type":"Answer","text":"Paddock focuses on status communication. For external uptime monitoring, you would pair it with a monitoring tool."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

@@ -270,5 +270,6 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 function copyInstall(){navigator.clipboard.writeText('curl -fsSL stockyard.dev/install.sh | sh');var h=document.getElementById('copy-hint');if(h){h.textContent='copied!';h.style.opacity='1';setTimeout(function(){h.textContent='click to copy';h.style.opacity='0.4'},1500)}}
 </script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

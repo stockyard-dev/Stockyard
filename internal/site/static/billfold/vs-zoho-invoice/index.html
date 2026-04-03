@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Billfold a Zoho Invoice alternative?","acceptedAnswer":{"@type":"Answer","text":"Both create and send invoices. Billfold is self-hosted (single binary). Zoho Invoice is part of the Zoho cloud suite."}},{"@type":"Question","name":"Does Billfold accept online payments?","acceptedAnswer":{"@type":"Answer","text":"Billfold generates and tracks invoices. For integrated payment processing, Zoho Invoice or FreshBooks with Stripe are more complete."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

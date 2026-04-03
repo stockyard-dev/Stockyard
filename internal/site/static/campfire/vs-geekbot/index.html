@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Campfire a Geekbot alternative?","acceptedAnswer":{"@type":"Answer","text":"Geekbot runs inside Slack. Campfire is a standalone self-hosted standup tool. Different delivery, same purpose."}},{"@type":"Question","name":"Does Campfire integrate with Slack?","acceptedAnswer":{"@type":"Answer","text":"Campfire has webhook support for posting summaries. For native Slack standup bots, Geekbot is more integrated."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

@@ -195,5 +195,6 @@ API Key:  your-stockyard-api-key</code></pre>
 </footer>
 <script>function toggleNav(){document.querySelector('.nav-toggle').classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}
 function copyCode(btn){const code=btn.parentElement.querySelector('code');navigator.clipboard.writeText(code.textContent).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Headcount a Plausible alternative?","acceptedAnswer":{"@type":"Answer","text":"Both track user activity with privacy in mind. Headcount runs as a self-hosted single binary with embedded SQLite. Plausible offers a managed cloud service and a self-hosted version that requires Docker and Clickhouse."}},{"@type":"Question","name":"Does Headcount require Docker?","acceptedAnswer":{"@type":"Answer","text":"No. Headcount is a single Go binary with embedded SQLite. No Docker, no Postgres, no Clickhouse, no Redis."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

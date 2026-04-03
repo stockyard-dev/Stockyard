@@ -244,5 +244,6 @@ async function startCheckout(plan,interval){
   }catch(e){alert('Network error — please try again');if(btn){btn.textContent='Get Complete';btn.style.opacity='1';btn.disabled=false;}}
 }
 </script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

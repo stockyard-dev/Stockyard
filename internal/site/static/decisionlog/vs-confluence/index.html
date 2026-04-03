@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Decision Log a Confluence alternative?","acceptedAnswer":{"@type":"Answer","text":"Confluence is a full wiki. Decision Log specifically tracks decisions. Use Decision Log alongside your wiki, not instead of it."}},{"@type":"Question","name":"Why not just use a Confluence page?","acceptedAnswer":{"@type":"Answer","text":"Decision Log adds structure: status, stakeholders, alternatives considered, outcome. A wiki page can do this, but Decision Log enforces the format."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

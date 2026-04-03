@@ -284,5 +284,6 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </footer>
 
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');}}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Feedreader a Mailbrew alternative?","acceptedAnswer":{"@type":"Answer","text":"Mailbrew aggregates multiple sources into beautiful digests. Feedreader focuses on RSS-to-email. Mailbrew is more polished; Feedreader is self-hosted."}},{"@type":"Question","name":"Does Feedreader support Twitter/Reddit?","acceptedAnswer":{"@type":"Answer","text":"Feedreader handles RSS feeds. For Twitter, Reddit, and HN aggregation, Mailbrew is more comprehensive."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

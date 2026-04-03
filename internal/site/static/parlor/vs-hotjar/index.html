@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Parlor a Hotjar alternative?","acceptedAnswer":{"@type":"Answer","text":"Hotjar does heatmaps, recordings, and surveys. Parlor does feedback collection only. Different scope — Parlor is privacy-first."}},{"@type":"Question","name":"Does Parlor have heatmaps?","acceptedAnswer":{"@type":"Answer","text":"No. Parlor collects feedback via widgets and surveys. For heatmaps and session recording, Hotjar is necessary."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

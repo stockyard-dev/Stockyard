@@ -20,6 +20,27 @@ import (
 //go:embed static
 var staticFiles embed.FS
 
+
+const affiliateSchema = `
+CREATE TABLE IF NOT EXISTS affiliates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS referral_clicks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    ip_hash TEXT NOT NULL,
+    page TEXT NOT NULL DEFAULT '/',
+    user_agent TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_ref_code ON referral_clicks(code);
+CREATE INDEX IF NOT EXISTS idx_ref_ts ON referral_clicks(timestamp);
+`
+
 const installSchema = `
 CREATE TABLE IF NOT EXISTS install_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -736,6 +757,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/statuspage-alternative/",
 		"/hubspot-alternative/",
 		"/systemd/",
+		"/affiliate/",
 		"/what-is-an-llm-proxy/",
 		"/what-is-feature-flagging/",
 		"/what-are-webhooks/",
@@ -1008,6 +1030,113 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 
 
 	// Serve RSS feed
+
+	// Affiliate program API
+	if db != nil {
+		// Run affiliate migrations
+		for _, stmt := range strings.Split(affiliateSchema, ";") {
+			stmt = strings.TrimSpace(stmt)
+			if stmt != "" {
+				db.Exec(stmt)
+			}
+		}
+
+		// Register as affiliate
+		mux.HandleFunc("POST /api/affiliate/register", func(w http.ResponseWriter, r *http.Request) {
+			var req struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Name == "" {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(400)
+				json.NewEncoder(w).Encode(map[string]string{"error": "name is required"})
+				return
+			}
+			// Generate code from name
+			code := strings.ToLower(strings.ReplaceAll(strings.TrimSpace(req.Name), " ", "-"))
+			code = strings.Map(func(r rune) rune {
+				if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
+					return r
+				}
+				return -1
+			}, code)
+			if len(code) < 2 {
+				code = "ref-" + code
+			}
+			
+			db.Exec("INSERT OR IGNORE INTO affiliates (code, name, email) VALUES (?, ?, ?)",
+				code, req.Name, req.Email)
+			
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{
+				"code": code,
+				"link": "https://stockyard.dev/?ref=" + code,
+				"install_link": "https://stockyard.dev/install.sh?ref=" + code,
+				"tools_link": "https://stockyard.dev/tools/?ref=" + code,
+			})
+		})
+
+		// Get affiliate stats
+		mux.HandleFunc("GET /api/affiliate/stats", func(w http.ResponseWriter, r *http.Request) {
+			code := r.URL.Query().Get("code")
+			if code == "" {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(400)
+				json.NewEncoder(w).Encode(map[string]string{"error": "code parameter required"})
+				return
+			}
+			
+			var totalClicks int64
+			db.QueryRow("SELECT COUNT(*) FROM referral_clicks WHERE code = ?", code).Scan(&totalClicks)
+			
+			var uniqueClicks int64
+			db.QueryRow("SELECT COUNT(DISTINCT ip_hash) FROM referral_clicks WHERE code = ?", code).Scan(&uniqueClicks)
+			
+			var last7d int64
+			db.QueryRow("SELECT COUNT(*) FROM referral_clicks WHERE code = ? AND timestamp > datetime('now', '-7 days')", code).Scan(&last7d)
+			
+			var installs int64
+			db.QueryRow("SELECT COUNT(*) FROM install_events WHERE referrer LIKE ?", "%ref="+code+"%").Scan(&installs)
+			
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"code": code,
+				"total_clicks": totalClicks,
+				"unique_clicks": uniqueClicks,
+				"clicks_7d": last7d,
+				"installs": installs,
+			})
+		})
+
+		// Track referral clicks (middleware on all page serves)
+		originalServePage := servePage
+		_ = originalServePage // suppress unused warning
+	}
+
+
+	// Track referral clicks on any page with ?ref= parameter
+	mux.HandleFunc("GET /api/affiliate/track", func(w http.ResponseWriter, r *http.Request) {
+		code := r.URL.Query().Get("code")
+		page := r.URL.Query().Get("page")
+		if code == "" || db == nil {
+			w.WriteHeader(204)
+			return
+		}
+		ip := clientIP(r)
+		h := sha256.Sum256([]byte(ip))
+		ipHash := hex.EncodeToString(h[:16])
+		ua := r.Header.Get("User-Agent")
+		if len(ua) > 256 {
+			ua = ua[:256]
+		}
+		go func() {
+			db.Exec("INSERT INTO referral_clicks (code, ip_hash, page, user_agent) VALUES (?, ?, ?, ?)",
+				code, ipHash, page, ua)
+		}()
+		w.WriteHeader(204)
+	})
+
 	mux.HandleFunc("GET /blog/feed.xml", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "blog/feed.xml")
 		if err != nil {

@@ -230,5 +230,6 @@ async function startCheckout(plan,interval){
   try{var r=await fetch('https://stockyard.dev/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan,interval:interval})});var d=await r.json();if(d.url){window.location.href=d.url;}else{alert('Error: '+(d.error||'try again'));}}catch(e){alert('Network error');}
 }
 </script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

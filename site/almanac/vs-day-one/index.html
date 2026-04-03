@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Almanac a Day One alternative?","acceptedAnswer":{"@type":"Answer","text":"Day One has native apps with photo support. Almanac is a text-based self-hosted journal. Day One is more polished; Almanac keeps data on your server."}},{"@type":"Question","name":"Does Almanac sync across devices?","acceptedAnswer":{"@type":"Answer","text":"Almanac runs on one server. Access it from any device via the web dashboard. Day One syncs natively across Apple devices."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

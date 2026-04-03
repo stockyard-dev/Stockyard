@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Headcount a Fathom alternative?","acceptedAnswer":{"@type":"Answer","text":"Both are privacy-first analytics. Headcount is self-hosted (single binary, your server). Fathom is a managed cloud service."}},{"@type":"Question","name":"How does pricing compare?","acceptedAnswer":{"@type":"Answer","text":"Headcount: free to 10k events, $1.99/mo Pro. Fathom: from $14/mo for 100k pageviews."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

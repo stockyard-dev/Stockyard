@@ -225,5 +225,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Rampart a Cloudflare alternative?","acceptedAnswer":{"@type":"Answer","text":"Cloudflare provides edge-level DDoS protection and WAF. Rampart is a local WAF. Cloudflare blocks at the perimeter; Rampart protects at the application level."}},{"@type":"Question","name":"Does Rampart stop DDoS attacks?","acceptedAnswer":{"@type":"Answer","text":"Rampart handles application-layer attacks (SQL injection, XSS). For volumetric DDoS protection, Cloudflare or AWS Shield are necessary."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

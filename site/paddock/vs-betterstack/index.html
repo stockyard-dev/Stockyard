@@ -227,5 +227,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Paddock a Better Stack alternative?","acceptedAnswer":{"@type":"Answer","text":"Paddock replaces the status page portion of Better Stack. For full monitoring and logging, you would need additional tools."}},{"@type":"Question","name":"Does Paddock include uptime monitoring?","acceptedAnswer":{"@type":"Answer","text":"Paddock focuses on public status pages and incident communication. For external uptime checks, pair it with a monitoring tool."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

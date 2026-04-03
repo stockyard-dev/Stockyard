@@ -184,5 +184,6 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does Bitly cost?","acceptedAnswer":{"@type":"Answer","text":"Free: 10 links/mo. Core: $8/mo for 100 links. Growth: $35/mo for 500 links. Premium: $300/mo."}},{"@type":"Question","name":"Is Lasso a Bitly alternative?","acceptedAnswer":{"@type":"Answer","text":"Yes. Lasso shortens URLs, tracks clicks, and supports custom domains. The main trade-off is Bitly&#x27;s brand recognition — bit.ly links are universally recognized."}}]}</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>
