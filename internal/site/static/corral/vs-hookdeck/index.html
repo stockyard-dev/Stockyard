@@ -216,6 +216,7 @@ ul.prose{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9}
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Corral a Hookdeck alternative?","acceptedAnswer":{"@type":"Answer","text":"Corral and Hookdeck solve the same core problem — capturing, inspecting, and replaying webhooks — but Corral is self-hosted and runs as a single binary on your own infrastructure, while Hookdeck is a managed cloud service."}},{"@type":"Question","name":"How does Corral pricing compare to Hookdeck?","acceptedAnswer":{"@type":"Answer","text":"Corral Pro is $0.99/month. Hookdeck paid plans start at $25/month. Corral is significantly cheaper for teams that are comfortable running their own binary."}}]}</script>

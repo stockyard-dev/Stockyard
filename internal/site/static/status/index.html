@@ -58,5 +58,6 @@ check('s-docker', 'https://ghcr.io/v2/stockyard-dev/stockyard/tags/list', r => t
 document.getElementById('ts').textContent = 'Last checked: ' + new Date().toISOString().slice(0,19) + ' UTC';
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>

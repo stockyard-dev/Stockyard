@@ -657,6 +657,29 @@ document.getElementById('guide-email').addEventListener('keydown',function(e){if
 
 </main>
 
+<div style="max-width:500px;margin:0 auto;padding:3rem 2rem;text-align:center">
+  <div style="font-family:var(--font-mono);font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem">Stay in the loop</div>
+  <p style="font-size:.95rem;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem">New tools, guides, and updates. No spam. Unsubscribe any time.</p>
+  <div id="guide-email-form" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
+    <input id="guide-email" type="email" placeholder="you@example.com" style="padding:.65rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:.82rem;min-width:220px;outline:none" onfocus="this.style.borderColor='var(--rust)'" onblur="this.style.borderColor='var(--bg3)'">
+    <button onclick="guideSubscribe()" style="padding:.65rem 1.5rem;background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-family:var(--font-mono);font-size:.82rem;cursor:pointer">Subscribe</button>
+  </div>
+  <div id="guide-email-ok" style="display:none;font-family:var(--font-mono);font-size:.82rem;color:var(--gold)">&#10003; You're on the list.</div>
+</div>
+<script>
+async function guideSubscribe(){
+  var e=document.getElementById('guide-email').value;
+  if(!e||!e.includes('@'))return;
+  try{
+    await fetch('https://stockyard.dev/api/nurture',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,source:'guide'})});
+  }catch(x){}
+  document.getElementById('guide-email-form').style.display='none';
+  document.getElementById('guide-email-ok').style.display='block';
+  gtag('event','generate_lead',{event_category:'email',event_label:'guide_subscribe'});
+  gtag('event','conversion',{send_to:'AW-18046975504/email_capture'});
+}
+</script>
+
 <div class="explore-bar">Explore: <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a> &middot; <a href="/model-aliasing/">Model aliasing</a></div>
 <div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 150 focused self-hosted tools &mdash; <a href="/tools/" style="color:var(--leather-light)">browse the catalog</a> or <a href="/complete/" style="color:var(--gold)">get everything for $29/mo</a>.</div>
 <footer>
@@ -703,5 +726,6 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>

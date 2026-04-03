@@ -42,6 +42,20 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </style>
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <link rel="canonical" href="https://stockyard.dev/billing/success/">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag("js",new Date());
+gtag("config","G-BR9VHNFEEE");
+gtag("config","AW-18046975504");
+// Fire purchase conversion
+var _p=new URLSearchParams(window.location.search);
+var _plan=_p.get("plan")||"complete";
+var _interval=_p.get("interval")||"monthly";
+var _value=_interval==="annual"?249:29;
+gtag("event","purchase",{currency:"USD",value:_value,transaction_id:"sub_"+Date.now(),items:[{item_name:"Stockyard "+_plan,price:_value,quantity:1}]});
+gtag("event","conversion",{send_to:"AW-18046975504/purchase",value:_value,currency:"USD"});
+</script>
 </head>
 <body>
 <div class="card">
@@ -123,5 +137,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>

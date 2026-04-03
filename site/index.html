@@ -140,10 +140,19 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
   <h1>Wrangle your <span class="accent">Stack.</span></h1>
   <p class="hero-sub">Self-hosted developer infrastructure. Single binary per tool. SQLite storage. No Redis, no Postgres, no vendor lock-in. Your data lives on your server.</p>
   <div class="cta-group">
-    <a href="/tools/" class="btn btn-primary">Browse the catalog &rarr;</a>
-    <a href="/complete/" class="btn btn-gold">Get Complete &mdash; $29/mo</a>
+    <a href="/complete/" class="btn btn-gold">Get all 150 tools &mdash; $29/mo</a>
+    <a href="/tools/" class="btn btn-secondary">Browse the catalog &rarr;</a>
   </div>
+  <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted);margin-top:1.2rem">Free tier on every tool. No credit card required.</p>
 </section>
+
+<div style="max-width:700px;margin:0 auto;padding:0 2rem 3rem;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream-muted)">
+  <span>&#9632; 150 tools</span>
+  <span>&#9632; ~12MB per binary</span>
+  <span>&#9632; Zero dependencies</span>
+  <span>&#9632; Apache 2.0 + BSL</span>
+  <span><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">&#9733; GitHub</a></span>
+</div>
 
 <section class="section-alt">
   <div class="section-alt-inner">
@@ -282,6 +291,15 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
   </div>
 </section>
 
+<section style="padding:4rem 2rem;text-align:center;max-width:700px;margin:0 auto">
+  <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:1rem">Ready to wrangle your stack?</h2>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem;line-height:1.8">Start free. No credit card. Download a single binary and see it running in 30 seconds.</p>
+  <div class="cta-group">
+    <a href="/complete/" class="btn btn-gold">Get all 150 tools &mdash; $29/mo</a>
+    <a href="/guide/" class="btn btn-secondary">Start free &rarr;</a>
+  </div>
+</section>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
@@ -296,6 +314,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=docum
 async function startCheckout(plan,interval){
   var btn=document.getElementById('checkout-btn-'+interval);
   if(btn){btn.textContent='Redirecting...';btn.style.opacity='0.6';btn.disabled=true;}
+  var _v=interval==='annual'?249:29;
+  gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard '+plan,price:_v,quantity:1}]});
+  gtag('event','conversion',{send_to:'AW-18046975504/begin_checkout',value:_v,currency:'USD'});
   try{
     var r=await fetch('https://stockyard.dev/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan,interval:interval})});
     var d=await r.json();
@@ -305,5 +326,6 @@ async function startCheckout(plan,interval){
 }
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>

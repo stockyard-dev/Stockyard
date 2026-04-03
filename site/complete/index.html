@@ -121,6 +121,27 @@ footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-m
   <p style="font-family:var(--font-mono);font-size:.72rem;color:var(--cream-muted)">One license key. Pro on all 150 tools. Unlimited instances.</p>
 </div>
 
+<div class="section" style="padding-bottom:2rem">
+  <div class="section-label">How it works</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;text-align:center">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--gold);font-weight:700;margin-bottom:0.5rem">1</div>
+      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.4rem">Subscribe</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);font-style:italic">Checkout takes 30 seconds. License key arrives by email within 5 minutes.</div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--gold);font-weight:700;margin-bottom:0.5rem">2</div>
+      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.4rem">Download any tool</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);font-style:italic">Each tool is a single binary. <code style="font-family:var(--font-mono);font-size:.78em;background:var(--bg2);padding:.1rem .3rem">curl | sh</code> or grab from GitHub Releases.</div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:2rem;color:var(--gold);font-weight:700;margin-bottom:0.5rem">3</div>
+      <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.4rem">Set the key and run</div>
+      <div style="font-size:0.8rem;color:var(--cream-dim);font-style:italic">One env var unlocks Pro. Same key works on every tool, every server.</div>
+    </div>
+  </div>
+</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">By the numbers</div>
@@ -166,6 +187,28 @@ footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-m
     </div>
   </div>
   <p style="margin-top:1.5rem;font-size:.82rem">Individual tool licenses are $0.99&ndash;$4.99/mo each. If you use 6+ tools, Complete costs less.</p>
+  <div style="margin-top:2rem;padding:1.5rem;border:1px solid var(--bg3);background:var(--bg2)">
+    <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;text-align:center">What you might be paying today</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem;font-family:var(--font-mono);font-size:.72rem;color:var(--cream-dim)">
+      <span>Sentry &mdash; $26/mo</span>
+      <span>Statuspage &mdash; $79/mo</span>
+      <span>LaunchDarkly &mdash; $50/mo</span>
+      <span>Bitly &mdash; $35/mo</span>
+      <span>Mixpanel &mdash; $20/mo</span>
+      <span>PagerDuty &mdash; $105/mo</span>
+      <span>Hookdeck &mdash; $25/mo</span>
+      <span>Postman &mdash; $70/mo</span>
+      <span>Notion &mdash; $40/mo</span>
+      <span>FreshBooks &mdash; $15/mo</span>
+      <span>Linear &mdash; $40/mo</span>
+      <span>Canny &mdash; $79/mo</span>
+    </div>
+    <div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--bg3)">
+      <span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream-dim)">Combined: <span style="color:var(--rust);text-decoration:line-through">$584/mo</span></span>
+      <span style="font-family:var(--font-mono);font-size:.82rem;color:var(--gold);margin-left:1rem">Stockyard Complete: $29/mo</span>
+    </div>
+    <div style="text-align:center;margin-top:.5rem"><a href="/calculator/" style="font-family:var(--font-mono);font-size:.68rem;color:var(--leather-light)">Build your own comparison &rarr;</a></div>
+  </div>
 </div>
 
 <div class="section-alt">
@@ -341,6 +384,21 @@ export CELLAR_LICENSE_KEY=stockyard_xxxxxxxxxxxxxxxxxxxx
 
 <div class="section-alt">
   <div class="section-alt-inner">
+    <div style="max-width:600px;margin:0 auto;text-align:center">
+      <div class="section-label">No risk</div>
+      <h2>Try free first. Cancel any time.</h2>
+      <p style="color:var(--cream-dim);font-style:italic;line-height:1.8;margin-bottom:1.5rem">Every tool has a free tier with no time limit. Download, run, and evaluate before you spend a dollar. If you subscribe and change your mind, cancel in one click. Your tools keep running on free tier limits. Your data stays on your server.</p>
+      <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)">
+        <span style="color:var(--gold)">&#10003; No credit card for free tier</span>
+        <span style="color:var(--gold)">&#10003; Cancel any time</span>
+        <span style="color:var(--gold)">&#10003; Your data never leaves your server</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
     <div class="section-label">FAQ</div>
     <div class="faq-item">
       <div class="faq-q">Do I need to run all 150 tools?</div>
@@ -376,6 +434,9 @@ export CELLAR_LICENSE_KEY=stockyard_xxxxxxxxxxxxxxxxxxxx
 async function startCheckout(plan, interval) {
   const btn = document.getElementById('checkout-btn-' + interval);
   if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
+  var _v=interval==='annual'?249:29;
+  gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard Complete',price:_v,quantity:1}]});
+  gtag('event','conversion',{send_to:'AW-18046975504/begin_checkout',value:_v,currency:'USD'});
   try {
     const r = await fetch('https://stockyard.dev/api/checkout', {
       method: 'POST',
@@ -411,5 +472,6 @@ async function startCheckout(plan, interval) {
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>

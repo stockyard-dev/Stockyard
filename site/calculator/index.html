@@ -62,5 +62,6 @@ function recalc(){const seats=parseInt(document.getElementById("seats").value)||
 function copyCmd(){navigator.clipboard.writeText(document.getElementById("cmd").textContent).then(()=>{const e=document.getElementById("cmd");e.style.borderColor="#4a9e5c";setTimeout(()=>e.style.borderColor="",1000)})}
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>

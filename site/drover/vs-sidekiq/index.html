@@ -225,5 +225,6 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Drover a Sidekiq alternative?","acceptedAnswer":{"@type":"Answer","text":"Both process background jobs. Sidekiq requires Ruby and Redis. Drover is a single Go binary with HTTP API, usable from any language."}},{"@type":"Question","name":"Is Drover as fast as Sidekiq?","acceptedAnswer":{"@type":"Answer","text":"No. Sidekiq with Redis handles millions of jobs/sec. Drover with SQLite handles thousands/sec. For most applications, thousands/sec is sufficient."}}]}</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>
