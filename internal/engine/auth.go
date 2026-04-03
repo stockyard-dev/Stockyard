@@ -338,5 +338,12 @@ func isPublicRoute(method, path string) bool {
 	if method == "GET" && path == "/api/billing/stripe/prices" {
 		return true // public pricing data
 	}
+	// Live webhook demo (public, rate-limited in handler)
+	if strings.HasPrefix(path, "/api/demo/webhook") {
+		return true
+	}
+	if method == "GET" && path == "/api/demo/webhooks" {
+		return true
+	}
 	return false
 }
