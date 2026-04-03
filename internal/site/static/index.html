@@ -185,6 +185,67 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
   <div style="text-align:center;margin-top:2.5rem"><a href="/tools/" class="btn btn-secondary">See all 150 tools &rarr;</a></div>
 </section>
 
+
+
+<section class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label leather">The Math</div>
+    <h2 style="text-align:center;font-size:clamp(1.4rem,3vw,2rem);margin-bottom:.5rem">What are you paying for SaaS?</h2>
+    <p style="text-align:center;color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem">Check the tools you use. See what you save.</p>
+    <div id="hp-calc" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.4rem;max-width:680px;margin:0 auto 1.5rem"></div>
+    <div id="hp-result" style="display:none;text-align:center;padding:1.5rem;border:2px solid var(--gold);max-width:500px;margin:0 auto 1.5rem">
+      <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:.8rem">
+        <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">SaaS cost</div><div id="hp-saas" style="font-family:var(--font-mono);font-size:1.8rem;color:var(--rust)">$0</div></div>
+        <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">Stockyard</div><div id="hp-sy" style="font-family:var(--font-mono);font-size:1.8rem;color:#4a9e5c">$29</div></div>
+        <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">You save</div><div id="hp-save" style="font-family:var(--font-mono);font-size:1.8rem;color:var(--gold)">$0/mo</div></div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-dim)">That&#39;s <span id="hp-year" style="color:var(--gold)">$0</span> back in your pocket per year.</div>
+    </div>
+    <div style="text-align:center"><a href="/calculator/" style="font-family:var(--font-mono);font-size:.78rem;color:var(--leather-light)">Full calculator with install commands &rarr;</a></div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var tools=[
+    {n:"Sentry",p:26,d:"Error tracking"},
+    {n:"Statuspage",p:79,d:"Status page"},
+    {n:"Canny",p:79,d:"Feedback"},
+    {n:"Bitly",p:35,d:"Link shortener"},
+    {n:"Hookdeck",p:25,d:"Webhooks"},
+    {n:"PagerDuty",p:105,d:"Alerting (5 seats)"},
+    {n:"Mixpanel",p:20,d:"Analytics"},
+    {n:"LaunchDarkly",p:50,d:"Feature flags (5 seats)"},
+    {n:"FreshBooks",p:15,d:"Invoicing"},
+    {n:"Postman",p:70,d:"API testing (5 seats)"},
+    {n:"Notion",p:40,d:"Wiki (5 seats)"},
+    {n:"Linear",p:40,d:"Issues (5 seats)"}
+  ];
+  var g=document.getElementById("hp-calc"),sel=new Set();
+  tools.forEach(function(t,i){
+    var d=document.createElement("label");
+    d.style.cssText="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--bg);border:1px solid var(--bg3);cursor:pointer;font-family:var(--font-mono);font-size:.75rem;user-select:none";
+    d.innerHTML='<input type="checkbox" style="accent-color:#c45d2c" data-i="'+i+'"><span style="color:#f0e6d3">'+t.n+'</span><span style="color:#7a7060;margin-left:auto;font-size:.65rem">$'+t.p+'/mo</span>';
+    d.querySelector("input").onchange=function(){
+      if(this.checked){sel.add(i);d.style.borderColor="#e8753a"}else{sel.delete(i);d.style.borderColor="#2e261e"}
+      calc();
+    };
+    g.appendChild(d);
+  });
+  function calc(){
+    var r=document.getElementById("hp-result");
+    if(!sel.size){r.style.display="none";return}
+    r.style.display="block";
+    var ts=0;sel.forEach(function(i){ts+=tools[i].p});
+    var sy=29,sv=ts-sy;
+    document.getElementById("hp-saas").textContent="$"+ts;
+    document.getElementById("hp-sy").textContent="$"+sy;
+    document.getElementById("hp-save").textContent="$"+sv+"/mo";
+    document.getElementById("hp-year").textContent="$"+(sv*12).toLocaleString();
+  }
+})();
+</script>
+
 <section class="bundle-section">
   <div class="bundle-inner">
     <div class="section-label gold">The Bundle</div>
