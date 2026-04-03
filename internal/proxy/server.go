@@ -51,14 +51,16 @@ type Server struct {
 	config     ServerConfig
 	httpServer *http.Server
 	mux        *http.ServeMux
+	startTime  time.Time
 }
 
 // NewServer creates a new proxy server.
 func NewServer(cfg ServerConfig) *Server {
 	mux := http.NewServeMux()
 	s := &Server{
-		config: cfg,
-		mux:    mux,
+		config:    cfg,
+		mux:       mux,
+		startTime: time.Now(),
 		httpServer: &http.Server{
 			Addr:              fmt.Sprintf(":%d", cfg.Port),
 			Handler:           mux,
