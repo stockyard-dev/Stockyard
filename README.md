@@ -6,14 +6,14 @@
 
 **Wrangle your Stack.**
 
-[Website](https://stockyard.dev) · [All 150 Tools](https://stockyard.dev/tools) · [Complete Bundle](https://stockyard.dev/complete) · [Docs](https://stockyard.dev/docs) · [Changelog](https://stockyard.dev/changelog)
+[Website](https://stockyard.dev) · [All 150 Tools](https://stockyard.dev/tools/) · [Complete Bundle](https://stockyard.dev/complete/) · [Docs](https://stockyard.dev/docs/) · [Changelog](https://stockyard.dev/changelog/)
 
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/Proxy-Apache_2.0-4CAF50)](LICENSE-APACHE)
 [![License](https://img.shields.io/badge/Platform-BSL_1.1-E8753A)](LICENSE)
-[![Tools](https://img.shields.io/badge/Tools-150-D4A843)](https://stockyard.dev/tools)
-[![Modules](https://img.shields.io/badge/Modules-76-E8753A)](https://stockyard.dev/modules)
-[![Providers](https://img.shields.io/badge/Providers-16-C4A87A)](https://stockyard.dev/providers)
+[![Tools](https://img.shields.io/badge/Tools-150-D4A843)](https://stockyard.dev/tools/)
+[![Modules](https://img.shields.io/badge/Modules-76-E8753A)](https://stockyard.dev/modules/)
+[![Providers](https://img.shields.io/badge/Providers-16-C4A87A)](https://stockyard.dev/providers/)
 
 </div>
 
@@ -23,7 +23,7 @@
 
 Plus an LLM proxy platform with 76 middleware modules and 16 providers.
 
-**All 150 tools for $29/mo.** Free tier on every tool. [stockyard.dev/complete](https://stockyard.dev/complete)
+**All 150 tools for $29/mo.** Free tier on every tool. [stockyard.dev/complete](https://stockyard.dev/complete/)
 
 ## Install Any Tool
 
@@ -65,17 +65,17 @@ brew install stockyard-corral stockyard-headcount stockyard-paddock
 
 | Tool | Replaces | What it does |
 |------|----------|-------------|
-| **[Corral](https://stockyard.dev/corral)** | Hookdeck ($25/mo) | Webhook capture, inspect, replay, forward |
-| **[Headcount](https://stockyard.dev/headcount)** | Mixpanel ($20/mo) | Privacy-first user analytics, funnels, retention |
-| **[Paddock](https://stockyard.dev/paddock)** | Statuspage ($79/mo) | Public status page with incidents and notifications |
-| **[Salt Lick](https://stockyard.dev/saltlick)** | LaunchDarkly ($50/mo) | Feature flags, gradual rollouts, kill switches |
-| **[Seismograph](https://stockyard.dev/seismograph)** | Sentry ($26/mo) | Error tracking and exception aggregation |
-| **[Lasso](https://stockyard.dev/lasso)** | Bitly ($35/mo) | Link shortener with custom domains and QR codes |
-| **[Strongbox](https://stockyard.dev/strongbox)** | 1Password ($18/mo) | Encrypted secret manager with team access |
-| **[Ledger](https://stockyard.dev/ledger)** | QuickBooks ($15/mo) | Double-entry bookkeeping and reports |
-| **[Sentinel](https://stockyard.dev/sentinel)** | PagerDuty ($21/mo) | Alert manager with escalation policies |
+| **[Corral](https://stockyard.dev/corral/)** | Hookdeck ($25/mo) | Webhook capture, inspect, replay, forward |
+| **[Headcount](https://stockyard.dev/headcount/)** | Mixpanel ($20/mo) | Privacy-first user analytics, funnels, retention |
+| **[Paddock](https://stockyard.dev/paddock/)** | Statuspage ($79/mo) | Public status page with incidents and notifications |
+| **[Salt Lick](https://stockyard.dev/saltlick/)** | LaunchDarkly ($50/mo) | Feature flags, gradual rollouts, kill switches |
+| **[Seismograph](https://stockyard.dev/seismograph/)** | Sentry ($26/mo) | Error tracking and exception aggregation |
+| **[Lasso](https://stockyard.dev/lasso/)** | Bitly ($35/mo) | Link shortener with custom domains and QR codes |
+| **[Strongbox](https://stockyard.dev/strongbox/)** | 1Password ($18/mo) | Encrypted secret manager with team access |
+| **[Ledger](https://stockyard.dev/ledger/)** | QuickBooks ($15/mo) | Double-entry bookkeeping and reports |
+| **[Sentinel](https://stockyard.dev/sentinel/)** | PagerDuty ($21/mo) | Alert manager with escalation policies |
 
-[Browse all 150 tools →](https://stockyard.dev/tools)
+[Browse all 150 tools →](https://stockyard.dev/tools/)
 
 ## Stockyard Complete — $29/mo
 
@@ -91,7 +91,7 @@ Stockyard:   All 150 tools = $29/mo
 - Your rate locks in when you subscribe
 - Cancel any time — tools keep running on free tier
 
-[Get Complete →](https://stockyard.dev/complete)
+[Get Complete →](https://stockyard.dev/complete/)
 
 ## LLM Platform
 
@@ -126,7 +126,7 @@ response = client.chat.completions.create(
 - **~400ns proxy overhead** across the full middleware chain
 - **~25MB binary**, embedded SQLite, zero external dependencies
 
-[Platform details →](https://stockyard.dev/platform) · [LLM Platform pricing →](https://stockyard.dev/pricing)
+[Platform details →](https://stockyard.dev/platform/) · [LLM Platform pricing →](https://stockyard.dev/pricing/)
 
 ## Architecture
 
@@ -156,7 +156,7 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 }
 ```
 
-[MCP documentation →](https://stockyard.dev/mcp)
+[MCP documentation →](https://stockyard.dev/mcp/)
 
 ## Shipped This Week
 
@@ -183,14 +183,14 @@ Requires Go 1.22+. No other dependencies.
 
 ## Documentation
 
-- [Quickstart (5 min)](https://stockyard.dev/docs/quickstart)
-- [All 150 Tools](https://stockyard.dev/tools)
-- [Configuration](https://stockyard.dev/docs/config)
-- [API Reference (360+ endpoints)](https://stockyard.dev/docs/api)
-- [SDKs (Python, Go, TypeScript)](https://stockyard.dev/docs/sdks)
-- [Benchmarks](https://stockyard.dev/benchmarks)
-- [API Sandbox](https://stockyard.dev/sandbox)
-- [vs LiteLLM](https://stockyard.dev/vs/litellm)
+- [Quickstart (5 min)](https://stockyard.dev/docs/quickstart/)
+- [All 150 Tools](https://stockyard.dev/tools/)
+- [Configuration](https://stockyard.dev/docs/config/)
+- [API Reference (360+ endpoints)](https://stockyard.dev/docs/api/)
+- [SDKs (Python, Go, TypeScript)](https://stockyard.dev/docs/sdks/)
+- [Benchmarks](https://stockyard.dev/benchmarks/)
+- [API Sandbox](https://stockyard.dev/sandbox/)
+- [vs LiteLLM](https://stockyard.dev/vs/litellm/)
 
 ## License
 
