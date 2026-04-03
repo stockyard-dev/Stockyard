@@ -227,6 +227,11 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/exchange/{slug}/download", s.handleExchangeDownload)
 	mux.HandleFunc("POST /api/exchange/{slug}/star", s.handleExchangeStar)
 	mux.HandleFunc("POST /api/exchange/{slug}/fork", s.handleExchangeFork)
+
+	// Live webhook demo (rate limited, public)
+	mux.HandleFunc("POST /api/demo/webhook", s.rateLimited(s.handleDemoWebhookCapture))
+	mux.HandleFunc("PUT /api/demo/webhook", s.rateLimited(s.handleDemoWebhookCapture))
+	mux.HandleFunc("GET /api/demo/webhooks", s.rateLimited(s.handleDemoWebhookList))
 }
 
 // Start starts the HTTP server.
@@ -1162,4 +1167,81 @@ func writeErr(w http.ResponseWriter, status int, msg string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(map[string]string{"error": msg})
+}
+
+// ─── Live Webhook Demo ─────────────────────────────────────────────────
+
+type demoWebhook struct {
+	ID        string            `json:"id"`
+	Method    string            `json:"method"`
+	Path      string            `json:"path"`
+	Headers   map[string]string `json:"headers"`
+	Body      string            `json:"body"`
+	IP        string            `json:"ip"`
+	Timestamp string            `json:"timestamp"`
+}
+
+var (
+	demoHooks   []demoWebhook
+	demoHooksMu sync.Mutex
+	demoCounter int64
+)
+
+func (s *Server) handleDemoWebhookCapture(w http.ResponseWriter, r *http.Request) {
+	body, _ := io.ReadAll(io.LimitReader(r.Body, 10240)) // 10KB max
+
+	headers := make(map[string]string)
+	for k, v := range r.Header {
+		if len(v) > 0 {
+			lk := strings.ToLower(k)
+			// Skip sensitive headers
+			if lk == "authorization" || lk == "cookie" || lk == "x-admin-key" {
+				headers[k] = "[redacted]"
+			} else {
+				headers[k] = v[0]
+			}
+		}
+	}
+
+	ip := r.RemoteAddr
+	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+		ip = strings.Split(fwd, ",")[0]
+	}
+
+	demoHooksMu.Lock()
+	demoCounter++
+	hook := demoWebhook{
+		ID:        fmt.Sprintf("wh_%d", demoCounter),
+		Method:    r.Method,
+		Path:      r.URL.Path,
+		Headers:   headers,
+		Body:      string(body),
+		IP:        strings.TrimSpace(ip),
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+	}
+	demoHooks = append(demoHooks, hook)
+	// Keep last 50
+	if len(demoHooks) > 50 {
+		demoHooks = demoHooks[len(demoHooks)-50:]
+	}
+	demoHooksMu.Unlock()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"captured": true, "id": hook.ID})
+}
+
+func (s *Server) handleDemoWebhookList(w http.ResponseWriter, r *http.Request) {
+	demoHooksMu.Lock()
+	hooks := make([]demoWebhook, len(demoHooks))
+	copy(hooks, demoHooks)
+	demoHooksMu.Unlock()
+
+	// Reverse so newest first
+	for i, j := 0, len(hooks)-1; i < j; i, j = i+1, j-1 {
+		hooks[i], hooks[j] = hooks[j], hooks[i]
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "no-cache")
+	json.NewEncoder(w).Encode(map[string]any{"webhooks": hooks, "count": len(hooks)})
 }

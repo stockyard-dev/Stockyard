@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Live Webhook Demo — Stockyard Corral</title>
+<meta name="description" content="Send a webhook to stockyard.dev and watch it appear in real-time. No signup. See what Stockyard Corral does.">
+<meta property="og:title" content="Live Webhook Demo — See Corral in Action">
+<meta property="og:description" content="Send a webhook. Watch it appear. No signup required.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/demo/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:760px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.5rem,4vw,2rem);text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:2.5rem}
+.endpoint-box{background:var(--bg2);border:2px solid var(--gold);padding:1.2rem;text-align:center;margin-bottom:1rem}
+.endpoint-label{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+.endpoint-url{font-family:var(--mono);font-size:.85rem;color:var(--gold);word-break:break-all;cursor:pointer}
+.endpoint-url:hover{color:var(--cream)}
+.copy-msg{font-family:var(--mono);font-size:.6rem;color:var(--green);margin-top:.3rem;min-height:1em}
+.curl-box{background:#0d0b09;padding:.8rem 1rem;font-family:var(--mono);font-size:.7rem;color:var(--ll);margin-bottom:2rem;cursor:pointer;overflow-x:auto}
+.curl-box:hover{color:var(--cream)}
+.section-label{font-family:var(--mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.feed{min-height:200px}
+.hook{border:1px solid var(--bg3);margin-bottom:.6rem;background:var(--bg2);animation:slideIn .3s}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.hook-header{padding:.6rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid transparent}
+.hook-header:hover{background:rgba(196,93,44,0.03)}
+.hook-method{font-family:var(--mono);font-size:.7rem;padding:.1rem .4rem;background:rgba(74,158,92,0.15);color:var(--green)}
+.hook-time{font-family:var(--mono);font-size:.6rem;color:var(--cm)}
+.hook-id{font-family:var(--mono);font-size:.6rem;color:var(--cm)}
+.hook-body{display:none;padding:.8rem 1rem;background:#0d0b09;font-family:var(--mono);font-size:.7rem;color:var(--ll);white-space:pre-wrap;word-break:break-all;max-height:200px;overflow-y:auto}
+.hook-body.show{display:block}
+.empty{text-align:center;padding:3rem;color:var(--cm);font-style:italic}
+.empty-cmd{font-family:var(--mono);font-size:.75rem;color:var(--ll);margin-top:1rem;background:#0d0b09;padding:.8rem;text-align:left;cursor:pointer}
+.send-btn{display:block;margin:1rem auto;font-family:var(--mono);font-size:.78rem;padding:.6rem 1.5rem;background:var(--rust);color:var(--cream);border:none;cursor:pointer}
+.send-btn:hover{background:var(--rl)}
+.cta{text-align:center;margin-top:2.5rem;padding:1.5rem;border:2px solid var(--gold)}
+.btn{font-family:var(--mono);font-size:.82rem;padding:.6rem 1.5rem;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg)}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}@media(max-width:768px){.nav-links{display:none}}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/corral/">Corral</a><a href="/tools/">Tools</a><a href="/complete/" style="color:var(--gold)">Complete</a></div>
+</nav>
+<div class="wrap">
+  <h1>Live Webhook Demo</h1>
+  <p class="sub">Send a webhook. Watch it appear. This is what <a href="/corral/">Stockyard Corral</a> does.</p>
+
+  <div class="endpoint-box">
+    <div class="endpoint-label">Your webhook URL (shared, public)</div>
+    <div class="endpoint-url" onclick="copyUrl()">https://stockyard.dev/api/demo/webhook</div>
+    <div class="copy-msg" id="copy-msg"></div>
+  </div>
+
+  <div class="curl-box" onclick="navigator.clipboard.writeText(this.textContent);document.getElementById('copy-msg').textContent='curl command copied!'">curl -X POST https://stockyard.dev/api/demo/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"event":"test","source":"terminal","message":"Hello from curl!"}'</div>
+
+  <button class="send-btn" onclick="sendTest()">Send a test webhook now</button>
+
+  <div class="section-label">
+    <span>Live feed</span>
+    <span><span class="live-dot"></span> polling every 3s</span>
+  </div>
+
+  <div class="feed" id="feed">
+    <div class="empty" id="empty">
+      <div>Waiting for webhooks...</div>
+      <div style="font-size:.82rem;margin-top:.5rem">Paste the URL above into Stripe, GitHub, or any webhook sender. Or click "Send a test" above.</div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <p style="font-family:var(--mono);font-size:.8rem;margin-bottom:.5rem">Like this? Corral does this on your server.</p>
+    <p style="color:var(--cd);font-size:.85rem;font-style:italic;margin-bottom:1rem">Capture, inspect, replay, and forward webhooks. Single binary. Your data.</p>
+    <a href="/corral/" class="btn btn-gold">Install Corral free &rarr;</a>
+  </div>
+</div>
+
+<footer><a href="/">Stockyard</a> &middot; <a href="/corral/">Corral</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a></footer>
+
+<script>
+var lastCount = 0;
+
+function copyUrl() {
+  navigator.clipboard.writeText('https://stockyard.dev/api/demo/webhook');
+  document.getElementById('copy-msg').textContent = 'URL copied!';
+  setTimeout(function(){document.getElementById('copy-msg').textContent=''},2000);
+}
+
+async function sendTest() {
+  var btn = document.querySelector('.send-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+  try {
+    await fetch('/api/demo/webhook', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        event: 'test.sent',
+        source: 'stockyard.dev/demo',
+        message: 'Test webhook from the demo page',
+        timestamp: new Date().toISOString()
+      })
+    });
+    btn.textContent = 'Sent! Check the feed below';
+    setTimeout(function(){btn.textContent='Send another test';btn.disabled=false},2000);
+    poll();
+  } catch(e) {
+    btn.textContent = 'Error — try again';
+    btn.disabled = false;
+  }
+}
+
+async function poll() {
+  try {
+    var r = await fetch('/api/demo/webhooks', {cache:'no-store'});
+    var data = await r.json();
+    if (!data.webhooks || !data.webhooks.length) return;
+
+    document.getElementById('empty').style.display = 'none';
+    var feed = document.getElementById('feed');
+
+    // Only update if count changed
+    if (data.count !== lastCount) {
+      lastCount = data.count;
+      feed.innerHTML = '';
+      data.webhooks.slice(0, 20).forEach(function(h) {
+        var div = document.createElement('div');
+        div.className = 'hook';
+        var time = new Date(h.timestamp).toLocaleTimeString();
+        var bodyPreview = h.body ? h.body.substring(0, 80) : '(empty body)';
+        div.innerHTML = '<div class="hook-header" onclick="this.nextElementSibling.classList.toggle(\'show\')">'
+          + '<div><span class="hook-method">' + h.method + '</span> <span class="hook-id">' + h.id + '</span></div>'
+          + '<span class="hook-time">' + time + '</span>'
+          + '</div>'
+          + '<div class="hook-body">'
+          + '<strong style="color:var(--gold)">Headers:</strong>\n' + JSON.stringify(h.headers, null, 2)
+          + '\n\n<strong style="color:var(--gold)">Body:</strong>\n' + (h.body || '(empty)')
+          + '</div>';
+        feed.appendChild(div);
+      });
+    }
+  } catch(e) { /* silent */ }
+}
+
+// Poll every 3 seconds
+poll();
+setInterval(poll, 3000);
+gtag('event','page_view',{page_title:'webhook_demo'});
+</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>

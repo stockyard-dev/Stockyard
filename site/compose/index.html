@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Docker Compose Generator — Stockyard</title>
+<meta name="description" content="Pick your tools, get a docker-compose.yml. One command to run your entire self-hosted stack.">
+<meta property="og:title" content="Stockyard Docker Compose Generator">
+<meta property="og:description" content="Pick tools. Get a docker-compose.yml. docker compose up.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/compose/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:800px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.5rem,4vw,2rem);text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:2.5rem}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.4rem;margin-bottom:2rem}
+.pick{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--mono);font-size:.72rem;user-select:none;transition:all .15s}
+.pick:hover{border-color:var(--rust)}
+.pick.on{border-color:var(--gold);background:rgba(212,168,67,0.08)}
+.pick input{accent-color:var(--gold)}
+.pick-port{color:var(--cm);margin-left:auto;font-size:.6rem}
+.output{display:none;margin-top:2rem}
+.output.show{display:block}
+.output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.output-label{font-family:var(--mono);font-size:.7rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px}
+.output-actions{display:flex;gap:.5rem}
+.output-btn{font-family:var(--mono);font-size:.65rem;padding:.3rem .8rem;border:1px solid var(--bg3);background:var(--bg2);color:var(--cd);cursor:pointer}
+.output-btn:hover{border-color:var(--rust);color:var(--cream)}
+.yaml{background:#0d0b09;border:1px solid var(--bg3);padding:1rem;font-family:var(--mono);font-size:.72rem;color:var(--ll);white-space:pre;overflow-x:auto;max-height:500px;overflow-y:auto;line-height:1.6}
+.yaml .comment{color:var(--cm)}
+.yaml .key{color:var(--gold)}
+.yaml .val{color:var(--green)}
+.info{font-family:var(--mono);font-size:.68rem;color:var(--cm);margin-top:1rem;text-align:center}
+.presets{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap}
+.preset{font-family:var(--mono);font-size:.65rem;padding:.3rem .8rem;border:1px solid var(--bg3);background:var(--bg2);color:var(--cd);cursor:pointer}
+.preset:hover{border-color:var(--gold);color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}@media(max-width:768px){.nav-links{display:none}}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/tools/">Tools</a><a href="/complete/" style="color:var(--gold)">Complete</a><a href="/stacks/">Stacks</a></div>
+</nav>
+<div class="wrap">
+  <h1>Docker Compose Generator</h1>
+  <p class="sub">Pick your tools. Get a docker-compose.yml. <code style="font-family:var(--mono);background:var(--bg2);padding:.1rem .4rem;font-size:.85em">docker compose up</code></p>
+
+  <div class="presets">
+    <span class="preset" onclick="selectPreset('startup')">Startup Stack</span>
+    <span class="preset" onclick="selectPreset('homelab')">Homelab Stack</span>
+    <span class="preset" onclick="selectPreset('devops')">DevOps Stack</span>
+    <span class="preset" onclick="selectPreset('all')">Select all</span>
+    <span class="preset" onclick="selectPreset('none')">Clear</span>
+  </div>
+
+  <div class="picker" id="picker"></div>
+
+  <div class="output" id="output">
+    <div class="output-header">
+      <span class="output-label">docker-compose.yml</span>
+      <div class="output-actions">
+        <button class="output-btn" onclick="copyYaml()">Copy</button>
+        <button class="output-btn" onclick="downloadYaml()">Download</button>
+      </div>
+    </div>
+    <div class="yaml" id="yaml"></div>
+    <div class="info" id="info"></div>
+  </div>
+</div>
+
+<footer><a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/stacks/">Stacks</a> &middot; <a href="/complete/">Complete</a></footer>
+
+<script>
+var tools = [
+  {id:'corral',name:'Corral',desc:'Webhook inbox',port:8760},
+  {id:'headcount',name:'Headcount',desc:'Analytics',port:8761},
+  {id:'paddock',name:'Paddock',desc:'Status page',port:8762},
+  {id:'saltlick',name:'Salt Lick',desc:'Feature flags',port:8763},
+  {id:'seismograph',name:'Seismograph',desc:'Error tracking',port:8764},
+  {id:'lasso',name:'Lasso',desc:'Link shortener',port:8765},
+  {id:'strongbox',name:'Strongbox',desc:'Secret manager',port:8766},
+  {id:'bellwether',name:'Bellwether',desc:'Uptime monitor',port:8767},
+  {id:'sentinel',name:'Sentinel',desc:'Alert manager',port:8768},
+  {id:'ledger',name:'Ledger',desc:'Bookkeeping',port:8769},
+  {id:'homestead',name:'Homestead',desc:'Server monitor',port:8770},
+  {id:'cipher',name:'Cipher',desc:'Password mgr',port:8771},
+  {id:'assay',name:'Assay',desc:'API testing',port:8772},
+  {id:'prairie',name:'Prairie',desc:'Project board',port:8773},
+  {id:'surveyor',name:'Surveyor',desc:'Forms',port:8774},
+  {id:'post',name:'Post',desc:'Blog engine',port:8775},
+  {id:'ponyexpress',name:'Pony Express',desc:'Newsletter',port:8776},
+  {id:'billfold',name:'Billfold',desc:'Invoicing',port:8777},
+  {id:'handbook',name:'Handbook',desc:'Wiki/docs',port:8778},
+  {id:'feedreader',name:'Feedreader',desc:'RSS reader',port:8779},
+  {id:'notebook',name:'Notebook',desc:'Notes',port:8780},
+  {id:'archive',name:'Archive',desc:'Bookmarks',port:8781},
+  {id:'concierge',name:'Concierge',desc:'Live chat',port:8782},
+  {id:'probe',name:'Probe',desc:'HTTP inspector',port:8783},
+];
+
+var presets = {
+  startup: ['seismograph','paddock','saltlick','headcount','corral','lasso'],
+  homelab: ['homestead','cipher','feedreader','notebook','archive','bellwether'],
+  devops: ['bellwether','sentinel','strongbox','assay','probe','seismograph'],
+};
+
+var selected = new Set();
+var picker = document.getElementById('picker');
+
+tools.forEach(function(t) {
+  var el = document.createElement('label');
+  el.className = 'pick';
+  el.dataset.id = t.id;
+  el.innerHTML = '<input type="checkbox"> ' + t.name + '<span class="pick-port">:' + t.port + '</span>';
+  el.querySelector('input').onchange = function() {
+    if (this.checked) { selected.add(t.id); el.classList.add('on'); }
+    else { selected.delete(t.id); el.classList.remove('on'); }
+    generate();
+  };
+  picker.appendChild(el);
+});
+
+function selectPreset(name) {
+  if (name === 'none') { selected.clear(); }
+  else if (name === 'all') { tools.forEach(function(t){selected.add(t.id)}); }
+  else { selected = new Set(presets[name]); }
+  document.querySelectorAll('.pick').forEach(function(el) {
+    var on = selected.has(el.dataset.id);
+    el.classList.toggle('on', on);
+    el.querySelector('input').checked = on;
+  });
+  generate();
+}
+
+function generate() {
+  var out = document.getElementById('output');
+  if (!selected.size) { out.classList.remove('show'); return; }
+  out.classList.add('show');
+
+  var sel = tools.filter(function(t){return selected.has(t.id)});
+  var lines = [];
+  lines.push('# Stockyard Stack — generated at stockyard.dev/compose');
+  lines.push('# Run: docker compose up -d');
+  lines.push('# Dashboards: http://localhost:{PORT}/ui');
+  lines.push('');
+  lines.push('services:');
+
+  sel.forEach(function(t) {
+    lines.push('');
+    lines.push('  ' + t.id + ':');
+    lines.push('    image: ghcr.io/stockyard-dev/stockyard-' + t.id + ':latest');
+    lines.push('    container_name: stockyard-' + t.id);
+    lines.push('    ports:');
+    lines.push('      - "' + t.port + ':' + t.port + '"');
+    lines.push('    volumes:');
+    lines.push('      - ' + t.id + '-data:/data');
+    lines.push('    environment:');
+    lines.push('      - DATA_DIR=/data');
+    lines.push('    restart: unless-stopped');
+  });
+
+  lines.push('');
+  lines.push('volumes:');
+  sel.forEach(function(t) {
+    lines.push('  ' + t.id + '-data:');
+  });
+
+  var yaml = lines.join('\n');
+  document.getElementById('yaml').textContent = yaml;
+  
+  var dashboards = sel.map(function(t){return t.name+': http://localhost:'+t.port+'/ui'}).join('\n');
+  document.getElementById('info').textContent = sel.length + ' tools selected. Total disk: ~' + (sel.length * 12) + 'MB. RAM: ~' + (sel.length * 15) + 'MB.';
+
+  window._yaml = yaml;
+  gtag('event','generate_lead',{event_category:'compose',event_label:sel.map(function(t){return t.id}).join(',')});
+}
+
+function copyYaml() {
+  navigator.clipboard.writeText(window._yaml);
+  var btns = document.querySelectorAll('.output-btn');
+  btns[0].textContent = 'Copied!';
+  setTimeout(function(){btns[0].textContent='Copy'},2000);
+}
+
+function downloadYaml() {
+  var blob = new Blob([window._yaml], {type:'text/yaml'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'docker-compose.yml';
+  a.click();
+}
+</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>
