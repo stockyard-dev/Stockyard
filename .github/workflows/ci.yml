@@ -28,7 +28,9 @@ jobs:
         run: go mod verify
 
       - name: Build core
-        run: CGO_ENABLED=0 go build -ldflags="-s -w" -o stockyard ./cmd/stockyard/
+        run: |
+          VERSION=$(git describe --tags --always 2>/dev/null || echo "dev")
+          CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=${VERSION}" -o stockyard ./cmd/stockyard/
 
       - name: Build OSS proxy
         run: CGO_ENABLED=0 go build -ldflags="-s -w" -o stockyard-proxy ./cmd/stockyard-proxy/

@@ -194,6 +194,42 @@ check "GET /robots.txt" GET /robots.txt
 check "GET /404 (branded)" GET /nonexistent 404
 
 echo ""
+echo "--- New Pages (April 2026) ---"
+check "GET /tools/" GET /tools/
+check "GET /complete/" GET /complete/
+check "GET /stacks/" GET /stacks/
+check "GET /save/" GET /save/
+check "GET /quiz/" GET /quiz/
+check "GET /graveyard/" GET /graveyard/
+check "GET /open/" GET /open/
+check "GET /sandbox/" GET /sandbox/
+check "GET /compose/" GET /compose/
+check "GET /demo/" GET /demo/
+check "GET /migrate-from-sentry/" GET /migrate-from-sentry/
+
+echo ""
+echo "--- API Endpoints ---"
+check "GET /api/products" GET /api/products
+check "GET /api/plans" GET /api/plans
+check "POST /api/demo/webhook" POST /api/demo/webhook 200 '{"test":"smoke"}'
+check "GET /api/demo/webhooks" GET /api/demo/webhooks
+
+echo ""
+echo "--- Headers ---"
+# Verify X-Request-Id and X-Stockyard-Version headers
+HEADERS=$(curl -sI "${BASE}/api/plans" 2>/dev/null)
+if echo "$HEADERS" | grep -qi "x-request-id"; then
+  pass "X-Request-Id header present"
+else
+  fail "X-Request-Id header" "missing"
+fi
+if echo "$HEADERS" | grep -qi "x-stockyard-version"; then
+  pass "X-Stockyard-Version header present"
+else
+  fail "X-Stockyard-Version header" "missing"
+fi
+
+echo ""
 echo "=== Results ==="
 echo "  ${PASS} passed, ${FAIL} failed"
 echo ""
