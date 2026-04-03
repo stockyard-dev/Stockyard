@@ -354,5 +354,9 @@ func isPublicRoute(method, path string) bool {
 	if method == "GET" && path == "/api/demo/webhooks" {
 		return true
 	}
+	// Install stats — public aggregate data
+	if method == "GET" && path == "/api/install/stats" {
+		return true
+	}
 	return false
 }

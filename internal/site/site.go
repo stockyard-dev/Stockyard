@@ -1166,6 +1166,34 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
+	// Public install stats (aggregate only, no PII)
+	mux.HandleFunc("GET /api/install/stats", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Cache-Control", "public, max-age=60")
+		if db == nil {
+			json.NewEncoder(w).Encode(map[string]any{"error": "no database"})
+			return
+		}
+		stats := DownloadStats(db)
+		// Also get per-tool breakdown
+		toolRows, err := db.Query(`
+			SELECT path, COUNT(*), COUNT(DISTINCT ip_hash)
+			FROM install_events
+			GROUP BY path ORDER BY COUNT(*) DESC LIMIT 30`)
+		if err == nil {
+			defer toolRows.Close()
+			var byTool []map[string]any
+			for toolRows.Next() {
+				var p string
+				var c, u int64
+				toolRows.Scan(&p, &c, &u)
+				byTool = append(byTool, map[string]any{"path": p, "total": c, "unique": u})
+			}
+			stats["by_tool"] = byTool
+		}
+		json.NewEncoder(w).Encode(stats)
+	})
+
 	// Serve static assets (JS, CSS, images) from site/js/ etc.
 	fileServer := http.FileServer(http.FS(sub))
 	mux.HandleFunc("GET /site-assets/", func(w http.ResponseWriter, r *http.Request) {
