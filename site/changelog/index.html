@@ -2,123 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Changelog: Release Notes &amp; Updates — Stockyard">
-<meta property="og:description" content="Stockyard changelog. What's new, what's fixed, what's next.">
-<meta property="og:url" content="https://stockyard.dev/changelog/">
-<meta property="og:type" content="website">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Changelog - Stockyard</title>
+<meta name="description" content="What's new in Stockyard. Recent updates, features, and fixes shipped by the team.">
+<link rel="canonical" href="https://stockyard.dev/changelog/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<title>Changelog: Release Notes &amp; Updates — Stockyard</title>
-<meta name="description" content="Stockyard changelog. What's new, what's fixed, what's next.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
+<style>:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
-.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-.content{max-width:750px;margin:0 auto;padding:5rem 2rem 4rem}
-.content h1{font-size:2rem;margin-bottom:0.5rem}
-.content .sub{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-muted);margin-bottom:3rem}
-.release{margin-bottom:3rem;border-left:2px solid var(--bg3);padding-left:1.5rem}
-.release-header{display:flex;align-items:baseline;gap:12px;margin-bottom:0.8rem}
-.release-version{font-family:var(--font-mono);font-size:1.1rem;color:var(--rust-light);font-weight:600}
-.release-date{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)}
-.release-tag{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;color:var(--cream)}
-.tag-major{background:var(--rust)}
-.tag-patch{background:var(--bg3);color:var(--cream-dim)}
-.tag-new{background:var(--green)}
-.change-group{margin-bottom:0.8rem}
-.change-group-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.3rem}
-.change-item{color:var(--cream-dim);font-size:0.9rem;margin-bottom:0.3rem;padding-left:1rem;position:relative}
-.change-item::before{content:'';position:absolute;left:0;top:0.6em;width:4px;height:4px;background:var(--leather);border-radius:50%}
-footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
-.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
-footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
-.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
-
-/* ===== MOBILE NAV ===== */
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
-.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
-.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-toggle.open span:nth-child(2){opacity:0}
-.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.nav-overlay{display:none}
-@media(max-width:768px){
-  .nav{padding:0.8rem 1.2rem}
-  .nav-toggle{display:block}
-  .nav-links{
-    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
-    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
-    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
-  }
-  .nav-links.open{display:flex;font-family:var(--font-serif)}
-  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
-  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
-  .nav-overlay.open{display:block}
-}
-
-
-/* ===== GLOBAL MOBILE FIXES ===== */
-@media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:wrap;gap:0}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
-}
-
-
-/* ===== CHANGELOG RESPONSIVE ===== */
-@media(max-width:600px){
-  .changelog,.cl-content,.page-content{padding:2rem 1.2rem}
-  .cl-hero,.page-hero{padding:4rem 1.2rem 2rem}
-  .cl-hero h1,.page-hero h1{font-size:1.6rem}
-  code{font-size:0.75rem;word-break:break-all}
-  .version-badge{font-size:0.7rem}
-  img{max-width:100%;height:auto}
-}
-
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
-.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3);position:relative;z-index:200}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono);align-items:center}
+.nav-links>a{color:var(--cream-dim)}.nav-links>a:hover{color:var(--rust-light)}
+.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
+.drop-arrow{font-size:.65rem;margin-left:2px}
+.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.nav-drop-menu.open{display:block}
+.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)}
+.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
+.drop-section{padding:.3rem 1.2rem;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:.3rem}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:.5rem;z-index:1001}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all .3s}
+@media(max-width:768px){.nav{padding:.8rem 1.2rem}.nav-toggle{display:block}.nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;width:260px;background:var(--bg2);border-left:1px solid var(--bg3);padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,.5)}.nav-links.open{display:flex}.nav-links>a{font-size:1.05rem;padding:.4rem 0}.nav-drop-trigger{font-size:1.05rem;padding:.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
+.hero{max-width:820px;margin:0 auto;padding:6rem 2rem 3rem;text-align:center}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.2rem}
+.eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1rem}
+h1{font-size:clamp(1.8rem,4.5vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.accent{color:var(--rust-light)}
+.sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:580px;margin:0 auto 2rem;line-height:1.8}
+.btn{font-family:var(--font-mono);font-size:.85rem;padding:.75rem 1.8rem;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-secondary:hover{border-color:var(--cream)}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.section{padding:4rem 2rem;max-width:820px;margin:0 auto}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:820px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem}
+.section-label.gold{color:var(--gold)}.section-label.leather{color:var(--leather-light)}
+h2{font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:.8rem;line-height:1.3}
+p{color:var(--cream-dim);line-height:1.8;margin-bottom:1rem}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:.8rem;color:var(--leather-light);overflow-x:auto;line-height:1.7;margin:1rem 0}
+.tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}@media(max-width:560px){.tier-grid{grid-template-columns:1fr}}
+.tier{padding:2rem;border:1px solid var(--bg3);background:var(--bg)}
+.tier.pro{border-color:var(--gold)}
+.tier-name{font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem}
+.tier-name.free{color:var(--green-light)}.tier-name.pro{color:var(--gold)}
+.tier-price{font-family:var(--font-mono);font-size:2rem;font-weight:700;margin-bottom:.3rem}
+.tier-detail{font-family:var(--font-mono);font-size:.7rem;color:var(--leather)}
+.banner{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0;font-size:.9rem}
+.banner strong{font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust-light)}
+.cta-strip{padding:5rem 2rem;text-align:center;max-width:700px;margin:0 auto}
+.cta-strip h2{font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:1rem}
+.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
 </style>
-<link rel="canonical" href="https://stockyard.dev/changelog/">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Changelog — Stockyard",
-  "description": "Release notes and updates for Stockyard",
-  "url": "https://stockyard.dev/changelog/",
-  "isPartOf": {
-    "@type": "WebSite",
-    "name": "Stockyard",
-    "url": "https://stockyard.dev"
-  }
-}
-</script>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-overlay" onclick="toggleNav()"></div>
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   <div class="nav-links">
     <div class="nav-drop">
@@ -129,12 +71,9 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
         <a href="/tools/?category=developer">Developer Tools</a>
         <a href="/tools/?category=operations">Operations</a>
         <a href="/tools/?category=creator">Creator &amp; Business</a>
-        <a href="/tools/?category=finance">Finance</a>
-        <a href="/tools/?category=personal">Personal</a>
         <div class="drop-section">Popular</div>
         <a href="/corral/">Corral</a>
         <a href="/gate/">Gate</a>
-        <a href="/headcount/">Headcount</a>
         <a href="/saltlick/">Salt Lick</a>
       </div>
     </div>
@@ -146,326 +85,124 @@ footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)
   </div>
 </nav>
 
-<div class="content" id="main">
-<h1>Changelog</h1>
-<div style="padding:0.8rem 0;border-bottom:1px solid var(--bg3);margin-bottom:0.8rem"><span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--leather)">2026-04-01</span> &mdash; <span style="font-size:0.85rem;color:var(--cream)">Stockyard catalog expanded to 150 focused self-hosted tools. <a href="/complete/">Stockyard Complete bundle</a> launched at $29/mo.</span></div>
-
-<p class="sub">What's new in Stockyard. Follow <a href="https://github.com/stockyard-dev/stockyard">GitHub</a> for commit-level detail.</p>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.7.0</span>
-    <span class="release-date">March 26, 2026</span>
-    <span class="release-tag tag-new">New</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Drover &mdash; Free Tier (100 requests/day)</div>
-    <div class="change-item">Drover autopilot routing now works on the free Community tier &mdash; 100 routed requests per day, no credit card required.</div>
-    <div class="change-item">Daily cap counter resets at midnight UTC. Tracks usage, savings, and remaining quota in real time.</div>
-    <div class="change-item">When capped, requests pass through un-routed (no errors, no data loss). Savings accumulate in the dashboard with upgrade CTA.</div>
-    <div class="change-item"><code>GET /api/autopilot/cap</code> &mdash; free-tier usage: used today, remaining, savings, capped status, and upgrade prompt.</div>
-    <div class="change-item"><code>GET /api/drover/cap</code> and <code>GET /api/drover/stats</code> &mdash; new Drover route aliases.</div>
-    <div class="change-item">Pro tier and above get unlimited autopilot routing. <a href="/drover/">Learn more &rarr;</a></div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Feral &mdash; Free Quickscan (5 probes)</div>
-    <div class="change-item"><code>POST /api/feral/quickscan</code> &mdash; free 5-probe security audit. No campaign setup, no tier gating, instant report card.</div>
-    <div class="change-item">Tests 5 attack categories: prompt injection, jailbreak, system prompt exfiltration, encoding bypass, and indirect injection.</div>
-    <div class="change-item">Returns letter grade (A&ndash;F), per-probe results with severity, verdict, and upgrade CTA for the full 29-probe suite.</div>
-    <div class="change-item">Full Feral suite (29 probes, 9 categories, evolutionary mutation) remains on Team tier. <a href="/feral/">Learn more &rarr;</a></div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Auto-Insights &mdash; Data-Backed Upgrade Prompts</div>
-    <div class="change-item"><code>GET /api/insights</code> &mdash; analyzes your trace data and surfaces actionable findings with product-specific CTAs.</div>
-    <div class="change-item">5 analyzers: cost waste detection (Drover upsell), PII in prompts (Brand upsell), prompt duplication (Tack Room upsell), error rate (failover upsell), model concentration (vendor lock-in warning).</div>
-    <div class="change-item">Each insight includes severity, evidence from your data, affected product, and upgrade CTA with tier and price.</div>
-    <div class="change-item">Free on all tiers. Requires 10+ traces for analysis. Dashboard can poll this endpoint for upgrade banners.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Webhook Upgrade Triggers</div>
-    <div class="change-item">6 new webhook event types fire at natural conversion boundaries: Drover cap reached, savings milestones ($1/$5/$10/$50), Feral bypass detected, PII found in traces, trace milestones (100/500/1K/5K), and high error rate.</div>
-    <div class="change-item">Events fire via existing webhook infrastructure (HMAC-signed, retried, logged) and broadcast via SSE for real-time in-app notifications.</div>
-    <div class="change-item">Cooldown deduplication prevents event spam (1h for cap/bypass, 6h for PII/errors, 24h for milestones/savings).</div>
-    <div class="change-item">Register a webhook at <code>POST /api/webhooks</code> with <code>events: "upgrade.*"</code> to receive all conversion events.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Lasso &mdash; Shareable Comparison URLs</div>
-    <div class="change-item"><code>POST /api/lasso/share</code> &mdash; snapshot any replay comparison into a shareable URL at <code>stockyard.dev/compare/{id}</code>.</div>
-    <div class="change-item"><code>POST /api/lasso/share/custom</code> &mdash; create shares from raw data (no replay run needed). Dashboard and playground can use this.</div>
-    <div class="change-item">Public <code>/compare/{id}</code> page: side-by-side responses, cost/latency/tokens with winner highlighting, "Share on X" button, view counter.</div>
-    <div class="change-item">Shares expire after 30 days. View count tracked. Every shared comparison is a free ad for Stockyard.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Optimization Loop &mdash; One Button, Full Stack Review</div>
-    <div class="change-item"><code>POST /api/optimize</code> &mdash; chains the full Stockyard loop: observe &rarr; score &rarr; analyze &rarr; recommend &rarr; apply &rarr; explain. One endpoint, complete stack optimization.</div>
-    <div class="change-item">Returns staged report with health grade (A&ndash;F), projected monthly savings, ordered actions with priority/impact/effort, and next steps.</div>
-    <div class="change-item">Pass <code>{"apply": true}</code> to auto-apply safe recommendations (enable Drover, toggle modules). Manual actions return clear instructions.</div>
-    <div class="change-item">Free on all tiers. Requires 10+ traces. Chains Lookout, Drover, Insights, and module state into one decision engine.</div>
-  </div>
-</div>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.6.0</span>
-    <span class="release-date">March 26, 2026</span>
-    <span class="release-tag tag-new">New</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Lasso &mdash; Request Replay</div>
-    <div class="change-item"><code>POST /api/replay</code> &mdash; replay any traced request against a different model. Compares cost, latency, and output.</div>
-    <div class="change-item"><code>POST /api/replay/batch</code> &mdash; replay against up to 5 models in a single call with winner analysis.</div>
-    <div class="change-item"><code>GET /api/replay/compare/{id}</code> &mdash; side-by-side comparison with cost, speed, and efficiency winners.</div>
-    <div class="change-item"><code>GET /api/replay/stats</code> &mdash; aggregate stats and model leaderboard across all replays.</div>
-    <div class="change-item">Request bodies are now stored on all new traces, making them replayable. Added <code>request_body</code> column to <code>observe_traces</code>.</div>
-    <div class="change-item">Lasso is available on the Individual tier ($29.99/mo). <a href="/lasso/">Learn more &rarr;</a></div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Drover &mdash; Autopilot Routing</div>
-    <div class="change-item"><code>POST /api/autopilot/calibrate</code> &mdash; score candidate models by replaying real traces against a reference model.</div>
-    <div class="change-item">Three trigger keywords: <code>model=autopilot</code>, <code>model=auto</code>, or the reference model name for transparent downgrade.</div>
-    <div class="change-item">Three routing modes: <strong>cost</strong> (cheapest), <strong>speed</strong> (fastest), <strong>balanced</strong> (weighted). Configurable via <code>PUT /api/autopilot</code>.</div>
-    <div class="change-item">Every routing decision is logged with estimated savings. Query via <code>GET /api/autopilot/decisions</code>.</div>
-    <div class="change-item">Live calibration: 3 models scored, quality threshold 0.80, up to 25x cost reduction measured.</div>
-    <div class="change-item">Drover launched on Pro tier ($99.99/mo). Now also available free at 100 requests/day &mdash; see v1.7.0. <a href="/drover/">Learn more &rarr;</a></div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Platform</div>
-    <div class="change-item">License changed from MIT to Business Source License 1.1 (source-available, no competing products).</div>
-    <div class="change-item">Module count: 76 (up from 66). New modules across safety, transform, validate, and automation categories.</div>
-    <div class="change-item">Products page rebuilt &mdash; organized by tier with named products. Rename map applied: Proxy&rarr;Chute, Observe&rarr;Lookout, Trust&rarr;Brand, Studio&rarr;Tack Room, Exchange&rarr;Trading Post, Orchestrator&rarr;Ramrod, Bid&rarr;Auction.</div>
-    <div class="change-item">Pricing updated to 5 tiers: Community (free), Individual ($29.99), Pro ($99.99), Team ($299.99), Enterprise ($499.99).</div>
-  </div>
-</div>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.4.0</span>
-    <span class="release-date">March 18, 2026</span>
-    <span class="release-tag tag-new">New</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Per-User Spend Tracking</div>
-    <div class="change-item">Per-user spend counters — track cost, tokens in, and tokens out per user alongside per-project. Works for both streaming and non-streaming requests.</div>
-    <div class="change-item">Per-user spend caps — set daily and monthly spend limits per user via <code>PUT /api/users/{id}/spend/cap</code>. Supports soft caps (alert only) and hard caps (block).</div>
-    <div class="change-item">User spend API — <code>GET /api/users/{id}/spend</code> (fast in-memory), <code>GET /api/users/{id}/spend/history</code> (daily rollups from DB).</div>
-    <div class="change-item">Usage metering — the <code>usage_metering</code> table is now populated with per-user and per-project dimensional data on every flush cycle.</div>
-    <div class="change-item">SSE events — <code>user_spend_update</code> broadcasts real-time user spend to the dashboard.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Guardrails CRUD</div>
-    <div class="change-item">Runtime-configurable guardrail rules — create, update, and delete regex-based rules via REST API. Rules are cached in memory with 60-second TTL.</div>
-    <div class="change-item">Per-project scoping — rules can target all projects (<code>*</code>) or a specific project, with priority ordering.</div>
-    <div class="change-item">Dry-run testing — <code>POST /api/guardrails/test</code> scans text against all applicable rules without sending to a provider.</div>
-    <div class="change-item">Analytics — <code>GET /api/guardrails/stats</code> for counters (blocked, flagged, redacted, per-rule hits), <code>GET /api/guardrails/events</code> for violation history.</div>
-    <div class="change-item">8 new endpoints: CRUD + test + stats + events for guardrail rules.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Webhook Delivery &amp; Retry</div>
-    <div class="change-item">Delivery logging — every webhook delivery attempt is recorded in <code>webhook_deliveries</code> with status code, latency, error, and attempt number.</div>
-    <div class="change-item">Automatic retry — failed deliveries retry up to 3 times with exponential backoff (2s, 8s, 32s).</div>
-    <div class="change-item">Delivery history API — <code>GET /api/webhooks/{id}/deliveries</code> and <code>GET /api/webhooks/{id}/stats</code> (success rate, avg latency).</div>
-    <div class="change-item">New event types — <code>provider.health_changed</code> (circuit breaker transitions), <code>spend.cap_exceeded</code>, <code>guardrail.violation</code>.</div>
-    <div class="change-item">SSE events — <code>webhook_delivery</code> broadcasts delivery status in real-time.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Reliability Fixes</div>
-    <div class="change-item">Fixed goroutine leak when streaming clients disconnect — provider goroutines now monitor <code>ctx.Done()</code> and stream channels are drained on write error.</div>
-    <div class="change-item">Fixed spend counter race condition at midnight — date comparison now uses <code>Date()</code> for correct year/month/day boundaries.</div>
-    <div class="change-item">Fixed shutdown ordering — HTTP server now drains before flusher stops, preventing lost spend data for in-flight requests.</div>
-    <div class="change-item">Added 10 MB request body size limit via <code>MaxBytesReader</code> to prevent OOM.</div>
-    <div class="change-item">Error responses sanitized — raw <code>err.Error()</code> no longer leaks SQLite errors, file paths, or provider details to clients.</div>
-    <div class="change-item">Improved cost estimation for cap checks — output estimate clamped to 256&ndash;4096 tokens instead of 2x input heuristic.</div>
-    <div class="change-item">Flusher retries failed DB writes up to 3 times with backoff. Token counts now passed to <code>UpsertSpendRollup</code> instead of zeros.</div>
-    <div class="change-item">Failover middleware skips streaming requests (handled by dedicated streaming failover path). Circuit breakers check context cancellation between attempts.</div>
-  </div>
-</div>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.3.0</span>
-    <span class="release-date">March 3, 2026</span>
-    <span class="release-tag tag-major">Security</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">New Features</div>
-    <div class="change-item">Provider key encryption at rest — all BYOK provider API keys (OpenAI, Anthropic, etc.) are now encrypted with AES-256-GCM before being written to SQLite. Existing plaintext keys are auto-migrated on startup.</div>
-    <div class="change-item">Configurable encryption key — set <code>STOCKYARD_ENCRYPTION_KEY</code> env var for deterministic key derivation, or let Stockyard auto-generate and persist a random key.</div>
-    <div class="change-item">Benchmark page updated with real <code>go test -bench</code> data — measured on Xeon Platinum 8581C. 76-module chain: 400ns, toggle chain: 1.56μs, registry lookup: 23ns.</div>
-    <div class="change-item">API reference expanded to 62 REST endpoints across 11 sections with color-coded methods.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Security</div>
-    <div class="change-item">Provider keys are decrypted only in-memory for outbound API calls. The <code>ProviderKey</code> JSON struct never includes the <code>api_key</code> field. Keys never appear in logs, traces, or API responses.</div>
-    <div class="change-item">Legacy plaintext keys are detected by the absence of the <code>enc:</code> prefix and transparently encrypted on next read or startup migration.</div>
-  </div>
-</div>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.2.0</span>
-    <span class="release-date">February 27, 2026</span>
-    <span class="release-tag tag-major">Platform</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">New Features</div>
-    <div class="change-item">Webhooks — register HTTP/Slack endpoints for alerts, cost thresholds, trust violations. HMAC-SHA256 signed. Auto-disable after 10 failures.</div>
-    <div class="change-item">API key rotation — <code>POST /api/auth/me/keys/{id}/rotate</code>. Atomic revoke + regenerate, zero downtime.</div>
-    <div class="change-item">Status page — <a href="/status/">/status/</a> with live auto-refresh. <code>GET /api/status</code> returns uptime, request count, error rate, latency, memory, component health.</div>
-    <div class="change-item">Config export/import — snapshot modules, webhooks, and policies. Diff before applying. <code>GET /api/config/export</code>, <code>POST /api/config/import</code>, <code>POST /api/config/diff</code>.</div>
-    <div class="change-item">VS Code extension — status bar indicator, module toggle quick-pick, trace viewer, sidebar tree views for modules/traces/providers.</div>
-    <div class="change-item">Terraform provider — manage modules, webhooks, and trust policies as infrastructure-as-code.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Docs & Site</div>
-    <div class="change-item"><a href="/docs/ops/">Operations docs</a> — doctor, webhooks, OTEL, status monitoring, config export, key rotation.</div>
-    <div class="change-item">API docs expanded with Playground, Webhooks, and System endpoint tables.</div>
-    <div class="change-item">Integration examples — Python, Node.js, curl, webhook setup.</div>
-    <div class="change-item">Sitemap expanded to 38 URLs. Endpoint count reconciled across all pages.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Infrastructure</div>
-    <div class="change-item">Dockerfile (multi-stage, non-root) + docker-compose.yml with healthcheck.</div>
-    <div class="change-item">GoReleaser config: unified build, Homebrew tap, Docker image, release notes.</div>
-    <div class="change-item">Integration smoke test — builds binary, boots server, hits 40+ endpoints. Runs in CI.</div>
-    <div class="change-item">SECURITY.md, .env.example, GitHub issue templates, CONTRIBUTING.md refresh.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Fixes</div>
-    <div class="change-item">Fixed playground share button — now calls backend API, loads shared sessions via <code>?share={id}</code>.</div>
-    <div class="change-item">Fixed docs sidebar structure (malformed HTML from nav insertion).</div>
-    <div class="change-item">Fixed 404 page favicon paths. Standardized endpoint count across all pages.</div>
-  </div>
-</div>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.1.0</span>
-    <span class="release-date">February 25, 2026</span>
-    <span class="release-tag tag-major">Platform</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">New Features</div>
-    <div class="change-item"><code>stockyard doctor</code> — Pre-flight environment check (config, database, ports, API keys, Ollama, license, disk). JSON output with <code>--json</code> flag.</div>
-    <div class="change-item">OpenTelemetry export — Set <code>OTEL_EXPORTER_OTLP_ENDPOINT</code> to send traces to any OTLP backend (Jaeger, Grafana, Datadog, Honeycomb). Batched export, graceful flush.</div>
-    <div class="change-item">Playground share — <code>POST /api/playground/share</code> creates shareable sessions. 30-day TTL, auto-cleanup.</div>
-    <div class="change-item">GitHub Action — <code>.github/actions/setup-stockyard</code> for CI/CD pipelines. Install, doctor, start as background service.</div>
-    <div class="change-item">Go benchmark suite — 12 benchmarks covering middleware chain, toggle overhead, registry lookup, and parallel throughput.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Docs & Site</div>
-    <div class="change-item">Docs split into 10 pages with sidebar navigation, prev/next links, and active state highlighting.</div>
-    <div class="change-item">3 comparison pages: <a href="/vs/litellm/">vs LiteLLM</a>, <a href="/vs/helicone/">vs Helicone</a>, <a href="/vs/portkey/">vs Portkey</a>.</div>
-    <div class="change-item">Blog with 3 launch posts. RSS feed at <a href="/blog/feed.xml">/blog/feed.xml</a>.</div>
-    <div class="change-item">Interactive architecture diagram at <a href="/architecture/">/architecture/</a> — animated request flow through all 76 modules.</div>
-    <div class="change-item">Install script: <code>curl -fsSL stockyard.dev/install.sh | sh</code></div>
-    <div class="change-item">Sitemap expanded to 35 URLs. Blog nav link added site-wide.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Fixes</div>
-    <div class="change-item">Fixed JavaScript SyntaxError on 4 pages (stray CSS in script blocks).</div>
-    <div class="change-item">Standardized module count to 66 across all pages.</div>
-    <div class="change-item">Removed dead Discord links. Unified footers across all page variants.</div>
-    <div class="change-item">Fixed visible skip-link elements on 7 pages. Added missing logo SVGs and Guide nav links.</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">CI</div>
-    <div class="change-item">CI workflow: added benchmark job with artifact upload. Expanded test/vet coverage to engine/ and proxy/.</div>
-  </div>
-</div>
-
-<div class="release">
-  <div class="release-header">
-    <span class="release-version">v1.0.0</span>
-    <span class="release-date">February 20, 2026</span>
-    <span class="release-tag tag-major">Launch</span>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Platform</div>
-    <div class="change-item">9 flagship apps: Chute, Lookout, Brand, Tack Room, Forge, Trading Post</div>
-    <div class="change-item">62 REST API endpoints across all apps</div>
-    <div class="change-item">Embedded web console at /ui with full dashboard</div>
-    <div class="change-item">16 providers auto-configured from environment variables (now 40)</div>
-    <div class="change-item">SQLite storage — zero external dependencies</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Proxy</div>
-    <div class="change-item">66 middleware modules across 8 categories (routing, caching, cost, safety, transform, validate, observe, shims) (now 76)</div>
-    <div class="change-item">Runtime module toggling via API</div>
-    <div class="change-item">Multi-provider failover with circuit breaker</div>
-    <div class="change-item">Bring-your-own-key (BYOK) with auto-detection from key prefix</div>
-    <div class="change-item">Anthropic and Gemini SDK shims (anthrofit, geminishim)</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Lookout</div>
-    <div class="change-item">Automatic trace recording for every proxy request</div>
-    <div class="change-item">Cost tracking and time-series analytics</div>
-    <div class="change-item">Configurable alerts with threshold and anomaly detection</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Brand</div>
-    <div class="change-item">Hash-chained audit ledger — tamper-evident by design</div>
-    <div class="change-item">Content policies with block, warn, and log actions</div>
-    <div class="change-item">Integrity verification endpoint</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Tack Room</div>
-    <div class="change-item">Versioned prompt templates with variable interpolation</div>
-    <div class="change-item">A/B experiments across models</div>
-    <div class="change-item">Multi-model benchmarking with eval methods</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Forge</div>
-    <div class="change-item">DAG workflow engine with dependency-ordered step execution</div>
-    <div class="change-item">Template variable interpolation between steps</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Trading Post</div>
-    <div class="change-item">13 config packs: safety-essentials, cost-control, openai-quickstart, multi-provider-failover, and more</div>
-    <div class="change-item">One-click install/uninstall via API</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Auth</div>
-    <div class="change-item">Multi-user system with per-user API keys (sk-sy-*)</div>
-    <div class="change-item">Per-user provider key management</div>
-    <div class="change-item">Admin key protection for management API</div>
-  </div>
-  <div class="change-group">
-    <div class="change-group-label">Site</div>
-    <div class="change-item">Marketing site with interactive playground</div>
-    <div class="change-item">Full API documentation</div>
-    <div class="change-item">Fence Rail brand identity and logo system</div>
-    <div class="change-item">Community, Pro, Cloud, and Enterprise pricing tiers</div>
-  </div>
-</div>
+<article style="max-width:820px;margin:0 auto;padding:3rem 2rem">
+  <div style="font-family:var(--font-mono,monospace);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather,#a0845c);margin-bottom:1.5rem">Changelog</div>
+  <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:.5rem">What we shipped</h1>
+  <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem">Recent updates to Stockyard. Solo developer, shipping daily.</p>
+  
+  
+<div style="margin-bottom:2rem">
+  <div style="font-family:var(--font-mono,monospace);font-size:.7rem;color:#a0845c;margin-bottom:.5rem">2026-04-03</div>
+  <div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>affiliate referral code wired through Stripe checkout</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>full affiliate program with referral tracking</div>
 
 </div>
+<div style="margin-bottom:2rem">
+  <div style="font-family:var(--font-mono,monospace);font-size:.7rem;color:#a0845c;margin-bottom:.5rem">2026-04-02</div>
+  <div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>10 technical improvements</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>--help flag, backup command, auto-discovery</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#d4a84322;color:#d4a843;border:1px solid #d4a84344;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">QUALITY</span>enrich 15 new comparison pages to 400+ words</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>systemd generator, status page, OG images, educational pages, Go port fix, 15 comparison pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>LiteLLM blog expansion, 4 alternative pages, README update</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">v1.1.0 release, nurture email fixes, Helicone blog expansion</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#7a706022;color:#7a7060;border:1px solid #7a706044;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">INFRA</span>fix port 7749→4200, add GitHub Actions CI for GHCR</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>install scripts + GitHub releases for 8 key tools</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>interactive menu installer + Hub dashboard</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>multi-tool installer, SaaS calculator, deploy page</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#7a706022;color:#7a7060;border:1px solid #7a706044;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">INFRA</span>5 dashboard screenshots with real sample data</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>update README port references 7749 → 4200</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>update all port references from 7749 to 4200</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>5 landing pages targeting proven Google Ads search terms</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>sitemap-pages.xml handler was missing from serve list</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>remove 5 duplicate routes causing ServeMux panic</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>enrich all 188 comparison pages to 500+ words</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>4 'alternative to X' pages targeting high-intent search queries</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>4 more tutorial pages (10 total)</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>6 how-to tutorial pages, segmented sitemaps</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>5 how-to tutorial pages with HowTo schema</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>segmented sitemaps, sub-sitemap routes, robots.txt</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>canonical tags, breadcrumb schema across 282 pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>5 category hub pages, cleanup orphan tools</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>64 new comparison pages, internal cross-linking, sitemap expansion</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>add contextual cross-links to 288 pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>enrich remaining thin pages, noindex utility pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>enrich 14 self-hosted intent pages with hand-written domain-specific content</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>enrich 123 comparison pages with unique analysis, architecture, and migration sections</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>enrich 150 tool pages with unique overview, workflow, and scenario sections</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">catalog: mark billfold2, outfitter, silo, ledger2 as built (150/150)</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>4 more comparisons (124 total), 466 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">blog: 3 more posts — self-hosting guide, Helicone migration, LiteLLM security</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>6 more comparisons (120 total), 459 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">blog: 3 new posts targeting SaaS cost and self-hosting keywords</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>6 more comparisons (114 total), 450 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>8 more comparisons (108 total), 444 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>8 more comparison pages (100 total), 436 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>10 more comparison pages (92 total), 428 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>5 more comparisons (82 total), drover page fixed, 418 URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>rebuild drover page (was LLM routing, now background job queue) Also: drover vs sidekiq comparison page. 77 total comparisons, 413 URLs.</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>5 more comparison pages (76 total), 412 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>10 more comparison pages (71 total), 407 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>structured data, sitemap dedup, og:image coverage</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">polish: install scripts, cross-linking, download tracking</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>sitewide tool page cleanup</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>sitewide messaging cleanup across 616 pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>rewrite 6-email nurture sequence for 150 tools</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>remove duplicate /hub/ route that crashed app on startup</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>remove healthcheck temporarily to stop Railway killing container</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>restore Dockerfile without HEALTHCHECK, remove nixpacks.toml</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>add nixpacks.toml to build ./cmd/stockyard/</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>remove Dockerfile to use Nixpacks Go builder (bypass Docker socket errors)</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>remove Dockerfile HEALTHCHECK (conflicts with Railway), increase timeout</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>Stockyard Hub — unified management dashboard for Complete subscribers</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>Stockyard Hub — subscriber dashboard for Complete bundle</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>how-to guides, educational pages, and GDPR/privacy pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>best-of list, pricing attack, and persona pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>13 more comparison pages — 61 total across 26 tools</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>20 more comparison pages (48 total), 368 sitemap URLs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>add Google Ads tag (AW-18046975504) to all 207 pages</div>
 
-<div class="explore-bar">Explore: <a href="/model-aliasing/">Model aliasing</a> &middot; <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a></div>
-<footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem">
-    <a href="/tools/">Tools</a> &middot;
-    <a href="/complete/">Complete</a> &middot;
-    <a href="/platform/">Platform</a> &middot;
-    <a href="/pricing/">Pricing</a> &middot;
-    <a href="/docs/">Docs</a> &middot;
-    <a href="/blog/">Blog</a> &middot;
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </p>
-  <p style="margin-top:0.3rem">
-    <a href="/privacy/">Privacy</a> &middot;
-    <a href="/terms/">Terms</a> &middot;
-    <a href="/changelog/">Changelog</a>
-  </p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
-    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
-  </p>
-</footer>
+</div>
+<div style="margin-bottom:2rem">
+  <div style="font-family:var(--font-mono,monospace);font-size:.7rem;color:#a0845c;margin-bottom:.5rem">2026-04-01</div>
+  <div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>16 intent/category landing pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>27 programmatic comparison pages across 16 tools</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>email license keys with correct tool env var name</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>wire all 150 tools to Stripe checkout</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>restore wrangler/post pages, rebuild paddock/lasso/saltlick with checkout buttons</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>sitemap — add 143 missing tool/brand pages, remove stale /products/ entry (161 → 303 URLs)</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>register /paddock/ route in site.go</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>site audit — dollar sign bug, stale counts/pricing, nav/footer on tool pages, description mismatches</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>create /paddock/ page — was 404, linked from homepage as uptime monitor</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">lace Drover/Feral/29-products with generic namesfix: guide page — replace Drover/Feral</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>docs page — replace "29 products" with "150 tools" in meta and body</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>platform page — replace Drover/Feral/Lasso/29-products with generic feature names</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>pricing page — remove Drover/Feral/29-products refs, fix 30→150 tools link</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>site-wide audit — tool page titles, complete/tools/llm-proxy nav, zero issues on 294 pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>replace green-light with warm amber across all 307 pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">redesign: Wrangle your Stack — brand homepage, platform page, bundle pricing</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>add /api/waitlist to isPublicRoute — no admin key needed</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>register waitlist route on unified mux, re-verify complete checkout</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>add missing saltlick page + route</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>Stockyard Complete bundle + 150 tool landing pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3">Site restructure: Wrangle your Stack</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>address message sprawl and boundary confusion (GPT review)</div>
 
-<script>
-function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
-</script>
+</div>
+<div style="margin-bottom:2rem">
+  <div style="font-family:var(--font-mono,monospace);font-size:.7rem;color:#a0845c;margin-bottom:.5rem">2026-03-31</div>
+  <div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#a0845c22;color:#a0845c;border:1px solid #a0845c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">CONTENT</span>full polish pass — schema, titles, descriptions, sitemap, breadcrumbs</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>add Dashboard tab to Gate, Fence, Brand product pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>SVG mockups for all 5 tool product pages</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>conversion pass — 9 SEO pages, product page improvements, post-purchase flow</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>billing/success page — add license key email instructions</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>Stripe checkout for 5 tool Pro plans</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>licensegen CLI for issuing Ed25519-signed tool license keys</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>Free/Pro tier copy across all 5 product pages + pricing page</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#e8753a22;color:#e8753a;border:1px solid #e8753a44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">FIX</span>serve install.sh files via dedicated handlers (not pages loop)</div>
+<div style="padding:.4rem 0;border-bottom:1px solid #2e261e;font-size:.85rem;color:#bfb5a3"><span style="font-family:var(--font-mono,monospace);font-size:.55rem;padding:.15rem .4rem;background:#4a9e5c22;color:#4a9e5c;border:1px solid #4a9e5c44;text-transform:uppercase;letter-spacing:1px;margin-right:.5rem">NEW</span>install scripts, v0.1.0 releases wired, sitemap +10 URLs</div>
+
+</div>
+</article>
 
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>

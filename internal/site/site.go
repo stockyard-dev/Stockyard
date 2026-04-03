@@ -758,6 +758,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/hubspot-alternative/",
 		"/systemd/",
 		"/affiliate/",
+		"/badge/",
 		"/what-is-an-llm-proxy/",
 		"/what-is-feature-flagging/",
 		"/what-are-webhooks/",
