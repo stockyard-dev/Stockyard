@@ -35,9 +35,17 @@ jobs:
 
       - name: Build all sub-products
         run: |
-          for p in bid doubt echo fault fossil grain hollow iron morph prism replay seance spine stampede tide trailhead verdikt; do
-            CGO_ENABLED=0 go build -ldflags="-s -w" -o /dev/null ./cmd/$p && echo "  $p: ok" || { echo "  $p: FAILED"; exit 1; }
+          total=0
+          failed=0
+          for dir in cmd/*/; do
+            p=$(basename "$dir")
+            # Skip core binaries (already built above)
+            [ "$p" = "stockyard" ] && continue
+            [ "$p" = "stockyard-proxy" ] && continue
+            CGO_ENABLED=0 go build -ldflags="-s -w" -o /dev/null "./$dir" 2>/dev/null && total=$((total+1)) || { echo "  FAIL: $p"; failed=$((failed+1)); }
           done
+          echo "Built $total sub-products ($failed failures)"
+          [ "$failed" -gt 0 ] && exit 1 || true
 
       - name: Test with coverage
         run: |
@@ -58,6 +66,11 @@ jobs:
 
       - name: Vet
         run: go vet ./...
+
+      - name: Staticcheck
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          staticcheck ./... 2>&1 | head -50 || true
 
   bench:
     runs-on: ubuntu-latest
@@ -107,9 +120,12 @@ jobs:
       - name: Build Docker image
         run: docker build -t stockyard:latest -f Dockerfile.manual .
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Smoke test
         run: |
           docker run -d --name sy-test -p 7749:7749 stockyard:latest
           sleep 5
-          curl -sf http://localhost:7749/health | grep '"status":"ok"'
+          curl -sf http://localhost:7749/health | jq -e '.status == "ok" or .status == "degraded"'
           docker stop sy-test

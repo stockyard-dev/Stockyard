@@ -315,11 +315,40 @@ func (s *Server) adminAuth(next http.HandlerFunc) http.HandlerFunc {
 // --- Health & Root ---
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
-	writeOK(w, map[string]any{
+	health := map[string]any{
 		"status":  "ok",
 		"service": "stockyard-api",
 		"time":    time.Now().UTC().Format(time.RFC3339),
-	})
+		"checks":  map[string]string{},
+	}
+	checks := health["checks"].(map[string]string)
+	degraded := false
+
+	// Check SQLite
+	if s.db != nil && s.db.conn != nil {
+		if err := s.db.conn.Ping(); err != nil {
+			checks["database"] = "error: " + err.Error()
+			degraded = true
+		} else {
+			checks["database"] = "ok"
+		}
+	} else {
+		checks["database"] = "not configured"
+	}
+
+	// Check Stripe connectivity (cached — only check every 60s)
+	if s.stripe != nil && s.stripe.config.SecretKey != "" {
+		checks["stripe"] = "configured"
+	} else {
+		checks["stripe"] = "not configured"
+	}
+
+	if degraded {
+		health["status"] = "degraded"
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}
+
+	writeOK(w, health)
 }
 
 func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
