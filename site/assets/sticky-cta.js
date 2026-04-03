@@ -6,14 +6,14 @@
     if(a){
       var tool=window.location.pathname.split('/')[1]||'stockyard';
       gtag('event','generate_lead',{event_category:'install',event_label:tool});
-      gtag('event','conversion',{send_to:'AW-18046975504/install'});
+      gtag('event','conversion',{send_to:'AW-18046975504/2I1uCJ3W6pQcEJD8u51D'});
     }
     // Track individual tool checkout button clicks
     var checkBtn=e.target.closest('#checkout-btn-monthly,#checkout-btn-annual,[onclick*="startCheckout"]');
     if(checkBtn){
       var tool=window.location.pathname.split('/')[1]||'unknown';
       gtag('event','begin_checkout',{currency:'USD',value:29,items:[{item_name:'Stockyard '+tool+' Pro',quantity:1}]});
-      gtag('event','conversion',{send_to:'AW-18046975504/begin_checkout'});
+      gtag('event','conversion',{send_to:'AW-18046975504/9CJJCJTW6pQcEJD8u51D'});
     }
     // Track any checkout/pricing CTA clicks on content pages
     var cta=e.target.closest('a[href="/complete/"],a[href="/pricing/"],a[href="/cloud/"]');

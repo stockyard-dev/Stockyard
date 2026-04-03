@@ -735,7 +735,7 @@ async function checkout(tier, e) {
   var _prices={individual:{monthly:29.99,annual:299.90},pro:{monthly:99.99,annual:999.90}};
   var _v=(_prices[tier]&&_prices[tier][billingMode])||29.99;
   gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard '+tier,price:_v,quantity:1}]});
-  gtag('event','conversion',{send_to:'AW-18046975504/begin_checkout',value:_v,currency:'USD'});
+  gtag('event','conversion',{send_to:'AW-18046975504/9CJJCJTW6pQcEJD8u51D',value:_v,currency:'USD'});
 
   try {
     const res = await fetch(API_BASE + '/api/billing/stripe/checkout', {
@@ -778,7 +778,7 @@ async function startCompleteCheckout(interval) {
   if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
   var _v=interval==='annual'?249:29;
   gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard Complete',price:_v,quantity:1}]});
-  gtag('event','conversion',{send_to:'AW-18046975504/begin_checkout',value:_v,currency:'USD'});
+  gtag('event','conversion',{send_to:'AW-18046975504/9CJJCJTW6pQcEJD8u51D',value:_v,currency:'USD'});
   try {
     const r = await fetch('https://stockyard.dev/api/checkout', {
       method: 'POST',

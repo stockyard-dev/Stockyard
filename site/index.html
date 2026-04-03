@@ -323,7 +323,7 @@ async function startCheckout(plan,interval){
   if(btn){btn.textContent='Redirecting...';btn.style.opacity='0.6';btn.disabled=true;}
   var _v=interval==='annual'?249:29;
   gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard '+plan,price:_v,quantity:1}]});
-  gtag('event','conversion',{send_to:'AW-18046975504/begin_checkout',value:_v,currency:'USD'});
+  gtag('event','conversion',{send_to:'AW-18046975504/9CJJCJTW6pQcEJD8u51D',value:_v,currency:'USD'});
   try{
     var r=await fetch('https://stockyard.dev/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan,interval:interval})});
     var d=await r.json();
