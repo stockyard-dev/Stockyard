@@ -78,6 +78,36 @@ h2{font-size:clamp(1.4rem,3vw,1.9rem);text-align:center;margin-bottom:1rem}
   </div>
 </div>
 
+<div class="section" style="padding:2.5rem 2rem">
+  <div style="max-width:460px;margin:0 auto;text-align:center;padding:2rem;border:1px solid var(--bg3);background:var(--bg2);border-radius:4px">
+    <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:.8rem">Free guide</div>
+    <h2 style="font-size:1.25rem;margin-bottom:.5rem">Get the self-hosting starter guide</h2>
+    <p style="font-size:.82rem;color:var(--cd);font-style:italic;margin-bottom:1.2rem">Which tools to install first, common pitfalls, and how to migrate off SaaS without downtime.</p>
+    <div style="display:flex;gap:.5rem;max-width:360px;margin:0 auto">
+      <input id="capture-email" type="email" placeholder="you@company.com" style="flex:1;padding:.7rem 1rem;font-family:var(--mono);font-size:.82rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);outline:none" required>
+      <button id="capture-btn" onclick="captureEmail()" style="padding:.7rem 1.2rem;font-family:var(--mono);font-size:.8rem;background:var(--gold);color:var(--bg);border:2px solid var(--gold);cursor:pointer;font-weight:600;white-space:nowrap">Send it</button>
+    </div>
+    <div id="capture-msg" style="font-family:var(--mono);font-size:.72rem;margin-top:.6rem;min-height:1.2em"></div>
+    <p style="font-size:.68rem;color:var(--cm);margin-top:.4rem">No spam. Unsubscribe anytime.</p>
+  </div>
+</div>
+<script>
+function captureEmail(){
+  var e=document.getElementById('capture-email'),b=document.getElementById('capture-btn'),m=document.getElementById('capture-msg');
+  if(!e.value||e.value.indexOf('@')<1){m.style.color='var(--rust)';m.textContent='Enter a valid email.';return}
+  b.disabled=true;b.textContent='Sending...';
+  fetch('/api/exchange/gate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e.value,source:'try_landing',pack_slug:'starter_guide'})})
+  .then(function(r){return r.json()})
+  .then(function(){
+    m.style.color='var(--gold)';m.textContent='Check your inbox — guide is on its way.';
+    b.textContent='Sent!';e.value='';
+    gtag('event','conversion',{send_to:'AW-18046975504/dr7ECJrW6pQcEJD8u51D'});
+    gtag('event','email_capture',{event_category:'lead',event_label:'try_landing'});
+  })
+  .catch(function(){m.style.color='var(--rust)';m.textContent='Something went wrong. Try again.';b.disabled=false;b.textContent='Send it'});
+}
+</script>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="label">How it works</div>
