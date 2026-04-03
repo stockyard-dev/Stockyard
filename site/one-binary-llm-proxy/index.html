@@ -133,7 +133,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 
   <h2>What is inside the binary</h2>
-  <p>The ~25MB binary contains: an <a href="/openai-compatible-proxy/">OpenAI-compatible proxy</a> with 76 middleware modules, <a href="/why-sqlite/">embedded SQLite</a> for traces/costs/config, a Preact dashboard, 40 provider integrations, a CLI, and 29 product modules from cost tracking to adversarial testing.</p>
+  <p>The ~25MB binary contains: an <a href="/openai-compatible-proxy/">OpenAI-compatible proxy</a> with 76 middleware modules, <a href="/why-sqlite/">embedded SQLite</a> for traces/costs/config, a Preact dashboard, 16 provider integrations, a CLI, and 29 product modules from cost tracking to adversarial testing.</p>
   <p>There is no separate database to install. No message queue. No cache layer. No sidecar. The binary is the entire platform.</p>
 
   <h2>How SQLite replaces Postgres</h2>
@@ -151,7 +151,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How big is the Stockyard binary?","acceptedAnswer":{"@type":"Answer","text":"Approximately 25MB. It includes the proxy, dashboard, SQLite engine, all 76 middleware modules, and 40 provider integrations. No additional downloads or dependencies required."}},{"@type":"Question","name":"Does Stockyard need Docker?","acceptedAnswer":{"@type":"Answer","text":"No. Stockyard is a static binary that runs directly on Linux, macOS, or Windows. Docker images are available for convenience but not required."}},{"@type":"Question","name":"Can a single binary handle production LLM traffic?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard handles hundreds of requests per second on a single node. The embedded SQLite database is optimized for the write patterns of LLM proxy traffic. For most teams, a single instance is more than sufficient."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How big is the Stockyard binary?","acceptedAnswer":{"@type":"Answer","text":"Approximately 25MB. It includes the proxy, dashboard, SQLite engine, all 76 middleware modules, and 16 provider integrations. No additional downloads or dependencies required."}},{"@type":"Question","name":"Does Stockyard need Docker?","acceptedAnswer":{"@type":"Answer","text":"No. Stockyard is a static binary that runs directly on Linux, macOS, or Windows. Docker images are available for convenience but not required."}},{"@type":"Question","name":"Can a single binary handle production LLM traffic?","acceptedAnswer":{"@type":"Answer","text":"Yes. Stockyard handles hundreds of requests per second on a single node. The embedded SQLite database is optimized for the write patterns of LLM proxy traffic. For most teams, a single instance is more than sufficient."}}]}
 </script>
 <div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/architecture/">Architecture</a> &middot; <a href="/providers/ollama/">Ollama</a> &middot; <a href="/providers/openai/">Openai</a></div>
 <div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 150 focused self-hosted tools &mdash; <a href="/tools/" style="color:var(--leather-light)">browse the catalog</a> or <a href="/complete/" style="color:var(--gold)">get everything for $29/mo</a>.</div>

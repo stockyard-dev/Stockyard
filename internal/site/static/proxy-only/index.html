@@ -9,7 +9,7 @@
 <title>LLM Proxy-Only Mode — Route Requests Without the Full Platform — Stockyard</title>
 <meta name="description" content="Use Stockyard as just an LLM proxy. One endpoint across 16 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies.">
 <meta property="og:title" content="Use Stockyard as Just a Proxy">
-<meta property="og:description" content="One endpoint for 40 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
+<meta property="og:description" content="One endpoint for 16 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/proxy-only/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -290,8 +290,8 @@ providers:
 <section class="faq-section">
   <h2>Frequently Asked Questions</h2>
     <div class="faq-item"><div class="faq-q">Can I use Stockyard as just a proxy without the other features?</div><div class="faq-a">Yes. Proxy-only is a first-class use case. Install the binary, set your provider key, and route requests through one endpoint. Tracing, audit, and the other products are there if you want them later, but they are not required.</div></div>
-    <div class="faq-item"><div class="faq-q">Does proxy-only mode cost anything?</div><div class="faq-a">No. The Community tier is free and includes the full proxy with all 76 middleware modules, 40 provider integrations, caching, rate limiting, and cost tracking. No credit card required.</div></div>
-    <div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 40 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
+    <div class="faq-item"><div class="faq-q">Does proxy-only mode cost anything?</div><div class="faq-a">No. The Community tier is free and includes the full proxy with all 76 middleware modules, 16 provider integrations, caching, rate limiting, and cost tracking. No credit card required.</div></div>
+    <div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 16 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
     <div class="faq-item"><div class="faq-q">Do I need Docker or Redis to run the proxy?</div><div class="faq-a">No. Stockyard ships as a single Go binary with embedded SQLite. No Docker, no Redis, no Postgres, no external dependencies. Download and run.</div></div>
 </section>
 
@@ -313,7 +313,7 @@ providers:
       "name": "Does proxy-only mode cost anything?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. The Community tier is free and includes the full proxy with all 76 middleware modules, 40 provider integrations, caching, rate limiting, and cost tracking. No credit card required."
+        "text": "No. The Community tier is free and includes the full proxy with all 76 middleware modules, 16 provider integrations, caching, rate limiting, and cost tracking. No credit card required."
       }
     },
     {
@@ -321,7 +321,7 @@ providers:
       "name": "What providers does the proxy support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Stockyard supports 40 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured."
+        "text": "Stockyard supports 16 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured."
       }
     },
     {

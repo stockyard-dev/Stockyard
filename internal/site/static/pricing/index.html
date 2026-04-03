@@ -161,8 +161,8 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
     {"@type": "Question", "name": "What do I get for free?", "acceptedAnswer": {"@type": "Answer", "text": "The full proxy with all 76 middleware modules and 16 LLM providers, unlimited requests, and the core tracing and cost dashboards. Advanced features like request replay, auto-routing, red-team testing, and prompt optimization unlock with paid tiers."}},
     {"@type": "Question", "name": "What's the difference between tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Stockyard Complete gives you all 150 tools for $29/mo. The LLM Platform has a free tier (full proxy, 76 modules, 16 providers) with paid tiers for advanced features like cost routing, request replay, and red-team testing. See the comparison table for details."}},
     {"@type": "Question", "name": "Can I save with annual billing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr."}},
-    {"@type": "Question", "name": "What providers are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box."}},
-    {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}}
+    {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}},
+    {"@type": "Question", "name": "What providers are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box."}}
   ]
 }
 </script>
@@ -405,19 +405,19 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   <div class="faq-label">Common questions</div>
   <div class="faq-item">
     <div class="faq-q">What do I get for free?</div>
-    <div class="faq-a">The full proxy with all 76 middleware modules, all 16 LLM providers, and unlimited requests. Plus 16 core apps including tracing, audit, prompt studio, workflows, billing, and teams. Self-hosted on your infrastructure. Cost routing is included at 100 requests/day. Security quickscan (5-probe audit) is free. The other platform products (Lasso, Breed, etc.) unlock with paid tiers.</div>
+    <div class="faq-a">The full proxy with all 76 middleware modules, all 16 LLM providers, and unlimited requests. Self-hosted on your infrastructure. Cost routing is included at 100 requests/day. Security quickscan (5 probes) is free.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">What's the difference between tiers?</div>
-    <div class="faq-a">Each tier unlocks more products. The free tier includes cost-routing at 100 requests/day. Individual ($29.99/mo) adds request replay and quality gates. Pro ($99.99/mo) upgrades to unlimited and adds Breed evolution, Stampede load testing, and 4 more. Team ($99.99/mo) adds Red-team testing, Phantom personas, and 9 more. Enterprise ($99.99/mo) unlocks everything including Cortex, Mycelium, Ramrod, and SSO/SLA.</div>
+    <div class="faq-a">Community is the full proxy, free forever. Individual ($29.99/mo) adds request replay, quality gates, and hallucination detection. Pro ($99.99/mo) adds unlimited cost routing, prompt evolution, load testing, chaos engineering, red-team testing, and all 29 platform products including RBAC and SSO.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">Can I save with annual billing?</div>
-    <div class="faq-a">Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr, Team $2,999.90/yr, Enterprise $4,999.90/yr.</div>
+    <div class="faq-a">Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr.</div>
   </div>
   <div class="faq-item">
-    <div class="faq-q">How does Team pricing work for more than 5 people?</div>
-    <div class="faq-a">Team includes 5 seats. Additional seats are $20/seat/month. So a 10-person team is $99.99 + (5 &times; $20) = $399.99/month.</div>
+    <div class="faq-q">What about the 150 standalone tools?</div>
+    <div class="faq-a">The LLM platform and the 150 standalone tools are separate products. The platform pricing on this page covers the proxy, routing, and LLM infrastructure. <a href="/complete/">Stockyard Complete</a> ($29/mo) bundles all 150 standalone tools. They can be used independently or together.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">What providers are supported?</div>
@@ -426,10 +426,6 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   <div class="faq-item">
     <div class="faq-q">Do I need to change my application code?</div>
     <div class="faq-a">No. Just point your <code>OPENAI_BASE_URL</code> at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs &mdash; zero code changes required.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">What does Enterprise include beyond Team?</div>
-    <div class="faq-a">Enterprise includes everything in Team plus Cortex memory, Mycelium + Spore + Molt, Ramrod orchestration, Iron hardening, RBAC governance. Plus unlimited seats, SSO/SAML, SLA with uptime guarantees, compliance export, and a dedicated support channel. Email <a href="mailto:enterprise@stockyard.dev">enterprise@stockyard.dev</a> to discuss.</div>
   </div>
 </section>
 

@@ -125,7 +125,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   <h2>The options</h2>
 
   <h3>Stockyard</h3>
-  <p>Single Go binary with embedded SQLite. Ships as a ~25MB download, runs with zero external dependencies. 76 middleware modules for cost tracking, PII redaction, rate limiting, caching, and <a href="/what-is-model-aliasing/">model aliasing</a>. 40 provider integrations. <a href="/openai-compatible-proxy/">OpenAI-compatible API</a> so any SDK that talks to <code>/v1/chat/completions</code> works without code changes. Proxy core is Apache 2.0; full platform is BSL 1.1.</p>
+  <p>Single Go binary with embedded SQLite. Ships as a ~25MB download, runs with zero external dependencies. 76 middleware modules for cost tracking, PII redaction, rate limiting, caching, and <a href="/what-is-model-aliasing/">model aliasing</a>. 16 provider integrations. <a href="/openai-compatible-proxy/">OpenAI-compatible API</a> so any SDK that talks to <code>/v1/chat/completions</code> works without code changes. Proxy core is Apache 2.0; full platform is BSL 1.1.</p>
   <p>The tradeoff: SQLite means single-node. No horizontal scaling. If you need multi-region clustering, this is not the right tool. If you need a proxy that runs on one server and just works, it is.</p>
   <p><a href="/guide/" class="btn btn-primary">Try Stockyard</a></p>
 
