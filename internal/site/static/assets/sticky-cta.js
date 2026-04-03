@@ -48,7 +48,7 @@
   var bar=document.createElement('div');
   bar.id='sticky-cta';
   bar.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap">'
-    +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;color:#f0e6d3">150 tools. <strong style="color:#d4a843">$29/mo</strong> <span style="font-size:0.65rem;color:#d4a843">(early adopter price)</span></span>'
+    +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;color:#f0e6d3">150 tools. <strong style="color:#d4a843">$1 first month</strong> <span style="font-size:0.65rem;color:#d4a843">then $29/mo</span></span>'
     +'<a href="/complete/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;padding:0.45rem 1.2rem;background:#c45d2c;color:#f0e6d3;border:none;text-decoration:none;white-space:nowrap">Get Complete &rarr;</a>'
     +'<a href="/tools/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.68rem;color:#bfb5a3;text-decoration:none;white-space:nowrap">Browse tools</a>'
     +'<button onclick="this.parentElement.parentElement.style.display=\'none\'" style="background:none;border:none;color:#7a7060;cursor:pointer;font-size:1.1rem;padding:0 0.3rem;line-height:1" aria-label="Close">&times;</button>'
@@ -89,7 +89,7 @@
       var box=document.createElement('div');
       box.style.cssText='margin:2rem 0;padding:1.5rem;border:1px solid #c45d2c;background:#241e18;text-align:center';
       box.innerHTML='<div style="font-family:\'JetBrains Mono\',monospace;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:#c45d2c;margin-bottom:0.6rem">Stockyard Complete</div>'
-        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.5rem;font-weight:700">150 self-hosted tools. $29/mo.</div>'
+        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.5rem;font-weight:700">150 self-hosted tools. $1 first month.</div>'
         +'<div style="font-size:0.82rem;color:#bfb5a3;font-style:italic;margin-bottom:1rem">Single binary each. SQLite storage. No dependencies.</div>'
         +'<a href="/complete/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;padding:0.5rem 1.5rem;background:#c45d2c;color:#f0e6d3;text-decoration:none;display:inline-block">See what\'s included &rarr;</a>';
       paras[4].parentNode.insertBefore(box,paras[4].nextSibling);

@@ -146,6 +146,11 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 		form += "&customer_email=" + email
 	}
 
+	// First-month discount coupon (e.g. $1 first month)
+	if couponID := os.Getenv("STRIPE_FIRST_MONTH_COUPON"); couponID != "" {
+		form += "&discounts[0][coupon]=" + couponID
+	}
+
 	result, err := s.stripePost("/checkout/sessions", form)
 	if err != nil {
 		return "", err
