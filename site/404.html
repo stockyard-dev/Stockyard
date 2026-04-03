@@ -5,15 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Page Not Found — Stockyard</title>
 <meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--mono:'JetBrains Mono',Consolas,monospace;--serif:'Libre Baskerville',Georgia,serif}
-*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7;display:flex;align-items:center;justify-content:center;min-height:100vh}
-a{color:var(--rl);text-decoration:none}a:hover{color:#d4a843}
-.wrap{text-align:center;padding:2rem;max-width:500px}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--mono:'JetBrains Mono',Consolas,monospace;--serif:'Libre Baskerville',Georgia,serif}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+.wrap{text-align:center;padding:2rem;max-width:550px}
 h1{font-size:4rem;font-family:var(--mono);color:var(--rust);margin-bottom:.5rem}
 p{color:var(--cd);margin-bottom:1.5rem}
-.links{font-family:var(--mono);font-size:.8rem;display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center}
+.links{font-family:var(--mono);font-size:.8rem;display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-bottom:2rem}
+.cta-box{padding:1.5rem;border:2px solid var(--gold);background:var(--bg2);margin-top:1rem}
+.cta-box h3{font-family:var(--mono);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.cta-box p{font-size:.88rem;margin-bottom:1rem}
+.btn{font-family:var(--mono);font-size:.82rem;padding:.6rem 1.5rem;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather);margin-left:.5rem}.btn-sec:hover{border-color:var(--cream)}
 </style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <div class="wrap">
@@ -22,10 +33,16 @@ p{color:var(--cd);margin-bottom:1.5rem}
 <div class="links">
 <a href="/">Home</a>
 <a href="/tools/">150 Tools</a>
-<a href="/docs/quickstart/">Quickstart</a>
+<a href="/docs/">Docs</a>
 <a href="/blog/">Blog</a>
 <a href="/calculator/">Calculator</a>
-<a href="/deploy/">Deploy</a>
+<a href="/guide/">Install Guide</a>
+</div>
+<div class="cta-box">
+<h3>While you're here</h3>
+<p>150 self-hosted developer tools. Single binary each. SQLite storage. <strong style="color:var(--gold)">$29/mo for everything.</strong></p>
+<a href="/complete/" class="btn btn-gold">Get Complete &rarr;</a>
+<a href="/tools/" class="btn btn-sec">Browse tools</a>
 </div>
 </div>
 </body>

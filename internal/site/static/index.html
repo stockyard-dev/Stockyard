@@ -150,8 +150,11 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
   <span>&#9632; 150 tools</span>
   <span>&#9632; ~12MB per binary</span>
   <span>&#9632; Zero dependencies</span>
-  <span>&#9632; Apache 2.0 + BSL</span>
-  <span><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">&#9733; GitHub</a></span>
+  <span>&#9632; Linux + macOS</span>
+  <span>&#9632; <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">Open on GitHub</a></span>
+</div>
+<div style="text-align:center;padding:0 2rem 2rem;font-family:var(--font-mono);font-size:0.65rem;color:var(--leather)">
+  <span>v1.1.0 &middot; 150 GitHub releases &middot; Homebrew tap &middot; Docker image &middot; Umbrel &middot; CasaOS</span>
 </div>
 
 <section class="section-alt">
@@ -208,6 +211,7 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
         <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">You save</div><div id="hp-save" style="font-family:var(--font-mono);font-size:1.8rem;color:var(--gold)">$0/mo</div></div>
       </div>
       <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-dim)">That&#39;s <span id="hp-year" style="color:var(--gold)">$0</span> back in your pocket per year.</div>
+      <a id="hp-cta" href="/complete/" style="display:none;margin-top:1rem;font-family:var(--font-mono);font-size:.82rem;padding:.6rem 1.5rem;background:var(--gold);color:var(--bg);text-decoration:none;display:none">Get Complete &mdash; $29/mo &rarr;</a>
     </div>
     <div style="text-align:center"><a href="/calculator/" style="font-family:var(--font-mono);font-size:.78rem;color:var(--leather-light)">Full calculator with install commands &rarr;</a></div>
   </div>
@@ -250,6 +254,8 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
     document.getElementById("hp-sy").textContent="$"+sy;
     document.getElementById("hp-save").textContent="$"+sv+"/mo";
     document.getElementById("hp-year").textContent="$"+(sv*12).toLocaleString();
+    var ctaEl=document.getElementById("hp-cta");
+    if(ctaEl){ctaEl.style.display=sv>0?'inline-block':'none';}
   }
 })();
 </script>
@@ -272,7 +278,8 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
         <button onclick="startCheckout('complete','annual')" id="checkout-btn-annual" class="btn btn-gold" style="width:100%;cursor:pointer">Get Complete Annual</button>
       </div>
     </div>
-    <p style="font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);margin-bottom:1rem">Or start free &mdash; every tool has a free tier. No credit card required.</p>
+    <p style="font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim);margin-bottom:0.6rem">Or start free &mdash; every tool has a free tier. No credit card required.</p>
+    <p style="font-family:var(--font-mono);font-size:0.68rem;color:var(--gold);margin-bottom:1rem">Early adopter pricing &mdash; your rate locks in when you subscribe.</p>
     <a href="/tools/" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--leather-light)">See what's included &rarr;</a>
   </div>
 </section>
