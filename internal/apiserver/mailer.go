@@ -107,7 +107,7 @@ Quick links:
 - Your tool page: https://stockyard.dev/%s/
 - Docs: https://stockyard.dev/docs
 - Support: hello@stockyard.dev
-- Manage subscription: https://stockyard.dev/account
+- Manage subscription: email hello@stockyard.dev
 
 If you have any questions, just reply to this email.
 
