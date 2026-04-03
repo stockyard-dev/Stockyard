@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"context"
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
@@ -8,9 +9,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/license"
@@ -247,6 +250,26 @@ func (s *Server) Start() error {
 		WriteTimeout:      30 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
+
+	// Graceful shutdown: finish in-flight requests and close SQLite cleanly
+	go func() {
+		sigCh := make(chan os.Signal, 1)
+		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+		sig := <-sigCh
+		log.Printf("apiserver: received %s, shutting down gracefully...", sig)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Printf("apiserver: shutdown error: %v", err)
+		}
+		if s.db != nil {
+			s.db.Close()
+		}
+		log.Println("apiserver: shutdown complete")
+	}()
+
 	return srv.ListenAndServe()
 }
 
