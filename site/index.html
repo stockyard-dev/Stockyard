@@ -157,6 +157,101 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
   <span>v1.1.0 &middot; 150 GitHub releases &middot; Homebrew tap &middot; Docker image &middot; Umbrel &middot; CasaOS</span>
 </div>
 
+<div style="max-width:640px;margin:0 auto;padding:0 2rem 4rem">
+  <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--leather);text-align:center;margin-bottom:0.8rem;letter-spacing:2px;text-transform:uppercase">See it run</div>
+  <div id="term" style="background:#0d0b09;border:1px solid var(--bg3);overflow:hidden">
+    <div style="background:#1a1612;padding:0.4rem 0.8rem;display:flex;gap:0.4rem;align-items:center">
+      <span style="width:8px;height:8px;border-radius:50%;background:#c45d2c;display:inline-block"></span>
+      <span style="width:8px;height:8px;border-radius:50%;background:#d4a843;display:inline-block"></span>
+      <span style="width:8px;height:8px;border-radius:50%;background:#4a8c5c;display:inline-block"></span>
+      <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-left:0.5rem">terminal</span>
+    </div>
+    <div id="term-body" style="padding:1rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;min-height:180px;color:#bfb5a3"></div>
+  </div>
+  <div style="text-align:center;margin-top:0.8rem">
+    <button onclick="replayTerm()" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);background:none;border:1px solid var(--bg3);padding:0.3rem 0.8rem;cursor:pointer">&#8635; Replay</button>
+    <a href="/guide/" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--rust-light);margin-left:1rem">Try it yourself &rarr;</a>
+  </div>
+</div>
+<script>
+(function(){
+  var lines=[
+    {t:'prompt',text:'curl -fsSL stockyard.dev/corral/install.sh | sh',delay:40},
+    {t:'out',text:'Downloading stockyard-corral v1.1.0 (linux/amd64)...',pause:600},
+    {t:'ok',text:'  \u2713 9.2 MB downloaded'},
+    {t:'out',text:'Installing to /usr/local/bin/stockyard-corral...',pause:300},
+    {t:'ok',text:'  \u2713 Installed'},
+    {t:'blank'},
+    {t:'prompt',text:'stockyard-corral',delay:60},
+    {t:'out',text:'Corral v1.1.0 \u2014 webhook capture & replay',pause:200},
+    {t:'out',text:'  Data:      ./data/corral.db (SQLite WAL)'},
+    {t:'out',text:'  API:       http://localhost:8760/api'},
+    {t:'hi',text:'  Dashboard: http://localhost:8760/ui'},
+    {t:'blank'},
+    {t:'out',text:'Listening on :8760 \u2014 ready for webhooks.'},
+  ];
+  var el=document.getElementById('term-body');
+  var running=false;
+
+  function type(text,speed,cb){
+    var i=0,span=document.createElement('span');
+    el.appendChild(span);
+    var iv=setInterval(function(){
+      span.textContent+=text[i];i++;
+      if(i>=text.length){clearInterval(iv);if(cb)cb();}
+    },speed);
+  }
+
+  function addLine(html){
+    var d=document.createElement('div');d.innerHTML=html;el.appendChild(d);
+    el.scrollTop=el.scrollHeight;
+  }
+
+  function run(i){
+    if(i>=lines.length){running=false;return;}
+    var l=lines[i];
+    if(l.t==='prompt'){
+      var d=document.createElement('div');
+      d.innerHTML='<span style="color:#4a8c5c">$</span> ';
+      el.appendChild(d);
+      var span=document.createElement('span');span.style.color='#f0e6d3';
+      d.appendChild(span);
+      var ci=0;
+      var iv=setInterval(function(){
+        span.textContent+=l.text[ci];ci++;
+        if(ci>=l.text.length){clearInterval(iv);setTimeout(function(){run(i+1)},400);}
+      },l.delay||40);
+    } else if(l.t==='out'){
+      addLine('<span style="color:#bfb5a3">'+l.text+'</span>');
+      setTimeout(function(){run(i+1)},l.pause||100);
+    } else if(l.t==='ok'){
+      addLine('<span style="color:#4a8c5c">'+l.text+'</span>');
+      setTimeout(function(){run(i+1)},150);
+    } else if(l.t==='hi'){
+      addLine('<span style="color:#d4a843;font-weight:600">'+l.text+'</span>');
+      setTimeout(function(){run(i+1)},150);
+    } else if(l.t==='blank'){
+      addLine('&nbsp;');
+      setTimeout(function(){run(i+1)},100);
+    }
+  }
+
+  function start(){
+    if(running)return;running=true;
+    el.innerHTML='';
+    run(0);
+  }
+  window.replayTerm=start;
+
+  // Auto-play when scrolled into view
+  var played=false;
+  var obs=new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting&&!played){played=true;start();}
+  },{threshold:0.5});
+  obs.observe(document.getElementById('term'));
+})();
+</script>
+
 <section class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label leather">The Promise</div>
@@ -310,7 +405,7 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p><a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/platform/">Platform</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p><a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a></p>
+  <p><a href="/privacy/">Privacy</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/changelog/">Changelog</a> &middot; <a href="/status/">Status</a> &middot; <a href="/sandbox/">API Sandbox</a></p>
   <p style="font-size:0.65rem;color:var(--cream-muted)">Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard</p>
 </footer>
 <script>

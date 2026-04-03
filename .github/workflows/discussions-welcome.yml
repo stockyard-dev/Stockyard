@@ -1,0 +1,75 @@
+name: Welcome new discussions
+
+on:
+  discussion:
+    types: [created]
+
+permissions:
+  discussions: write
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    if: github.event.discussion.category.slug != 'announcements'
+    steps:
+      - name: Welcome comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const discussion = context.payload.discussion;
+            const author = discussion.user.login;
+            const title = discussion.title.toLowerCase();
+            const body = discussion.body?.toLowerCase() || '';
+            const category = discussion.category.slug;
+            
+            // Build contextual links based on discussion content
+            let links = [];
+            
+            if (title.includes('install') || body.includes('install') || body.includes('curl')) {
+              links.push('- [Install Guide](https://stockyard.dev/guide/) — one-line install for any tool');
+            }
+            if (title.includes('docker') || body.includes('docker') || body.includes('container')) {
+              links.push('- [Docker Deploy](https://stockyard.dev/deploy/) — Docker, Railway, and binary options');
+            }
+            if (title.includes('proxy') || body.includes('llm') || body.includes('openai')) {
+              links.push('- [LLM Platform](https://stockyard.dev/platform/) — proxy, routing, cost tracking');
+            }
+            if (title.includes('tool') || body.includes('which tool') || body.includes('recommend')) {
+              links.push('- [All 150 Tools](https://stockyard.dev/tools/) — browse by category');
+            }
+            if (title.includes('price') || title.includes('pricing') || body.includes('cost') || body.includes('free')) {
+              links.push('- [Pricing](https://stockyard.dev/pricing/) — free tier on every tool');
+              links.push('- [Complete Bundle](https://stockyard.dev/complete/) — all 150 tools for $29/mo');
+            }
+            if (title.includes('bug') || title.includes('error') || title.includes('issue')) {
+              links.push('- [API Docs](https://stockyard.dev/docs/api/) — 360+ endpoint reference');
+            }
+            
+            // Always include docs
+            if (links.length === 0) {
+              links.push('- [Docs](https://stockyard.dev/docs/) — quickstart, config, API reference');
+              links.push('- [All 150 Tools](https://stockyard.dev/tools/) — browse the catalog');
+            }
+            
+            const comment = `Hey @${author}, thanks for posting!
+
+            I'm Michael, the solo developer behind Stockyard. I read every discussion and will reply as soon as I can.
+
+            Some links that might help in the meantime:
+            ${links.join('\n')}
+
+            If you're hitting a bug or need help, including the tool name, version (\`stockyard-corral --version\`), and OS helps me debug faster.`.replace(/            /g, '');
+            
+            // Use GraphQL to add discussion comment
+            const mutation = `mutation($discussionId: ID!, $body: String!) {
+              addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
+                comment { id }
+              }
+            }`;
+            
+            await github.graphql(mutation, {
+              discussionId: discussion.node_id,
+              body: comment
+            });
+            
+            console.log(`Welcomed ${author} on discussion: ${title}`);

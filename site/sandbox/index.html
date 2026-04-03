@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>API Sandbox — Stockyard</title>
+<meta name="description" content="Try Stockyard's API live. Send requests, see responses. No signup required.">
+<meta property="og:title" content="API Sandbox — Stockyard">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/sandbox/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:760px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:3rem}
+.endpoint{margin-bottom:2rem;border:1px solid var(--bg3);background:var(--bg2)}
+.ep-header{padding:.8rem 1.2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3);cursor:pointer}
+.ep-method{font-family:var(--mono);font-size:.7rem;padding:.15rem .5rem;background:rgba(74,158,92,0.15);color:var(--green);letter-spacing:1px}
+.ep-path{font-family:var(--mono);font-size:.82rem;color:var(--cream)}
+.ep-desc{font-size:.78rem;color:var(--cd);font-style:italic}
+.ep-try{font-family:var(--mono);font-size:.72rem;padding:.35rem 1rem;background:var(--rust);color:var(--cream);border:none;cursor:pointer}
+.ep-try:hover{background:var(--rl)}
+.ep-response{display:none;padding:1rem 1.2rem;background:#0d0b09;max-height:300px;overflow-y:auto}
+.ep-response pre{font-family:var(--mono);font-size:.72rem;color:var(--cd);white-space:pre-wrap;word-break:break-all}
+.ep-response.show{display:block}
+.ep-time{font-family:var(--mono);font-size:.6rem;color:var(--cm);padding:.4rem 1.2rem;border-top:1px solid var(--bg3)}
+.section-label{font-family:var(--mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;text-align:center}
+.note{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:2rem 0;font-size:.85rem;color:var(--cd)}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);margin-top:2rem;border-top:1px solid var(--bg3)}
+footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>API Sandbox</h1>
+  <p class="sub">Live requests against stockyard.dev. No signup. No API key. Click and see.</p>
+
+  <div class="section-label">Public endpoints</div>
+
+  <div class="endpoint">
+    <div class="ep-header" onclick="tryEndpoint('health','/health')">
+      <div><span class="ep-method">GET</span> <span class="ep-path">/health</span></div>
+      <button class="ep-try">Try it</button>
+    </div>
+    <div class="ep-desc" style="padding:.4rem 1.2rem">System health check. Returns status and version.</div>
+    <div class="ep-response" id="resp-health"></div>
+    <div class="ep-time" id="time-health" style="display:none"></div>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-header" onclick="tryEndpoint('products','/api/products')">
+      <div><span class="ep-method">GET</span> <span class="ep-path">/api/products</span></div>
+      <button class="ep-try">Try it</button>
+    </div>
+    <div class="ep-desc" style="padding:.4rem 1.2rem">List all platform products with descriptions and tier requirements.</div>
+    <div class="ep-response" id="resp-products"></div>
+    <div class="ep-time" id="time-products" style="display:none"></div>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-header" onclick="tryEndpoint('tools','/api/tools')">
+      <div><span class="ep-method">GET</span> <span class="ep-path">/api/tools</span></div>
+      <button class="ep-try">Try it</button>
+    </div>
+    <div class="ep-desc" style="padding:.4rem 1.2rem">List all 150 standalone tools with pricing tiers.</div>
+    <div class="ep-response" id="resp-tools"></div>
+    <div class="ep-time" id="time-tools" style="display:none"></div>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-header" onclick="tryEndpoint('exchange','/api/exchange/featured')">
+      <div><span class="ep-method">GET</span> <span class="ep-path">/api/exchange/featured</span></div>
+      <button class="ep-try">Try it</button>
+    </div>
+    <div class="ep-desc" style="padding:.4rem 1.2rem">Featured config packs from the exchange marketplace.</div>
+    <div class="ep-response" id="resp-exchange"></div>
+    <div class="ep-time" id="time-exchange" style="display:none"></div>
+  </div>
+
+  <div class="endpoint">
+    <div class="ep-header" onclick="tryEndpoint('stats','/api/exchange/stats')">
+      <div><span class="ep-method">GET</span> <span class="ep-path">/api/exchange/stats</span></div>
+      <button class="ep-try">Try it</button>
+    </div>
+    <div class="ep-desc" style="padding:.4rem 1.2rem">Exchange marketplace statistics.</div>
+    <div class="ep-response" id="resp-stats"></div>
+    <div class="ep-time" id="time-stats" style="display:none"></div>
+  </div>
+
+  <div class="note">
+    These are live requests against the production Stockyard API at <code style="font-family:var(--mono);background:var(--bg3);padding:.1rem .3rem;font-size:.82em">stockyard.dev</code>. The full API has 360+ endpoints — authenticated endpoints require an API key. <a href="/docs/api/">Full API reference &rarr;</a>
+  </div>
+
+  <div style="text-align:center;margin-top:2rem">
+    <a href="/guide/" style="font-family:var(--mono);font-size:.82rem;padding:.6rem 1.5rem;background:var(--rust);color:var(--cream);display:inline-block">Install Stockyard &rarr;</a>
+    <a href="/complete/" style="font-family:var(--mono);font-size:.82rem;padding:.6rem 1.5rem;border:2px solid var(--gold);color:var(--gold);display:inline-block;margin-left:.5rem">Complete &mdash; $29/mo</a>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+</footer>
+
+<script>
+async function tryEndpoint(id, path) {
+  var resp = document.getElementById('resp-' + id);
+  var timeEl = document.getElementById('time-' + id);
+  resp.innerHTML = '<pre style="color:var(--cm)">Loading...</pre>';
+  resp.className = 'ep-response show';
+  
+  var start = performance.now();
+  try {
+    var r = await fetch(path, {cache: 'no-store'});
+    var elapsed = (performance.now() - start).toFixed(0);
+    var data = await r.json();
+    resp.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    timeEl.textContent = r.status + ' OK \u2014 ' + elapsed + 'ms';
+    timeEl.style.display = 'block';
+    timeEl.style.color = r.ok ? 'var(--green)' : 'var(--rust)';
+  } catch(e) {
+    resp.innerHTML = '<pre style="color:var(--rust)">Error: ' + e.message + '</pre>';
+    timeEl.style.display = 'none';
+  }
+  
+  gtag('event', 'sandbox_request', {endpoint: path});
+}
+</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>
