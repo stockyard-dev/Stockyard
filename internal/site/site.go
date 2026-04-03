@@ -856,6 +856,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/open/",
 		"/quiz/",
 		"/blog/why-150-tools/",
+		"/graveyard/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
