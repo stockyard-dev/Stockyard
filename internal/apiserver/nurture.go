@@ -33,7 +33,7 @@ Welcome to Stockyard. You just got access to 150 self-hosted developer tools —
 
 The fastest way to try one:
 
-  curl -fsSL https://stockyard.dev/corral/install.sh | sh
+  curl -fsSL https://stockyard.dev/corral//install.sh | sh
   DATA_DIR=./data stockyard-corral
 
 That installs Corral, a webhook capture and replay tool. Open http://localhost:8760/ui and you have a running dashboard.
@@ -41,15 +41,15 @@ That installs Corral, a webhook capture and replay tool. Open http://localhost:8
 Every tool works the same way — one curl command, one binary, one port.
 
 A few popular ones to start with:
-- Corral (webhook inbox): stockyard.dev/corral
-- Paddock (status page): stockyard.dev/paddock
-- Salt Lick (feature flags): stockyard.dev/saltlick
-- Headcount (analytics): stockyard.dev/headcount
+- Corral (webhook inbox): stockyard.dev/corral/
+- Paddock (status page): stockyard.dev/paddock/
+- Salt Lick (feature flags): stockyard.dev/saltlick/
+- Headcount (analytics): stockyard.dev/headcount/
 
-Full catalog: https://stockyard.dev/tools
+Full catalog: https://stockyard.dev/tools/
 
 If you already know you want the whole set: Stockyard Complete is all 150 tools for $29/mo. Early adopter pricing — your rate locks in when you subscribe.
-  https://stockyard.dev/complete
+  https://stockyard.dev/complete/
 
 If you have any questions, just reply to this email. I read every one.
 
@@ -65,18 +65,18 @@ You have had Stockyard for a few days. Here are three tools that people tend to 
 
 IF YOU PAY FOR A STATUS PAGE
 Paddock replaces Statuspage.io ($79/mo) with a self-hosted status page at $0.99/mo. Components, incidents, subscriber notifications. Install it, add your services, point status.yourcompany.com at it.
-  stockyard.dev/paddock
+  stockyard.dev/paddock/
 
 IF YOU USE FEATURE FLAGS
 Salt Lick replaces LaunchDarkly ($10/seat/mo) with self-hosted feature flags. Boolean, multivariate, percentage rollouts. No per-seat pricing.
-  stockyard.dev/saltlick
+  stockyard.dev/saltlick/
 
 IF YOU TRACK ERRORS
 Seismograph replaces Sentry without requiring Kafka, Clickhouse, Postgres, and Redis. One binary. Captures errors with stack traces, groups them, sends alerts.
-  stockyard.dev/seismograph
+  stockyard.dev/seismograph/
 
 Every tool has a free tier. Pro is $0.99-4.99/mo per tool. Or get all 150 for $29/mo with Complete.
-  stockyard.dev/complete
+  stockyard.dev/complete/
 
 — Michael`,
 		},
@@ -132,7 +132,7 @@ Hub is included with every plan, including the free Community tier.
   stockyard.dev/hub
 
 If you are running 6+ tools, Stockyard Complete ($29/mo for all 150) is cheaper than buying them individually. One license key unlocks Pro on everything.
-  stockyard.dev/complete
+  stockyard.dev/complete/
 
 — Michael`,
 		},
@@ -146,7 +146,7 @@ It has been a month. Quick check-in.
 If Stockyard is working for you:
 - A GitHub star helps visibility: https://github.com/stockyard-dev/Stockyard
 - Tell a friend who is paying too much for SaaS tools
-- Check out Complete ($29/mo for all 150 tools) if you are using more than a few: stockyard.dev/complete
+- Check out Complete ($29/mo for all 150 tools) if you are using more than a few: stockyard.dev/complete/
 
 If it is not working for you:
 - Reply and tell me what is missing. I will either build it or point you to something better.
@@ -170,7 +170,7 @@ This is the last email in the sequence. I do not want to spam you.
 If Stockyard replaced even one SaaS tool, it was worth building. If it replaced several, I would genuinely love to hear which ones and how the switch went. Reply any time — this email address works and I read everything.
 
 If you have not tried it yet, the quickest test is still:
-  curl -fsSL https://stockyard.dev/corral/install.sh | sh
+  curl -fsSL https://stockyard.dev/corral//install.sh | sh
 Running in 30 seconds, no dependencies, free forever on the community tier.
 
 Thanks for your time.
