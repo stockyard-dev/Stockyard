@@ -848,6 +848,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/watcher/vs-watchman/",
 		"/try/",
 		"/sandbox/",
+		"/save/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

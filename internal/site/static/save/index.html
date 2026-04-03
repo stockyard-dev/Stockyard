@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Your SaaS Savings Report — Stockyard</title>
+<meta name="description" content="See exactly how much you'd save replacing SaaS tools with Stockyard. Shareable link.">
+<meta property="og:title" content="SaaS Savings Report — Stockyard">
+<meta property="og:description" content="See how much your team can save by switching to self-hosted tools.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/save/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:720px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:2.5rem}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.4rem;margin-bottom:2rem}
+.tool-item{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--mono);font-size:.75rem;user-select:none;transition:border-color .15s}
+.tool-item.selected{border-color:var(--rust);background:rgba(196,93,44,0.08)}
+.tool-item input{accent-color:var(--rust)}
+.tool-price{color:var(--cm);margin-left:auto;font-size:.65rem}
+.results{display:none;padding:2rem;border:2px solid var(--gold);text-align:center;margin-bottom:2rem}
+.results.show{display:block}
+.results-row{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.results-col{text-align:center}
+.results-label{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
+.results-val{font-family:var(--mono);font-size:2rem;font-weight:700}
+.saas-val{color:var(--rust);text-decoration:line-through}
+.sy-val{color:var(--green)}
+.save-val{color:var(--gold)}
+.replacements{text-align:left;margin:1.5rem 0;padding:1rem;background:var(--bg2);border:1px solid var(--bg3)}
+.rep-item{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--bg3);font-family:var(--mono);font-size:.75rem}
+.rep-item:last-child{border-bottom:none}
+.rep-saas{color:var(--cd)}
+.rep-arrow{color:var(--cm)}
+.rep-sy{color:var(--cream)}
+.share-box{margin-top:1.5rem}
+.share-url{width:100%;padding:.6rem .8rem;background:var(--bg);border:1px solid var(--bg3);color:var(--gold);font-family:var(--mono);font-size:.75rem;text-align:center;outline:none}
+.share-btn{margin-top:.5rem;padding:.5rem 1.2rem;background:var(--rust);color:var(--cream);border:none;font-family:var(--mono);font-size:.75rem;cursor:pointer}
+.cta-area{text-align:center;margin-top:2rem}
+.btn{font-family:var(--mono);font-size:.82rem;padding:.7rem 1.8rem;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather);margin-left:.5rem}.btn-sec:hover{border-color:var(--cream)}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3);margin-top:3rem}
+footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>What would you save?</h1>
+  <p class="sub">Check the SaaS tools you pay for. See what Stockyard replaces them with.</p>
+
+  <div class="tool-grid" id="grid"></div>
+
+  <div class="results" id="results">
+    <div class="results-row">
+      <div class="results-col"><div class="results-label">Your SaaS</div><div class="results-val saas-val" id="r-saas">$0</div></div>
+      <div class="results-col"><div class="results-label">Stockyard</div><div class="results-val sy-val" id="r-sy">$29</div></div>
+      <div class="results-col"><div class="results-label">You save</div><div class="results-val save-val" id="r-save">$0/mo</div></div>
+    </div>
+    <div style="font-family:var(--mono);font-size:.75rem;color:var(--cd)">That's <span id="r-year" style="color:var(--gold)">$0</span>/year back in your budget.</div>
+
+    <div class="replacements" id="replacements"></div>
+
+    <div class="share-box">
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem">Share this report</div>
+      <input class="share-url" id="share-url" readonly onclick="this.select()">
+      <br><button class="share-btn" onclick="copyShare()">Copy link</button>
+    </div>
+  </div>
+
+  <div class="cta-area">
+    <a href="/complete/" class="btn btn-gold">Get all 150 tools — $29/mo</a>
+    <a href="/tools/" class="btn btn-sec">Browse tools</a>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+</footer>
+
+<script>
+var tools = [
+  {id:'sentry',saas:'Sentry',price:26,sy:'Seismograph',syUrl:'/seismograph/'},
+  {id:'statuspage',saas:'Statuspage.io',price:79,sy:'Paddock',syUrl:'/paddock/'},
+  {id:'launchdarkly',saas:'LaunchDarkly',price:50,sy:'Salt Lick',syUrl:'/saltlick/'},
+  {id:'bitly',saas:'Bitly',price:35,sy:'Lasso',syUrl:'/lasso/'},
+  {id:'mixpanel',saas:'Mixpanel',price:20,sy:'Headcount',syUrl:'/headcount/'},
+  {id:'pagerduty',saas:'PagerDuty',price:105,sy:'Sentinel',syUrl:'/sentinel/'},
+  {id:'hookdeck',saas:'Hookdeck',price:25,sy:'Corral',syUrl:'/corral/'},
+  {id:'postman',saas:'Postman Team',price:70,sy:'Assay',syUrl:'/assay/'},
+  {id:'notion',saas:'Notion Team',price:40,sy:'Handbook',syUrl:'/handbook/'},
+  {id:'linear',saas:'Linear',price:40,sy:'Prairie',syUrl:'/prairie/'},
+  {id:'canny',saas:'Canny',price:79,sy:'Surveyor',syUrl:'/surveyor/'},
+  {id:'freshbooks',saas:'FreshBooks',price:15,sy:'Billfold',syUrl:'/billfold/'},
+  {id:'1password',saas:'1Password Teams',price:18,sy:'Strongbox',syUrl:'/strongbox/'},
+  {id:'typeform',saas:'Typeform',price:25,sy:'Surveyor II',syUrl:'/surveyor2/'},
+  {id:'intercom',saas:'Intercom',price:74,sy:'Concierge',syUrl:'/concierge/'},
+  {id:'mailchimp',saas:'Mailchimp',price:20,sy:'Pony Express',syUrl:'/ponyexpress/'},
+];
+
+var grid = document.getElementById('grid');
+var selected = new Set();
+
+// Read initial selection from URL hash
+var hash = window.location.hash.slice(1);
+if (hash) hash.split('+').forEach(function(id) { selected.add(id); });
+
+tools.forEach(function(t) {
+  var el = document.createElement('label');
+  el.className = 'tool-item' + (selected.has(t.id) ? ' selected' : '');
+  el.innerHTML = '<input type="checkbox"' + (selected.has(t.id) ? ' checked' : '') + '> ' + t.saas + '<span class="tool-price">$' + t.price + '/mo</span>';
+  el.querySelector('input').onchange = function() {
+    if (this.checked) { selected.add(t.id); el.classList.add('selected'); }
+    else { selected.delete(t.id); el.classList.remove('selected'); }
+    update();
+  };
+  grid.appendChild(el);
+});
+
+function update() {
+  var res = document.getElementById('results');
+  if (!selected.size) { res.classList.remove('show'); history.replaceState(null,'','/save/'); return; }
+  res.classList.add('show');
+
+  var total = 0;
+  var reps = [];
+  tools.forEach(function(t) {
+    if (selected.has(t.id)) {
+      total += t.price;
+      reps.push(t);
+    }
+  });
+
+  var sy = 29, save = total - sy;
+  document.getElementById('r-saas').textContent = '$' + total;
+  document.getElementById('r-sy').textContent = '$' + sy;
+  document.getElementById('r-save').textContent = '$' + save + '/mo';
+  document.getElementById('r-year').textContent = '$' + (save * 12).toLocaleString();
+
+  var repEl = document.getElementById('replacements');
+  repEl.innerHTML = reps.map(function(t) {
+    return '<div class="rep-item"><span class="rep-saas">' + t.saas + ' ($' + t.price + ')</span><span class="rep-arrow">&rarr;</span><span class="rep-sy"><a href="' + t.syUrl + '">' + t.sy + '</a></span></div>';
+  }).join('');
+
+  var ids = Array.from(selected).sort().join('+');
+  var url = 'https://stockyard.dev/save/#' + ids;
+  document.getElementById('share-url').value = url;
+  history.replaceState(null, '', '/save/#' + ids);
+
+  gtag('event', 'view_item_list', {item_list_name: 'savings_report', items: reps.map(function(t){return {item_name:t.sy}})});
+}
+
+function copyShare() {
+  var el = document.getElementById('share-url');
+  el.select();
+  navigator.clipboard.writeText(el.value);
+  var btn = document.querySelector('.share-btn');
+  btn.textContent = 'Copied!';
+  setTimeout(function() { btn.textContent = 'Copy link'; }, 2000);
+}
+
+// Init from hash
+if (selected.size) update();
+</script>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>
