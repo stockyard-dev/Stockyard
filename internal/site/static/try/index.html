@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Try Stockyard — 150 Self-Hosted Developer Tools</title>
+<meta name="robots" content="noindex,follow">
+<meta name="description" content="150 self-hosted developer tools. Single binary each. SQLite storage. Zero dependencies. Free tier on every tool. $29/mo for everything.">
+<meta property="og:title" content="Try Stockyard — 150 Self-Hosted Tools">
+<meta property="og:description" content="Replace your SaaS stack. Single binary per tool. $29/mo for all 150.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:url" content="https://stockyard.dev/try/">
+<link rel="canonical" href="https://stockyard.dev/try/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--leather:#7a6544;--ll:#8b7355;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.topbar{padding:.8rem 2rem;text-align:center;border-bottom:1px solid var(--bg3)}
+.topbar a{font-family:var(--mono);font-size:.82rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+.hero{max-width:680px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}
+.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin-bottom:1.2rem}
+.hero h1 .accent{color:var(--rl)}
+.hero .sub{font-size:1.05rem;color:var(--cd);font-style:italic;max-width:520px;margin:0 auto 2rem;line-height:1.8}
+.cta-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+.btn{font-family:var(--mono);font-size:.85rem;padding:.8rem 2rem;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold);font-weight:600}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather)}.btn-sec:hover{border-color:var(--cream)}
+.trust{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:.68rem;color:var(--cm);padding:1rem 0}
+.section{max-width:720px;margin:0 auto;padding:4rem 2rem}
+.section-alt{padding:4rem 2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.section-alt-inner{max-width:720px;margin:0 auto}
+.label{font-family:var(--mono);font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1.2rem;text-align:center}
+h2{font-size:clamp(1.4rem,3vw,1.9rem);text-align:center;margin-bottom:1rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;text-align:center;margin-top:2rem}
+@media(max-width:600px){.steps{grid-template-columns:1fr}}
+.step-num{font-family:var(--mono);font-size:2rem;color:var(--gold);font-weight:700;margin-bottom:.4rem}
+.step-title{font-family:var(--mono);font-size:.85rem;margin-bottom:.4rem}
+.step-body{font-size:.8rem;color:var(--cd);font-style:italic}
+.saas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.3rem;margin:1.5rem 0;font-family:var(--mono);font-size:.72rem;color:var(--cd)}
+.saas-total{text-align:center;padding-top:1rem;border-top:1px solid var(--bg3);margin-top:1rem}
+.final{max-width:600px;margin:0 auto;padding:4rem 2rem;text-align:center}
+.final h2{margin-bottom:.8rem}
+.badge{display:inline-block;padding:.3rem .8rem;border:1px solid var(--gold);font-family:var(--mono);font-size:.65rem;color:var(--gold);margin-top:1rem}
+.tools-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:2rem}
+@media(max-width:600px){.tools-preview{grid-template-columns:1fr}}
+.tp{padding:1rem;border:1px solid var(--bg3);background:var(--bg)}
+.tp-name{font-family:var(--mono);font-size:.82rem;color:var(--cream);margin-bottom:.2rem}
+.tp-desc{font-size:.75rem;color:var(--cd);font-style:italic}
+.tp-rep{font-family:var(--mono);font-size:.6rem;color:var(--leather);margin-top:.3rem}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");gtag("event","page_view",{page_title:"try_landing",campaign:"ads"});</script>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/"><svg viewBox="0 0 64 64" width="20" height="20" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+</div>
+
+<div class="hero">
+  <h1>Replace your SaaS stack with <span class="accent">one download.</span></h1>
+  <p class="sub">150 self-hosted developer tools. Each is a single Go binary with embedded SQLite. No Docker, no Postgres, no vendor lock-in. Your data stays on your server.</p>
+  <div class="cta-group">
+    <a href="/complete/" class="btn btn-gold">Get all 150 tools &mdash; $29/mo</a>
+    <a href="/guide/" class="btn btn-sec">Start free &rarr;</a>
+  </div>
+  <div style="font-family:var(--mono);font-size:.7rem;color:var(--cm)">Free tier on every tool. No credit card required.</div>
+  <div class="trust">
+    <span>150 tools</span>
+    <span>~12MB each</span>
+    <span>Zero dependencies</span>
+    <span>Linux + macOS</span>
+  </div>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="label">How it works</div>
+    <div class="steps">
+      <div>
+        <div class="step-num">1</div>
+        <div class="step-title">Download</div>
+        <div class="step-body">One curl command. Single binary, no install process.</div>
+      </div>
+      <div>
+        <div class="step-num">2</div>
+        <div class="step-title">Run</div>
+        <div class="step-body">Execute the binary. Dashboard at localhost. Data in SQLite.</div>
+      </div>
+      <div>
+        <div class="step-num">3</div>
+        <div class="step-title">Own it</div>
+        <div class="step-body">Your server. Your data. Cancel SaaS subscriptions.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Popular tools</div>
+  <div class="tools-preview">
+    <div class="tp"><div class="tp-name">Seismograph</div><div class="tp-desc">Error tracking and exception aggregator</div><div class="tp-rep">Replaces Sentry &middot; $26/mo</div></div>
+    <div class="tp"><div class="tp-name">Paddock</div><div class="tp-desc">Public status page with incidents and notifications</div><div class="tp-rep">Replaces Statuspage &middot; $79/mo</div></div>
+    <div class="tp"><div class="tp-name">Salt Lick</div><div class="tp-desc">Feature flags with gradual rollouts and kill switches</div><div class="tp-rep">Replaces LaunchDarkly &middot; $50/mo</div></div>
+    <div class="tp"><div class="tp-name">Headcount</div><div class="tp-desc">Privacy-first user analytics with funnels and retention</div><div class="tp-rep">Replaces Mixpanel &middot; $20/mo</div></div>
+    <div class="tp"><div class="tp-name">Lasso</div><div class="tp-desc">Link shortener with custom domains and QR codes</div><div class="tp-rep">Replaces Bitly &middot; $35/mo</div></div>
+    <div class="tp"><div class="tp-name">Corral</div><div class="tp-desc">Webhook inbox to capture, inspect, and replay events</div><div class="tp-rep">Replaces Hookdeck &middot; $25/mo</div></div>
+  </div>
+  <div style="text-align:center;margin-top:1.5rem"><a href="/tools/" style="font-family:var(--mono);font-size:.75rem;color:var(--ll)">See all 150 tools &rarr;</a></div>
+</div>
+
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="label">The math</div>
+    <h2>What are you paying for SaaS?</h2>
+    <div class="saas-grid">
+      <span>Sentry &mdash; $26</span>
+      <span>Statuspage &mdash; $79</span>
+      <span>LaunchDarkly &mdash; $50</span>
+      <span>Bitly &mdash; $35</span>
+      <span>Mixpanel &mdash; $20</span>
+      <span>PagerDuty &mdash; $105</span>
+      <span>Hookdeck &mdash; $25</span>
+      <span>Postman &mdash; $70</span>
+      <span>Notion &mdash; $40</span>
+      <span>FreshBooks &mdash; $15</span>
+      <span>Linear &mdash; $40</span>
+      <span>Canny &mdash; $79</span>
+    </div>
+    <div class="saas-total">
+      <span style="font-family:var(--mono);font-size:.85rem;color:var(--cd)">Combined: <span style="color:var(--rust);text-decoration:line-through">$584/mo</span></span>
+      <span style="font-family:var(--mono);font-size:.85rem;color:var(--gold);margin-left:1rem">Stockyard Complete: $29/mo</span>
+    </div>
+  </div>
+</div>
+
+<div class="final">
+  <h2>Ready to own your stack?</h2>
+  <p style="color:var(--cd);font-style:italic;margin-bottom:1.5rem">Start free with any tool. Upgrade to Complete when you're ready.</p>
+  <div class="cta-group">
+    <a href="/complete/" class="btn btn-gold">Get all 150 tools &mdash; $29/mo</a>
+    <a href="/guide/" class="btn btn-sec">Start free &rarr;</a>
+  </div>
+  <div class="badge">Early adopter pricing &mdash; your rate locks in</div>
+</div>
+
+<div style="padding:1.5rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--mono);font-size:.7rem;color:var(--cm)">
+  <a href="/" style="color:var(--cm)">stockyard.dev</a> &middot;
+  <a href="/tools/" style="color:var(--cm)">Tools</a> &middot;
+  <a href="/docs/" style="color:var(--cm)">Docs</a> &middot;
+  <a href="/pricing/" style="color:var(--cm)">Pricing</a> &middot;
+  <a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cm)">GitHub</a>
+</div>
+
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+</body>
+</html>

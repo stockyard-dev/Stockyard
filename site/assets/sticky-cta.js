@@ -65,14 +65,18 @@
   document.body.appendChild(bar);
 
   var shown=false;
+  function showBar(){
+    if(shown)return;
+    bar.style.transform='translateY(0)';
+    shown=true;
+    gtag('event','view_promotion',{promotion_name:'sticky_cta',creative_slot:'bottom_bar'});
+  }
   window.addEventListener('scroll',function(){
     var pct=window.scrollY/(document.body.scrollHeight-window.innerHeight);
-    if(pct>0.25&&!shown){
-      bar.style.transform='translateY(0)';
-      shown=true;
-      gtag('event','view_promotion',{promotion_name:'sticky_cta',creative_slot:'bottom_bar'});
-    }
+    if(pct>0.25)showBar();
   },{passive:true});
+  // Also show after 30s of engagement (reader is interested even if not scrolling much)
+  setTimeout(showBar,30000);
 
   bar.querySelector('a[href="/complete/"]').addEventListener('click',function(){
     gtag('event','select_promotion',{promotion_name:'sticky_cta',creative_slot:'bottom_bar'});
