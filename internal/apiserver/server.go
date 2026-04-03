@@ -156,6 +156,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/admin/licenses", s.adminAuth(s.handleAdminLicenses))
 	s.mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
 	s.mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
+	s.mux.HandleFunc("POST /api/admin/backup", s.adminAuth(s.handleAdminBackup))
 
 	// Cloud API
 	s.mux.HandleFunc("POST /api/cloud/tenants", s.rateLimited(s.handleCloudSignup))
@@ -210,6 +211,7 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/licenses", s.adminAuth(s.handleAdminLicenses))
 	mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
 	mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
+	mux.HandleFunc("POST /api/admin/backup", s.adminAuth(s.handleAdminBackup))
 
 	// Cloud
 	mux.HandleFunc("POST /api/cloud/tenants", s.handleCloudSignup)
@@ -763,6 +765,22 @@ func (s *Server) handleAdminRevoke(w http.ResponseWriter, r *http.Request) {
 	s.db.UpdateLicenseStatusByID(rec.ID, "revoked")
 
 	writeOK(w, map[string]any{"status": "revoked", "id": rec.ID})
+}
+
+func (s *Server) handleAdminBackup(w http.ResponseWriter, r *http.Request) {
+	backupPath := s.db.path + ".backup"
+	if err := s.db.Backup(backupPath); err != nil {
+		writeErr(w, http.StatusInternalServerError, "backup failed: "+err.Error())
+		return
+	}
+
+	// Serve the backup file as a download
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=stockyard-backup.db")
+	http.ServeFile(w, r, backupPath)
+
+	// Clean up backup file after serving
+	os.Remove(backupPath)
 }
 
 // --- Cloud endpoints ---

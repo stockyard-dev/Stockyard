@@ -2,12 +2,14 @@ package engine
 
 import (
 	"crypto/subtle"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -128,7 +130,14 @@ func adminAuthMiddleware(next http.Handler) http.Handler {
 		log.Println("🔒 Admin API key auth enabled")
 	}
 
+	var reqCounter int64
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Request ID on every response for traceability
+		id := fmt.Sprintf("req_%d_%x", atomic.AddInt64(&reqCounter, 1), time.Now().UnixMicro()&0xFFFF)
+		w.Header().Set("X-Request-Id", id)
+		w.Header().Set("X-Stockyard-Version", "1.1.0")
+
 		path := r.URL.Path
 
 		// CORS headers on all responses (exact-match origin validation)

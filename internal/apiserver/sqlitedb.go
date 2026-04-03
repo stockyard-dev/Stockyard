@@ -56,6 +56,7 @@ func OpenSqliteDB(path string) (*SqliteDB, error) {
 	// Single writer, multiple readers
 	conn.SetMaxOpenConns(4)
 	conn.SetMaxIdleConns(2)
+	conn.SetConnMaxLifetime(0) // Keep connections alive (embedded SQLite, not a network DB)
 
 	// Performance pragmas — WAL mode makes NORMAL synchronous safe
 	// and these settings significantly improve throughput
@@ -64,6 +65,7 @@ func OpenSqliteDB(path string) (*SqliteDB, error) {
 		"PRAGMA cache_size = -8000",         // 8MB page cache (default is 2MB)
 		"PRAGMA mmap_size = 268435456",      // 256MB memory-mapped I/O for reads
 		"PRAGMA temp_store = MEMORY",        // temp tables in memory
+		"PRAGMA wal_autocheckpoint = 1000",  // checkpoint WAL every 1000 pages (default, explicit)
 	} {
 		if _, err := conn.Exec(pragma); err != nil {
 			log.Printf("sqlite pragma warning: %s: %v", pragma, err)
@@ -1170,4 +1172,11 @@ func (db *SqliteDB) ExchangeItemCount() int {
 	var count int
 	db.conn.QueryRow("SELECT COUNT(*) FROM exchange_items").Scan(&count)
 	return count
+}
+
+// Backup creates a consistent backup of the database using VACUUM INTO.
+// Returns the path to the backup file.
+func (db *SqliteDB) Backup(destPath string) error {
+	_, err := db.conn.Exec("VACUUM INTO ?", destPath)
+	return err
 }

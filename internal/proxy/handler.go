@@ -213,20 +213,28 @@ func (s *Server) handleModels(w http.ResponseWriter, r *http.Request) {
 // handleHealth handles GET /health
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	providerStatus := make(map[string]string)
+	healthy := 0
 	for name, p := range s.config.Providers {
 		if err := p.HealthCheck(r.Context()); err != nil {
 			log.Printf("health check: %s: %v", name, err)
 			providerStatus[name] = "unhealthy"
 		} else {
 			providerStatus[name] = "healthy"
+			healthy++
 		}
+	}
+
+	status := "ok"
+	if healthy == 0 && len(s.config.Providers) > 0 {
+		status = "degraded"
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
-		"status":    "ok",
+		"status":    status,
 		"product":   s.config.ProductName,
 		"providers": providerStatus,
+		"uptime_s":  int(time.Since(s.startTime).Seconds()),
 	})
 }
 
