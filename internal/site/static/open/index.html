@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Open Startup — Stockyard Metrics</title>
+<meta name="description" content="Stockyard's public metrics. Revenue, installs, users, traffic — everything is public. Solo founder, bootstrapped.">
+<meta property="og:title" content="Stockyard — Open Startup Metrics">
+<meta property="og:description" content="Public metrics from a solo-founder bootstrapped developer tools company.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/open/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--red:#c44a4a;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:800px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:.3rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:3rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:3rem}
+.card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center}
+.card-val{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--cream);margin-bottom:.3rem}
+.card-label{font-family:var(--mono);font-size:.65rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px}
+.card-val.green{color:var(--green)}.card-val.gold{color:var(--gold)}.card-val.rust{color:var(--rust)}
+h2{font-size:1.2rem;margin:2rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--bg3)}
+p{color:var(--cd);margin-bottom:1rem}
+.timeline{margin:1.5rem 0}
+.tl-item{display:flex;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--bg3)}
+.tl-date{font-family:var(--mono);font-size:.7rem;color:var(--cm);min-width:80px;flex-shrink:0}
+.tl-text{font-size:.88rem;color:var(--cd)}
+.tl-text strong{color:var(--cream)}
+.honest{background:var(--bg2);border-left:3px solid var(--rust);padding:1.2rem 1.5rem;margin:2rem 0}
+.honest strong{font-family:var(--mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--rust);display:block;margin-bottom:.4rem}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}@media(max-width:768px){.nav-links{display:none}}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}
+footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/tools/">Tools</a>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <h1>Open Startup</h1>
+  <p class="sub">Everything is public. Solo founder. Bootstrapped. Building in the open.</p>
+
+  <div class="grid">
+    <div class="card"><div class="card-val rust">$0</div><div class="card-label">MRR</div></div>
+    <div class="card"><div class="card-val gold">150</div><div class="card-label">Tools shipped</div></div>
+    <div class="card"><div class="card-val">590+</div><div class="card-label">Site pages</div></div>
+    <div class="card"><div class="card-val">31</div><div class="card-label">Installs (30d)</div></div>
+    <div class="card"><div class="card-val">12</div><div class="card-label">Cloud signups</div></div>
+    <div class="card"><div class="card-val green">0</div><div class="card-label">Paid customers</div></div>
+    <div class="card"><div class="card-val">4</div><div class="card-label">GitHub stars</div></div>
+    <div class="card"><div class="card-val">1</div><div class="card-label">Founders</div></div>
+  </div>
+
+  <div class="honest">
+    <strong>The honest version</strong>
+    Stockyard has zero revenue and zero paid customers as of April 2026. The product works — 150 tools compiled and shipping, the proxy handles real LLM traffic, the install scripts download real binaries. What is missing is distribution. This page exists because hiding behind vague growth language when the numbers are this early would be dishonest. If you are evaluating Stockyard, you should know the stage it is at.
+  </div>
+
+  <h2>What has shipped</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-date">Apr 2026</div><div class="tl-text"><strong>150 standalone tools</strong> built, compiled, and published to GitHub. 590+ site pages. Migration guides, stacks, comparison pages. Google Ads and conversion tracking live.</div></div>
+    <div class="tl-item"><div class="tl-date">Mar 2026</div><div class="tl-text"><strong>v1.1.0 released.</strong> 150 GitHub releases with pre-compiled binaries. Homebrew tap, Docker image, Umbrel and CasaOS app manifests submitted. GitHub Discussions enabled.</div></div>
+    <div class="tl-item"><div class="tl-date">Mar 2026</div><div class="tl-text"><strong>v1.0.0 launched.</strong> LLM proxy platform with 76 middleware modules, 16 providers, 360+ API endpoints. Show HN posted. First cloud signups.</div></div>
+    <div class="tl-item"><div class="tl-date">Feb 2026</div><div class="tl-text"><strong>Beta period.</strong> Core proxy working. First external testers. Stripe integration. Pricing model established.</div></div>
+  </div>
+
+  <h2>What is next</h2>
+  <p>Product Hunt launch. Outreach to self-hosted newsletter editors and YouTube creators. Improving the top 20 tool pages with real screenshots. Getting the first paying customer.</p>
+  <p>The constraint is distribution, not product. The tools work. People just don't know they exist yet.</p>
+
+  <h2>How it is built</h2>
+  <p>Solo developer. Go for the backend. SQLite for storage. Vanilla HTML/CSS/JS for the site (no framework). Railway for hosting. Resend for email. Stripe for payments. Claude for the heavy content generation sprints.</p>
+  <p>Total infrastructure cost: ~$20/mo (Railway + Resend + domain).</p>
+
+  <div style="text-align:center;margin-top:3rem">
+    <a href="/complete/" style="font-family:var(--mono);font-size:.82rem;padding:.65rem 1.8rem;background:var(--gold);color:var(--bg);display:inline-block;text-decoration:none">Be an early customer &mdash; $29/mo</a>
+    <div style="font-family:var(--mono);font-size:.65rem;color:var(--cm);margin-top:.5rem">Your rate locks in. You'd literally be customer #1.</div>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+</footer>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>
