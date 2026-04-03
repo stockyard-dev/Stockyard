@@ -7,6 +7,11 @@ REPO="stockyard-dev/stockyard"
 BINARY="stockyard"
 INSTALL_DIR="/usr/local/bin"
 
+# Cleanup temp files on exit or interrupt
+TMPDIR=""
+cleanup() { [ -n "$TMPDIR" ] && rm -rf "$TMPDIR"; }
+trap cleanup EXIT INT TERM
+
 # Colors (if terminal supports them)
 RED='\033[0;31m'
 GREEN='\033[0;32m'

@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/license"
@@ -269,7 +270,13 @@ func corsAllowedOrigin(origin string) bool {
 }
 
 func (s *Server) corsMiddleware(next http.Handler) http.Handler {
+	var reqCounter int64
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Generate request ID (monotonic counter + timestamp suffix for uniqueness)
+		id := fmt.Sprintf("req_%d_%x", atomic.AddInt64(&reqCounter, 1), time.Now().UnixMicro()&0xFFFF)
+		w.Header().Set("X-Request-Id", id)
+		w.Header().Set("X-Stockyard-Version", "1.1.0")
+
 		origin := r.Header.Get("Origin")
 		if corsAllowedOrigin(origin) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
@@ -1195,7 +1202,26 @@ func writeOK(w http.ResponseWriter, v any) {
 func writeErr(w http.ResponseWriter, status int, msg string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{"error": msg})
+	errType := "api_error"
+	switch {
+	case status == 401:
+		errType = "authentication_error"
+	case status == 403:
+		errType = "permission_error"
+	case status == 404:
+		errType = "not_found"
+	case status == 429:
+		errType = "rate_limit_error"
+	case status >= 500:
+		errType = "server_error"
+	}
+	json.NewEncoder(w).Encode(map[string]any{
+		"error": map[string]any{
+			"message": msg,
+			"type":    errType,
+			"status":  status,
+		},
+	})
 }
 
 // ─── Live Webhook Demo ─────────────────────────────────────────────────

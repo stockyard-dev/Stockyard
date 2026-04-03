@@ -57,6 +57,19 @@ func OpenSqliteDB(path string) (*SqliteDB, error) {
 	conn.SetMaxOpenConns(4)
 	conn.SetMaxIdleConns(2)
 
+	// Performance pragmas — WAL mode makes NORMAL synchronous safe
+	// and these settings significantly improve throughput
+	for _, pragma := range []string{
+		"PRAGMA synchronous = NORMAL",      // WAL mode makes this safe; ~2x faster writes
+		"PRAGMA cache_size = -8000",         // 8MB page cache (default is 2MB)
+		"PRAGMA mmap_size = 268435456",      // 256MB memory-mapped I/O for reads
+		"PRAGMA temp_store = MEMORY",        // temp tables in memory
+	} {
+		if _, err := conn.Exec(pragma); err != nil {
+			log.Printf("sqlite pragma warning: %s: %v", pragma, err)
+		}
+	}
+
 	db := &SqliteDB{conn: conn, path: path}
 	if err := db.migrate(); err != nil {
 		conn.Close()

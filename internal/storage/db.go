@@ -42,6 +42,18 @@ func Open(dataDir string) (*DB, error) {
 
 	db := &DB{conn: conn, dataDir: dataDir}
 
+	// Performance pragmas — WAL mode makes NORMAL synchronous safe
+	for _, pragma := range []string{
+		"PRAGMA synchronous = NORMAL",  // WAL makes this safe; ~2x faster writes
+		"PRAGMA cache_size = -16000",   // 16MB page cache (engine handles more data)
+		"PRAGMA mmap_size = 268435456", // 256MB memory-mapped I/O
+		"PRAGMA temp_store = MEMORY",   // temp tables in memory
+	} {
+		if _, err := conn.Exec(pragma); err != nil {
+			log.Printf("sqlite pragma warning: %s: %v", pragma, err)
+		}
+	}
+
 	// SQLite WAL mode: concurrent readers, serialized writers.
 	// More than 1 connection allows concurrent reads while writes wait.
 	// busy_timeout=5000 handles write contention gracefully.
