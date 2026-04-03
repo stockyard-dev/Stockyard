@@ -3,10 +3,10 @@ package apiserver
 import "strings"
 
 // ─── Pricing Plans ─────────────────────────────────────────────────────
-// Stockyard uses a 4-tier pricing model:
-//   Free (self-hosted) → Pro ($29/mo cloud) → Team ($99/mo) → Enterprise ($299/mo)
-// All tiers include the full platform (16 apps, 66 modules, all providers).
-// Platform fees: 20% app store, 12% mesh, 20% knowledge, 2.5% billing.
+// Stockyard LLM Platform uses a 3-tier pricing model:
+//   Community (free, self-hosted) → Individual ($29.99/mo) → Pro ($99.99/mo)
+// All tiers include the full proxy (76 modules, 16 providers, unlimited requests).
+// Paid tiers unlock advanced features like request replay, cost routing, and red-team testing.
 
 // Plan represents a Stockyard pricing tier.
 type Plan struct {
@@ -25,16 +25,16 @@ type Plan struct {
 func Plans() []Plan {
 	return []Plan{
 		{
-			Slug: "free", Name: "Free", Tagline: "Full platform. Self-hosted. Free forever.",
+			Slug: "free", Name: "Community", Tagline: "Full proxy. Self-hosted. Free forever.",
 			PriceCents: 0,
 			Features: []string{
-				"All 16 apps",
-				"66 middleware modules",
+				"Full proxy + 76 modules",
 				"All 16 providers",
 				"Unlimited requests",
+				"16 core apps included",
+				"Cost routing (100/day)",
 				"SQLite storage",
 				"Community support",
-				"Publish apps, contribute to mesh, sell knowledge",
 			},
 			Limits: map[string]string{
 				"requests":  "unlimited",
@@ -44,63 +44,44 @@ func Plans() []Plan {
 			},
 		},
 		{
-			Slug: "pro", Name: "Pro", Tagline: "Cloud-managed. Zero ops.",
-			PriceCents:  2900,  // $29/mo
-			AnnualCents: 29000, // $290/yr (save $58)
+			Slug: "individual", Name: "Individual", Tagline: "Advanced features for solo developers.",
+			PriceCents:  2999,  // $29.99/mo
+			AnnualCents: 29990, // $299.90/yr
 			Features: []string{
-				"Everything in Free",
-				"Managed cloud infrastructure",
-				"Auto-scaling",
-				"90-day audit retention",
-				"Daily backups",
+				"Everything in Community",
+				"Request replay",
+				"Auction model bidding",
+				"Hallucination detection",
+				"Quality gates",
+				"Provenance tracking",
 				"Email support",
-				"Custom domain",
 			},
 			Limits: map[string]string{
 				"requests":  "unlimited",
-				"retention": "90 days",
+				"retention": "unlimited",
 				"support":   "email",
 				"users":     "unlimited",
 			},
 		},
 		{
-			Slug: "team", Name: "Team", Tagline: "5 seats. RBAC. Compliance.",
-			PriceCents:  9900,  // $99/mo
-			AnnualCents: 99000, // $990/yr (save $198)
+			Slug: "pro", Name: "Pro", Tagline: "Full platform. All 29 products.",
+			PriceCents:  9999,  // $99.99/mo
+			AnnualCents: 99990, // $999.90/yr
 			Features: []string{
-				"Everything in Pro",
-				"5 seats included ($20/seat/mo additional)",
-				"Role-based access control",
-				"Team dashboards",
-				"Shared configs",
-				"Compliance export",
-				"Priority support",
-			},
-			Limits: map[string]string{
-				"requests":  "unlimited",
-				"retention": "1 year",
-				"support":   "priority",
-				"users":     "5 included",
-			},
-		},
-		{
-			Slug: "enterprise", Name: "Enterprise", Tagline: "SSO. SLA. Federation.",
-			PriceCents:  29900,  // $299/mo
-			AnnualCents: 299000, // $2,990/yr (save $598)
-			Features: []string{
-				"Everything in Team",
-				"Unlimited seats",
-				"SSO / SAML",
-				"Trust federation",
-				"99.9% SLA with uptime guarantees",
-				"Safety certification",
-				"Unlimited audit retention",
-				"Dedicated support channel",
+				"Everything in Individual",
+				"Cost routing (unlimited)",
+				"Prompt evolution",
+				"Load testing",
+				"Chaos engineering",
+				"Red-team + persona testing",
+				"Cortex memory, Ramrod orchestration",
+				"All 29 platform products",
+				"RBAC, SSO, priority support",
 			},
 			Limits: map[string]string{
 				"requests":  "unlimited",
 				"retention": "unlimited",
-				"support":   "dedicated",
+				"support":   "priority",
 				"users":     "unlimited",
 			},
 		},
@@ -132,7 +113,7 @@ type Product struct {
 func Catalog() []Product {
 	return []Product{
 		// Core apps
-		{Slug: "proxy", Name: "Chute", Tagline: "The proxy. 76 middleware modules, 40 providers, 400ns overhead.", Category: "app"},
+		{Slug: "proxy", Name: "Chute", Tagline: "The proxy. 76 middleware modules, 16 providers, 400ns overhead.", Category: "app"},
 		{Slug: "observe", Name: "Lookout", Tagline: "Request tracing, cost dashboards, anomaly detection.", Category: "app"},
 		{Slug: "trust", Name: "Brand", Tagline: "Hash-chained audit ledger, policy engine, compliance evidence.", Category: "app"},
 		{Slug: "studio", Name: "Tack Room", Tagline: "Prompt versioning, A/B testing, experiments, benchmarks.", Category: "app"},

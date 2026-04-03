@@ -259,7 +259,7 @@ func EvaluateTriggers(enforcer *license.Enforcer, counters *UsageCounters) []Upg
 			ID:       "cost_savings",
 			Priority: 2,
 			Title:    "Cache is saving you money",
-			Message:  fmt.Sprintf("Cache has saved you $%.2f this month across %d hits. Unlock all 66 modules with Pro to save even more.", cacheSavings, cacheHits),
+			Message:  fmt.Sprintf("Cache has saved you $%.2f this month across %d hits. Unlock all 76 modules with Pro to save even more.", cacheSavings, cacheHits),
 			CTA:      "Unlock all modules — $29/mo",
 			CTALink:  "/pricing/",
 			Tier:     "individual",

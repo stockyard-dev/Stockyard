@@ -435,7 +435,7 @@ func pageLicense() Page {
 <h2 id="tiers">Tiers</h2>
 
 <table>
-<tr><th>Tier</th><th>Individual Product</th><th>Suite (66 modules)</th><th>Limits</th></tr>
+<tr><th>Tier</th><th>Individual Product</th><th>Suite (76 modules)</th><th>Limits</th></tr>
 <tr><td>Free</td><td>$0</td><td>$0</td><td>Unlimited requests, all features</td></tr>
 
 <tr><td>Pro</td><td>$29/mo</td><td>$29/mo</td><td>Unlimited requests</td></tr>
@@ -445,7 +445,7 @@ func pageLicense() Page {
 
 <div class="callout tip">
 <span class="callout-label">Suite value</span>
-The suite at all tiers include all 66 modules. That is 
+The suite at all tiers include all 76 modules. That is 
 </div>
 
 <h2 id="activation">Activation</h2>

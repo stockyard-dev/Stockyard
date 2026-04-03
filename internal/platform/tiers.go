@@ -7,7 +7,7 @@ import "github.com/stockyard-dev/stockyard/internal/license"
 type Tier int
 
 const (
-	TierCommunity  Tier = 0  // Free: proxy + 66 modules
+	TierCommunity  Tier = 0  // Free: proxy + 76 modules
 	TierIndividual Tier = 1  // $29.99: proxy + 4 products
 	TierPro        Tier = 2  // $99.99: proxy + 9 products
 	TierTeam       Tier = 3  // $299.99: proxy + 16 products

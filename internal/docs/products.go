@@ -161,7 +161,7 @@ func pricingSection(p apiserver.Product) string {
 	if p.Category == "suite" {
 		return `<table>
 <tr><th>Tier</th><th>Price</th><th>Includes</th></tr>
-<tr><td>Free</td><td>$0</td><td>All 66 modules, unlimited (self-hosted)</td></tr>
+<tr><td>Free</td><td>$0</td><td>All 76 modules, unlimited (self-hosted)</td></tr>
 
 <tr><td>Pro</td><td>$29/mo</td><td>Unlimited (cloud managed)</td></tr>
 <tr><td>Team</td><td>$99/mo</td><td>5 seats, RBAC</td></tr>
