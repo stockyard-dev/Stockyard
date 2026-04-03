@@ -1,0 +1,43 @@
+name: stockyard
+services:
+  stockyard:
+    image: ghcr.io/stockyard-dev/stockyard:latest
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    environment:
+      PORT: "4200"
+      DATA_DIR: /data
+    volumes:
+      - /DATA/AppData/stockyard:/data
+    x-casaos:
+      envs:
+        - container: PORT
+          description: HTTP port
+        - container: DATA_DIR
+          description: Data directory
+      ports:
+        - container: "4200"
+          description: Web UI
+          protocol: tcp
+      volumes:
+        - container: /data
+          description: Persistent data
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: stockyard
+  author: stockyard-dev
+  category: Developer
+  description:
+    en_us: 150 self-hosted developer tools. Bug tracker, CRM, feature flags, uptime monitoring, invoicing, and more. Single binary, zero dependencies.
+  developer: Stockyard
+  icon: https://stockyard.dev/site-assets/assets/brand/favicon-32.png
+  tagline:
+    en_us: 150 self-hosted developer tools
+  title:
+    en_us: Stockyard
+  index: /
+  port_map: "4200"
+  scheme: http

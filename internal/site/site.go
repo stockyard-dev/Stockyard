@@ -759,6 +759,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/systemd/",
 		"/affiliate/",
 		"/badge/",
+		"/webhooks/",
 		"/what-is-an-llm-proxy/",
 		"/what-is-feature-flagging/",
 		"/what-are-webhooks/",

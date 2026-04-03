@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Webhook Templates — Stockyard</title>
+<meta name="description" content="Pre-built webhook integrations for Stockyard tools. Stripe, GitHub, Slack, Twilio, and more.">
+<link rel="canonical" href="https://stockyard.dev/webhooks/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',Consolas,monospace;--serif:'Libre Baskerville',Georgia,serif}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}a{color:var(--rl);text-decoration:none}
+.wrap{max-width:820px;margin:0 auto;padding:2rem}
+h1{font-size:clamp(1.4rem,3.5vw,2rem);margin-bottom:.5rem;text-align:center}
+.sub{color:var(--cd);font-style:italic;text-align:center;margin-bottom:2rem}
+h2{font-size:1.1rem;margin:2rem 0 .6rem}
+.tmpl{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;margin-bottom:1rem}
+.tmpl-name{font-family:var(--mono);font-size:.85rem;color:var(--cream);margin-bottom:.3rem}
+.tmpl-desc{font-size:.8rem;color:var(--cd);margin-bottom:.5rem}
+pre{background:var(--bg);border:1px solid var(--bg3);padding:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--cream);overflow-x:auto;margin-top:.5rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="font-family:var(--mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem;text-align:center">Integrations</div>
+<h1>Webhook Templates</h1>
+<p class="sub">Pre-built integrations for popular services. Point your webhook at Corral, then forward to any Stockyard tool.</p>
+
+<h2>Payment events</h2>
+<div class="tmpl">
+<div class="tmpl-name">Stripe → Corral → Billfold</div>
+<div class="tmpl-desc">Capture Stripe payment webhooks and create invoices in Billfold automatically.</div>
+<pre>1. Set Stripe webhook URL to: http://your-server:8760/hooks/stripe
+2. Corral captures and displays the full payload
+3. Forward to Billfold: POST http://localhost:8710/api/invoices</pre>
+</div>
+
+<h2>Code events</h2>
+<div class="tmpl">
+<div class="tmpl-name">GitHub → Corral → Bounty</div>
+<div class="tmpl-desc">Turn GitHub issues and PR comments into Bounty tickets.</div>
+<pre>1. Set GitHub webhook URL to: http://your-server:8760/hooks/github
+2. Filter for issues.opened and issue_comment.created events
+3. Forward to Bounty: POST http://localhost:9320/api/issues</pre>
+</div>
+
+<div class="tmpl">
+<div class="tmpl-name">GitHub Push → Pipeline</div>
+<div class="tmpl-desc">Trigger Pipeline jobs on every push to main.</div>
+<pre>1. Set GitHub webhook URL to: http://your-server:8760/hooks/github-push
+2. Filter for push events on refs/heads/main
+3. Forward to Pipeline: POST http://localhost:8800/api/jobs/trigger</pre>
+</div>
+
+<h2>Monitoring events</h2>
+<div class="tmpl">
+<div class="tmpl-name">Bellwether → Sentinel → Slack</div>
+<div class="tmpl-desc">When Bellwether detects downtime, create a Sentinel alert and notify Slack.</div>
+<pre>1. Bellwether fires webhook on status change
+2. Sentinel creates an incident: POST http://localhost:8730/api/alerts
+3. Sentinel forwards to Slack incoming webhook</pre>
+</div>
+
+<div class="tmpl">
+<div class="tmpl-name">Uptime Alert → Paddock</div>
+<div class="tmpl-desc">Auto-update your status page when monitoring detects issues.</div>
+<pre>1. Bellwether fires webhook on downtime
+2. Forward to Paddock: POST http://localhost:8680/api/incidents
+3. Status page updates automatically</pre>
+</div>
+
+<h2>Communication events</h2>
+<div class="tmpl">
+<div class="tmpl-name">Twilio → Corral</div>
+<div class="tmpl-desc">Capture incoming SMS and voice webhooks for debugging.</div>
+<pre>1. Set Twilio webhook URL to: http://your-server:8760/hooks/twilio
+2. Corral captures SMS body, from number, and metadata
+3. Replay to test your handler: click Replay in Corral dashboard</pre>
+</div>
+
+<div class="tmpl">
+<div class="tmpl-name">Slack → Corral → Dossier</div>
+<div class="tmpl-desc">Log Slack messages mentioning customers into your CRM.</div>
+<pre>1. Create Slack app with event subscription
+2. Point events URL to: http://your-server:8760/hooks/slack
+3. Forward customer mentions to Dossier: POST http://localhost:8700/api/contacts/note</pre>
+</div>
+
+<div style="text-align:center;margin-top:2rem;font-family:var(--mono);font-size:.8rem">
+<a href="/corral/">Corral webhook relay</a> · <a href="/tools/">All 150 tools</a> · <a href="/docs/">Docs</a>
+</div>
+</div>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+</body>
+</html>
