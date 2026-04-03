@@ -160,11 +160,9 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   "mainEntity": [
     {"@type": "Question", "name": "What do I get for free?", "acceptedAnswer": {"@type": "Answer", "text": "The full proxy with all 76 middleware modules and 16 LLM providers, unlimited requests, and the core tracing and cost dashboards. Advanced features like request replay, auto-routing, red-team testing, and prompt optimization unlock with paid tiers."}},
     {"@type": "Question", "name": "What's the difference between tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Stockyard Complete gives you all 150 tools for $29/mo. The LLM Platform has a free tier (full proxy, 76 modules, 16 providers) with paid tiers for advanced features like cost routing, request replay, and red-team testing. See the comparison table for details."}},
-    {"@type": "Question", "name": "Can I save with annual billing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr, Team $2,999.90/yr, Enterprise $4,999.90/yr."}},
-    {"@type": "Question", "name": "How does Team pricing work for more than 5 people?", "acceptedAnswer": {"@type": "Answer", "text": "Team includes 5 seats. Additional seats are $20/seat/month. A 10-person team is $299.99 + (5 × $20) = $399.99/month."}},
+    {"@type": "Question", "name": "Can I save with annual billing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr."}},
     {"@type": "Question", "name": "What providers are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box."}},
-    {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}},
-    {"@type": "Question", "name": "What does Enterprise include beyond Team?", "acceptedAnswer": {"@type": "Answer", "text": "Enterprise includes Cortex memory, Mycelium + Spore + Molt, Ramrod orchestration, Iron hardening, RBAC governance. Plus SSO/SAML, SLA with uptime guarantees, compliance export, and dedicated support."}}
+    {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}}
   ]
 }
 </script>
@@ -269,6 +267,14 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   <span class="annual-badge">Save 2 months</span>
 </div>
 
+<section style="padding:3rem 2rem 0;text-align:center">
+  <div style="max-width:900px;margin:0 auto">
+    <div style="display:inline-block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);background:var(--bg2);border:1px solid var(--bg3);padding:.4rem 1.2rem;margin-bottom:1rem">Different product</div>
+    <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:.5rem">LLM Platform Pricing</h2>
+    <p style="color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto 1rem;line-height:1.6">The proxy, routing, cost tracking, tracing, and guardrails for teams building with LLMs. This is separate from the 150 tools above.</p>
+  </div>
+</section>
+
 <section class="pricing-section">
   <div class="pricing-grid">
 
@@ -317,52 +323,23 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
         <li>Breed prompt evolution</li>
         <li>Stampede load testing</li>
         <li>Fault chaos engineering</li>
-        <li>Morph, Spine, Hollow, Fossil Record</li>
-        <li>Priority support</li>
+        <li>Red-team + persona testing</li>
+        <li>Cortex memory, Ramrod orchestration</li>
+        <li>All 29 platform products</li>
+        <li>RBAC, SSO, priority support</li>
       </ul>
       <button onclick="checkout('pro',event)" class="btn btn-rust tier-cta">Go Pro</button>
     </div>
 
-    <div class="tier">
-      <div class="tier-name">Team</div>
-      <div class="tier-price" data-monthly="299.99" data-annual="2999.90"><span class="dollar">$</span><span class="price-val">299.99</span></div>
-      <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$599.98/yr"></span>&nbsp;</div>
-      <ul class="tier-features">
-        <li>Everything in Pro</li>
-        <li>Red-team testing testing</li>
-        <li>Phantom persona testing</li>
-        <li>Crucible confidence scoring</li>
-        <li>Prism, S&eacute;ance, Echo + 4 more</li>
-        <li>RBAC + 5 team seats</li>
-        <li>Slack + email support</li>
-      </ul>
-      <button onclick="checkout('team',event)" class="btn btn-rust tier-cta">Start Team</button>
     </div>
 
-    <div class="tier">
-      <div class="tier-name">Enterprise</div>
-      <div class="tier-price" data-monthly="499.99" data-annual="4999.90"><span class="dollar">$</span><span class="price-val">499.99</span></div>
-      <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$999.98/yr"></span>&nbsp;</div>
-      <ul class="tier-features">
-        <li>Everything in Team</li>
-        <li>Cortex platform memory</li>
-        <li>Mycelium + Spore + Molt</li>
-        <li>Ramrod orchestration</li>
-        <li>Iron hardening + compliance</li>
-        <li>Full platform access</li>
-        <li>SSO + SLA + dedicated support</li>
-      </ul>
-      <button onclick="checkout('enterprise',event)" class="btn btn-rust tier-cta">Go Enterprise</button>
-    </div>
 
   </div>
 </section>
 
 
 <section class="compare">
-  <div class="compare-label">Compare plans</div>
+  <div class="compare-label">Compare LLM Platform plans</div>
   <table>
     <thead>
       <tr>
@@ -370,28 +347,27 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
         <th>Free</th>
         <th>Individual</th>
         <th class="highlight-col">Pro</th>
-        <th>Team</th>
-        <th>Enterprise</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td>Monthly price</td><td>$0</td><td>$29.99</td><td class="highlight-col">$99.99</td><td>$299.99</td><td>$499.99</td></tr>
-      <tr><td>Annual price</td><td>$0</td><td>$299.90</td><td class="highlight-col">$999.90</td><td>$2,999.90</td><td>$4,999.90</td></tr>
-      <tr><td>Modules</td><td>All 76</td><td>All 76</td><td class="highlight-col">All 76</td><td>All 76</td><td>All 76 + custom</td></tr>
-      <tr><td>Providers</td><td>All 40</td><td>All 40</td><td class="highlight-col">All 40</td><td>All 40</td><td>All 40 + custom</td></tr>
-      <tr><td>Products unlocked</td><td>0</td><td>5</td><td class="highlight-col">12</td><td>23</td><td>All 29</td></tr>
-      <tr><td>Seats</td><td>1</td><td>1</td><td class="highlight-col">1</td><td>5 (+$20/seat)</td><td>Unlimited</td></tr>
-      <tr><td>Requests</td><td>Unlimited</td><td>Unlimited</td><td class="highlight-col">Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
-      <tr><td>Lasso replay</td><td>&mdash;</td><td class="check">&#10003;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>Cost routing</td><td>100/day</td><td>100/day</td><td class="highlight-col check">&#10003; Unlimited</td><td class="check">&#10003; Unlimited</td><td class="check">&#10003; Unlimited</td></tr>
-      <tr><td>Breed evolution</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>Red-team testing</td><td>Quickscan (5)</td><td>Quickscan (5)</td><td class="highlight-col">Quickscan (5)</td><td class="check">&#10003; Full (29)</td><td class="check">&#10003; Full (29)</td></tr>
-      <tr><td>Phantom personas</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>Cortex memory</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
-      <tr><td>RBAC &amp; governance</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
-      <tr><td>SSO / SAML</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
-      <tr><td>SLA</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col">&mdash;</td><td>&mdash;</td><td class="check">&#10003;</td></tr>
-      <tr><td>Support</td><td>Community</td><td>Email</td><td class="highlight-col">Priority</td><td>Slack + email</td><td>Dedicated</td></tr>
+<tbody>
+      <tr><td>Monthly price</td><td>$0</td><td>$29.99</td><td class="highlight-col ">$99.99</td></tr>
+      <tr><td>Annual price</td><td>$0</td><td>$299.90</td><td class="highlight-col ">$999.90</td></tr>
+      <tr><td>Modules</td><td>All 76</td><td>All 76</td><td class="highlight-col ">All 76</td></tr>
+      <tr><td>Providers</td><td>All 16</td><td>All 16</td><td class="highlight-col ">All 16</td></tr>
+      <tr><td>Products unlocked</td><td>0</td><td>5</td><td class="highlight-col ">All 29</td></tr>
+      <tr><td>Seats</td><td>1</td><td>1</td><td class="highlight-col ">Unlimited</td></tr>
+      <tr><td>Requests</td><td>Unlimited</td><td>Unlimited</td><td class="highlight-col ">Unlimited</td></tr>
+      <tr><td>Lasso replay</td><td>&mdash;</td><td>&#10003;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>Cost routing</td><td>100/day</td><td>100/day</td><td class="highlight-col check">&#10003; Unlimited</td></tr>
+      <tr><td>Breed evolution</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>Red-team testing</td><td>Quickscan (5)</td><td>Quickscan (5)</td><td class="highlight-col check">&#10003; Full</td></tr>
+      <tr><td>Phantom personas</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>Cortex memory</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>RBAC &amp; governance</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>SSO / SAML</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>SLA</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
+      <tr><td>Support</td><td>Community</td><td>Email</td><td class="highlight-col ">Priority + Slack</td></tr>
     </tbody>
   </table>
 </section>
