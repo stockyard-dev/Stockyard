@@ -9,12 +9,67 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/license"
 )
 
 var defaultHTTPClient = &http.Client{Timeout: 30 * time.Second}
+
+// apiRateLimiter provides per-IP rate limiting for public API endpoints.
+var (
+	apiLimiter   = make(map[string][]int64) // IP -> timestamps
+	apiLimiterMu sync.Mutex
+)
+
+// checkAPIRate returns true if the request is allowed (max 60 requests per minute per IP).
+func checkAPIRate(ip string) bool {
+	apiLimiterMu.Lock()
+	defer apiLimiterMu.Unlock()
+	now := time.Now().Unix()
+
+	// Clean old entries periodically
+	if len(apiLimiter) > 5000 {
+		for k, times := range apiLimiter {
+			if len(times) == 0 || now-times[len(times)-1] > 120 {
+				delete(apiLimiter, k)
+			}
+		}
+	}
+
+	times := apiLimiter[ip]
+	// Remove timestamps older than 60 seconds
+	cutoff := now - 60
+	start := 0
+	for start < len(times) && times[start] < cutoff {
+		start++
+	}
+	times = times[start:]
+
+	if len(times) >= 60 {
+		apiLimiter[ip] = times
+		return false
+	}
+	apiLimiter[ip] = append(times, now)
+	return true
+}
+
+// rateLimitedHandler wraps an http.HandlerFunc with API rate limiting.
+func (s *Server) rateLimited(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ip := r.RemoteAddr
+		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+			ip = strings.Split(fwd, ",")[0]
+		}
+		if !checkAPIRate(strings.TrimSpace(ip)) {
+			w.Header().Set("Retry-After", "60")
+			http.Error(w, `{"error":"rate limit exceeded, max 60 requests/minute"}`, http.StatusTooManyRequests)
+			return
+		}
+		next(w, r)
+	}
+}
 
 func newHTTPRequest(method, url string, body io.Reader) (*http.Request, error) {
 	return http.NewRequest(method, url, body)
@@ -80,20 +135,20 @@ func (s *Server) registerRoutes() {
 	// Stripe webhook (POST only, no CORS)
 	s.mux.HandleFunc("POST /webhooks/stripe", s.webhook.HandleWebhook)
 
-	// Public API — checkout & portal
-	s.mux.HandleFunc("POST /api/checkout", s.handleCheckout)
-	s.mux.HandleFunc("POST /api/portal", s.handlePortal)
+	// Public API — checkout & portal (rate limited)
+	s.mux.HandleFunc("POST /api/checkout", s.rateLimited(s.handleCheckout))
+	s.mux.HandleFunc("POST /api/portal", s.rateLimited(s.handlePortal))
 
 	// Public API — license validation
 	s.mux.HandleFunc("GET /api/license/validate", s.handleValidateLicense)
 	s.mux.HandleFunc("GET /api/license/lookup", s.handleLookupLicense)
 
-	// Public API — product catalog
-	s.mux.HandleFunc("GET /api/products", s.handleProducts)
+	// Public API — product catalog (rate limited)
+	s.mux.HandleFunc("GET /api/products", s.rateLimited(s.handleProducts))
 	s.mux.HandleFunc("GET /api/tools", s.handleToolPlans)
-	s.mux.HandleFunc("POST /api/waitlist", s.handleWaitlist)
-	s.mux.HandleFunc("GET /api/products/{slug}", s.handleProductBySlug)
-	s.mux.HandleFunc("GET /api/plans", s.handlePlans)
+	s.mux.HandleFunc("POST /api/waitlist", s.rateLimited(s.handleWaitlist))
+	s.mux.HandleFunc("GET /api/products/{slug}", s.rateLimited(s.handleProductBySlug))
+	s.mux.HandleFunc("GET /api/plans", s.rateLimited(s.handlePlans))
 
 	// Admin API (requires STOCKYARD_ADMIN_KEY)
 	s.mux.HandleFunc("GET /api/admin/stats", s.adminAuth(s.handleAdminStats))
@@ -102,7 +157,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 
 	// Cloud API
-	s.mux.HandleFunc("POST /api/cloud/tenants", s.handleCloudSignup)
+	s.mux.HandleFunc("POST /api/cloud/tenants", s.rateLimited(s.handleCloudSignup))
 	s.mux.HandleFunc("GET /api/cloud/tenant", s.handleCloudGetTenant)
 	s.mux.HandleFunc("PUT /api/cloud/keys", s.handleCloudUpdateKeys)
 	s.mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
@@ -177,11 +232,12 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 // Start starts the HTTP server.
 func (s *Server) Start() error {
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", s.port),
-		Handler:      s.corsMiddleware(s.mux),
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		Addr:              fmt.Sprintf(":%d", s.port),
+		Handler:           s.corsMiddleware(s.mux),
+		ReadTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       120 * time.Second,
 	}
 	return srv.ListenAndServe()
 }
