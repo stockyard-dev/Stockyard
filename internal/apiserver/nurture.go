@@ -48,6 +48,9 @@ A few popular ones to start with:
 
 Full catalog: https://stockyard.dev/tools
 
+If you already know you want the whole set: Stockyard Complete is all 150 tools for $29/mo. Early adopter pricing — your rate locks in when you subscribe.
+  https://stockyard.dev/complete
+
 If you have any questions, just reply to this email. I read every one.
 
 — Michael
@@ -102,7 +105,7 @@ The Stockyard equivalents:
 - Surveyor (forms): $0.99/mo
 Total: $6.94/mo ($83/year)
 
-Or just get Complete: $29/mo for all 150 tools.
+Or just get Complete: $29/mo for all 150 tools. Early adopter pricing — this rate locks in when you subscribe.
 
 The tradeoff is real — you are running the tools yourself instead of paying someone else to. But each one is a single binary with no external dependencies. If you can run a Go binary on a $5/mo VPS, you can run all of these.
 
@@ -127,6 +130,9 @@ Open http://localhost:9800/ui and you see every tool in the catalog. Click Insta
 Hub is included with every plan, including the free Community tier.
 
   stockyard.dev/hub
+
+If you are running 6+ tools, Stockyard Complete ($29/mo for all 150) is cheaper than buying them individually. One license key unlocks Pro on everything.
+  stockyard.dev/complete
 
 — Michael`,
 		},

@@ -2,53 +2,59 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Checkout Cancelled — Stockyard</title>
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--rust:#c45d2c;--cream:#f0e6d3;--cream-dim:#bfb5a3;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
-body{font-family:var(--font-serif);background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
-.card{background:var(--bg2);border:1px solid #3a3228;border-radius:12px;padding:3rem;max-width:520px;text-align:center}
-h1{font-size:1.6rem;margin-bottom:0.75rem}
-p{color:var(--cream-dim);line-height:1.6;margin-bottom:1.5rem}
-.buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-.cta{display:inline-block;background:var(--rust);color:var(--cream);padding:0.75rem 2rem;border-radius:6px;text-decoration:none;font-family:var(--font-mono);font-size:0.85rem;transition:opacity 0.2s}
-.cta:hover{opacity:0.85}
-.secondary{background:transparent;border:1px solid var(--cream-dim)}
-
-.nav-links>a.nav-complete{color:var(--gold)}.nav-links>a.nav-complete:hover{color:var(--leather-light)}
-.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
-.drop-arrow{font-size:0.65rem;margin-left:2px}
-.nav-drop-menu{display:none;position:absolute;top:calc(100% + 0.8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:200px;padding:0.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
-.nav-drop-menu.open{display:block}
-.nav-drop-menu a{display:block;padding:0.4rem 1.2rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream-dim)}.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
-.drop-section{padding:0.3rem 1.2rem;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:0.3rem}
-@media(max-width:768px){.nav-drop-trigger{font-size:1.05rem;padding:0.4rem 0;display:block}.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:0.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:0.95rem;padding:0.3rem 0}}
-
-footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
-footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
-.sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+body{font-family:var(--serif);background:var(--bg);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.card{background:var(--bg2);border:1px solid var(--bg3);max-width:540px;width:100%;padding:2.5rem;text-align:center}
+h1{font-size:1.5rem;margin-bottom:.8rem}
+.sub{color:var(--cd);margin-bottom:2rem;line-height:1.7}
+.btn{font-family:var(--mono);font-size:.85rem;padding:.75rem 2rem;border:none;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather);margin-left:.8rem}.btn-sec:hover{border-color:var(--cream)}
+.reasons{text-align:left;margin:1.5rem 0;padding:1.2rem 1.5rem;border:1px solid var(--bg3)}
+.reason{display:flex;gap:.8rem;margin-bottom:.8rem;align-items:flex-start;font-size:.85rem;color:var(--cd)}
+.reason:last-child{margin-bottom:0}
+.reason-icon{color:var(--gold);font-family:var(--mono);font-size:.9rem;flex-shrink:0;margin-top:.1rem}
 </style>
 <link rel="canonical" href="https://stockyard.dev/billing/cancel/">
-<!-- Google Analytics -->
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");
-function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
-document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
+gtag("event","checkout_abandoned",{event_category:"conversion",event_label:window.location.search});
 </script>
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 </head>
 <body>
 <div class="card">
-<h1>Checkout Cancelled</h1>
-<p>No charges were made. The Community tier remains active with full proxy access and 76 middleware modules.</p>
-<div class="buttons">
-<a href="/pricing/" class="cta">View Plans</a>
-<a href="/ui" class="cta secondary">Back to Console</a>
+  <h1>No worries. No charges made.</h1>
+  <p class="sub">Your free tier is still active. If you had questions before committing, here are the common ones:</p>
+
+  <div class="reasons">
+    <div class="reason"><span class="reason-icon">&#10003;</span><span>Every tool has a free tier with no time limit. Try before you buy.</span></div>
+    <div class="reason"><span class="reason-icon">&#10003;</span><span>Cancel any time. Your data stays on your server.</span></div>
+    <div class="reason"><span class="reason-icon">&#10003;</span><span>One license key works across all 150 tools, all instances.</span></div>
+    <div class="reason"><span class="reason-icon">&#10003;</span><span>Early adopter pricing locks in when you subscribe.</span></div>
+  </div>
+
+  <div style="margin-bottom:1.5rem">
+    <a href="/complete/" class="btn btn-gold">Try Complete &mdash; $29/mo</a>
+    <a href="/tools/" class="btn btn-sec">Browse tools</a>
+  </div>
+
+  <p style="font-family:var(--mono);font-size:.72rem;color:var(--cm)">Questions? Email <a href="mailto:hello@stockyard.dev" style="color:var(--ll)">hello@stockyard.dev</a> — I reply to everything.</p>
 </div>
+
+<div style="margin-top:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm)">
+  <a href="/" style="color:var(--cm)">Home</a> &middot;
+  <a href="/pricing/" style="color:var(--cm)">Pricing</a> &middot;
+  <a href="/guide/" style="color:var(--cm)">Install Guide</a>
 </div>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
 </html>
