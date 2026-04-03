@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1410;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Libre Baskerville',Georgia,serif}
+.card{width:1200px;height:630px;background:#1a1410;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3rem 4rem;gap:3.5rem}
+.card::after{content:'';position:absolute;inset:24px;border:1px solid #2e261e;pointer-events:none}
+.rail{position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent 0%,#c45d2c 15%,#e8753a 50%,#c45d2c 85%,transparent 100%)}
+
+.left{flex:0 0 340px}
+.left h2{font-size:2rem;color:#f0e6d3;line-height:1.3;margin-bottom:.8rem}
+.left h2 .accent{color:#e8753a}
+.left p{font-size:.92rem;color:#bfb5a3;font-style:italic;line-height:1.7;margin-bottom:1.5rem}
+.left .steps{display:flex;flex-direction:column;gap:.6rem}
+.step{display:flex;align-items:center;gap:.8rem}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;width:22px;height:22px;border:1px solid #c45d2c;color:#e8753a;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-text{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#c4a87a;letter-spacing:.5px}
+
+.right{flex:1}
+.terminal{background:#0d0b09;border:1px solid #2e261e;border-radius:6px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.term-bar{background:#1a1410;padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid #2e261e}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#c0392b}.dot-y{background:#d4a843}.dot-g{background:#5ba86e}
+.term-title{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#7a7060;margin-left:.8rem;letter-spacing:1px}
+.term-body{padding:1.2rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:2;color:#bfb5a3}
+.prompt{color:#5ba86e}
+.cmd{color:#f0e6d3}
+.url{color:#e8753a}
+.dim{color:#7a7060}
+.output{color:#a0845c}
+.gold{color:#d4a843}
+.success{color:#5ba86e}
+
+.badge{position:absolute;bottom:32px;right:48px;display:flex;align-items:center;gap:10px}
+.badge svg{opacity:.6}
+.badge span{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#7a7060;letter-spacing:2px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="rail"></div>
+
+  <div class="left">
+    <h2>Install any tool in <span class="accent">30 seconds</span></h2>
+    <p>One curl command. One binary. One port. Dashboard at localhost.</p>
+    <div class="steps">
+      <div class="step"><span class="step-num">1</span><span class="step-text">curl the install script</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text">run the binary</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">open the dashboard</span></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="term-title">terminal</span>
+      </div>
+      <div class="term-body">
+        <div><span class="prompt">$</span> <span class="cmd">curl -fsSL <span class="url">https://stockyard.dev/corral/install.sh</span> | sh</span></div>
+        <div><span class="output">Downloading stockyard-corral v1.2.1 (linux/amd64)...</span></div>
+        <div><span class="success">✓ Installed to /usr/local/bin/stockyard-corral (12.4MB)</span></div>
+        <div>&nbsp;</div>
+        <div><span class="prompt">$</span> <span class="cmd">DATA_DIR=./data stockyard-corral</span></div>
+        <div>&nbsp;</div>
+        <div><span class="output">  Corral — Webhook capture &amp; replay</span></div>
+        <div><span class="output">  ─────────────────────────────────</span></div>
+        <div><span class="output">  Dashboard:  <span class="url">http://localhost:8760/ui</span></span></div>
+        <div><span class="output">  Webhook:    http://localhost:8760/hook/{id}</span></div>
+        <div><span class="output">  Data:       ./data/corral.db</span></div>
+        <div><span class="output">  Tier:       <span class="gold">Free</span> <span class="dim">(3 endpoints, 1K events/mo)</span></span></div>
+        <div><span class="output">  ─────────────────────────────────</span></div>
+        <div>&nbsp;</div>
+        <div><span class="success">listening on :8760</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="badge">
+    <svg viewBox="0 0 64 64" width="18" height="18" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>
+    <span>stockyard.dev</span>
+  </div>
+</div>
+</body>
+</html>

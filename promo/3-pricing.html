@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1410;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Libre Baskerville',Georgia,serif}
+.card{width:1200px;height:630px;background:#1a1410;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:3rem 5rem;gap:4rem}
+.card::after{content:'';position:absolute;inset:24px;border:1px solid #2e261e;pointer-events:none}
+.rail{position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent 0%,#c45d2c 15%,#e8753a 50%,#c45d2c 85%,transparent 100%)}
+
+.col{flex:1}
+
+/* Left: SaaS stack */
+.col-header{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:#7a7060;margin-bottom:1.2rem}
+.saas-list{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.5rem}
+.saas-item{display:flex;justify-content:space-between;align-items:center;padding:.45rem .8rem;background:#241e18;border-left:2px solid #c0392b}
+.saas-name{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#bfb5a3}
+.saas-price{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#c0392b}
+.saas-total{display:flex;justify-content:space-between;align-items:center;padding:.7rem .8rem;border-top:1px solid #2e261e}
+.saas-total-lbl{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#bfb5a3}
+.saas-total-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:#c0392b;text-decoration:line-through;text-decoration-thickness:2px}
+
+/* Divider */
+.divider{display:flex;flex-direction:column;align-items:center;gap:.8rem;flex:0 0 60px}
+.div-line{width:1px;height:80px;background:linear-gradient(to bottom,transparent,#2e261e,transparent)}
+.div-arrow{font-family:'JetBrains Mono',monospace;font-size:1.6rem;color:#d4a843}
+
+/* Right: Stockyard */
+.sy-box{background:#241e18;border:1px solid #2e261e;border-left:3px solid #5ba86e;padding:2rem 2rem}
+.sy-logo{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+.sy-logo span{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#a0845c;letter-spacing:3px;text-transform:uppercase}
+.sy-price{font-family:'JetBrains Mono',monospace;font-size:3.2rem;font-weight:700;color:#f0e6d3;margin-bottom:.2rem}
+.sy-price .unit{font-size:1.2rem;color:#bfb5a3;font-weight:400}
+.sy-desc{font-size:.88rem;color:#c4a87a;font-style:italic;margin-bottom:1.5rem;line-height:1.6}
+.sy-features{display:flex;flex-direction:column;gap:.5rem}
+.sy-feat{display:flex;align-items:center;gap:.6rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#bfb5a3}
+.sy-feat .check{color:#5ba86e;font-size:.8rem}
+.savings{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #2e261e;display:flex;align-items:baseline;gap:.5rem}
+.savings-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:#7a7060}
+.savings-val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#5ba86e}
+
+.badge{position:absolute;bottom:32px;right:48px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#7a7060;letter-spacing:2px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="rail"></div>
+
+  <div class="col">
+    <div class="col-header">Your current SaaS stack</div>
+    <div class="saas-list">
+      <div class="saas-item"><span class="saas-name">Sentry</span><span class="saas-price">$26/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Statuspage</span><span class="saas-price">$79/mo</span></div>
+      <div class="saas-item"><span class="saas-name">LaunchDarkly</span><span class="saas-price">$50/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Hookdeck</span><span class="saas-price">$25/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Mixpanel</span><span class="saas-price">$20/mo</span></div>
+      <div class="saas-item"><span class="saas-name">PagerDuty</span><span class="saas-price">$105/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Bitly</span><span class="saas-price">$35/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Postman</span><span class="saas-price">$70/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Linear</span><span class="saas-price">$40/mo</span></div>
+      <div class="saas-item"><span class="saas-name">Canny</span><span class="saas-price">$79/mo</span></div>
+    </div>
+    <div class="saas-total">
+      <span class="saas-total-lbl">Total</span>
+      <span class="saas-total-val">$529/mo</span>
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="div-line"></div>
+    <div class="div-arrow">→</div>
+    <div class="div-line"></div>
+  </div>
+
+  <div class="col">
+    <div class="sy-box">
+      <div class="sy-logo">
+        <svg viewBox="0 0 64 64" width="20" height="20" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>
+        <span>Stockyard Complete</span>
+      </div>
+      <div class="sy-price">$29<span class="unit">/mo</span></div>
+      <p class="sy-desc">All 150 tools. Every feature unlocked. Early adopter pricing locks in forever.</p>
+      <div class="sy-features">
+        <div class="sy-feat"><span class="check">✓</span> Single binary per tool (~12MB)</div>
+        <div class="sy-feat"><span class="check">✓</span> Embedded SQLite, no external DB</div>
+        <div class="sy-feat"><span class="check">✓</span> No Docker, no dependencies</div>
+        <div class="sy-feat"><span class="check">✓</span> Your server, your data</div>
+        <div class="sy-feat"><span class="check">✓</span> Free tier on every tool</div>
+      </div>
+      <div class="savings">
+        <span class="savings-lbl">You save</span>
+        <span class="savings-val">$500/mo</span>
+      </div>
+    </div>
+  </div>
+
+  <span class="badge">stockyard.dev</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1410;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Libre Baskerville',Georgia,serif}
+.card{width:1200px;height:630px;background:#1a1410;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem}
+
+/* Subtle grain */
+.card::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:.5;pointer-events:none}
+
+/* Border lines */
+.card::after{content:'';position:absolute;inset:24px;border:1px solid #2e261e;pointer-events:none}
+
+/* Fence rail accent */
+.rail{position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent 0%,#c45d2c 15%,#e8753a 50%,#c45d2c 85%,transparent 100%)}
+
+.logo{display:flex;align-items:center;gap:14px;margin-bottom:2.5rem}
+.logo svg{filter:drop-shadow(0 2px 8px rgba(232,117,58,.3))}
+.logo-text{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:#a0845c;letter-spacing:5px;text-transform:uppercase}
+
+h1{font-size:3.4rem;color:#f0e6d3;text-align:center;line-height:1.2;margin-bottom:.6rem;max-width:800px}
+h1 .accent{color:#e8753a}
+h1 .gold{color:#d4a843}
+
+.sub{font-size:1.1rem;color:#bfb5a3;font-style:italic;text-align:center;margin-bottom:2.5rem;max-width:600px;line-height:1.7}
+
+.stats{display:flex;gap:3rem;align-items:center}
+.stat{text-align:center}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:#f0e6d3;display:block}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:#7a7060;margin-top:.3rem}
+.stat-dot{width:4px;height:4px;background:#2e261e;border-radius:50%}
+
+.badge{position:absolute;bottom:40px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#7a7060;letter-spacing:2px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="rail"></div>
+
+  <div class="logo">
+    <svg viewBox="0 0 64 64" width="36" height="36" fill="none">
+      <rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/>
+      <rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/>
+      <rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/>
+      <rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/>
+    </svg>
+    <span class="logo-text">Stockyard</span>
+  </div>
+
+  <h1><span class="accent">150</span> self-hosted dev tools.<br>One binary each.</h1>
+  <p class="sub">Replace your SaaS stack with single Go binaries. Embedded SQLite. No Docker. No dependencies. Your server, your data.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-val">~12MB</span>
+      <span class="stat-lbl">Per binary</span>
+    </div>
+    <div class="stat-dot"></div>
+    <div class="stat">
+      <span class="stat-val">0</span>
+      <span class="stat-lbl">Dependencies</span>
+    </div>
+    <div class="stat-dot"></div>
+    <div class="stat">
+      <span class="stat-val">$29<span style="font-size:1rem;color:#bfb5a3">/mo</span></span>
+      <span class="stat-lbl">All 150 tools</span>
+    </div>
+    <div class="stat-dot"></div>
+    <div class="stat">
+      <span class="stat-val" style="color:#5ba86e">Free</span>
+      <span class="stat-lbl">Tier on every tool</span>
+    </div>
+  </div>
+
+  <span class="badge">stockyard.dev</span>
+</div>
+</body>
+</html>

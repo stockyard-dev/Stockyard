@@ -2245,6 +2245,36 @@ async function waitlist(tool, btn) {
   } catch(e) { alert('Error — please try again'); }
 }
 </script>
+
+<div style="padding:3rem 2rem">
+  <div style="max-width:460px;margin:0 auto;text-align:center;padding:2rem;border:1px solid var(--bg3,#2e261e);background:var(--bg2,#241e18)">
+    <div style="font-family:var(--mono,var(--font-mono,'JetBrains Mono',monospace));font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:.8rem">Free guide</div>
+    <h2 style="font-size:1.2rem;margin-bottom:.5rem;color:var(--cream,#f0e6d3)">Get the self-hosting starter guide</h2>
+    <p style="font-size:.82rem;color:var(--cream-dim,var(--cd,#bfb5a3));font-style:italic;margin-bottom:1.2rem">Which tools to install first, common pitfalls, and how to migrate off SaaS.</p>
+    <div style="display:flex;gap:.5rem;max-width:360px;margin:0 auto">
+      <input id="capture-email" type="email" placeholder="you@company.com" style="flex:1;padding:.7rem 1rem;font-family:var(--mono,var(--font-mono,'JetBrains Mono',monospace));font-size:.82rem;background:var(--bg,#1a1410);border:1px solid var(--bg3,#2e261e);color:var(--cream,#f0e6d3);outline:none">
+      <button id="capture-btn" onclick="captureEmail()" style="padding:.7rem 1.2rem;font-family:var(--mono,var(--font-mono,'JetBrains Mono',monospace));font-size:.8rem;background:var(--gold,#d4a843);color:var(--bg,#1a1410);border:2px solid var(--gold,#d4a843);cursor:pointer;font-weight:600;white-space:nowrap">Send it</button>
+    </div>
+    <div id="capture-msg" style="font-family:var(--mono,var(--font-mono,'JetBrains Mono',monospace));font-size:.72rem;margin-top:.6rem;min-height:1.2em"></div>
+    <p style="font-size:.68rem;color:var(--cream-muted,var(--cm,#7a7060));margin-top:.4rem">No spam. Unsubscribe anytime.</p>
+  </div>
+</div>
+<script>
+function captureEmail(){
+  var e=document.getElementById('capture-email'),b=document.getElementById('capture-btn'),m=document.getElementById('capture-msg');
+  if(!e.value||e.value.indexOf('@')<1){m.style.color='var(--rust,#c45d2c)';m.textContent='Enter a valid email.';return}
+  b.disabled=true;b.textContent='Sending...';
+  fetch('/api/exchange/gate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e.value,source:'tools_page',pack_slug:'starter_guide'})})
+  .then(function(r){return r.json()})
+  .then(function(){
+    m.style.color='var(--gold,#d4a843)';m.textContent='Check your inbox.';
+    b.textContent='Sent!';e.value='';
+    if(typeof gtag!=='undefined')gtag('event','conversion',{send_to:'AW-18046975504/dr7ECJrW6pQcEJD8u51D'});
+  })
+  .catch(function(){m.style.color='var(--rust,#c45d2c)';m.textContent='Something went wrong. Try again.';b.disabled=false;b.textContent='Send it'});
+}
+</script>
+
 <footer>
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem">
