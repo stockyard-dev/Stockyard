@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Migrate from Sentry to Seismograph — Stockyard</title>
+<meta name="description" content="Step-by-step guide to migrate from Sentry to Stockyard Seismograph. 5 minutes setup. Save $26/mo.">
+<meta property="og:title" content="Migrate from Sentry to Seismograph">
+<meta property="og:description" content="Replace Sentry with a self-hosted alternative. 5 minutes. Save $26/mo.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/migrate-from-sentry/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+.wrap{max-width:720px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:clamp(1.5rem,4vw,2rem);text-align:center;margin-bottom:.5rem}
+.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:2.5rem}
+.meta{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:.72rem;color:var(--cm);margin-bottom:2.5rem;text-align:center}
+.meta-val{color:var(--gold)}
+h2{font-size:1.2rem;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--bg3)}
+p{color:var(--cd);margin-bottom:1rem}
+pre{background:var(--bg2);border:1px solid var(--bg3);padding:1rem;font-family:var(--mono);font-size:.78rem;color:var(--ll);margin:1rem 0;overflow-x:auto}
+.box{background:var(--bg2);border-left:3px solid var(--gold);padding:1rem 1.2rem;margin:1.5rem 0;font-size:.88rem;color:var(--cd)}
+.box strong{color:var(--cream);font-family:var(--mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:.4rem;color:var(--gold)}
+.check{color:var(--green);font-family:var(--mono);font-size:.82rem}
+.cta{text-align:center;margin:3rem 0 2rem;padding:2rem;border:2px solid var(--gold)}
+.cta h3{font-family:var(--mono);font-size:.85rem;color:var(--cream);margin-bottom:.5rem}
+.cta p{color:var(--cd);font-style:italic;margin-bottom:1rem}
+.btn{font-family:var(--mono);font-size:.82rem;padding:.65rem 1.8rem;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.9;color:var(--bg)}
+.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather);margin-left:.5rem}.btn-sec:hover{border-color:var(--cream)}
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}
+footer a{color:var(--cm)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}.nav-links a:hover{color:var(--rl)}
+@media(max-width:768px){.nav-links{display:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"Migrate from Sentry to Stockyard Seismograph","description":"Step-by-step migration guide. Replace Sentry with a self-hosted alternative.","totalTime":"PT5M","step":[{"@type":"HowToStep","name":"Install Seismograph","text":"Download and run the Seismograph binary"},{"@type":"HowToStep","name":"Configure","text":"Set up components and configuration"},{"@type":"HowToStep","name":"Verify","text":"Confirm Seismograph is working correctly"},{"@type":"HowToStep","name":"Switch traffic","text":"Point your application to Seismograph"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Migrate from Sentry","item":"https://stockyard.dev/migrate-from-sentry/"}]}</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/tools/">Tools</a>
+    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <h1>Migrate from Sentry to Seismograph</h1>
+  <p class="sub">Self-hosted replacement. Single binary. 5 minutes setup.</p>
+
+  <div class="meta">
+    <span>Time: <span class="meta-val">5 minutes</span></span>
+    <span>Saves: <span class="meta-val">$26/mo</span></span>
+    <span>Binary: <span class="meta-val">~12MB</span></span>
+    <span>Dependencies: <span class="meta-val">none</span></span>
+  </div>
+
+  <h2>Before you start</h2>
+  <div class="box">
+    <strong>What transfers</strong>
+    Error grouping, stack traces, alert rules (manual recreation)
+  </div>
+  <div class="box">
+    <strong>What does not transfer</strong>
+    Historical error data, Sentry integrations (Slack/PagerDuty need reconfiguring). Seismograph starts fresh. If you need historical data, export it from Sentry before cancelling.
+  </div>
+
+  <h2>Step 1: Install Seismograph</h2>
+  <pre>curl -fsSL stockyard.dev/seismograph/install.sh | sh
+stockyard-seismograph</pre>
+  <p>The binary starts an HTTP server with a dashboard at <code style="font-family:var(--mono);background:var(--bg2);padding:.1rem .3rem">http://localhost:8830/ui</code> and a REST API at <code style="font-family:var(--mono);background:var(--bg2);padding:.1rem .3rem">http://localhost:8830/api</code>.</p>
+
+  <h2>Step 2: Configure</h2>
+  <p>Open the dashboard and set up your configuration. Seismograph stores everything in a SQLite file in the current directory. No external database to provision.</p>
+  <p>For production, set a data directory and run as a systemd service:</p>
+  <pre>DATA_DIR=/var/lib/seismograph stockyard-seismograph</pre>
+  <p>See the <a href="/seismograph/">full Seismograph documentation</a> for configuration options.</p>
+
+  <h2>Step 3: Verify</h2>
+  <p>Trigger a test exception in your app. Check the Seismograph dashboard at localhost:PORT/ui for the captured error with stack trace.</p>
+  <p class="check">&#10003; If you see data in the dashboard, Seismograph is working.</p>
+
+  <h2>Step 4: Switch traffic</h2>
+  <p>Point your application to Seismograph instead of Sentry. Update any webhook URLs, SDK configurations, or DNS records. Run both in parallel for a few days if you want to compare.</p>
+  <p>Once you are confident, cancel your Sentry subscription. Your data stays on your server regardless of what happens to the Sentry account.</p>
+
+  <h2>The honest tradeoff</h2>
+  <p>Sentry requires Kafka, Clickhouse, Postgres, Redis, and multiple workers to self-host. Seismograph is one binary with SQLite. The tradeoff: Seismograph has fewer integrations and no performance monitoring (APM). If you need error tracking without the infrastructure overhead, it fits. If you need full APM, Sentry is more complete.</p>
+
+  <div class="cta">
+    <h3>Save $26/mo. Own your data.</h3>
+    <p>Seismograph is one of 150 self-hosted tools in Stockyard Complete.</p>
+    <a href="/seismograph/" class="btn btn-gold">Install Seismograph free</a>
+    <a href="/complete/" class="btn btn-sec">All 150 tools &mdash; $29/mo</a>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/seismograph/">Seismograph</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
+</footer>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</body>
+</html>

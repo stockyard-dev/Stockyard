@@ -849,6 +849,9 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/try/",
 		"/sandbox/",
 		"/save/",
+		"/migrate-from-sentry/",
+		"/migrate-from-statuspage/",
+		"/migrate-from-launchdarkly/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
