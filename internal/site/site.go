@@ -852,6 +852,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/migrate-from-sentry/",
 		"/migrate-from-statuspage/",
 		"/migrate-from-launchdarkly/",
+		"/stacks/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
