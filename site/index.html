@@ -196,7 +196,7 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
     <div id="hp-result" style="display:none;text-align:center;padding:1.5rem;border:2px solid var(--gold);max-width:500px;margin:0 auto 1.5rem">
       <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:.8rem">
         <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">SaaS cost</div><div id="hp-saas" style="font-family:var(--font-mono);font-size:1.8rem;color:var(--rust)">$0</div></div>
-        <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">Stockyard</div><div id="hp-sy" style="font-family:var(--font-mono);font-size:1.8rem;color:#4a9e5c">$29</div></div>
+        <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">Stockyard</div><div id="hp-sy" style="font-family:var(--font-mono);font-size:1.8rem;color:var(--green,#4a9e5c)">$29</div></div>
         <div><div style="font-family:var(--font-mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px">You save</div><div id="hp-save" style="font-family:var(--font-mono);font-size:1.8rem;color:var(--gold)">$0/mo</div></div>
       </div>
       <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-dim)">That&#39;s <span id="hp-year" style="color:var(--gold)">$0</span> back in your pocket per year.</div>
@@ -224,10 +224,10 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
   var g=document.getElementById("hp-calc"),sel=new Set();
   tools.forEach(function(t,i){
     var d=document.createElement("label");
-    d.style.cssText="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--bg);border:1px solid var(--bg3);cursor:pointer;font-family:var(--font-mono);font-size:.75rem;user-select:none";
-    d.innerHTML='<input type="checkbox" style="accent-color:#c45d2c" data-i="'+i+'"><span style="color:#f0e6d3">'+t.n+'</span><span style="color:#7a7060;margin-left:auto;font-size:.65rem">$'+t.p+'/mo</span>';
+    d.style.cssText="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--bg);border:1px solid var(--bg3);cursor:pointer;font-family:var(--font-mono);font-size:.75rem;user-select:none;color:var(--cream)";
+    d.innerHTML='<input type="checkbox" style="accent-color:var(--rust)" data-i="'+i+'"><span style="color:var(--cream)">'+t.n+'</span><span style="color:var(--cream-muted,#7a7060);margin-left:auto;font-size:.65rem">$'+t.p+'/mo</span>';
     d.querySelector("input").onchange=function(){
-      if(this.checked){sel.add(i);d.style.borderColor="#e8753a"}else{sel.delete(i);d.style.borderColor="#2e261e"}
+      if(this.checked){sel.add(i);d.style.borderColor="var(--rust-light)"}else{sel.delete(i);d.style.borderColor="var(--bg3)"}
       calc();
     };
     g.appendChild(d);
