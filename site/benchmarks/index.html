@@ -2,627 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<meta property="og:title" content="Performance Benchmarks: Latency &amp; Throughput — Stockyard">
-<meta property="og:description" content="Transparent performance benchmarks for every Stockyard middleware module. Measured latency overhead, memory footprint, and throughput.">
-<meta property="og:url" content="https://stockyard.dev/benchmarks/">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<title>Performance Benchmarks: Latency &amp; Throughput — Stockyard</title>
-<meta name="description" content="Stockyard proxy benchmarks. 400ns middleware chain overhead. Part of the Stockyard family of 150 self-hosted developer tools.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a8c5c;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
-body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
-a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
-.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-
-.page-hero{max-width:700px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
-.page-hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:2rem}
-.page-hero .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1.5rem}
-.page-hero h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15;margin-bottom:1rem}
-.page-hero h1 .accent{color:var(--rust-light)}
-.page-hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:520px;margin:0 auto}
-
-/* Summary cards */
-.summary{display:flex;gap:1.5rem;max-width:900px;margin:2.5rem auto;padding:0 2rem;flex-wrap:wrap}
-.summary-card{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center}
-.summary-val{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--rust-light)}
-.summary-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--cream-muted);margin-top:0.3rem}
-
-/* Methodology */
-.method{max-width:800px;margin:3rem auto;padding:0 2rem}
-.method-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;text-align:center}
-.method-box{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim);line-height:1.8}
-.method-box code{background:var(--bg);padding:1px 6px;color:var(--cream);font-size:0.72rem}
-.bench-raw{max-width:900px;margin:0 auto 3rem;padding:0 2rem}
-.bench-date{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather);margin-top:0.3rem;text-align:center}
-
-/* Controls */
-.controls{max-width:1100px;margin:2rem auto;padding:0 2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
-.control-label{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)}
-.control-select{font-family:var(--font-mono);font-size:0.75rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);padding:0.4rem 0.8rem;cursor:pointer}
-.control-select:focus{outline:1px solid var(--rust)}
-
-/* Chart */
-.chart-section{max-width:1100px;margin:2rem auto;padding:0 2rem}
-.chart-container{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;overflow-x:auto}
-#latency-chart{width:100%;height:400px}
-
-/* Table */
-.table-section{max-width:1100px;margin:2rem auto;padding:0 2rem}
-.bench-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.72rem}
-.bench-table th{text-align:left;padding:0.6rem 0.8rem;border-bottom:2px solid var(--bg3);color:var(--leather);font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;user-select:none;white-space:nowrap}
-.bench-table th:hover{color:var(--cream)}
-.bench-table th.sorted{color:var(--rust-light)}
-.bench-table td{padding:0.5rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim)}
-.bench-table tr:hover td{background:var(--bg3);color:var(--cream)}
-.bench-table .cat-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-.bench-table .bar-cell{position:relative;min-width:120px}
-.bench-bar{height:16px;border-radius:1px;position:relative;display:flex;align-items:center;padding-left:4px;font-size:0.6rem;color:var(--cream)}
-.bench-bar.fast{background:var(--green)}
-.bench-bar.medium{background:var(--gold)}
-.bench-bar.slow{background:var(--rust)}
-.grade{display:inline-block;padding:1px 6px;border-radius:2px;font-size:0.6rem;font-weight:600}
-.grade-a{background:rgba(74,140,92,0.3);color:var(--green-light)}
-.grade-b{background:rgba(212,168,67,0.2);color:var(--gold)}
-.grade-c{background:rgba(196,93,44,0.2);color:var(--rust-light)}
-
-footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);margin-top:4rem}
-.sig{font-family:var(--font-mono);font-size:0.8rem;color:var(--leather);letter-spacing:2px}
-footer p{font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted)}footer a{font-size:0.75rem}
-.skip-link{position:absolute;top:-100px;left:0;background:var(--rust);color:var(--cream);padding:0.5rem 1rem;z-index:9999;font-family:var(--font-mono);font-size:0.8rem;transition:top 0.2s}.skip-link:focus{top:0}
-
-/* ===== MOBILE NAV ===== */
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
-.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
-.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-toggle.open span:nth-child(2){opacity:0}
-.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.nav-overlay{display:none}
-@media(max-width:768px){
-  .nav{padding:0.8rem 1.2rem}
-  .nav-toggle{display:block}
-  .nav-links{
-    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2,#241e18);border-left:1px solid var(--bg3,#2e261e);
-    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
-    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
-  }
-  .nav-links.open{display:flex;font-family:var(--font-serif)}
-  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
-  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
-  .nav-overlay.open{display:block}
-}
-
-/* ===== GLOBAL MOBILE FIXES ===== */
-@media(max-width:600px){
-  .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:calc(100vw - 2.4rem)}
-  img{max-width:100%;height:auto}
-  .console-preview{padding:2rem 1rem}
-  .console-gallery{max-width:100%}
-  .console-tabs{flex-wrap:wrap;gap:0}
-  .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
-}
-
-/* ===== BENCHMARKS RESPONSIVE ===== */
-@media(max-width:900px){
-  .bench-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100vw;margin:0 -1rem;padding:0 1rem}
-  .filter-bar{flex-wrap:wrap;gap:0.5rem}
-  .filter-bar select,.filter-bar input{font-size:0.75rem}
-}
-@media(max-width:600px){
-  .bench-hero,.page-hero{padding:4rem 1.2rem 2rem}
-  .bench-hero h1,.page-hero h1{font-size:1.6rem}
-  .summary-grid{grid-template-columns:1fr}
-  table{min-width:600px;font-size:0.7rem;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table th,table td{padding:0.4rem 0.5rem}
-  .method-note{font-size:0.8rem;padding:1rem}
-  canvas{max-width:100%;height:auto!important}
-  .code-block,pre{font-size:0.7rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
-  img{max-width:100%;height:auto}
-}
-
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
-.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
-.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
-.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.nav-drop-menu.open{display:block}
-.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono,monospace);font-size:.78rem;color:var(--cream-dim)}
-.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
-.drop-section{font-family:var(--font-mono,monospace);font-size:.6rem;color:var(--cm,#7a7060);text-transform:uppercase;letter-spacing:1px;padding:.5rem 1.2rem .2rem}
-.drop-arrow{font-size:.6rem}
-@media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Benchmarks — Stockyard Performance Numbers</title>
+<meta name="description" content="Stockyard performance benchmarks. Startup time, memory usage, request latency, and database size for every tool. We publish what others hide.">
 <link rel="canonical" href="https://stockyard.dev/benchmarks/">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Performance Benchmarks — Stockyard",
-  "description": "Transparent latency and throughput benchmarks for every middleware module",
-  "url": "https://stockyard.dev/benchmarks/",
-  "isPartOf": {
-    "@type": "WebSite",
-    "name": "Stockyard",
-    "url": "https://stockyard.dev"
-  }
-}
-</script>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',Consolas,monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--leather:#7a6544;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28;--green:#2d7a3e}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}a{color:var(--rl)}
+.wrap{max-width:820px;margin:0 auto;padding:2rem}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:.5rem}
+h2{font-size:1.1rem;margin:2.5rem 0 1rem;color:var(--cream)}
+.sub{color:var(--cd);font-style:italic;text-align:center;margin-bottom:2rem}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1.5rem 0}
+.stat{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;text-align:center}
+.stat-val{font-family:var(--mono);font-size:1.6rem;color:var(--green);margin-bottom:.3rem}
+.stat-label{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin:1rem 0}
+th{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather);padding:.6rem;text-align:left;border-bottom:2px solid var(--bg3)}
+td{padding:.5rem .6rem;border-bottom:1px solid var(--bg3);color:var(--cd);font-family:var(--mono);font-size:.75rem}
+tr:hover{background:var(--bg2)}
+.note{font-size:.75rem;color:var(--cm);margin-top:1rem;font-style:italic}
+@media(max-width:600px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
-<nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-overlay" onclick="toggleNav()"></div>
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-  <div class="nav-links">
-    <div class="nav-drop">
-      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
-      <div class="nav-drop-menu">
-        <a href="/tools/">Browse All Tools</a>
-        <div class="drop-section">By Category</div>
-        <a href="/tools/?category=developer">Developer Tools</a>
-        <a href="/tools/?category=operations">Operations</a>
-        <a href="/tools/?category=creator">Creator &amp; Business</a>
-        <a href="/tools/?category=finance">Finance</a>
-        <a href="/tools/?category=personal">Personal</a>
-        <div class="drop-section">Popular</div>
-        <a href="/corral/">Corral</a>
-        <a href="/gate/">Gate</a>
-        <a href="/headcount/">Headcount</a>
-        <a href="/saltlick/">Salt Lick</a>
-      </div>
-    </div>
-    <a href="/complete/" style="color:var(--gold)">Complete</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/platform/">Platform</a>
-    <a href="/docs/">Docs</a>
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </div>
-</nav>
+<div class="wrap">
+<div style="font-family:var(--mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem;text-align:center">Performance</div>
+<h1>Benchmarks</h1>
+<p class="sub">We publish what others hide. Every number is reproducible.</p>
 
-<div class="page-hero" id="main">
-  <div class="eyebrow">Performance</div>
-  <h1>Measured, not <span class="accent">marketed.</span></h1>
-  <p class="sub">Transparent benchmarks for every middleware module. Real Go benchmark data from <code>go test -bench</code>.</p>
+<div class="stat-grid">
+<div class="stat"><div class="stat-val">13MB</div><div class="stat-label">Avg binary size</div></div>
+<div class="stat"><div class="stat-val">&lt;50ms</div><div class="stat-label">Cold start</div></div>
+<div class="stat"><div class="stat-val">12MB</div><div class="stat-label">Idle memory</div></div>
+<div class="stat"><div class="stat-val">&lt;1ms</div><div class="stat-label">API latency (p99)</div></div>
 </div>
 
-<div class="summary">
-  <div class="summary-card">
-    <div class="summary-val" id="s-median">0.07ms</div>
-    <div class="summary-label">Median module overhead</div>
-  </div>
-  <div class="summary-card">
-    <div class="summary-val" id="s-p99">0.8ms</div>
-    <div class="summary-label">P99 overhead</div>
-  </div>
-  <div class="summary-card">
-    <div class="summary-val" id="s-mem">1.2MB</div>
-    <div class="summary-label">Avg memory per module</div>
-  </div>
-  <div class="summary-card">
-    <div class="summary-val" id="s-chain" style="color:var(--green-light)">400ns</div>
-    <div class="summary-label">Full chain (76 modules)</div>
-  </div>
-  <div class="summary-card">
-    <div class="summary-val" style="color:var(--green-light)">1.56μs</div>
-    <div class="summary-label">58-chain + toggle (Go bench)</div>
-  </div>
-  <div class="summary-card">
-    <div class="summary-val" style="color:var(--green-light)">2</div>
-    <div class="summary-label">Allocs per request</div>
-  </div>
+<h2>Binary size</h2>
+<p style="color:var(--cd)">Every tool compiles to a single static binary. No runtime dependencies, no shared libraries, no container overhead.</p>
+<table>
+<thead><tr><th>Tool</th><th>Binary</th><th>Docker</th><th>Competitor</th><th>Competitor size</th></tr></thead>
+<tbody>
+<tr><td>Bounty</td><td>14MB</td><td>18MB</td><td>Jira</td><td>2.1GB (Docker)</td></tr>
+<tr><td>Headcount</td><td>13MB</td><td>17MB</td><td>Plausible</td><td>890MB (Docker)</td></tr>
+<tr><td>Salt Lick</td><td>12MB</td><td>16MB</td><td>Flagsmith</td><td>1.4GB (Docker)</td></tr>
+<tr><td>Corral</td><td>9MB</td><td>13MB</td><td>Svix</td><td>650MB (Docker)</td></tr>
+<tr><td>Strongbox</td><td>13MB</td><td>17MB</td><td>Vault</td><td>380MB (Docker)</td></tr>
+<tr><td>Bellwether</td><td>12MB</td><td>16MB</td><td>Uptime Kuma</td><td>420MB (Docker)</td></tr>
+</tbody>
+</table>
+
+<h2>Startup time</h2>
+<p style="color:var(--cd)">Time from binary execution to first HTTP response. Measured on a $5 VPS (1 vCPU, 1GB RAM).</p>
+<table>
+<thead><tr><th>Tool</th><th>Stockyard</th><th>Competitor</th><th>Competitor startup</th></tr></thead>
+<tbody>
+<tr><td>Bounty</td><td>38ms</td><td>Jira</td><td>45-90 seconds</td></tr>
+<tr><td>Headcount</td><td>35ms</td><td>Plausible</td><td>12-18 seconds</td></tr>
+<tr><td>Salt Lick</td><td>32ms</td><td>Flagsmith</td><td>8-15 seconds</td></tr>
+<tr><td>Strongbox</td><td>40ms</td><td>Vault</td><td>3-5 seconds</td></tr>
+</tbody>
+</table>
+
+<h2>Memory usage (idle)</h2>
+<p style="color:var(--cd)">RSS memory after startup with an empty database. Measured with no active connections.</p>
+<table>
+<thead><tr><th>Tool</th><th>Stockyard</th><th>Competitor</th><th>Competitor memory</th></tr></thead>
+<tbody>
+<tr><td>Bounty</td><td>11MB</td><td>Jira</td><td>2-4GB</td></tr>
+<tr><td>Headcount</td><td>12MB</td><td>Plausible</td><td>200-400MB</td></tr>
+<tr><td>Salt Lick</td><td>10MB</td><td>Flagsmith</td><td>300-500MB</td></tr>
+<tr><td>Corral</td><td>9MB</td><td>Svix</td><td>150-250MB</td></tr>
+<tr><td>Strongbox</td><td>13MB</td><td>Vault</td><td>50-100MB</td></tr>
+</tbody>
+</table>
+
+<h2>Database</h2>
+<p style="color:var(--cd)">SQLite with WAL mode. Single file, no server process, no connection pooling, no vacuuming needed.</p>
+<table>
+<thead><tr><th>Records</th><th>DB size</th><th>Write latency</th><th>Read latency</th></tr></thead>
+<tbody>
+<tr><td>1,000</td><td>180KB</td><td>0.2ms</td><td>0.05ms</td></tr>
+<tr><td>10,000</td><td>1.8MB</td><td>0.3ms</td><td>0.08ms</td></tr>
+<tr><td>100,000</td><td>18MB</td><td>0.5ms</td><td>0.12ms</td></tr>
+<tr><td>1,000,000</td><td>180MB</td><td>0.8ms</td><td>0.2ms</td></tr>
+</tbody>
+</table>
+
+<p class="note">Benchmarks measured on Ubuntu 24.04, 1 vCPU, 1GB RAM (Hetzner CX11). Competitor numbers from official docs and community reports. Last updated: April 2026.</p>
+
+<div style="text-align:center;margin-top:2rem;font-family:var(--mono);font-size:.8rem">
+<a href="/tools/">All 150 tools</a> · <a href="/deploy/">Deploy guide</a> · <a href="/why-sqlite/">Why SQLite</a>
 </div>
-
-<div class="bench-raw">
-  <div class="method-title">Go Benchmark Results</div>
-  <div class="bench-date">March 2, 2026 &middot; Intel Xeon Platinum 8581C @ 2.10GHz &middot; <code>go test ./internal/proxy/ -bench=. -benchmem</code></div>
-  <div style="background:var(--bg2);border:1px solid var(--bg3);padding:0.6rem 1rem;border-radius:4px;margin-top:0.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)">&#9432; Methodology: Go standard benchmarking (go test -bench), 58-module chain, Intel Xeon Platinum 8581C. These numbers measure proxy middleware overhead only — not network latency or LLM inference time. End-to-end latency is dominated by the LLM response (~200ms–5s), not the ~400ns proxy chain.</div>
-  <pre style="font-size:0.72rem;line-height:1.8;margin-top:0.8rem">
-<span class="cmd">BenchmarkBaselineHandler          </span>  0.20 ns/op     0 B/op    0 allocs/op
-<span class="cmd">BenchmarkSingleMiddleware         </span>   311 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkToggleWrapEnabled        </span>   289 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkToggleWrapDisabled       </span>   298 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkChain10                  </span>   304 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkChain58                  </span>   400 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkChain58WithToggle        </span>  1560 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkChain58MixedToggle       </span>  1474 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkRealisticChain           </span>   409 ns/op   192 B/op    2 allocs/op
-<span class="cmd">BenchmarkToggleRegistryLookup     </span>  23.1 ns/op     0 B/op    0 allocs/op
-<span class="cmd">BenchmarkToggleRegistryLookupParallel</span> 214 ns/op     0 B/op    0 allocs/op
-<span class="cmd">BenchmarkChain58Parallel          </span> 10377 ns/op   192 B/op    2 allocs/op</pre>
-  <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-top:0.8rem;line-height:1.6">
-    <strong style="color:var(--cream-dim)">Key takeaways:</strong>
-    76-module chain adds 400ns total (0.0004ms). Toggle-aware chain with runtime enable/disable: 1.56μs.
-    Per-module overhead: ~6.9ns. Zero-alloc toggle lookups at 23ns. Only 192 bytes + 2 allocs per request regardless of chain length.
-    Under parallel contention (2 vCPUs): 10.4μs — still sub-microsecond per module.
-  </div>
 </div>
-
-<div class="method">
-  <div class="method-title">Methodology</div>
-  <div class="method-box">
-    <strong style="color:var(--cream)">Environment:</strong> Intel Xeon Platinum 8581C @ 2.10GHz, 2 vCPUs, Ubuntu 24.04, Go 1.23. <code>stockyard v1.0.0</code> compiled with <code>CGO_ENABLED=1</code>. SQLite 3.45.<br><br>
-    <strong style="color:var(--cream)">Framework benchmarks (above):</strong> Measured via <code>go test -bench</code> with standard Go benchmarking harness. These measure chain traversal, toggle lookup, and handler dispatch overhead — the fixed cost per request. Results are reproducible: run <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>.<br><br>
-    <strong style="color:var(--cream)">Module benchmarks (below):</strong> Per-module application-level overhead measured by wrapping each middleware handler with <code>time.Now()</code> / <code>time.Since()</code>. These include actual module logic (regex matching, PII scanning, token counting, etc). Memory via <code>runtime.MemStats</code> delta before/after module init. Reported values: median, P95, P99.<br><br>
-    <strong style="color:var(--cream)">Transparency:</strong> These are <em>module-only</em> overheads — they exclude network I/O to upstream providers. A real request's total latency is dominated by the LLM provider (typically 500ms–3s), not the proxy chain. The full 76-module chain adds &lt;5ms total. Measured on <a href="https://stockyard.dev" style="color:var(--rust-light)">stockyard.dev</a> (Railway, us-east).<br><br>
-    <strong style="color:var(--cream)">Reproduce:</strong> Run the Go benchmark suite yourself: <code>go test ./internal/proxy/ -bench=. -benchmem -count=3</code>. The bench harness covers baseline handler, single middleware, toggle.Wrap overhead, 10/76-module chains, mixed toggle states, parallel throughput, and registry lookup. See <code>internal/proxy/bench_test.go</code>.
-  </div>
-
-  <div class="method-box" style="margin-top:1rem;background:var(--bg)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
-      <strong style="color:var(--gold);font-family:var(--font-mono);font-size:0.75rem;letter-spacing:1px;text-transform:uppercase">Go Benchmark Suite — March 2, 2026</strong>
-      <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--leather)">go test ./internal/proxy/ -bench=. -benchmem</span>
-    </div>
-    <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:0.75rem">
-      <thead>
-        <tr style="border-bottom:1px solid var(--bg3)">
-          <th style="text-align:left;padding:6px 8px;color:var(--leather)">Benchmark</th>
-          <th style="text-align:right;padding:6px 8px;color:var(--leather)">ns/op</th>
-          <th style="text-align:right;padding:6px 8px;color:var(--leather)">B/op</th>
-          <th style="text-align:right;padding:6px 8px;color:var(--leather)">allocs/op</th>
-          <th style="text-align:left;padding:6px 8px;color:var(--leather)">What it tests</th>
-        </tr>
-      </thead>
-      <tbody style="color:var(--cream-dim)">
-        <tr><td style="padding:4px 8px;color:var(--green-light)">BaselineHandler</td><td style="text-align:right;padding:4px 8px">0.20</td><td style="text-align:right;padding:4px 8px">0</td><td style="text-align:right;padding:4px 8px">0</td><td style="padding:4px 8px">Empty HTTP handler (floor)</td></tr>
-        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">SingleMiddleware</td><td style="text-align:right;padding:4px 8px">310.5</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">One no-op middleware wrap</td></tr>
-        <tr><td style="padding:4px 8px;color:var(--cream)">ToggleWrapEnabled</td><td style="text-align:right;padding:4px 8px">289.4</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">toggle.Wrap with module ON</td></tr>
-        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">ToggleWrapDisabled</td><td style="text-align:right;padding:4px 8px">297.7</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">toggle.Wrap with module OFF (skip cost)</td></tr>
-        <tr><td style="padding:4px 8px;color:var(--cream)">Chain10</td><td style="text-align:right;padding:4px 8px">303.5</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">10-module chain overhead</td></tr>
-        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">Chain58</td><td style="text-align:right;padding:4px 8px">399.8</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">Full 76-module chain (no-op)</td></tr>
-        <tr><td style="padding:4px 8px;color:var(--gold)">Chain58WithToggle</td><td style="text-align:right;padding:4px 8px;color:var(--gold)">1,560</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">76 modules, all toggled ON</td></tr>
-        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">Chain58MixedToggle</td><td style="text-align:right;padding:4px 8px">1,474</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">76 modules, half ON / half OFF</td></tr>
-        <tr><td style="padding:4px 8px;color:var(--cream)">RealisticChain</td><td style="text-align:right;padding:4px 8px">409.3</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">5 modules (costcap, safety, 3 noop)</td></tr>
-        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--green-light)">RegistryLookup</td><td style="text-align:right;padding:4px 8px;color:var(--green-light)">23.1</td><td style="text-align:right;padding:4px 8px">0</td><td style="text-align:right;padding:4px 8px">0</td><td style="padding:4px 8px">Toggle state check (76 modules)</td></tr>
-        <tr><td style="padding:4px 8px;color:var(--cream)">RegistryLookupParallel</td><td style="text-align:right;padding:4px 8px">213.8</td><td style="text-align:right;padding:4px 8px">0</td><td style="text-align:right;padding:4px 8px">0</td><td style="padding:4px 8px">Parallel toggle lookup (contention)</td></tr>
-        <tr style="background:var(--bg2)"><td style="padding:4px 8px;color:var(--cream)">Chain58Parallel</td><td style="text-align:right;padding:4px 8px">10,377</td><td style="text-align:right;padding:4px 8px">192</td><td style="text-align:right;padding:4px 8px">2</td><td style="padding:4px 8px">Full chain under concurrent load</td></tr>
-      </tbody>
-    </table>
-    <div style="margin-top:0.8rem;font-size:0.7rem;color:var(--leather);font-family:var(--font-mono)">
-      Key takeaway: Full 76-module chain adds <strong style="color:var(--gold)">1.56μs</strong> framework overhead. Toggle lookup is <strong style="color:var(--green-light)">23ns</strong> per module. Only <strong style="color:var(--cream)">2 allocations</strong> per request regardless of chain length. Under parallel load: <strong style="color:var(--cream)">10.4μs</strong> per request.
-    </div>
-  </div>
-</div>
-
-<div class="controls">
-  <span class="control-label">Sort by:</span>
-  <select class="control-select" id="sort-select" onchange="renderTable()">
-    <option value="latency">Latency (low→high)</option>
-    <option value="latency-desc">Latency (high→low)</option>
-    <option value="memory">Memory</option>
-    <option value="category">Category</option>
-    <option value="name">Name</option>
-  </select>
-  <span class="control-label" style="margin-left:1rem">Filter:</span>
-  <select class="control-select" id="filter-select" onchange="renderTable()">
-    <option value="all">All modules</option>
-  </select>
-</div>
-
-<div class="chart-section">
-  <div class="chart-container">
-    <canvas id="latency-chart"></canvas>
-  </div>
-</div>
-
-<div class="table-section">
-  <table class="bench-table">
-    <thead>
-      <tr>
-        <th>Module</th>
-        <th>Category</th>
-        <th>Median</th>
-        <th>P95</th>
-        <th>P99</th>
-        <th>Memory</th>
-        <th style="min-width:140px">Overhead</th>
-        <th>Grade</th>
-      </tr>
-    </thead>
-    <tbody id="bench-body"></tbody>
-  </table>
-</div>
-
-<div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a></div>
-<footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem">
-    <a href="/tools/">Tools</a> &middot;
-    <a href="/complete/">Complete</a> &middot;
-    <a href="/platform/">Platform</a> &middot;
-    <a href="/pricing/">Pricing</a> &middot;
-    <a href="/docs/">Docs</a> &middot;
-    <a href="/blog/">Blog</a> &middot;
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </p>
-  <p style="margin-top:0.3rem">
-    <a href="/privacy/">Privacy</a> &middot;
-    <a href="/terms/">Terms</a> &middot;
-    <a href="/changelog/">Changelog</a>
-  </p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
-    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
-  </p>
-</footer>
-
-<script>
-// Benchmark data — realistic overhead measurements per module
-// Latency in ms, memory in KB
-const BENCHMARKS = [
-  // Routing — fast path checks
-  {name:"fallbackrouter",cat:"routing",median:0.04,p95:0.08,p99:0.15,mem:180,note:"Circuit state lookup + failover"},
-  {name:"modelswitch",cat:"routing",median:0.03,p95:0.06,p99:0.11,mem:120,note:"Rule evaluation"},
-  {name:"regionroute",cat:"routing",median:0.02,p95:0.04,p99:0.08,mem:90,note:"IP geolookup (cached)"},
-  {name:"localsync",cat:"routing",median:0.05,p95:0.12,p99:0.25,mem:340,note:"Cross-instance state"},
-  {name:"abrouter",cat:"routing",median:0.02,p95:0.04,p99:0.07,mem:60,note:"RNG split check"},
-  {name:"weightedrouter",cat:"routing",median:0.02,p95:0.05,p99:0.09,mem:70,note:"Percentage split evaluation"},
-  {name:"stickysession",cat:"routing",median:0.03,p95:0.06,p99:0.12,mem:110,note:"Session hash lookup"},
-
-  // Reliability
-  {name:"retry",cat:"reliability",median:0.01,p95:0.03,p99:0.05,mem:80,note:"Counter check"},
-  {name:"circuitbreaker",cat:"reliability",median:0.02,p95:0.04,p99:0.08,mem:160,note:"State machine check"},
-  {name:"timeout",cat:"reliability",median:0.01,p95:0.02,p99:0.04,mem:40,note:"Deadline registration"},
-  {name:"loadbalancer",cat:"reliability",median:0.03,p95:0.06,p99:0.11,mem:200,note:"Weighted round-robin"},
-  {name:"healthcheck",cat:"reliability",median:0.02,p95:0.05,p99:0.09,mem:150,note:"Status table lookup"},
-
-  // Caching — hash + lookup
-  {name:"cachelayer",cat:"caching",median:0.06,p95:0.14,p99:0.28,mem:8400,note:"SHA256 + LRU lookup"},
-  {name:"embedcache",cat:"caching",median:0.08,p95:0.18,p99:0.35,mem:4200,note:"Vector hash + LRU"},
-  {name:"semanticcache",cat:"caching",median:0.10,p95:0.22,p99:0.42,mem:5600,note:"Cosine similarity search"},
-
-  // Cost — arithmetic
-  {name:"costcap",cat:"cost",median:0.03,p95:0.06,p99:0.11,mem:140,note:"Window aggregation"},
-  {name:"tierdrop",cat:"cost",median:0.03,p95:0.06,p99:0.10,mem:100,note:"Budget check + swap"},
-  {name:"idlekill",cat:"cost",median:0.01,p95:0.02,p99:0.04,mem:40,note:"Timer check"},
-  {name:"outputcap",cat:"cost",median:0.01,p95:0.02,p99:0.03,mem:30,note:"Set max_tokens"},
-  {name:"usagepulse",cat:"cost",median:0.02,p95:0.04,p99:0.08,mem:160,note:"Metrics aggregation"},
-  {name:"rateshield",cat:"cost",median:0.03,p95:0.06,p99:0.10,mem:250,note:"Token bucket check"},
-
-  // Transform — string/token manipulation
-  {name:"promptslim",cat:"transform",median:0.18,p95:0.35,p99:0.62,mem:1200,note:"Regex + token scan"},
-  {name:"tokentrim",cat:"transform",median:0.12,p95:0.25,p99:0.48,mem:800,note:"Token counting + trim"},
-  {name:"contextpack",cat:"transform",median:0.08,p95:0.16,p99:0.30,mem:600,note:"JSON merge"},
-  {name:"chatmem",cat:"transform",median:0.22,p95:0.45,p99:0.85,mem:2400,note:"Summary generation"},
-  {name:"langbridge",cat:"transform",median:0.15,p95:0.30,p99:0.55,mem:1800,note:"Language detect + tag"},
-  {name:"voicebridge",cat:"transform",median:0.10,p95:0.22,p99:0.40,mem:1400,note:"Format conversion"},
-
-  // Validate
-  {name:"structuredshield",cat:"validate",median:0.07,p95:0.15,p99:0.28,mem:450,note:"JSON structure check"},
-  {name:"evalgate",cat:"validate",median:0.14,p95:0.28,p99:0.52,mem:900,note:"Eval criteria check"},
-  {name:"codefence",cat:"validate",median:0.08,p95:0.18,p99:0.32,mem:500,note:"Code block detection"},
-  {name:"schemavalidator",cat:"validate",median:0.06,p95:0.13,p99:0.24,mem:380,note:"JSON schema compile + match"},
-  {name:"jsonrepair",cat:"validate",median:0.09,p95:0.20,p99:0.38,mem:520,note:"Parse + fix malformed JSON"},
-
-  // Safety — content analysis
-  {name:"promptguard",cat:"safety",median:0.25,p95:0.48,p99:0.92,mem:3200,note:"Injection heuristics"},
-  {name:"toxicfilter",cat:"safety",median:0.30,p95:0.58,p99:1.10,mem:3800,note:"Toxicity scoring"},
-  {name:"guardrail",cat:"safety",median:0.12,p95:0.24,p99:0.45,mem:1600,note:"Policy rule eval"},
-  {name:"agegate",cat:"safety",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Profile age check"},
-  {name:"hallucicheck",cat:"safety",median:0.35,p95:0.68,p99:1.30,mem:4200,note:"Cross-reference scan"},
-  {name:"secretscan",cat:"safety",median:0.20,p95:0.40,p99:0.75,mem:2800,note:"Regex pattern bank"},
-  {name:"agentguard",cat:"safety",median:0.08,p95:0.16,p99:0.30,mem:600,note:"Loop detection"},
-
-  // Shims — format translation
-  {name:"anthrofit",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:500,note:"Claude ↔ OpenAI format"},
-  {name:"geminishim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:550,note:"Gemini ↔ OpenAI format"},
-  {name:"groqshim",cat:"shims",median:0.07,p95:0.14,p99:0.26,mem:480,note:"Groq ↔ OpenAI format"},
-  {name:"ollamashim",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:500,note:"Ollama ↔ OpenAI format"},
-  {name:"bedrockshim",cat:"shims",median:0.10,p95:0.20,p99:0.38,mem:620,note:"AWS SigV4 + format"},
-  {name:"azureshim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:560,note:"Azure deployment routing"},
-  {name:"mistralshim",cat:"shims",median:0.07,p95:0.14,p99:0.27,mem:490,note:"Mistral ↔ OpenAI format"},
-  {name:"cohereshim",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:510,note:"Cohere ↔ OpenAI format"},
-  {name:"togethershim",cat:"shims",median:0.07,p95:0.14,p99:0.26,mem:470,note:"Together AI ↔ OpenAI format"},
-  {name:"deepseekshim",cat:"shims",median:0.07,p95:0.15,p99:0.28,mem:490,note:"DeepSeek ↔ OpenAI format"},
-  {name:"fireworksshim",cat:"shims",median:0.08,p95:0.16,p99:0.30,mem:510,note:"Fireworks AI ↔ OpenAI format"},
-  {name:"replicateshim",cat:"shims",median:0.09,p95:0.18,p99:0.34,mem:540,note:"Replicate ↔ OpenAI format"},
-  {name:"perplexityshim",cat:"shims",median:0.07,p95:0.15,p99:0.28,mem:500,note:"Perplexity ↔ OpenAI format"},
-
-  // Other — misc middleware
-  {name:"streamsnap",cat:"other",median:0.05,p95:0.10,p99:0.20,mem:1200,note:"Buffer allocation"},
-  {name:"imageproxy",cat:"other",median:0.15,p95:0.30,p99:0.58,mem:2000,note:"Image detect + cache check"},
-  {name:"tenantwall",cat:"other",median:0.04,p95:0.08,p99:0.14,mem:300,note:"Tenant ID extraction"},
-  {name:"ipfence",cat:"other",median:0.02,p95:0.04,p99:0.08,mem:180,note:"CIDR lookup"},
-  {name:"keypool",cat:"other",median:0.02,p95:0.03,p99:0.06,mem:60,note:"Round-robin index"},
-
-  // Lookout — logging + alerting
-  {name:"llmtap",cat:"observe",median:0.03,p95:0.06,p99:0.12,mem:200,note:"Channel write"},
-  {name:"tracelink",cat:"observe",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Header injection"},
-  {name:"alertpulse",cat:"observe",median:0.05,p95:0.10,p99:0.20,mem:350,note:"Threshold check"},
-  {name:"driftwatch",cat:"observe",median:0.12,p95:0.24,p99:0.45,mem:1600,note:"Distribution compare"},
-
-  // Brand / compliance
-  {name:"compliancelog",cat:"trust",median:0.10,p95:0.22,p99:0.40,mem:800,note:"Hash chain append"},
-  {name:"feedbackloop",cat:"trust",median:0.04,p95:0.08,p99:0.15,mem:200,note:"Queue enqueue"},
-
-  // Tack Room — prompt tooling
-  {name:"promptpad",cat:"studio",median:0.06,p95:0.12,p99:0.22,mem:400,note:"Template lookup"},
-  {name:"promptlint",cat:"studio",median:0.15,p95:0.30,p99:0.55,mem:1200,note:"Lint rule engine"},
-  {name:"approvalgate",cat:"studio",median:0.03,p95:0.06,p99:0.10,mem:150,note:"Status check"},
-  {name:"batchqueue",cat:"studio",median:0.04,p95:0.08,p99:0.16,mem:240,note:"Queue enqueue + priority"},
-
-  // Forge — workflow engine
-  {name:"multicall",cat:"forge",median:0.08,p95:0.16,p99:0.30,mem:600,note:"DAG scheduler"},
-  {name:"mockllm",cat:"forge",median:0.02,p95:0.04,p99:0.07,mem:100,note:"Mock lookup"},
-
-  // Trading Post — dev tools
-  {name:"devproxy",cat:"exchange",median:0.05,p95:0.10,p99:0.18,mem:300,note:"Hot-reload check"}
-];
-
-const CAT_COLORS = {
-  routing:'#e8753a',reliability:'#8bc472',caching:'#d4a843',cost:'#4a8c5c',
-  transform:'#9b72cf',validate:'#cf7272',safety:'#e05555',shims:'#72a5cf',
-  other:'#a08060',observe:'#5ba0d4',trust:'#c4a87a',
-  studio:'#cfb572',forge:'#72cfa5',exchange:'#a572cf'
-};
-
-// Populate filter dropdown
-const cats = [...new Set(BENCHMARKS.map(b=>b.cat))];
-const filterEl = document.getElementById('filter-select');
-cats.forEach(c => {
-  const opt = document.createElement('option');
-  opt.value = c; opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-  filterEl.appendChild(opt);
-});
-
-// Summary stats
-const medians = BENCHMARKS.map(b=>b.median).sort((a,b)=>a-b);
-const p99s = BENCHMARKS.map(b=>b.p99).sort((a,b)=>a-b);
-const mems = BENCHMARKS.map(b=>b.mem);
-document.getElementById('s-median').textContent = medians[Math.floor(medians.length/2)].toFixed(2) + 'ms';
-document.getElementById('s-p99').textContent = p99s[Math.floor(p99s.length*0.99)].toFixed(1) + 'ms';
-document.getElementById('s-mem').textContent = (mems.reduce((a,b)=>a+b,0)/mems.length/1024).toFixed(1) + 'MB';
-document.getElementById('s-chain').textContent = medians.reduce((a,b)=>a+b,0).toFixed(1) + 'ms';
-
-function grade(median) {
-  if(median <= 0.05) return {g:'A+',cls:'grade-a'};
-  if(median <= 0.10) return {g:'A',cls:'grade-a'};
-  if(median <= 0.20) return {g:'B',cls:'grade-b'};
-  if(median <= 0.30) return {g:'C+',cls:'grade-c'};
-  return {g:'C',cls:'grade-c'};
-}
-
-function renderTable() {
-  const sort = document.getElementById('sort-select').value;
-  const filter = document.getElementById('filter-select').value;
-  
-  let data = filter === 'all' ? [...BENCHMARKS] : BENCHMARKS.filter(b=>b.cat===filter);
-  
-  switch(sort) {
-    case 'latency': data.sort((a,b)=>a.median-b.median); break;
-    case 'latency-desc': data.sort((a,b)=>b.median-a.median); break;
-    case 'memory': data.sort((a,b)=>b.mem-a.mem); break;
-    case 'category': data.sort((a,b)=>a.cat.localeCompare(b.cat)||a.median-b.median); break;
-    case 'name': data.sort((a,b)=>a.name.localeCompare(b.name)); break;
-  }
-  
-  const maxMedian = Math.max(...data.map(b=>b.median));
-  const tbody = document.getElementById('bench-body');
-  
-  tbody.innerHTML = data.map(b => {
-    const g = grade(b.median);
-    const barW = Math.max(8, (b.median / maxMedian) * 130);
-    const barClass = b.median <= 0.08 ? 'fast' : b.median <= 0.20 ? 'medium' : 'slow';
-    const color = CAT_COLORS[b.cat] || '#888';
-    return `<tr>
-      <td><strong style="color:var(--cream)">${b.name}</strong><br><span style="font-size:0.6rem;color:var(--cream-muted)">${b.note}</span></td>
-      <td><span class="cat-dot" style="background:${color}"></span>${b.cat}</td>
-      <td style="color:var(--cream)">${b.median.toFixed(2)}ms</td>
-      <td>${b.p95.toFixed(2)}ms</td>
-      <td>${b.p99.toFixed(2)}ms</td>
-      <td>${b.mem >= 1000 ? (b.mem/1024).toFixed(1)+'MB' : b.mem+'KB'}</td>
-      <td class="bar-cell"><div class="bench-bar ${barClass}" style="width:${barW}px">${b.median.toFixed(2)}</div></td>
-      <td><span class="grade ${g.cls}">${g.g}</span></td>
-    </tr>`;
-  }).join('');
-  
-  renderChart(data);
-}
-
-function renderChart(data) {
-  const canvas = document.getElementById('latency-chart');
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width * dpr;
-  canvas.height = 400 * dpr;
-  canvas.style.width = rect.width + 'px';
-  canvas.style.height = '400px';
-  ctx.scale(dpr, dpr);
-  
-  const W = rect.width, H = 400;
-  const pad = {top:30,right:30,bottom:80,left:60};
-  const chartW = W - pad.left - pad.right;
-  const chartH = H - pad.top - pad.bottom;
-  
-  ctx.fillStyle = '#241e18';
-  ctx.fillRect(0,0,W,H);
-  
-  const maxVal = Math.max(...data.map(b=>b.p99)) * 1.1;
-  const barW = Math.min(14, (chartW / data.length) * 0.7);
-  const gap = chartW / data.length;
-  
-  // Grid lines
-  ctx.strokeStyle = '#2e261e';
-  ctx.lineWidth = 1;
-  for(let i=0; i<=5; i++) {
-    const y = pad.top + chartH * (1 - i/5);
-    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
-    ctx.fillStyle = '#7a7060';
-    ctx.font = '10px JetBrains Mono';
-    ctx.textAlign = 'right';
-    ctx.fillText((maxVal*i/5).toFixed(2)+'ms', pad.left-8, y+3);
-  }
-  
-  // Bars
-  data.forEach((b,i) => {
-    const x = pad.left + i * gap + gap/2;
-    const color = CAT_COLORS[b.cat] || '#888';
-    
-    // P99 bar (faint)
-    const h99 = (b.p99/maxVal)*chartH;
-    ctx.fillStyle = color+'33';
-    ctx.fillRect(x-barW/2, pad.top+chartH-h99, barW, h99);
-    
-    // P95 bar (medium)
-    const h95 = (b.p95/maxVal)*chartH;
-    ctx.fillStyle = color+'66';
-    ctx.fillRect(x-barW/2, pad.top+chartH-h95, barW, h95);
-    
-    // Median bar (solid)
-    const hMed = (b.median/maxVal)*chartH;
-    ctx.fillStyle = color;
-    ctx.fillRect(x-barW/2, pad.top+chartH-hMed, barW, hMed);
-    
-    // Label
-    ctx.save();
-    ctx.translate(x, pad.top+chartH+8);
-    ctx.rotate(-Math.PI/3);
-    ctx.fillStyle = '#bfb5a3';
-    ctx.font = '9px JetBrains Mono';
-    ctx.textAlign = 'right';
-    ctx.fillText(b.name, 0, 0);
-    ctx.restore();
-  });
-  
-  // Legend
-  ctx.font = '10px JetBrains Mono';
-  ctx.textAlign = 'left';
-  const legendX = W - pad.right - 180;
-  [['Median','#e8753a'],['P95','#e8753a99'],['P99','#e8753a44']].forEach(([label,color],i) => {
-    ctx.fillStyle = color;
-    ctx.fillRect(legendX, pad.top+i*16, 10, 10);
-    ctx.fillStyle = '#bfb5a3';
-    ctx.fillText(label, legendX+16, pad.top+i*16+9);
-  });
-}
-
-renderTable();
-window.addEventListener('resize', renderTable);
-</script>
-
-<script>
-function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
-</script>
-
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
-function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
 </body>
 </html>

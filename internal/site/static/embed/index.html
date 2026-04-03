@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Embeddable Widgets — Stockyard</title>
+<meta name="description" content="Embed Stockyard status pages, uptime badges, feedback forms, and analytics on your own website with a single script tag.">
+<link rel="canonical" href="https://stockyard.dev/embed/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',Consolas,monospace;--serif:'Libre Baskerville',Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--leather:#7a6544;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28;--green:#2d7a3e}}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}a{color:var(--rl)}
+.wrap{max-width:820px;margin:0 auto;padding:2rem}
+h1{font-size:clamp(1.4rem,3.5vw,2rem);text-align:center;margin-bottom:.5rem}
+h2{font-size:1.1rem;margin:2rem 0 .6rem}
+.sub{color:var(--cd);font-style:italic;text-align:center;margin-bottom:2rem}
+.widget{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin:1rem 0}
+.widget-title{font-family:var(--mono);font-size:.8rem;color:var(--rl);margin-bottom:.5rem}
+.widget-desc{font-size:.85rem;color:var(--cd);margin-bottom:1rem}
+pre{background:var(--bg);border:1px solid var(--bg3);padding:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--cream);overflow-x:auto;cursor:pointer;margin:.5rem 0}
+pre:hover{border-color:var(--leather)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="font-family:var(--mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem;text-align:center">Integrations</div>
+<h1>Embeddable Widgets</h1>
+<p class="sub">Add Stockyard-powered widgets to your own site with one line of code.</p>
+
+<div class="widget">
+<div class="widget-title">Uptime Badge</div>
+<div class="widget-desc">Show your service uptime powered by Bellwether. Automatically updates.</div>
+<pre onclick="navigator.clipboard.writeText(this.textContent)">&lt;img src="http://YOUR_SERVER:8650/api/badge?service=api" alt="Uptime"&gt;</pre>
+</div>
+
+<div class="widget">
+<div class="widget-title">Status Page</div>
+<div class="widget-desc">Embed a live status indicator powered by Paddock on your homepage or docs.</div>
+<pre onclick="navigator.clipboard.writeText(this.textContent)">&lt;iframe src="http://YOUR_SERVER:8680/embed/status" style="width:100%;height:200px;border:none"&gt;&lt;/iframe&gt;</pre>
+</div>
+
+<div class="widget">
+<div class="widget-title">Feedback Form</div>
+<div class="widget-desc">Embed a feedback widget powered by Podium. Submissions go straight to your dashboard.</div>
+<pre onclick="navigator.clipboard.writeText(this.textContent)">&lt;iframe src="http://YOUR_SERVER:8830/embed/form" style="width:100%;height:300px;border:none"&gt;&lt;/iframe&gt;</pre>
+</div>
+
+<div class="widget">
+<div class="widget-title">NPS Survey</div>
+<div class="widget-desc">Embed a Net Promoter Score survey powered by Surveyor II.</div>
+<pre onclick="navigator.clipboard.writeText(this.textContent)">&lt;iframe src="http://YOUR_SERVER:8850/embed/nps" style="width:100%;height:180px;border:none"&gt;&lt;/iframe&gt;</pre>
+</div>
+
+<div class="widget">
+<div class="widget-title">Analytics Pixel</div>
+<div class="widget-desc">Privacy-first page view tracking powered by Headcount. No cookies, no consent banner.</div>
+<pre onclick="navigator.clipboard.writeText(this.textContent)">&lt;script defer src="http://YOUR_SERVER:8690/track.js" data-site="my-site"&gt;&lt;/script&gt;</pre>
+</div>
+
+<div class="widget">
+<div class="widget-title">Link Shortener Redirect</div>
+<div class="widget-desc">Use Lasso short links anywhere. No embed needed, just use the short URL.</div>
+<pre onclick="navigator.clipboard.writeText(this.textContent)">curl -X POST http://YOUR_SERVER:8780/api/links -d '{"url":"https://example.com","slug":"my-link"}'
+# Result: http://YOUR_SERVER:8780/my-link</pre>
+</div>
+
+<p style="color:var(--cd);margin-top:2rem;font-size:.85rem">Replace <code style="font-family:var(--mono);color:var(--rl)">YOUR_SERVER</code> with your server's IP or domain. All embeds work over HTTP or HTTPS.</p>
+
+<div style="text-align:center;margin-top:2rem;font-family:var(--mono);font-size:.8rem">
+<a href="/tools/">All 150 tools</a> · <a href="/docs/quickstart/">Quickstart</a> · <a href="/deploy/">Deploy</a>
+</div>
+</div>
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+</body>
+</html>

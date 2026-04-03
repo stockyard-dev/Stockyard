@@ -67,6 +67,8 @@ Usage:
   %s              Start the service
   %s doctor       Check environment
   %s backup [path] Backup database
+  %s export        Export data as JSON
+  %s import <file> Import data from JSON
   %s --version    Print version
   %s --health     Quick health check
 
@@ -77,7 +79,7 @@ Environment:
 Dashboard: http://localhost:PORT/ui
 API:       http://localhost:PORT/api
 Docs:      https://stockyard.dev/%s/
-`, pc.Name, pc.Version, binary, binary, binary, binary, binary, pc.Product)
+`, pc.Name, pc.Version, binary, binary, binary, binary, binary, binary, binary, pc.Product)
 		os.Exit(0)
 	}
 

@@ -1205,6 +1205,78 @@ Docs:      https://stockyard.dev/docs
 		json.NewEncoder(w).Encode(entries[:limit])
 	})
 
+
+	// SQLite read-only query endpoint (admin-only)
+	srv.Mux().HandleFunc("POST /api/query", func(w http.ResponseWriter, r *http.Request) {
+		// Require admin key
+		key := r.Header.Get("X-Admin-Key")
+		if key == "" {
+			key = r.Header.Get("Authorization")
+			if strings.HasPrefix(key, "Bearer ") {
+				key = key[7:]
+			}
+		}
+		adminKey := os.Getenv("STOCKYARD_ADMIN_KEY")
+		if adminKey == "" || key != adminKey {
+			w.WriteHeader(401)
+			json.NewEncoder(w).Encode(map[string]string{"error": "admin key required"})
+			return
+		}
+		
+		var req struct {
+			SQL string `json:"sql"`
+		}
+		json.NewDecoder(r.Body).Decode(&req)
+		if req.SQL == "" {
+			w.WriteHeader(400)
+			json.NewEncoder(w).Encode(map[string]string{"error": "sql field required"})
+			return
+		}
+		
+		// Block writes
+		upper := strings.ToUpper(strings.TrimSpace(req.SQL))
+		if !strings.HasPrefix(upper, "SELECT") && !strings.HasPrefix(upper, "PRAGMA") && !strings.HasPrefix(upper, "EXPLAIN") {
+			w.WriteHeader(400)
+			json.NewEncoder(w).Encode(map[string]string{"error": "read-only: only SELECT, PRAGMA, and EXPLAIN allowed"})
+			return
+		}
+		
+		rows, err := db.Conn().Query(req.SQL)
+		if err != nil {
+			w.WriteHeader(400)
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+		defer rows.Close()
+		
+		cols, _ := rows.Columns()
+		var results []map[string]any
+		for rows.Next() {
+			vals := make([]any, len(cols))
+			ptrs := make([]any, len(cols))
+			for i := range vals {
+				ptrs[i] = &vals[i]
+			}
+			rows.Scan(ptrs...)
+			row := make(map[string]any)
+			for i, col := range cols {
+				row[col] = vals[i]
+			}
+			results = append(results, row)
+			if len(results) >= 1000 {
+				break
+			}
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"columns": cols,
+			"rows":    results,
+			"count":   len(results),
+		})
+	})
+	log.Printf("  SQL Query: POST /api/query (admin-only, read-only)")
+
 	// OpenAPI spec
 	srv.Mux().HandleFunc("GET /api/openapi.json", apiserver.HandleOpenAPI)
 	log.Printf("  OpenAPI:   http://localhost:%d/api/openapi.json", cfg.Port)
