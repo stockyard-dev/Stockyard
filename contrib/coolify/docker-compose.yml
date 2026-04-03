@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  stockyard:
+    image: ghcr.io/stockyard-dev/stockyard:latest
+    container_name: stockyard
+    ports:
+      - "4200:4200"
+    environment:
+      - PORT=4200
+      - DATA_DIR=/data
+    volumes:
+      - stockyard-data:/data
+    restart: unless-stopped
+    labels:
+      - "coolify.managed=true"
+      - "coolify.name=Stockyard"
+      - "coolify.description=150 self-hosted developer tools in one binary"
+
+volumes:
+  stockyard-data:
