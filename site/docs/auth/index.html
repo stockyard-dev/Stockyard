@@ -97,7 +97,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -257,7 +256,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>License keys are available at <a href="/pricing/">stockyard.dev/pricing</a>. Pro and Enterprise keys unlock unlimited requests, unlimited users, and extended retention. All features and modules are available on every tier.</p>
 
-
     <h2 id="api-keys">API Key Types</h2>
     <p>Stockyard uses two kinds of keys:</p>
     <table class="endpoint-table">
@@ -359,7 +357,6 @@ providers:
 }
 </pre>
 
-
     <h2 id="multi-tenant">Multi-Tenant Setup</h2>
     <p>Run Stockyard for multiple teams or customers. Each user gets isolated usage tracking and provider keys:</p>
     <pre>
@@ -394,7 +391,6 @@ providers:
   -d '{"api_key": "sk-proj-..."}'</span>
 </pre>
     <div class="note"><strong>BYOK model:</strong> Stockyard never stores provider keys in plaintext. Keys are encrypted at rest and never appear in logs, traces, or API responses.</div>
-
 
     <h2 id="auth-security">Security Best Practices</h2>
     <p>Follow these practices for production deployments:</p>

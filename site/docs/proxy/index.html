@@ -97,7 +97,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -258,7 +257,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">curl http://localhost:4200/api/proxy/routes</span>
 </pre>
 
-
     <h2 id="toggle-modules">Toggling Modules</h2>
     <p>Enable or disable any module at runtime without restart:</p>
     <pre>
@@ -371,7 +369,6 @@ modules:
 }
 </pre>
 
-
     <h2 id="caching-patterns">Caching Patterns</h2>
     <p>Stockyard offers three caching layers, each suited to different use cases:</p>
     <table class="endpoint-table">
@@ -407,7 +404,6 @@ for module in promptguard toxicfilter guardrail secretscan agentguard; do
 done
 </pre>
     <div class="note"><strong>Performance:</strong> The full 76-module chain adds ~4ms of overhead. Safety modules are the heaviest at 0.06&ndash;0.35ms each, but still negligible compared to LLM provider latency (500ms&ndash;3s).</div>
-
 
     <h2 id="rate-limiting">Rate Limiting</h2>
     <p>The <code>rateshield</code> module enforces per-user rate limits using a token bucket algorithm:</p>

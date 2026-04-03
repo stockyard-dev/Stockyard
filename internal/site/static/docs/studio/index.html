@@ -97,7 +97,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -249,7 +248,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/studio/">Studio product page</a> and the Diff view (coming soon).</p>
 
-
     <h2 id="templates">Prompt Templates</h2>
     <p>Create versioned prompt templates for reuse and A/B testing:</p>
     <pre>
@@ -350,7 +348,6 @@ apps:
 }
 </pre>
 
-
     <h2 id="template-variables">Template Variables</h2>
     <p>Templates support Mustache-style variables (<code>{{variable}}</code>) that are substituted at runtime. This lets you reuse the same prompt across different contexts:</p>
     <pre>
@@ -370,7 +367,6 @@ apps:
     <h2 id="eval-criteria">Evaluation Criteria</h2>
     <p>Experiments support custom evaluation criteria. Built-in criteria include: helpfulness, conciseness, tone, accuracy, and relevance. Define custom criteria as natural language descriptions that an evaluator model scores on a 1&ndash;5 scale.</p>
     <div class="note"><strong>Cost control:</strong> Use <code>mockllm</code> during prompt development to test template rendering and workflow logic without making real API calls.</div>
-
 
     <h2 id="studio-workflow">Typical Tack Room Workflow</h2>
     <p>A typical prompt engineering workflow with Tack Room:</p>

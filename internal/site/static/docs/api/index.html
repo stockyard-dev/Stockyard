@@ -104,7 +104,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -265,7 +264,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <span class="cmd">curl http://localhost:4200/api/openapi.json \
   -H "Authorization: Bearer sy_admin_..." | python3 -m json.tool</span>
 </pre>
-
 
     <h2 id="system">System</h2>
     <table class="endpoint-table">
@@ -554,7 +552,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
     <h2 id="feral-api">Feral &mdash; Red-Team Testing (1 free + 12 paid endpoints)</h2>
     <p>Adversarial security testing for your LLM stack. The quickscan is free on all tiers. Full campaign management requires Team.</p>
-    <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--green-light);border:1px solid var(--green-light);padding:0.15rem 0.5rem;display:inline-block;margin-bottom:1rem">Quickscan: Free &bull; Full suite: Team $299.99/mo</span>
+    <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--green-light);border:1px solid var(--green-light);padding:0.15rem 0.5rem;display:inline-block;margin-bottom:1rem">Quickscan: Free &bull; Full suite: </span>
     <table class="endpoint-table">
       <tr><th>Method</th><th>Path</th><th>Description</th></tr>
       <tr><td class="method" style="color:var(--rust-light)">POST</td><td>/api/feral/quickscan</td><td>Free 5-probe security audit &mdash; instant report card, no tier gating</td></tr>
@@ -573,7 +571,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   -d '{"api_key":"$OPENAI_API_KEY"}'</span>
 <span class="comment"># → {"probes_run":5,"blocked":3,"bypassed":2,"grade":"C","score":"3/5",...}</span>
 
-<span class="comment"># Full hunt — 29 probes with evolutionary mutation (Team tier)</span>
+<span class="comment"># Full hunt — 29 probes with evolutionary mutation (Pro tier)</span>
 <span class="cmd">curl -X POST /api/feral/campaigns \
   -d '{"name":"audit-q1","target_url":"http://localhost:4200/v1/chat/completions"}'</span>
 <span class="cmd">curl -X POST /api/feral/campaigns/{id}/hunt \

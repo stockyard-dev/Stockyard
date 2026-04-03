@@ -97,7 +97,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -251,7 +250,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/observe/">Observe product page</a> for screenshots of the dashboard.</p>
 
-
     <h2 id="traces">Traces</h2>
     <p>Every request through the proxy creates a trace. Query recent traces:</p>
     <pre>
@@ -358,7 +356,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <div class="note"><strong>Tip:</strong> The built-in dashboard at <code>/ui</code> uses these same API endpoints. You can build your own monitoring UI using the same data.</div>
 
-
     <h2 id="observe-config">Configuration</h2>
     <pre>
 <span class="comment"># stockyard.yaml</span>
@@ -391,7 +388,6 @@ apps:
     <h2 id="export-data">Exporting Data</h2>
     <p>Export traces and cost data for external analysis. The Lookout API supports pagination via <code>offset</code> and <code>limit</code> parameters, making it straightforward to iterate through large datasets.</p>
     <div class="note"><strong>Retention:</strong> Traces older than <code>retention_days</code> are automatically pruned. Export regularly if you need long-term storage.</div>
-
 
     <h2 id="built-in-dashboard">Built-in Dashboard</h2>
     <p>Stockyard includes a built-in dashboard at <code>/ui</code> that displays real-time metrics, cost charts, and trace logs. The dashboard uses the same API endpoints documented here, so you can also build custom dashboards.</p>

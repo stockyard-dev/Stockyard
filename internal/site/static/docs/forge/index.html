@@ -97,7 +97,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -247,7 +246,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/forge/">Forge product page</a> and the <a href="/forge/">visual workflow builder</a>.</p>
 
-
     <h2 id="create-workflow">Creating Workflows</h2>
     <p>Forge uses DAG (directed acyclic graph) definitions to chain LLM calls, transforms, and tool invocations:</p>
     <pre>
@@ -349,7 +347,6 @@ apps:
 </pre>
     <div class="note"><strong>Tip:</strong> Use the <code>mockllm</code> module during workflow development to get deterministic outputs without burning tokens.</div>
 
-
     <h2 id="step-types">Step Types</h2>
     <p>Forge supports several step types within a workflow:</p>
     <table class="endpoint-table">
@@ -380,7 +377,6 @@ apps:
     <h2 id="workflow-tips">Workflow Tips</h2>
     <div class="note"><strong>Testing:</strong> Use <code>mockllm</code> during development to test workflow structure without API calls. Enable it globally or per-step with a test flag.</div>
     <div class="note"><strong>Cost visibility:</strong> Each workflow run reports <code>total_cost_usd</code> so you can track per-workflow spending in Lookout.</div>
-
 
     <h2 id="variable-reference">Variable References</h2>
     <p>Steps reference outputs from other steps using <code>{{step_id.output}}</code> syntax. The Forge engine resolves these references and passes data between steps automatically:</p>

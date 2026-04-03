@@ -143,7 +143,6 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
   </div>
 </section>
 
-
 <div class="section">
   <div class="section-label">What the proxy actually does</div>
   <p>Stockyard sits between your application and the LLM provider. Your app sends requests to Stockyard's endpoint instead of directly to OpenAI, Anthropic, or Google. Stockyard forwards the request to the configured provider, applies any active middleware (caching, guardrails, cost tracking, rate limiting), and returns the response. Your application code does not change beyond updating one URL. The proxy speaks the OpenAI-compatible API format, so any SDK or HTTP client that works with OpenAI works with Stockyard without modification.</p>

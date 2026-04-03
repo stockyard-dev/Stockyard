@@ -141,7 +141,6 @@ footer a:hover{color:var(--rust-light)}
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -152,7 +151,6 @@ footer a:hover{color:var(--rust-light)}
   .console-tabs{flex-wrap:wrap;gap:0}
   .console-tab{font-size:0.65rem;padding:0.4rem 0.8rem;flex:1;min-width:0;text-align:center}
 }
-
 
 /* ===== GUIDE RESPONSIVE ===== */
 @media(max-width:768px){
@@ -696,7 +694,6 @@ function showLang(name) {
   event.target.classList.add('active');
 }
 </script>
-
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}

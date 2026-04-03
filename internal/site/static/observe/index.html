@@ -146,7 +146,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -334,7 +333,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </div>
 </section>
 
-
 <div class="section">
   <div class="section-label">Tracing without the third-party dependency</div>
   <p>Most LLM observability tools are SaaS products that require sending your prompts and completions to their servers. Helicone, Langfuse, and Braintrust all see your data in transit. Lookout runs inside the Stockyard proxy — traces never leave your infrastructure. Every request is automatically recorded with timing data for each middleware step, token counts for input and output, the model and provider used, and the full request and response bodies (configurable — you can redact or skip body logging for sensitive workloads).</p>
@@ -349,7 +347,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="/" class="btn btn-secondary">Back to platform</a>
   </div>
 </section>
-
 
 <section class="related-apps">
   <div class="related-label">Other apps in the platform</div>
@@ -393,7 +390,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
   </p>
 </footer>
-
 
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}

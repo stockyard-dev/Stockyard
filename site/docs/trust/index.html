@@ -97,7 +97,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   .nav-overlay.open{display:block}
 }
 
-
 /* ===== GLOBAL MOBILE FIXES ===== */
 @media(max-width:600px){
   .code-block,pre{font-size:0.7rem;padding:0.8rem;max-width:calc(100vw - 2.4rem);overflow-x:auto}
@@ -238,7 +237,6 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </pre>
     <p>See the <a href="/trust/">Trust product page</a> for the ledger visualization.</p>
 
-
     <h2 id="ledger">Audit Ledger</h2>
     <p>Brand maintains a hash-chained, append-only ledger of every LLM interaction. Each entry is linked to the previous via SHA-256, making tampering detectable:</p>
     <pre>
@@ -332,7 +330,6 @@ apps:
   -d '{"enabled": true}'</span>
 </pre>
 
-
     <h2 id="chain-verification">Chain Verification</h2>
     <p>The hash chain ensures ledger integrity. Each entry&rsquo;s hash includes the previous entry&rsquo;s hash, creating a tamper-evident chain similar to a blockchain:</p>
     <pre>
@@ -359,7 +356,6 @@ entry[n].hash = SHA256(entry[n].data + entry[n-1].hash)
       <tr><td>Financial compliance</td><td>Policy rules blocking financial advice patterns</td></tr>
     </table>
     <div class="note"><strong>Export:</strong> Use <code>/api/config/export</code> to create snapshots of your compliance configuration for auditors.</div>
-
 
     <h2 id="trust-config-yaml">Full Configuration Example</h2>
     <pre>
