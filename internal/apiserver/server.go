@@ -10,6 +10,9 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"runtime"
+	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -242,6 +245,9 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 
 // Start starts the HTTP server.
 func (s *Server) Start() error {
+	// Start background maintenance (WAL checkpoint every hour, backup daily)
+	go s.maintenanceLoop()
+
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", s.port),
 		Handler:           s.corsMiddleware(s.mux),
@@ -300,7 +306,7 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 		// Generate request ID (monotonic counter + timestamp suffix for uniqueness)
 		id := fmt.Sprintf("req_%d_%x", atomic.AddInt64(&reqCounter, 1), time.Now().UnixMicro()&0xFFFF)
 		w.Header().Set("X-Request-Id", id)
-		w.Header().Set("X-Stockyard-Version", "1.1.0")
+		w.Header().Set("X-Stockyard-Version", stockyardVersion())
 
 		origin := r.Header.Get("Origin")
 		if corsAllowedOrigin(origin) {
@@ -659,6 +665,19 @@ func (s *Server) handleAdminStats(w http.ResponseWriter, r *http.Request) {
 	stats["product_count"] = CatalogCount()
 	stats["cloud"] = s.db.CloudStats()
 	stats["exchange"] = s.db.ExchangeStats()
+
+	// Runtime metrics for monitoring
+	var mem runtime.MemStats
+	runtime.ReadMemStats(&mem)
+	stats["runtime"] = map[string]any{
+		"goroutines":    runtime.NumGoroutine(),
+		"heap_alloc_mb": float64(mem.HeapAlloc) / 1024 / 1024,
+		"heap_sys_mb":   float64(mem.HeapSys) / 1024 / 1024,
+		"gc_cycles":     mem.NumGC,
+		"gc_pause_ms":   float64(mem.PauseTotalNs) / 1e6,
+		"go_version":    runtime.Version(),
+		"version":       stockyardVersion(),
+	}
 	writeOK(w, stats)
 }
 
@@ -1233,6 +1252,60 @@ func maskKey(key string) string {
 		return "****"
 	}
 	return key[:6] + "..." + key[len(key)-4:]
+}
+
+// maintenanceLoop runs periodic database maintenance tasks.
+func (s *Server) maintenanceLoop() {
+	checkpoint := time.NewTicker(1 * time.Hour)
+	backup := time.NewTicker(24 * time.Hour)
+	defer checkpoint.Stop()
+	defer backup.Stop()
+
+	for {
+		select {
+		case <-checkpoint.C:
+			if s.db != nil && s.db.conn != nil {
+				if _, err := s.db.conn.Exec("PRAGMA wal_checkpoint(TRUNCATE)"); err != nil {
+					log.Printf("maintenance: WAL checkpoint failed: %v", err)
+				}
+			}
+		case <-backup.C:
+			if s.db != nil {
+				backupPath := s.db.path + fmt.Sprintf(".backup-%s", time.Now().Format("2006-01-02"))
+				if err := s.db.Backup(backupPath); err != nil {
+					log.Printf("maintenance: daily backup failed: %v", err)
+				} else {
+					log.Printf("maintenance: daily backup saved to %s", backupPath)
+					// Keep only last 7 backups
+					s.cleanOldBackups(7)
+				}
+			}
+		}
+	}
+}
+
+// cleanOldBackups removes backup files older than the keep count.
+func (s *Server) cleanOldBackups(keep int) {
+	pattern := s.db.path + ".backup-*"
+	matches, _ := filepath.Glob(pattern)
+	if len(matches) <= keep {
+		return
+	}
+	// Sort by name (date-based names sort chronologically)
+	sort.Strings(matches)
+	for _, f := range matches[:len(matches)-keep] {
+		os.Remove(f)
+		log.Printf("maintenance: removed old backup %s", f)
+	}
+}
+
+// stockyardVersion returns the version string from STOCKYARD_VERSION env var,
+// falling back to "dev" if not set (Docker builds inject this via ldflags).
+func stockyardVersion() string {
+	if v := os.Getenv("STOCKYARD_VERSION"); v != "" {
+		return v
+	}
+	return "1.1.0"
 }
 
 func writeOK(w http.ResponseWriter, v any) {
