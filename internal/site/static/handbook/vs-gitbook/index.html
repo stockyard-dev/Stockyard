@@ -93,52 +93,71 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
   <h1 style="font-size:clamp(1.4rem,3.5vw,2rem);margin-bottom:.5rem">Handbook vs GitBook</h1>
   <p style="color:var(--cream-dim,#bfb5a3);font-style:italic;margin-bottom:2rem">GitBook costs $8/user/mo. Handbook is a self-hosted alternative at $0.99/mo.</p>
   
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Pick Handbook when</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">Pick Handbook when</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Handbook is a single Go binary with embedded SQLite. Install with one command and you are running in under a minute. Your data stays on your server. No per-seat pricing, no cloud dependency, no vendor lock-in.</p>
   <pre style="background:var(--bg2,#241e18);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono,monospace);font-size:.8rem;color:var(--cream,#f0e6d3);margin:1rem 0">curl -fsSL https://stockyard.dev/handbook/install.sh | sh</pre>
+  <div style="margin-top:2rem">
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">Quick comparison</h2>
+  <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono,monospace);font-size:.78rem;margin-top:1rem">
+    <thead><tr>
+      <th style="background:var(--bg3,#2e261e);padding:.5rem .8rem;text-align:left;color:var(--leather-light,#c4a87a);font-size:.65rem;text-transform:uppercase;letter-spacing:1px"></th>
+      <th style="background:var(--bg3,#2e261e);padding:.5rem .8rem;text-align:left;color:var(--leather-light,#c4a87a);font-size:.65rem;text-transform:uppercase;letter-spacing:1px">Handbook</th>
+      <th style="background:var(--bg3,#2e261e);padding:.5rem .8rem;text-align:left;color:var(--leather-light,#c4a87a);font-size:.65rem;text-transform:uppercase;letter-spacing:1px">Gitbook</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Hosting</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream,#f0e6d3)">Self-hosted</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Cloud / SaaS</td></tr>
+      <tr><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Dependencies</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream,#f0e6d3)">None (single binary)</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Cloud account</td></tr>
+      <tr><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Data storage</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream,#f0e6d3)">SQLite (your disk)</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Vendor cloud</td></tr>
+      <tr><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Price</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream,#f0e6d3)">Free / $0.99/mo Pro</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Varies</td></tr>
+      <tr><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Setup time</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream,#f0e6d3)">~30 seconds</td><td style="padding:.5rem .8rem;border-bottom:1px solid var(--bg3,#2e261e);color:var(--cream-dim,#bfb5a3)">Account + config</td></tr>
+      <tr><td style="padding:.5rem .8rem;color:var(--cream-dim,#bfb5a3)">Backup</td><td style="padding:.5rem .8rem;color:var(--cream,#f0e6d3)">cp data.db backup.db</td><td style="padding:.5rem .8rem;color:var(--cream-dim,#bfb5a3)">Vendor export</td></tr>
+    </tbody>
+  </table>
+  </div>
+
 </section>
 
 <section style="padding:3rem 2rem;max-width:820px;margin:0 auto;background:var(--bg2,#241e18);border-top:1px solid var(--bg3)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">GitBook strengths</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">GitBook strengths</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">GitBook provides features beyond Handbook's scope including advanced workflows and team collaboration.</p>
 </section>
 
 <section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Making the decision</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">Making the decision</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Teams evaluating these two options typically split on operational simplicity versus feature depth. GitBook at $8/user/mo offers a more complete solution. Handbook at $0.99/mo offers a focused tool that runs anywhere with zero operational overhead. The right choice depends on whether your workflow needs GitBook's additional features or whether the core functionality that both share is sufficient.</p>
 </section>
 
 <section style="padding:3rem 2rem;max-width:820px;margin:0 auto;background:var(--bg2,#241e18);border-top:1px solid var(--bg3)">
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Technical differences</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">Technical differences</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">The architectural gap between Handbook and GitBook shows up in deployment and maintenance. Handbook deploys in 30 seconds with zero dependencies. GitBook requires cloud infrastructure or a managed service.</p>
 </section>
 
 <section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">When to switch</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">When to switch</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Evaluate Handbook alongside GitBook for two weeks. If Handbook handles your daily workflow, migrate before your next GitBook renewal. If it does not, you have identified exactly which features you depend on.</p>
 </section>
 
 <section style="padding:3rem 2rem;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e);border-bottom:1px solid var(--bg3)">
   <div style="max-width:820px;margin:0 auto">
-    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Under the hood</div>
+    <h2 style="font-size:1.15rem;margin-bottom:.8rem">Under the hood</h2>
     <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">From an operational perspective, Handbook and GitBook represent different ends of the complexity spectrum. GitBook at $8/user/mo gets you managed hosting, automatic updates, and support. Handbook at $0.99/mo gets you data ownership, deployment flexibility, and independence from a vendor's business decisions.</p>
   </div>
 </section>
 
 <section style="padding:3rem 2rem;max-width:820px;margin:0 auto">
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Data portability</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">Data portability</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">With GitBook, your data lives on their infrastructure in their format. With Handbook, your data is a SQLite file on your disk. To migrate away from Handbook, write a SQL query. To migrate away from GitBook, use whatever export process they provide and hope it preserves everything.</p>
 </section>
 
 <section style="padding:3rem 2rem;max-width:820px;margin:0 auto;background:var(--bg2,#241e18);border-top:1px solid var(--bg3,#2e261e)">
   <div style="max-width:820px;margin:0 auto">
-    <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">Planning the transition</div>
+    <h2 style="font-size:1.15rem;margin-bottom:.8rem">Planning the transition</h2>
     <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Start by installing Handbook and importing a subset of your data. Run both tools for a week. If Handbook handles 90% of your workflow, the remaining 10% is either features you can live without or features worth paying $8/user/mo for. Most teams discover they use far fewer features than they think.</p>
   </div>
 </section>
 
 <section style="padding:2.5rem 2rem;max-width:820px;margin:0 auto">
-  <div style="font-family:var(--font-mono,monospace);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust,#c45d2c);margin-bottom:1rem">The bottom line</div>
+  <h2 style="font-size:1.15rem;margin-bottom:.8rem">The bottom line</h2>
   <p style="color:var(--cream-dim,#bfb5a3);line-height:1.8">Consider your exit strategy before committing. If you use GitBook for two years and then need to leave — pricing change, acquisition, feature removal — how painful is the migration? With Handbook, your data is a SQLite file you can query, export, or transform with standard tools. That portability is worth considering even if you never exercise it.</p>
 </section>
 <section style="padding:2rem;text-align:center;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3)">
