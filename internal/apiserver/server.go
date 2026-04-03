@@ -323,7 +323,14 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		start := time.Now()
 		next.ServeHTTP(w, r)
+		elapsed := time.Since(start)
+
+		// Log slow requests (>500ms) for debugging
+		if elapsed > 500*time.Millisecond {
+			log.Printf("slow request: %s %s took %s [%s]", r.Method, r.URL.Path, elapsed, id)
+		}
 	})
 }
 
