@@ -82,7 +82,8 @@ func (m *SMTPMailer) SendLicenseKey(to, productName, tier, licenseKey string) er
 	slug := strings.ToLower(productName)
 	slug = strings.ReplaceAll(slug, " ", "")
 	if isKnownTool(slug) {
-		envVar = strings.ToUpper(slug) + "_LICENSE_KEY"
+		// All tools use STOCKYARD_LICENSE_KEY (unified env var)
+		_ = slug // tool slug used for other purposes
 	}
 
 	body := fmt.Sprintf(`Hey!
@@ -224,7 +225,8 @@ func (m *ResendMailer) SendLicenseKey(to, productName, tier, licenseKey string) 
 	slug := strings.ToLower(productName)
 	slug = strings.ReplaceAll(slug, " ", "")
 	if isKnownTool(slug) {
-		envVar = strings.ToUpper(slug) + "_LICENSE_KEY"
+		// All tools use STOCKYARD_LICENSE_KEY (unified env var)
+		_ = slug // tool slug used for other purposes
 	}
 	return m.sendResend(to,
 		fmt.Sprintf("Your %s license key", productName),
