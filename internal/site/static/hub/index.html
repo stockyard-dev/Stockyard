@@ -134,8 +134,8 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 STOCKYARD_LICENSE_KEY=your_key_here stockyard-hub
 
-  Dashboard:  http://localhost:8600/ui
-  API:        http://localhost:8600/api</pre>
+  Dashboard:  http://localhost:9800/ui
+  API:        http://localhost:9800/api</pre>
     <p>Open the dashboard, browse the 150-tool catalog, and click Install on any tool. Hub downloads the binary, sets the license key, and starts it. Click the port number to open that tool's own dashboard.</p>
   </div>
 </section>
@@ -146,19 +146,27 @@ STOCKYARD_LICENSE_KEY=your_key_here stockyard-hub
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:1.5rem">
     <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem">
       <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--rust-light);margin:0 0 .5rem">Install</h3>
-      <p style="font-size:.82rem;margin:0">Browse all 150 tools. Click Install to download the binary. No Docker, no package manager.</p>
+      <p style="font-size:.82rem;margin:0">Browse all 150 tools with search and category filters. Click Install to download the binary. No Docker, no package manager.</p>
     </div>
     <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem">
       <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--green-light);margin:0 0 .5rem">Start / Stop</h3>
       <p style="font-size:.82rem;margin:0">One-click start and stop. Hub sets the port, data directory, and license key automatically.</p>
     </div>
     <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem">
-      <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--gold);margin:0 0 .5rem">Monitor</h3>
-      <p style="font-size:.82rem;margin:0">See which tools are running, healthy, or stopped. Dashboard refreshes every 15 seconds.</p>
+      <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--gold);margin:0 0 .5rem">Health Timeline</h3>
+      <p style="font-size:.82rem;margin:0">Background health checks every 30 seconds. Per-tool status bars show uptime history at a glance. Stored in SQLite.</p>
     </div>
     <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem">
-      <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather-light);margin:0 0 .5rem">License</h3>
-      <p style="font-size:.82rem;margin:0">Set your Complete license key once. Hub propagates it to every tool at startup. No per-tool config.</p>
+      <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--leather-light);margin:0 0 .5rem">Activity Feed</h3>
+      <p style="font-size:.82rem;margin:0">Every install, start, stop, and config change logged with timestamps. See exactly what happened and when.</p>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem">
+      <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--rust-light);margin:0 0 .5rem">License Management</h3>
+      <p style="font-size:.82rem;margin:0">Set your Complete license key from the Settings tab. Hub propagates it to every tool at startup. No per-tool config.</p>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem">
+      <h3 style="font-family:var(--font-mono);font-size:.8rem;color:var(--green-light);margin:0 0 .5rem">Tool Logs</h3>
+      <p style="font-size:.82rem;margin:0">View stdout and stderr for any tool via the API. Debug issues without SSH.</p>
     </div>
   </div>
 </section>
@@ -168,28 +176,34 @@ STOCKYARD_LICENSE_KEY=your_key_here stockyard-hub
     <div class="section-label">API</div>
     <h2>Automate with the API.</h2>
     <pre># List all tools with status
-curl http://localhost:8600/api/tools
+curl http://localhost:9800/api/tools
 
 # Install a tool
-curl -X POST http://localhost:8600/api/tools/corral/install
+curl -X POST http://localhost:9800/api/tools/corral/install
 
 # Start it
-curl -X POST http://localhost:8600/api/tools/corral/start
+curl -X POST http://localhost:9800/api/tools/corral/start
 
 # Check health
-curl http://localhost:8600/api/tools/corral
+curl http://localhost:9800/api/tools/corral
+
+# Health history (all tools)
+curl http://localhost:9800/api/health-history
+
+# Activity log
+curl http://localhost:9800/api/activity
 
 # Stop it
-curl -X POST http://localhost:8600/api/tools/corral/stop</pre>
+curl -X POST http://localhost:9800/api/tools/corral/stop</pre>
   </div>
 </section>
 
 <section class="section">
   <div class="section-label">Technical details</div>
   <h2>How it works.</h2>
-  <p>Hub is itself a single Go binary (14MB) with embedded SQLite. It stores installed tool state, process IDs, and configuration. When you click Start, Hub executes the tool binary as a subprocess with the correct environment variables (DATA_DIR, PORT, and the tool-specific license key). Tool logs go to the tool's data directory.</p>
-  <p>Hub checks health by probing each tool's TCP port every 15 seconds. If a tool process exits, Hub updates the status automatically.</p>
-  <p>Hub does not require root, does not modify system services, and does not touch systemd. It runs as a regular user process. For production, you can put Hub behind a reverse proxy or run it in a screen/tmux session.</p>
+  <p>Hub is a single Go binary (14MB) with embedded SQLite. It manages tool binaries in <code>~/.stockyard/bin/</code>, stores health history and activity in SQLite, and reads the CLI's <code>~/.stockyard/config.json</code> for license key propagation.</p>
+  <p>When you click Start, Hub executes the tool binary as a subprocess with PORT, DATA_DIR, and STOCKYARD_LICENSE_KEY set automatically. A background health poller checks each running tool's <code>/health</code> endpoint every 30 seconds and records response times and status to SQLite.</p>
+  <p>The dashboard has four tabs: Tools (grid with search and filters), Activity (event log), Health (per-tool status timelines), and Settings (license key management). Auto-refreshes every 30 seconds.</p>
 </section>
 
 <section class="cta-strip">
