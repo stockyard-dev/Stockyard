@@ -167,7 +167,7 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
       <span style="width:8px;height:8px;border-radius:50%;background:#4a8c5c;display:inline-block"></span>
       <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);margin-left:0.5rem">terminal</span>
     </div>
-    <div id="term-body" style="padding:1rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;min-height:180px;color:#bfb5a3"></div>
+    <div id="term-body" style="padding:1rem;font-family:var(--font-mono);font-size:0.78rem;line-height:1.8;min-height:340px;color:#bfb5a3"></div>
   </div>
   <div style="text-align:center;margin-top:0.8rem">
     <button onclick="replayTerm()" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);background:none;border:1px solid var(--bg3);padding:0.3rem 0.8rem;cursor:pointer">&#8635; Replay</button>
@@ -177,19 +177,29 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
 <script>
 (function(){
   var lines=[
-    {t:'prompt',text:'curl -fsSL stockyard.dev/corral/install.sh | sh',delay:40},
-    {t:'out',text:'Downloading stockyard-corral v1.1.0 (linux/amd64)...',pause:600},
-    {t:'ok',text:'  \u2713 9.2 MB downloaded'},
-    {t:'out',text:'Installing to /usr/local/bin/stockyard-corral...',pause:300},
-    {t:'ok',text:'  \u2713 Installed'},
+    {t:'prompt',text:'curl -fsSL stockyard.dev/cli/install.sh | sh',delay:35},
+    {t:'out',text:'Downloading stockyard v1.0.1 (linux/amd64)...',pause:500},
+    {t:'ok',text:'  \u2713 Installed stockyard CLI to /usr/local/bin'},
     {t:'blank'},
-    {t:'prompt',text:'stockyard-corral',delay:60},
-    {t:'out',text:'Corral v1.1.0 \u2014 webhook capture & replay',pause:200},
-    {t:'out',text:'  Data:      ./data/corral.db (SQLite WAL)'},
-    {t:'out',text:'  API:       http://localhost:8760/api'},
-    {t:'hi',text:'  Dashboard: http://localhost:8760/ui'},
+    {t:'prompt',text:'stockyard install corral paddock saltlick',delay:45},
+    {t:'out',text:'  Installing Corral...',pause:400},
+    {t:'ok',text:'  \u2713 Installed Corral v1.2.1 (port 8760)'},
+    {t:'out',text:'  Installing Paddock...',pause:300},
+    {t:'ok',text:'  \u2713 Installed Paddock v1.0.4 (port 8750)'},
+    {t:'out',text:'  Installing Salt Lick...',pause:300},
+    {t:'ok',text:'  \u2713 Installed Salt Lick v1.1.0 (port 8730)'},
     {t:'blank'},
-    {t:'out',text:'Listening on :8760 \u2014 ready for webhooks.'},
+    {t:'prompt',text:'stockyard start --all',delay:50},
+    {t:'ok',text:'  \u2713 Corral is running on :8760',pause:300},
+    {t:'ok',text:'  \u2713 Paddock is running on :8750',pause:200},
+    {t:'ok',text:'  \u2713 Salt Lick is running on :8730',pause:200},
+    {t:'blank'},
+    {t:'prompt',text:'stockyard status',delay:50},
+    {t:'out',text:'  Stockyard \u2014 3 installed, 3 running',pause:200},
+    {t:'blank'},
+    {t:'hi',text:'  \u25cf Corral             :8760   running   \u25b2 healthy'},
+    {t:'hi',text:'  \u25cf Paddock            :8750   running   \u25b2 healthy'},
+    {t:'hi',text:'  \u25cf Salt Lick          :8730   running   \u25b2 healthy'},
   ];
   var el=document.getElementById('term-body');
   var running=false;
