@@ -175,7 +175,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
-<div style="background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--leather);padding:0.8rem 1.2rem;margin:1rem 2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim)">Looking for tool docs? <a href="/docs/corral/">Corral</a>, <a href="/docs/gate/">Gate</a>, <a href="/docs/trough/">Trough</a>, and all other tools have dedicated docs pages. Or <a href="/tools/">browse the full catalog</a>.</div>
+<div style="display:none"><!-- old banner removed --></div>
 
 <div class="docs-layout">
     <aside class="sidebar">
@@ -225,43 +225,93 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>Documentation</h1>
-    <p class="subtitle">150 tools, 76 middleware modules, 350+ API endpoints. Everything you need to know.</p>
+    <p class="subtitle">What are you looking for?</p>
 
-    <div style="margin-bottom:2rem">
-      <input id="docFilter" type="text" placeholder="Search docs..." style="width:100%;padding:0.6rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:0.85rem;outline:none" oninput="filterDocs(this.value)"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem">
+      <a href="#tools" class="ov-card" style="border-color:var(--gold);padding:1.5rem" onclick="showPath('tools')">
+        <div style="font-size:1.8rem;margin-bottom:0.5rem">&#9881;</div>
+        <div class="ov-title" style="font-size:1.1rem">I want a self-hosted tool</div>
+        <div class="ov-desc" style="margin-top:0.5rem">Bug tracker, status page, feature flags, analytics, form builder, or any of the 150 tools. Install one, start using it.</div>
+      </a>
+      <a href="#platform" class="ov-card" style="border-color:var(--rust);padding:1.5rem" onclick="showPath('platform')">
+        <div style="font-size:1.8rem;margin-bottom:0.5rem">&#9889;</div>
+        <div class="ov-title" style="font-size:1.1rem">I want the LLM proxy platform</div>
+        <div class="ov-desc" style="margin-top:0.5rem">Route LLM requests, cache responses, track costs, manage keys, failover across providers. The full AI infrastructure stack.</div>
+      </a>
     </div>
 
-    <div style="margin-bottom:2.5rem;padding:1.2rem;background:var(--bg2);border:1px solid var(--bg3)">
-      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:0.8rem">Common questions</div>
-      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;font-family:var(--font-mono);font-size:0.78rem">
-        <a href="/proxy-only/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Use as proxy only</a>
-        <a href="/docs/aliasing/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Model aliasing</a>
-        <a href="/docs/docker/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Docker setup</a>
-        <a href="/why-sqlite/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Why SQLite?</a>
-        <a href="/vs/litellm/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">vs LiteLLM</a>
-        <a href="/features/llm-failover/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Failover</a>
-        <a href="/features/llm-caching/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Caching</a>
-        <a href="/does-stockyard-phone-home/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Phone home?</a>
-        <a href="/how-stockyard-backups-work/" style="color:var(--cream-dim);padding:4px 10px;border:1px solid var(--bg3)">Backups</a>
+    <!-- TOOLS PATH -->
+    <div id="path-tools">
+      <h2 id="tools" style="border:none;padding:0">Self-Hosted Tools</h2>
+      <p>Each tool is a single Go binary with embedded SQLite. Install with the CLI, open the dashboard, done.</p>
+
+      <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;margin:1rem 0 1.5rem;font-family:var(--font-mono);font-size:0.82rem">
+        <div style="color:var(--leather);margin-bottom:0.3rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px">Install any tool</div>
+        <span style="color:var(--green)">$</span> curl -fsSL stockyard.dev/cli/install.sh | sh<br>
+        <span style="color:var(--green)">$</span> stockyard install bounty<br>
+        <span style="color:var(--green)">$</span> stockyard start bounty<br>
+        <span style="color:var(--cream-dim);font-size:0.72rem"># Open http://localhost:9320/ui</span>
+      </div>
+
+      <div class="ov-grid" style="margin-bottom:2rem">
+        <a href="/docs/cli/" class="ov-card"><div class="ov-label">Start Here</div><div class="ov-title">CLI Reference</div><div class="ov-desc">Install, start, stop, update, and manage all 150 tools.</div></a>
+        <a href="/stacks/" class="ov-card"><div class="ov-label">Start Here</div><div class="ov-title">Curated Stacks</div><div class="ov-desc">Pre-picked bundles for indie devs, SREs, startups, API builders.</div></a>
+        <a href="/tools/" class="ov-card"><div class="ov-label">Browse</div><div class="ov-title">All 150 Tools</div><div class="ov-desc">Search and filter by category, name, or use case.</div></a>
+        <a href="https://demo.stockyard.dev" class="ov-card" target="_blank"><div class="ov-label">Try It</div><div class="ov-title">Live Demo</div><div class="ov-desc">Click around Hub + 5 tools with real data. No install needed.</div></a>
+      </div>
+
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Popular tool docs</div>
+      <div class="ov-grid">
+        <a href="/docs/corral/" class="ov-card"><div class="ov-label">Webhook</div><div class="ov-title">Corral</div><div class="ov-desc">Capture, inspect, replay, forward webhooks.</div></a>
+        <a href="/docs/gate/" class="ov-card"><div class="ov-label">Auth</div><div class="ov-title">Gate</div><div class="ov-desc">API key management and authentication.</div></a>
+        <a href="/docs/trough/" class="ov-card"><div class="ov-label">Cost</div><div class="ov-title">Trough</div><div class="ov-desc">Track and analyze API costs across providers.</div></a>
       </div>
     </div>
 
-    <div class="ov-grid" id="docGrid">
-      <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
-      <a href="/docs/auth/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, configuration, licensing.</div></a>
-      <a href="/docs/sdks/" class="ov-card"><div class="ov-label">Getting Started</div><div class="ov-title">SDKs</div><div class="ov-desc">Python, Node, Go &mdash; one line change, zero config.</div></a>
-      <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Core</div><div class="ov-title">Chute &amp; Modules</div><div class="ov-desc">76 middleware modules, 16 providers, routing.</div></a>
-      <a href="/docs/observe/" class="ov-card"><div class="ov-label">Core</div><div class="ov-title">Observe</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
-      <a href="/docs/trust/" class="ov-card"><div class="ov-label">Core</div><div class="ov-title">Brand</div><div class="ov-desc">Hash-chained audit ledger, policies, evidence.</div></a>
-      <a href="/docs/studio/" class="ov-card"><div class="ov-label">Creation</div><div class="ov-title">Studio</div><div class="ov-desc">Prompt templates, A/B experiments, benchmarks.</div></a>
-      <a href="/docs/forge/" class="ov-card"><div class="ov-label">Creation</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
-      <a href="/docs/memory/" class="ov-card"><div class="ov-label">Operations</div><div class="ov-title">Memory</div><div class="ov-desc">Conversation memory, relevance search, TTL.</div></a>
-      <a href="/docs/exchange/" class="ov-card"><div class="ov-label">Economy</div><div class="ov-title">Exchange</div><div class="ov-desc">Config packs, app marketplace, environment sync.</div></a>
-      <a href="/docs/team/" class="ov-card"><div class="ov-label">Governance</div><div class="ov-title">Team Key Isolation</div><div class="ov-desc">Isolated API keys, spend, and logs per team.</div></a>
-      <a href="/docs/config/" class="ov-card"><div class="ov-label">Operations</div><div class="ov-title">Configuration</div><div class="ov-desc">Env vars, provider keys, runtime config.</div></a>
-      <a href="/docs/integrations/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">Integrations</div><div class="ov-desc">LangChain, Vercel AI SDK, LiteLLM, Instructor.</div></a>
-      <a href="/docs/ops/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">Ops Guide</div><div class="ov-desc">Webhooks, OTEL, status, config export.</div></a>
-      <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">360+ REST endpoints with examples.</div></a>
+    <!-- PLATFORM PATH -->
+    <div id="path-platform" style="margin-top:3rem">
+      <h2 id="platform">LLM Proxy Platform</h2>
+      <p>A single binary that sits between your app and LLM providers. 76 middleware modules, 16 providers, 360+ API endpoints.</p>
+
+      <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;margin:1rem 0 1.5rem;font-family:var(--font-mono);font-size:0.82rem">
+        <div style="color:var(--leather);margin-bottom:0.3rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px">Start the proxy</div>
+        <span style="color:var(--green)">$</span> curl -fsSL stockyard.dev/install.sh | sh<br>
+        <span style="color:var(--green)">$</span> OPENAI_API_KEY=sk-... stockyard<br>
+        <span style="color:var(--cream-dim);font-size:0.72rem"># Point your SDK at http://localhost:4200/v1</span>
+      </div>
+
+      <div class="ov-grid" style="margin-bottom:2rem">
+        <a href="/docs/quickstart/" class="ov-card"><div class="ov-label">Start Here</div><div class="ov-title">Quickstart</div><div class="ov-desc">Install, first request, and the web console.</div></a>
+        <a href="/docs/auth/" class="ov-card"><div class="ov-label">Start Here</div><div class="ov-title">Auth &amp; Config</div><div class="ov-desc">Multi-user auth, provider keys, licensing.</div></a>
+        <a href="/docs/sdks/" class="ov-card"><div class="ov-label">Start Here</div><div class="ov-title">SDKs</div><div class="ov-desc">Python, Node, Go &mdash; one line change.</div></a>
+      </div>
+
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.8rem">Proxy features</div>
+      <div class="ov-grid">
+        <a href="/docs/proxy/" class="ov-card"><div class="ov-label">Core</div><div class="ov-title">Chute &amp; Modules</div><div class="ov-desc">76 middleware modules, 16 providers, routing.</div></a>
+        <a href="/docs/observe/" class="ov-card"><div class="ov-label">Monitoring</div><div class="ov-title">Lookout</div><div class="ov-desc">Traces, costs, alerts, anomaly detection.</div></a>
+        <a href="/docs/aliasing/" class="ov-card"><div class="ov-label">Routing</div><div class="ov-title">Model Aliasing</div><div class="ov-desc">Map model names to providers transparently.</div></a>
+        <a href="/docs/caching/" class="ov-card"><div class="ov-label">Performance</div><div class="ov-title">Caching</div><div class="ov-desc">Semantic and exact-match response caching.</div></a>
+        <a href="/docs/failover/" class="ov-card"><div class="ov-label">Reliability</div><div class="ov-title">Failover</div><div class="ov-desc">Automatic provider failover on errors.</div></a>
+        <a href="/docs/rate-limiting/" class="ov-card"><div class="ov-label">Control</div><div class="ov-title">Rate Limiting</div><div class="ov-desc">Per-key and per-model rate limits.</div></a>
+      </div>
+
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin:2rem 0 0.8rem">Platform apps</div>
+      <div class="ov-grid">
+        <a href="/docs/trust/" class="ov-card"><div class="ov-label">Governance</div><div class="ov-title">Brand</div><div class="ov-desc">Audit ledger, policies, evidence.</div></a>
+        <a href="/docs/studio/" class="ov-card"><div class="ov-label">Creation</div><div class="ov-title">Tack Room</div><div class="ov-desc">Prompts, A/B experiments, benchmarks.</div></a>
+        <a href="/docs/forge/" class="ov-card"><div class="ov-label">Creation</div><div class="ov-title">Forge</div><div class="ov-desc">DAG workflows, tool registry, batch processing.</div></a>
+        <a href="/docs/memory/" class="ov-card"><div class="ov-label">Operations</div><div class="ov-title">Memory</div><div class="ov-desc">Conversation memory, relevance search.</div></a>
+        <a href="/docs/team/" class="ov-card"><div class="ov-label">Governance</div><div class="ov-title">Team Key Isolation</div><div class="ov-desc">Per-team API keys, spend, and logs.</div></a>
+      </div>
+
+      <div style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin:2rem 0 0.8rem">Reference</div>
+      <div class="ov-grid">
+        <a href="/docs/api/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">API Reference</div><div class="ov-desc">360+ REST endpoints with examples.</div></a>
+        <a href="/docs/integrations/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">Integrations</div><div class="ov-desc">LangChain, Vercel AI SDK, LiteLLM.</div></a>
+        <a href="/docs/ops/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">Ops Guide</div><div class="ov-desc">Docker, Railway, webhooks, OTEL.</div></a>
+        <a href="/docs/config/" class="ov-card"><div class="ov-label">Reference</div><div class="ov-title">Configuration</div><div class="ov-desc">Env vars, provider keys, runtime config.</div></a>
+      </div>
     </div>
 
     <div class="pn"><a href="/docs/quickstart/" class="next">Install &amp; Quickstart &rarr;</a></div>
