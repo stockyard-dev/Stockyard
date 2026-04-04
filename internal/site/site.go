@@ -861,6 +861,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/stacks/personal/",
 		"/open/",
 		"/quiz/",
+		"/blog/curated-stacks/",
 		"/blog/why-150-tools/",
 		"/graveyard/",
 		"/compose/",
