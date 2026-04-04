@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<title>Stockyard Stacks — Pre-Configured Tool Bundles</title>
-<meta name="description" content="Curated sets of Stockyard tools for startups, homelabs, agencies, and dev teams. One install command per stack.">
-<meta property="og:title" content="Stockyard Stacks — Tool Bundles">
+<title>Stockyard Stacks &mdash; Curated Tool Bundles</title>
+<meta name="description" content="Not sure which of 150 tools to install first? Stacks are curated bundles for indie devs, SREs, startups, API builders, and personal use. $1 first month.">
+<meta property="og:title" content="Stockyard Stacks &mdash; Curated Tool Bundles">
+<meta property="og:description" content="Curated bundles of self-hosted tools for specific use cases. Replace $200/mo of SaaS for $1.">
+<meta property="og:url" content="https://stockyard.dev/stacks/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <link rel="canonical" href="https://stockyard.dev/stacks/">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -15,31 +17,24 @@
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rl:#c45d2c;--cream:#1a1410;--cd:#4a4035;--cm:#8a806e;--gold:#b08a28}}
 *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
 a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
-.wrap{max-width:800px;margin:0 auto;padding:3rem 2rem}
-h1{font-size:clamp(1.6rem,4vw,2.2rem);text-align:center;margin-bottom:.5rem}
-.sub{text-align:center;color:var(--cd);font-style:italic;margin-bottom:3rem}
-.stack{border:1px solid var(--bg3);margin-bottom:2rem;background:var(--bg2)}
-.stack-header{padding:1.5rem;border-bottom:1px solid var(--bg3)}
-.stack-name{font-size:1.2rem;margin-bottom:.3rem}
-.stack-desc{font-size:.88rem;color:var(--cd);font-style:italic}
-.stack-meta{display:flex;gap:1.5rem;margin-top:.8rem;font-family:var(--mono);font-size:.68rem;color:var(--cm)}
-.stack-meta .val{color:var(--gold)}
-.stack-tools{padding:1rem 1.5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.4rem}
-.st{font-family:var(--mono);font-size:.75rem;padding:.4rem .6rem;border:1px solid var(--bg3);background:var(--bg)}
-.st-name{color:var(--cream)}.st-what{color:var(--cm);font-size:.65rem}
-.stack-install{padding:1rem 1.5rem;border-top:1px solid var(--bg3);background:#0d0b09}
-.stack-install pre{font-family:var(--mono);font-size:.78rem;color:var(--ll);margin:0;cursor:pointer}
-.stack-install pre:hover{color:var(--cream)}
-.copy-hint{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-align:right;margin-top:.3rem}
-.cta{text-align:center;margin-top:2rem;padding:2rem;border:2px solid var(--gold)}
-.btn{font-family:var(--mono);font-size:.82rem;padding:.65rem 1.8rem;text-decoration:none;display:inline-block}
-.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.9;color:var(--bg)}
-.btn-sec{background:transparent;color:var(--cream);border:2px solid var(--leather);margin-left:.5rem}.btn-sec:hover{border-color:var(--cream)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}@media(max-width:768px){.nav-links{display:none}}
-footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}
-footer a{color:var(--cm)}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}.nav-links a{color:var(--cd)}.nav-links a:hover{color:var(--rl)}
+@media(max-width:768px){.nav-links{display:none}}
+.hero{max-width:820px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
+h1{font-size:clamp(1.8rem,4.5vw,2.8rem);line-height:1.2;margin-bottom:1rem}
+.accent{color:var(--rl)}
+.sub{font-size:1rem;color:var(--cd);font-style:italic;max-width:560px;margin:0 auto 3rem;line-height:1.8}
+.grid{max-width:820px;margin:0 auto;padding:0 2rem 4rem;display:grid;gap:1rem}
+.stack-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;display:block;transition:border-color .15s;color:var(--cream)}
+.stack-card:hover{border-color:var(--leather);color:var(--cream)}
+.stack-card-name{font-size:1.1rem;font-weight:700;margin-bottom:.3rem}
+.stack-card-pitch{font-size:.88rem;color:var(--cd);font-style:italic;margin-bottom:.6rem}
+.stack-card-tools{font-family:var(--mono);font-size:.72rem;color:var(--cm);margin-bottom:.5rem}
+.stack-card-savings{font-family:var(--mono);font-size:.7rem;color:var(--gold)}
+.cta{text-align:center;padding:0 2rem 4rem}
+.btn{font-family:var(--mono);font-size:.85rem;padding:.7rem 1.8rem;text-decoration:none;display:inline-block}
+.btn-gold{background:var(--gold);color:var(--bg);border:2px solid var(--gold)}.btn-gold:hover{opacity:.85}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
@@ -49,119 +44,60 @@ footer a{color:var(--cm)}
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
     <a href="/tools/">Tools</a>
+    <a href="/stacks/">Stacks</a>
+    <a href="/cli/">CLI</a>
     <a href="/complete/" style="color:var(--gold)">Complete</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
+    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
 
-<div class="wrap">
-  <h1>Stockyard Stacks</h1>
-  <p class="sub">Curated tool bundles for common setups. One install command.</p>
-
-  <div class="stack">
-    <div class="stack-header">
-      <div class="stack-name">Startup Stack</div>
-      <div class="stack-desc">Everything a 2-10 person startup needs on day one. Error tracking, status page, feature flags, analytics, and a webhook inbox.</div>
-      <div class="stack-meta"><span>Tools: <span class="val">6</span></span><span>Replaces: <span class="val">$235/mo in SaaS</span></span><span>Disk: <span class="val">~72MB</span></span></div>
-    </div>
-    <div class="stack-tools">
-      <div class="st"><span class="st-name">Seismograph</span><div class="st-what">error tracking</div></div>
-      <div class="st"><span class="st-name">Paddock</span><div class="st-what">status page</div></div>
-      <div class="st"><span class="st-name">Salt Lick</span><div class="st-what">feature flags</div></div>
-      <div class="st"><span class="st-name">Headcount</span><div class="st-what">analytics</div></div>
-      <div class="st"><span class="st-name">Corral</span><div class="st-what">webhook inbox</div></div>
-      <div class="st"><span class="st-name">Lasso</span><div class="st-what">link shortener</div></div>
-    </div>
-    <div class="stack-install">
-      <pre onclick="copyCmd(this)">curl -fsSL stockyard.dev/install-tools.sh | sh -s -- seismograph paddock saltlick headcount corral lasso</pre>
-      <div class="copy-hint">click to copy</div>
-    </div>
-  </div>
-
-  <div class="stack">
-    <div class="stack-header">
-      <div class="stack-name">Homelab Stack</div>
-      <div class="stack-desc">Self-hosted essentials for your home server. Monitoring, password management, bookmarks, notes, and a personal dashboard.</div>
-      <div class="stack-meta"><span>Tools: <span class="val">6</span></span><span>Perfect for: <span class="val">Raspberry Pi, NAS, VPS</span></span><span>Disk: <span class="val">~72MB</span></span></div>
-    </div>
-    <div class="stack-tools">
-      <div class="st"><span class="st-name">Homestead</span><div class="st-what">server monitor</div></div>
-      <div class="st"><span class="st-name">Cipher</span><div class="st-what">password manager</div></div>
-      <div class="st"><span class="st-name">Feedreader</span><div class="st-what">RSS reader</div></div>
-      <div class="st"><span class="st-name">Notebook</span><div class="st-what">personal notes</div></div>
-      <div class="st"><span class="st-name">Archive</span><div class="st-what">bookmark manager</div></div>
-      <div class="st"><span class="st-name">Meridian</span><div class="st-what">life dashboard</div></div>
-    </div>
-    <div class="stack-install">
-      <pre onclick="copyCmd(this)">curl -fsSL stockyard.dev/install-tools.sh | sh -s -- homestead cipher feedreader notebook archive meridian</pre>
-      <div class="copy-hint">click to copy</div>
-    </div>
-  </div>
-
-  <div class="stack">
-    <div class="stack-header">
-      <div class="stack-name">DevOps Stack</div>
-      <div class="stack-desc">Operations infrastructure. Uptime monitoring, alerting, deploy tracking, secret management, and an API testing tool.</div>
-      <div class="stack-meta"><span>Tools: <span class="val">6</span></span><span>Replaces: <span class="val">$180/mo in SaaS</span></span><span>Disk: <span class="val">~72MB</span></span></div>
-    </div>
-    <div class="stack-tools">
-      <div class="st"><span class="st-name">Bellwether</span><div class="st-what">uptime monitor</div></div>
-      <div class="st"><span class="st-name">Sentinel</span><div class="st-what">alert manager</div></div>
-      <div class="st"><span class="st-name">Muster</span><div class="st-what">deploy tracker</div></div>
-      <div class="st"><span class="st-name">Strongbox</span><div class="st-what">secret manager</div></div>
-      <div class="st"><span class="st-name">Assay</span><div class="st-what">API testing</div></div>
-      <div class="st"><span class="st-name">Probe</span><div class="st-what">HTTP inspector</div></div>
-    </div>
-    <div class="stack-install">
-      <pre onclick="copyCmd(this)">curl -fsSL stockyard.dev/install-tools.sh | sh -s -- bellwether sentinel muster strongbox assay probe</pre>
-      <div class="copy-hint">click to copy</div>
-    </div>
-  </div>
-
-  <div class="stack">
-    <div class="stack-header">
-      <div class="stack-name">Creator Stack</div>
-      <div class="stack-desc">Blog, newsletter, forms, landing pages, and analytics. Everything a content creator or small business needs online.</div>
-      <div class="stack-meta"><span>Tools: <span class="val">6</span></span><span>Replaces: <span class="val">$130/mo in SaaS</span></span><span>Disk: <span class="val">~72MB</span></span></div>
-    </div>
-    <div class="stack-tools">
-      <div class="st"><span class="st-name">Post</span><div class="st-what">blog engine</div></div>
-      <div class="st"><span class="st-name">Pony Express</span><div class="st-what">newsletter</div></div>
-      <div class="st"><span class="st-name">Surveyor</span><div class="st-what">forms &amp; surveys</div></div>
-      <div class="st"><span class="st-name">Headcount</span><div class="st-what">analytics</div></div>
-      <div class="st"><span class="st-name">Lasso</span><div class="st-what">link shortener</div></div>
-      <div class="st"><span class="st-name">Broadside</span><div class="st-what">press releases</div></div>
-    </div>
-    <div class="stack-install">
-      <pre onclick="copyCmd(this)">curl -fsSL stockyard.dev/install-tools.sh | sh -s -- post ponyexpress surveyor headcount lasso broadside</pre>
-      <div class="copy-hint">click to copy</div>
-    </div>
-  </div>
-
-  <div class="cta">
-    <p style="font-family:var(--mono);font-size:.82rem;margin-bottom:.5rem">Or get everything.</p>
-    <p style="color:var(--cd);font-style:italic;margin-bottom:1rem">All 150 tools. One license key. $1 first month.</p>
-    <a href="/complete/" class="btn btn-gold">Get Complete &rarr;</a>
-    <a href="/tools/" class="btn btn-sec">Browse all tools</a>
-  </div>
+<div class="hero">
+  <h1>Stockyard <span class="accent">Stacks</span></h1>
+  <p class="sub">150 tools is a lot. Stacks are curated bundles for specific roles and use cases. Pick your stack, install with one command.</p>
 </div>
 
-<footer>
-  <a href="/">Stockyard</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/complete/">Complete</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-</footer>
+<div class="grid">
+  <a href="/stacks/indie/" class="stack-card">
+      <div class="stack-card-name">Indie Stack</div>
+      <div class="stack-card-pitch">The 5 tools every solo dev needs</div>
+      <div class="stack-card-tools">Seismograph, Paddock, Salt Lick, Corral, Headcount</div>
+      <div class="stack-card-savings">SaaS: $200/mo &rarr; Stockyard: $1 first month</div>
+    </a>
+<a href="/stacks/sre/" class="stack-card">
+      <div class="stack-card-name">SRE Stack</div>
+      <div class="stack-card-pitch">Full incident lifecycle in 5 binaries</div>
+      <div class="stack-card-tools">Bellwether, Sentinel, Seismograph, Paddock, Inquest</div>
+      <div class="stack-card-savings">SaaS: $234/mo+ &rarr; Stockyard: $1 first month</div>
+    </a>
+<a href="/stacks/startup/" class="stack-card">
+      <div class="stack-card-name">Startup Stack</div>
+      <div class="stack-card-pitch">Ship, sell, and measure</div>
+      <div class="stack-card-tools">Bounty, Roundup, Prospector, Surveyor, Headcount</div>
+      <div class="stack-card-savings">SaaS: $88+/mo &rarr; Stockyard: $1 first month</div>
+    </a>
+<a href="/stacks/api/" class="stack-card">
+      <div class="stack-card-name">API Stack</div>
+      <div class="stack-card-pitch">Build, secure, test, and monitor APIs</div>
+      <div class="stack-card-tools">Corral, Fence, Trough, Assay, Cutoff</div>
+      <div class="stack-card-savings">SaaS: $95+/mo &rarr; Stockyard: $1 first month</div>
+    </a>
+<a href="/stacks/personal/" class="stack-card">
+      <div class="stack-card-name">Personal Stack</div>
+      <div class="stack-card-pitch">Own your personal data</div>
+      <div class="stack-card-tools">Almanac, Trailhead, Ledger, Quiver, Curator</div>
+      <div class="stack-card-savings">SaaS: $28/mo &rarr; Stockyard: $1 first month</div>
+    </a>
 
-<script>
-function copyCmd(el) {
-  navigator.clipboard.writeText(el.textContent);
-  var hint = el.nextElementSibling;
-  hint.textContent = 'copied!';
-  hint.style.color = 'var(--green)';
-  setTimeout(function() { hint.textContent = 'click to copy'; hint.style.color = ''; }, 2000);
-  gtag('event', 'generate_lead', {event_category: 'stack_install', event_label: el.textContent.split('-- ')[1]});
-}
-</script>
-<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script src="/site-assets/assets/sticky-cta.js" defer></script>
+</div>
+
+<div class="cta">
+  <p style="color:var(--cd);font-style:italic;margin-bottom:1rem">All stacks included in Stockyard Complete. $1 first month.</p>
+  <a href="/complete/" class="btn btn-gold">Start for $1</a>
+</div>
+
+<footer style="border-top:1px solid var(--bg3);padding:2rem;text-align:center;font-family:var(--mono);font-size:.72rem;color:var(--cm)">
+  &copy; 2026 Stockyard &middot; <a href="/">Home</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/stacks/">Stacks</a> &middot; <a href="/cli/">CLI</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a>
+</footer>
 </body>
 </html>
