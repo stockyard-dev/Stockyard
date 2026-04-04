@@ -33,12 +33,13 @@ Welcome to Stockyard. You just got access to 150 self-hosted developer tools —
 
 The fastest way to try one:
 
-  curl -fsSL https://stockyard.dev/corral//install.sh | sh
-  DATA_DIR=./data stockyard-corral
+  curl -fsSL https://stockyard.dev/cli/install.sh | sh
+  stockyard install corral
+  stockyard start corral
 
-That installs Corral, a webhook capture and replay tool. Open http://localhost:8760/ui and you have a running dashboard.
+That installs the CLI, downloads Corral, and starts it. Open http://localhost:8760/ui and you have a running dashboard.
 
-Every tool works the same way — one curl command, one binary, one port.
+The CLI manages all 150 tools — install, start, stop, update, status. One command for everything.
 
 A few popular ones to start with:
 - Corral (webhook inbox): stockyard.dev/corral/
@@ -120,9 +121,10 @@ Full pricing: https://stockyard.dev/pricing
 
 Two weeks in. If you are running more than a couple of Stockyard tools, the Hub makes life easier.
 
-Stockyard Hub is a management dashboard — one binary that installs, starts, stops, and monitors all your other tools. Hub discovers all installed Stockyard tools, shows their status, and lets you start, stop, and install tools from the browser.
+Stockyard Hub is a management dashboard for all 150 tools. It has four tabs: a tool grid with search and filters, an activity feed, health timelines with per-tool status bars, and license management. Install, start, and stop tools from the browser.
 
-  curl -fsSL https://stockyard.dev/hub/install.sh | sh
+  stockyard install hub
+  stockyard start hub
   stockyard-hub
 
 Open http://localhost:9800/ui and you see every tool in the catalog. Click Install, click Start, and the tool's dashboard loads right in the Hub panel. No new tabs, no hunting for port numbers.
@@ -170,7 +172,7 @@ This is the last email in the sequence. I do not want to spam you.
 If Stockyard replaced even one SaaS tool, it was worth building. If it replaced several, I would genuinely love to hear which ones and how the switch went. Reply any time — this email address works and I read everything.
 
 If you have not tried it yet, the quickest test is still:
-  curl -fsSL https://stockyard.dev/corral//install.sh | sh
+  curl -fsSL https://stockyard.dev/cli/install.sh | sh
 Running in 30 seconds, no dependencies, free forever on the community tier.
 
 Thanks for your time.
