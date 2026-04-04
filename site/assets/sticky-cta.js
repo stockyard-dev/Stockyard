@@ -125,7 +125,7 @@
         +'<div style="font-size:0.88rem;color:#f0e6d3;margin-bottom:0.5rem">'+toolName+' is a single binary with SQLite storage. No Docker, no external database, no cloud dependency. Free tier included.</div>'
         +'<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.8rem">'
         +'<a href="/'+parts[0]+'/#install" style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;padding:0.4rem 1rem;background:#c45d2c;color:#f0e6d3;text-decoration:none">Try '+toolName+' free &rarr;</a>'
-        +'<a href="/complete/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.72rem;color:#d4a843;text-decoration:none;padding:0.4rem 0">or all 150 tools for $29/mo</a>'
+        +'<a href="/complete/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.72rem;color:#d4a843;text-decoration:none;padding:0.4rem 0">or all 150 tools — $1 first month, then $29/mo</a>'
         +'</div>';
       target.parentNode.insertBefore(verdict,target);
     }

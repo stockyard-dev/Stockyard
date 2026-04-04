@@ -16,7 +16,7 @@
 <title>Pricing — Stockyard</title>
 <meta name="description" content="Stockyard pricing. Stockyard Complete: all 150 tools at $29/mo or $249/yr. Individual tools from $0.99/mo. Free tier on every tool.">
 <meta property="og:title" content="Pricing — Stockyard">
-<meta property="og:description" content="150 self-hosted developer tools. Free tier on every tool. Complete bundle: $29/mo for everything. LLM Platform included.">
+<meta property="og:description" content="150 self-hosted developer tools. Free tier on every tool. Complete bundle: $1 first month. LLM Platform included.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -159,7 +159,7 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "What do I get for free?", "acceptedAnswer": {"@type": "Answer", "text": "The full proxy with all 76 middleware modules and 16 LLM providers, unlimited requests, and the core tracing and cost dashboards. Advanced features like request replay, auto-routing, red-team testing, and prompt optimization unlock with paid tiers."}},
-    {"@type": "Question", "name": "What's the difference between tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Stockyard Complete gives you all 150 tools for $29/mo. The LLM Platform has a free tier (full proxy, 76 modules, 16 providers) with paid tiers for advanced features like cost routing, request replay, and red-team testing. See the comparison table for details."}},
+    {"@type": "Question", "name": "What's the difference between tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Stockyard Complete gives you all 150 tools — $1 first month, then $29/mo. The LLM Platform has a free tier (full proxy, 76 modules, 16 providers) with paid tiers for advanced features like cost routing, request replay, and red-team testing. See the comparison table for details."}},
     {"@type": "Question", "name": "Can I save with annual billing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr."}},
     {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}},
     {"@type": "Question", "name": "What providers are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box."}}
@@ -254,7 +254,7 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
       <div style="font-family:var(--font-mono);font-size:.82rem;color:#e8753a;line-height:1.6">Webhook inboxes, cron schedulers, NPS trackers, home inventories. 150 single-binary tools, all Pro unlocked.</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:.6rem;flex-shrink:0;text-align:center">
-      <button id="complete-btn-monthly-2" onclick="startCompleteCheckout('monthly')" style="font-family:var(--font-mono);font-size:.82rem;padding:.7rem 1.8rem;background:#d4a843;color:#1a1410;border:2px solid #d4a843;cursor:pointer;font-weight:600">All 150 Tools &mdash; $29/mo</button>
+      <button id="complete-btn-monthly-2" onclick="startCompleteCheckout('monthly')" style="font-family:var(--font-mono);font-size:.82rem;padding:.7rem 1.8rem;background:#d4a843;color:#1a1410;border:2px solid #d4a843;cursor:pointer;font-weight:600">All 150 Tools &mdash; $1 first month</button>
       <button id="complete-btn-annual-2" onclick="startCompleteCheckout('annual')" style="font-family:var(--font-mono);font-size:.75rem;padding:.5rem 1.5rem;background:transparent;color:var(--cream-dim);border:1px solid #4a3520;cursor:pointer">Annual &mdash; $249/yr &nbsp;<span style="color:#c9892a">save $99</span></button>
       <a href="/tools/" style="font-family:var(--font-mono);font-size:.62rem;color:#c4a87a">Browse all 150 tools &rarr;</a>
     </div>
@@ -418,7 +418,7 @@ noscript .annual-note{display:block;text-align:center;font-family:var(--font-mon
   </div>
   <div class="faq-item">
     <div class="faq-q">What about the 150 standalone tools?</div>
-    <div class="faq-a">The LLM platform and the 150 standalone tools are separate products. The platform pricing on this page covers the proxy, routing, and LLM infrastructure. <a href="/complete/">Stockyard Complete</a> ($29/mo) bundles all 150 standalone tools. They can be used independently or together.</div>
+    <div class="faq-a">The LLM platform and the 150 standalone tools are separate products. The platform pricing on this page covers the proxy, routing, and LLM infrastructure. <a href="/complete/">Stockyard Complete</a> ($1 first month) bundles all 150 standalone tools. They can be used independently or together.</div>
   </div>
   <div class="faq-item">
     <div class="faq-q">What providers are supported?</div>

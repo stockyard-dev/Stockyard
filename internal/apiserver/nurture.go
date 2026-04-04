@@ -48,7 +48,7 @@ A few popular ones to start with:
 
 Full catalog: https://stockyard.dev/tools/
 
-If you already know you want the whole set: Stockyard Complete is all 150 tools for $29/mo. Early adopter pricing — your rate locks in when you subscribe.
+If you already know you want the whole set: Stockyard Complete is all 150 tools — $1 for your first month, then $29/mo. Early adopter pricing — your rate locks in when you subscribe.
   https://stockyard.dev/complete/
 
 If you have any questions, just reply to this email. I read every one.
@@ -75,7 +75,7 @@ IF YOU TRACK ERRORS
 Seismograph replaces Sentry without requiring Kafka, Clickhouse, Postgres, and Redis. One binary. Captures errors with stack traces, groups them, sends alerts.
   stockyard.dev/seismograph/
 
-Every tool has a free tier. Pro is $0.99-4.99/mo per tool. Or get all 150 for $29/mo with Complete.
+Every tool has a free tier. Pro is $0.99-4.99/mo per tool. Or get all 150 for $1 first month with Complete.
   stockyard.dev/complete/
 
 — Michael`,
@@ -105,7 +105,7 @@ The Stockyard equivalents:
 - Surveyor (forms): $0.99/mo
 Total: $6.94/mo ($83/year)
 
-Or just get Complete: $29/mo for all 150 tools. Early adopter pricing — this rate locks in when you subscribe.
+Or just get Complete: $1 first month for all 150 tools, then $29/mo. Early adopter pricing — this rate locks in when you subscribe.
 
 The tradeoff is real — you are running the tools yourself instead of paying someone else to. But each one is a single binary with no external dependencies. If you can run a Go binary on a $5/mo VPS, you can run all of these.
 
@@ -131,7 +131,7 @@ Hub is included with every plan, including the free Community tier.
 
   stockyard.dev/hub
 
-If you are running 6+ tools, Stockyard Complete ($29/mo for all 150) is cheaper than buying them individually. One license key unlocks Pro on everything.
+If you are running 6+ tools, Stockyard Complete ($1 first month for all 150) is cheaper than buying them individually. One license key unlocks Pro on everything.
   stockyard.dev/complete/
 
 — Michael`,
@@ -146,7 +146,7 @@ It has been a month. Quick check-in.
 If Stockyard is working for you:
 - A GitHub star helps visibility: https://github.com/stockyard-dev/Stockyard
 - Tell a friend who is paying too much for SaaS tools
-- Check out Complete ($29/mo for all 150 tools) if you are using more than a few: stockyard.dev/complete/
+- Check out Complete ($1 first month for all 150 tools) if you are using more than a few: stockyard.dev/complete/
 
 If it is not working for you:
 - Reply and tell me what is missing. I will either build it or point you to something better.
