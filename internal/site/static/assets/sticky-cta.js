@@ -104,7 +104,7 @@
       var banner=document.createElement('div');
       banner.style.cssText='margin-top:1.5rem;padding:1.2rem 1.5rem;border:2px solid #d4a843;background:rgba(212,168,67,0.06);text-align:center';
       banner.innerHTML='<div style="font-family:\'JetBrains Mono\',monospace;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#d4a843;margin-bottom:0.5rem">Better deal</div>'
-        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.4rem">Get <strong>all 150 tools</strong> for <strong style="color:#d4a843">$29/mo</strong></div>'
+        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.4rem">Get <strong>all 150 tools</strong> — <strong style="color:#d4a843">$1 first month</strong></div>'
         +'<div style="font-size:0.78rem;color:#bfb5a3;font-style:italic;margin-bottom:0.8rem">This tool plus 149 others. One license key. Cancel any time.</div>'
         +'<a href="/complete/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;padding:0.5rem 1.5rem;background:#d4a843;color:#1a1410;text-decoration:none;display:inline-block;font-weight:600">Get Complete &rarr;</a>';
       grid.parentNode.insertBefore(banner,grid.nextSibling);
