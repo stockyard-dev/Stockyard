@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<meta property="og:title" content="CLI Tool — Stockyard">
-<meta property="og:description" content="Manage Stockyard from the terminal with the sy CLI.">
+<meta property="og:title" content="Stockyard CLI — Docs">
+<meta property="og:description" content="Install, start, stop, and manage all 150 Stockyard tools from your terminal.">
 <meta property="og:url" content="https://stockyard.dev/docs/cli/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>CLI Tool — Stockyard</title>
-<meta name="description" content="Manage Stockyard from the terminal with the sy CLI. Status, costs, modules, traces, config.">
+<title>Stockyard CLI — Docs</title>
+<meta name="description" content="Install, start, stop, and manage all 150 Stockyard tools from your terminal. One binary, one license key, every tool.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -83,6 +83,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
       <div class="nav-drop-menu">
         <a href="/tools/">Browse All Tools</a>
+        <a href="/cli/" style="color:var(--gold)">Install via CLI</a>
         <div class="drop-section">By Category</div>
         <a href="/tools/?category=developer">Developer Tools</a>
         <a href="/tools/?category=operations">Operations</a>
@@ -150,70 +151,69 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
   </aside>
   <main class="content" id="main">
-    <h1>CLI Tool</h1>
-    <p class="subtitle">Manage Stockyard from the terminal with the <code>sy</code> command.</p>
+    <h1>Stockyard CLI</h1>
+    <p class="subtitle">Install, start, stop, and manage all 150 Stockyard tools from your terminal.</p>
 
     <h2 id="install">Installation</h2>
-    <p>Install with Go:</p>
-    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>go install github.com/stockyard-dev/stockyard/cmd/sy@latest</code></pre>
-    <p>Or build from source:</p>
-    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>git clone https://github.com/stockyard-dev/stockyard
-cd stockyard
-make cli
-# Binary at dist/sy</code></pre>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>curl -fsSL https://stockyard.dev/cli/install.sh | sh</code></pre>
+    <p>Linux and macOS. amd64 + arm64. ~5MB binary, zero dependencies.</p>
+    <p>Or download directly from <a href="https://github.com/stockyard-dev/stockyard-cli/releases/latest">GitHub Releases</a>.</p>
 
-    <h2 id="config">Configuration</h2>
-    <p>Set your Stockyard server URL and admin key via environment variables:</p>
-    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>export STOCKYARD_URL=https://your-instance.com
-export STOCKYARD_ADMIN_KEY=your-admin-key</code></pre>
-    <p>Or create <code>~/.stockyard/config.json</code>:</p>
-    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
-  "url": "https://your-instance.com",
-  "admin_key": "your-admin-key"
-}</code></pre>
+    <h2 id="quickstart">Quick Start</h2>
+    <pre><code># Install some tools
+stockyard install corral paddock saltlick
+
+# Start them all
+stockyard start --all
+
+# Check status
+stockyard status
+
+# Set your license key (applies Pro to every tool)
+stockyard license set SY-xxxxx
+stockyard restart --all</code></pre>
 
     <h2 id="commands">Commands</h2>
     <table class="endpoint-table">
       <tr><th>Command</th><th>Description</th></tr>
-      <tr><td>sy status</td><td>System status, uptime, running apps</td></tr>
-      <tr><td>sy costs [today|week|month]</td><td>Cost breakdown by provider and model</td></tr>
-      <tr><td>sy modules list</td><td>List all proxy modules with enabled status</td></tr>
-      <tr><td>sy modules enable &lt;name&gt;</td><td>Enable a middleware module</td></tr>
-      <tr><td>sy modules disable &lt;name&gt;</td><td>Disable a middleware module</td></tr>
-      <tr><td>sy traces [--limit N] [--model X]</td><td>List recent traces</td></tr>
-      <tr><td>sy traces --follow</td><td>Follow traces in real-time via SSE</td></tr>
-      <tr><td>sy providers health</td><td>Provider health status grid</td></tr>
-      <tr><td>sy config export</td><td>Export full config to stdout</td></tr>
-      <tr><td>sy config import &lt;file&gt;</td><td>Import config from JSON file</td></tr>
-      <tr><td>sy version</td><td>CLI and server version</td></tr>
+      <tr><td>stockyard install &lt;tool...&gt;</td><td>Install one or more tools from GitHub Releases</td></tr>
+      <tr><td>stockyard install --all</td><td>Install all 150 tools</td></tr>
+      <tr><td>stockyard uninstall &lt;tool&gt;</td><td>Remove a tool</td></tr>
+      <tr><td>stockyard start &lt;tool&gt;</td><td>Start a tool as a background process</td></tr>
+      <tr><td>stockyard start --all</td><td>Start all installed tools</td></tr>
+      <tr><td>stockyard stop &lt;tool&gt;</td><td>Stop a running tool (SIGTERM, then SIGKILL)</td></tr>
+      <tr><td>stockyard stop --all</td><td>Stop all running tools</td></tr>
+      <tr><td>stockyard restart &lt;tool&gt;</td><td>Stop and start a tool</td></tr>
+      <tr><td>stockyard status</td><td>Show all installed tools with status</td></tr>
+      <tr><td>stockyard status &lt;tool&gt;</td><td>Show detailed status and health for one tool</td></tr>
+      <tr><td>stockyard update &lt;tool&gt;</td><td>Re-download the latest version</td></tr>
+      <tr><td>stockyard update --all</td><td>Update all installed tools</td></tr>
+      <tr><td>stockyard list</td><td>List all 150 available tools by category</td></tr>
+      <tr><td>stockyard list --installed</td><td>List installed tools only</td></tr>
+      <tr><td>stockyard list --running</td><td>List running tools only</td></tr>
+      <tr><td>stockyard search &lt;query&gt;</td><td>Search tools by name or description</td></tr>
+      <tr><td>stockyard logs &lt;tool&gt;</td><td>View recent logs for a tool</td></tr>
+      <tr><td>stockyard license set &lt;key&gt;</td><td>Save your license key</td></tr>
+      <tr><td>stockyard license show</td><td>Show current license</td></tr>
+      <tr><td>stockyard config</td><td>Show configuration</td></tr>
+      <tr><td>stockyard version</td><td>Show CLI version</td></tr>
     </table>
 
-    <h2 id="examples">Examples</h2>
-    <pre><code># Check system status
-$ sy status
-Stockyard — healthy
-Uptime:    3d 5h 42m
-Version:   v1.0.0
-Requests:  15.4K
+    <h2 id="config">Configuration</h2>
+    <p>All config lives in <code>~/.stockyard/</code>:</p>
+    <pre><code>~/.stockyard/
+  config.json          # license key, ports, settings
+  bin/                 # installed tool binaries
+  tools/               # metadata for each installed tool
+  logs/                # stdout/stderr from managed tools
+  data/                # data directories for each tool</code></pre>
+    <p>The license key is stored in <code>config.json</code> and passed to every tool via the <code>STOCKYARD_LICENSE_KEY</code> environment variable when starting. Set it once, every tool gets Pro.</p>
 
-APP       DESCRIPTION                  API
-proxy     Middleware &amp; providers        /api/proxy
-observe   Traces &amp; costs               /api/observe
-trust     Policies &amp; audit             /api/trust
-
-# Follow traces in real-time
-$ sy traces --follow
-Following traces (Ctrl+C to stop)...
-
-[14:23:01] gpt-4o  tokens=1523  cost=$0.0152  latency=432ms
-[14:23:03] claude-sonnet-4-20250514  tokens=892   cost=$0.0089  latency=1205ms
-
-# Toggle a module
-$ sy modules disable cache
-Module "cache" disabled.
-
-# Export config for backup
-$ sy config export > backup.json</code></pre>
+    <h2 id="how-it-works">How It Works</h2>
+    <p><strong>Install</strong> downloads the tool binary from GitHub Releases, extracts it from the tar.gz archive, and places it in <code>~/.stockyard/bin/</code>. Each tool gets a metadata file tracking its version, port, and data directory.</p>
+    <p><strong>Start</strong> runs the tool as a background process with <code>PORT</code>, <code>DATA_DIR</code>, and <code>STOCKYARD_LICENSE_KEY</code> environment variables set. Stdout and stderr are captured to log files. The CLI waits 2 seconds and hits <code>/health</code> to verify the tool started successfully.</p>
+    <p><strong>Stop</strong> sends SIGTERM and waits up to 5 seconds for graceful shutdown. If the process doesn't exit, it sends SIGKILL.</p>
+    <p><strong>Ports</strong> are assigned from the tool's default port. If a port is already in use, the CLI auto-increments to find an open one.</p>
 
     <div class="pn">
       <a href="/docs/ops/">&larr; Ops Guide</a>

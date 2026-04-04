@@ -114,6 +114,7 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
       <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
       <div class="nav-drop-menu">
         <a href="/tools/">Browse All Tools</a>
+        <a href="/cli/" style="color:var(--gold)">Install via CLI</a>
         <div class="drop-section">By Category</div>
         <a href="/tools/?category=developer">Developer Tools</a>
         <a href="/tools/?category=operations">Operations</a>
@@ -291,6 +292,22 @@ footer a{color:var(--cream-muted)}.footer a:hover{color:var(--cream)}
     <a href="/strongbox/" class="catalog-card"><span class="cat-name">Strongbox</span><span class="cat-desc">Self-hosted secret manager. Encrypted at rest, team access, audit log.</span><span class="cat-replaces">Replaces 1Password Teams &middot; saves $18/mo</span></a>
   </div>
   <div style="text-align:center;margin-top:2.5rem"><a href="/tools/" class="btn btn-secondary">See all 150 tools &rarr;</a></div>
+</section>
+
+<section class="section" style="padding:3rem 2rem 4rem">
+  <div style="max-width:600px;margin:0 auto;text-align:center">
+    <div class="section-label gold">Get Started</div>
+    <h2 style="font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:.8rem">Install the CLI. Manage everything.</h2>
+    <p style="color:var(--cream-dim);font-style:italic;margin-bottom:1.5rem">One command to install tools. One command to start them. One license key for Pro on all 150.</p>
+    <div style="background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:.82rem;text-align:left;margin-bottom:1rem;cursor:pointer" onclick="navigator.clipboard.writeText('curl -fsSL https://stockyard.dev/cli/install.sh | sh')">
+      <span style="color:var(--leather);user-select:none">$ </span>curl -fsSL https://stockyard.dev/cli/install.sh | sh
+    </div>
+    <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap">
+      <a href="/cli/" style="font-family:var(--font-mono);font-size:.78rem;color:var(--rust-light)">Learn more &rarr;</a>
+      <span style="color:var(--bg3)">&middot;</span>
+      <a href="https://github.com/stockyard-dev/stockyard-cli" style="font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim)">GitHub</a>
+    </div>
+  </div>
 </section>
 
 <section class="section-alt">

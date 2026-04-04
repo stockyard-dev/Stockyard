@@ -97,6 +97,7 @@ footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-m
       <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
       <div class="nav-drop-menu">
         <a href="/tools/">Browse All Tools</a>
+        <a href="/cli/" style="color:var(--gold)">Install via CLI</a>
         <div class="drop-section">By Category</div>
         <a href="/tools/?category=developer">Developer Tools</a>
         <a href="/tools/?category=operations">Operations</a>
@@ -382,8 +383,9 @@ export STOCKYARD_LICENSE_KEY=SY-xxxxxxxxxxxxxxxxxxxx
 ./stockyard-cellar</pre>
   <p style="margin-top:1rem">The same key works across all tools, all instances, all servers.</p>
   <div style="background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--gold);padding:1.2rem 1.5rem;margin-top:1.5rem;font-size:.9rem">
-    <strong style="font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold)">Even easier: use Stockyard Hub</strong><br>
-    <span style="color:var(--cream-dim)">Hub is a management dashboard that installs, starts, and monitors all 150 tools from one UI. Set your license key once and Hub handles the rest. <a href="/hub/">Learn more &rarr;</a></span>
+    <strong style="font-family:var(--font-mono);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold)">Even easier: use the CLI</strong><br>
+    <span style="color:var(--cream-dim)">The <a href="/cli/">Stockyard CLI</a> installs, starts, stops, and updates all 150 tools from your terminal. Set your license key once and every tool gets Pro automatically.</span>
+    <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.78rem;background:var(--bg);padding:.6rem .8rem;border:1px solid var(--bg3)"><span style="color:var(--leather);user-select:none">$ </span>stockyard license set SY-xxxxx<br><span style="color:var(--leather);user-select:none">$ </span>stockyard install corral paddock saltlick<br><span style="color:var(--leather);user-select:none">$ </span>stockyard start --all</div>
   </div>
 </div>
 
