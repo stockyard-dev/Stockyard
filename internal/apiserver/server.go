@@ -436,6 +436,7 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		Interval string `json:"interval"` // "monthly" (default) or "annual"
 		Email    string `json:"email"`
 		Ref      string `json:"ref"`
+		Bundle   string `json:"bundle"` // bundle slug for $7.99/mo bundle checkout
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeErr(w, http.StatusBadRequest, "invalid JSON")
@@ -458,6 +459,24 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Support both new plan-based and legacy product/tier checkout
+
+	// Bundle checkout — $7.99/mo for a specific community bundle
+	if req.Bundle != "" {
+		priceID := os.Getenv("STRIPE_PRICE_BUNDLE_MONTHLY")
+		if priceID == "" {
+			writeErr(w, http.StatusBadRequest, "bundle pricing not configured — set STRIPE_PRICE_BUNDLE_MONTHLY")
+			return
+		}
+		url, err := s.stripe.CreateCheckoutSessionWithBundle(req.Bundle, req.Email, priceID, refCode)
+		if err != nil {
+			log.Printf("bundle checkout error: %v", err)
+			writeErr(w, http.StatusInternalServerError, fmt.Sprintf("checkout: %v", err))
+			return
+		}
+		writeOK(w, map[string]string{"url": url})
+		return
+	}
+
 	product := req.Product
 	tier := req.Tier
 	if req.Plan != "" {

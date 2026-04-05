@@ -163,6 +163,57 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 	return url, nil
 }
 
+// CreateCheckoutSessionWithBundle creates a checkout session for a community bundle.
+func (s *StripeClient) CreateCheckoutSessionWithBundle(bundle, email, priceID, ref string) (string, error) {
+	if priceID == "" {
+		return "", fmt.Errorf("no Stripe price ID for bundles")
+	}
+
+	successURL := s.config.SuccessURL
+	if successURL == "" {
+		successURL = "https://stockyard.dev/billing/success/"
+	}
+	successURL += "?bundle=" + bundle
+	cancelURL := s.config.CancelURL
+	if cancelURL == "" {
+		cancelURL = "https://stockyard.dev/for/" + bundle + "/"
+	}
+
+	form := fmt.Sprintf(
+		"mode=subscription"+
+			"&line_items[0][price]=%s"+
+			"&line_items[0][quantity]=1"+
+			"&success_url=%s"+
+			"&cancel_url=%s"+
+			"&metadata[product]=bundle"+
+			"&metadata[bundle]=%s"+
+			"&metadata[ref]=%s"+
+			"&subscription_data[metadata][product]=bundle"+
+			"&subscription_data[metadata][bundle]=%s"+
+			"&subscription_data[metadata][ref]=%s",
+		priceID, successURL, cancelURL, bundle, ref, bundle, ref,
+	)
+
+	if email != "" {
+		form += "&customer_email=" + email
+	}
+
+	if couponID := os.Getenv("STRIPE_FIRST_MONTH_COUPON"); couponID != "" {
+		form += "&discounts[0][coupon]=" + couponID
+	}
+
+	result, err := s.stripePost("/checkout/sessions", form)
+	if err != nil {
+		return "", err
+	}
+
+	url, ok := result["url"].(string)
+	if !ok {
+		return "", fmt.Errorf("no checkout URL in response")
+	}
+	return url, nil
+}
+
 // GetSubscription retrieves a subscription from Stripe.
 func (s *StripeClient) GetSubscription(subID string) (map[string]any, error) {
 	return s.stripeGet("/subscriptions/" + subID)
