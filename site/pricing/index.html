@@ -838,5 +838,20 @@ function toggleNav(){document.querySelector('.nav-links').classList.toggle('open
 })();
 </script>
 <script src="/site-assets/assets/sticky-cta.js" defer></script>
+<script>
+// Auto-initiate bundle checkout if ?bundle= is present
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  var bundle=p.get('bundle');
+  if(bundle){
+    // Show a brief message then redirect to Stripe
+    document.body.insertAdjacentHTML('afterbegin','<div style="position:fixed;inset:0;background:rgba(26,20,16,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem"><div style="font-family:var(--font-mono);color:var(--cream);font-size:1.1rem">Preparing checkout for <strong style=color:var(--rust-light)>'+bundle+'</strong> bundle...</div><div style="font-family:var(--font-mono);color:var(--leather);font-size:0.8rem">$7.99/mo · Cancel anytime</div></div>');
+    fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bundle:bundle,ref:p.get('ref')||''})})
+      .then(function(r){return r.json()})
+      .then(function(d){if(d.url)window.location.href=d.url;else{document.querySelector('[style*="position:fixed"]').innerHTML='<div style="color:var(--cream);font-family:var(--font-mono);text-align:center;padding:2rem"><p>'+( d.error&&d.error.message||'Checkout unavailable')+'</p><p style="margin-top:1rem"><a href="/for/'+bundle+'/" style="color:var(--rust-light)">Back to bundle</a></p></div>'}})
+      .catch(function(){window.location.href='/for/'+bundle+'/'});
+  }
+})();
+</script>
 </body>
 </html>
