@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <meta property="og:title" content="MCP Server — Stockyard">
-<meta property="og:description" content="Connect MCP-compatible AI editors to Stockyard. Claude Desktop, Cursor, Windsurf, Cline.">
+<meta property="og:description" content="384 MCP tools for your AI editor. One binary connects Cursor, Claude Desktop, Windsurf, or Cline to every running Stockyard tool.">
 <meta property="og:url" content="https://stockyard.dev/mcp/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>MCP Server — Stockyard</title>
-<meta name="description" content="Connect MCP-compatible AI editors to Stockyard. Full middleware chain, tracing, cost tracking, and audit logs for every request.">
+<title>MCP Server — 384 Tools for Your AI Editor — Stockyard</title>
+<meta name="description" content="384 MCP tools for your AI editor. One binary connects Cursor, Claude Desktop, Windsurf, or Cline to every running Stockyard tool. Feature flags, alerts, caching, cost tracking, and 120+ more.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -187,39 +187,51 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   </aside>
   <main class="content" id="main">
     <h1>MCP Server</h1>
-    <p class="subtitle">Use Stockyard as an MCP backend for AI-powered editors and tools.</p>
+    <p class="subtitle">384 MCP tools for your AI editor. One binary. Zero dependencies.</p>
 
-    <h2 id="what-is-mcp">What is MCP?</h2>
-    <p>The <strong>Model Context Protocol (MCP)</strong> is an open protocol that lets AI-powered tools connect to external services. Stockyard implements the MCP SSE transport, so any MCP-compatible client &mdash; Claude Desktop, Cursor, Windsurf, Cline &mdash; can use Stockyard as their LLM backend.</p>
-    <p>Every request through MCP passes through Stockyard&rsquo;s full middleware chain: tracing, cost tracking, guardrails, audit logs, caching, and all 76 proxy modules.</p>
+    <h2 id="what-is-mcp">What It Does</h2>
+    <p><code>stockyard-mcp</code> is a single binary that connects your AI editor to every running Stockyard tool. Feature flags, cron jobs, alerts, caching, cost tracking, guardrails, and 120+ more &mdash; all available as native MCP tools in Cursor, Claude Desktop, Windsurf, or Cline.</p>
+    <p>Ask your editor <em>&ldquo;What&rsquo;s my LLM spend this month?&rdquo;</em> and it calls CostCap. Ask <em>&ldquo;Create a feature flag called dark-mode at 10% rollout&rdquo;</em> and it calls SaltLick. The adapter translates MCP tool calls into HTTP API calls to the correct running tool and returns the result.</p>
 
-    <h2 id="endpoints">Endpoints</h2>
-    <p>Stockyard exposes two MCP endpoints:</p>
-    <pre><code>GET  /mcp/sse       &mdash; SSE connection (client subscribes here)
-POST /mcp/message   &mdash; Message endpoint (client sends JSON-RPC here)</code></pre>
+    <h2 id="install">Install</h2>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>curl -fsSL https://stockyard.dev/stockyard-mcp/install.sh | sh</code></pre>
+    <p>Or build from source:</p>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>git clone https://github.com/stockyard-dev/Stockyard.git
+cd Stockyard && go build -o stockyard-mcp ./cmd/stockyard-mcp/</code></pre>
 
-    <h2 id="tools">Available Tools</h2>
-    <p>The MCP server exposes a single <code>chat</code> tool that accepts:</p>
-    <pre><code>{
-  "model": "gpt-4o",
-  "messages": [{"role": "user", "content": "Hello"}],
-  "temperature": 0.7,
-  "max_tokens": 1000
-}</code></pre>
-    <p>The tool routes the request through all configured middleware modules and returns the LLM response.</p>
+    <h2 id="usage">Usage</h2>
+    <pre><code># Connect to specific running tools
+stockyard-mcp --tools costcap:4100,llmcache:4200
+
+# Auto-discover tools on a port range
+stockyard-mcp --scan 4000-7000
+
+# Connect to all tools at default ports
+stockyard-mcp --all
+
+# List all 125 known products
+stockyard-mcp --list</code></pre>
+
+    <h2 id="how-it-works">How It Works</h2>
+    <pre><code>Your AI Editor (Cursor / Claude Desktop / Windsurf / Cline)
+    &darr; MCP protocol (JSON-RPC over stdio)
+stockyard-mcp (7 MB binary, embedded catalog)
+    &darr; HTTP API calls
+Running Stockyard tools (costcap:4100, llmcache:4200, ...)</code></pre>
+    <p>The adapter embeds a catalog of all 125 Stockyard products and their API schemas. When a tool is running, the adapter exposes its endpoints as MCP tools. When the editor calls a tool, the adapter translates the MCP request into an HTTP call to the correct tool instance.</p>
 
     <h2 id="claude-desktop">Claude Desktop</h2>
-    <p>Add this to your <code>claude_desktop_config.json</code>:</p>
+    <p>Add to <code>claude_desktop_config.json</code>:</p>
     <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
   "mcpServers": {
     "stockyard": {
-      "url": "https://your-stockyard-instance.com/mcp/sse",
-      "transport": "sse"
+      "command": "stockyard-mcp",
+      "args": ["--tools", "costcap:4100,llmcache:4200"]
     }
   }
 }</code></pre>
     <div class="note">
-      <strong>Config location:</strong> On macOS: <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>. On Windows: <code>%APPDATA%\Claude\claude_desktop_config.json</code>.
+      <strong>Config location:</strong> macOS: <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> &middot; Windows: <code>%APPDATA%\Claude\claude_desktop_config.json</code>
     </div>
 
     <h2 id="cursor">Cursor</h2>
@@ -227,49 +239,68 @@ POST /mcp/message   &mdash; Message endpoint (client sends JSON-RPC here)</code>
     <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
   "mcpServers": {
     "stockyard": {
-      "url": "https://your-stockyard-instance.com/mcp/sse",
-      "transport": "sse"
+      "command": "stockyard-mcp",
+      "args": ["--scan", "4000-7000"]
     }
   }
 }</code></pre>
 
     <h2 id="windsurf">Windsurf</h2>
-    <p>In Windsurf settings, add the MCP server:</p>
     <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
   "mcpServers": {
     "stockyard": {
-      "serverUrl": "https://your-stockyard-instance.com/mcp/sse"
+      "command": "stockyard-mcp",
+      "args": ["--all"]
     }
   }
 }</code></pre>
 
-    <h2 id="editor-guides">Editor-Specific Guides</h2>
-    <p>For detailed setup instructions for each editor, see:</p>
+    <h2 id="cline">Cline (VS Code)</h2>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "mcpServers": {
+    "stockyard": {
+      "command": "stockyard-mcp",
+      "args": ["--all"]
+    }
+  }
+}</code></pre>
+
+    <h2 id="proxy-mcp">Platform MCP (SSE Transport)</h2>
+    <p>The Stockyard platform also exposes an MCP endpoint via SSE for routing LLM requests through the full middleware chain. This is separate from <code>stockyard-mcp</code> &mdash; it proxies LLM completions rather than exposing tool APIs.</p>
+    <pre><code>GET  /mcp/sse       &mdash; SSE connection
+POST /mcp/message   &mdash; JSON-RPC messages</code></pre>
+    <p>To use the SSE transport in Claude Desktop:</p>
+    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "mcpServers": {
+    "stockyard-proxy": {
+      "url": "https://your-instance.com/mcp/sse",
+      "transport": "sse"
+    }
+  }
+}</code></pre>
+
+    <h2 id="tools">All 125 Products</h2>
+    <p>Every Stockyard tool becomes MCP-accessible. Browse the full catalog at <a href="/tools/">stockyard.dev/tools</a> or run <code>stockyard-mcp --list</code>.</p>
     <div class="ov-grid">
-      <a class="ov-card" href="/docs/editors/cursor/">
-        <div class="ov-label">Editor</div>
-        <div class="ov-title">Cursor</div>
-        <div class="ov-desc">MCP config for Cursor IDE</div>
+      <a class="ov-card" href="/tools/?category=developer">
+        <div class="ov-label">Category</div>
+        <div class="ov-title">Developer Tools</div>
+        <div class="ov-desc">Feature flags, cron, webhooks, queues, secrets</div>
       </a>
-      <a class="ov-card" href="/docs/editors/windsurf/">
-        <div class="ov-label">Editor</div>
-        <div class="ov-title">Windsurf</div>
-        <div class="ov-desc">MCP config for Windsurf</div>
+      <a class="ov-card" href="/tools/?category=operations">
+        <div class="ov-label">Category</div>
+        <div class="ov-title">Operations</div>
+        <div class="ov-desc">Monitoring, alerts, backups, uptime, logs</div>
       </a>
-      <a class="ov-card" href="/docs/editors/copilot/">
-        <div class="ov-label">Editor</div>
-        <div class="ov-title">GitHub Copilot</div>
-        <div class="ov-desc">Custom endpoint config</div>
+      <a class="ov-card" href="/tools/?category=creator">
+        <div class="ov-label">Category</div>
+        <div class="ov-title">LLM &amp; AI</div>
+        <div class="ov-desc">Cost caps, caching, guardrails, routing, eval</div>
       </a>
-      <a class="ov-card" href="/docs/editors/cline/">
-        <div class="ov-label">Editor</div>
-        <div class="ov-title">Cline</div>
-        <div class="ov-desc">MCP config for VS Code</div>
-      </a>
-      <a class="ov-card" href="/docs/editors/aider/">
-        <div class="ov-label">Editor</div>
-        <div class="ov-title">Aider</div>
-        <div class="ov-desc">CLI flag configuration</div>
+      <a class="ov-card" href="/tools/?category=finance">
+        <div class="ov-label">Category</div>
+        <div class="ov-title">Finance &amp; Business</div>
+        <div class="ov-desc">Expenses, invoices, time tracking, billing</div>
       </a>
     </div>
 
@@ -295,9 +326,9 @@ POST /mcp/message   &mdash; Message endpoint (client sends JSON-RPC here)</code>
 <div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a></div>
 
 <div class="section">
-  <div class="section-label">Why route AI editors through a proxy</div>
-  <p>AI-powered editors like Cursor, Windsurf, and Claude Desktop send LLM requests directly to providers. This works until you need cost tracking across editors, guardrails that apply regardless of which tool made the request, or an audit trail of every prompt your team sends. Stockyard's MCP server sits between the editor and the provider, applying the same middleware chain to editor traffic that it applies to application traffic. Cache hits from one editor benefit all editors. Guardrails block the same patterns everywhere. Cost tracking aggregates spend from every source into a single dashboard.</p>
-  <p>The setup requires adding a single JSON block to your editor's MCP configuration — the Stockyard URL and transport type. From that point, every request from the editor flows through Stockyard's middleware. The editor does not know or care that a proxy exists. It sends requests to the MCP endpoint, and Stockyard forwards them to the configured provider after applying caching, guardrails, cost tracking, and any other active middleware modules.</p>
+  <div class="section-label">Why connect AI editors to self-hosted tools</div>
+  <p>AI-powered editors like Cursor, Windsurf, and Claude Desktop are increasingly capable of calling external tools via MCP. But most MCP servers expose a single service — one server for GitHub, one for Slack, one for Notion. stockyard-mcp takes a different approach: one binary that connects your editor to an entire suite of self-hosted developer tools. Feature flags, cron scheduling, webhook relay, alerting, caching, cost tracking, secrets management, and 120+ more — all discoverable and callable from your editor without leaving your codebase.</p>
+  <p>The adapter runs locally, connects to your running Stockyard tool instances over HTTP, and translates MCP tool calls into API requests. No cloud dependency. No third-party data sharing. Your tools, your infrastructure, your editor.</p>
 </div>
 
 <footer>
