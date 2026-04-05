@@ -298,6 +298,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/blog/openai-api-bill-surprise/",
 		"/blog/sqlite-in-production-2026/",
 		"/blog/building-llm-proxy-go/",
+		"/blog/384-mcp-tools/",
 		"/architecture/",
 		"/status/",
 		"/mcp/",
