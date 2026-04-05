@@ -339,7 +339,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/does-stockyard-phone-home/",
 		"/features/llm-failover/",
 		"/features/llm-caching/",
-		"/for/solo-developers/",
 		"/use-case/llm-cost-control/",
 		"/open-source-vs-bsl/",
 		"/how-stockyard-backups-work/",
@@ -347,8 +346,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/features/rate-limiting/",
 		"/features/prompt-logging/",
 		"/use-case/dev-team-llm-gateway/",
-		"/for/self-hosters/",
-		"/for/startups/",
 		"/docs/railway-deploy/",
 		"/blog/self-hosted-vs-saas-llm-proxy/",
 		"/blog/cursor-api-costs/",
@@ -897,6 +894,36 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		})
 	}
 
+	// Bundle pages — /for/ index + /for/{slug}/ + /for/{slug}/install.sh
+	mux.HandleFunc("GET /for/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/")
+		if path == "for/" || path == "for" {
+			path = "for/index.html"
+		} else if strings.HasSuffix(path, "/install.sh") {
+			// Install script — serve with download tracking
+			data, err := fs.ReadFile(sub, path)
+			if err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			recordInstall(db, r, "/"+path)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.Header().Set("Cache-Control", "public, max-age=300")
+			w.Write(data)
+			return
+		} else if strings.HasSuffix(path, "/") {
+			path = path + "index.html"
+		} else {
+			path = path + "/index.html"
+		}
+		data, err := fs.ReadFile(sub, path)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		servePage(w, r, data, "public, max-age=300")
+	})
+
 	// Redirects for renamed products
 	mux.HandleFunc("GET /proxy/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy-only/", http.StatusMovedPermanently)
@@ -1045,7 +1072,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 	// Serve sub-sitemaps
-	for _, smName := range []string{"sitemap-tools.xml", "sitemap-comparisons.xml", "sitemap-blog.xml", "sitemap-docs.xml", "sitemap-pages.xml"} {
+	for _, smName := range []string{"sitemap-tools.xml", "sitemap-comparisons.xml", "sitemap-blog.xml", "sitemap-docs.xml", "sitemap-pages.xml", "sitemap-bundles.xml"} {
 		name := smName
 		mux.HandleFunc("GET /"+name, func(w http.ResponseWriter, r *http.Request) {
 			data, err := fs.ReadFile(sub, name)

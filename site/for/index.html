@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Tool Bundles for Every Community — Stockyard</title>
+<meta name="description" content="112 curated tool bundles for 10 communities. Self-hosted, $7.99/mo each. From Minecraft admins to therapists to food trucks.">
+<meta property="og:title" content="Tool Bundles for Every Community — Stockyard">
+<meta property="og:description" content="112 curated bundles. Self-hosted tools for gaming, healthcare, small business, education, and more.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/for/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/for/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.hero{max-width:720px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
+.hero h1{font-size:2rem;margin-bottom:0.8rem}
+.hero .sub{color:var(--cream-dim);font-style:italic}
+.main{max-width:1000px;margin:0 auto;padding:2rem}
+.cat-section{margin-bottom:3rem}
+.cat-section h2{font-family:var(--font-mono);font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--bg3)}
+.cat-count{color:var(--cream-muted);font-size:0.65rem}
+.bundle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.bundle-card{display:block;background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s;text-decoration:none}
+.bundle-card:hover{border-color:var(--rust)}
+.bundle-name{font-size:1rem;color:var(--cream);margin-bottom:0.3rem}
+.bundle-desc{font-size:0.8rem;color:var(--cream-dim);margin-bottom:0.5rem}
+.bundle-tools{font-family:var(--font-mono);font-size:0.7rem;color:var(--leather)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:600px){.bundle-grid{grid-template-columns:1fr}.hero{padding:3rem 1.5rem 1.5rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/tools/">Tools</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Tool Bundles for Every Community</h1>
+  <p class="sub">112 curated bundles across 10 categories. Self-hosted tools, one install command, $7.99/mo each.</p>
+</div>
+
+<div class="main">
+
+    <div class="cat-section">
+      <h2>Communities & Groups <span class="cat-count">14</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/alumni/">
+        <div class="bundle-name">Alumni Associations</div>
+        <div class="bundle-desc">Alumni network management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/bookclub/">
+        <div class="bundle-name">Book Clubs & Reading Groups</div>
+        <div class="bundle-desc">Run your book club</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/car-club/">
+        <div class="bundle-name">Car Clubs & Car Meets</div>
+        <div class="bundle-desc">Car club management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/cycling-club/">
+        <div class="bundle-name">Cycling Clubs</div>
+        <div class="bundle-desc">Cycling club management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/discord/">
+        <div class="bundle-name">Discord Community Managers</div>
+        <div class="bundle-desc">Manage your Discord community</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/hiking-group/">
+        <div class="bundle-name">Hiking & Trail Groups</div>
+        <div class="bundle-desc">Hiking group management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/neighborhood-watch/">
+        <div class="bundle-name">Neighborhood Watch</div>
+        <div class="bundle-desc">Neighborhood watch coordination</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/pta/">
+        <div class="bundle-name">PTA / Parent-Teacher Organizations</div>
+        <div class="bundle-desc">PTA management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/running-club/">
+        <div class="bundle-name">Running Clubs & Marathon Groups</div>
+        <div class="bundle-desc">Running club management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/scouting/">
+        <div class="bundle-name">Scout Troops & Youth Groups</div>
+        <div class="bundle-desc">Troop management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/service-club/">
+        <div class="bundle-name">Rotary / Lions / Kiwanis Chapters</div>
+        <div class="bundle-desc">Service club management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/sports-league/">
+        <div class="bundle-name">Sports League Organizers</div>
+        <div class="bundle-desc">Rec league management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/tabletop/">
+        <div class="bundle-name">Tabletop RPG Groups</div>
+        <div class="bundle-desc">Organize your RPG group</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/volunteer-fire/">
+        <div class="bundle-name">Volunteer Fire Departments</div>
+        <div class="bundle-desc">VFD management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Content Creators <span class="cat-count">12</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/author/">
+        <div class="bundle-name">Self-Published Authors</div>
+        <div class="bundle-desc">Author business management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/band/">
+        <div class="bundle-name">Bands & Music Groups</div>
+        <div class="bundle-desc">Band management tools</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/course-creator/">
+        <div class="bundle-name">Online Course Creators</div>
+        <div class="bundle-desc">Course business management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/graphic-designer/">
+        <div class="bundle-name">Graphic Designers</div>
+        <div class="bundle-desc">Design studio management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/illustrator/">
+        <div class="bundle-name">Illustrators & Comic Artists</div>
+        <div class="bundle-desc">Illustration business tools</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/indie-gamedev/">
+        <div class="bundle-name">Indie Game Developers</div>
+        <div class="bundle-desc">Indie dev project management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/newsletter/">
+        <div class="bundle-name">Newsletter Writers</div>
+        <div class="bundle-desc">Newsletter management tools</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/photography/">
+        <div class="bundle-name">Photographers</div>
+        <div class="bundle-desc">Photography business management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/podcast/">
+        <div class="bundle-name">Podcasters</div>
+        <div class="bundle-desc">Podcast production management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/twitch/">
+        <div class="bundle-name">Twitch Streamers & Content Creators</div>
+        <div class="bundle-desc">Manage your streaming business</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/video-editor/">
+        <div class="bundle-name">Video Editors & Post-Production</div>
+        <div class="bundle-desc">Post-production business management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/youtube/">
+        <div class="bundle-name">YouTubers</div>
+        <div class="bundle-desc">YouTube channel management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Education <span class="cat-count">5</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/driving-school/">
+        <div class="bundle-name">Driving Schools</div>
+        <div class="bundle-desc">Driving school management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/homeschool/">
+        <div class="bundle-name">Homeschool Families</div>
+        <div class="bundle-desc">Homeschool management tools</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/language-school/">
+        <div class="bundle-name">Language Schools</div>
+        <div class="bundle-desc">Language school management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/trade-school/">
+        <div class="bundle-name">Trade Schools & Vocational Programs</div>
+        <div class="bundle-desc">Trade school management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/tutoring-center/">
+        <div class="bundle-name">Tutoring Centers</div>
+        <div class="bundle-desc">Tutoring center management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Gaming & Servers <span class="cat-count">12</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/ark-rust/">
+        <div class="bundle-name">ARK / Rust Server Admins</div>
+        <div class="bundle-desc">Wrangle your game servers</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/fivem/">
+        <div class="bundle-name">FiveM / GTA RP Server Admins</div>
+        <div class="bundle-desc">Admin tools for your RP server</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/foundry-vtt/">
+        <div class="bundle-name">Foundry VTT Hosts</div>
+        <div class="bundle-desc">Keep your virtual tabletop running</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/gmod/">
+        <div class="bundle-name">Garry's Mod Server Admins</div>
+        <div class="bundle-desc">Manage your GMod server</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/homelab/">
+        <div class="bundle-name">Homelab Enthusiasts</div>
+        <div class="bundle-desc">Self-hosted monitoring for your homelab</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/minecraft/">
+        <div class="bundle-name">Minecraft Server Admins</div>
+        <div class="bundle-desc">Run your Minecraft server like a pro</div>
+        <div class="bundle-tools">9 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/plex/">
+        <div class="bundle-name">Plex & Media Server Owners</div>
+        <div class="bundle-desc">Manage your media server without the bloat</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/proxmox/">
+        <div class="bundle-name">Proxmox Users</div>
+        <div class="bundle-desc">Proxmox VM monitoring and automation</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/terraria/">
+        <div class="bundle-name">Terraria Server Admins</div>
+        <div class="bundle-desc">Tools for your Terraria server</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/truenas/">
+        <div class="bundle-name">TrueNAS Users</div>
+        <div class="bundle-desc">TrueNAS monitoring and automation</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/unraid/">
+        <div class="bundle-name">Unraid Users</div>
+        <div class="bundle-desc">Monitor and manage your Unraid server</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/valheim/">
+        <div class="bundle-name">Valheim Server Admins</div>
+        <div class="bundle-desc">Keep your Valheim server running smooth</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Healthcare <span class="cat-count">10</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/acupuncture/">
+        <div class="bundle-name">Acupuncture & Traditional Medicine</div>
+        <div class="bundle-desc">Practice management for acupuncturists</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/chiropractor/">
+        <div class="bundle-name">Chiropractic Practices</div>
+        <div class="bundle-desc">Practice management for chiropractors</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/dental/">
+        <div class="bundle-name">Dental Practices</div>
+        <div class="bundle-desc">Practice tools for small dental offices</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/doula-midwife/">
+        <div class="bundle-name">Doulas & Midwives</div>
+        <div class="bundle-desc">Birth work practice management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/nutritionist/">
+        <div class="bundle-name">Nutritionists & Dietitians</div>
+        <div class="bundle-desc">Practice management for nutrition professionals</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/optometry/">
+        <div class="bundle-name">Optometry Practices</div>
+        <div class="bundle-desc">Practice tools for optometrists</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/physical-therapy/">
+        <div class="bundle-name">Physical Therapy Practices</div>
+        <div class="bundle-desc">PT practice management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/speech-therapist/">
+        <div class="bundle-name">Speech Therapists</div>
+        <div class="bundle-desc">Practice management for SLPs</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/therapist/">
+        <div class="bundle-name">Therapists & Counselors</div>
+        <div class="bundle-desc">Practice management you control</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/veterinary/">
+        <div class="bundle-name">Veterinary Practices</div>
+        <div class="bundle-desc">Vet practice management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Hobbies & Enthusiasts <span class="cat-count">11</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/3d-printing/">
+        <div class="bundle-name">3D Printing Enthusiasts</div>
+        <div class="bundle-desc">3D print farm management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/aquarium/">
+        <div class="bundle-name">Aquarium & Reef Keepers</div>
+        <div class="bundle-desc">Aquarium management tools</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/astronomy/">
+        <div class="bundle-name">Astronomy Clubs</div>
+        <div class="bundle-desc">Astronomy club management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/beekeeper/">
+        <div class="bundle-name">Beekeepers</div>
+        <div class="bundle-desc">Hive management tools</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/board-gamer/">
+        <div class="bundle-name">Board Game Groups</div>
+        <div class="bundle-desc">Board game group management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/gardener/">
+        <div class="bundle-name">Gardeners & Urban Farmers</div>
+        <div class="bundle-desc">Garden management tools</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/ham-radio/">
+        <div class="bundle-name">Amateur Radio Operators</div>
+        <div class="bundle-desc">Ham radio station management</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/homebrewer/">
+        <div class="bundle-name">Homebrewers</div>
+        <div class="bundle-desc">Homebrew batch management</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/vintage-car/">
+        <div class="bundle-name">Vintage & Classic Car Owners</div>
+        <div class="bundle-desc">Classic car collection management</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/wine-collector/">
+        <div class="bundle-name">Wine Collectors</div>
+        <div class="bundle-desc">Manage your wine collection</div>
+        <div class="bundle-tools">4 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/woodworker/">
+        <div class="bundle-name">Woodworkers</div>
+        <div class="bundle-desc">Woodworking shop management</div>
+        <div class="bundle-tools">5 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Organizations <span class="cat-count">14</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/animal-shelter/">
+        <div class="bundle-name">Animal Shelters & Rescue Orgs</div>
+        <div class="bundle-desc">Shelter management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/church/">
+        <div class="bundle-name">Churches & Houses of Worship</div>
+        <div class="bundle-desc">Church management without the monthly fee</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/community-garden/">
+        <div class="bundle-name">Community Gardens</div>
+        <div class="bundle-desc">Manage your community garden</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/community-library/">
+        <div class="bundle-name">Community & Little Free Libraries</div>
+        <div class="bundle-desc">Library management tools</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/coworking/">
+        <div class="bundle-name">Coworking Spaces</div>
+        <div class="bundle-desc">Coworking space management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/daycare/">
+        <div class="bundle-name">Daycare & Childcare Centers</div>
+        <div class="bundle-desc">Childcare center management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/food-bank/">
+        <div class="bundle-name">Food Banks & Food Pantries</div>
+        <div class="bundle-desc">Food bank management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/gym/">
+        <div class="bundle-name">Gyms & Fitness Studios</div>
+        <div class="bundle-desc">Gym management without the bloat</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/hoa/">
+        <div class="bundle-name">HOA & Condo Boards</div>
+        <div class="bundle-desc">HOA management without the vendor</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/makerspace/">
+        <div class="bundle-name">Makerspaces & Community Workshops</div>
+        <div class="bundle-desc">Makerspace management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/nonprofit/">
+        <div class="bundle-name">Nonprofits & Charities</div>
+        <div class="bundle-desc">Nonprofit management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/school/">
+        <div class="bundle-name">Schools & Teachers</div>
+        <div class="bundle-desc">Classroom and school management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/theater/">
+        <div class="bundle-name">Theater & Performing Arts</div>
+        <div class="bundle-desc">Theater company management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/youth-sports/">
+        <div class="bundle-name">Youth Sports Leagues</div>
+        <div class="bundle-desc">League management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Professional Services <span class="cat-count">12</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/accountant-tax/">
+        <div class="bundle-name">Tax Preparers</div>
+        <div class="bundle-desc">Client management for tax season</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/architect/">
+        <div class="bundle-name">Small Architecture Firms</div>
+        <div class="bundle-desc">Project management for small firms</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/financial-advisor/">
+        <div class="bundle-name">Financial Advisors</div>
+        <div class="bundle-desc">Practice management for advisors</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/home-inspector/">
+        <div class="bundle-name">Home Inspectors</div>
+        <div class="bundle-desc">Inspection business management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/immigration-consultant/">
+        <div class="bundle-name">Immigration Consultants</div>
+        <div class="bundle-desc">Case management for immigration</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/insurance-agent/">
+        <div class="bundle-name">Insurance Agents</div>
+        <div class="bundle-desc">Agency management tools</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/it-consultant/">
+        <div class="bundle-name">IT Consultants</div>
+        <div class="bundle-desc">Client management for IT consultants</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/music-teacher/">
+        <div class="bundle-name">Music Teachers & Studios</div>
+        <div class="bundle-desc">Manage your music studio</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/notary/">
+        <div class="bundle-name">Notaries & Signing Agents</div>
+        <div class="bundle-desc">Manage your notary business</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/personal-trainer/">
+        <div class="bundle-name">Personal Trainers & Coaches</div>
+        <div class="bundle-desc">Manage your training practice</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/realestate/">
+        <div class="bundle-name">Real Estate Agents</div>
+        <div class="bundle-desc">CRM and deal tracking for agents</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/wedding/">
+        <div class="bundle-name">Wedding Planners</div>
+        <div class="bundle-desc">Wedding planning tools you own</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Real Estate & Property <span class="cat-count">4</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/airbnb/">
+        <div class="bundle-name">Airbnb & Vacation Rental Hosts</div>
+        <div class="bundle-desc">Vacation rental management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/campground/">
+        <div class="bundle-name">Campgrounds & RV Parks</div>
+        <div class="bundle-desc">Campground management tools</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/property-manager/">
+        <div class="bundle-name">Property Managers</div>
+        <div class="bundle-desc">Property management tools</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/storage-facility/">
+        <div class="bundle-name">Storage Facility Operators</div>
+        <div class="bundle-desc">Storage facility management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+    <div class="cat-section">
+      <h2>Small Business <span class="cat-count">18</span></h2>
+      <div class="bundle-grid">
+      <a class="bundle-card" href="/for/auto-shop/">
+        <div class="bundle-name">Auto Repair Shops</div>
+        <div class="bundle-desc">Shop management without the monthly fee</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/barber-salon/">
+        <div class="bundle-name">Barber Shops & Hair Salons</div>
+        <div class="bundle-desc">Run your shop without monthly software fees</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/bookkeeper/">
+        <div class="bundle-name">Bookkeepers & Accountants</div>
+        <div class="bundle-desc">Client and financial management</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/catering/">
+        <div class="bundle-name">Catering Companies</div>
+        <div class="bundle-desc">Catering business management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/cleaning-service/">
+        <div class="bundle-name">Cleaning Services</div>
+        <div class="bundle-desc">Manage your cleaning business</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/etsy/">
+        <div class="bundle-name">Etsy & Handmade Sellers</div>
+        <div class="bundle-desc">Track your handmade business</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/event-planner/">
+        <div class="bundle-name">Event Planners</div>
+        <div class="bundle-desc">Plan events without the SaaS overhead</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/florist/">
+        <div class="bundle-name">Florists</div>
+        <div class="bundle-desc">Flower shop management</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/food-truck/">
+        <div class="bundle-name">Food Trucks</div>
+        <div class="bundle-desc">Run your food truck business</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/freelancer/">
+        <div class="bundle-name">Freelancers & Solopreneurs</div>
+        <div class="bundle-desc">Run your freelance business from one place</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/interior-designer/">
+        <div class="bundle-name">Interior Designers</div>
+        <div class="bundle-desc">Design studio management</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/lawn-care/">
+        <div class="bundle-name">Lawn Care & Landscaping</div>
+        <div class="bundle-desc">Manage your lawn care business</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/moving-company/">
+        <div class="bundle-name">Moving Companies</div>
+        <div class="bundle-desc">Manage your moving business</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/pet-services/">
+        <div class="bundle-name">Dog Groomers & Pet Sitters</div>
+        <div class="bundle-desc">Manage your pet care business</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/print-shop/">
+        <div class="bundle-name">Print Shops & Sign Shops</div>
+        <div class="bundle-desc">Shop management for print and signage</div>
+        <div class="bundle-tools">6 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/tattoo/">
+        <div class="bundle-name">Tattoo Studios</div>
+        <div class="bundle-desc">Studio management for tattoo artists</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/trades/">
+        <div class="bundle-name">Plumbers, Electricians & HVAC</div>
+        <div class="bundle-desc">Run your trade business</div>
+        <div class="bundle-tools">8 tools · $7.99/mo</div>
+      </a>
+      <a class="bundle-card" href="/for/tutoring/">
+        <div class="bundle-name">Tutoring Services</div>
+        <div class="bundle-desc">Manage your tutoring practice</div>
+        <div class="bundle-tools">7 tools · $7.99/mo</div>
+      </a>
+      </div>
+    </div>
+
+</div>
+
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+</footer>
+</body>
+</html>
