@@ -419,6 +419,7 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	// Get metadata
 	product := "stockyard"
 	tier := "pro"
+	bundle := ""
 	if meta, ok := session["metadata"].(map[string]any); ok {
 		if p := jsonStr(meta, "product"); p != "" {
 			product = p
@@ -426,6 +427,18 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 		if t := jsonStr(meta, "tier"); t != "" {
 			tier = t
 		}
+		if b := jsonStr(meta, "bundle"); b != "" {
+			bundle = b
+		}
+	}
+
+	// Bundle purchases: issue a tool license valid for all tools in the bundle
+	// For MVP, issue with product="*" to unlock all tools the user installs.
+	// TODO: scope license to specific bundle tools via payload claims.
+	if product == "bundle" && bundle != "" {
+		product = "*"
+		tier = "pro"
+		log.Printf("webhook: bundle purchase — bundle=%s, issuing wildcard tool license", bundle)
 	}
 
 	if customerID == "" || email == "" {
