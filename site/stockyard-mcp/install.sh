@@ -24,7 +24,11 @@ echo ""
 # Try GitHub release first
 TAG="${VERSION:-}"
 if [ -z "$TAG" ]; then
-  TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | grep '"tag_name"' | sed 's/.*"tag_name": *"\(.*\)".*/\1/' || true)
+  RELEASE_JSON="$(mktemp)"
+  if curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" -o "$RELEASE_JSON" 2>/dev/null; then
+    TAG=$(cat "$RELEASE_JSON" | tr ',' '\n' | grep '"tag_name"' | cut -d'"' -f4 || true)
+  fi
+  rm -f "$RELEASE_JSON"
 fi
 
 FILENAME="${BINARY}_${OS}_${ARCH}.tar.gz"
