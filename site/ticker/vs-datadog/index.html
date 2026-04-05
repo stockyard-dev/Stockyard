@@ -128,7 +128,7 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
       <tbody>
         <tr><td>Hosting</td><td class="us">Self-hosted, your infra</td><td>Managed SaaS (cloud only)</td></tr>
         <tr><td>Data location</td><td class="us">Your server, your disk</td><td>Datadog's cloud</td></tr>
-        <tr><td>Free tier</td><td class="us">10 metrics, 24h retention</td><td>Paid only</td></tr>
+        <tr><td>Free tier</td><td class="us">5 metrics, 24h retention</td><td>Paid only</td></tr>
         <tr><td>Pro pricing</td><td class="us">$0.99/mo</td><td>$15/host/mo (Infrastructure)</td></tr>
         <tr><td>Dependencies</td><td class="us">None (single binary + SQLite)</td><td>N/A (managed)</td></tr>
         <tr><td>Setup time</td><td class="us">~30 seconds</td><td>Account signup</td></tr>
@@ -191,7 +191,7 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
 <section class="section">
   <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Is Ticker a Datadog alternative?</div><div class="faq-a">Datadog is a full observability platform. Ticker is a simple self-hosted metrics dashboard. If you need APM and log management, Datadog is necessary.</div></div>
-  <div class="faq-item"><div class="faq-q">How many metrics can Ticker handle?</div><div class="faq-a">Free: 10 metrics with 24h retention. Pro: unlimited metrics with 90-day retention. For thousands of high-cardinality metrics, Prometheus or Datadog are more appropriate.</div></div>
+  <div class="faq-item"><div class="faq-q">How many metrics can Ticker handle?</div><div class="faq-a">Free: 5 metrics with 24h retention. Pro: unlimited metrics with 90-day retention. For thousands of high-cardinality metrics, Prometheus or Datadog are more appropriate.</div></div>
 </section>
 
 <section class="section">
@@ -227,7 +227,7 @@ ul.strengths{color:var(--cream-dim);margin:.5rem 0 1rem 1.5rem;line-height:1.9;f
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Ticker a Datadog alternative?","acceptedAnswer":{"@type":"Answer","text":"Datadog is a full observability platform. Ticker is a simple self-hosted metrics dashboard. If you need APM and log management, Datadog is necessary."}},{"@type":"Question","name":"How many metrics can Ticker handle?","acceptedAnswer":{"@type":"Answer","text":"Free: 10 metrics with 24h retention. Pro: unlimited metrics with 90-day retention. For thousands of high-cardinality metrics, Prometheus or Datadog are more appropriate."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Ticker a Datadog alternative?","acceptedAnswer":{"@type":"Answer","text":"Datadog is a full observability platform. Ticker is a simple self-hosted metrics dashboard. If you need APM and log management, Datadog is necessary."}},{"@type":"Question","name":"How many metrics can Ticker handle?","acceptedAnswer":{"@type":"Answer","text":"Free: 5 metrics with 24h retention. Pro: unlimited metrics with 90-day retention. For thousands of high-cardinality metrics, Prometheus or Datadog are more appropriate."}}]}</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>

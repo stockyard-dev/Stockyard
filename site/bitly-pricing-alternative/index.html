@@ -121,7 +121,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <section class="section">
   <div class="section-label">The pricing reality</div>
   <h2>What Bitly actually costs.</h2>
-  <p>Bitly free gives you 10 links/mo with bit.ly branding. Core is $8/mo for 100 links. Growth is $35/mo for 500 links. Premium is $300/mo. Per-link limits apply at every tier.</p>
+  <p>Bitly free gives you 5 links/mo with bit.ly branding. Core is $8/mo for 100 links. Growth is $35/mo for 500 links. Premium is $300/mo. Per-link limits apply at every tier.</p>
   <p>For an enterprise team with a large budget and complex requirements, Bitly is probably worth it. For everyone else, the math does not work.</p>
 </section>
 
@@ -153,7 +153,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 <section class="section">
   <div class="section-label">FAQ</div>
-  <div class="faq-item"><div class="faq-q">How much does Bitly cost?</div><div class="faq-a">Free: 10 links/mo. Core: $8/mo for 100 links. Growth: $35/mo for 500 links. Premium: $300/mo.</div></div>
+  <div class="faq-item"><div class="faq-q">How much does Bitly cost?</div><div class="faq-a">Free: 5 links/mo. Core: $8/mo for 100 links. Growth: $35/mo for 500 links. Premium: $300/mo.</div></div>
 <div class="faq-item"><div class="faq-q">Is Lasso a Bitly alternative?</div><div class="faq-a">Yes. Lasso shortens URLs, tracks clicks, and supports custom domains. The main trade-off is Bitly&#x27;s brand recognition — bit.ly links are universally recognized.</div></div>
 
 </section>
@@ -172,7 +172,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 
 <div class="section">
   <div class="section-label">The real cost of link shortening</div>
-  <p>Bitly's pricing tiers are structured to push teams toward the Growth plan at $35 per month. The free tier caps you at 10 links, which is enough for about two days of actual marketing work. Core at $8 per month bumps that to 100 links but still forces bit.ly branding. Custom domains — the feature most teams actually need — start at Growth tier. For a small agency managing links across multiple campaigns and clients, Bitly's annual cost easily exceeds $400 before accounting for the per-link overage charges that kick in when you exceed your tier.</p>
+  <p>Bitly's pricing tiers are structured to push teams toward the Growth plan at $35 per month. The free tier caps you at 5 links, which is enough for about two days of actual marketing work. Core at $8 per month bumps that to 100 links but still forces bit.ly branding. Custom domains — the feature most teams actually need — start at Growth tier. For a small agency managing links across multiple campaigns and clients, Bitly's annual cost easily exceeds $400 before accounting for the per-link overage charges that kick in when you exceed your tier.</p>
   <p>The deeper problem is dependency. Every link you create with Bitly is a redirect through their infrastructure. If Bitly has an outage, your links stop working. If Bitly changes their pricing again — and they have, multiple times — you either pay more or lose your existing short links. Self-hosted link shortening means your redirects run on your server, and the only infrastructure dependency is one you control.</p>
 </div>
 
@@ -185,7 +185,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':''}}
 function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does Bitly cost?","acceptedAnswer":{"@type":"Answer","text":"Free: 10 links/mo. Core: $8/mo for 100 links. Growth: $35/mo for 500 links. Premium: $300/mo."}},{"@type":"Question","name":"Is Lasso a Bitly alternative?","acceptedAnswer":{"@type":"Answer","text":"Yes. Lasso shortens URLs, tracks clicks, and supports custom domains. The main trade-off is Bitly&#x27;s brand recognition — bit.ly links are universally recognized."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does Bitly cost?","acceptedAnswer":{"@type":"Answer","text":"Free: 5 links/mo. Core: $8/mo for 100 links. Growth: $35/mo for 500 links. Premium: $300/mo."}},{"@type":"Question","name":"Is Lasso a Bitly alternative?","acceptedAnswer":{"@type":"Answer","text":"Yes. Lasso shortens URLs, tracks clicks, and supports custom domains. The main trade-off is Bitly&#x27;s brand recognition — bit.ly links are universally recognized."}}]}</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script src="/site-assets/assets/sticky-cta.js" defer></script>
 </body>
