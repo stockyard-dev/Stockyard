@@ -4,7 +4,7 @@ set -euo pipefail
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
 echo "  │  Stockyard for Community & Little Free Libraries│"
-echo "  │  6 tools · $7.99/mo · self-hosted        │"
+echo "  │  7 tools · $7.99/mo · self-hosted        │"
 echo "  │  https://stockyard.dev/for/community-library/│"
 echo "  └──────────────────────────────────────────┘"
 echo ""
@@ -59,12 +59,20 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
+  echo "  Installing Checkout..."
+  if curl -fsSL "https://stockyard.dev/checkout/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Checkout"
+  else
+    echo "    ✗ Checkout (failed — try manually: curl stockyard.dev/checkout/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
 if [ "$FAILED" -eq 0 ]; then
   echo ""
-  echo "  ✓ All 6 tools installed!"
+  echo "  ✓ All 7 tools installed!"
 else
   echo ""
-  echo "  Installed 6 tools ($FAILED had issues)"
+  echo "  Installed 7 tools ($FAILED had issues)"
 fi
 
 echo ""

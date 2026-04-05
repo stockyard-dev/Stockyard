@@ -4,7 +4,7 @@ set -euo pipefail
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
 echo "  │  Stockyard for Aquarium & Reef Keepers  │"
-echo "  │  5 tools · $7.99/mo · self-hosted        │"
+echo "  │  6 tools · $7.99/mo · self-hosted        │"
 echo "  │  https://stockyard.dev/for/aquarium/     │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
@@ -51,12 +51,20 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
+  echo "  Installing Collection..."
+  if curl -fsSL "https://stockyard.dev/collection/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Collection"
+  else
+    echo "    ✗ Collection (failed — try manually: curl stockyard.dev/collection/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
 if [ "$FAILED" -eq 0 ]; then
   echo ""
-  echo "  ✓ All 5 tools installed!"
+  echo "  ✓ All 6 tools installed!"
 else
   echo ""
-  echo "  Installed 5 tools ($FAILED had issues)"
+  echo "  Installed 6 tools ($FAILED had issues)"
 fi
 
 echo ""
