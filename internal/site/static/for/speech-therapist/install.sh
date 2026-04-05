@@ -4,7 +4,7 @@ set -euo pipefail
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
 echo "  │  Stockyard for Speech Therapists        │"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
+echo "  │  8 tools · $7.99/mo · self-hosted        │"
 echo "  │  https://stockyard.dev/for/speech-therapist/│"
 echo "  └──────────────────────────────────────────┘"
 echo ""
@@ -67,12 +67,20 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
+  echo "  Installing Booking..."
+  if curl -fsSL "https://stockyard.dev/booking/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Booking"
+  else
+    echo "    ✗ Booking (failed — try manually: curl stockyard.dev/booking/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
 if [ "$FAILED" -eq 0 ]; then
   echo ""
-  echo "  ✓ All 7 tools installed!"
+  echo "  ✓ All 8 tools installed!"
 else
   echo ""
-  echo "  Installed 7 tools ($FAILED had issues)"
+  echo "  Installed 8 tools ($FAILED had issues)"
 fi
 
 echo ""
