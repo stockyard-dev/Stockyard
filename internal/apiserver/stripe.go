@@ -313,6 +313,7 @@ type WebhookHandler struct {
 	authUpdater  AuthTierUpdater // updates user tier in auth system (optional)
 	toolsPrivKey string          // hex Ed25519 private key for tool license issuance
 	bundleTools  map[string][]string // bundle slug → tool slugs
+	trialDrip    *TrialDripRunner    // trial reminder email runner (optional)
 }
 
 // NewWebhookHandler creates a new webhook processor.
@@ -626,6 +627,16 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 				log.Printf("webhook: email send failed (non-fatal): %v", err)
 			}
 		}
+	}
+
+	// Enqueue trial drip emails for bundle purchases
+	if wh.trialDrip != nil && bundle != "" && trialEnd > 0 {
+		bundleDisplayName := strings.ReplaceAll(bundle, "-", " ")
+		if len(bundleDisplayName) > 0 {
+			bundleDisplayName = strings.ToUpper(bundleDisplayName[:1]) + bundleDisplayName[1:]
+		}
+		trialEndRFC := time.Unix(trialEnd, 0).UTC().Format(time.RFC3339)
+		wh.trialDrip.EnqueueTrial(email, bundle, bundleDisplayName, trialEndRFC)
 	}
 
 	log.Printf("webhook: license issued — key=%s...%s product=%s tier=%s",

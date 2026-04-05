@@ -1,0 +1,201 @@
+package apiserver
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"strings"
+	"time"
+)
+
+// ─── Trial Drip Runner ─────────────────────────────────────────────
+
+const trialDripSchema = `
+CREATE TABLE IF NOT EXISTS trial_drip (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    bundle_slug TEXT NOT NULL DEFAULT '',
+    bundle_name TEXT NOT NULL DEFAULT '',
+    trial_start TEXT NOT NULL DEFAULT (datetime('now')),
+    trial_end TEXT NOT NULL,
+    day3_sent INTEGER NOT NULL DEFAULT 0,
+    day7_sent INTEGER NOT NULL DEFAULT 0,
+    day12_sent INTEGER NOT NULL DEFAULT 0,
+    day14_sent INTEGER NOT NULL DEFAULT 0,
+    converted INTEGER NOT NULL DEFAULT 0,
+    cancelled INTEGER NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_trial_drip_email ON trial_drip(email, bundle_slug);
+`
+
+// TrialDripRunner sends trial reminder emails on schedule.
+type TrialDripRunner struct {
+	db     *sql.DB
+	mailer Mailer
+	stop   chan struct{}
+}
+
+// NewTrialDripRunner creates a trial drip sequence runner.
+func NewTrialDripRunner(db *sql.DB, mailer Mailer) *TrialDripRunner {
+	for _, stmt := range strings.Split(trialDripSchema, ";") {
+		stmt = strings.TrimSpace(stmt)
+		if stmt != "" {
+			if _, err := db.Exec(stmt); err != nil {
+				log.Printf("trial_drip: schema error: %v", err)
+			}
+		}
+	}
+	return &TrialDripRunner{db: db, mailer: mailer, stop: make(chan struct{})}
+}
+
+// EnqueueTrial adds a new trial subscriber to the drip queue.
+func (td *TrialDripRunner) EnqueueTrial(email, bundleSlug, bundleName, trialEnd string) {
+	_, err := td.db.Exec(
+		`INSERT OR IGNORE INTO trial_drip (email, bundle_slug, bundle_name, trial_end) VALUES (?, ?, ?, ?)`,
+		email, bundleSlug, bundleName, trialEnd,
+	)
+	if err != nil {
+		log.Printf("trial_drip: enqueue error: %v", err)
+		return
+	}
+	log.Printf("trial_drip: enqueued %s for bundle %s (trial ends %s)", email, bundleSlug, trialEnd)
+}
+
+// MarkConverted marks a trial as converted to paid.
+func (td *TrialDripRunner) MarkConverted(email string) {
+	td.db.Exec(`UPDATE trial_drip SET converted = 1 WHERE email = ? AND converted = 0`, email)
+}
+
+// MarkCancelled marks a trial as cancelled.
+func (td *TrialDripRunner) MarkCancelled(email string) {
+	td.db.Exec(`UPDATE trial_drip SET cancelled = 1 WHERE email = ? AND cancelled = 0`, email)
+}
+
+// Start begins the hourly check loop.
+func (td *TrialDripRunner) Start() {
+	go func() {
+		// Wait 5 minutes before first check (let server stabilize)
+		time.Sleep(5 * time.Minute)
+		td.tick()
+
+		ticker := time.NewTicker(1 * time.Hour)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				td.tick()
+			case <-td.stop:
+				return
+			}
+		}
+	}()
+	log.Printf("trial_drip: started (day 3/7/12 reminders, checking hourly)")
+}
+
+// Stop halts the runner.
+func (td *TrialDripRunner) Stop() {
+	close(td.stop)
+}
+
+func (td *TrialDripRunner) tick() {
+	now := time.Now().UTC()
+
+	rows, err := td.db.Query(`SELECT id, email, bundle_slug, bundle_name, trial_start, trial_end, 
+		day3_sent, day7_sent, day12_sent, day14_sent 
+		FROM trial_drip WHERE converted = 0 AND cancelled = 0`)
+	if err != nil {
+		log.Printf("trial_drip: query error: %v", err)
+		return
+	}
+	defer rows.Close()
+
+	sent := 0
+	for rows.Next() {
+		var id int
+		var email, bundleSlug, bundleName, trialStart, trialEnd string
+		var d3, d7, d12, d14 int
+		if err := rows.Scan(&id, &email, &bundleSlug, &bundleName, &trialStart, &trialEnd, &d3, &d7, &d12, &d14); err != nil {
+			continue
+		}
+
+		start, err := time.Parse("2006-01-02 15:04:05", trialStart)
+		if err != nil {
+			start, err = time.Parse(time.RFC3339, trialStart)
+			if err != nil {
+				continue
+			}
+		}
+
+		daysSince := int(now.Sub(start).Hours() / 24)
+
+		te, _ := time.Parse(time.RFC3339, trialEnd)
+		if te.IsZero() {
+			te, _ = time.Parse("2006-01-02 15:04:05", trialEnd)
+		}
+		daysLeft := 0
+		if !te.IsZero() {
+			daysLeft = int(te.Sub(now).Hours() / 24)
+		}
+
+		// Day 3: feature tip
+		if daysSince >= 3 && d3 == 0 {
+			if err := td.mailer.Send(email,
+				"Quick tip — explore all your tools",
+				"You've been using Stockyard for 3 days. Quick tip:\n\n"+
+					"Each tool in your "+bundleName+" bundle runs on its own port. "+
+					"Check the install output for the full list of URLs.\n\n"+
+					"Try the CSV export on any tool: GET /api/{resource}/export.csv\n\n"+
+					daysLeftLine(daysLeft)+"\n\n— Michael, Stockyard",
+			); err != nil {
+				log.Printf("trial_drip: day 3 send error for %s: %v", email, err)
+			} else {
+				td.db.Exec(`UPDATE trial_drip SET day3_sent = 1 WHERE id = ?`, id)
+				sent++
+			}
+		}
+
+		// Day 7: midway check-in
+		if daysSince >= 7 && d7 == 0 {
+			if err := td.mailer.SendTrialReminder(email, bundleName, daysLeft); err != nil {
+				log.Printf("trial_drip: day 7 send error for %s: %v", email, err)
+			} else {
+				td.db.Exec(`UPDATE trial_drip SET day7_sent = 1 WHERE id = ?`, id)
+				sent++
+			}
+		}
+
+		// Day 12: 2-day warning
+		if daysSince >= 12 && d12 == 0 {
+			if err := td.mailer.SendTrialReminder(email, bundleName, daysLeft); err != nil {
+				log.Printf("trial_drip: day 12 send error for %s: %v", email, err)
+			} else {
+				td.db.Exec(`UPDATE trial_drip SET day12_sent = 1 WHERE id = ?`, id)
+				sent++
+			}
+		}
+
+		// Day 14+: trial ended — send conversion or declined email
+		if daysSince >= 14 && d14 == 0 {
+			if err := td.mailer.SendTrialConverted(email, bundleName); err != nil {
+				log.Printf("trial_drip: day 14 send error for %s: %v", email, err)
+			} else {
+				td.db.Exec(`UPDATE trial_drip SET day14_sent = 1 WHERE id = ?`, id)
+				sent++
+			}
+		}
+	}
+
+	if sent > 0 {
+		log.Printf("trial_drip: sent %d emails", sent)
+	}
+}
+
+func daysLeftLine(d int) string {
+	if d <= 0 {
+		return "Your trial has ended."
+	}
+	if d == 1 {
+		return "1 day left in your trial."
+	}
+	return fmt.Sprintf("%d days left in your trial.", d)
+}

@@ -85,6 +85,11 @@ func (db *SqliteDB) Close() error {
 	return db.conn.Close()
 }
 
+// Conn returns the underlying *sql.DB connection.
+func (db *SqliteDB) Conn() *sql.DB {
+	return db.conn
+}
+
 // ---------------------------------------------------------------------------
 // Schema migrations
 // ---------------------------------------------------------------------------

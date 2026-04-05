@@ -134,6 +134,11 @@ func (s *Server) SetAuthTierUpdater(u AuthTierUpdater) {
 	s.webhook.authUpdater = u
 }
 
+// SetTrialDrip connects the trial drip email runner.
+func (s *Server) SetTrialDrip(td *TrialDripRunner) {
+	s.webhook.trialDrip = td
+}
+
 func (s *Server) registerRoutes() {
 	// Health
 	s.mux.HandleFunc("GET /health", s.handleHealth)

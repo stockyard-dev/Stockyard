@@ -83,6 +83,12 @@ func mountAPIServer(mux *http.ServeMux, dataDir string, authUpdater apiserver.Au
 		log.Println("[apibridge] auth tier updater connected")
 	}
 
+	// Wire trial drip runner for Stripe webhook → trial drip emails
+	trialDrip := apiserver.NewTrialDripRunner(db.Conn(), mailer)
+	trialDrip.Start()
+	srv.SetTrialDrip(trialDrip)
+	log.Println("[apibridge] trial drip runner started")
+
 	// CORS preflight for apiserver paths (stockyard.dev frontend calls these)
 	corsHandler := func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
