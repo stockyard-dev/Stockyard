@@ -924,6 +924,26 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		servePage(w, r, data, "public, max-age=300")
 	})
 
+	// Alternative-to pages — /alternative-to/{slug}/
+	mux.HandleFunc("GET /alternative-to/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/")
+		if path == "alternative-to/" || path == "alternative-to" {
+			http.Redirect(w, r, "/for/", 302)
+			return
+		}
+		if strings.HasSuffix(path, "/") {
+			path = path + "index.html"
+		} else {
+			path = path + "/index.html"
+		}
+		data, err := fs.ReadFile(sub, path)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		servePage(w, r, data, "public, max-age=300")
+	})
+
 	// Redirects for renamed products
 	mux.HandleFunc("GET /proxy/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy-only/", http.StatusMovedPermanently)
