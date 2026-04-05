@@ -13,38 +13,28 @@ case "$ARCH" in
   *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-TAG="${VERSION:-}"
-if [ -z "$TAG" ]; then
-  RELEASE_JSON="$(mktemp)"
-  if curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" -o "$RELEASE_JSON" 2>/dev/null; then
-    TAG=$(cat "$RELEASE_JSON" | tr ',' '\n' | grep '"tag_name"' | cut -d'"' -f4 || true)
-  fi
-  rm -f "$RELEASE_JSON"
-fi
+echo "Installing Stockyard Booking (${OS}/${ARCH})..."
 
-FILENAME="${BINARY}_${OS}_${ARCH}.tar.gz"
-if [ -n "$TAG" ]; then
-  URL="https://github.com/${REPO}/releases/download/${TAG}/${FILENAME}"
-  TMP="$(mktemp -d)"
-  trap 'rm -rf "$TMP"' EXIT
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
 
-  if curl -fsSL "$URL" -o "${TMP}/${FILENAME}" 2>/dev/null; then
-    tar -xzf "${TMP}/${FILENAME}" -C "$TMP"
-    install -m755 "${TMP}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
-    echo "  Installed ${BINARY} ${TAG} to ${INSTALL_DIR}/${BINARY}"
-    echo "  Dashboard: http://localhost:8830/ui"
-    echo "  Public booking: http://localhost:8830/book"
-    echo "  Questions? hello@stockyard.dev"
-    exit 0
+URL="https://github.com/${REPO}/releases/latest/download/${BINARY}_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "${TMP}/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "${TMP}/archive.tar.gz" -C "$TMP"
+  install -m755 "${TMP}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
+else
+  echo "Release not found. Trying go install..."
+  if command -v go &>/dev/null; then
+    CGO_ENABLED=0 GOBIN="${INSTALL_DIR}" go install "github.com/stockyard-dev/stockyard-booking/cmd/booking@latest"
+  else
+    echo "Install Go from https://go.dev or download from:"
+    echo "  https://github.com/${REPO}/releases"
+    exit 1
   fi
 fi
 
-if command -v go &>/dev/null; then
-  echo "  Building from source..."
-  CGO_ENABLED=0 GOBIN="${INSTALL_DIR}" go install "github.com/${REPO}/cmd/booking@latest"
-  echo "  Installed ${BINARY} to ${INSTALL_DIR}/${BINARY}"
-  exit 0
-fi
-
-echo "  Could not install. Download from: https://github.com/${REPO}/releases"
-exit 1
+echo ""
+echo "  Stockyard Booking installed to ${INSTALL_DIR}/${BINARY}"
+echo "  Quick start:  stockyard-booking"
+echo "  Dashboard:    http://localhost:9800/ui"
+echo ""

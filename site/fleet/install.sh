@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="stockyard-dev/stockyard-booking"
-BINARY="stockyard-booking"
+REPO="stockyard-dev/stockyard-fleet"
+BINARY="stockyard-fleet"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -13,7 +13,7 @@ case "$ARCH" in
   *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-echo "Installing Stockyard Booking (${OS}/${ARCH})..."
+echo "Installing Stockyard Fleet (${OS}/${ARCH})..."
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -25,7 +25,7 @@ if curl -fsSL "$URL" -o "${TMP}/archive.tar.gz" 2>/dev/null; then
 else
   echo "Release not found. Trying go install..."
   if command -v go &>/dev/null; then
-    CGO_ENABLED=0 GOBIN="${INSTALL_DIR}" go install "github.com/stockyard-dev/stockyard-booking/cmd/booking@latest"
+    CGO_ENABLED=0 GOBIN="${INSTALL_DIR}" go install "github.com/stockyard-dev/stockyard-fleet/cmd/fleet@latest"
   else
     echo "Install Go from https://go.dev or download from:"
     echo "  https://github.com/${REPO}/releases"
@@ -34,7 +34,7 @@ else
 fi
 
 echo ""
-echo "  Stockyard Booking installed to ${INSTALL_DIR}/${BINARY}"
-echo "  Quick start:  stockyard-booking"
-echo "  Dashboard:    http://localhost:9800/ui"
+echo "  Stockyard Fleet installed to ${INSTALL_DIR}/${BINARY}"
+echo "  Quick start:  stockyard-fleet"
+echo "  Dashboard:    http://localhost:9809/ui"
 echo ""
