@@ -198,9 +198,7 @@ func (s *StripeClient) CreateCheckoutSessionWithBundle(bundle, email, priceID, r
 		form += "&customer_email=" + email
 	}
 
-	if couponID := os.Getenv("STRIPE_FIRST_MONTH_COUPON"); couponID != "" {
-		form += "&discounts[0][coupon]=" + couponID
-	}
+	// No first-month coupon for bundles — already at $7.99
 
 	result, err := s.stripePost("/checkout/sessions", form)
 	if err != nil {
