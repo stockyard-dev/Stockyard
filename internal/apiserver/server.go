@@ -141,6 +141,7 @@ func (s *Server) registerRoutes() {
 
 	// Stripe webhook (POST only, no CORS)
 	s.mux.HandleFunc("POST /webhooks/stripe", s.webhook.HandleWebhook)
+	s.mux.HandleFunc("POST /api/stripe/webhook", s.webhook.HandleWebhook) // alias for Stripe-configured URL
 
 	// Public API — checkout & portal (rate limited)
 	s.mux.HandleFunc("POST /api/checkout", s.rateLimited(s.handleCheckout))
@@ -196,6 +197,7 @@ func (s *Server) Mux() *http.ServeMux { return s.mux }
 func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	// Stripe webhook
 	mux.HandleFunc("POST /webhooks/stripe", s.webhook.HandleWebhook)
+	mux.HandleFunc("POST /api/stripe/webhook", s.webhook.HandleWebhook) // alias
 
 	// Checkout & portal
 	mux.HandleFunc("POST /api/checkout", s.handleCheckout)
