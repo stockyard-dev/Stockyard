@@ -188,6 +188,7 @@ func (s *StripeClient) CreateCheckoutSessionWithBundle(bundle, email, priceID, r
 			"&metadata[product]=bundle"+
 			"&metadata[bundle]=%s"+
 			"&metadata[ref]=%s"+
+			"&subscription_data[trial_period_days]=14"+
 			"&subscription_data[metadata][product]=bundle"+
 			"&subscription_data[metadata][bundle]=%s"+
 			"&subscription_data[metadata][ref]=%s",
@@ -311,17 +312,62 @@ type WebhookHandler struct {
 	mailer       Mailer
 	authUpdater  AuthTierUpdater // updates user tier in auth system (optional)
 	toolsPrivKey string          // hex Ed25519 private key for tool license issuance
+	bundleTools  map[string][]string // bundle slug → tool slugs
 }
 
 // NewWebhookHandler creates a new webhook processor.
 func NewWebhookHandler(db *SqliteDB, stripe *StripeClient, kp *license.KeyPair, mailer Mailer) *WebhookHandler {
-	return &WebhookHandler{
+	wh := &WebhookHandler{
 		db:           db,
 		stripe:       stripe,
 		keyPair:      kp,
 		mailer:       mailer,
 		toolsPrivKey: os.Getenv("STOCKYARD_TOOLS_PRIVATE_KEY"),
+		bundleTools:  loadBundleTools(),
 	}
+	return wh
+}
+
+// loadBundleTools reads bundles.json and builds a bundle-slug → tool-slugs map.
+func loadBundleTools() map[string][]string {
+	m := make(map[string][]string)
+
+	// Try common paths
+	paths := []string{
+		"bundles.json",
+		"site/tools/bundles.json",
+		"/app/site/tools/bundles.json",
+	}
+	if p := os.Getenv("BUNDLES_JSON_PATH"); p != "" {
+		paths = append([]string{p}, paths...)
+	}
+
+	var data []byte
+	var err error
+	for _, p := range paths {
+		data, err = os.ReadFile(p)
+		if err == nil {
+			break
+		}
+	}
+	if data == nil {
+		log.Printf("[bundles] no bundles.json found — bundle license scoping uses wildcard")
+		return m
+	}
+
+	var bundles []struct {
+		Slug  string   `json:"slug"`
+		Tools []string `json:"tools"`
+	}
+	if err := json.Unmarshal(data, &bundles); err != nil {
+		log.Printf("[bundles] parse error: %v", err)
+		return m
+	}
+	for _, b := range bundles {
+		m[b.Slug] = b.Tools
+	}
+	log.Printf("[bundles] loaded %d bundle-to-tools mappings", len(m))
+	return m
 }
 
 // StripeEvent represents a parsed Stripe webhook event.
@@ -432,13 +478,29 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 		}
 	}
 
-	// Bundle purchases: issue a tool license valid for all tools in the bundle
-	// For MVP, issue with product="*" to unlock all tools the user installs.
-	// TODO: scope license to specific bundle tools via payload claims.
+	// Bundle purchases: issue a tool license scoped to the bundle's tools
+	// with trial_end if the subscription has a trial period.
+	var trialEnd int64
 	if product == "bundle" && bundle != "" {
-		product = "*"
+		// Look up tools for this bundle
+		if tools, ok := wh.bundleTools[bundle]; ok && len(tools) > 0 {
+			product = strings.Join(tools, ",")
+		} else {
+			product = "*" // fallback: unlock all tools
+		}
 		tier = "pro"
-		log.Printf("webhook: bundle purchase — bundle=%s, issuing wildcard tool license", bundle)
+		log.Printf("webhook: bundle purchase — bundle=%s, tools=%s", bundle, product)
+
+		// Check if subscription has a trial period
+		if subscriptionID != "" {
+			sub, err := wh.stripe.GetSubscription(subscriptionID)
+			if err == nil {
+				if te, ok := sub["trial_end"].(float64); ok && te > 0 {
+					trialEnd = int64(te)
+					log.Printf("webhook: trial_end=%d (%s)", trialEnd, time.Unix(trialEnd, 0).Format(time.RFC3339))
+				}
+			}
+		}
 	}
 
 	if customerID == "" || email == "" {
@@ -458,7 +520,22 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	licProduct := product
 	var licenseKey string
 
-	if isKnownTool(product) && wh.toolsPrivKey != "" {
+	// Bundle license: scoped to specific tools, with trial support
+	if bundle != "" && wh.toolsPrivKey != "" {
+		tools := wh.bundleTools[bundle]
+		if len(tools) == 0 {
+			tools = []string{"*"} // fallback
+		}
+		key, err := issueBundleLicenseKey(wh.toolsPrivKey, tools, bundle, trialEnd)
+		if err != nil {
+			log.Printf("webhook: bundle license issuance failed: %v — falling back to platform key", err)
+		} else {
+			licenseKey = key
+			log.Printf("webhook: bundle Ed25519 license issued — bundle=%s tools=%d trial=%v", bundle, len(tools), trialEnd > 0)
+		}
+	}
+
+	if licenseKey == "" && isKnownTool(product) && wh.toolsPrivKey != "" {
 		// Issue an Ed25519 tool license key (offline-verifiable by the tool binary)
 		key, err := issueToolLicenseKey(wh.toolsPrivKey, product, customerID)
 		if err != nil {
@@ -681,6 +758,50 @@ func issueToolLicenseKey(privKeyHex, product, customerID string) (string, error)
 	sig := ed25519.Sign(privKey, payloadBytes)
 
 	key := "stockyard_" +
+		base64.RawURLEncoding.EncodeToString(payloadBytes) + "." +
+		base64.RawURLEncoding.EncodeToString(sig)
+	return key, nil
+}
+
+// issueBundleLicenseKey issues an Ed25519-signed license key for bundle tools.
+// Uses the claim format expected by framework-generated tool binaries (v0.3.0+).
+// Format: SY-<base64url(payload)>.<base64url(signature)>
+func issueBundleLicenseKey(privKeyHex string, tools []string, bundle string, trialEnd int64) (string, error) {
+	privBytes, err := hex.DecodeString(privKeyHex)
+	if err != nil || len(privBytes) != 64 {
+		return "", fmt.Errorf("invalid tools private key: must be 64-byte hex")
+	}
+
+	type payload struct {
+		Product  string   `json:"p"`
+		Tier     string   `json:"tier"`
+		Tools    []string `json:"tools"`
+		Bundle   string   `json:"bundle"`
+		TrialEnd string   `json:"trial_end,omitempty"`
+		Exp      int64    `json:"x"`
+	}
+
+	p := payload{
+		Product: "*",
+		Tier:    "bundle",
+		Tools:   tools,
+		Bundle:  bundle,
+		Exp:     time.Now().Add(395 * 24 * time.Hour).Unix(),
+	}
+
+	if trialEnd > 0 {
+		p.TrialEnd = time.Unix(trialEnd, 0).UTC().Format(time.RFC3339)
+	}
+
+	payloadBytes, err := json.Marshal(p)
+	if err != nil {
+		return "", fmt.Errorf("marshal payload: %w", err)
+	}
+
+	privKey := ed25519.PrivateKey(privBytes)
+	sig := ed25519.Sign(privKey, payloadBytes)
+
+	key := "SY-" +
 		base64.RawURLEncoding.EncodeToString(payloadBytes) + "." +
 		base64.RawURLEncoding.EncodeToString(sig)
 	return key, nil
