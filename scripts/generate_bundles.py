@@ -167,6 +167,7 @@ footer .sig{{color:var(--leather-light);font-style:italic;font-family:var(--font
   <div class="eyebrow">Stockyard for {esc(name)}</div>
   <h1>{esc(headline)}</h1>
   <p class="sub">{esc(desc)}</p>
+  <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-top:1.5rem">After starting your trial, install with:</p>
   <div class="install" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/{slug}/install.sh | sh</div>
 </div>
 
@@ -177,10 +178,10 @@ footer .sig{{color:var(--leather-light);font-style:italic;font-family:var(--font
 </div>
 {replaces_html}
 <div class="cta">
-  <div class="price">$7.99<span style="font-size:0.9rem;color:var(--cream-dim)">/mo</span></div>
-  <div class="price-note">Unlimited everything. Self-hosted. Cancel anytime.</div>
-  <a href="/pricing/?bundle={slug}" class="btn btn-primary">Get Started</a>
-  <p class="free-note">Free tier available — 5 items per tool, no credit card needed.</p>
+  <div class="price">14 days free</div>
+  <div class="price-note">Then $7.99/mo. Cancel anytime. Your data stays no matter what.</div>
+  <a href="/pricing/?bundle={slug}" class="btn btn-primary">Start 14-Day Trial</a>
+  <p class="free-note">Credit card required. $0 charged today. Full access, no limits.</p>
 </div>
 
 <div class="section" style="text-align:center">
