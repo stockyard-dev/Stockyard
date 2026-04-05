@@ -3,9 +3,9 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Graphic Designers        │"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/graphic-designer/│"
+echo "  │  Stockyard for Graphic Designers         │"
+echo "  │  9 tools · $7.99/mo · self-hosted        │"
+echo "  │  https://stockyard.dev/for/graphic-designer/  │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
 
@@ -67,17 +67,29 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 7 tools installed!"
-else
-  echo ""
-  echo "  Installed 7 tools ($FAILED had issues)"
-fi
+  echo "  Installing Estimate..."
+  if curl -fsSL "https://stockyard.dev/estimate/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Estimate"
+  else
+    echo "    ✗ Estimate (failed — try manually: curl stockyard.dev/estimate/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo "  Installing Portfolio..."
+  if curl -fsSL "https://stockyard.dev/portfolio/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Portfolio"
+  else
+    echo "    ✗ Portfolio (failed — try manually: curl stockyard.dev/portfolio/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=graphic-designer"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 9 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

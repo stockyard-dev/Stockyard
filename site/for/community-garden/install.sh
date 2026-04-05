@@ -3,9 +3,9 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Community Gardens        │"
-echo "  │  8 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/community-garden/│"
+echo "  │  Stockyard for Community Gardens         │"
+echo "  │  9 tools · $7.99/mo · self-hosted        │"
+echo "  │  https://stockyard.dev/for/community-garden/  │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
 
@@ -75,17 +75,21 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 8 tools installed!"
-else
-  echo ""
-  echo "  Installed 8 tools ($FAILED had issues)"
-fi
+  echo "  Installing Harvest..."
+  if curl -fsSL "https://stockyard.dev/harvest/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Harvest"
+  else
+    echo "    ✗ Harvest (failed — try manually: curl stockyard.dev/harvest/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=community-garden"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 9 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

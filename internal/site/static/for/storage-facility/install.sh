@@ -2,11 +2,11 @@
 set -euo pipefail
 
 echo ""
-echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Storage Facility Operators│"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/storage-facility/│"
-echo "  └──────────────────────────────────────────┘"
+echo "  ┌────────────────────────────────────────────┐"
+echo "  │  Stockyard for Storage Facility Operators  │"
+echo "  │  7 tools · $7.99/mo · self-hosted          │"
+echo "  │  https://stockyard.dev/for/storage-facility/  │"
+echo "  └────────────────────────────────────────────┘"
 echo ""
 
 FAILED=0
@@ -67,17 +67,13 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
+echo ""
 if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 7 tools installed!"
+  echo "  ✓ All 7 tools installed successfully!"
 else
-  echo ""
-  echo "  Installed 7 tools ($FAILED had issues)"
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
 fi
-
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=storage-facility"
-echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

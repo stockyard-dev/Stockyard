@@ -3,8 +3,8 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Campgrounds & RV Parks   │"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
+echo "  │  Stockyard for Campgrounds & RV Parks    │"
+echo "  │  9 tools · $7.99/mo · self-hosted        │"
 echo "  │  https://stockyard.dev/for/campground/   │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
@@ -67,17 +67,29 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 7 tools installed!"
-else
-  echo ""
-  echo "  Installed 7 tools ($FAILED had issues)"
-fi
+  echo "  Installing Reservation..."
+  if curl -fsSL "https://stockyard.dev/reservation/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Reservation"
+  else
+    echo "    ✗ Reservation (failed — try manually: curl stockyard.dev/reservation/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo "  Installing Permit..."
+  if curl -fsSL "https://stockyard.dev/permit/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Permit"
+  else
+    echo "    ✗ Permit (failed — try manually: curl stockyard.dev/permit/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=campground"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 9 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

@@ -1,0 +1,412 @@
+#!/usr/bin/env python3
+"""Generate bundle landing pages and install scripts from bundles.json."""
+import json, os, html
+
+SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'site')
+BUNDLES_PATH = os.path.join(SITE_DIR, 'tools', 'bundles.json')
+CATALOG_PATH = os.path.join(SITE_DIR, 'tools', 'catalog.json')
+
+# Tool display names and descriptions for bundle pages
+TOOL_INFO = {
+    # Existing tools
+    "dossier": ("Dossier", "Contact records and directory"),
+    "billfold": ("Billfold", "Invoicing and payments"),
+    "sundial": ("Sundial", "Scheduling and calendar"),
+    "steward": ("Steward", "Expense and income tracking"),
+    "notebook": ("Notebook", "Notes and documentation"),
+    "surveyor": ("Surveyor", "Forms, intake, and registration"),
+    "deposition": ("Deposition", "Audit trail and compliance logs"),
+    "headcount": ("Headcount", "Analytics and visitor tracking"),
+    "sentinel": ("Sentinel", "Uptime monitoring and alerts"),
+    "campfire": ("Campfire", "Chat and messaging"),
+    "announcements": ("Announcements", "Announcements and updates"),
+    "silo": ("Silo", "Backup and file storage"),
+    "roster": ("Roster", "Team and member rosters"),
+    "outpost": ("Outpost", "Status page"),
+    "paddock": ("Paddock", "Server health monitoring"),
+    "corral": ("Corral", "Task management and to-dos"),
+    "quartermaster": ("Quartermaster", "Inventory management"),
+    "dispatch": ("Dispatch", "Email newsletter and updates"),
+    "prospector": ("Prospector", "Lead pipeline and CRM"),
+    "tally": ("Tally", "Scoring and leaderboards"),
+    "agora": ("Agora", "Polls and voting"),
+    "roundup": ("Roundup", "Job and task tracking"),
+    "prairie": ("Prairie", "Project board"),
+    "ponyexpress": ("Pony Express", "Email delivery"),
+    "saltlick": ("Saltlick", "Feature flags"),
+    "seismograph": ("Seismograph", "Error tracking"),
+    "post": ("Post", "Blog and CMS"),
+    "chronicle": ("Chronicle", "Event logging"),
+    "trailhead": ("Trailhead", "Onboarding and checklists"),
+    "books": ("Books", "Bookkeeping and accounting"),
+    "collection": ("Collection", "Collections and catalog"),
+    "checkout": ("Checkout", "Checkout and payments"),
+    # New tools
+    "booking": ("Booking", "Appointment scheduling"),
+    "waiver": ("Waiver", "Digital consent and waivers"),
+    "estimate": ("Estimate", "Quotes and estimates"),
+    "breeding": ("Breeding", "Pedigree and breeding records"),
+    "tournament": ("Tournament", "Brackets and tournaments"),
+    "recipe": ("Recipe", "Recipe management"),
+    "reservation": ("Reservation", "Space and table reservations"),
+    "checkin": ("Checkin", "Attendance and check-ins"),
+    "portfolio": ("Portfolio", "Gallery and portfolio"),
+    "fleet": ("Fleet", "Vehicle and fleet management"),
+    "harvest": ("Harvest", "Crop and harvest tracking"),
+    "permit": ("Permit", "Permit and license tracking"),
+    "menu": ("Menu", "Digital menu management"),
+    "curriculum": ("Curriculum", "Lesson planning"),
+}
+
+def esc(s):
+    return html.escape(str(s)) if s else ''
+
+def gen_landing_page(bundle):
+    slug = bundle['slug']
+    name = bundle['name']
+    headline = bundle.get('headline', f'Self-hosted tools for {name}')
+    desc = bundle.get('description', headline)
+    tools = bundle.get('tools', [])
+    replaces = bundle.get('replaces', [])
+    price_anchor = bundle.get('price_anchor', '')
+    
+    tool_cards = ''
+    for t in tools:
+        tname, tdesc = TOOL_INFO.get(t, (t.capitalize(), 'Developer tool'))
+        tool_cards += f'''      <div class="tool-card">
+        <div class="tool-name">{esc(tname)}</div>
+        <div class="tool-desc">{esc(tdesc)}</div>
+      </div>
+'''
+
+    replaces_html = ''
+    if replaces:
+        replaces_items = ' &middot; '.join(esc(r) for r in replaces)
+        replaces_html = f'''
+    <div class="replaces">
+      <div class="section-label">What it replaces</div>
+      <p>{replaces_items}</p>
+      <p class="price-anchor">That's typically {esc(price_anchor)} in SaaS fees.</p>
+      <p><strong>This bundle: $7.99/mo. Self-hosted. Yours forever.</strong></p>
+    </div>'''
+
+    meta_desc = f'{esc(desc)} Self-hosted, $7.99/mo. {len(tools)} tools included.'
+    
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Stockyard for {esc(name)} — {esc(headline)}</title>
+<meta name="description" content="{meta_desc}">
+<meta property="og:title" content="Stockyard for {esc(name)}">
+<meta property="og:description" content="{esc(headline)}. {len(tools)} self-hosted tools, one install command, $7.99/mo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/for/{slug}/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/for/{slug}/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+:root{{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}}
+body{{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}}
+a{{color:var(--rust-light);text-decoration:none}}a:hover{{color:var(--gold)}}
+.nav{{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}}
+.nav-brand{{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}}
+.nav-links{{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}}.nav-links a{{color:var(--cream-dim)}}.nav-links a:hover{{color:var(--rust-light)}}
+.hero{{max-width:720px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}}
+.hero .eyebrow{{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}}
+.hero h1{{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.3;margin-bottom:1.2rem}}
+.hero .sub{{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto 2rem}}
+.install{{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);max-width:600px;margin:0 auto;cursor:pointer;position:relative;transition:border-color 0.2s}}
+.install:hover{{border-color:var(--rust)}}
+.install::after{{content:'click to copy';position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:0.6rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}}
+.section{{padding:3rem 2rem;max-width:800px;margin:0 auto}}
+.section-label{{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}}
+.section p{{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem;line-height:1.8;text-align:center}}
+.tool-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:2rem 0}}
+.tool-card{{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s}}
+.tool-card:hover{{border-color:var(--rust)}}
+.tool-name{{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.3rem}}
+.tool-desc{{font-size:0.8rem;color:var(--cream-dim)}}
+.replaces{{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);margin:2rem 0}}
+.replaces p{{max-width:600px;margin:0 auto 0.8rem}}
+.price-anchor{{color:var(--cream-muted);font-size:0.85rem}}
+.cta{{text-align:center;padding:3rem 2rem}}
+.cta .price{{font-family:var(--font-mono);font-size:2rem;color:var(--cream);margin-bottom:0.5rem}}
+.cta .price-note{{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-bottom:1.5rem}}
+.btn{{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}}
+.btn-primary{{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}}.btn-primary:hover{{background:var(--rust-light);border-color:var(--rust-light);color:#fff}}
+.free-note{{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:1rem;text-align:center}}
+footer{{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}}
+footer .sig{{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}}
+@media(max-width:600px){{.hero{{padding:3rem 1.5rem 2rem}}.section{{padding:2rem 1.5rem}}.tool-grid{{grid-template-columns:1fr}}.install{{font-size:0.7rem}}.nav-links{{gap:0.8rem;font-size:0.7rem}}}}
+@media(prefers-color-scheme:light){{:root{{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}}}
+</style>
+<script type="application/ld+json">
+{{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard for {esc(name)}","description":"{meta_desc}","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS","offers":{{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly bundle subscription"}},"author":{{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}}}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/for/">Bundles</a>
+    <a href="/tools/">Tools</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Stockyard for {esc(name)}</div>
+  <h1>{esc(headline)}</h1>
+  <p class="sub">{esc(desc)}</p>
+  <div class="install" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/{slug}/install.sh | sh</div>
+</div>
+
+<div class="section">
+  <div class="section-label">{len(tools)} tools included</div>
+  <div class="tool-grid">
+{tool_cards}  </div>
+</div>
+{replaces_html}
+<div class="cta">
+  <div class="price">$7.99<span style="font-size:0.9rem;color:var(--cream-dim)">/mo</span></div>
+  <div class="price-note">Unlimited everything. Self-hosted. Cancel anytime.</div>
+  <a href="/pricing/?bundle={slug}" class="btn btn-primary">Get Started</a>
+  <p class="free-note">Free tier available — 5 items per tool, no credit card needed.</p>
+</div>
+
+<div class="section" style="text-align:center">
+  <p style="color:var(--cream-muted);font-size:0.85rem">Every tool is a single binary with an embedded SQLite database. No cloud. No external dependencies. Your data stays on your hardware. <a href="/tools/">Browse all 160+ tools</a> or <a href="/for/">see all bundles</a>.</p>
+</div>
+
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+</footer>
+
+<script>(function(){{var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))}})()</script>
+</body>
+</html>'''
+
+
+def gen_install_script(bundle):
+    slug = bundle['slug']
+    name = bundle['name']
+    tools = bundle.get('tools', [])
+    
+    tool_count = len(tools)
+    
+    # Build install commands
+    install_blocks = ''
+    for t in tools:
+        tname = TOOL_INFO.get(t, (t.capitalize(), ''))[0]
+        install_blocks += f'''
+  echo "  Installing {tname}..."
+  if curl -fsSL "https://stockyard.dev/{t}/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ {tname}"
+  else
+    echo "    ✗ {tname} (failed — try manually: curl stockyard.dev/{t}/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+'''
+
+    # Pad box width
+    title_line = f"Stockyard for {name}"
+    box_width = max(len(title_line) + 6, 44)
+    pad_title = title_line.ljust(box_width - 6)
+    info_line = f"{tool_count} tools · $7.99/mo · self-hosted"
+    pad_info = info_line.ljust(box_width - 6)
+    url_line = f"https://stockyard.dev/for/{slug}/"
+    pad_url = url_line.ljust(box_width - 6)
+    border = "─" * (box_width - 4)
+
+    return f'''#!/usr/bin/env bash
+set -euo pipefail
+
+echo ""
+echo "  ┌─{border}─┐"
+echo "  │  {pad_title}  │"
+echo "  │  {pad_info}  │"
+echo "  │  {pad_url}  │"
+echo "  └─{border}─┘"
+echo ""
+
+FAILED=0
+{install_blocks}
+echo ""
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All {tool_count} tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
+echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
+echo "  Questions? hello@stockyard.dev"
+echo ""
+'''
+
+
+def gen_index_page(bundles):
+    from collections import defaultdict
+    cats = defaultdict(list)
+    for b in bundles:
+        cats[b.get('category', 'Other')].append(b)
+    
+    cat_order = [
+        'Small Business', 'Healthcare', 'Professional Services',
+        'Organizations', 'Communities & Groups', 'Education',
+        'Gaming & Servers', 'Content Creators',
+        'Hobbies & Enthusiasts', 'Real Estate & Property'
+    ]
+    
+    sections = ''
+    for cat in cat_order:
+        if cat not in cats:
+            continue
+        items = sorted(cats[cat], key=lambda b: b['name'])
+        cards = ''
+        for b in items:
+            cards += f'''    <a href="/for/{b['slug']}/" class="bundle-card">
+      <div class="bundle-name">{esc(b['name'])}</div>
+      <div class="bundle-desc">{esc(b.get('headline',''))}</div>
+      <div class="bundle-meta">{len(b.get('tools',[]))} tools · $7.99/mo</div>
+    </a>
+'''
+        sections += f'''
+  <div class="cat-section">
+    <h2 class="cat-title">{esc(cat)} <span class="cat-count">({len(items)})</span></h2>
+    <div class="bundle-grid">
+{cards}    </div>
+  </div>
+'''
+
+    total = len(bundles)
+    cat_count = len(cats)
+
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Tool Bundles for Every Community — Stockyard</title>
+<meta name="description" content="{total} curated tool bundles for {cat_count} categories. Self-hosted, $7.99/mo each. From Minecraft admins to therapists to food trucks.">
+<meta property="og:title" content="Tool Bundles for Every Community — Stockyard">
+<meta property="og:description" content="{total} curated bundles. Self-hosted tools for gaming, healthcare, small business, education, and more.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/for/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/for/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+:root{{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}}
+body{{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}}
+a{{color:var(--rust-light);text-decoration:none}}a:hover{{color:var(--gold)}}
+.nav{{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}}
+.nav-brand{{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}}
+.nav-links{{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}}.nav-links a{{color:var(--cream-dim)}}.nav-links a:hover{{color:var(--rust-light)}}
+.hero{{max-width:720px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}}
+.hero h1{{font-size:clamp(1.6rem,3.5vw,2.2rem);margin-bottom:1rem}}
+.hero .sub{{font-size:0.95rem;color:var(--cream-dim);font-style:italic}}
+.main{{max-width:1000px;margin:0 auto;padding:2rem}}
+.cat-section{{margin-bottom:3rem}}
+.cat-title{{font-family:var(--font-mono);font-size:0.9rem;letter-spacing:2px;color:var(--rust);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--bg3)}}
+.cat-count{{color:var(--cream-muted);font-size:0.75rem}}
+.bundle-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.8rem}}
+.bundle-card{{display:block;background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;transition:border-color 0.2s;text-decoration:none}}
+.bundle-card:hover{{border-color:var(--rust)}}
+.bundle-name{{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream);margin-bottom:0.3rem}}
+.bundle-desc{{font-size:0.78rem;color:var(--cream-dim);margin-bottom:0.4rem}}
+.bundle-meta{{font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted)}}
+footer{{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}}
+footer .sig{{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}}
+@media(max-width:600px){{.bundle-grid{{grid-template-columns:1fr}}.nav-links{{gap:0.8rem;font-size:0.7rem}}}}
+@media(prefers-color-scheme:light){{:root{{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/for/">Bundles</a>
+    <a href="/tools/">Tools</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>{total} tool bundles for every community</h1>
+  <p class="sub">Self-hosted tools for your business, practice, club, or hobby. One command. Your hardware. Your data. $7.99/mo.</p>
+</div>
+
+<div class="main">
+{sections}
+</div>
+
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+</footer>
+</body>
+</html>'''
+
+
+def gen_sitemap(bundles):
+    urls = ''
+    for b in bundles:
+        urls += f'  <url><loc>https://stockyard.dev/for/{b["slug"]}/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n'
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://stockyard.dev/for/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+{urls}</urlset>'''
+
+
+def main():
+    bundles = json.load(open(BUNDLES_PATH))
+    print(f"Loaded {len(bundles)} bundles")
+    
+    generated = 0
+    for bundle in bundles:
+        slug = bundle['slug']
+        out_dir = os.path.join(SITE_DIR, 'for', slug)
+        os.makedirs(out_dir, exist_ok=True)
+        
+        # Landing page
+        with open(os.path.join(out_dir, 'index.html'), 'w') as f:
+            f.write(gen_landing_page(bundle))
+        
+        # Install script
+        with open(os.path.join(out_dir, 'install.sh'), 'w') as f:
+            f.write(gen_install_script(bundle))
+        
+        generated += 1
+    
+    # Index page
+    with open(os.path.join(SITE_DIR, 'for', 'index.html'), 'w') as f:
+        f.write(gen_index_page(bundles))
+    
+    # Sitemap
+    with open(os.path.join(SITE_DIR, 'sitemap-bundles.xml'), 'w') as f:
+        f.write(gen_sitemap(bundles))
+    
+    print(f"Generated {generated} bundle pages + install scripts")
+    print(f"Generated /for/ index page")
+    print(f"Generated sitemap-bundles.xml ({generated + 1} URLs)")
+
+if __name__ == '__main__':
+    main()

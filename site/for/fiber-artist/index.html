@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Stockyard for Fiber Artists &amp; Weavers — Pattern management and project tracking</title>
+<meta name="description" content="Pattern/recipe records, yarn inventory, portfolio gallery, client orders. Self-hosted, $7.99/mo. 6 tools included.">
+<meta property="og:title" content="Stockyard for Fiber Artists &amp; Weavers">
+<meta property="og:description" content="Pattern management and project tracking. 6 self-hosted tools, one install command, $7.99/mo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/for/fiber-artist/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/for/fiber-artist/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
+.hero{max-width:720px;margin:0 auto;padding:5rem 2rem 3rem;text-align:center}
+.hero .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.3;margin-bottom:1.2rem}
+.hero .sub{font-size:0.95rem;color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto 2rem}
+.install{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);max-width:600px;margin:0 auto;cursor:pointer;position:relative;transition:border-color 0.2s}
+.install:hover{border-color:var(--rust)}
+.install::after{content:'click to copy';position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:0.6rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}
+.section{padding:3rem 2rem;max-width:800px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
+.section p{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem;line-height:1.8;text-align:center}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:2rem 0}
+.tool-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s}
+.tool-card:hover{border-color:var(--rust)}
+.tool-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.3rem}
+.tool-desc{font-size:0.8rem;color:var(--cream-dim)}
+.replaces{text-align:center;padding:2rem;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);margin:2rem 0}
+.replaces p{max-width:600px;margin:0 auto 0.8rem}
+.price-anchor{color:var(--cream-muted);font-size:0.85rem}
+.cta{text-align:center;padding:3rem 2rem}
+.cta .price{font-family:var(--font-mono);font-size:2rem;color:var(--cream);margin-bottom:0.5rem}
+.cta .price-note{font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-bottom:1.5rem}
+.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--rust);color:var(--cream);border:2px solid var(--rust)}.btn-primary:hover{background:var(--rust-light);border-color:var(--rust-light);color:#fff}
+.free-note{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:1rem;text-align:center}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
+@media(max-width:600px){.hero{padding:3rem 1.5rem 2rem}.section{padding:2rem 1.5rem}.tool-grid{grid-template-columns:1fr}.install{font-size:0.7rem}.nav-links{gap:0.8rem;font-size:0.7rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard for Fiber Artists &amp; Weavers","description":"Pattern/recipe records, yarn inventory, portfolio gallery, client orders. Self-hosted, $7.99/mo. 6 tools included.","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS","offers":{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly bundle subscription"},"author":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links">
+    <a href="/for/">Bundles</a>
+    <a href="/tools/">Tools</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/docs/">Docs</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Stockyard for Fiber Artists &amp; Weavers</div>
+  <h1>Pattern management and project tracking</h1>
+  <p class="sub">Pattern/recipe records, yarn inventory, portfolio gallery, client orders.</p>
+  <div class="install" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/fiber-artist/install.sh | sh</div>
+</div>
+
+<div class="section">
+  <div class="section-label">6 tools included</div>
+  <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">Recipe</div>
+        <div class="tool-desc">Recipe management</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Quartermaster</div>
+        <div class="tool-desc">Inventory management</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Portfolio</div>
+        <div class="tool-desc">Gallery and portfolio</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Dossier</div>
+        <div class="tool-desc">Contact records and directory</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Billfold</div>
+        <div class="tool-desc">Invoicing and payments</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Steward</div>
+        <div class="tool-desc">Expense and income tracking</div>
+      </div>
+  </div>
+</div>
+
+    <div class="replaces">
+      <div class="section-label">What it replaces</div>
+      <p>Ravelry &middot; spreadsheets</p>
+      <p class="price-anchor">That's typically Free but limited in SaaS fees.</p>
+      <p><strong>This bundle: $7.99/mo. Self-hosted. Yours forever.</strong></p>
+    </div>
+<div class="cta">
+  <div class="price">$7.99<span style="font-size:0.9rem;color:var(--cream-dim)">/mo</span></div>
+  <div class="price-note">Unlimited everything. Self-hosted. Cancel anytime.</div>
+  <a href="/pricing/?bundle=fiber-artist" class="btn btn-primary">Get Started</a>
+  <p class="free-note">Free tier available — 5 items per tool, no credit card needed.</p>
+</div>
+
+<div class="section" style="text-align:center">
+  <p style="color:var(--cream-muted);font-size:0.85rem">Every tool is a single binary with an embedded SQLite database. No cloud. No external dependencies. Your data stays on your hardware. <a href="/tools/">Browse all 160+ tools</a> or <a href="/for/">see all bundles</a>.</p>
+</div>
+
+<footer>
+  <p class="sig">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+</footer>
+
+<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
+</body>
+</html>

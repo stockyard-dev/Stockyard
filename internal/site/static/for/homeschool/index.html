@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
 <title>Stockyard for Homeschool Families — Homeschool management tools</title>
-<meta name="description" content="Student records, curriculum calendar, progress tracking, lesson notes, expense tracking, and grade tracking.">
+<meta name="description" content="Student records, curriculum calendar, progress tracking, lesson notes, expense tracking, and grade tracking. Self-hosted, $7.99/mo. 7 tools included.">
 <meta property="og:title" content="Stockyard for Homeschool Families">
-<meta property="og:description" content="Homeschool management tools. 6 self-hosted tools, one install command, $7.99/mo.">
+<meta property="og:description" content="Homeschool management tools. 7 self-hosted tools, one install command, $7.99/mo.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/for/homeschool/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -49,11 +49,11 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .free-note{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);margin-top:1rem;text-align:center}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-@media(max-width:600px){.hero{padding:3rem 1.5rem 2rem}.section{padding:2rem 1.5rem}.tool-grid{grid-template-columns:1fr}.install{font-size:0.7rem}}
+@media(max-width:600px){.hero{padding:3rem 1.5rem 2rem}.section{padding:2rem 1.5rem}.tool-grid{grid-template-columns:1fr}.install{font-size:0.7rem}.nav-links{gap:0.8rem;font-size:0.7rem}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard for Homeschool Families","description":"Student records, curriculum calendar, progress tracking, lesson notes, expense tracking, and grade tracking.","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS","offers":{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly bundle subscription"},"author":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard for Homeschool Families","description":"Student records, curriculum calendar, progress tracking, lesson notes, expense tracking, and grade tracking. Self-hosted, $7.99/mo. 7 tools included.","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS","offers":{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly bundle subscription"},"author":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
@@ -62,7 +62,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
-    <a href="/for/">All Bundles</a>
+    <a href="/for/">Bundles</a>
     <a href="/tools/">Tools</a>
     <a href="/pricing/">Pricing</a>
     <a href="/docs/">Docs</a>
@@ -77,7 +77,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </div>
 
 <div class="section">
-  <div class="section-label">6 tools included</div>
+  <div class="section-label">7 tools included</div>
   <div class="tool-grid">
       <div class="tool-card">
         <div class="tool-name">Dossier</div>
@@ -89,7 +89,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       </div>
       <div class="tool-card">
         <div class="tool-name">Trailhead</div>
-        <div class="tool-desc">Progress and milestone tracking</div>
+        <div class="tool-desc">Onboarding and checklists</div>
       </div>
       <div class="tool-card">
         <div class="tool-name">Notebook</div>
@@ -101,7 +101,11 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
       </div>
       <div class="tool-card">
         <div class="tool-name">Tally</div>
-        <div class="tool-desc">Counters and metrics</div>
+        <div class="tool-desc">Scoring and leaderboards</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Curriculum</div>
+        <div class="tool-desc">Lesson planning</div>
       </div>
   </div>
 </div>
@@ -120,7 +124,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </div>
 
 <div class="section" style="text-align:center">
-  <p style="color:var(--cream-muted);font-size:0.85rem">Every tool is a single binary with an embedded SQLite database. No cloud. No external dependencies. Your data stays on your hardware. <a href="/tools/">Browse all 150+ tools</a> or <a href="/for/">see all bundles</a>.</p>
+  <p style="color:var(--cream-muted);font-size:0.85rem">Every tool is a single binary with an embedded SQLite database. No cloud. No external dependencies. Your data stays on your hardware. <a href="/tools/">Browse all 160+ tools</a> or <a href="/for/">see all bundles</a>.</p>
 </div>
 
 <footer>

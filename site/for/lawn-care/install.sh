@@ -3,8 +3,8 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Lawn Care & Landscaping  │"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
+echo "  │  Stockyard for Lawn Care & Landscaping   │"
+echo "  │  9 tools · $7.99/mo · self-hosted        │"
 echo "  │  https://stockyard.dev/for/lawn-care/    │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
@@ -67,17 +67,29 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 7 tools installed!"
-else
-  echo ""
-  echo "  Installed 7 tools ($FAILED had issues)"
-fi
+  echo "  Installing Estimate..."
+  if curl -fsSL "https://stockyard.dev/estimate/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Estimate"
+  else
+    echo "    ✗ Estimate (failed — try manually: curl stockyard.dev/estimate/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo "  Installing Fleet..."
+  if curl -fsSL "https://stockyard.dev/fleet/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Fleet"
+  else
+    echo "    ✗ Fleet (failed — try manually: curl stockyard.dev/fleet/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=lawn-care"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 9 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

@@ -2,11 +2,11 @@
 set -euo pipefail
 
 echo ""
-echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Makerspaces & Community Workshops│"
-echo "  │  9 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/makerspace/   │"
-echo "  └──────────────────────────────────────────┘"
+echo "  ┌───────────────────────────────────────────────────┐"
+echo "  │  Stockyard for Makerspaces & Community Workshops  │"
+echo "  │  12 tools · $7.99/mo · self-hosted                │"
+echo "  │  https://stockyard.dev/for/makerspace/            │"
+echo "  └───────────────────────────────────────────────────┘"
 echo ""
 
 FAILED=0
@@ -83,17 +83,37 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 9 tools installed!"
-else
-  echo ""
-  echo "  Installed 9 tools ($FAILED had issues)"
-fi
+  echo "  Installing Waiver..."
+  if curl -fsSL "https://stockyard.dev/waiver/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Waiver"
+  else
+    echo "    ✗ Waiver (failed — try manually: curl stockyard.dev/waiver/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo "  Installing Reservation..."
+  if curl -fsSL "https://stockyard.dev/reservation/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Reservation"
+  else
+    echo "    ✗ Reservation (failed — try manually: curl stockyard.dev/reservation/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo "  Installing Checkin..."
+  if curl -fsSL "https://stockyard.dev/checkin/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Checkin"
+  else
+    echo "    ✗ Checkin (failed — try manually: curl stockyard.dev/checkin/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=makerspace"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 12 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

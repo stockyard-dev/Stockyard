@@ -3,9 +3,9 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Driving Schools          │"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/driving-school/│"
+echo "  │  Stockyard for Driving Schools           │"
+echo "  │  8 tools · $7.99/mo · self-hosted        │"
+echo "  │  https://stockyard.dev/for/driving-school/  │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
 
@@ -67,17 +67,21 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 7 tools installed!"
-else
-  echo ""
-  echo "  Installed 7 tools ($FAILED had issues)"
-fi
+  echo "  Installing Curriculum..."
+  if curl -fsSL "https://stockyard.dev/curriculum/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Curriculum"
+  else
+    echo "    ✗ Curriculum (failed — try manually: curl stockyard.dev/curriculum/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=driving-school"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 8 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

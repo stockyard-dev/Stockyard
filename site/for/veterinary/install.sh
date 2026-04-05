@@ -3,8 +3,8 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Veterinary Practices     │"
-echo "  │  9 tools · $7.99/mo · self-hosted        │"
+echo "  │  Stockyard for Veterinary Practices      │"
+echo "  │  11 tools · $7.99/mo · self-hosted       │"
 echo "  │  https://stockyard.dev/for/veterinary/   │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
@@ -83,17 +83,29 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
-if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 9 tools installed!"
-else
-  echo ""
-  echo "  Installed 9 tools ($FAILED had issues)"
-fi
+  echo "  Installing Waiver..."
+  if curl -fsSL "https://stockyard.dev/waiver/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Waiver"
+  else
+    echo "    ✗ Waiver (failed — try manually: curl stockyard.dev/waiver/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo "  Installing Breeding..."
+  if curl -fsSL "https://stockyard.dev/breeding/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Breeding"
+  else
+    echo "    ✗ Breeding (failed — try manually: curl stockyard.dev/breeding/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=veterinary"
+if [ "$FAILED" -eq 0 ]; then
+  echo "  ✓ All 11 tools installed successfully!"
+else
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+fi
 echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""

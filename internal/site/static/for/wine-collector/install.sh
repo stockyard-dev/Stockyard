@@ -3,9 +3,9 @@ set -euo pipefail
 
 echo ""
 echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Wine Collectors          │"
+echo "  │  Stockyard for Wine Collectors           │"
 echo "  │  5 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/wine-collector/│"
+echo "  │  https://stockyard.dev/for/wine-collector/  │"
 echo "  └──────────────────────────────────────────┘"
 echo ""
 
@@ -51,17 +51,13 @@ FAILED=0
     FAILED=$((FAILED + 1))
   fi
 
+echo ""
 if [ "$FAILED" -eq 0 ]; then
-  echo ""
-  echo "  ✓ All 5 tools installed!"
+  echo "  ✓ All 5 tools installed successfully!"
 else
-  echo ""
-  echo "  Installed 5 tools ($FAILED had issues)"
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
 fi
-
 echo ""
-echo "  Each tool runs on its own port with a web dashboard at /ui"
-echo "  Free tier: 5 items per tool. Upgrade: stockyard.dev/pricing/?bundle=wine-collector"
-echo ""
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
 echo "  Questions? hello@stockyard.dev"
 echo ""
