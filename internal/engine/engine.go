@@ -21,6 +21,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/stockyard-dev/stockyard/internal/agent"
 	"github.com/stockyard-dev/stockyard/internal/api"
 	"github.com/stockyard-dev/stockyard/internal/apiserver"
 	"github.com/stockyard-dev/stockyard/internal/apps/billing"
@@ -618,6 +619,16 @@ Docs:      https://stockyard.dev/docs
 	mcpServer.SetDB(db.Conn())
 	mcpServer.SetToggle(toggleReg)
 	mcpServer.Register(srv.Mux())
+
+	// Agent runtime — orchestrate tool calls via LLM
+	agentCatalog, err := agent.LoadCatalog()
+	if err != nil {
+		log.Printf("[agent] catalog load failed: %v", err)
+	} else {
+		agentInstance := agent.New(agentCatalog, db.Conn(), fmt.Sprintf("http://127.0.0.1:%d", cfg.Port))
+		agent.RegisterRoutes(srv.Mux(), agentInstance)
+		log.Printf("[agent] ready (%d products)", len(agentCatalog))
+	}
 
 	// Status collector (real-time metrics for /api/status)
 	statusCollector := NewStatusCollector()

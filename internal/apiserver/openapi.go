@@ -34,6 +34,7 @@ func OpenAPISpec() map[string]any {
 			{"name": "System", "description": "Health, license, plans"},
 			{"name": "Lasso", "description": "Request replay and model comparison"},
 			{"name": "Drover", "description": "Autopilot routing and model calibration"},
+			{"name": "Agent", "description": "AI agent runtime — orchestrate tool calls via natural language"},
 		},
 		"paths": openAPIPaths(),
 		"components": map[string]any{
@@ -182,6 +183,16 @@ func openAPIPaths() map[string]any {
 		"/api/config/export": map[string]any{"get": ep("Export full config snapshot (modules, webhooks, policies)", "Config", admin, ok)},
 		"/api/config/import": map[string]any{"post": ep("Import config snapshot — apply module states, add webhooks/policies", "Config", admin, ok)},
 		"/api/config/diff":   map[string]any{"post": ep("Diff current config against uploaded snapshot", "Config", admin, ok)},
+
+		// Agent
+		"/api/agent/run":      map[string]any{"post": ep("Execute agent prompt — LLM plans and orchestrates tool calls", "Agent", admin, ok)},
+		"/api/agent/runs":     map[string]any{"get": ep("List recent agent runs", "Agent", admin, ok)},
+		"/api/agent/runs/{id}": map[string]any{"get": ep("Get agent run detail with steps and results", "Agent", admin, ok)},
+		"/api/agent/tools":    map[string]any{
+			"get":  ep("List connected tools available to the agent", "Agent", admin, ok),
+			"post": ep("Connect a running Stockyard tool to the agent", "Agent", admin, ok),
+		},
+		"/api/agent/status":   map[string]any{"get": ep("Agent status — connected tools, last run", "Agent", nil, ok)},
 	}
 }
 
