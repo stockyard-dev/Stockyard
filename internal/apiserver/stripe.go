@@ -489,12 +489,18 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	}
 
 	// Store license record
+	licProduct = product
+	licTier := tier
+	if bundle != "" {
+		licProduct = "bundle:" + bundle // preserve which bundle was purchased
+		licTier = "bundle"
+	}
 	rec := &LicenseRecord{
 		CustomerID:           cust.ID,
 		StripeCustomerID:     customerID,
 		StripeSubscriptionID: subscriptionID,
-		Product:              product,
-		Tier:                 tier,
+		Product:              licProduct,
+		Tier:                 licTier,
 		LicenseKey:           licenseKey,
 		Status:               "active",
 		Email:                email,
@@ -507,12 +513,14 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	// Send welcome email with license key
 	productInfo := ProductBySlug(product)
 	productName := product
-	if productInfo != nil {
+	if bundle != "" {
+		// Bundle purchase — use bundle name in email
+		productName = "Stockyard Bundle (" + bundle + ")"
+	} else if productInfo != nil {
 		productName = productInfo.Name
 	} else if tp := ToolPlanByTool(product); tp != nil {
 		productName = tp.Name
 	} else {
-		// Capitalize slug as fallback (e.g. "paddock" → "Paddock")
 		if len(product) > 0 {
 			productName = strings.ToUpper(product[:1]) + product[1:]
 		}
