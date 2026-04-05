@@ -896,6 +896,11 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		})
 	}
 
+	// Redirects for renamed products
+	mux.HandleFunc("GET /proxy/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/proxy-only/", http.StatusMovedPermanently)
+	})
+
 	// /compare/{id} — serve compare page for any share ID (wildcard)
 	mux.HandleFunc("GET /compare/{id}", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "compare/index.html")
