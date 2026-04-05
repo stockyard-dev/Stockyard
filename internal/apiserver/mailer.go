@@ -38,6 +38,9 @@ func sanitizeHeader(s string) string {
 // Mailer sends transactional emails.
 type Mailer interface {
 	SendLicenseKey(to, productName, tier, licenseKey string) error
+	SendBundleTrialKey(to, bundleName, bundleSlug, licenseKey, trialEndDate string, tools []string) error
+	SendTrialReminder(to, bundleName string, daysLeft int) error
+	SendTrialConverted(to, bundleName string) error
 	SendCancellation(to, productName string) error
 	// Send sends a plain-text email to one recipient.
 	Send(to, subject, body string) error
@@ -113,6 +116,111 @@ If you have any questions, just reply to this email.
 
 — Stockyard
 Wrangle your Stack.`, productName, tier, licenseKey, envVar, licenseKey, slug, envVar, licenseKey, slug)
+
+	return m.send(to, subject, body)
+}
+
+// SendBundleTrialKey sends the welcome email for a bundle trial signup.
+func (m *SMTPMailer) SendBundleTrialKey(to, bundleName, bundleSlug, licenseKey, trialEndDate string, tools []string) error {
+	subject := fmt.Sprintf("Your tools are ready — Stockyard for %s", bundleName)
+
+	toolList := ""
+	for _, t := range tools {
+		toolList += fmt.Sprintf("  - %s\n", t)
+	}
+
+	body := fmt.Sprintf(`Welcome! Your 14-day trial of Stockyard for %s is active.
+
+Your license key:
+
+  %s
+
+Install your tools:
+
+  curl -fsSL https://stockyard.dev/for/%s/install.sh | sh
+
+Set your license key:
+
+  export STOCKYARD_LICENSE_KEY=%s
+
+Then open http://localhost:9100/ui in your browser.
+
+Tools included:
+%s
+What to do first:
+1. Open the dashboard at http://localhost:9100/ui
+2. Add your first record
+3. Explore each tool — they all run on separate ports
+
+Your trial ends: %s
+You'll be billed $7.99/mo after that. Cancel anytime.
+Your data stays on YOUR machine no matter what.
+
+Need help? Reply to this email. I read every message.
+
+— Michael, Stockyard
+hello@stockyard.dev`, bundleName, licenseKey, bundleSlug, licenseKey, toolList, trialEndDate)
+
+	return m.send(to, subject, body)
+}
+
+// SendTrialReminder sends a trial reminder email.
+func (m *SMTPMailer) SendTrialReminder(to, bundleName string, daysLeft int) error {
+	var subject, body string
+
+	switch {
+	case daysLeft == 7:
+		subject = fmt.Sprintf("How's Stockyard for %s working?", bundleName)
+		body = fmt.Sprintf(`You're halfway through your trial. Quick question:
+
+Is Stockyard doing what you need it to?
+
+If yes — great, you don't need to do anything. It'll continue at $7.99/mo after your trial.
+
+If something's missing — hit reply and tell me. I can usually build what you need within a day or two.
+
+7 days left in your trial.
+
+— Michael, Stockyard`)
+
+	case daysLeft == 2:
+		subject = "Your Stockyard trial ends in 2 days"
+		body = fmt.Sprintf(`Just a heads up — your Stockyard for %s trial ends in 2 days.
+
+After that, your subscription starts at $7.99/mo. You don't need to do anything — it's automatic.
+
+If you want to cancel:
+https://stockyard.dev/billing/manage/
+
+Your data stays on your machine no matter what. We never delete anything.
+
+— Michael, Stockyard`, bundleName)
+
+	default:
+		subject = fmt.Sprintf("Stockyard trial: %d days remaining", daysLeft)
+		body = fmt.Sprintf(`Your Stockyard for %s trial has %d days remaining.
+
+Your data stays on your machine forever, whether you subscribe or not.
+
+— Stockyard`, bundleName, daysLeft)
+	}
+
+	return m.send(to, subject, body)
+}
+
+// SendTrialConverted sends confirmation when trial converts to paid.
+func (m *SMTPMailer) SendTrialConverted(to, bundleName string) error {
+	subject := fmt.Sprintf("Your Stockyard subscription is active — %s", bundleName)
+	body := fmt.Sprintf(`Your trial is over and your %s subscription has started.
+
+$7.99/mo. Cancel anytime. Your data is always yours.
+
+Tip: back up your data by copying the /data folder. That's it. Your entire system is in that folder.
+
+Thanks for choosing Stockyard.
+
+— Michael, Stockyard
+hello@stockyard.dev`, bundleName)
 
 	return m.send(to, subject, body)
 }
@@ -193,6 +301,25 @@ func (m *LogMailer) SendCancellation(to, productName string) error {
 	return nil
 }
 
+// SendBundleTrialKey logs the bundle trial email.
+func (m *LogMailer) SendBundleTrialKey(to, bundleName, bundleSlug, licenseKey, trialEndDate string, tools []string) error {
+	log.Printf("📧 [dev] Bundle trial email to %s: %s (%d tools, trial ends %s)", to, bundleName, len(tools), trialEndDate)
+	log.Printf("   Key: %s", licenseKey)
+	return nil
+}
+
+// SendTrialReminder logs the trial reminder email.
+func (m *LogMailer) SendTrialReminder(to, bundleName string, daysLeft int) error {
+	log.Printf("📧 [dev] Trial reminder to %s: %s (%d days left)", to, bundleName, daysLeft)
+	return nil
+}
+
+// SendTrialConverted logs the trial conversion email.
+func (m *LogMailer) SendTrialConverted(to, bundleName string) error {
+	log.Printf("📧 [dev] Trial converted email to %s: %s", to, bundleName)
+	return nil
+}
+
 // Send logs the email instead of sending it.
 func (m *LogMailer) Send(to, subject, body string) error {
 	log.Printf("📧 [dev] Email to %s: %s", to, subject)
@@ -240,6 +367,29 @@ func (m *ResendMailer) SendCancellation(to, productName string) error {
 	return m.sendResend(to,
 		fmt.Sprintf("Your %s subscription has been canceled", productName),
 		fmt.Sprintf("Your %s subscription has been canceled. Your key works until the billing period ends.\n\nRe-subscribe anytime at stockyard.dev/pricing\n\n— Stockyard", productName),
+	)
+}
+
+func (m *ResendMailer) SendBundleTrialKey(to, bundleName, bundleSlug, licenseKey, trialEndDate string, tools []string) error {
+	toolList := ""
+	for _, t := range tools {
+		toolList += fmt.Sprintf("  - %s\n", t)
+	}
+	body := fmt.Sprintf("Welcome! Your 14-day trial of Stockyard for %s is active.\n\nYour license key:\n\n  %s\n\nInstall:\n\n  curl -fsSL https://stockyard.dev/for/%s/install.sh | sh\n\nSet your key:\n\n  export STOCKYARD_LICENSE_KEY=%s\n\nTools included:\n%s\nTrial ends: %s\n$7.99/mo after that. Cancel anytime.\n\n— Michael, Stockyard\nhello@stockyard.dev",
+		bundleName, licenseKey, bundleSlug, licenseKey, toolList, trialEndDate)
+	return m.sendResend(to, fmt.Sprintf("Your tools are ready — Stockyard for %s", bundleName), body)
+}
+
+func (m *ResendMailer) SendTrialReminder(to, bundleName string, daysLeft int) error {
+	subject := fmt.Sprintf("Stockyard trial: %d days remaining", daysLeft)
+	body := fmt.Sprintf("Your Stockyard for %s trial has %d days remaining.\n\nYour data stays on your machine forever.\n\n— Stockyard", bundleName, daysLeft)
+	return m.sendResend(to, subject, body)
+}
+
+func (m *ResendMailer) SendTrialConverted(to, bundleName string) error {
+	return m.sendResend(to,
+		fmt.Sprintf("Your Stockyard subscription is active — %s", bundleName),
+		fmt.Sprintf("Your %s subscription has started. $7.99/mo. Cancel anytime.\n\nTip: back up your data by copying the /data folder.\n\n— Michael, Stockyard", bundleName),
 	)
 }
 

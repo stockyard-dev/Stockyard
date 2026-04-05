@@ -604,9 +604,27 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	}
 
 	if wh.mailer != nil {
-		if err := wh.mailer.SendLicenseKey(email, productName, tier, licenseKey); err != nil {
-			log.Printf("webhook: email send failed (non-fatal): %v", err)
-			// Non-fatal — key is stored in DB, customer can retrieve via portal
+		if bundle != "" {
+			// Bundle purchase — send trial-aware email with install instructions
+			bundleDisplayName := "Stockyard Bundle"
+			if bundle != "" {
+				bundleDisplayName = strings.ReplaceAll(bundle, "-", " ")
+				if len(bundleDisplayName) > 0 {
+					bundleDisplayName = strings.ToUpper(bundleDisplayName[:1]) + bundleDisplayName[1:]
+				}
+			}
+			trialEndStr := ""
+			if trialEnd > 0 {
+				trialEndStr = time.Unix(trialEnd, 0).UTC().Format("January 2, 2006")
+			}
+			bundleToolSlugs := wh.bundleTools[bundle]
+			if err := wh.mailer.SendBundleTrialKey(email, bundleDisplayName, bundle, licenseKey, trialEndStr, bundleToolSlugs); err != nil {
+				log.Printf("webhook: bundle trial email failed (non-fatal): %v", err)
+			}
+		} else {
+			if err := wh.mailer.SendLicenseKey(email, productName, tier, licenseKey); err != nil {
+				log.Printf("webhook: email send failed (non-fatal): %v", err)
+			}
 		}
 	}
 
