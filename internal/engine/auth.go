@@ -341,6 +341,10 @@ func isPublicRoute(method, path string) bool {
 	if method == "GET" && path == "/api/toolkit-count" {
 		return true
 	}
+	// Toolkit configs — public, cached
+	if method == "GET" && strings.HasPrefix(path, "/api/toolkit/") {
+		return true
+	}
 	// Stripe webhooks (signature-verified, not admin-key-verified)
 	if method == "POST" && path == "/webhooks/stripe" {
 		return true

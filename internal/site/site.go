@@ -919,6 +919,8 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 	if recommender != nil {
 		mux.HandleFunc("POST /api/recommend", recommender.HandleRecommend)
 		mux.HandleFunc("GET /api/toolkit-count", recommender.HandleToolkitCount)
+		mux.HandleFunc("GET /api/toolkit/{slug}/configs", recommender.HandleToolkitConfigs)
+		mux.HandleFunc("GET /api/toolkit/{slug}/config/{tool}", recommender.HandleToolConfig)
 	}
 
 	// Bundle pages — /for/ index + /for/{slug}/ + /for/{slug}/install.sh

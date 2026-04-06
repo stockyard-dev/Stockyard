@@ -286,6 +286,81 @@ func (r *Recommender) HandleToolkitCount(w http.ResponseWriter, req *http.Reques
 	json.NewEncoder(w).Encode(map[string]int64{"count": count})
 }
 
+// HandleToolkitConfigs returns all per-tool configs for a generated bundle.
+// GET /api/toolkit/{slug}/configs → {"dossier":{...}, "booking":{...}}
+func (r *Recommender) HandleToolkitConfigs(w http.ResponseWriter, req *http.Request) {
+	slug := req.PathValue("slug")
+	if slug == "" {
+		http.Error(w, "slug required", 400)
+		return
+	}
+
+	result := r.lookupResult(slug)
+	if result == nil {
+		http.NotFound(w, req)
+		return
+	}
+
+	configs := make(map[string]json.RawMessage)
+	for _, t := range result.Tools {
+		if len(t.Config) > 0 {
+			configs[t.Slug] = t.Config
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "public, max-age=3600")
+	json.NewEncoder(w).Encode(configs)
+}
+
+// HandleToolConfig returns a single tool's config.json for a generated bundle.
+// GET /api/toolkit/{slug}/config/{tool} → {...config...}
+func (r *Recommender) HandleToolConfig(w http.ResponseWriter, req *http.Request) {
+	slug := req.PathValue("slug")
+	toolSlug := req.PathValue("tool")
+	if slug == "" || toolSlug == "" {
+		http.Error(w, "slug and tool required", 400)
+		return
+	}
+
+	result := r.lookupResult(slug)
+	if result == nil {
+		http.NotFound(w, req)
+		return
+	}
+
+	for _, t := range result.Tools {
+		if t.Slug == toolSlug && len(t.Config) > 0 {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Cache-Control", "public, max-age=3600")
+			w.Write(t.Config)
+			return
+		}
+	}
+
+	http.NotFound(w, req)
+}
+
+// lookupResult finds a RecommendResult by slug from any cache layer.
+func (r *Recommender) lookupResult(slug string) *RecommendResult {
+	// Try recommendation_cache first (Layer 2)
+	if cached, ok := r.recCache.Get(slug); ok {
+		return cached
+	}
+
+	// Try generated_bundles (legacy)
+	var resultJSON string
+	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, slug).Scan(&resultJSON)
+	if err == nil {
+		var result RecommendResult
+		if json.Unmarshal([]byte(resultJSON), &result) == nil {
+			return &result
+		}
+	}
+
+	return nil
+}
+
 func (r *Recommender) callLLM(description string) (*RecommendResult, error) {
 	prompt := fmt.Sprintf(`You are the toolkit builder for Stockyard, a platform of self-hosted business tools. Each tool is a standalone binary (~13MB) that stores data in SQLite on the user's own hardware. No cloud. No dependencies. No accounts.
 
@@ -455,9 +530,18 @@ func (r *Recommender) GenerateInstallScript(slug string) ([]byte, bool) {
 		s.WriteString(fmt.Sprintf("  echo \"    ✗ %s (failed)\"\n  FAILED=$((FAILED + 1))\nfi\n\n", label))
 	}
 
-	// Generate start.sh
+	// Download personalization configs for each tool
+	s.WriteString("echo \"\"\necho \"  Downloading configs...\"\n")
+	for _, t := range result.Tools {
+		s.WriteString(fmt.Sprintf("mkdir -p \"$BUNDLE_DIR/data/%s\"\n", t.Slug))
+		s.WriteString(fmt.Sprintf("curl -fsSL \"https://stockyard.dev/api/toolkit/%s/config/%s\" -o \"$BUNDLE_DIR/data/%s/config.json\" 2>/dev/null && echo \"    ✓ %s config\" || true\n",
+			slug, t.Slug, t.Slug, t.Label))
+	}
+	s.WriteString("echo \"\"\n\n")
+
+	// Generate start.sh — each tool gets its own data subdirectory
 	s.WriteString("cat > \"$BUNDLE_DIR/start.sh\" << 'STARTEOF'\n#!/bin/bash\n")
-	s.WriteString("DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\nDATA=\"$DIR/data\"\nmkdir -p \"$DATA\"\n")
+	s.WriteString("DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\nDATA=\"$DIR/data\"\n")
 	s.WriteString(fmt.Sprintf("echo \"\"\necho \"  Starting %s...\"\necho \"\"\n", result.Title))
 	firstPort := 0
 	for _, t := range result.Tools {
@@ -468,7 +552,8 @@ func (r *Recommender) GenerateInstallScript(slug string) ([]byte, bool) {
 		if firstPort == 0 {
 			firstPort = port
 		}
-		s.WriteString(fmt.Sprintf("PORT=%d \"$DIR/tools/stockyard-%s\" -port %d -data \"$DATA\" >/dev/null 2>&1 &\n", port, t.Slug, port))
+		s.WriteString(fmt.Sprintf("mkdir -p \"$DATA/%s\"\n", t.Slug))
+		s.WriteString(fmt.Sprintf("PORT=%d \"$DIR/tools/stockyard-%s\" -port %d -data \"$DATA/%s\" >/dev/null 2>&1 &\n", port, t.Slug, port, t.Slug))
 	}
 	s.WriteString("sleep 1\necho \"\"\n")
 	for _, t := range result.Tools {
