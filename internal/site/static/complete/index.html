@@ -84,7 +84,7 @@ footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-m
 <link rel="manifest" href="/site-assets/manifest.json">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard All Tools","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"29","priceCurrency":"USD","description":"Monthly — all 164+ tools","availability":"https://schema.org/InStock"},{"@type":"Offer","price":"249","priceCurrency":"USD","description":"Annual — save $99","availability":"https://schema.org/InStock"}],"description":"164+ self-hosted tools. Each is a single Go binary with embedded SQLite. Webhook inboxes, status pages, feature flags, analytics, error tracking, and more."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Complete","item":"https://stockyard.dev/complete/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Stockyard All Tools?","acceptedAnswer":{"@type":"Answer","text":"All 150 Stockyard tools with Pro features unlocked. One license key, one price (14-day free trial, then $7.99/mo per bundle — or $249/yr), unlimited instances."}},{"@type":"Question","name":"Do I need to run all 164+ tools?","acceptedAnswer":{"@type":"Answer","text":"No. Download and run only what you need. Each is a standalone binary. The license key unlocks Pro on whatever you choose to run."}},{"@type":"Question","name":"How does pricing compare to individual tools?","acceptedAnswer":{"@type":"Answer","text":"Individual tool Pro licenses are $7.99/mo per bundle. Complete is 14-day free trial for all 150. If you use more than 6-7 tools, Complete is cheaper."}},{"@type":"Question","name":"What happens if I cancel?","acceptedAnswer":{"@type":"Answer","text":"Your tools continue running on free tier limits. Your data stays on your server. Nothing is deleted."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Stockyard All Tools?","acceptedAnswer":{"@type":"Answer","text":"All 150 Stockyard tools with Pro features unlocked. One license key, one price (14-day free trial, then $7.99/mo per bundle — or $249/yr), unlimited instances."}},{"@type":"Question","name":"Do I need to run all 164+ tools?","acceptedAnswer":{"@type":"Answer","text":"No. Download and run only what you need. Each is a standalone binary. The license key unlocks Pro on whatever you choose to run."}},{"@type":"Question","name":"How does pricing compare to individual tools?","acceptedAnswer":{"@type":"Answer","text":"Individual tool Pro licenses are $7.99/mo per bundle. Complete is 14-day free trial for all 164+. If you use more than 6-7 tools, Complete is cheaper."}},{"@type":"Question","name":"What happens if I cancel?","acceptedAnswer":{"@type":"Answer","text":"Your tools continue running on trial limits. Your data stays on your server. Nothing is deleted."}}]}</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
@@ -396,9 +396,9 @@ export STOCKYARD_LICENSE_KEY=SY-xxxxxxxxxxxxxxxxxxxx
     <div style="max-width:600px;margin:0 auto;text-align:center">
       <div class="section-label">No risk</div>
       <h2>Try free first. Cancel any time.</h2>
-      <p style="color:var(--cream-dim);font-style:italic;line-height:1.8;margin-bottom:1.5rem">Every tool has a free tier with no time limit. Download, run, and evaluate before you spend a dollar. If you subscribe and change your mind, cancel in one click. Your tools keep running on free tier limits. Your data stays on your server.</p>
+      <p style="color:var(--cream-dim);font-style:italic;line-height:1.8;margin-bottom:1.5rem">Every tool has a 14-day free trial. Download, run, and evaluate before you spend a dollar. If you subscribe and change your mind, cancel in one click. Your tools keep running on trial limits. Your data stays on your server.</p>
       <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-dim)">
-        <span style="color:var(--gold)">&#10003; No credit card for free tier</span>
+        <span style="color:var(--gold)">&#10003; 14-day free trial included</span>
         <span style="color:var(--gold)">&#10003; Cancel any time</span>
         <span style="color:var(--gold)">&#10003; Your data never leaves your server</span>
       </div>
@@ -444,7 +444,7 @@ function captureEmail(){
     </div>
     <div class="faq-item">
       <div class="faq-q">What's the difference between Complete and individual tool licenses?</div>
-      <div class="faq-a">Individual tool Pro licenses are $7.99/mo per bundle. Complete is 14-day free trial for all 150. If you use more than 6&ndash;7 tools, Complete is cheaper.</div>
+      <div class="faq-a">Individual tool Pro licenses are $7.99/mo per bundle. Complete is 14-day free trial for all 164+. If you use more than 6&ndash;7 tools, Complete is cheaper.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q">Does this include the main Stockyard LLM proxy platform?</div>
@@ -456,7 +456,7 @@ function captureEmail(){
     </div>
     <div class="faq-item">
       <div class="faq-q">What happens if I cancel?</div>
-      <div class="faq-a">Your tools continue running on free tier limits. Pro features require an active license. Your data stays on your server &mdash; nothing is deleted or phone-home'd.</div>
+      <div class="faq-a">Your tools continue running on trial limits. Pro features require an active license. Your data stays on your server &mdash; nothing is deleted or phone-home'd.</div>
     </div>
   </div>
 </div>
