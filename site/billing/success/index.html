@@ -110,24 +110,50 @@ gtag("event","conversion",{send_to:"AW-18046975504/do8vCJHW6pQcEJD8u51D",value:_
 </p>
 
 <script>
-// Detect which tool the user came from via URL params or referrer
 var params = new URLSearchParams(window.location.search);
 var product = params.get('product') || '';
-var envMap = {
-  corral: 'STOCKYARD_LICENSE_KEY',
-  gate:   'STOCKYARD_LICENSE_KEY',
-  trough: 'STOCKYARD_LICENSE_KEY',
-  fence:  'STOCKYARD_LICENSE_KEY',
-  brand:  'STOCKYARD_LICENSE_KEY',
-};
-var cmdMap = {
-  corral: 'corral',
-  gate:   'gate --upstream http://localhost:3000',
-  trough: 'trough',
-  fence:  'fence',
-  brand:  'brand',
-};
-if (product && envMap[product]) {
+var bundle = params.get('bundle') || '';
+
+// Bundle trial success
+if (bundle) {
+  var bundleName = bundle.replace(/-/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  document.querySelector('h1').textContent = 'Your 14-day trial has started!';
+  document.querySelector('.icon').textContent = '🎉';
+
+  var steps = document.querySelector('.steps');
+  steps.innerHTML =
+    '<div class="step"><div class="step-num">1</div><div class="step-body">' +
+    '<div class="step-title">Check your email</div>' +
+    '<div class="step-desc">Your license key and install command have been sent to your email. Look for a message from <strong>hello@stockyard.dev</strong>.</div>' +
+    '</div></div>' +
+    '<div class="step"><div class="step-num">2</div><div class="step-body">' +
+    '<div class="step-title">Install your tools</div>' +
+    '<div class="step-desc">Run this command in your terminal:</div>' +
+    '<pre style="cursor:pointer" onclick="navigator.clipboard.writeText(this.textContent.trim());this.style.borderColor=\'var(--gold)\'">curl -fsSL https://stockyard.dev/for/' + bundle + '/install.sh | sh</pre>' +
+    '</div></div>' +
+    '<div class="step"><div class="step-num">3</div><div class="step-body">' +
+    '<div class="step-title">Set your license key</div>' +
+    '<div class="step-desc">Copy the key from your email and set it:</div>' +
+    '<pre>export STOCKYARD_LICENSE_KEY=SY-your_key_from_email</pre>' +
+    '<div class="step-desc" style="margin-top:.4rem;font-size:.78rem">Then open <strong>http://localhost:9100/ui</strong> in your browser.</div>' +
+    '</div></div>';
+
+  // Update CTA buttons
+  var ctaArea = document.querySelector('.card');
+  var existingCTAs = ctaArea.querySelectorAll('.cta');
+  existingCTAs.forEach(function(c){ c.remove(); });
+  var note = ctaArea.querySelector('.note');
+  if (note) {
+    note.innerHTML = '<strong style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather-light)">Your trial</strong><br>' +
+      'Full access for 14 days. $7.99/mo after that. Cancel anytime.<br>' +
+      'Your data stays on YOUR machine no matter what.';
+  }
+}
+
+// Individual tool product handling
+var envMap = {corral:'STOCKYARD_LICENSE_KEY',gate:'STOCKYARD_LICENSE_KEY',trough:'STOCKYARD_LICENSE_KEY',fence:'STOCKYARD_LICENSE_KEY',brand:'STOCKYARD_LICENSE_KEY'};
+var cmdMap = {corral:'corral',gate:'gate --upstream http://localhost:3000',trough:'trough',fence:'fence',brand:'brand'};
+if (!bundle && product && envMap[product]) {
   var envEl = document.getElementById('env-example');
   var allEl = document.getElementById('all-envs');
   if (envEl) envEl.textContent = envMap[product] + '=SY-your_key_here ' + cmdMap[product];
