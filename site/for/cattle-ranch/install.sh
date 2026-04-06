@@ -124,13 +124,13 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Cattle Ranchers..."
 echo ""
-PORT=9803 "$DIR/tools/stockyard-breeding" -port 9803 -data "$DATA" >/dev/null 2>&1 &
-PORT=9810 "$DIR/tools/stockyard-harvest" -port 9810 -data "$DATA" >/dev/null 2>&1 &
-PORT=9809 "$DIR/tools/stockyard-fleet" -port 9809 -data "$DATA" >/dev/null 2>&1 &
-PORT=9811 "$DIR/tools/stockyard-permit" -port 9811 -data "$DATA" >/dev/null 2>&1 &
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/breeding" && PORT=9803 "$DIR/tools/stockyard-breeding" -port 9803 -data "$DATA/breeding" >/dev/null 2>&1 &
+mkdir -p "$DATA/harvest" && PORT=9810 "$DIR/tools/stockyard-harvest" -port 9810 -data "$DATA/harvest" >/dev/null 2>&1 &
+mkdir -p "$DATA/fleet" && PORT=9809 "$DIR/tools/stockyard-fleet" -port 9809 -data "$DATA/fleet" >/dev/null 2>&1 &
+mkdir -p "$DATA/permit" && PORT=9811 "$DIR/tools/stockyard-permit" -port 9811 -data "$DATA/permit" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/notebook" && PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA/notebook" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Breeding                  http://localhost:9803/ui"

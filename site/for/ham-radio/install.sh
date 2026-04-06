@@ -111,12 +111,12 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Amateur Radio Operators..."
 echo ""
-PORT=8850 "$DIR/tools/stockyard-campfire" -port 8850 -data "$DATA" >/dev/null 2>&1 &
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA" >/dev/null 2>&1 &
-PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA" >/dev/null 2>&1 &
-PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA" >/dev/null 2>&1 &
-PORT=9100 "$DIR/tools/stockyard-collection" -port 9100 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/campfire" && PORT=8850 "$DIR/tools/stockyard-campfire" -port 8850 -data "$DATA/campfire" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/quartermaster" && PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA/quartermaster" >/dev/null 2>&1 &
+mkdir -p "$DATA/notebook" && PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA/notebook" >/dev/null 2>&1 &
+mkdir -p "$DATA/tally" && PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA/tally" >/dev/null 2>&1 &
+mkdir -p "$DATA/collection" && PORT=9100 "$DIR/tools/stockyard-collection" -port 9100 -data "$DATA/collection" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Campfire                  http://localhost:8850/ui"

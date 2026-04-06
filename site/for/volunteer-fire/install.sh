@@ -163,16 +163,16 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Volunteer Fire Departments..."
 echo ""
-PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=9310 "$DIR/tools/stockyard-deposition" -port 9310 -data "$DATA" >/dev/null 2>&1 &
-PORT=8680 "$DIR/tools/stockyard-sentinel" -port 8680 -data "$DATA" >/dev/null 2>&1 &
-PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA" >/dev/null 2>&1 &
-PORT=9290 "$DIR/tools/stockyard-surveyor" -port 9290 -data "$DATA" >/dev/null 2>&1 &
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA" >/dev/null 2>&1 &
-PORT=9811 "$DIR/tools/stockyard-permit" -port 9811 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/roster" && PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA/roster" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/deposition" && PORT=9310 "$DIR/tools/stockyard-deposition" -port 9310 -data "$DATA/deposition" >/dev/null 2>&1 &
+mkdir -p "$DATA/sentinel" && PORT=8680 "$DIR/tools/stockyard-sentinel" -port 8680 -data "$DATA/sentinel" >/dev/null 2>&1 &
+mkdir -p "$DATA/announcements" && PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA/announcements" >/dev/null 2>&1 &
+mkdir -p "$DATA/surveyor" && PORT=9290 "$DIR/tools/stockyard-surveyor" -port 9290 -data "$DATA/surveyor" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/checkin" && PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA/checkin" >/dev/null 2>&1 &
+mkdir -p "$DATA/permit" && PORT=9811 "$DIR/tools/stockyard-permit" -port 9811 -data "$DATA/permit" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Roster                    http://localhost:8970/ui"

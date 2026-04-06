@@ -124,13 +124,13 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Preschools & Montessori Schools..."
 echo ""
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA" >/dev/null 2>&1 &
-PORT=8560 "$DIR/tools/stockyard-dispatch" -port 8560 -data "$DATA" >/dev/null 2>&1 &
-PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA" >/dev/null 2>&1 &
-PORT=9813 "$DIR/tools/stockyard-curriculum" -port 9813 -data "$DATA" >/dev/null 2>&1 &
-PORT=9290 "$DIR/tools/stockyard-surveyor" -port 9290 -data "$DATA" >/dev/null 2>&1 &
-PORT=9801 "$DIR/tools/stockyard-waiver" -port 9801 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/checkin" && PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA/checkin" >/dev/null 2>&1 &
+mkdir -p "$DATA/dispatch" && PORT=8560 "$DIR/tools/stockyard-dispatch" -port 8560 -data "$DATA/dispatch" >/dev/null 2>&1 &
+mkdir -p "$DATA/billfold" && PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA/billfold" >/dev/null 2>&1 &
+mkdir -p "$DATA/curriculum" && PORT=9813 "$DIR/tools/stockyard-curriculum" -port 9813 -data "$DATA/curriculum" >/dev/null 2>&1 &
+mkdir -p "$DATA/surveyor" && PORT=9290 "$DIR/tools/stockyard-surveyor" -port 9290 -data "$DATA/surveyor" >/dev/null 2>&1 &
+mkdir -p "$DATA/waiver" && PORT=9801 "$DIR/tools/stockyard-waiver" -port 9801 -data "$DATA/waiver" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Dossier                   http://localhost:9080/ui"

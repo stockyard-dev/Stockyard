@@ -111,12 +111,12 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Vacation Rental Owners..."
 echo ""
-PORT=9800 "$DIR/tools/stockyard-booking" -port 9800 -data "$DATA" >/dev/null 2>&1 &
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA" >/dev/null 2>&1 &
-PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/booking" && PORT=9800 "$DIR/tools/stockyard-booking" -port 9800 -data "$DATA/booking" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/roundup" && PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA/roundup" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/portfolio" && PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA/portfolio" >/dev/null 2>&1 &
+mkdir -p "$DATA/billfold" && PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA/billfold" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Booking                   http://localhost:9800/ui"

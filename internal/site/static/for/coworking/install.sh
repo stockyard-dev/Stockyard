@@ -176,17 +176,17 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Coworking Spaces..."
 echo ""
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA" >/dev/null 2>&1 &
-PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=9290 "$DIR/tools/stockyard-surveyor" -port 9290 -data "$DATA" >/dev/null 2>&1 &
-PORT=8920 "$DIR/tools/stockyard-paddock" -port 8920 -data "$DATA" >/dev/null 2>&1 &
-PORT=9801 "$DIR/tools/stockyard-waiver" -port 9801 -data "$DATA" >/dev/null 2>&1 &
-PORT=9806 "$DIR/tools/stockyard-reservation" -port 9806 -data "$DATA" >/dev/null 2>&1 &
-PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/billfold" && PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA/billfold" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/roster" && PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA/roster" >/dev/null 2>&1 &
+mkdir -p "$DATA/announcements" && PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA/announcements" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/surveyor" && PORT=9290 "$DIR/tools/stockyard-surveyor" -port 9290 -data "$DATA/surveyor" >/dev/null 2>&1 &
+mkdir -p "$DATA/paddock" && PORT=8920 "$DIR/tools/stockyard-paddock" -port 8920 -data "$DATA/paddock" >/dev/null 2>&1 &
+mkdir -p "$DATA/waiver" && PORT=9801 "$DIR/tools/stockyard-waiver" -port 9801 -data "$DATA/waiver" >/dev/null 2>&1 &
+mkdir -p "$DATA/reservation" && PORT=9806 "$DIR/tools/stockyard-reservation" -port 9806 -data "$DATA/reservation" >/dev/null 2>&1 &
+mkdir -p "$DATA/checkin" && PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA/checkin" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Dossier                   http://localhost:9080/ui"

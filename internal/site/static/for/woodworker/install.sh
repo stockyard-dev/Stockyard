@@ -137,14 +137,14 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Woodworkers..."
 echo ""
-PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA" >/dev/null 2>&1 &
-PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA" >/dev/null 2>&1 &
-PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA" >/dev/null 2>&1 &
-PORT=9100 "$DIR/tools/stockyard-collection" -port 9100 -data "$DATA" >/dev/null 2>&1 &
-PORT=9802 "$DIR/tools/stockyard-estimate" -port 9802 -data "$DATA" >/dev/null 2>&1 &
-PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/quartermaster" && PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA/quartermaster" >/dev/null 2>&1 &
+mkdir -p "$DATA/notebook" && PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA/notebook" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/roundup" && PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA/roundup" >/dev/null 2>&1 &
+mkdir -p "$DATA/tally" && PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA/tally" >/dev/null 2>&1 &
+mkdir -p "$DATA/collection" && PORT=9100 "$DIR/tools/stockyard-collection" -port 9100 -data "$DATA/collection" >/dev/null 2>&1 &
+mkdir -p "$DATA/estimate" && PORT=9802 "$DIR/tools/stockyard-estimate" -port 9802 -data "$DATA/estimate" >/dev/null 2>&1 &
+mkdir -p "$DATA/portfolio" && PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA/portfolio" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Quartermaster             http://localhost:10230/ui"

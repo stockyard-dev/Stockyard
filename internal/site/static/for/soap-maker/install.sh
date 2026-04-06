@@ -98,11 +98,11 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Soap & Candle Makers..."
 echo ""
-PORT=9805 "$DIR/tools/stockyard-recipe" -port 9805 -data "$DATA" >/dev/null 2>&1 &
-PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA" >/dev/null 2>&1 &
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/recipe" && PORT=9805 "$DIR/tools/stockyard-recipe" -port 9805 -data "$DATA/recipe" >/dev/null 2>&1 &
+mkdir -p "$DATA/quartermaster" && PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA/quartermaster" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/billfold" && PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA/billfold" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Recipe                    http://localhost:9805/ui"

@@ -150,15 +150,15 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Minecraft Server Admins..."
 echo ""
-PORT=8690 "$DIR/tools/stockyard-headcount" -port 8690 -data "$DATA" >/dev/null 2>&1 &
-PORT=8680 "$DIR/tools/stockyard-sentinel" -port 8680 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=8760 "$DIR/tools/stockyard-corral" -port 8760 -data "$DATA" >/dev/null 2>&1 &
-PORT=8850 "$DIR/tools/stockyard-campfire" -port 8850 -data "$DATA" >/dev/null 2>&1 &
-PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA" >/dev/null 2>&1 &
-PORT=8545 "$DIR/tools/stockyard-silo" -port 8545 -data "$DATA" >/dev/null 2>&1 &
-PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA" >/dev/null 2>&1 &
-PORT=8740 "$DIR/tools/stockyard-outpost" -port 8740 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/headcount" && PORT=8690 "$DIR/tools/stockyard-headcount" -port 8690 -data "$DATA/headcount" >/dev/null 2>&1 &
+mkdir -p "$DATA/sentinel" && PORT=8680 "$DIR/tools/stockyard-sentinel" -port 8680 -data "$DATA/sentinel" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/corral" && PORT=8760 "$DIR/tools/stockyard-corral" -port 8760 -data "$DATA/corral" >/dev/null 2>&1 &
+mkdir -p "$DATA/campfire" && PORT=8850 "$DIR/tools/stockyard-campfire" -port 8850 -data "$DATA/campfire" >/dev/null 2>&1 &
+mkdir -p "$DATA/announcements" && PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA/announcements" >/dev/null 2>&1 &
+mkdir -p "$DATA/silo" && PORT=8545 "$DIR/tools/stockyard-silo" -port 8545 -data "$DATA/silo" >/dev/null 2>&1 &
+mkdir -p "$DATA/roster" && PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA/roster" >/dev/null 2>&1 &
+mkdir -p "$DATA/outpost" && PORT=8740 "$DIR/tools/stockyard-outpost" -port 8740 -data "$DATA/outpost" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Headcount                 http://localhost:8690/ui"

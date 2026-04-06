@@ -150,15 +150,15 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Small Architecture Firms..."
 echo ""
-PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
-PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA" >/dev/null 2>&1 &
-PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA" >/dev/null 2>&1 &
-PORT=9310 "$DIR/tools/stockyard-deposition" -port 9310 -data "$DATA" >/dev/null 2>&1 &
-PORT=9802 "$DIR/tools/stockyard-estimate" -port 9802 -data "$DATA" >/dev/null 2>&1 &
-PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
+mkdir -p "$DATA/billfold" && PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA/billfold" >/dev/null 2>&1 &
+mkdir -p "$DATA/roundup" && PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA/roundup" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/notebook" && PORT=9370 "$DIR/tools/stockyard-notebook" -port 9370 -data "$DATA/notebook" >/dev/null 2>&1 &
+mkdir -p "$DATA/deposition" && PORT=9310 "$DIR/tools/stockyard-deposition" -port 9310 -data "$DATA/deposition" >/dev/null 2>&1 &
+mkdir -p "$DATA/estimate" && PORT=9802 "$DIR/tools/stockyard-estimate" -port 9802 -data "$DATA/estimate" >/dev/null 2>&1 &
+mkdir -p "$DATA/portfolio" && PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA/portfolio" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Dossier                   http://localhost:9080/ui"

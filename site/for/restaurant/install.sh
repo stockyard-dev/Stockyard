@@ -111,12 +111,12 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Restaurants & Cafes..."
 echo ""
-PORT=9812 "$DIR/tools/stockyard-menu" -port 9812 -data "$DATA" >/dev/null 2>&1 &
-PORT=9806 "$DIR/tools/stockyard-reservation" -port 9806 -data "$DATA" >/dev/null 2>&1 &
-PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA" >/dev/null 2>&1 &
-PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/menu" && PORT=9812 "$DIR/tools/stockyard-menu" -port 9812 -data "$DATA/menu" >/dev/null 2>&1 &
+mkdir -p "$DATA/reservation" && PORT=9806 "$DIR/tools/stockyard-reservation" -port 9806 -data "$DATA/reservation" >/dev/null 2>&1 &
+mkdir -p "$DATA/quartermaster" && PORT=10230 "$DIR/tools/stockyard-quartermaster" -port 10230 -data "$DATA/quartermaster" >/dev/null 2>&1 &
+mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/roster" && PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA/roster" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Menu                      http://localhost:9812/ui"

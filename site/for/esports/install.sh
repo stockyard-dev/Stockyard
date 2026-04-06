@@ -111,12 +111,12 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Esports Teams & Organizers..."
 echo ""
-PORT=9804 "$DIR/tools/stockyard-tournament" -port 9804 -data "$DATA" >/dev/null 2>&1 &
-PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=8850 "$DIR/tools/stockyard-campfire" -port 8850 -data "$DATA" >/dev/null 2>&1 &
-PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA" >/dev/null 2>&1 &
-PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/tournament" && PORT=9804 "$DIR/tools/stockyard-tournament" -port 9804 -data "$DATA/tournament" >/dev/null 2>&1 &
+mkdir -p "$DATA/roster" && PORT=8970 "$DIR/tools/stockyard-roster" -port 8970 -data "$DATA/roster" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/campfire" && PORT=8850 "$DIR/tools/stockyard-campfire" -port 8850 -data "$DATA/campfire" >/dev/null 2>&1 &
+mkdir -p "$DATA/announcements" && PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA/announcements" >/dev/null 2>&1 &
+mkdir -p "$DATA/tally" && PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA/tally" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Tournament                http://localhost:9804/ui"

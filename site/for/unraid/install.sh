@@ -124,13 +124,13 @@ mkdir -p "$DATA"
 echo ""
 echo "  Starting Stockyard for Unraid Users..."
 echo ""
-PORT=8680 "$DIR/tools/stockyard-sentinel" -port 8680 -data "$DATA" >/dev/null 2>&1 &
-PORT=8740 "$DIR/tools/stockyard-outpost" -port 8740 -data "$DATA" >/dev/null 2>&1 &
-PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
-PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA" >/dev/null 2>&1 &
-PORT=8545 "$DIR/tools/stockyard-silo" -port 8545 -data "$DATA" >/dev/null 2>&1 &
-PORT=9950 "$DIR/tools/stockyard-mainspring" -port 9950 -data "$DATA" >/dev/null 2>&1 &
-PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA" >/dev/null 2>&1 &
+mkdir -p "$DATA/sentinel" && PORT=8680 "$DIR/tools/stockyard-sentinel" -port 8680 -data "$DATA/sentinel" >/dev/null 2>&1 &
+mkdir -p "$DATA/outpost" && PORT=8740 "$DIR/tools/stockyard-outpost" -port 8740 -data "$DATA/outpost" >/dev/null 2>&1 &
+mkdir -p "$DATA/sundial" && PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA/sundial" >/dev/null 2>&1 &
+mkdir -p "$DATA/tally" && PORT=8640 "$DIR/tools/stockyard-tally" -port 8640 -data "$DATA/tally" >/dev/null 2>&1 &
+mkdir -p "$DATA/silo" && PORT=8545 "$DIR/tools/stockyard-silo" -port 8545 -data "$DATA/silo" >/dev/null 2>&1 &
+mkdir -p "$DATA/mainspring" && PORT=9950 "$DIR/tools/stockyard-mainspring" -port 9950 -data "$DATA/mainspring" >/dev/null 2>&1 &
+mkdir -p "$DATA/announcements" && PORT=9750 "$DIR/tools/stockyard-announcements" -port 9750 -data "$DATA/announcements" >/dev/null 2>&1 &
 sleep 1
 echo ""
 echo "  ✓ Sentinel                  http://localhost:8680/ui"
