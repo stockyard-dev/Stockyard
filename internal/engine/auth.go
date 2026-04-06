@@ -337,6 +337,10 @@ func isPublicRoute(method, path string) bool {
 	if method == "POST" && path == "/api/recommend" {
 		return true
 	}
+	// Toolkit counter — public, cached
+	if method == "GET" && path == "/api/toolkit-count" {
+		return true
+	}
 	// Stripe webhooks (signature-verified, not admin-key-verified)
 	if method == "POST" && path == "/webhooks/stripe" {
 		return true

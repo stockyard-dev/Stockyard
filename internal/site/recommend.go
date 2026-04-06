@@ -30,6 +30,16 @@ CREATE TABLE IF NOT EXISTS generated_bundles (
     last_viewed TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_gb_slug ON generated_bundles(slug);
+CREATE TABLE IF NOT EXISTS toolkit_generations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT NOT NULL,
+    description TEXT NOT NULL,
+    tool_count INTEGER NOT NULL DEFAULT 0,
+    cache_layer TEXT NOT NULL DEFAULT '',
+    ip_hash TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_tg_created ON toolkit_generations(created_at);
 `
 
 // RecommendResult is the AI-generated toolkit.
@@ -152,6 +162,7 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 			result := personalize(cached, businessName)
 			result.Slug = slug
 			result.Cached = true
+			r.recordGeneration(slug, desc, "L1", req.RemoteAddr, len(result.Tools))
 			log.Printf("[recommend] L1 quick-match hit: %q → %s", normalized, slug)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(result)
@@ -166,6 +177,7 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	if cached, ok := r.recCache.Get(normalized); ok {
 		result := personalize(cached, businessName)
 		result.Cached = true
+		r.recordGeneration(result.Slug, desc, "L2", req.RemoteAddr, len(result.Tools))
 		log.Printf("[recommend] L2 cache hit: %q", normalized)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
@@ -185,6 +197,7 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		// Migrate to new cache for future hits
 		r.recCache.Set(normalized, oldSlug, &result)
 		result2 := personalize(&result, businessName)
+		r.recordGeneration(oldSlug, desc, "legacy", req.RemoteAddr, len(result2.Tools))
 		log.Printf("[recommend] legacy cache hit (migrated): %q → %s", normalized, oldSlug)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result2)
@@ -245,10 +258,30 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		genSlug, desc, string(resultJSON))
 
 	log.Printf("[recommend] L3 LLM call: %q → %s (%d tools)", normalized, genSlug, len(result.Tools))
+	r.recordGeneration(genSlug, desc, "L3", req.RemoteAddr, len(result.Tools))
 
 	finalResult := personalize(result, businessName)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(finalResult)
+}
+
+// recordGeneration logs a toolkit generation for the counter.
+func (r *Recommender) recordGeneration(slug, desc, layer, ipAddr string, toolCount int) {
+	h := sha256.Sum256([]byte(ipAddr))
+	ipHash := fmt.Sprintf("%x", h)[:12]
+	r.db.Exec(
+		"INSERT INTO toolkit_generations (slug, description, tool_count, cache_layer, ip_hash) VALUES (?, ?, ?, ?, ?)",
+		slug, desc, toolCount, layer, ipHash,
+	)
+}
+
+// HandleToolkitCount returns the total number of toolkit generations.
+func (r *Recommender) HandleToolkitCount(w http.ResponseWriter, req *http.Request) {
+	var count int64
+	r.db.QueryRow("SELECT COUNT(*) FROM toolkit_generations").Scan(&count)
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "public, max-age=30")
+	json.NewEncoder(w).Encode(map[string]int64{"count": count})
 }
 
 func (r *Recommender) callLLM(description string) (*RecommendResult, error) {

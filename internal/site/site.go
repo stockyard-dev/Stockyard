@@ -918,6 +918,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 	// AI recommendation endpoint
 	if recommender != nil {
 		mux.HandleFunc("POST /api/recommend", recommender.HandleRecommend)
+		mux.HandleFunc("GET /api/toolkit-count", recommender.HandleToolkitCount)
 	}
 
 	// Bundle pages — /for/ index + /for/{slug}/ + /for/{slug}/install.sh

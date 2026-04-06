@@ -121,6 +121,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
     </div>
     <button id="ai-btn" onclick="buildToolkit()" style="display:none;width:100%;margin-top:.8rem;padding:.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.85rem;border:2px solid var(--rust);cursor:pointer;transition:opacity .3s;letter-spacing:1px">Build My Toolkit →</button>
     <div id="spinner" style="display:none;text-align:center;padding:2rem;font-family:var(--font-mono);font-size:.8rem;color:var(--cream-dim)">Building your toolkit<span id="dots">...</span></div>
+    <div id="toolkit-counter" style="display:none;text-align:center;margin-top:1.2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--cream-muted);letter-spacing:1px"><span id="counter-num" style="color:var(--gold);font-size:1rem;font-weight:600"></span> toolkits built</div>
   </div>
 </section>
 
@@ -176,6 +177,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 var B=[];
 var SI=document.getElementById('search'),RD=document.getElementById('results'),BR=document.getElementById('bundle-result'),CS=document.getElementById('categories');
 fetch("/bundles-search.json").then(function(r){return r.json()}).then(function(d){B=d;var p=new URLSearchParams(window.location.search);var q=p.get("q");if(q){SI.value=q;doSearch(q)}}).catch(function(){});
+fetch("/api/toolkit-count").then(function(r){return r.json()}).then(function(d){if(d.count>0){document.getElementById("counter-num").textContent=d.count.toLocaleString();document.getElementById("toolkit-counter").style.display="block"}}).catch(function(){});
 
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
