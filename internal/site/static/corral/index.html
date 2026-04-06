@@ -143,7 +143,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
         <a href="/saltlick/">Salt Lick</a>
       </div>
     </div>
-    <a href="/complete/" style="color:var(--gold)">Complete</a>
+    <a href="/pricing/" style="color:var(--gold)">Complete</a>
     <a href="/pricing/">Pricing</a>
     <a href="/platform/">Platform</a>
     <a href="/docs/">Docs</a>
@@ -320,7 +320,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
     <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">What counts as an event?</div><div class="faq-a">Any HTTP request received at a <code>/hook/{id}</code> URL. Each captured request is one event.</div></div>
   <div class="faq-item"><div class="faq-q">Does Corral require Docker or a database?</div><div class="faq-a">No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary.</div></div>
-  <div class="faq-item"><div class="faq-q">What happens when I hit the free event limit?</div><div class="faq-a">The binary enforces limits only when you're using Corral as a managed service. Self-hosted instances on the free tier show a warning in the API but do not hard-block events. Pro removes the limit entirely.</div></div>
+  <div class="faq-item"><div class="faq-q">What happens when I hit the free event limit?</div><div class="faq-a">The binary enforces limits only when you're using Corral as a managed service. Self-hosted instances during the trial show a warning in the API but do not hard-block events. Pro removes the limit entirely.</div></div>
   <div class="faq-item"><div class="faq-q">How does retention work?</div><div class="faq-a">Set <code>RETENTION_DAYS</code> to control automatic cleanup. Free tier defaults to 7 days. Pro supports up to 90 days.</div></div>
   <div class="faq-item"><div class="faq-q">What's the license?</div><div class="faq-a">Apache 2.0. Free to use, modify, and deploy with no restrictions.</div></div>
   </div>
@@ -330,12 +330,12 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 <section class="cta-strip">
   <div class="section-label">Get started</div>
   <h2>Capture your first webhook in 30 seconds.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Single binary. Free to start. $7.99/mo for unlimited.</p>
+  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Single binary. 14 days free. $7.99/mo. Unlimited everything.</p>
   <div class="cta-group">
     <a href="#install" class="btn btn-primary">Install Corral Free</a>
     <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Start Trial</a>
   </div>
-  <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Part of <a href="/complete/" style="color:var(--gold)">Stockyard All Tools</a> &mdash; all 164+ tools — 14-day free trial, then $7.99/mo per bundle</p>
+  <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Part of <a href="/pricing/" style="color:var(--gold)">Stockyard All Tools</a> &mdash; all 164+ tools — 14-day free trial, then $7.99/mo per bundle</p>
 </section>
 
 </main>
@@ -344,7 +344,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
   <p class="sig">Stockyard. Wrangle your Stack.</p>
   <p style="margin-top:0.5rem">
     <a href="/tools/">Tools</a> &middot;
-    <a href="/complete/">Complete</a> &middot;
+    <a href="/pricing/">Complete</a> &middot;
     <a href="/platform/">Platform</a> &middot;
     <a href="/pricing/">Pricing</a> &middot;
     <a href="/docs/">Docs</a> &middot;
@@ -367,7 +367,7 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav()}})
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as an event?", "acceptedAnswer": {"@type": "Answer", "text": "Any HTTP request received at a <code>/hook/{id}</code> URL. Each captured request is one event."}}, {"@type": "Question", "name": "Does Corral require Docker or a database?", "acceptedAnswer": {"@type": "Answer", "text": "No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary."}}, {"@type": "Question", "name": "What happens when I hit the free event limit?", "acceptedAnswer": {"@type": "Answer", "text": "The binary enforces limits only when you're using Corral as a managed service. Self-hosted instances on the free tier show a warning in the API but do not hard-block events. Pro removes the limit entirely."}}, {"@type": "Question", "name": "How does retention work?", "acceptedAnswer": {"@type": "Answer", "text": "Set <code>RETENTION_DAYS</code> to control automatic cleanup. Free tier defaults to 7 days. Pro supports up to 90 days."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "Apache 2.0. Free to use, modify, and deploy with no restrictions."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What counts as an event?", "acceptedAnswer": {"@type": "Answer", "text": "Any HTTP request received at a <code>/hook/{id}</code> URL. Each captured request is one event."}}, {"@type": "Question", "name": "Does Corral require Docker or a database?", "acceptedAnswer": {"@type": "Answer", "text": "No. Single Go binary with embedded SQLite. Run it anywhere you can run a binary."}}, {"@type": "Question", "name": "What happens when I hit the free event limit?", "acceptedAnswer": {"@type": "Answer", "text": "The binary enforces limits only when you're using Corral as a managed service. Self-hosted instances during the trial show a warning in the API but do not hard-block events. Pro removes the limit entirely."}}, {"@type": "Question", "name": "How does retention work?", "acceptedAnswer": {"@type": "Answer", "text": "Set <code>RETENTION_DAYS</code> to control automatic cleanup. Free tier defaults to 7 days. Pro supports up to 90 days."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "Apache 2.0. Free to use, modify, and deploy with no restrictions."}}]}
 </script>
 <script>
 async function startCheckout(plan, interval) {
