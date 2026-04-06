@@ -116,10 +116,10 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="search-box">
     <label for="search">Tell us what you do</label>
     <div class="search-wrap">
-      <input type="text" id="search" placeholder="e.g. I run a small tattoo shop, yoga studio owner, minecraft server admin..." autocomplete="off">
+      <input type="text" id="search" placeholder="e.g. I run a small tattoo shop, yoga studio owner, minecraft server admin..." autocomplete="off" enterkeyhint="go">
       <div id="results"></div>
     </div>
-    <button id="ai-btn" onclick="buildToolkit()" style="display:none;width:100%;margin-top:.8rem;padding:.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.85rem;border:2px solid var(--rust);cursor:pointer;transition:all .3s;letter-spacing:1px;opacity:0;max-height:0;overflow:hidden">Build My Toolkit →</button>
+    <button id="ai-btn" onclick="buildToolkit()" style="display:none;width:100%;margin-top:.8rem;padding:.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.85rem;border:2px solid var(--rust);cursor:pointer;transition:opacity .3s;letter-spacing:1px">Build My Toolkit →</button>
     <div id="spinner" style="display:none;text-align:center;padding:2rem;font-family:var(--font-mono);font-size:.8rem;color:var(--cream-dim)">Building your toolkit<span id="dots">...</span></div>
   </div>
 </section>
@@ -180,12 +180,12 @@ fetch("/bundles-search.json").then(function(r){return r.json()}).then(function(d
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 var AB=document.getElementById('ai-btn'),SP=document.getElementById('spinner');
-function showAB(){showAB();setTimeout(function(){AB.style.opacity='1';AB.style.maxHeight='4rem'},10)}
-function hideAB(){AB.style.opacity='0';AB.style.maxHeight='0';setTimeout(function(){AB.style.display='none'},300)}
+function showAB(){AB.style.display='block'}
+function hideAB(){AB.style.display='none'}
 SI.addEventListener('input',function(){var v=this.value.trim();
 if(v.length<2){RD.style.display='none';BR.style.display='none';CS.style.display='';hideAB();return}
 doSearch(v);
-if(v.length>10){showAB()}else{hideAB()}
+if(v.length>5){showAB()}else{hideAB()}
 });
 
 
@@ -258,7 +258,8 @@ history.replaceState(null,'','/?q='+encodeURIComponent(desc));
 gtag('event','ai_toolkit_generated',{description:desc,tools:data.tools.length,slug:slug});
 }catch(e){clearInterval(di);SP.style.display='none';showAB();doSearch(desc.split(' ')[0])}
 }
-SI.addEventListener('keydown',function(e){if(e.key==='Enter'&&SI.value.trim().length>10){e.preventDefault();buildToolkit()}});
+SI.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();if(SI.value.trim().length>5)buildToolkit()}});
+SI.addEventListener('keyup',function(e){if(e.key==='Enter'){e.preventDefault();if(SI.value.trim().length>5)buildToolkit()}});
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
