@@ -58,9 +58,10 @@ type Recommender struct {
 	catalog  string // formatted tool catalog for LLM prompt
 	apiKey   string
 	mu       sync.RWMutex
-	slugSet  map[string]bool // known tool slugs for validation
-	portMap  map[string]int  // slug → default port
+	slugSet  map[string]bool   // known tool slugs for validation
+	portMap  map[string]int    // slug → default port
 	nameMap  map[string]string // slug → display name
+	recCache *RecCache         // Layer 2 normalized cache
 }
 
 // NewRecommender creates the recommendation system.
@@ -81,6 +82,8 @@ func NewRecommender(db *sql.DB) *Recommender {
 		nameMap: make(map[string]string),
 	}
 
+	r.recCache = NewRecCache(db)
+	logCacheStats(r.recCache)
 	r.loadCatalog()
 	return r
 }
@@ -116,7 +119,10 @@ func (r *Recommender) loadCatalog() {
 	log.Printf("[recommend] loaded %d tools for AI catalog", len(tools))
 }
 
-// HandleRecommend processes a recommendation request.
+// HandleRecommend processes a recommendation request through 3 cache layers:
+// Layer 1: Quick match (keyword map, ~200 entries, <1ms)
+// Layer 2: Normalized cache (SQLite, catches variations, <5ms)
+// Layer 3: LLM call (Anthropic API, 2-4 seconds, ~$0.005)
 func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		http.Error(w, "POST required", 405)
@@ -137,25 +143,56 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	slug := slugify(desc)
+	normalized := normalizeInput(desc)
+	businessName := extractBusinessName(desc)
 
-	// Check cache
-	var cached string
-	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, slug).Scan(&cached)
-	if err == nil {
-		r.db.Exec(`UPDATE generated_bundles SET views = views + 1, last_viewed = datetime('now') WHERE slug = ?`, slug)
-		var result RecommendResult
-		json.Unmarshal([]byte(cached), &result)
-		result.Slug = slug
+	// ── Layer 1: Quick Match ──────────────────────────────
+	if slug := QuickMatchLookup(normalized); slug != "" {
+		if cached, ok := r.recCache.Get(slug); ok {
+			result := personalize(cached, businessName)
+			result.Slug = slug
+			result.Cached = true
+			log.Printf("[recommend] L1 quick-match hit: %q → %s", normalized, slug)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(result)
+			return
+		}
+		// Slug matched but no cache entry yet — fall through to check generated_bundles
+		// then LLM if needed
+		log.Printf("[recommend] L1 quick-match slug %q exists but no cache entry yet", slug)
+	}
+
+	// ── Layer 2: Normalized Cache ─────────────────────────
+	if cached, ok := r.recCache.Get(normalized); ok {
+		result := personalize(cached, businessName)
 		result.Cached = true
+		log.Printf("[recommend] L2 cache hit: %q", normalized)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(result)
 		return
 	}
 
-	// Call LLM
+	// ── Legacy: Check old generated_bundles table ─────────
+	oldSlug := slugify(desc)
+	var oldCached string
+	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, oldSlug).Scan(&oldCached)
+	if err == nil {
+		r.db.Exec(`UPDATE generated_bundles SET views = views + 1, last_viewed = datetime('now') WHERE slug = ?`, oldSlug)
+		var result RecommendResult
+		json.Unmarshal([]byte(oldCached), &result)
+		result.Slug = oldSlug
+		result.Cached = true
+		// Migrate to new cache for future hits
+		r.recCache.Set(normalized, oldSlug, &result)
+		result2 := personalize(&result, businessName)
+		log.Printf("[recommend] legacy cache hit (migrated): %q → %s", normalized, oldSlug)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result2)
+		return
+	}
+
+	// ── Layer 3: LLM Call ─────────────────────────────────
 	if r.apiKey == "" {
-		// Fallback: return empty result, homepage JS falls back to static search
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"error": "AI recommendations unavailable", "fallback": true})
 		return
@@ -164,6 +201,12 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	result, err := r.callLLM(desc)
 	if err != nil {
 		log.Printf("[recommend] LLM error: %v", err)
+
+		// Fallback: try quick-match for a degraded experience
+		if slug := QuickMatchLookup(normalized); slug != "" {
+			log.Printf("[recommend] LLM failed, falling back to quick-match slug: %s", slug)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"error": "recommendation failed", "fallback": true})
 		return
@@ -184,15 +227,28 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	result.Slug = slug
+	genSlug := slugify(desc)
+	result.Slug = genSlug
 
-	// Cache
+	// Store in Layer 2 cache (normalized key)
+	r.recCache.Set(normalized, genSlug, result)
+
+	// Also store under the quick-match slug if one exists, so future
+	// quick-match lookups can find it
+	if qmSlug := QuickMatchLookup(normalized); qmSlug != "" && qmSlug != genSlug {
+		r.recCache.Set(qmSlug, qmSlug, result)
+	}
+
+	// Store in legacy generated_bundles for page rendering
 	resultJSON, _ := json.Marshal(result)
 	r.db.Exec(`INSERT OR REPLACE INTO generated_bundles (slug, description, result_json, views) VALUES (?, ?, ?, 1)`,
-		slug, desc, string(resultJSON))
+		genSlug, desc, string(resultJSON))
 
+	log.Printf("[recommend] L3 LLM call: %q → %s (%d tools)", normalized, genSlug, len(result.Tools))
+
+	finalResult := personalize(result, businessName)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
+	json.NewEncoder(w).Encode(finalResult)
 }
 
 func (r *Recommender) callLLM(description string) (*RecommendResult, error) {
