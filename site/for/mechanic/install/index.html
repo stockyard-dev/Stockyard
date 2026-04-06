@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Install Stockyard for Mobile Mechanics</title>
+<meta name="description" content="Install 6 self-hosted tools for Mobile Mechanics in 60 seconds.">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.main{max-width:640px;margin:0 auto;padding:3rem 2rem}
+h1{font-size:1.5rem;margin-bottom:.5rem}
+.sub{color:var(--cream-dim);font-style:italic;margin-bottom:2rem}
+.step{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;margin-bottom:1rem}
+.step-num{font-family:var(--font-mono);font-size:.7rem;color:var(--rust);text-transform:uppercase;letter-spacing:2px;margin-bottom:.8rem}
+.step h3{font-size:1rem;margin-bottom:.6rem}
+.step p{font-size:.88rem;color:var(--cream-dim)}
+.os-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin:.8rem 0}
+.os-btn{padding:.7rem;background:var(--bg);border:2px solid var(--bg3);color:var(--cream);font-family:var(--font-mono);font-size:.75rem;cursor:pointer;text-align:center;transition:border-color .2s}
+.os-btn:hover,.os-btn.active{border-color:var(--rust);color:var(--rust-light)}
+.cmd{background:var(--bg);border:1px solid var(--bg3);padding:.8rem 1rem;font-family:var(--font-mono);font-size:.75rem;color:var(--gold);word-break:break-all;cursor:pointer;position:relative;margin:.8rem 0;transition:border-color .2s}
+.cmd:hover{border-color:var(--rust)}
+.cmd::after{content:'click to copy';position:absolute;right:.5rem;top:50%;transform:translateY(-50%);font-size:.5rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.72rem;margin:.8rem 0}
+th{text-align:left;padding:.4rem;border-bottom:2px solid var(--bg3);color:var(--cream-muted);font-size:.6rem;text-transform:uppercase;letter-spacing:1px}
+td{padding:.4rem;border-bottom:1px solid var(--bg3)}
+.note{font-size:.8rem;color:var(--cream-muted);font-style:italic;margin-top:1.5rem;padding:1rem;border-left:2px solid var(--bg3)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.7rem;color:var(--leather);border-top:1px solid var(--bg3);margin-top:2rem}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green:#3a7a4a}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a></nav>
+<div class="main">
+<h1>Install Stockyard for Mobile Mechanics</h1>
+<p class="sub">6 tools. 60 seconds. Your data stays on your machine.</p>
+
+<div class="step">
+<div class="step-num">Step 1 — Run one command</div>
+<h3>Open Terminal and paste this:</h3>
+<div class="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/mechanic/install.sh | bash</div>
+<p>This downloads 6 tools into <code style="font-family:var(--font-mono);background:var(--bg);padding:.1rem .3rem;font-size:.82em">~/stockyard-mechanic/</code> and creates start/stop scripts.</p>
+<details style="margin-top:.8rem;font-size:.82rem;color:var(--cream-dim)">
+<summary style="cursor:pointer;color:var(--leather-light)">Don't have Terminal?</summary>
+<p style="margin-top:.5rem"><strong>Mac:</strong> Press Cmd+Space, type "Terminal", press Enter.</p>
+<p><strong>Windows:</strong> Install <a href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL</a> first, then open Ubuntu from the Start menu.</p>
+<p><strong>Linux:</strong> Press Ctrl+Alt+T.</p>
+</details>
+</div>
+
+<div class="step">
+<div class="step-num">Step 2 — Start your tools</div>
+<h3>Run the start script:</h3>
+<div class="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''))">cd ~/stockyard-mechanic && ./start.sh</div>
+<p>Your browser will open automatically. All tools run in the background.</p>
+</div>
+
+<div class="step">
+<div class="step-num">Step 3 — You're running</div>
+<h3>Your tools:</h3>
+<table>
+<tr><th>Tool</th><th>Address</th></tr>
+<tr><td>Estimate</td><td>localhost:9802</td></tr>
+<tr><td>Fleet</td><td>localhost:9809</td></tr>
+<tr><td>Dossier</td><td>localhost:9080</td></tr>
+<tr><td>Billfold</td><td>localhost:9070</td></tr>
+<tr><td>Booking</td><td>localhost:9800</td></tr>
+<tr><td>Sundial</td><td>localhost:9890</td></tr>
+</table>
+</div>
+
+<div class="step" style="border-color:var(--gold)">
+<div class="step-num" style="color:var(--gold)">License key</div>
+<h3>Activate unlimited access</h3>
+<p>After starting your <a href="/pricing/?bundle=mechanic">14-day trial</a>, set your license key:</p>
+<div class="cmd" onclick="navigator.clipboard.writeText('export STOCKYARD_LICENSE_KEY=SY-your_key_from_email')">export STOCKYARD_LICENSE_KEY=SY-your_key_from_email</div>
+<p>Add this line to <code style="font-family:var(--font-mono);background:var(--bg);padding:.1rem .3rem;font-size:.82em">~/.bashrc</code> or <code style="font-family:var(--font-mono);background:var(--bg);padding:.1rem .3rem;font-size:.82em">~/.zshrc</code> so it persists.</p>
+</div>
+
+<div class="note">
+<strong>Your data</strong> lives in <code style="font-family:var(--font-mono)">~/stockyard-mechanic/data/</code>. Back up by copying this folder. Move to a new computer by moving this folder. Standard SQLite files — open with any tool.
+</div>
+</div>
+<footer><a href="/for/mechanic/">Back to Mobile Mechanics bundle</a> · <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a></footer>
+</body>
+</html>

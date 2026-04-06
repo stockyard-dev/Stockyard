@@ -2,78 +2,199 @@
 set -euo pipefail
 
 echo ""
-echo "  ┌──────────────────────────────────────────┐"
-echo "  │  Stockyard for Music Schools             │"
-echo "  │  7 tools · $7.99/mo · self-hosted        │"
-echo "  │  https://stockyard.dev/for/music-school/  │"
-echo "  └──────────────────────────────────────────┘"
+echo "  Stockyard for Music Schools"
+echo "  7 tools — self-hosted on your hardware"
 echo ""
+
+OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+ARCH="$(uname -m)"
+case "$ARCH" in
+  x86_64)  ARCH="amd64" ;;
+  aarch64|arm64) ARCH="arm64" ;;
+  *) echo "  Unsupported architecture: $ARCH"; exit 1 ;;
+esac
+echo "  Platform: $OS/$ARCH"
+echo ""
+
+BUNDLE_DIR="$HOME/stockyard-music-school"
+mkdir -p "$BUNDLE_DIR/tools" "$BUNDLE_DIR/data"
+
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
 
 FAILED=0
 
-  echo "  Installing Dossier..."
-  if curl -fsSL "https://stockyard.dev/dossier/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Dossier"
-  else
-    echo "    ✗ Dossier (failed — try manually: curl stockyard.dev/dossier/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+echo "  Downloading Dossier..."
+URL="https://github.com/stockyard-dev/stockyard-dossier/releases/latest/download/stockyard-dossier_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-dossier_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-dossier" 2>/dev/null || \
+  mv "$TMP/stockyard-dossier" "$BUNDLE_DIR/tools/stockyard-dossier" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-dossier" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Dossier"
+else
+  echo "    ✗ Dossier (failed)"
+  FAILED=$((FAILED + 1))
+fi
+echo "  Downloading Booking..."
+URL="https://github.com/stockyard-dev/stockyard-booking/releases/latest/download/stockyard-booking_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-booking_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-booking" 2>/dev/null || \
+  mv "$TMP/stockyard-booking" "$BUNDLE_DIR/tools/stockyard-booking" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-booking" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Booking"
+else
+  echo "    ✗ Booking (failed)"
+  FAILED=$((FAILED + 1))
+fi
+echo "  Downloading Curriculum..."
+URL="https://github.com/stockyard-dev/stockyard-curriculum/releases/latest/download/stockyard-curriculum_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-curriculum_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-curriculum" 2>/dev/null || \
+  mv "$TMP/stockyard-curriculum" "$BUNDLE_DIR/tools/stockyard-curriculum" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-curriculum" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Curriculum"
+else
+  echo "    ✗ Curriculum (failed)"
+  FAILED=$((FAILED + 1))
+fi
+echo "  Downloading Billfold..."
+URL="https://github.com/stockyard-dev/stockyard-billfold/releases/latest/download/stockyard-billfold_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-billfold_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-billfold" 2>/dev/null || \
+  mv "$TMP/stockyard-billfold" "$BUNDLE_DIR/tools/stockyard-billfold" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-billfold" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Billfold"
+else
+  echo "    ✗ Billfold (failed)"
+  FAILED=$((FAILED + 1))
+fi
+echo "  Downloading Sundial..."
+URL="https://github.com/stockyard-dev/stockyard-sundial/releases/latest/download/stockyard-sundial_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-sundial_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-sundial" 2>/dev/null || \
+  mv "$TMP/stockyard-sundial" "$BUNDLE_DIR/tools/stockyard-sundial" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-sundial" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Sundial"
+else
+  echo "    ✗ Sundial (failed)"
+  FAILED=$((FAILED + 1))
+fi
+echo "  Downloading Tournament..."
+URL="https://github.com/stockyard-dev/stockyard-tournament/releases/latest/download/stockyard-tournament_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-tournament_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-tournament" 2>/dev/null || \
+  mv "$TMP/stockyard-tournament" "$BUNDLE_DIR/tools/stockyard-tournament" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-tournament" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Tournament"
+else
+  echo "    ✗ Tournament (failed)"
+  FAILED=$((FAILED + 1))
+fi
+echo "  Downloading Checkin..."
+URL="https://github.com/stockyard-dev/stockyard-checkin/releases/latest/download/stockyard-checkin_${OS}_${ARCH}.tar.gz"
+if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
+  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
+  mv "$TMP/stockyard-checkin_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-checkin" 2>/dev/null || \
+  mv "$TMP/stockyard-checkin" "$BUNDLE_DIR/tools/stockyard-checkin" 2>/dev/null || true
+  chmod +x "$BUNDLE_DIR/tools/stockyard-checkin" 2>/dev/null
+  rm -f "$TMP/archive.tar.gz"
+  echo "    ✓ Checkin"
+else
+  echo "    ✗ Checkin (failed)"
+  FAILED=$((FAILED + 1))
+fi
 
-  echo "  Installing Booking..."
-  if curl -fsSL "https://stockyard.dev/booking/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Booking"
-  else
-    echo "    ✗ Booking (failed — try manually: curl stockyard.dev/booking/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+cat > "$BUNDLE_DIR/start.sh" << 'STARTEOF'
+#!/bin/bash
+DIR="$(cd "$(dirname "$0")" && pwd)"
+DATA="$DIR/data"
+mkdir -p "$DATA"
+echo ""
+echo "  Starting Stockyard for Music Schools..."
+echo ""
+PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA" >/dev/null 2>&1 &
+PORT=9800 "$DIR/tools/stockyard-booking" -port 9800 -data "$DATA" >/dev/null 2>&1 &
+PORT=9813 "$DIR/tools/stockyard-curriculum" -port 9813 -data "$DATA" >/dev/null 2>&1 &
+PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA" >/dev/null 2>&1 &
+PORT=9890 "$DIR/tools/stockyard-sundial" -port 9890 -data "$DATA" >/dev/null 2>&1 &
+PORT=9804 "$DIR/tools/stockyard-tournament" -port 9804 -data "$DATA" >/dev/null 2>&1 &
+PORT=9807 "$DIR/tools/stockyard-checkin" -port 9807 -data "$DATA" >/dev/null 2>&1 &
+sleep 1
+echo ""
+echo "  ✓ Dossier                   http://localhost:9080/ui"
+echo "  ✓ Booking                   http://localhost:9800/ui"
+echo "  ✓ Curriculum                http://localhost:9813/ui"
+echo "  ✓ Billfold                  http://localhost:9070/ui"
+echo "  ✓ Sundial                   http://localhost:9890/ui"
+echo "  ✓ Tournament                http://localhost:9804/ui"
+echo "  ✓ Checkin                   http://localhost:9807/ui"
+echo ""
+echo "  All tools running. Press Ctrl+C to stop."
+echo ""
+if command -v xdg-open &>/dev/null; then
+  xdg-open "http://localhost:9080/ui" 2>/dev/null &
+elif command -v open &>/dev/null; then
+  open "http://localhost:9080/ui" 2>/dev/null &
+fi
+wait
+STARTEOF
+chmod +x "$BUNDLE_DIR/start.sh"
 
-  echo "  Installing Curriculum..."
-  if curl -fsSL "https://stockyard.dev/curriculum/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Curriculum"
-  else
-    echo "    ✗ Curriculum (failed — try manually: curl stockyard.dev/curriculum/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+cat > "$BUNDLE_DIR/stop.sh" << 'STOPEOF'
+#!/bin/bash
+echo "  Stopping Stockyard tools..."
+pkill -f "stockyard-dossier" 2>/dev/null && echo "  ✓ Stopped Dossier" || true
+pkill -f "stockyard-booking" 2>/dev/null && echo "  ✓ Stopped Booking" || true
+pkill -f "stockyard-curriculum" 2>/dev/null && echo "  ✓ Stopped Curriculum" || true
+pkill -f "stockyard-billfold" 2>/dev/null && echo "  ✓ Stopped Billfold" || true
+pkill -f "stockyard-sundial" 2>/dev/null && echo "  ✓ Stopped Sundial" || true
+pkill -f "stockyard-tournament" 2>/dev/null && echo "  ✓ Stopped Tournament" || true
+pkill -f "stockyard-checkin" 2>/dev/null && echo "  ✓ Stopped Checkin" || true
+echo "  Done."
+STOPEOF
+chmod +x "$BUNDLE_DIR/stop.sh"
 
-  echo "  Installing Billfold..."
-  if curl -fsSL "https://stockyard.dev/billfold/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Billfold"
-  else
-    echo "    ✗ Billfold (failed — try manually: curl stockyard.dev/billfold/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+cat > "$BUNDLE_DIR/README.txt" << 'READMEEOF'
+STOCKYARD FOR MUSIC SCHOOLS
 
-  echo "  Installing Sundial..."
-  if curl -fsSL "https://stockyard.dev/sundial/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Sundial"
-  else
-    echo "    ✗ Sundial (failed — try manually: curl stockyard.dev/sundial/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+Start:   ./start.sh
+Stop:    ./stop.sh
+Data:    ./data/
 
-  echo "  Installing Tournament..."
-  if curl -fsSL "https://stockyard.dev/tournament/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Tournament"
-  else
-    echo "    ✗ Tournament (failed — try manually: curl stockyard.dev/tournament/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+Tools:
+  Dossier                   http://localhost:9080/ui
+  Booking                   http://localhost:9800/ui
+  Curriculum                http://localhost:9813/ui
+  Billfold                  http://localhost:9070/ui
+  Sundial                   http://localhost:9890/ui
+  Tournament                http://localhost:9804/ui
+  Checkin                   http://localhost:9807/ui
 
-  echo "  Installing Checkin..."
-  if curl -fsSL "https://stockyard.dev/checkin/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
-    echo "    ✓ Checkin"
-  else
-    echo "    ✗ Checkin (failed — try manually: curl stockyard.dev/checkin/install.sh | sh)"
-    FAILED=$((FAILED + 1))
-  fi
+License: export STOCKYARD_LICENSE_KEY=your_key
+Trial:   https://stockyard.dev/pricing/?bundle=music-school
+Help:    hello@stockyard.dev
+READMEEOF
 
 echo ""
 if [ "$FAILED" -eq 0 ]; then
-  echo "  ✓ All 7 tools installed successfully!"
+  echo "  ✓ All 7 tools installed to $BUNDLE_DIR/"
 else
-  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
+  echo "  ⚠ $FAILED tool(s) failed. The rest are ready."
 fi
 echo ""
-echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
-echo "  Questions? hello@stockyard.dev"
+echo "  Next steps:"
+echo "    cd $BUNDLE_DIR"
+echo "    ./start.sh"
 echo ""
