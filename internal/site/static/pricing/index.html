@@ -4,851 +4,198 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
-<meta property="og:url" content="https://stockyard.dev/pricing/">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
 <title>Pricing — Stockyard</title>
-<meta name="description" content="Stockyard pricing. Stockyard Complete: all 150 tools — $1 first month, then $29/mo. Individual tools from $0.99/mo. Free tier on every tool.">
-<meta property="og:title" content="Pricing — Stockyard">
-<meta property="og:description" content="150 self-hosted developer tools. Free tier on every tool. Complete bundle: $1 first month. LLM Platform included.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="description" content="Stockyard pricing. $7.99/mo per bundle with 14-day free trial. 164+ self-hosted tools. Your data stays on your hardware.">
+<meta property="og:title" content="Stockyard Pricing — $7.99/mo with 14-day free trial">
+<meta property="og:description" content="164+ self-hosted tools. $7.99/mo per bundle. 14-day free trial. Your data stays on your hardware.">
+<link rel="canonical" href="https://stockyard.dev/pricing/">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is there a free trial?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every plan includes a 14-day free trial. Full access, no limits. Credit card required. Cancel anytime during the trial and you won't be charged."}},
+{"@type":"Question","name":"What happens to my data if I cancel?","acceptedAnswer":{"@type":"Answer","text":"Your data stays on your machine forever. Stockyard never deletes your data. Your SQLite files are standard database files you can open with any tool."}},
+{"@type":"Question","name":"Is the LLM proxy really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The open-source proxy binary (Apache 2.0) is free forever. 16 providers, 76 middleware modules. No limits, no phone-home, no catch."}}
+]}
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
-  --rust:#c45d2c;--rust-light:#e8753a;--rust-dark:#8b3d1a;
-  --leather:#a0845c;--leather-light:#c4a87a;
-  --cream:#f0e6d3;--cream-dim:#bfb5a3;
-  --gold:#d4a843;
-  --font-serif:'Libre Baskerville',Georgia,serif;
-  --font-mono:'JetBrains Mono',monospace;
-}
-body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
-a{color:var(--rust-light);text-decoration:none}
-a:hover{color:var(--gold)}
-
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}
-.nav-links a{color:var(--cream-dim)}
-.nav-links a:hover{color:var(--rust-light)}
-
-.btn{font-family:var(--font-mono);font-size:0.85rem;padding:0.8rem 2rem;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-secondary{background:transparent;color:var(--cream);border:2px solid var(--leather)}
-.btn-secondary:hover{border-color:var(--cream);color:var(--cream)}
-.btn-rust{background:var(--rust);color:var(--cream);border:2px solid var(--rust);font-weight:600}
-.btn-rust:hover{background:var(--rust-light);border-color:var(--rust-light)}
-.btn:disabled,.btn.loading{opacity:0.5;cursor:wait}
-
-.page-header{max-width:700px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
-.page-header .eyebrow{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:5px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem}
-.page-header .eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--rust);margin:0 auto 1rem}
-.page-header h1{font-size:clamp(2rem,5vw,3rem);line-height:1.2;margin-bottom:1rem}
-.page-header h1 .accent{color:var(--rust-light)}
-.page-header .sub{font-size:1.05rem;color:var(--cream-dim);font-style:italic}
-
-.billing-toggle{text-align:center;margin:2rem 0 3rem;display:flex;align-items:center;justify-content:center;gap:1rem}
-.billing-toggle span{font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);cursor:pointer;transition:color 0.2s}
-.billing-toggle span.active{color:var(--cream)}
-.toggle-track{width:48px;height:24px;background:var(--bg3);border:1px solid var(--leather);border-radius:12px;position:relative;cursor:pointer;transition:background 0.2s}
-.toggle-track.annual{background:var(--rust-dark);border-color:var(--rust)}
-.toggle-knob{width:18px;height:18px;background:var(--cream);border-radius:50%;position:absolute;top:2px;left:3px;transition:left 0.2s}
-.toggle-track.annual .toggle-knob{left:25px}
-.annual-badge{font-family:var(--font-mono);font-size:0.65rem;background:var(--rust);color:var(--cream);padding:0.15rem 0.5rem;border-radius:2px;font-weight:600}
-
-.pricing-section{padding:0 2rem 4rem;max-width:1200px;margin:0 auto}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start;max-width:820px;margin:0 auto}
-.tier{padding:2rem 1.5rem;border:1px solid var(--bg3);background:var(--bg2);text-align:center;position:relative;transition:border-color 0.2s}
-.tier:hover{border-color:var(--leather)}
-.tier.featured{border-color:var(--rust);background:var(--bg);transform:scale(1.03);z-index:1}
-.tier.featured::after{content:'Most popular';position:absolute;top:-0.6rem;left:50%;transform:translateX(-50%);background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.6rem;padding:0.15rem 0.6rem;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-.tier-name{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--leather-light);margin-bottom:0.8rem}
-.tier-price{font-size:2.5rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
-.tier-price .dollar{font-size:1rem;vertical-align:super;margin-right:2px;color:var(--leather-light)}
-.tier-price-free{font-size:2.5rem;font-weight:700;color:var(--cream);margin-bottom:0.2rem;line-height:1}
-.tier-period{font-family:var(--font-mono);font-size:0.65rem;color:var(--leather);margin-bottom:0.3rem}
-.tier-annual-note{font-family:var(--font-mono);font-size:0.6rem;color:var(--gold);margin-bottom:1.2rem;min-height:1em}
-.tier-features{list-style:none;text-align:left;margin-bottom:1.5rem;font-size:0.8rem;color:var(--cream-dim)}
-.tier-features li{padding:0.35rem 0;padding-left:1.2rem;position:relative}
-.tier-features li::before{content:'\2014';position:absolute;left:0;color:var(--rust)}
-.tier-cta{width:100%}
-
-.compare{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-.compare-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
-.compare table{width:100%;border-collapse:collapse;font-size:0.8rem}
-.compare th{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather-light);padding:0.8rem;text-align:center;border-bottom:2px solid var(--bg3)}
-.compare th:first-child{text-align:left}
-.compare td{padding:0.6rem 0.8rem;border-bottom:1px solid var(--bg3);color:var(--cream-dim);text-align:center}
-.compare td:first-child{text-align:left;color:var(--cream);font-family:var(--font-mono);font-size:0.75rem}
-.compare .check{color:var(--rust-light)}
-.compare .highlight-col{background:rgba(196,93,44,0.08)}
-
-.how{padding:4rem 2rem;max-width:700px;margin:0 auto}
-.how-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
-.how-step{display:flex;gap:1.5rem;margin-bottom:2rem;align-items:flex-start}
-.how-num{font-family:var(--font-mono);font-size:1.5rem;color:var(--rust);font-weight:700;min-width:2rem}
-.how-text h3{font-size:1rem;margin-bottom:0.3rem;color:var(--cream)}
-.how-text p{font-size:0.9rem;color:var(--cream-dim)}
-.how-text code{font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em}
-
-.faq{padding:4rem 2rem;max-width:700px;margin:0 auto}
-.faq-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:2rem;text-align:center}
-.faq-item{border-bottom:1px solid var(--bg3);padding:1.5rem 0}
-.faq-q{font-weight:700;margin-bottom:0.5rem;color:var(--cream)}
-.faq-a{font-size:0.9rem;color:var(--cream-dim)}
-.faq-a code{font-family:var(--font-mono);background:var(--bg2);padding:0.1rem 0.4rem;font-size:0.85em}
-
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
-footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-
-.nav-brand{display:flex;align-items:center;gap:10px}
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:0.5rem;z-index:1001}
-.nav-toggle span{display:block;width:22px;height:2px;background:var(--cream-dim);margin:5px 0;transition:all 0.3s}
-.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-toggle.open span:nth-child(2){opacity:0}
-.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.nav-overlay{display:none}
-
-@media(max-width:1100px){
-  .pricing-grid{grid-template-columns:repeat(3,1fr)}
-  .tier.featured{transform:none}
-}
-@media(max-width:900px){
-  .pricing-grid{grid-template-columns:repeat(2,1fr)}
-}
-noscript .annual-note{display:block;text-align:center;font-family:var(--font-mono);font-size:0.8rem;color:var(--cream-dim);margin-bottom:2rem}
-@media(max-width:768px){
-  .nav-toggle{display:block}
-  .nav-links{
-    display:none;flex-direction:column;position:fixed;top:0;right:0;bottom:0;
-    width:260px;background:var(--bg2);border-left:1px solid var(--bg3);
-    padding:5rem 2rem 2rem;gap:1.5rem;z-index:1000;
-    box-shadow:-4px 0 20px rgba(0,0,0,0.5)
-  }
-  .nav-links.open{display:flex;font-family:var(--font-serif)}
-  .nav-links a{font-size:1.05rem;padding:0.4rem 0}
-  .nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
-  .nav-overlay.open{display:block}
-}
-@media(max-width:700px){
-  .pricing-grid{grid-template-columns:1fr}
-  .compare{overflow-x:auto}
-  .compare table{min-width:700px}
-}
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--rust-dark:#8b3d1a;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
-.explore-bar{padding:1.5rem 2rem;text-align:center;border-top:1px solid var(--bg3,#2e261e);font-family:var(--font-mono,monospace);font-size:0.7rem}.explore-bar a{color:var(--cream-muted,#b8a898);margin:0 0.8rem;text-decoration:none;transition:color 0.2s}.explore-bar a:hover{color:var(--rust-light,#e8753a)}
-.nav-drop{position:relative}.nav-drop-trigger{color:var(--cream-dim);cursor:pointer;user-select:none}.nav-drop-trigger:hover{color:var(--rust-light)}
-.nav-drop-menu{display:none;position:absolute;top:calc(100% + .8rem);right:0;background:var(--bg2);border:1px solid var(--bg3);min-width:180px;padding:.5rem 0;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.nav-drop-menu.open{display:block}
-.nav-drop-menu a{display:block;padding:.4rem 1.2rem;font-family:var(--font-mono,monospace);font-size:.78rem;color:var(--cream-dim)}
-.nav-drop-menu a:hover{color:var(--rust-light);background:var(--bg3)}
-.drop-section{font-family:var(--font-mono,monospace);font-size:.6rem;color:var(--cm,#7a7060);text-transform:uppercase;letter-spacing:1px;padding:.5rem 1.2rem .2rem}
-.drop-arrow{font-size:.6rem}
-@media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}
+.hero{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
+.hero h1{font-size:clamp(1.6rem,3.5vw,2.2rem);margin-bottom:1rem}
+.hero .sub{font-size:.95rem;color:var(--cream-dim);font-style:italic}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem;max-width:1000px;margin:2rem auto 3rem;padding:0 2rem}
+.tier{background:var(--bg2);border:2px solid var(--bg3);padding:2rem 1.5rem;text-align:center;position:relative;transition:border-color .2s}
+.tier:hover{border-color:var(--rust)}
+.tier.featured{border-color:var(--gold)}
+.tier-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:.6rem;padding:.2rem .8rem;letter-spacing:2px;text-transform:uppercase}
+.tier-name{font-family:var(--font-mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem}
+.tier-price{font-family:var(--font-mono);font-size:2.5rem;color:var(--cream);line-height:1}
+.tier-price .dollar{font-size:1.2rem;vertical-align:super;color:var(--cream-dim)}
+.tier-period{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);margin-bottom:.3rem}
+.tier-trial{font-family:var(--font-mono);font-size:.65rem;color:var(--gold);margin-bottom:1.2rem}
+.tier-desc{font-size:.85rem;color:var(--cream-dim);margin-bottom:1.5rem;line-height:1.6}
+.tier-features{list-style:none;text-align:left;margin-bottom:1.5rem}
+.tier-features li{padding:.4rem 0;font-size:.8rem;color:var(--cream-dim);border-bottom:1px solid var(--bg3)}
+.tier-features li::before{content:'✓ ';color:var(--green)}
+.btn{display:inline-block;padding:.6rem 1.5rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;cursor:pointer;text-decoration:none;transition:background .2s}
+.btn:hover{background:var(--rust-light);color:#fff}
+.btn-outline{background:transparent;border:2px solid var(--leather);color:var(--cream)}
+.btn-outline:hover{border-color:var(--rust);color:var(--cream)}
+.section{max-width:700px;margin:0 auto;padding:3rem 2rem}
+.section h2{font-size:1.3rem;margin-bottom:1.5rem;text-align:center}
+.faq{margin-bottom:1.5rem}
+.faq h3{font-size:.9rem;margin-bottom:.5rem;color:var(--cream)}
+.faq p{font-size:.85rem;color:var(--cream-dim);line-height:1.7}
+.promise{background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);padding:3rem 2rem;text-align:center;margin:2rem 0}
+.promise h2{font-size:1.2rem;margin-bottom:1rem}
+.promise p{font-size:.88rem;color:var(--cream-dim);max-width:550px;margin:0 auto;line-height:1.8}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
+@media(max-width:768px){.tiers{grid-template-columns:1fr}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green:#3a7a4a}}
 </style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {"@type": "Question", "name": "What do I get for free?", "acceptedAnswer": {"@type": "Answer", "text": "The full proxy with all 76 middleware modules and 16 LLM providers, unlimited requests, and the core tracing and cost dashboards. Advanced features like request replay, auto-routing, red-team testing, and prompt optimization unlock with paid tiers."}},
-    {"@type": "Question", "name": "What's the difference between tiers?", "acceptedAnswer": {"@type": "Answer", "text": "Stockyard Complete gives you all 150 tools — $1 first month, then $29/mo. The LLM Platform has a free tier (full proxy, 76 modules, 16 providers) with paid tiers for advanced features like cost routing, request replay, and red-team testing. See the comparison table for details."}},
-    {"@type": "Question", "name": "Can I save with annual billing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr."}},
-    {"@type": "Question", "name": "Do I need to change my application code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Just point your OPENAI_BASE_URL at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs — zero code changes required."}},
-    {"@type": "Question", "name": "What providers are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box."}}
-  ]
-}
-</script>
-<link rel="canonical" href="https://stockyard.dev/pricing/">
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Pricing","item":"https://stockyard.dev/pricing/"}]}
-</script>
-<link rel="manifest" href="/site-assets/manifest.json">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
-
 <nav class="nav">
   <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-overlay" onclick="toggleNav()"></div>
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-  <div class="nav-links">
-    <div class="nav-drop">
-      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
-      <div class="nav-drop-menu">
-        <a href="/tools/">Browse All Tools</a>
-        <a href="/cli/" style="color:var(--gold)">Install via CLI</a>
-        <a href="/stacks/">Curated Stacks</a>
-        <div class="drop-section">By Category</div>
-        <a href="/tools/?category=developer">Developer Tools</a>
-        <a href="/tools/?category=operations">Operations</a>
-        <a href="/tools/?category=creator">Creator &amp; Business</a>
-        <a href="/tools/?category=finance">Finance</a>
-        <a href="/tools/?category=personal">Personal</a>
-        <div class="drop-section">Popular</div>
-        <a href="/corral/">Corral</a>
-        <a href="/gate/">Gate</a>
-        <a href="/headcount/">Headcount</a>
-        <a href="/saltlick/">Salt Lick</a>
-      </div>
-    </div>
-    <a href="/complete/" style="color:var(--gold)">Complete</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/platform/">Platform</a>
-    <a href="/docs/">Docs</a>
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </div>
+  <div class="nav-links"><a href="/for/">Bundles</a><a href="/tools/">Tools</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a></div>
 </nav>
 
-<!-- COMPLETE BUNDLE — FEATURED -->
-<section style="padding:4rem 2rem;background:var(--bg2);border-top:2px solid var(--gold);border-bottom:2px solid var(--gold)">
-  <div style="max-width:900px;margin:0 auto">
-    <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center">Best Value</div>
-    <h2 style="text-align:center;font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:0.8rem">Stockyard Complete</h2>
-    <p style="text-align:center;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto 2rem;line-height:1.8">All 150 tools. Unlimited Pro. One price.<br>Cancel your SaaS subscriptions today.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:560px;margin:0 auto 2rem">
-      <div style="padding:2rem 1.5rem;border:2px solid var(--gold);background:var(--bg);text-align:center;position:relative">
-        <div style="font-family:var(--font-mono);font-size:2.4rem;font-weight:700;color:var(--cream);line-height:1">$1</div>
-        <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--leather);margin:0.3rem 0 1.2rem">first month, then $29/mo</div>
-        <button onclick="startCompleteCheckout('monthly')" id="complete-btn-monthly" style="width:100%;background:var(--gold);color:var(--bg);border:2px solid var(--gold);font-family:var(--font-mono);font-size:0.82rem;padding:0.7rem;cursor:pointer;font-weight:600;transition:all 0.2s">Start for $1</button>
-      </div>
-      <div style="padding:2rem 1.5rem;border:2px solid var(--gold);background:var(--bg);text-align:center;position:relative">
-        <div style="position:absolute;top:-0.7rem;right:1rem;background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:0.6rem;font-weight:700;padding:0.2rem 0.6rem;letter-spacing:1px;text-transform:uppercase">Save $99</div>
-        <div style="font-family:var(--font-mono);font-size:2.4rem;font-weight:700;color:var(--cream);line-height:1">$249</div>
-        <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--leather);margin:0.3rem 0 1.2rem">per year</div>
-        <button onclick="startCompleteCheckout('annual')" id="complete-btn-annual" style="width:100%;background:var(--gold);color:var(--bg);border:2px solid var(--gold);font-family:var(--font-mono);font-size:0.82rem;padding:0.7rem;cursor:pointer;font-weight:600;transition:all 0.2s">Get Complete Annual</button>
-      </div>
-    </div>
-    <details style="max-width:700px;margin:0 auto;border:1px solid var(--bg3);padding:1rem 1.5rem">
-      <summary style="font-family:var(--font-mono);font-size:0.82rem;color:var(--cream);cursor:pointer">All 150 tools included &rarr;</summary>
-      <div style="margin-top:1rem">
-        <div style="margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem">Developer Tools (61)</div><div style="display:flex;flex-wrap:wrap;gap:.2rem .8rem"><span style="font-size:.72rem">Almanac III</span><span style="font-size:.72rem">Assay</span><span style="font-size:.72rem">Assay II</span><span style="font-size:.72rem">Bandolier</span><span style="font-size:.72rem">Barrage</span><span style="font-size:.72rem">Bellringer</span><span style="font-size:.72rem">Bounty</span><span style="font-size:.72rem">Cartridge</span><span style="font-size:.72rem">Cartwright</span><span style="font-size:.72rem">Codex</span><span style="font-size:.72rem">Conduit</span><span style="font-size:.72rem">Corral</span><span style="font-size:.72rem">Crucible</span><span style="font-size:.72rem">Crucible II</span><span style="font-size:.72rem">Cutoff</span><span style="font-size:.72rem">Dispatch</span><span style="font-size:.72rem">Dowser</span><span style="font-size:.72rem">Drifter</span><span style="font-size:.72rem">Drover</span><span style="font-size:.72rem">Embargo</span><span style="font-size:.72rem">Fence</span><span style="font-size:.72rem">Gate</span><span style="font-size:.72rem">Githost</span><span style="font-size:.72rem">Granary</span><span style="font-size:.72rem">Hub</span><span style="font-size:.72rem">Ironworks</span><span style="font-size:.72rem">Lasso</span><span style="font-size:.72rem">Mainspring</span><span style="font-size:.72rem">Manifest</span><span style="font-size:.72rem">Metrics</span><span style="font-size:.72rem">Mirage</span><span style="font-size:.72rem">Ordnance</span><span style="font-size:.72rem">Parcel</span><span style="font-size:.72rem">Parcel Proxy</span><span style="font-size:.72rem">Pathfinder</span><span style="font-size:.72rem">Pipeline</span><span style="font-size:.72rem">Plumb</span><span style="font-size:.72rem">Probe</span><span style="font-size:.72rem">Rampart</span><span style="font-size:.72rem">Rangeland</span><span style="font-size:.72rem">Registry</span><span style="font-size:.72rem">Relay</span><span style="font-size:.72rem">Rustler</span><span style="font-size:.72rem">Scaffold</span><span style="font-size:.72rem">Scout</span><span style="font-size:.72rem">Seismograph</span><span style="font-size:.72rem">Silo</span><span style="font-size:.72rem">Smelter</span><span style="font-size:.72rem">Spur</span><span style="font-size:.72rem">Stampede</span><span style="font-size:.72rem">Strongbox</span><span style="font-size:.72rem">Switchboard</span><span style="font-size:.72rem">Switchman</span><span style="font-size:.72rem">Tally</span><span style="font-size:.72rem">Ticker</span><span style="font-size:.72rem">Tinderbox</span><span style="font-size:.72rem">Trough</span><span style="font-size:.72rem">Viaduct</span><span style="font-size:.72rem">Watcher</span><span style="font-size:.72rem">Windmill</span><span style="font-size:.72rem">Wrangler</span></div></div><div style="margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem">Operations (34)</div><div style="display:flex;flex-wrap:wrap;gap:.2rem .8rem"><span style="font-size:.72rem">Announcements</span><span style="font-size:.72rem">Bellwether</span><span style="font-size:.72rem">Brand</span><span style="font-size:.72rem">Campfire</span><span style="font-size:.72rem">Chronicle</span><span style="font-size:.72rem">Courier</span><span style="font-size:.72rem">Covenant</span><span style="font-size:.72rem">Deposition</span><span style="font-size:.72rem">Escrow</span><span style="font-size:.72rem">Gazette II</span><span style="font-size:.72rem">Grapevine</span><span style="font-size:.72rem">Handbook</span><span style="font-size:.72rem">Headcount</span><span style="font-size:.72rem">Hearthside</span><span style="font-size:.72rem">Homestead</span><span style="font-size:.72rem">Inquest</span><span style="font-size:.72rem">Mailbag</span><span style="font-size:.72rem">Megaphone</span><span style="font-size:.72rem">Muster</span><span style="font-size:.72rem">Notify</span><span style="font-size:.72rem">Outfitter</span><span style="font-size:.72rem">Outpost</span><span style="font-size:.72rem">Paddock</span><span style="font-size:.72rem">Prairie</span><span style="font-size:.72rem">Quarry</span><span style="font-size:.72rem">Roster</span><span style="font-size:.72rem">Roundup</span><span style="font-size:.72rem">Saddlebag</span><span style="font-size:.72rem">Saloon</span><span style="font-size:.72rem">Semaphore</span><span style="font-size:.72rem">Sentinel</span><span style="font-size:.72rem">Signalman</span><span style="font-size:.72rem">Soapbox</span><span style="font-size:.72rem">Telegraph</span></div></div><div style="margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem">Creator & Marketing (22)</div><div style="display:flex;flex-wrap:wrap;gap:.2rem .8rem"><span style="font-size:.72rem">Agora</span><span style="font-size:.72rem">Brander</span><span style="font-size:.72rem">Branding Iron</span><span style="font-size:.72rem">Broadside</span><span style="font-size:.72rem">Cartograph</span><span style="font-size:.72rem">Chalkboard</span><span style="font-size:.72rem">Concierge</span><span style="font-size:.72rem">Crossroads</span><span style="font-size:.72rem">Glossary</span><span style="font-size:.72rem">Parlor</span><span style="font-size:.72rem">Pasture</span><span style="font-size:.72rem">Podium</span><span style="font-size:.72rem">Pony Express</span><span style="font-size:.72rem">Post</span><span style="font-size:.72rem">Presskit</span><span style="font-size:.72rem">Pulpit</span><span style="font-size:.72rem">Salt Lick</span><span style="font-size:.72rem">Scribe</span><span style="font-size:.72rem">Surveyor</span><span style="font-size:.72rem">Surveyor II</span><span style="font-size:.72rem">Typeset</span><span style="font-size:.72rem">Watering Hole</span></div></div><div style="margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem">Finance & Business (16)</div><div style="display:flex;flex-wrap:wrap;gap:.2rem .8rem"><span style="font-size:.72rem">Assayer</span><span style="font-size:.72rem">Billfold</span><span style="font-size:.72rem">Billfold II</span><span style="font-size:.72rem">Books</span><span style="font-size:.72rem">Consortium</span><span style="font-size:.72rem">Deed</span><span style="font-size:.72rem">Dividend</span><span style="font-size:.72rem">Dossier</span><span style="font-size:.72rem">Exchequer</span><span style="font-size:.72rem">Grubstake</span><span style="font-size:.72rem">Ledger</span><span style="font-size:.72rem">Ledger II</span><span style="font-size:.72rem">Pennant</span><span style="font-size:.72rem">Prospector</span><span style="font-size:.72rem">Prospector II</span><span style="font-size:.72rem">Steward</span></div></div><div style="margin-bottom:1rem"><div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem">Personal (17)</div><div style="display:flex;flex-wrap:wrap;gap:.2rem .8rem"><span style="font-size:.72rem">Almanac</span><span style="font-size:.72rem">Apothecary</span><span style="font-size:.72rem">Archive</span><span style="font-size:.72rem">Archivist</span><span style="font-size:.72rem">Cellar</span><span style="font-size:.72rem">Cipher</span><span style="font-size:.72rem">Curator</span><span style="font-size:.72rem">Decisionlog</span><span style="font-size:.72rem">Feedreader</span><span style="font-size:.72rem">Meridian</span><span style="font-size:.72rem">Notebook</span><span style="font-size:.72rem">Paddock II</span><span style="font-size:.72rem">Quartermaster</span><span style="font-size:.72rem">Quiver</span><span style="font-size:.72rem">Sundial</span><span style="font-size:.72rem">Trailhead</span><span style="font-size:.72rem">Waystation</span></div></div>
-      </div>
-    </details>
-    <p style="text-align:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--leather)">All individual tool Pro plans included &middot; <a href="/tools/" style="color:var(--leather-light)">Browse all 150 tools &rarr;</a></p>
-    <p style="text-align:center;margin-top:0.5rem;font-family:var(--font-mono);font-size:0.68rem;color:var(--gold)">Early adopter pricing &mdash; your rate locks in when you subscribe.</p>
-  </div>
-</section>
-
-
-<section class="page-header">
-  <div class="eyebrow">Pricing</div>
-  <h1>Simple pricing. <span class="accent">Powerful products.</span></h1>
-  <p class="sub">76 modules and 16 providers, free. Paid tiers unlock more platform features as your needs grow.</p>
-</section>
-
-
-<div style="max-width:1100px;margin:2rem auto 0;padding:0 2rem">
-  <div style="background:#241e18;border:2px solid #d4a843;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
-    <div>
-      <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:#d4a843;margin-bottom:.5rem">NEW &mdash; Stockyard Complete</div>
-      <div style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:.3rem">All 150 focused tools. One price.</div>
-      <div style="font-family:var(--font-mono);font-size:.82rem;color:#e8753a;line-height:1.6">Webhook inboxes, cron schedulers, NPS trackers, home inventories. 150 single-binary tools, all Pro unlocked.</div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:.6rem;flex-shrink:0;text-align:center">
-      <button id="complete-btn-monthly-2" onclick="startCompleteCheckout('monthly')" style="font-family:var(--font-mono);font-size:.82rem;padding:.7rem 1.8rem;background:#d4a843;color:#1a1410;border:2px solid #d4a843;cursor:pointer;font-weight:600">All 150 Tools &mdash; $1 first month</button>
-      <button id="complete-btn-annual-2" onclick="startCompleteCheckout('annual')" style="font-family:var(--font-mono);font-size:.75rem;padding:.5rem 1.5rem;background:transparent;color:var(--cream-dim);border:1px solid #4a3520;cursor:pointer">Annual &mdash; $249/yr &nbsp;<span style="color:#c9892a">save $99</span></button>
-      <a href="/tools/" style="font-family:var(--font-mono);font-size:.62rem;color:#c4a87a">Browse all 150 tools &rarr;</a>
-    </div>
-  </div>
+<div class="hero">
+  <h1>14 days free. Then pick your plan.</h1>
+  <p class="sub">Every plan includes all features, no limits. Your data stays on your hardware forever.</p>
 </div>
 
-<div class="billing-toggle">
-  <span id="label-monthly" class="active" onclick="setBilling('monthly')">Monthly</span>
-  <div id="toggle-track" class="toggle-track" onclick="toggleBilling()">
-    <div class="toggle-knob"></div>
+<div class="tiers">
+
+  <div class="tier">
+    <div class="tier-name">Open-Source Proxy</div>
+    <div class="tier-price" style="font-size:2rem">Free</div>
+    <div class="tier-period">forever</div>
+    <div class="tier-trial">&nbsp;</div>
+    <p class="tier-desc">The LLM proxy. Apache 2.0. No catch.</p>
+    <ul class="tier-features">
+      <li>16 LLM providers</li>
+      <li>76 middleware modules</li>
+      <li>Unlimited requests</li>
+      <li>No phone-home</li>
+      <li>Self-hosted, single binary</li>
+    </ul>
+    <a href="/proxy-only/" class="btn btn-outline">Download</a>
   </div>
-  <span id="label-annual" onclick="setBilling('annual')">Annual</span>
-  <span class="annual-badge">Save 2 months</span>
+
+  <div class="tier featured">
+    <div class="tier-badge">Most Popular</div>
+    <div class="tier-name">Bundle</div>
+    <div class="tier-price"><span class="dollar">$</span>7.99</div>
+    <div class="tier-period">per month</div>
+    <div class="tier-trial">14-day free trial</div>
+    <p class="tier-desc">One community bundle. All tools unlimited.</p>
+    <ul class="tier-features">
+      <li>5-10 tools per bundle</li>
+      <li>Unlimited records</li>
+      <li>All features unlocked</li>
+      <li>Your data, your hardware</li>
+      <li>Cancel anytime</li>
+    </ul>
+    <a href="/" class="btn" id="bundle-cta">Start Trial — $0 today</a>
+    <p style="font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted);margin-top:.6rem">$79.99/yr (save 17%)</p>
+  </div>
+
+  <div class="tier">
+    <div class="tier-name">All Tools</div>
+    <div class="tier-price"><span class="dollar">$</span>29.99</div>
+    <div class="tier-period">per month</div>
+    <div class="tier-trial">14-day free trial</div>
+    <p class="tier-desc">Every tool. 164+ binaries. For developers and power users.</p>
+    <ul class="tier-features">
+      <li>All 164+ tools</li>
+      <li>LLM proxy included</li>
+      <li>Framework access</li>
+      <li>Priority support</li>
+      <li>Unlimited everything</li>
+    </ul>
+    <a href="#" class="btn btn-outline" id="all-cta" onclick="event.preventDefault();fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:'individual'})}).then(function(r){return r.json()}).then(function(d){if(d.url)window.location=d.url})">Start Trial</a>
+    <p style="font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted);margin-top:.6rem">$299.99/yr (save 17%)</p>
+  </div>
+
 </div>
 
-<section style="padding:3rem 2rem 0;text-align:center">
-  <div style="max-width:900px;margin:0 auto">
-    <div style="display:inline-block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust);background:var(--bg2);border:1px solid var(--bg3);padding:.4rem 1.2rem;margin-bottom:1rem">Different product</div>
-    <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin-bottom:.5rem">LLM Platform Pricing</h2>
-    <p style="color:var(--cream-dim);font-style:italic;max-width:560px;margin:0 auto 1rem;line-height:1.6">The proxy, routing, cost tracking, tracing, and guardrails for teams building with LLMs. This is separate from the 150 tools above.</p>
-  </div>
-</section>
-
-<section class="pricing-section">
-  <div class="pricing-grid">
-
-    <div class="tier">
-      <div class="tier-name">Open-Source Proxy</div>
-      <div class="tier-price-free">Free</div>
-      <div class="tier-period">forever</div>
-      <div class="tier-annual-note">&nbsp;</div>
-      <ul class="tier-features">
-        <li>Full LLM proxy + 76 modules</li>
-        <li>All 16 providers</li>
-        <li>Unlimited requests</li>
-        <li>Apache 2.0 license</li>
-        <li>No trial. No license key.</li>
-        <li>Community support</li>
-      </ul>
-      <a href="/proxy-only/" class="btn btn-secondary tier-cta">Get Proxy</a>
-    </div>
-
-    <div class="tier" style="border-color:var(--gold)">
-      <div class="tier-name" style="color:var(--gold)">Bundle</div>
-      <div class="tier-price"><span class="dollar">$</span><span class="price-val">7.99</span></div>
-      <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span style="color:var(--gold);font-size:0.7rem">14-day free trial</span></div>
-      <ul class="tier-features">
-        <li>14 days free, full access</li>
-        <li>Pick a community bundle</li>
-        <li>4-9 tools, unlimited everything</li>
-        <li>195 communities available</li>
-        <li>Self-hosted, your data forever</li>
-        <li>Email support</li>
-      </ul>
-      <a href="/for/" class="btn btn-primary tier-cta" style="background:var(--gold);border-color:var(--gold)">Start 14-Day Trial</a>
-    </div>
-
-    <div class="tier">
-      <div class="tier-name">Individual</div>
-      <div class="tier-price" data-monthly="29.99" data-annual="299.90"><span class="dollar">$</span><span class="price-val">29.99</span></div>
-      <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$59.98/yr"></span> · 14-day trial</div>
-      <ul class="tier-features">
-        <li>14 days free, full access</li>
-        <li>All 164 tools, unlimited</li>
-        <li>Full LLM platform</li>
-        <li>Request replay + cost routing</li>
-        <li>All 29 platform products</li>
-        <li>Email support</li>
-      </ul>
-      <button onclick="checkout('individual',event)" class="btn btn-rust tier-cta">Start 14-Day Trial</button>
-    </div>
-
-    <div class="tier featured">
-      <div class="tier-name">Pro</div>
-      <div class="tier-price" data-monthly="99.99" data-annual="999.90"><span class="dollar">$</span><span class="price-val">99.99</span></div>
-      <div class="tier-period"><span class="period-text">per month</span></div>
-      <div class="tier-annual-note"><span class="annual-savings" data-save="$199.98/yr"></span>&nbsp;</div>
-      <ul class="tier-features">
-        <li>Everything in Individual</li>
-        <li>Cost routing (unlimited)</li>
-        <li>Breed prompt evolution</li>
-        <li>Stampede load testing</li>
-        <li>Fault chaos engineering</li>
-        <li>Red-team + persona testing</li>
-        <li>Cortex memory, Ramrod orchestration</li>
-        <li>All 29 platform products</li>
-        <li>RBAC, SSO, priority support</li>
-      </ul>
-      <button onclick="checkout('pro',event)" class="btn btn-rust tier-cta">Go Pro</button>
-    </div>
-
-    </div>
-
-
-  </div>
-</section>
-
-
-<section class="compare">
-  <div class="compare-label">Compare LLM Platform plans</div>
-  <table>
-    <thead>
-      <tr>
-        <th></th>
-        <th>Free</th>
-        <th>Individual</th>
-        <th class="highlight-col">Pro</th>
-      </tr>
-    </thead>
-    <tbody>
-<tbody>
-      <tr><td>Monthly price</td><td>$0</td><td>$29.99</td><td class="highlight-col ">$99.99</td></tr>
-      <tr><td>Annual price</td><td>$0</td><td>$299.90</td><td class="highlight-col ">$999.90</td></tr>
-      <tr><td>Modules</td><td>All 76</td><td>All 76</td><td class="highlight-col ">All 76</td></tr>
-      <tr><td>Providers</td><td>All 16</td><td>All 16</td><td class="highlight-col ">All 16</td></tr>
-      <tr><td>Products unlocked</td><td>0</td><td>5</td><td class="highlight-col ">All 29</td></tr>
-      <tr><td>Seats</td><td>1</td><td>1</td><td class="highlight-col ">Unlimited</td></tr>
-      <tr><td>Requests</td><td>Unlimited</td><td>Unlimited</td><td class="highlight-col ">Unlimited</td></tr>
-      <tr><td>Lasso replay</td><td>&mdash;</td><td>&#10003;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>Cost routing</td><td>100/day</td><td>100/day</td><td class="highlight-col check">&#10003; Unlimited</td></tr>
-      <tr><td>Breed evolution</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>Red-team testing</td><td>Quickscan (5)</td><td>Quickscan (5)</td><td class="highlight-col check">&#10003; Full</td></tr>
-      <tr><td>Phantom personas</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>Cortex memory</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>RBAC &amp; governance</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>SSO / SAML</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>SLA</td><td>&mdash;</td><td>&mdash;</td><td class="highlight-col check">&#10003;</td></tr>
-      <tr><td>Support</td><td>Community</td><td>Email</td><td class="highlight-col ">Priority + Slack</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<section class="how">
-  <div class="how-label">How it works</div>
-  <div class="how-step">
-    <div class="how-num">1</div>
-    <div class="how-text">
-      <h3>Download the binary</h3>
-      <p>One command: <code>brew install stockyard-dev/tap/stockyard</code> or <code>npx</code>, <code>docker</code>, or <code>curl</code>.</p>
-    </div>
-  </div>
-  <div class="how-step">
-    <div class="how-num">2</div>
-    <div class="how-text">
-      <h3>Run it</h3>
-      <p>Set your LLM API key, run the binary. Dashboard appears at <code>localhost/ui</code>.</p>
-    </div>
-  </div>
-  <div class="how-step">
-    <div class="how-num">3</div>
-    <div class="how-text">
-      <h3>Upgrade when you're ready</h3>
-      <p>The free tier is production-ready. Cost routing is included at 100 requests/day, and the security quickscan gives you a free 5-probe audit. When you need unlimited routing, the full security suite, request replay, or other features &mdash; upgrade to unlock them. Set <code>STOCKYARD_LICENSE_KEY=SY-...</code> and restart.</p>
-    </div>
-  </div>
-</section>
-
-
-
-<section class="faq">
-  <div class="faq-label">Common questions</div>
-  <div class="faq-item">
-    <div class="faq-q">What do I get for free?</div>
-    <div class="faq-a">The full proxy with all 76 middleware modules, all 16 LLM providers, and unlimited requests. Self-hosted on your infrastructure. Cost routing is included at 100 requests/day. Security quickscan (5 probes) is free.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">What's the difference between tiers?</div>
-    <div class="faq-a">Community is the full proxy, free forever. Individual ($29.99/mo) adds request replay, quality gates, and hallucination detection. Pro ($99.99/mo) adds unlimited cost routing, prompt evolution, load testing, chaos engineering, red-team testing, and all 29 platform products including RBAC and SSO.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">Can I save with annual billing?</div>
-    <div class="faq-a">Yes. Annual plans save roughly 2 months: Individual $299.90/yr, Pro $999.90/yr.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">What about the 150 standalone tools?</div>
-    <div class="faq-a">The LLM platform and the 150 standalone tools are separate products. The platform pricing on this page covers the proxy, routing, and LLM infrastructure. <a href="/complete/">Stockyard Complete</a> ($1 first month) bundles all 150 standalone tools. They can be used independently or together.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">What providers are supported?</div>
-    <div class="faq-a">OpenAI, Anthropic, Gemini, Groq, Ollama, DeepSeek, xAI, Mistral, Cohere, Together, Fireworks, Perplexity, Replicate, Amazon Bedrock, Azure OpenAI, and Google Vertex AI. Any OpenAI-compatible endpoint works out of the box.</div>
-  </div>
-  <div class="faq-item">
-    <div class="faq-q">Do I need to change my application code?</div>
-    <div class="faq-a">No. Just point your <code>OPENAI_BASE_URL</code> at Stockyard. Works with the official OpenAI, Anthropic, and other provider SDKs &mdash; zero code changes required.</div>
-  </div>
-</section>
-
-<div class="explore-bar">Explore: <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a> &middot; <a href="/proxy-only/">Proxy-only mode</a></div>
-
-<!-- Focused Tools Pricing -->
-<div style="border-top:2px solid var(--bg3);margin:0 2rem;padding-top:3rem;text-align:center">
-  <p style="font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:.6rem">Different category</p>
-  <h2 style="font-size:1.5rem;margin-bottom:.6rem">Focused standalone tools</h2>
-  <p style="color:var(--cream-dim);max-width:620px;margin:0 auto 1rem;font-size:.9rem">These are separate single-purpose tools, not part of the Stockyard platform above. Each solves one specific infrastructure problem. Free to use, Pro unlocks limits. No subscription required to try any of them.</p>
-  <p style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather);margin-bottom:2.5rem"><a href="/tools/">Browse all 150 tools &rarr;</a></p>
+<div class="promise">
+  <h2>Your data is never hostage.</h2>
+  <p>Trial expires? Your SQLite files stay on disk, untouched, exportable. Cancel your subscription? Same thing. Move to a competitor? Copy the folder. Your data is a file on your computer. We never touch it.</p>
 </div>
-<section style="padding:0 2rem 4rem;max-width:1100px;margin:0 auto">
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:1.5rem">
-    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
-          <a href="/corral/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Corral</a>
-          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$0.99/mo Pro</span>
-        </div>
-        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Self-hosted webhook inbox</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">3 endpoints &middot; 1K events/mo &middot; 7-day retention</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>3 endpoints</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Live event stream</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Manual replay</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>1 forward target / endpoint</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs</div>
-        </div>
-        <div style="padding:1rem 1.5rem">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $0.99/mo</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited endpoints</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>30–90 day retention</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Retry failed deliveries</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Event filtering &amp; export</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams, production</div>
-        </div>
-      </div>
-      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
-        <a href="/corral/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
-        <a href="/corral/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
-      </div>
-    </div>
-    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
-          <a href="/gate/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Gate</a>
-          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$2.99/mo Pro</span>
-        </div>
-        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Auth proxy for internal services</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">1 upstream &middot; 5 users</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>API key auth</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Session login</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Fixed rate limiting</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Access logs</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs</div>
-        </div>
-        <div style="padding:1rem 1.5rem">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $2.99/mo</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited upstreams &amp; users</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Per-route rate limits</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>IP allow / deny lists</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Log export &amp; filtering</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams with multiple services</div>
-        </div>
-      </div>
-      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
-        <a href="/gate/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
-        <a href="/gate/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
-      </div>
-    </div>
-    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
-          <a href="/trough/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Trough</a>
-          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$2.99/mo Pro</span>
-        </div>
-        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">API cost monitor</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">1 service &middot; 10K requests/mo &middot; 7-day history</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Daily cost summary</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Route-level breakdown</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>CSV export</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Simple cost rules</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs</div>
-        </div>
-        <div style="padding:1rem 1.5rem">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $2.99/mo</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited services</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>90-day history</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Anomaly detection</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Spend alerts &amp; trend reports</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams running multiple APIs</div>
-        </div>
-      </div>
-      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
-        <a href="/trough/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
-        <a href="/trough/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
-      </div>
-    </div>
-    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
-          <a href="/fence/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Fence</a>
-          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$4.99/mo Pro</span>
-        </div>
-        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Team vault for API keys</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">10 keys &middot; 2 members &middot; 2 vaults</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>AES-256-GCM encryption</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Scoped member tokens</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Basic access log</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Manual key management</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs, small teams</div>
-        </div>
-        <div style="padding:1rem 1.5rem">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $4.99/mo</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Unlimited keys &amp; members</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Role-based access</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Full audit trail</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Rotation reminders &amp; expiry</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams with shared credentials</div>
-        </div>
-      </div>
-      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
-        <a href="/fence/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
-        <a href="/fence/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
-      </div>
-    </div>
-    <div style="border:1px solid var(--bg3);background:var(--bg2);overflow:hidden">
-      <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bg3)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.2rem">
-          <a href="/brand/" style="font-family:var(--font-mono);font-size:1rem;color:var(--cream)">Brand</a>
-          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--gold)">$4.99/mo Pro</span>
-        </div>
-        <div style="font-size:.8rem;color:var(--cream-dim);font-style:italic">Verifiable audit trail</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:1rem 1.5rem;border-right:1px solid var(--bg3)">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-light);margin-bottom:.3rem">Free</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">10K events/mo &middot; 7-day retention</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>SHA-256 hash chain</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Chain verification</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>JSON export</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--green-light)">✓</span>Basic evidence pack</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: solo devs, small apps</div>
-        </div>
-        <div style="padding:1rem 1.5rem">
-          <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem">Pro — $4.99/mo</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-bottom:.7rem">Everything in Free, plus:</div>
-          <ul style="list-style:none">
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>90-day retention</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Policy templates (SOC2, HIPAA, GDPR)</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Scheduled evidence export</li>
-          <li style="font-size:.78rem;color:var(--cream-dim);padding:.2rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--gold)">✓</span>Signed evidence bundles</li>
-          </ul>
-          <div style="margin-top:.8rem;font-family:var(--font-mono);font-size:.62rem;color:var(--leather)">Best for: teams with compliance needs</div>
-        </div>
-      </div>
-      <div style="padding:.8rem 1.5rem;border-top:1px solid var(--bg3);display:flex;gap:1rem">
-        <a href="/brand/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Learn more &rarr;</a>
-        <a href="/brand/#install" style="font-family:var(--font-mono);font-size:.72rem;color:var(--leather-light)">Install &rarr;</a>
-      </div>
-    </div>
+
+<div class="section">
+  <h2>Frequently asked questions</h2>
+
+  <div class="faq">
+    <h3>What's in a bundle?</h3>
+    <p>Each bundle is 5-10 tools picked for a specific community — therapists, barber shops, minecraft servers, dog breeders, and 190+ more. Visit <a href="/">stockyard.dev</a> and type what you do to see yours.</p>
   </div>
 
-  <div style="border-top:1px solid var(--bg3);margin-top:2.5rem;padding-top:2rem">
-    <p style="text-align:center;font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--leather);margin-bottom:1.5rem">25 more tools</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.8rem">
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Salt Lick</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Feature flags</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 flags</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Paddock</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Uptime monitor</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 monitors</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Wrangler</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Job queue</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 3 queues</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Post</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$1.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Form backend</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 3 forms</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Rangeland</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Web analytics</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 1 site</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Telegraph</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Webhook sender</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 3 targets</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Cipher</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Secrets manager</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 20 secrets</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Lasso</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$1.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Link shortener</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 25 links</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Dispatch</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Email &amp; newsletter</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 1 list, 100 subs</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Stampede</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Load tester</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 tests</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Spur</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">API mock server</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 2 projects</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Almanac</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$1.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Changelog</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 20 entries</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Pulpit</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Blog platform</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 posts</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Ledger</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Invoicing</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 clients</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Roster</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">CRM</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 25 contacts</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Muster</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">On-call schedule</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 members</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Chalkboard</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Internal wiki</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 20 pages</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Saddlebag</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">File sharing</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 files</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Rustler</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Dead link checker</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 5 scans</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Homestead</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$1.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Personal dashboard</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 20 bookmarks</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Watering Hole</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Link-in-bio</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 1 profile</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Pony Express</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Transactional email</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 100/day</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Ticker</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$2.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Finance tracker</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 3 accounts</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Campfire</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">Community forum</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 3 categories</div></div>
-      <div style="padding:.8rem 1rem;border:1px solid var(--bg3);background:var(--bg2)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:var(--font-mono);font-size:.82rem;color:var(--cream)">Branding Iron</span><span style="font-family:var(--font-mono);font-size:.6rem;color:var(--gold)">$4.99/mo</span></div><div style="font-size:.72rem;color:var(--cream-dim);font-style:italic">OG image API</div><div style="font-family:var(--font-mono);font-size:.58rem;color:var(--green-light);margin-top:.3rem">Free: 3 templates</div></div>
-    </div>
-    <p style="text-align:center;margin-top:1.5rem"><a href="/tools/" style="font-family:var(--font-mono);font-size:.72rem;color:var(--rust-light)">Full tool catalog with details &rarr;</a></p>
+  <div class="faq">
+    <h3>Do I need a credit card for the trial?</h3>
+    <p>Yes. You get full access for 14 days. Cancel before day 14 and you're never charged.</p>
   </div>
 
-  <p style="text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:.72rem;color:var(--leather)">Tool pricing is separate from Stockyard platform pricing &middot; Each tool has its own independent free tier</p>
-</section>
+  <div class="faq">
+    <h3>What happens when my trial ends?</h3>
+    <p>Your subscription starts automatically. Your tools keep running. Nothing changes except the trial banner disappears.</p>
+  </div>
 
+  <div class="faq">
+    <h3>What if I cancel?</h3>
+    <p>Your tools stop accepting new records after the billing period ends. Your existing data stays on your machine forever. Export everything as CSV at any time. Re-subscribe and pick up where you left off.</p>
+  </div>
+
+  <div class="faq">
+    <h3>Is the proxy really free?</h3>
+    <p>Yes. The open-source proxy is Apache 2.0. Free forever. No limits. No phone-home. 16 LLM providers, 76 middleware modules. <a href="/proxy-only/">Download it here.</a></p>
+  </div>
+
+  <div class="faq">
+    <h3>Can I switch bundles?</h3>
+    <p>Email hello@stockyard.dev and we'll switch you. Your old tools keep running.</p>
+  </div>
+
+  <div class="faq">
+    <h3>Do you offer refunds?</h3>
+    <p>Yes. Email hello@stockyard.dev within 30 days of any charge. No questions.</p>
+  </div>
+
+  <div class="faq">
+    <h3>Where does my data live?</h3>
+    <p>On your machine. In SQLite files. Back up by copying the folder. We never see your data.</p>
+  </div>
+</div>
 
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem">
-    <a href="/tools/">Tools</a> &middot;
-    <a href="/complete/">Complete</a> &middot;
-    <a href="/platform/">Platform</a> &middot;
-    <a href="/pricing/">Pricing</a> &middot;
-    <a href="/docs/">Docs</a> &middot;
-    <a href="/blog/">Blog</a> &middot;
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
-  </p>
-  <p style="margin-top:0.3rem">
-    <a href="/privacy/">Privacy</a> &middot;
-    <a href="/terms/">Terms</a> &middot;
-    <a href="/changelog/">Changelog</a>
-  </p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">
-    Apache 2.0 proxy &middot; BSL 1.1 platform &middot; &copy; 2026 Stockyard
-  </p>
+  <p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:.5rem"><a href="/">Home</a> · <a href="/for/">Bundles</a> · <a href="/tools/">Tools</a> · <a href="/docs/">Docs</a></p>
+  <p style="margin-top:.3rem;font-size:.65rem;color:var(--cream-muted)">hello@stockyard.dev</p>
 </footer>
 
 <script>
-const API_BASE = window.STOCKYARD_API || 'https://stockyard.dev';
-let billingMode = 'monthly';
-
-function setBilling(mode) {
-  billingMode = mode;
-  const track = document.getElementById('toggle-track');
-  const labelM = document.getElementById('label-monthly');
-  const labelA = document.getElementById('label-annual');
-
-  if (mode === 'annual') {
-    track.classList.add('annual');
-    labelA.classList.add('active');
-    labelM.classList.remove('active');
-  } else {
-    track.classList.remove('annual');
-    labelM.classList.add('active');
-    labelA.classList.remove('active');
-  }
-
-  document.querySelectorAll('.tier-price[data-monthly]').forEach(el => {
-    const val = el.querySelector('.price-val');
-    val.textContent = mode === 'annual' ? el.dataset.annual : el.dataset.monthly;
-  });
-
-  document.querySelectorAll('.period-text').forEach(el => {
-    el.textContent = mode === 'annual' ? 'per year' : 'per month';
-  });
-
-  document.querySelectorAll('.annual-savings').forEach(el => {
-    el.textContent = mode === 'annual' ? 'Save ' + el.dataset.save : '';
-  });
-}
-
-function toggleBilling() {
-  setBilling(billingMode === 'monthly' ? 'annual' : 'monthly');
-}
-
-async function checkout(tier, e) {
-  const ref = new URLSearchParams(window.location.search).get('ref') || '';
-  const btn = e ? e.target : document.activeElement;
-  const originalText = btn.textContent;
-  btn.textContent = 'Redirecting...';
-  btn.disabled = true;
-  var _prices={individual:{monthly:29.99,annual:299.90},pro:{monthly:99.99,annual:999.90}};
-  var _v=(_prices[tier]&&_prices[tier][billingMode])||29.99;
-  gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard '+tier,price:_v,quantity:1}]});
-  gtag('event','conversion',{send_to:'AW-18046975504/9CJJCJTW6pQcEJD8u51D',value:_v,currency:'USD'});
-
-  try {
-    const res = await fetch(API_BASE + '/api/billing/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier: tier, period: billingMode, ref: ref })
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Checkout failed');
-    }
-
-    const data = await res.json();
-    if (data.checkout_url && data.checkout_url.startsWith('https://checkout.stripe.com/')) {
-      window.location.href = data.checkout_url;
-    } else {
-      throw new Error('No checkout URL returned');
-    }
-  } catch (err) {
-    console.error('Checkout error:', err);
-    btn.textContent = 'Error — retry';
-    btn.disabled = false;
-    setTimeout(() => { btn.textContent = originalText; }, 3000);
-  }
+var p=new URLSearchParams(window.location.search);
+var bundle=p.get('bundle');
+if(bundle){
+  var btn=document.getElementById('bundle-cta');
+  btn.href='#';
+  btn.onclick=function(e){
+    e.preventDefault();
+    fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bundle:bundle})})
+    .then(function(r){return r.json()})
+    .then(function(d){if(d.url)window.location=d.url})
+  };
 }
 </script>
-
-<script>
-function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
-</script>
-<noscript><p class="annual-note">Annual billing saves 2 months. Enable JavaScript to toggle between monthly and annual pricing.</p></noscript>
-
-
-<script>
-async function startCompleteCheckout(interval) {
-  const ref = new URLSearchParams(window.location.search).get('ref') || '';
-  const btn = document.getElementById('complete-btn-' + interval);
-  if (btn) { btn.textContent = 'Redirecting...'; btn.style.opacity = '0.6'; }
-  var _v=interval==='annual'?249:29;
-  gtag('event','begin_checkout',{currency:'USD',value:_v,items:[{item_name:'Stockyard Complete',price:_v,quantity:1}]});
-  gtag('event','conversion',{send_to:'AW-18046975504/9CJJCJTW6pQcEJD8u51D',value:_v,currency:'USD'});
-  try {
-    const r = await fetch('https://stockyard.dev/api/checkout', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({plan: 'complete', interval: interval})
-    });
-    const d = await r.json();
-    if (d.url) { window.location.href = d.url; }
-    else { alert('Checkout error: ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'All 150 Tools'; btn.style.opacity = '1'; } }
-  } catch(e) { alert('Network error'); if (btn) { btn.textContent = 'All 150 Tools'; btn.style.opacity = '1'; } }
-}
-</script>
-
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
-function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script>
-// Exit-intent overlay
-(function(){
-  var shown=false;
-  var overlay=document.createElement('div');
-  overlay.id='exit-overlay';
-  overlay.style.cssText='display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center';
-  overlay.innerHTML='<div style="background:#241e18;border:2px solid #c45d2c;max-width:460px;width:90%;padding:2.5rem;text-align:center;position:relative">'
-    +'<button onclick="document.getElementById(\'exit-overlay\').style.display=\'none\'" style="position:absolute;top:0.8rem;right:1rem;background:none;border:none;color:#7a7060;font-size:1.4rem;cursor:pointer">&times;</button>'
-    +'<div style="font-family:\'JetBrains Mono\',monospace;font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:#c45d2c;margin-bottom:1rem">Before you go</div>'
-    +'<h3 style="font-size:1.3rem;color:#f0e6d3;margin-bottom:0.8rem;font-family:\'Libre Baskerville\',serif">Every tool has a free tier.</h3>'
-    +'<p style="font-size:0.9rem;color:#bfb5a3;font-style:italic;margin-bottom:1.5rem;line-height:1.7">No credit card. No time limit. Download a single binary and try it on your own server.</p>'
-    +'<a href="/guide/" style="display:inline-block;font-family:\'JetBrains Mono\',monospace;font-size:0.85rem;padding:0.7rem 2rem;background:#c45d2c;color:#f0e6d3;text-decoration:none;margin-bottom:0.8rem">Start free &rarr;</a>'
-    +'<br><a href="/tools/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.72rem;color:#a0845c;text-decoration:none">or browse the catalog</a>'
-    +'</div>';
-  document.body.appendChild(overlay);
-  document.addEventListener('mouseout',function(e){
-    if(shown)return;
-    if(e.clientY<5&&e.relatedTarget===null){
-      shown=true;
-      overlay.style.display='flex';
-      gtag('event','view_promotion',{promotion_name:'exit_intent',creative_slot:'pricing_overlay'});
-    }
-  });
-  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.style.display='none';});
-})();
-</script>
-<script src="/site-assets/assets/sticky-cta.js" defer></script>
-<script>
-// Auto-initiate bundle checkout if ?bundle= is present
-(function(){
-  var p=new URLSearchParams(window.location.search);
-  var bundle=p.get('bundle');
-  if(bundle){
-    // Show a brief message then redirect to Stripe
-    document.body.insertAdjacentHTML('afterbegin','<div style="position:fixed;inset:0;background:rgba(26,20,16,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem"><div style="font-family:var(--font-mono);color:var(--cream);font-size:1.1rem">Preparing checkout for <strong style=color:var(--rust-light)>'+bundle+'</strong> bundle...</div><div style="font-family:var(--font-mono);color:var(--leather);font-size:0.8rem">$7.99/mo · Cancel anytime</div></div>');
-    fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bundle:bundle,ref:p.get('ref')||''})})
-      .then(function(r){return r.json()})
-      .then(function(d){if(d.url)window.location.href=d.url;else{document.querySelector('[style*="position:fixed"]').innerHTML='<div style="color:var(--cream);font-family:var(--font-mono);text-align:center;padding:2rem"><p>'+( d.error&&d.error.message||'Checkout unavailable')+'</p><p style="margin-top:1rem"><a href="/for/'+bundle+'/" style="color:var(--rust-light)">Back to bundle</a></p></div>'}})
-      .catch(function(){window.location.href='/for/'+bundle+'/'});
-  }
-})();
-</script>
 </body>
 </html>
