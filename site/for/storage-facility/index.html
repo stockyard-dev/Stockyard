@@ -75,6 +75,15 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <p class="sub">Tenant records, invoicing, unit inventory, expense tracking, access logs, payment calendar, and rental applications.</p>
   <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-top:1.5rem">After starting your trial, install with:</p>
   <div class="install" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/storage-facility/install.sh | sh</div>
+  <div style="margin-top:1.5rem;text-align:center">
+    <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.8rem">Or one-click install</p>
+    <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+      <a href="https://github.com/stockyard-dev/stockyard-launcher/releases/latest/download/stockyard-launcher-darwin-arm64" style="display:inline-block;padding:0.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">Mac (Apple Silicon)</a>
+      <a href="https://github.com/stockyard-dev/stockyard-launcher/releases/latest/download/stockyard-launcher-darwin-amd64" style="display:inline-block;padding:0.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">Mac (Intel)</a>
+      <a href="https://github.com/stockyard-dev/stockyard-launcher/releases/latest/download/stockyard-launcher-linux-amd64" style="display:inline-block;padding:0.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">Linux</a>
+    </div>
+    <p style="font-family:var(--font-mono);font-size:0.55rem;color:var(--cream-muted);margin-top:0.5rem">Download, run with: ./stockyard-launcher -bundle storage-facility</p>
+  </div>
 </div>
 
 <div class="section">

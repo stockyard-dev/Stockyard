@@ -1138,6 +1138,32 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
+	// Serve individual bundle data for launcher
+	mux.HandleFunc("GET /api/bundle/{slug}", func(w http.ResponseWriter, r *http.Request) {
+		slug := r.PathValue("slug")
+		data, err := fs.ReadFile(sub, "bundles-search.json")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		var bundles []json.RawMessage
+		if err := json.Unmarshal(data, &bundles); err != nil {
+			http.Error(w, "internal error", 500)
+			return
+		}
+		for _, b := range bundles {
+			var m map[string]any
+			json.Unmarshal(b, &m)
+			if s, _ := m["slug"].(string); s == slug {
+				w.Header().Set("Content-Type", "application/json")
+				w.Header().Set("Cache-Control", "public, max-age=300")
+				w.Write(b)
+				return
+			}
+		}
+		http.NotFound(w, r)
+	})
+
 	// Serve sitemap.xml
 	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "sitemap.xml")
