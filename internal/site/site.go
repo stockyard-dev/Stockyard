@@ -1126,6 +1126,18 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
+	// Serve bundles search index for homepage async load
+	mux.HandleFunc("GET /bundles-search.json", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "bundles-search.json")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+
 	// Serve sitemap.xml
 	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "sitemap.xml")
