@@ -100,13 +100,13 @@ pre{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font
 <p>But many teams use AWS services not because they need AWS-specific features, but because AWS was the default choice. They use S3 for file storage, SQS for message queues, and Secrets Manager for secrets. For these teams, the alternative to simulating AWS locally is using tools that provide the same capability without the AWS dependency — in production, not just in development.</p>
 
 <h2>AWS service replacements</h2>
-<p><strong><a href="/granary/">Granary</a></strong> — object storage (replaces S3 for application file storage). Store and retrieve files via a simple HTTP API. For applications that use S3 as a file store rather than for its advanced features like lifecycle policies or cross-region replication. $0.99/mo.</p>
+<p><strong><a href="/granary/">Granary</a></strong> — object storage (replaces S3 for application file storage). Store and retrieve files via a simple HTTP API. For applications that use S3 as a file store rather than for its advanced features like lifecycle policies or cross-region replication. $7.99/mo.</p>
 
-<p><strong><a href="/courier/">Courier</a></strong> — message queue (replaces SQS). Publish messages, consume from queues, dead-letter handling. For applications that use SQS for async job processing rather than for its integration with Lambda or other AWS services. $0.99/mo.</p>
+<p><strong><a href="/courier/">Courier</a></strong> — message queue (replaces SQS). Publish messages, consume from queues, dead-letter handling. For applications that use SQS for async job processing rather than for its integration with Lambda or other AWS services. $7.99/mo.</p>
 
-<p><strong><a href="/strongbox/">Strongbox</a></strong> — secret management (replaces Secrets Manager). Store and retrieve secrets with AES-256-GCM encryption. For applications that use Secrets Manager to store API keys and database passwords. $0.99/mo.</p>
+<p><strong><a href="/strongbox/">Strongbox</a></strong> — secret management (replaces Secrets Manager). Store and retrieve secrets with AES-256-GCM encryption. For applications that use Secrets Manager to store API keys and database passwords. $7.99/mo.</p>
 
-<p><strong><a href="/cartridge/">Cartridge</a></strong> — configuration management (replaces Parameter Store). Store and retrieve configuration values with versioning. $0.99/mo.</p>
+<p><strong><a href="/cartridge/">Cartridge</a></strong> — configuration management (replaces Parameter Store). Store and retrieve configuration values with versioning. $7.99/mo.</p>
 
 <h2>When you still need LocalStack</h2>
 <p>If your application uses AWS-specific features — IAM policies, Lambda triggers, DynamoDB streams, S3 event notifications, or Step Functions — LocalStack is the right tool because you need API compatibility with AWS. Stockyard tools do not emulate AWS APIs. They provide the same capabilities through their own REST APIs. The migration requires changing your application code to use the Stockyard API instead of the AWS SDK, which is a real cost. The benefit is eliminating the AWS dependency entirely — not just locally, but in production.</p>

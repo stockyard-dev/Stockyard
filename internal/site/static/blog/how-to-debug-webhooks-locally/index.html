@@ -189,7 +189,7 @@ curl -s http://localhost:8760/api/events/evt_xyz | jq .</pre>
   <p>Corral forwards every incoming webhook to your handler, retries on failure, and logs every delivery attempt. You keep the capture history for debugging without changing how your application receives events.</p>
 
   <h2 style="margin-top:2.5rem;font-size:1.3rem">On production</h2>
-  <p>The same binary works in production. Run it on your server, set <code>DATA_DIR</code> to a persistent path, and put it behind your existing reverse proxy. For teams, Corral Pro ($0.99/mo) removes the endpoint and event limits and adds 90-day retention, so you have history when a production webhook fails at 3am.</p>
+  <p>The same binary works in production. Run it on your server, set <code>DATA_DIR</code> to a persistent path, and put it behind your existing reverse proxy. For teams, Corral Pro ($7.99/mo) removes the endpoint and event limits and adds 90-day retention, so you have history when a production webhook fails at 3am.</p>
 
   <div class="note">
     If your application is an LLM application and you need more than webhook debugging — request tracing, cost tracking across LLM providers, model routing — <a href="/">Stockyard</a> is the full platform that handles all of that in one binary.

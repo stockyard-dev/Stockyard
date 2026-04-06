@@ -106,7 +106,7 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Gate","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free tier"},{"@type":"Offer","price":"2.99","priceCurrency":"USD","description":"Pro monthly"}],"description":"Put basic auth, API key validation, and IP allowlisting in front of any service without touching the service. Your own nginx auth_request layer with a dashboard"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Gate","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"14-day free trial"},{"@type":"Offer","price":"2.99","priceCurrency":"USD","description":"Bundle monthly"}],"description":"Put basic auth, API key validation, and IP allowlisting in front of any service without touching the service. Your own nginx auth_request layer with a dashboard"}</script>
 
 <style>
 .related-section{padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3)}
@@ -267,7 +267,7 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
           <li>Route-based protection rules</li>
       </ul>
       <div style="display:flex;gap:.6rem;flex-direction:column">
-  <button id="checkout-btn-monthly" onclick="startCheckout('gate-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Upgrade to Pro &mdash; $2.99/mo</button>
+  <button id="checkout-btn-monthly" onclick="startCheckout('gate-pro','monthly')" class="cta" style="cursor:pointer;background:var(--gold);border-color:var(--gold);color:var(--bg)">Start Trial &mdash; $2.99/mo</button>
   <button id="checkout-btn-annual" onclick="startCheckout('gate-pro','annual')" class="cta" style="cursor:pointer;font-size:.72rem">Annual &mdash; $29.90/yr <span style="color:var(--green-light)">save 2 months</span></button>
 </div>
     </div>
@@ -318,7 +318,7 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
     <div class="section-label">FAQ</div>
   <div class="faq-item"><div class="faq-q">Does Gate work with browser apps?</div><div class="faq-a">Yes. Set <code>GATE_CORS_ORIGINS</code> for CORS headers. The <code>POST /gate/login</code> endpoint sets an HTTP-only cookie for browser clients. Pro adds session duration controls.</div></div>
   <div class="faq-item"><div class="faq-q">Can I run it behind a load balancer?</div><div class="faq-a">Yes. Gate is stateless except for the SQLite DB. Run one instance behind a reverse proxy or load balancer. For HA, point multiple instances at the same <code>DATA_DIR</code> on shared storage.</div></div>
-  <div class="faq-item"><div class="faq-q">What happens at the user limit on Free?</div><div class="faq-a">The admin API returns an error when you try to create a sixth user. Existing users and keys keep working. Upgrade to Pro to remove the limit.</div></div>
+  <div class="faq-item"><div class="faq-q">What happens at the user limit on Free?</div><div class="faq-a">The admin API returns an error when you try to create a sixth user. Existing users and keys keep working. Start Trial to remove the limit.</div></div>
   <div class="faq-item"><div class="faq-q">Does the upstream know Gate is in the path?</div><div class="faq-a">No. Gate proxies requests as-is. The upstream sees the original request headers (with auth headers stripped). It has no awareness of Gate.</div></div>
   <div class="faq-item"><div class="faq-q">What's the license?</div><div class="faq-a">Apache 2.0. Free to use, modify, and deploy.</div></div>
   </div>
@@ -331,9 +331,9 @@ curl -H 'Authorization: Bearer sk-gate-...' http://localhost:8780/your/path</pre
   <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">Single binary. No code changes required. Free to start.</p>
   <div class="cta-group">
     <a href="#install" class="btn btn-primary">Install Gate Free</a>
-    <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Upgrade to Pro</a>
+    <a href="#pricing" class="btn btn-primary" style="background:var(--bg2);border-color:var(--gold);color:var(--gold)">Start Trial</a>
   </div>
-  <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Part of <a href="/complete/" style="color:var(--gold)">Stockyard Complete</a> &mdash; all 150 tools — $1 first month, then $29/mo</p>
+  <p style="margin-top:2rem;font-family:var(--font-mono);font-size:.75rem;color:var(--leather)">Part of <a href="/complete/" style="color:var(--gold)">Stockyard All Tools</a> &mdash; all 164+ tools — 14-day free trial, then $7.99/mo per bundle</p>
 </section>
 
 </main>
@@ -365,7 +365,7 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop'))
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav()}})
 </script>
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Gate work with browser apps?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set <code>GATE_CORS_ORIGINS</code> for CORS headers. The <code>POST /gate/login</code> endpoint sets an HTTP-only cookie for browser clients. Pro adds session duration controls."}}, {"@type": "Question", "name": "Can I run it behind a load balancer?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gate is stateless except for the SQLite DB. Run one instance behind a reverse proxy or load balancer. For HA, point multiple instances at the same <code>DATA_DIR</code> on shared storage."}}, {"@type": "Question", "name": "What happens at the user limit on Free?", "acceptedAnswer": {"@type": "Answer", "text": "The admin API returns an error when you try to create a sixth user. Existing users and keys keep working. Upgrade to Pro to remove the limit."}}, {"@type": "Question", "name": "Does the upstream know Gate is in the path?", "acceptedAnswer": {"@type": "Answer", "text": "No. Gate proxies requests as-is. The upstream sees the original request headers (with auth headers stripped). It has no awareness of Gate."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "Apache 2.0. Free to use, modify, and deploy."}}]}
+{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does Gate work with browser apps?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set <code>GATE_CORS_ORIGINS</code> for CORS headers. The <code>POST /gate/login</code> endpoint sets an HTTP-only cookie for browser clients. Pro adds session duration controls."}}, {"@type": "Question", "name": "Can I run it behind a load balancer?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gate is stateless except for the SQLite DB. Run one instance behind a reverse proxy or load balancer. For HA, point multiple instances at the same <code>DATA_DIR</code> on shared storage."}}, {"@type": "Question", "name": "What happens at the user limit on Free?", "acceptedAnswer": {"@type": "Answer", "text": "The admin API returns an error when you try to create a sixth user. Existing users and keys keep working. Start Trial to remove the limit."}}, {"@type": "Question", "name": "Does the upstream know Gate is in the path?", "acceptedAnswer": {"@type": "Answer", "text": "No. Gate proxies requests as-is. The upstream sees the original request headers (with auth headers stripped). It has no awareness of Gate."}}, {"@type": "Question", "name": "What's the license?", "acceptedAnswer": {"@type": "Answer", "text": "Apache 2.0. Free to use, modify, and deploy."}}]}
 </script>
 <script>
 async function startCheckout(plan, interval) {
@@ -379,8 +379,8 @@ async function startCheckout(plan, interval) {
     });
     const d = await r.json();
     if (d.url) { window.location.href = d.url; }
-    else { alert('Checkout error — ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
-  } catch(e) { alert('Network error — please try again'); if (btn) { btn.textContent = 'Upgrade to Pro'; btn.style.opacity = '1'; } }
+    else { alert('Checkout error — ' + (d.error || 'please try again')); if (btn) { btn.textContent = 'Start Trial'; btn.style.opacity = '1'; } }
+  } catch(e) { alert('Network error — please try again'); if (btn) { btn.textContent = 'Start Trial'; btn.style.opacity = '1'; } }
 }
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
