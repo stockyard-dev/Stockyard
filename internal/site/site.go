@@ -264,6 +264,12 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		log.Println("[site] install tracking table ready")
 	}
 
+	// Initialize AI recommendation system
+	var recommender *Recommender
+	if db != nil {
+		recommender = NewRecommender(db)
+	}
+
 	// Strip the "static/" prefix so files are served from root
 	sub, err := fs.Sub(staticFiles, "static")
 	if err != nil {
@@ -909,14 +915,31 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		})
 	}
 
+	// AI recommendation endpoint
+	if recommender != nil {
+		mux.HandleFunc("POST /api/recommend", recommender.HandleRecommend)
+	}
+
 	// Bundle pages — /for/ index + /for/{slug}/ + /for/{slug}/install.sh
 	mux.HandleFunc("GET /for/", func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/")
 		if path == "for/" || path == "for" {
 			path = "for/index.html"
 		} else if strings.HasSuffix(path, "/install.sh") {
-			// Install script — serve with download tracking
+			// Install script — try static first, then AI-generated
 			data, err := fs.ReadFile(sub, path)
+			if err != nil && recommender != nil {
+				// Try AI-generated install script
+				slug := strings.TrimPrefix(path, "for/")
+				slug = strings.TrimSuffix(slug, "/install.sh")
+				if script, ok := recommender.GenerateInstallScript(slug); ok {
+					recordInstall(db, r, "/"+path)
+					w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+					w.Header().Set("Cache-Control", "public, max-age=300")
+					w.Write(script)
+					return
+				}
+			}
 			if err != nil {
 				http.NotFound(w, r)
 				return
@@ -932,6 +955,14 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			path = path + "/index.html"
 		}
 		data, err := fs.ReadFile(sub, path)
+		if err != nil && recommender != nil {
+			// Try AI-generated cached page
+			slug := strings.TrimPrefix(strings.TrimSuffix(path, "/index.html"), "for/")
+			if page, ok := recommender.ServeCachedBundle(slug); ok {
+				servePage(w, r, page, "public, max-age=300")
+				return
+			}
+		}
 		if err != nil {
 			http.NotFound(w, r)
 			return

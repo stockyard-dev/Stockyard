@@ -112,13 +112,15 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 
 <section class="hero">
   <h1>Your tools. Your data. Your&nbsp;hardware.</h1>
-  <p class="sub">Self-hosted software for your business, hobby, or community. One install. No subscriptions. No cloud.</p>
+  <p class="sub">Tell us what you do and we'll build your toolkit. Self-hosted software for your business, hobby, or community. No cloud. No subscriptions.</p>
   <div class="search-box">
-    <label for="search">What do you do?</label>
+    <label for="search">Tell us what you do</label>
     <div class="search-wrap">
-      <input type="text" id="search" placeholder="e.g. barber, therapist, minecraft, church..." autocomplete="off">
+      <input type="text" id="search" placeholder="e.g. I run a small tattoo shop, yoga studio owner, minecraft server admin..." autocomplete="off">
       <div id="results"></div>
     </div>
+    <button id="ai-btn" onclick="buildToolkit()" style="display:none;width:100%;margin-top:.8rem;padding:.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.85rem;border:2px solid var(--rust);cursor:pointer;transition:all .2s;letter-spacing:1px">Build My Toolkit →</button>
+    <div id="spinner" style="display:none;text-align:center;padding:2rem;font-family:var(--font-mono);font-size:.8rem;color:var(--cream-dim)">Building your toolkit<span id="dots">...</span></div>
   </div>
 </section>
 
@@ -176,7 +178,12 @@ var SI=document.getElementById('search'),RD=document.getElementById('results'),B
 
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
-SI.addEventListener('input',function(){var v=this.value.trim();if(v.length<2){RD.style.display='none';BR.style.display='none';CS.style.display='';return}doSearch(v)});
+var AB=document.getElementById('ai-btn'),SP=document.getElementById('spinner');
+SI.addEventListener('input',function(){var v=this.value.trim();
+if(v.length<2){RD.style.display='none';BR.style.display='none';CS.style.display='';AB.style.display='none';return}
+doSearch(v);
+AB.style.display=v.length>10?'block':'none';
+});
 
 var params=new URLSearchParams(window.location.search);var initQ=params.get('q');
 if(initQ){SI.value=initQ;doSearch(initQ)}
@@ -229,6 +236,28 @@ BR.style.display='block'
 
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){RD.style.display='none'}});
 document.addEventListener('click',function(e){if(!e.target.closest('.search-wrap'))RD.style.display='none'});
+
+async function buildToolkit(){
+var desc=SI.value.trim();if(desc.length<5)return;
+RD.style.display='none';CS.style.display='none';BR.style.display='none';
+AB.style.display='none';SP.style.display='block';
+// Animate dots
+var di=setInterval(function(){var d=document.getElementById('dots');if(d)d.textContent=d.textContent.length>5?'.':d.textContent+'.'},400);
+try{
+var resp=await fetch('/api/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:desc})});
+var data=await resp.json();
+clearInterval(di);SP.style.display='none';
+if(data.fallback||data.error){doSearch(desc.split(' ')[0]);AB.style.display='block';return}
+// Render AI result
+var tc=data.tools.map(function(t){return'<div class="tool-card"><h4 style="font-family:var(--font-mono);font-size:.82rem;margin-bottom:.3rem">'+esc(t.label)+'</h4><p style="font-size:.78rem;color:var(--cream-dim)">'+esc(t.desc)+'</p><p style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-top:.3rem">Replaces '+esc(t.replaces)+' ($'+t.replaces_cost+'/mo)</p></div>'}).join('');
+var slug=data.slug||'custom';
+BR.innerHTML='<div class="bundle-detail" style="animation:fadeIn .3s ease"><div class="bun-eye">Your Custom Toolkit</div><h2 class="bun-h">'+esc(data.title)+'</h2><p class="bun-sub">'+data.tools.length+' self-hosted tools for '+esc(data.audience)+'</p><div class="install-methods"><div class="method"><h4>Install</h4><div class="install-cmd" id="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim());this.classList.add(\'copied\');setTimeout(function(){document.getElementById(\'cmd\').classList.remove(\'copied\')},2000)">curl -fsSL https://stockyard.dev/for/'+esc(slug)+'/install.sh | sh</div></div><div class="method"><h4>Details</h4><a href="/for/'+esc(slug)+'/" class="btn">View Full Page</a></div></div><div style="text-align:center;margin:2rem 0;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem"><p style="font-size:.85rem;color:var(--cream-dim)">You\'re probably paying <strong style="color:var(--rust-light)">~$'+data.total_replaces_cost+'/mo</strong> in SaaS fees</p><p style="font-family:var(--font-mono);font-size:1.3rem;margin-top:.5rem;color:var(--gold)">Save ~$'+data.savings_per_year+'/year with Stockyard</p></div><div class="bun-section-label">'+data.tools.length+' tools, built for you</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p>14 days free. Then <strong>$7.99/mo</strong>. Cancel anytime. Your data stays.</p><a href="/pricing/?bundle='+esc(slug)+'" class="btn" style="margin-top:1rem">Start 14-Day Trial</a><p style="font-size:.7rem;color:var(--cream-muted);margin-top:.8rem;font-family:var(--font-mono)">Credit card required. $0 charged today.</p></div></div>';
+BR.style.display='block';BR.scrollIntoView({behavior:'smooth',block:'start'});
+history.replaceState(null,'','/?q='+encodeURIComponent(desc));
+gtag('event','ai_toolkit_generated',{description:desc,tools:data.tools.length,slug:slug});
+}catch(e){clearInterval(di);SP.style.display='none';AB.style.display='block';doSearch(desc.split(' ')[0])}
+}
+SI.addEventListener('keydown',function(e){if(e.key==='Enter'&&SI.value.trim().length>10){e.preventDefault();buildToolkit()}});
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
