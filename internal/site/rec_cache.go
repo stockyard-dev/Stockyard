@@ -122,9 +122,31 @@ func personalize(base *RecommendResult, businessName string) *RecommendResult {
 	var result RecommendResult
 	json.Unmarshal(data, &result)
 
-	// If the result title is generic, prepend business name
-	if businessName != "" && !strings.Contains(result.Title, businessName) {
-		result.Title = businessName + " — " + result.Title
+	// Swap business name in title
+	oldName := result.BusinessName
+	if oldName == "" {
+		oldName = "My Business"
+	}
+
+	if !strings.Contains(result.Title, businessName) {
+		if strings.Contains(result.Title, oldName) {
+			result.Title = strings.Replace(result.Title, oldName, businessName, 1)
+		} else {
+			result.Title = businessName + " — " + result.Title
+		}
+	}
+
+	result.BusinessName = businessName
+
+	// Swap business name in per-tool config dashboard_titles
+	for i := range result.Tools {
+		if len(result.Tools[i].Config) > 0 {
+			raw := string(result.Tools[i].Config)
+			if oldName != "" && strings.Contains(raw, oldName) {
+				raw = strings.Replace(raw, oldName, businessName, -1)
+				result.Tools[i].Config = json.RawMessage(raw)
+			}
+		}
 	}
 
 	return &result

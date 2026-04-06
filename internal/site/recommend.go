@@ -46,6 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_tg_created ON toolkit_generations(created_at);
 type RecommendResult struct {
 	Title             string          `json:"title"`
 	Audience          string          `json:"audience"`
+	BusinessName      string          `json:"business_name,omitempty"`
 	Tools             []RecommendTool `json:"tools"`
 	TotalReplacesCost int             `json:"total_replaces_cost"`
 	SavingsPerYear    int             `json:"savings_per_year"`
@@ -55,11 +56,12 @@ type RecommendResult struct {
 
 // RecommendTool is a single tool recommendation.
 type RecommendTool struct {
-	Slug         string `json:"slug"`
-	Label        string `json:"label"`
-	Desc         string `json:"desc"`
-	Replaces     string `json:"replaces"`
-	ReplacesCost int    `json:"replaces_cost"`
+	Slug         string          `json:"slug"`
+	Label        string          `json:"label"`
+	Desc         string          `json:"desc"`
+	Replaces     string          `json:"replaces"`
+	ReplacesCost int             `json:"replaces_cost"`
+	Config       json.RawMessage `json:"config,omitempty"`
 }
 
 // Recommender handles AI-powered tool recommendations.
@@ -285,40 +287,62 @@ func (r *Recommender) HandleToolkitCount(w http.ResponseWriter, req *http.Reques
 }
 
 func (r *Recommender) callLLM(description string) (*RecommendResult, error) {
-	prompt := fmt.Sprintf(`You are the tool recommender for Stockyard, a platform of self-hosted tools. Each tool is a single binary (~9MB) that stores data in SQLite. No cloud. No dependencies.
+	prompt := fmt.Sprintf(`You are the toolkit builder for Stockyard, a platform of self-hosted business tools. Each tool is a standalone binary (~13MB) that stores data in SQLite on the user's own hardware. No cloud. No dependencies. No accounts.
 
-Available tools:
+AVAILABLE TOOLS:
 %s
 
-The user described their work:
+THE USER SAID:
 "%s"
 
-Pick 5-10 tools that would be most useful for exactly this person. Be specific to what they described.
+YOUR TASK:
+Pick 6-9 tools that would be most useful for exactly this person and their specific work. Then generate a personalization config so every tool arrives pre-configured for their business.
 
-For each tool:
-1. Pick the tool slug from the list above (ONLY use slugs from the list)
-2. Give it a display label that makes sense for THIS person (not the generic name)
-3. Write a brief description (under 15 words) of how THEY would use it
-4. Name one SaaS product it replaces for them, with approximate monthly cost
+Respond with ONLY valid JSON. No markdown. No backticks. No explanation.
 
-Also provide:
-- A short title for their toolkit (under 8 words)
-- A one-line description of their business/activity
-- Total monthly SaaS cost they're probably paying
-- Annual savings (total_replaces_cost - 7.99) * 12
-
-Respond with ONLY this JSON, no markdown, no backticks:
 {
-  "title": "...",
-  "audience": "...",
-  "tools": [{"slug":"...","label":"...","desc":"...","replaces":"...","replaces_cost":0}],
+  "title": "3-6 word toolkit title",
+  "audience": "one-line description of who this is for",
+  "business_name": "extracted or generated business name",
+  "tools": [
+    {
+      "slug": "exact_slug_from_list",
+      "label": "Custom Display Name For This Person",
+      "desc": "How THEY would use it, under 15 words",
+      "replaces": "SaaS product name",
+      "replaces_cost": 25,
+      "config": {
+        "dashboard_title": "Tony's Barber Shop — Clients",
+        "primary_label": "Clients",
+        "empty_state_message": "Add your first client to get started",
+        "placeholder_name": "Marcus Johnson",
+        "custom_fields": [
+          {"name": "hair_type", "label": "Hair Type", "type": "select", "options": ["Straight","Wavy","Curly","Coily"]},
+          {"name": "preferred_barber", "label": "Preferred Barber", "type": "text"}
+        ]
+      }
+    }
+  ],
   "total_replaces_cost": 0,
   "savings_per_year": 0
-}`, r.catalog, description)
+}
+
+RULES:
+1. ONLY use tool slugs from the list above. Never invent slugs.
+2. Every tool must have a config object with at minimum: dashboard_title, primary_label, empty_state_message, placeholder_name.
+3. For tools that track items/records (dossier, quartermaster, steward, etc.), include custom_fields (3-5 fields) with labels and types specific to their work. Types allowed: text, textarea, number, date, select (with options), checkbox, email, phone, url.
+4. For steward/exchequer, include a "categories" array (6-8 expense/budget categories specific to their industry).
+5. For booking, include a "services" array (3-6 services with name, duration_min, price) and "default_hours" object.
+6. custom_fields should be things specific to their work that the generic tool wouldn't have. A barber needs "Hair Type" and "Regular Service." A vet needs "Species" and "Weight." A beekeeper needs "Hive Type" and "Queen Status."
+7. placeholder_name should be a realistic example appropriate to their context. A vet's placeholder: "Bella (Golden Retriever, Johnson family)." A church's: "Sarah Mitchell — Choir, Sunday School."
+8. business_name: extract from their input if mentioned, otherwise generate something plausible like "My Barber Shop."
+9. dashboard_title should include their business name and the tool's purpose: "Tony's Barber Shop — Clients" not just "Clients."
+10. For replaces, name one SaaS product each tool replaces with realistic monthly cost. Calculate total_replaces_cost as the sum. Calculate savings_per_year as (total_replaces_cost - 7.99) * 12.
+11. Be specific. A therapist who says "EMDR practice" should get fields for trauma type, SUDS score, bilateral stimulation method — not generic therapy fields. A "craft brewery" should get fields for IBU, SRM, OG, FG — not generic inventory fields.`, r.catalog, description)
 
 	reqBody, _ := json.Marshal(map[string]any{
 		"model":      "claude-sonnet-4-20250514",
-		"max_tokens": 1000,
+		"max_tokens": 2500,
 		"messages": []map[string]string{
 			{"role": "user", "content": prompt},
 		},
@@ -329,7 +353,7 @@ Respond with ONLY this JSON, no markdown, no backticks:
 	httpReq.Header.Set("x-api-key", r.apiKey)
 	httpReq.Header.Set("anthropic-version", "2023-06-01")
 
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 45 * time.Second}
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("API call failed: %w", err)
