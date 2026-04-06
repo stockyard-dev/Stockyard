@@ -185,16 +185,30 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75
 <script>
 var p=new URLSearchParams(window.location.search);
 var bundle=p.get('bundle');
-if(bundle){
-  var btn=document.getElementById('bundle-cta');
-  btn.href='#';
-  btn.onclick=function(e){
-    e.preventDefault();
-    fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bundle:bundle})})
-    .then(function(r){return r.json()})
-    .then(function(d){if(d.url)window.location=d.url})
-  };
+
+function doCheckout(btn,body){
+  var orig=btn.textContent;
+  btn.textContent='Loading...';btn.style.opacity='.6';
+  fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(r){return r.json()})
+  .then(function(d){
+    if(d.url){window.location=d.url}
+    else{btn.textContent=d.error||'Error — try again';btn.style.opacity='1';setTimeout(function(){btn.textContent=orig;},3000)}
+  })
+  .catch(function(){btn.textContent='Error — try again';btn.style.opacity='1';setTimeout(function(){btn.textContent=orig},3000)});
 }
+
+var bundleBtn=document.getElementById('bundle-cta');
+if(bundle){
+  bundleBtn.href='#';
+  bundleBtn.textContent='Start Trial — $0 today';
+  bundleBtn.onclick=function(e){e.preventDefault();doCheckout(this,{bundle:bundle})};
+}else{
+  bundleBtn.href='/';
+  bundleBtn.textContent='Find Your Bundle';
+}
+
+document.getElementById('all-cta').onclick=function(e){e.preventDefault();doCheckout(this,{plan:'individual'})};
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
