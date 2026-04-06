@@ -296,6 +296,8 @@ func isPublicRoute(method, path string) bool {
 			return true
 		case path == "/api/products" || strings.HasPrefix(path, "/api/products/"):
 			return true
+		case strings.HasPrefix(path, "/api/bundle/"):
+			return true
 		case path == "/api/plans":
 			return true
 		case path == "/api/license":
