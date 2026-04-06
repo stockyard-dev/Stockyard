@@ -59,6 +59,8 @@ type Recommender struct {
 	apiKey   string
 	mu       sync.RWMutex
 	slugSet  map[string]bool // known tool slugs for validation
+	portMap  map[string]int  // slug → default port
+	nameMap  map[string]string // slug → display name
 }
 
 // NewRecommender creates the recommendation system.
@@ -75,6 +77,8 @@ func NewRecommender(db *sql.DB) *Recommender {
 		db:      db,
 		apiKey:  os.Getenv("ANTHROPIC_API_KEY"),
 		slugSet: make(map[string]bool),
+		portMap: make(map[string]int),
+		nameMap: make(map[string]string),
 	}
 
 	r.loadCatalog()
@@ -93,12 +97,19 @@ func (r *Recommender) loadCatalog() {
 		Name    string `json:"name"`
 		Tagline string `json:"tagline"`
 		Desc    string `json:"description"`
+		Port    int    `json:"port"`
 	}
 	json.Unmarshal(data, &tools)
 
 	var lines []string
 	for _, t := range tools {
 		r.slugSet[t.Slug] = true
+		r.nameMap[t.Slug] = t.Name
+		port := t.Port
+		if port == 0 {
+			port = 9100
+		}
+		r.portMap[t.Slug] = port
 		lines = append(lines, fmt.Sprintf("- %s: %s. %s", t.Slug, t.Tagline, t.Desc))
 	}
 	r.catalog = strings.Join(lines, "\n")
@@ -283,7 +294,7 @@ func (r *Recommender) ServeCachedBundle(slug string) ([]byte, bool) {
 	return renderCachedBundlePage(slug, &result), true
 }
 
-// GenerateInstallScript creates an install script for a cached bundle.
+// GenerateInstallScript creates a full bundle install script for a cached AI bundle.
 func (r *Recommender) GenerateInstallScript(slug string) ([]byte, bool) {
 	var resultJSON string
 	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, slug).Scan(&resultJSON)
@@ -294,27 +305,97 @@ func (r *Recommender) GenerateInstallScript(slug string) ([]byte, bool) {
 	var result RecommendResult
 	json.Unmarshal([]byte(resultJSON), &result)
 
-	var script strings.Builder
-	script.WriteString("#!/usr/bin/env bash\nset -euo pipefail\n\n")
-	script.WriteString(fmt.Sprintf("# Stockyard — %s\n", result.Title))
-	script.WriteString(fmt.Sprintf("# %d tools for %s\n\n", len(result.Tools), result.Audience))
-	script.WriteString("FAILED=0\n\n")
-
-	for _, t := range result.Tools {
-		script.WriteString(fmt.Sprintf("echo \"  Installing %s...\"\n", t.Label))
-		script.WriteString(fmt.Sprintf("if curl -fsSL \"https://stockyard.dev/%s/install.sh\" 2>/dev/null | sh >/dev/null 2>&1; then\n", t.Slug))
-		script.WriteString(fmt.Sprintf("  echo \"    ✓ %s\"\n", t.Label))
-		script.WriteString("else\n")
-		script.WriteString(fmt.Sprintf("  echo \"    ✗ %s (failed)\"\n", t.Label))
-		script.WriteString("  FAILED=$((FAILED + 1))\n")
-		script.WriteString("fi\n\n")
+	if len(result.Tools) == 0 {
+		return nil, false
 	}
 
-	script.WriteString("echo \"\"\n")
-	script.WriteString(fmt.Sprintf("if [ \"$FAILED\" -eq 0 ]; then\n  echo \"  ✓ All %d tools installed!\"\nelse\n  echo \"  ⚠ $FAILED tool(s) failed.\"\nfi\n", len(result.Tools)))
-	script.WriteString("echo \"\"\necho \"  Questions? hello@stockyard.dev\"\necho \"\"\n")
+	var s strings.Builder
+	s.WriteString("#!/usr/bin/env bash\nset -euo pipefail\n\n")
+	s.WriteString(fmt.Sprintf("echo \"\"\necho \"  %s\"\n", result.Title))
+	s.WriteString(fmt.Sprintf("echo \"  %d tools — self-hosted on your hardware\"\necho \"\"\n\n", len(result.Tools)))
 
-	return []byte(script.String()), true
+	// OS/arch detection
+	s.WriteString("OS=\"$(uname -s | tr '[:upper:]' '[:lower:]')\"\n")
+	s.WriteString("ARCH=\"$(uname -m)\"\ncase \"$ARCH\" in\n")
+	s.WriteString("  x86_64)  ARCH=\"amd64\" ;;\n  aarch64|arm64) ARCH=\"arm64\" ;;\n")
+	s.WriteString("  *) echo \"  Unsupported architecture: $ARCH\"; exit 1 ;;\nesac\n")
+	s.WriteString("echo \"  Platform: $OS/$ARCH\"\necho \"\"\n\n")
+
+	// Bundle directory
+	s.WriteString(fmt.Sprintf("BUNDLE_DIR=\"$HOME/stockyard-%s\"\n", slug))
+	s.WriteString("mkdir -p \"$BUNDLE_DIR/tools\" \"$BUNDLE_DIR/data\"\n\n")
+	s.WriteString("TMP=\"$(mktemp -d)\"\ntrap 'rm -rf \"$TMP\"' EXIT\n\nFAILED=0\n\n")
+
+	// Download each tool
+	for _, t := range result.Tools {
+		label := t.Label
+		s.WriteString(fmt.Sprintf("echo \"  Downloading %s...\"\n", label))
+		s.WriteString(fmt.Sprintf("URL=\"https://github.com/stockyard-dev/stockyard-%s/releases/latest/download/stockyard-%s_${OS}_${ARCH}.tar.gz\"\n", t.Slug, t.Slug))
+		s.WriteString("if curl -fsSL \"$URL\" -o \"$TMP/archive.tar.gz\" 2>/dev/null; then\n")
+		s.WriteString("  tar -xzf \"$TMP/archive.tar.gz\" -C \"$TMP\" 2>/dev/null\n")
+		s.WriteString(fmt.Sprintf("  mv \"$TMP/stockyard-%s_${OS}_${ARCH}\" \"$BUNDLE_DIR/tools/stockyard-%s\" 2>/dev/null || \\\n", t.Slug, t.Slug))
+		s.WriteString(fmt.Sprintf("  mv \"$TMP/stockyard-%s\" \"$BUNDLE_DIR/tools/stockyard-%s\" 2>/dev/null || true\n", t.Slug, t.Slug))
+		s.WriteString(fmt.Sprintf("  chmod +x \"$BUNDLE_DIR/tools/stockyard-%s\" 2>/dev/null\n", t.Slug))
+		s.WriteString("  rm -f \"$TMP/archive.tar.gz\"\n")
+		s.WriteString(fmt.Sprintf("  echo \"    ✓ %s\"\n", label))
+		s.WriteString("else\n")
+		s.WriteString(fmt.Sprintf("  echo \"    ✗ %s (failed)\"\n  FAILED=$((FAILED + 1))\nfi\n\n", label))
+	}
+
+	// Generate start.sh
+	s.WriteString("cat > \"$BUNDLE_DIR/start.sh\" << 'STARTEOF'\n#!/bin/bash\n")
+	s.WriteString("DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"\nDATA=\"$DIR/data\"\nmkdir -p \"$DATA\"\n")
+	s.WriteString(fmt.Sprintf("echo \"\"\necho \"  Starting %s...\"\necho \"\"\n", result.Title))
+	firstPort := 0
+	for _, t := range result.Tools {
+		port := r.portMap[t.Slug]
+		if port == 0 {
+			port = 9100
+		}
+		if firstPort == 0 {
+			firstPort = port
+		}
+		s.WriteString(fmt.Sprintf("PORT=%d \"$DIR/tools/stockyard-%s\" -port %d -data \"$DATA\" >/dev/null 2>&1 &\n", port, t.Slug, port))
+	}
+	s.WriteString("sleep 1\necho \"\"\n")
+	for _, t := range result.Tools {
+		port := r.portMap[t.Slug]
+		if port == 0 {
+			port = 9100
+		}
+		s.WriteString(fmt.Sprintf("echo \"  ✓ %-25s http://localhost:%d/ui\"\n", t.Label, port))
+	}
+	s.WriteString("echo \"\"\necho \"  All tools running. Press Ctrl+C to stop.\"\necho \"\"\n")
+	s.WriteString(fmt.Sprintf("if command -v xdg-open &>/dev/null; then\n  xdg-open \"http://localhost:%d/ui\" 2>/dev/null &\n", firstPort))
+	s.WriteString(fmt.Sprintf("elif command -v open &>/dev/null; then\n  open \"http://localhost:%d/ui\" 2>/dev/null &\nfi\nwait\n", firstPort))
+	s.WriteString("STARTEOF\nchmod +x \"$BUNDLE_DIR/start.sh\"\n\n")
+
+	// Generate stop.sh
+	s.WriteString("cat > \"$BUNDLE_DIR/stop.sh\" << 'STOPEOF'\n#!/bin/bash\necho \"  Stopping tools...\"\n")
+	for _, t := range result.Tools {
+		s.WriteString(fmt.Sprintf("pkill -f \"stockyard-%s\" 2>/dev/null && echo \"  ✓ Stopped %s\" || true\n", t.Slug, t.Label))
+	}
+	s.WriteString("echo \"  Done.\"\nSTOPEOF\nchmod +x \"$BUNDLE_DIR/stop.sh\"\n\n")
+
+	// README
+	s.WriteString("cat > \"$BUNDLE_DIR/README.txt\" << 'READMEEOF'\n")
+	s.WriteString(fmt.Sprintf("%s\n\nStart: ./start.sh\nStop:  ./stop.sh\nData:  ./data/\n\nTools:\n", strings.ToUpper(result.Title)))
+	for _, t := range result.Tools {
+		port := r.portMap[t.Slug]
+		if port == 0 {
+			port = 9100
+		}
+		s.WriteString(fmt.Sprintf("  %-25s http://localhost:%d/ui\n", t.Label, port))
+	}
+	s.WriteString(fmt.Sprintf("\nLicense: export STOCKYARD_LICENSE_KEY=your_key\nTrial:   https://stockyard.dev/pricing/?bundle=%s\nHelp:    hello@stockyard.dev\nREADMEEOF\n\n", slug))
+
+	// Summary
+	s.WriteString("echo \"\"\n")
+	s.WriteString(fmt.Sprintf("if [ \"$FAILED\" -eq 0 ]; then\n  echo \"  ✓ All %d tools installed to $BUNDLE_DIR/\"\n", len(result.Tools)))
+	s.WriteString("else\n  echo \"  ⚠ $FAILED tool(s) failed.\"\nfi\n")
+	s.WriteString("echo \"\"\necho \"  Next steps:\"\necho \"    cd $BUNDLE_DIR\"\necho \"    ./start.sh\"\necho \"\"\n")
+
+	return []byte(s.String()), true
 }
 
 func renderCachedBundlePage(slug string, r *RecommendResult) []byte {
