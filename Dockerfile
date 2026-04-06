@@ -13,7 +13,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata curl
 COPY --from=build /stockyard /usr/local/bin/stockyard
-COPY --from=build /src/site/tools/bundles.json /app/site/tools/bundles.json
+COPY --from=build /src/internal/site/static/tools/bundles.json /app/site/tools/bundles.json
 WORKDIR /app
 
 EXPOSE 4200
