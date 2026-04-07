@@ -163,6 +163,10 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **trigger deploy: pick up per-tool data dir patches** (2026-04-06)
+- **Per-tool data directories in all 194 static install scripts** (2026-04-06)
+- **trigger deploy** (2026-04-06)
+- **Add config download endpoints and per-tool data dirs in install scripts** (2026-04-06)
 - **Upgrade LLM prompt to generate personalization configs per tool** (2026-04-06)
 - **Add toolkit generation counter with social proof display** (2026-04-06)
 - **Add 3-layer recommendation cache: quick-match, normalized cache, LLM fallback** (2026-04-06)
@@ -179,10 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **polish: fix all stale per-tool prices + remaining messaging** (2026-04-06)
 - **fix: add route for /bundles-search.json (homepage async fetch)** (2026-04-06)
 - **polish: sitewide messaging update + homepage slim + about page** (2026-04-06)
-- **fix: rewrite pricing page + fix homepage stale language** (2026-04-06)
-- **fix: smoother homepage — no auto-scroll, no auto-select, smooth AI button** (2026-04-06)
-- **feat: AI-generated bundles get full one-click install** (2026-04-06)
-- **fix: one-click install working end-to-end** (2026-04-06)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
