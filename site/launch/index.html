@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Stockyard — 169 self-hosted developer tools, all yours</title>
+<meta name="description" content="One AI prompt builds a personalized self-hosted toolkit for your business. 169 single-binary tools, your data, your server. Watch the 20-second launch demo.">
+<meta property="og:title" content="Stockyard — 169 self-hosted developer tools, all yours">
+<meta property="og:description" content="Type what you do. Get a personalized toolkit. Self-hosted, single binaries, your data. Watch the 20-second launch demo.">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<meta property="og:type" content="video.other">
+<meta property="og:video" content="https://stockyard.dev/launch.mp4">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1280">
+<meta property="og:video:height" content="800">
+<meta name="twitter:card" content="player">
+<meta name="twitter:title" content="Stockyard — 169 self-hosted developer tools, all yours">
+<meta name="twitter:description" content="Type what you do. Get a personalized toolkit. Self-hosted, single binaries, your data.">
+<meta name="twitter:player" content="https://stockyard.dev/launch.mp4">
+<meta name="twitter:player:width" content="1280">
+<meta name="twitter:player:height" content="800">
+<meta name="twitter:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/launch/">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rl:#e8753a;--leather:#a0845c;--ll:#c4a87a;--cream:#f0e6d3;--cd:#bfb5a3;--cm:#7a7060;--gold:#d4a843;--green:#4a9e5c;--mono:'JetBrains Mono',monospace;--serif:'Libre Baskerville',Georgia,serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--cream);font-family:var(--serif);line-height:1.7}
+a{color:var(--rl);text-decoration:none}a:hover{color:var(--gold)}
+
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--mono);font-size:.9rem;color:var(--ll);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--mono)}
+.nav-links a{color:var(--cd)}
+@media(max-width:768px){.nav-links{display:none}}
+
+.wrap{max-width:880px;margin:0 auto;padding:3rem 1.5rem 4rem}
+
+.eyebrow{font-family:var(--mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);text-align:center;margin-bottom:.8rem}
+h1{font-size:clamp(1.7rem,4.5vw,2.6rem);text-align:center;margin-bottom:.6rem;line-height:1.25}
+.sub{text-align:center;color:var(--cd);font-style:italic;font-size:1.05rem;margin-bottom:2.5rem;max-width:640px;margin-left:auto;margin-right:auto}
+
+.video-frame{background:#0d0b09;border:1px solid var(--bg3);padding:.5rem;margin-bottom:2rem;box-shadow:0 0 60px rgba(196,93,44,.06)}
+video{display:block;width:100%;height:auto;background:#000}
+
+.cta-row{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn{font-family:var(--mono);font-size:.78rem;padding:.7rem 1.4rem;text-decoration:none;display:inline-block;border:1px solid var(--bg3);color:var(--cream);background:var(--bg2);transition:all .15s}
+.btn:hover{border-color:var(--leather);color:var(--cream)}
+.btn-primary{background:var(--rust);border-color:var(--rust);color:var(--cream)}
+.btn-primary:hover{background:var(--rl);border-color:var(--rl);color:var(--cream)}
+.btn-gold{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.btn-gold:hover{opacity:.92;color:var(--bg)}
+
+.section-label{font-family:var(--mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin:2.5rem 0 1rem;text-align:center}
+
+.numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2.5rem}
+.num{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1rem;text-align:center}
+.num-v{font-family:var(--mono);font-size:1.6rem;color:var(--gold);font-weight:600}
+.num-l{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1px;margin-top:.3rem}
+
+.bullets{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem 2rem;margin-bottom:2.5rem}
+.bullets ul{list-style:none}
+.bullets li{padding:.5rem 0;border-bottom:1px solid var(--bg3);font-size:.92rem}
+.bullets li:last-child{border-bottom:none}
+.bullets li::before{content:"→";color:var(--rust);margin-right:.7rem;font-family:var(--mono)}
+
+.install-row{background:#0d0b09;padding:1.2rem;font-family:var(--mono);font-size:.78rem;color:var(--ll);overflow-x:auto;border:1px solid var(--bg3);cursor:pointer}
+.install-row:hover{color:var(--cream)}
+.install-label{font-family:var(--mono);font-size:.6rem;color:var(--cm);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.4rem;text-align:center}
+.copy-msg{font-family:var(--mono);font-size:.65rem;color:var(--green);margin-top:.5rem;min-height:1em;text-align:center}
+
+.try{text-align:center;background:var(--bg2);border:2px solid var(--gold);padding:2rem 1.5rem;margin-top:3rem}
+.try h2{font-family:var(--mono);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.try p{color:var(--cd);font-size:.95rem;margin-bottom:1.4rem}
+.try-input{display:flex;gap:.5rem;max-width:520px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.try-input input{flex:1;min-width:240px;padding:.7rem 1rem;background:var(--bg);border:1px solid var(--bg3);color:var(--cream);font-family:var(--serif);font-size:.95rem}
+.try-input input:focus{outline:none;border-color:var(--gold)}
+
+footer{text-align:center;padding:2rem;font-family:var(--mono);font-size:.7rem;color:var(--cm);border-top:1px solid var(--bg3)}
+footer a{color:var(--cm)}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/tools/">Tools</a><a href="/proxy/">Proxy</a><a href="/pricing/" style="color:var(--gold)">Pricing</a></div>
+</nav>
+
+<div class="wrap">
+  <div class="eyebrow">Launch</div>
+  <h1>169 self-hosted developer tools, all yours</h1>
+  <p class="sub">Type what you do. The AI builds a personalized toolkit. Single binaries, your data, your server. No accounts, no SaaS lock-in, no sending your customer list to someone else's database.</p>
+
+  <div class="video-frame">
+    <video controls preload="metadata" playsinline poster="/site-assets/assets/marketing/og-card.png">
+      <source src="/launch.mp4" type="video/mp4">
+      Your browser doesn't support HTML5 video. <a href="/launch.mp4">Download the MP4 directly</a>.
+    </video>
+  </div>
+
+  <div class="cta-row">
+    <a href="#try" class="btn btn-primary">Build my toolkit</a>
+    <a href="/tools/" class="btn">Browse all 169 tools</a>
+    <a href="/pricing/" class="btn btn-gold">Pricing</a>
+  </div>
+
+  <div class="section-label">By the numbers</div>
+  <div class="numbers">
+    <div class="num"><div class="num-v">169</div><div class="num-l">Tools</div></div>
+    <div class="num"><div class="num-v">~13MB</div><div class="num-l">Per binary</div></div>
+    <div class="num"><div class="num-v">0</div><div class="num-l">External deps</div></div>
+    <div class="num"><div class="num-v">5</div><div class="num-l">Platforms each</div></div>
+  </div>
+
+  <div class="section-label">What you get</div>
+  <div class="bullets">
+    <ul>
+      <li>One AI prompt builds a toolkit personalized to your business — fields, categories, defaults, the works</li>
+      <li>Every tool ships as a single Go binary with embedded SQLite. No Postgres, no Redis, no Docker required</li>
+      <li>Your data lives in <code>~/stockyard/data/</code>. You can <code>tar -czf</code> it and move it to another machine</li>
+      <li>OpenAI-compatible LLM proxy with provider routing, failover, spend tracking, and 76 middleware modules</li>
+      <li>Open core: the proxy is Apache 2.0. The dashboard, apps, and 29 platform products are BSL 1.1</li>
+      <li>Every AI feature on stockyard.dev runs through our own proxy. Yes, we dogfood it</li>
+    </ul>
+  </div>
+
+  <div class="section-label">Install in one line</div>
+  <div class="install-label">Pick a bundle, paste in your terminal</div>
+  <div class="install-row" id="cmd1" onclick="copyCmd('cmd1')">curl -fsSL https://stockyard.dev/for/brewery/install.sh | sh</div>
+  <div class="copy-msg" id="msg1"></div>
+
+  <div class="try" id="try">
+    <h2>Or build your own toolkit in 30 seconds</h2>
+    <p>Tell the AI what you do. We'll pick the right tools and pre-configure them for your business.</p>
+    <form class="try-input" onsubmit="event.preventDefault();go()">
+      <input id="bizdesc" type="text" placeholder="I run a craft brewery in Portland..." autocomplete="off">
+      <button type="submit" class="btn btn-gold">Build it →</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <a href="/">Stockyard</a> &middot;
+  <a href="/tools/">Tools</a> &middot;
+  <a href="/proxy/">Proxy</a> &middot;
+  <a href="/pricing/">Pricing</a> &middot;
+  <a href="https://github.com/stockyard-dev">GitHub</a> &middot;
+  <a href="/launch.mp4">Direct MP4</a>
+</footer>
+
+<script>
+function copyCmd(id){
+  var t = document.getElementById(id).textContent.trim();
+  navigator.clipboard.writeText(t);
+  document.getElementById('msg1').textContent = 'copied!';
+  setTimeout(function(){document.getElementById('msg1').textContent=''}, 2000);
+  gtag('event','launch_install_copy',{cmd:t});
+}
+function go(){
+  var v = document.getElementById('bizdesc').value.trim();
+  if(v.length<5)return;
+  gtag('event','launch_try_recommend',{description:v});
+  window.location.href = '/?q=' + encodeURIComponent(v);
+}
+</script>
+</body>
+</html>
