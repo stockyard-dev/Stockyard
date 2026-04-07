@@ -1160,22 +1160,50 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 	mux.HandleFunc("GET /api/bundle/{slug}", func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
 		data, err := fs.ReadFile(sub, "bundles-search.json")
-		if err != nil {
-			http.NotFound(w, r)
-			return
+		if err == nil {
+			var bundles []json.RawMessage
+			if jerr := json.Unmarshal(data, &bundles); jerr == nil {
+				for _, b := range bundles {
+					var m map[string]any
+					json.Unmarshal(b, &m)
+					if s, _ := m["slug"].(string); s == slug {
+						w.Header().Set("Content-Type", "application/json")
+						w.Header().Set("Cache-Control", "public, max-age=300")
+						w.Write(b)
+						return
+					}
+				}
+			}
 		}
-		var bundles []json.RawMessage
-		if err := json.Unmarshal(data, &bundles); err != nil {
-			http.Error(w, "internal error", 500)
-			return
-		}
-		for _, b := range bundles {
-			var m map[string]any
-			json.Unmarshal(b, &m)
-			if s, _ := m["slug"].(string); s == slug {
+		// Fall through: try the AI recommendation cache. The launcher may
+		// have an AI-generated slug like "hopfield-craft-brewery-ab8715"
+		// that doesn't exist in the static bundles list but does exist in
+		// the recCache from a prior /api/recommend call.
+		if recommender != nil && recommender.recCache != nil {
+			if rec, ok := recommender.recCache.Get(slug); ok {
+				// Convert RecommendResult → launcher Bundle shape
+				name := rec.BusinessName
+				if name == "" {
+					name = rec.Title
+				}
+				tools := make([]map[string]any, 0, len(rec.Tools))
+				for _, t := range rec.Tools {
+					tools = append(tools, map[string]any{
+						"slug":  t.Slug,
+						"label": t.Label,
+						"desc":  t.Desc,
+					})
+				}
+				out := map[string]any{
+					"slug":     slug,
+					"name":     name,
+					"headline": rec.Audience,
+					"tools":    tools,
+					"ai":       true,
+				}
 				w.Header().Set("Content-Type", "application/json")
 				w.Header().Set("Cache-Control", "public, max-age=300")
-				w.Write(b)
+				json.NewEncoder(w).Encode(out)
 				return
 			}
 		}
