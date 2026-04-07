@@ -66,14 +66,14 @@ type RecommendTool struct {
 
 // Recommender handles AI-powered tool recommendations.
 type Recommender struct {
-	db       *sql.DB
-	catalog  string // formatted tool catalog for LLM prompt
-	apiKey   string
-	mu       sync.RWMutex
-	slugSet  map[string]bool   // known tool slugs for validation
-	portMap  map[string]int    // slug → default port
-	nameMap  map[string]string // slug → display name
-	recCache *RecCache         // Layer 2 normalized cache
+	db         *sql.DB
+	catalog    string // formatted tool catalog for LLM prompt
+	llmBaseURL string // base URL for the local Stockyard proxy (OpenAI-compatible)
+	mu         sync.RWMutex
+	slugSet    map[string]bool   // known tool slugs for validation
+	portMap    map[string]int    // slug → default port
+	nameMap    map[string]string // slug → display name
+	recCache   *RecCache         // Layer 2 normalized cache
 }
 
 // NewRecommender creates the recommendation system.
@@ -87,17 +87,36 @@ func NewRecommender(db *sql.DB) *Recommender {
 	}
 
 	r := &Recommender{
-		db:      db,
-		apiKey:  os.Getenv("ANTHROPIC_API_KEY"),
-		slugSet: make(map[string]bool),
-		portMap: make(map[string]int),
-		nameMap: make(map[string]string),
+		db:         db,
+		llmBaseURL: defaultLLMBaseURL(),
+		slugSet:    make(map[string]bool),
+		portMap:    make(map[string]int),
+		nameMap:    make(map[string]string),
 	}
 
 	r.recCache = NewRecCache(db)
 	logCacheStats(r.recCache)
 	r.loadCatalog()
 	return r
+}
+
+// defaultLLMBaseURL returns the base URL for LLM calls. In production this
+// points at the local Stockyard proxy (same binary, same port) so that all
+// recommendation traffic goes through spend tracking, failover routing, and
+// caching. Override with LLM_BASE_URL env var for testing.
+//
+// This is the dogfooding step: every AI feature on stockyard.dev now flows
+// through stockyard-proxy. The proxy reads ANTHROPIC_API_KEY from its own env
+// to talk to Anthropic upstream.
+func defaultLLMBaseURL() string {
+	if u := os.Getenv("LLM_BASE_URL"); u != "" {
+		return strings.TrimRight(u, "/")
+	}
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "4200"
+	}
+	return "http://127.0.0.1:" + port + "/v1"
 }
 
 func (r *Recommender) loadCatalog() {
@@ -207,7 +226,10 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	}
 
 	// ── Layer 3: LLM Call ─────────────────────────────────
-	if r.apiKey == "" {
+	// The local proxy reads ANTHROPIC_API_KEY (and other provider keys) from
+	// its own env. If none are set, there's no point hitting the proxy — it'll
+	// just return a no-provider error. Short-circuit and serve the fallback.
+	if os.Getenv("ANTHROPIC_API_KEY") == "" && os.Getenv("OPENAI_API_KEY") == "" {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"error": "AI recommendations unavailable", "fallback": true})
 		return
@@ -415,6 +437,11 @@ RULES:
 10. For replaces, name one SaaS product each tool replaces with realistic monthly cost. Calculate total_replaces_cost as the sum. Calculate savings_per_year as (total_replaces_cost - 7.99) * 12.
 11. Be specific. A therapist who says "EMDR practice" should get fields for trauma type, SUDS score, bilateral stimulation method — not generic therapy fields. A "craft brewery" should get fields for IBU, SRM, OG, FG — not generic inventory fields.`, r.catalog, description)
 
+	// Build OpenAI chat-completions request and route through the local
+	// Stockyard proxy. The proxy handles upstream auth, provider routing,
+	// failover, spend tracking, and caching — none of which we want to
+	// reimplement here. This makes the recommendation pipeline a first-class
+	// dogfooding consumer of stockyard-proxy.
 	reqBody, _ := json.Marshal(map[string]any{
 		"model":      "claude-sonnet-4-20250514",
 		"max_tokens": 2500,
@@ -423,35 +450,42 @@ RULES:
 		},
 	})
 
-	httpReq, _ := http.NewRequest("POST", "https://api.anthropic.com/v1/messages", bytes.NewReader(reqBody))
+	url := r.llmBaseURL + "/chat/completions"
+	httpReq, _ := http.NewRequest("POST", url, bytes.NewReader(reqBody))
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("x-api-key", r.apiKey)
-	httpReq.Header.Set("anthropic-version", "2023-06-01")
+	// Tag for spend attribution in the proxy's request log.
+	httpReq.Header.Set("X-Stockyard-Source", "site/recommend")
 
 	client := &http.Client{Timeout: 45 * time.Second}
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		return nil, fmt.Errorf("API call failed: %w", err)
+		return nil, fmt.Errorf("LLM call via proxy %s failed: %w", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("API returned %d: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("LLM proxy returned %d: %s", resp.StatusCode, string(body))
 	}
 
+	// Parse OpenAI chat-completions response (the proxy translates from
+	// upstream Anthropic format on the way back).
 	var apiResp struct {
-		Content []struct {
-			Text string `json:"text"`
-		} `json:"content"`
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
 	}
-	json.NewDecoder(resp.Body).Decode(&apiResp)
-
-	if len(apiResp.Content) == 0 {
-		return nil, fmt.Errorf("empty API response")
+	if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {
+		return nil, fmt.Errorf("decode LLM response: %w", err)
 	}
 
-	text := apiResp.Content[0].Text
+	if len(apiResp.Choices) == 0 {
+		return nil, fmt.Errorf("LLM returned no choices")
+	}
+
+	text := apiResp.Choices[0].Message.Content
 	// Strip markdown fences if present
 	text = strings.TrimPrefix(text, "```json")
 	text = strings.TrimPrefix(text, "```")
