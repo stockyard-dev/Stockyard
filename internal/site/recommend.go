@@ -239,9 +239,20 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	if err != nil {
 		log.Printf("[recommend] LLM error: %v", err)
 
-		// Fallback: try quick-match for a degraded experience
+		// Fallback: if quick-match has a slug, return it as a degraded
+		// result. The frontend can redirect to /for/{slug}/ for a static
+		// bundle experience instead of showing "recommendation failed".
 		if slug := QuickMatchLookup(normalized); slug != "" {
 			log.Printf("[recommend] LLM failed, falling back to quick-match slug: %s", slug)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"slug":          slug,
+				"fallback":      true,
+				"degraded":      true,
+				"redirect_to":   "/for/" + slug + "/",
+				"message":       "AI recommendation timed out — showing the closest static bundle instead",
+			})
+			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -444,7 +455,7 @@ RULES:
 	// dogfooding consumer of stockyard-proxy.
 	reqBody, _ := json.Marshal(map[string]any{
 		"model":      "claude-sonnet-4-20250514",
-		"max_tokens": 2500,
+		"max_tokens": 6000,
 		"messages": []map[string]string{
 			{"role": "user", "content": prompt},
 		},
