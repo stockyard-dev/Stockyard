@@ -146,12 +146,22 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 		form += "&customer_email=" + email
 	}
 
-	// First-month discount coupon (e.g. $1 first month)
-	if couponID := os.Getenv("STRIPE_FIRST_MONTH_COUPON"); couponID != "" {
-		form += "&discounts[0][coupon]=" + couponID
+	// First-month discount coupon (e.g. $1 first month). The coupon is
+	// optional — if Stripe rejects it (because the coupon scope doesn't
+	// match the price ID being checked out, or any other reason), retry
+	// the checkout without the discount. A misconfigured coupon must
+	// never block a paying customer from checking out.
+	formWithCoupon := form
+	couponID := os.Getenv("STRIPE_FIRST_MONTH_COUPON")
+	if couponID != "" {
+		formWithCoupon = form + "&discounts[0][coupon]=" + couponID
 	}
 
-	result, err := s.stripePost("/checkout/sessions", form)
+	result, err := s.stripePost("/checkout/sessions", formWithCoupon)
+	if err != nil && couponID != "" && (strings.Contains(err.Error(), "coupon") || strings.Contains(err.Error(), "discount")) {
+		log.Printf("[stripe] coupon %s rejected by Stripe (%v) — retrying checkout without discount", couponID, err)
+		result, err = s.stripePost("/checkout/sessions", form)
+	}
 	if err != nil {
 		return "", err
 	}
