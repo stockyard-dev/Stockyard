@@ -250,6 +250,7 @@ try{
 var resp=await fetch('/api/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:desc})});
 var data=await resp.json();
 clearInterval(di);SP.style.display='none';
+if(data.fallback&&data.redirect_to){window.location.href=data.redirect_to;return}
 if(data.fallback||data.error){doSearch(desc.split(' ')[0]);showAB();return}
 // Render AI result
 var tc=data.tools.map(function(t){return'<div class="tool-card"><h4 style="font-family:var(--font-mono);font-size:.82rem;margin-bottom:.3rem">'+esc(t.label)+'</h4><p style="font-size:.78rem;color:var(--cream-dim)">'+esc(t.desc)+'</p><p style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-top:.3rem">Replaces '+esc(t.replaces)+' ($'+t.replaces_cost+'/mo)</p></div>'}).join('');
