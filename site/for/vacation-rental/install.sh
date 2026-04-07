@@ -2,182 +2,70 @@
 set -euo pipefail
 
 echo ""
-echo "  Stockyard for Vacation Rental Owners"
-echo "  6 tools — self-hosted on your hardware"
+echo "  ┌──────────────────────────────────────────┐"
+echo "  │  Stockyard for Vacation Rental Owners    │"
+echo "  │  6 tools · $7.99/mo · self-hosted        │"
+echo "  │  https://stockyard.dev/for/vacation-rental/  │"
+echo "  └──────────────────────────────────────────┘"
 echo ""
-
-OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
-ARCH="$(uname -m)"
-case "$ARCH" in
-  x86_64)  ARCH="amd64" ;;
-  aarch64|arm64) ARCH="arm64" ;;
-  *) echo "  Unsupported architecture: $ARCH"; exit 1 ;;
-esac
-echo "  Platform: $OS/$ARCH"
-echo ""
-
-BUNDLE_DIR="$HOME/stockyard-vacation-rental"
-mkdir -p "$BUNDLE_DIR/tools" "$BUNDLE_DIR/data"
-
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
 
 FAILED=0
 
-echo "  Downloading Booking..."
-URL="https://github.com/stockyard-dev/stockyard-booking/releases/latest/download/stockyard-booking_${OS}_${ARCH}.tar.gz"
-if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
-  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
-  mv "$TMP/stockyard-booking_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-booking" 2>/dev/null || \
-  mv "$TMP/stockyard-booking" "$BUNDLE_DIR/tools/stockyard-booking" 2>/dev/null || true
-  chmod +x "$BUNDLE_DIR/tools/stockyard-booking" 2>/dev/null
-  rm -f "$TMP/archive.tar.gz"
-  echo "    ✓ Booking"
-else
-  echo "    ✗ Booking (failed)"
-  FAILED=$((FAILED + 1))
-fi
-echo "  Downloading Dossier..."
-URL="https://github.com/stockyard-dev/stockyard-dossier/releases/latest/download/stockyard-dossier_${OS}_${ARCH}.tar.gz"
-if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
-  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
-  mv "$TMP/stockyard-dossier_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-dossier" 2>/dev/null || \
-  mv "$TMP/stockyard-dossier" "$BUNDLE_DIR/tools/stockyard-dossier" 2>/dev/null || true
-  chmod +x "$BUNDLE_DIR/tools/stockyard-dossier" 2>/dev/null
-  rm -f "$TMP/archive.tar.gz"
-  echo "    ✓ Dossier"
-else
-  echo "    ✗ Dossier (failed)"
-  FAILED=$((FAILED + 1))
-fi
-echo "  Downloading Roundup..."
-URL="https://github.com/stockyard-dev/stockyard-roundup/releases/latest/download/stockyard-roundup_${OS}_${ARCH}.tar.gz"
-if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
-  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
-  mv "$TMP/stockyard-roundup_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-roundup" 2>/dev/null || \
-  mv "$TMP/stockyard-roundup" "$BUNDLE_DIR/tools/stockyard-roundup" 2>/dev/null || true
-  chmod +x "$BUNDLE_DIR/tools/stockyard-roundup" 2>/dev/null
-  rm -f "$TMP/archive.tar.gz"
-  echo "    ✓ Roundup"
-else
-  echo "    ✗ Roundup (failed)"
-  FAILED=$((FAILED + 1))
-fi
-echo "  Downloading Steward..."
-URL="https://github.com/stockyard-dev/stockyard-steward/releases/latest/download/stockyard-steward_${OS}_${ARCH}.tar.gz"
-if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
-  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
-  mv "$TMP/stockyard-steward_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-steward" 2>/dev/null || \
-  mv "$TMP/stockyard-steward" "$BUNDLE_DIR/tools/stockyard-steward" 2>/dev/null || true
-  chmod +x "$BUNDLE_DIR/tools/stockyard-steward" 2>/dev/null
-  rm -f "$TMP/archive.tar.gz"
-  echo "    ✓ Steward"
-else
-  echo "    ✗ Steward (failed)"
-  FAILED=$((FAILED + 1))
-fi
-echo "  Downloading Portfolio..."
-URL="https://github.com/stockyard-dev/stockyard-portfolio/releases/latest/download/stockyard-portfolio_${OS}_${ARCH}.tar.gz"
-if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
-  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
-  mv "$TMP/stockyard-portfolio_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-portfolio" 2>/dev/null || \
-  mv "$TMP/stockyard-portfolio" "$BUNDLE_DIR/tools/stockyard-portfolio" 2>/dev/null || true
-  chmod +x "$BUNDLE_DIR/tools/stockyard-portfolio" 2>/dev/null
-  rm -f "$TMP/archive.tar.gz"
-  echo "    ✓ Portfolio"
-else
-  echo "    ✗ Portfolio (failed)"
-  FAILED=$((FAILED + 1))
-fi
-echo "  Downloading Billfold..."
-URL="https://github.com/stockyard-dev/stockyard-billfold/releases/latest/download/stockyard-billfold_${OS}_${ARCH}.tar.gz"
-if curl -fsSL "$URL" -o "$TMP/archive.tar.gz" 2>/dev/null; then
-  tar -xzf "$TMP/archive.tar.gz" -C "$TMP" 2>/dev/null
-  mv "$TMP/stockyard-billfold_${OS}_${ARCH}" "$BUNDLE_DIR/tools/stockyard-billfold" 2>/dev/null || \
-  mv "$TMP/stockyard-billfold" "$BUNDLE_DIR/tools/stockyard-billfold" 2>/dev/null || true
-  chmod +x "$BUNDLE_DIR/tools/stockyard-billfold" 2>/dev/null
-  rm -f "$TMP/archive.tar.gz"
-  echo "    ✓ Billfold"
-else
-  echo "    ✗ Billfold (failed)"
-  FAILED=$((FAILED + 1))
-fi
+  echo "  Installing Booking..."
+  if curl -fsSL "https://stockyard.dev/booking/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Booking"
+  else
+    echo "    ✗ Booking (failed — try manually: curl stockyard.dev/booking/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
-cat > "$BUNDLE_DIR/start.sh" << 'STARTEOF'
-#!/bin/bash
-DIR="$(cd "$(dirname "$0")" && pwd)"
-DATA="$DIR/data"
-mkdir -p "$DATA"
-echo ""
-echo "  Starting Stockyard for Vacation Rental Owners..."
-echo ""
-mkdir -p "$DATA/booking" && PORT=9800 "$DIR/tools/stockyard-booking" -port 9800 -data "$DATA/booking" >/dev/null 2>&1 &
-mkdir -p "$DATA/dossier" && PORT=9080 "$DIR/tools/stockyard-dossier" -port 9080 -data "$DATA/dossier" >/dev/null 2>&1 &
-mkdir -p "$DATA/roundup" && PORT=8700 "$DIR/tools/stockyard-roundup" -port 8700 -data "$DATA/roundup" >/dev/null 2>&1 &
-mkdir -p "$DATA/steward" && PORT=9840 "$DIR/tools/stockyard-steward" -port 9840 -data "$DATA/steward" >/dev/null 2>&1 &
-mkdir -p "$DATA/portfolio" && PORT=9808 "$DIR/tools/stockyard-portfolio" -port 9808 -data "$DATA/portfolio" >/dev/null 2>&1 &
-mkdir -p "$DATA/billfold" && PORT=9070 "$DIR/tools/stockyard-billfold" -port 9070 -data "$DATA/billfold" >/dev/null 2>&1 &
-sleep 1
-echo ""
-echo "  ✓ Booking                   http://localhost:9800/ui"
-echo "  ✓ Dossier                   http://localhost:9080/ui"
-echo "  ✓ Roundup                   http://localhost:8700/ui"
-echo "  ✓ Steward                   http://localhost:9840/ui"
-echo "  ✓ Portfolio                 http://localhost:9808/ui"
-echo "  ✓ Billfold                  http://localhost:9070/ui"
-echo ""
-echo "  All tools running. Press Ctrl+C to stop."
-echo ""
-if command -v xdg-open &>/dev/null; then
-  xdg-open "http://localhost:9800/ui" 2>/dev/null &
-elif command -v open &>/dev/null; then
-  open "http://localhost:9800/ui" 2>/dev/null &
-fi
-wait
-STARTEOF
-chmod +x "$BUNDLE_DIR/start.sh"
+  echo "  Installing Dossier..."
+  if curl -fsSL "https://stockyard.dev/dossier/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Dossier"
+  else
+    echo "    ✗ Dossier (failed — try manually: curl stockyard.dev/dossier/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
-cat > "$BUNDLE_DIR/stop.sh" << 'STOPEOF'
-#!/bin/bash
-echo "  Stopping Stockyard tools..."
-pkill -f "stockyard-booking" 2>/dev/null && echo "  ✓ Stopped Booking" || true
-pkill -f "stockyard-dossier" 2>/dev/null && echo "  ✓ Stopped Dossier" || true
-pkill -f "stockyard-roundup" 2>/dev/null && echo "  ✓ Stopped Roundup" || true
-pkill -f "stockyard-steward" 2>/dev/null && echo "  ✓ Stopped Steward" || true
-pkill -f "stockyard-portfolio" 2>/dev/null && echo "  ✓ Stopped Portfolio" || true
-pkill -f "stockyard-billfold" 2>/dev/null && echo "  ✓ Stopped Billfold" || true
-echo "  Done."
-STOPEOF
-chmod +x "$BUNDLE_DIR/stop.sh"
+  echo "  Installing Roundup..."
+  if curl -fsSL "https://stockyard.dev/roundup/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Roundup"
+  else
+    echo "    ✗ Roundup (failed — try manually: curl stockyard.dev/roundup/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
-cat > "$BUNDLE_DIR/README.txt" << 'READMEEOF'
-STOCKYARD FOR VACATION RENTAL OWNERS
+  echo "  Installing Steward..."
+  if curl -fsSL "https://stockyard.dev/steward/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Steward"
+  else
+    echo "    ✗ Steward (failed — try manually: curl stockyard.dev/steward/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
-Start:   ./start.sh
-Stop:    ./stop.sh
-Data:    ./data/
+  echo "  Installing Portfolio..."
+  if curl -fsSL "https://stockyard.dev/portfolio/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Portfolio"
+  else
+    echo "    ✗ Portfolio (failed — try manually: curl stockyard.dev/portfolio/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
-Tools:
-  Booking                   http://localhost:9800/ui
-  Dossier                   http://localhost:9080/ui
-  Roundup                   http://localhost:8700/ui
-  Steward                   http://localhost:9840/ui
-  Portfolio                 http://localhost:9808/ui
-  Billfold                  http://localhost:9070/ui
-
-License: export STOCKYARD_LICENSE_KEY=your_key
-Trial:   https://stockyard.dev/pricing/?bundle=vacation-rental
-Help:    hello@stockyard.dev
-READMEEOF
+  echo "  Installing Billfold..."
+  if curl -fsSL "https://stockyard.dev/billfold/install.sh" 2>/dev/null | sh >/dev/null 2>&1; then
+    echo "    ✓ Billfold"
+  else
+    echo "    ✗ Billfold (failed — try manually: curl stockyard.dev/billfold/install.sh | sh)"
+    FAILED=$((FAILED + 1))
+  fi
 
 echo ""
 if [ "$FAILED" -eq 0 ]; then
-  echo "  ✓ All 6 tools installed to $BUNDLE_DIR/"
+  echo "  ✓ All 6 tools installed successfully!"
 else
-  echo "  ⚠ $FAILED tool(s) failed. The rest are ready."
+  echo "  ⚠ $FAILED tool(s) failed. Check the output above."
 fi
 echo ""
-echo "  Next steps:"
-echo "    cd $BUNDLE_DIR"
-echo "    ./start.sh"
+echo "  Dashboard: run any tool and open http://localhost:<port>/ui"
+echo "  Questions? hello@stockyard.dev"
 echo ""

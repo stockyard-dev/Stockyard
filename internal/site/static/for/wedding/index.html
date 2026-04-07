@@ -30,6 +30,26 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .install{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--leather-light);max-width:600px;margin:0 auto;cursor:pointer;position:relative;transition:border-color 0.2s}
 .install:hover{border-color:var(--rust)}
 .install::after{content:'click to copy';position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:0.6rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}
+.install-buttons{max-width:680px;margin:1.5rem auto 0;padding:1.5rem;background:var(--bg2);border:1px solid var(--bg3);text-align:left}
+.install-buttons-header{text-align:center;margin-bottom:1.2rem}
+.install-buttons-header h3{font-family:var(--font-mono);font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream);margin-bottom:0.4rem;font-weight:700}
+.install-buttons-header p{font-size:0.8rem;color:var(--cream-dim);font-style:italic;margin:0}
+.install-buttons-grid{display:grid;grid-template-columns:1fr;gap:0.6rem}
+@media(min-width:680px){.install-buttons-grid{grid-template-columns:repeat(3,1fr)}}
+.install-btn{display:flex;align-items:center;gap:0.8rem;padding:1rem 1.1rem;background:var(--bg);border:1px solid var(--bg3);border-left:3px solid var(--rust);text-decoration:none;color:var(--cream);transition:border-color .15s,transform .15s,background .15s;position:relative}
+.install-btn:hover{border-color:var(--rust);border-left-color:var(--rust-light);transform:translateY(-1px);color:var(--cream)}
+.install-btn .os-icon{width:24px;height:24px;flex-shrink:0;color:var(--cream)}
+.install-btn-label{display:flex;flex-direction:column;gap:1px;min-width:0}
+.install-btn-title{font-family:var(--font-mono);font-size:0.78rem;font-weight:700;color:var(--cream)}
+.install-btn-sub{font-size:0.62rem;color:var(--cream-dim);font-family:var(--font-mono)}
+.install-btn-recommended{border-color:var(--rust-light);border-left-width:5px;background:var(--bg3)}
+.install-btn-badge{position:absolute;top:-8px;right:8px;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:0.5rem;padding:2px 7px;letter-spacing:1px;text-transform:uppercase}
+.install-mobile-note{display:none;background:var(--bg3);border-left:3px solid var(--gold);padding:0.8rem 1rem;margin-bottom:1rem;font-size:0.78rem;color:var(--cream-dim);font-style:italic;text-align:center;line-height:1.5}
+@media(max-width:680px){.install-mobile-note{display:block}}
+.install-advanced{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--bg3)}
+.install-advanced summary{font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;outline:none}
+.install-advanced summary:hover{color:var(--rust-light)}
+.install-advanced pre{margin-top:0.6rem;padding:0.7rem 0.9rem;background:var(--bg);border:1px solid var(--bg3);font-size:0.7rem;color:var(--cream-dim);overflow-x:auto;font-family:var(--font-mono);white-space:pre-wrap;word-break:break-all}
 .section{padding:3rem 2rem;max-width:800px;margin:0 auto}
 .section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
 .section p{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem;line-height:1.8;text-align:center}
@@ -73,16 +93,38 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="eyebrow">Stockyard for Wedding Planners</div>
   <h1>Wedding planning tools you own</h1>
   <p class="sub">Client and vendor directory, invoicing, task checklists, budget tracking, timelines, RSVPs, rental inventory, and emails.</p>
-  <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-top:1.5rem">After starting your trial, install with:</p>
-  <div class="install" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/wedding/install.sh | sh</div>
-  <div style="margin-top:1.5rem;text-align:center">
-    <p style="font-family:var(--font-mono);font-size:0.65rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.8rem">Or one-click install</p>
-    <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
-      <a href="https://github.com/stockyard-dev/stockyard-launcher/releases/latest/download/stockyard-launcher-darwin-arm64" style="display:inline-block;padding:0.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">Mac (Apple Silicon)</a>
-      <a href="https://github.com/stockyard-dev/stockyard-launcher/releases/latest/download/stockyard-launcher-darwin-amd64" style="display:inline-block;padding:0.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">Mac (Intel)</a>
-      <a href="https://github.com/stockyard-dev/stockyard-launcher/releases/latest/download/stockyard-launcher-linux-amd64" style="display:inline-block;padding:0.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:0.7rem;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--rust)'" onmouseout="this.style.borderColor='var(--bg3)'">Linux</a>
+  <p style="font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted);margin-top:1.5rem">After starting your trial, install on your computer:</p>
+  <div class="install-buttons" data-bundle="wedding">
+    <div class="install-mobile-note">
+      Stockyard runs on desktops and laptops. To install, open this page on your Mac, Windows, or Linux computer.
     </div>
-    <p style="font-family:var(--font-mono);font-size:0.55rem;color:var(--cream-muted);margin-top:0.5rem">Download, run with: ./stockyard-launcher -bundle wedding</p>
+    <div class="install-buttons-grid">
+      <a href="/api/installer/macos?bundle=wedding" class="install-btn install-btn-mac" download>
+        <svg class="os-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.64 2.16-3.91 2.26-3.97-1.23-1.8-3.15-2.05-3.83-2.08-1.63-.16-3.18.96-4.01.96-.83 0-2.11-.94-3.46-.91-1.78.03-3.42 1.04-4.34 2.63-1.85 3.2-.47 7.93 1.33 10.53.88 1.27 1.93 2.7 3.32 2.65 1.34-.05 1.84-.86 3.45-.86 1.61 0 2.06.86 3.46.83 1.43-.02 2.34-1.3 3.21-2.57.99-1.47 1.4-2.9 1.42-2.97-.03-.01-2.73-1.04-2.76-4.13zm-2.65-7.59c.74-.89 1.24-2.13 1.1-3.36-1.07.04-2.36.71-3.12 1.6-.69.79-1.29 2.05-1.13 3.26 1.19.09 2.41-.6 3.15-1.5z"/></svg>
+        <div class="install-btn-label">
+          <span class="install-btn-title">Download for Mac</span>
+          <span class="install-btn-sub">macOS 11+ &middot; Universal</span>
+        </div>
+      </a>
+      <a href="/api/installer/windows?bundle=wedding" class="install-btn install-btn-windows" download>
+        <svg class="os-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.479L10.502 4.45v7.249H3V5.479zm0 13.041l7.502 1.029V12.301H3v6.219zm8.351 1.157L21.5 21V12.301h-10.149v7.376zm0-15.354v7.376H21.5V3l-10.149 1.323z"/></svg>
+        <div class="install-btn-label">
+          <span class="install-btn-title">Download for Windows</span>
+          <span class="install-btn-sub">Windows 10/11 &middot; 64-bit</span>
+        </div>
+      </a>
+      <a href="/api/installer/linux?bundle=wedding" class="install-btn install-btn-linux" download>
+        <svg class="os-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14.62 8.35c-.42-.14-.59-.55-.59-.96 0-.41-.06-1.04-.21-1.46-.55-1.55-1.45-2.11-2.36-2.11-.92 0-1.82.56-2.37 2.11-.15.42-.21 1.05-.21 1.46 0 .41-.16.82-.59.96-1.94.66-3.36 2.39-3.6 4.45-.27 2.33.97 4.5 3.04 5.4.13.06.21.21.21.36v.74c0 .55.45 1 1 1h5c.55 0 1-.45 1-1v-.74c0-.15.08-.3.21-.36 2.07-.9 3.31-3.07 3.04-5.4-.24-2.06-1.66-3.79-3.6-4.45zM9.5 7.5c.55 0 1 .67 1 1.5s-.45 1.5-1 1.5-1-.67-1-1.5.45-1.5 1-1.5zm5 0c.55 0 1 .67 1 1.5s-.45 1.5-1 1.5-1-.67-1-1.5.45-1.5 1-1.5zM12 14c-1.1 0-2-.9-2-2 .67.5 1.27.75 2 .75s1.33-.25 2-.75c0 1.1-.9 2-2 2z"/></svg>
+        <div class="install-btn-label">
+          <span class="install-btn-title">Download for Linux</span>
+          <span class="install-btn-sub">.tar.gz &middot; Any distro</span>
+        </div>
+      </a>
+    </div>
+    <details class="install-advanced">
+      <summary>Advanced: install via terminal instead</summary>
+      <pre>curl -fsSL https://stockyard.dev/for/wedding/install.sh | sh</pre>
+    </details>
   </div>
 </div>
 
@@ -151,6 +193,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 
+<script>(function(){var ua=navigator.userAgent.toLowerCase();var os='unknown';if(ua.indexOf('mac')!==-1&&ua.indexOf('iphone')===-1&&ua.indexOf('ipad')===-1)os='mac';else if(ua.indexOf('win')!==-1)os='windows';else if(ua.indexOf('linux')!==-1&&ua.indexOf('android')===-1)os='linux';if(os==='unknown')return;var btns=document.querySelectorAll('.install-btn-'+os);for(var i=0;i<btns.length;i++){var b=btns[i];b.classList.add('install-btn-recommended');var badge=document.createElement('span');badge.textContent='RECOMMENDED FOR YOU';badge.className='install-btn-badge';b.appendChild(badge);}})();</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

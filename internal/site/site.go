@@ -1089,6 +1089,110 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		json.NewEncoder(w).Encode(DownloadStats(db))
 	})
 
+	// One-click OS installer endpoint — serves the bundle's install.sh as a
+	// downloadable file with an OS-appropriate filename. The audience is non-
+	// developers; the download flow is a strict upgrade over `curl | sh`.
+	//
+	// Mac: .command file (auto-opens in Terminal on double-click)
+	// Linux: .sh file (right-click → run as program in most file managers)
+	// Windows: .bat stub with WSL instructions (Windows native binaries are
+	//          a follow-up; for launch we direct users to WSL because it's the
+	//          one path that actually works without rewriting all install scripts)
+	//
+	// Accepts ?bundle={slug} for bundle installers or ?tool={slug} for single-tool
+	// installers. At least one is required.
+	mux.HandleFunc("GET /api/installer/{os}", func(w http.ResponseWriter, r *http.Request) {
+		osParam := strings.ToLower(r.PathValue("os"))
+		bundleSlug := r.URL.Query().Get("bundle")
+		toolSlug := r.URL.Query().Get("tool")
+		if bundleSlug == "" && toolSlug == "" {
+			http.Error(w, "bundle or tool query parameter required", 400)
+			return
+		}
+
+		// Resolve install script source
+		var script []byte
+		var label string
+		if bundleSlug != "" {
+			label = bundleSlug
+			staticPath := "for/" + bundleSlug + "/install.sh"
+			if data, err := fs.ReadFile(sub, staticPath); err == nil {
+				script = data
+			} else if recommender != nil {
+				if generated, ok := recommender.GenerateInstallScript(bundleSlug); ok {
+					script = generated
+				}
+			}
+		} else {
+			label = toolSlug
+			staticPath := toolSlug + "/install.sh"
+			if data, err := fs.ReadFile(sub, staticPath); err == nil {
+				script = data
+			}
+		}
+		if script == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		recordInstall(db, r, "/api/installer/"+osParam+"?"+r.URL.RawQuery)
+
+		var filename, body, contentType string
+		switch osParam {
+		case "macos", "mac", "darwin":
+			// .command files are recognized by macOS Terminal and run on double-click
+			filename = "stockyard-" + label + "-installer.command"
+			body = string(script)
+			contentType = "application/octet-stream"
+		case "linux":
+			filename = "stockyard-" + label + "-installer.sh"
+			body = string(script)
+			contentType = "application/octet-stream"
+		case "windows", "win":
+			// Windows native installer is a follow-up. For launch we ship a
+			// .bat stub that explains the situation and offers WSL path.
+			filename = "stockyard-" + label + "-installer.bat"
+			contentType = "application/octet-stream"
+			var src string
+			if bundleSlug != "" {
+				src = "https://stockyard.dev/for/" + bundleSlug + "/install.sh"
+			} else {
+				src = "https://stockyard.dev/" + toolSlug + "/install.sh"
+			}
+			body = "@echo off\r\n" +
+				"echo.\r\n" +
+				"echo  ============================================================\r\n" +
+				"echo   Stockyard Installer for " + label + "\r\n" +
+				"echo  ============================================================\r\n" +
+				"echo.\r\n" +
+				"echo  Native Windows installers are coming soon. For now, the\r\n" +
+				"echo  install path on Windows is via WSL (Windows Subsystem for\r\n" +
+				"echo  Linux), which Microsoft ships and supports.\r\n" +
+				"echo.\r\n" +
+				"echo  STEP 1: Install WSL\r\n" +
+				"echo    Open PowerShell as Administrator and run:\r\n" +
+				"echo      wsl --install\r\n" +
+				"echo    Restart your computer when prompted.\r\n" +
+				"echo.\r\n" +
+				"echo  STEP 2: Install Stockyard\r\n" +
+				"echo    Open the Ubuntu app from your Start menu, then paste:\r\n" +
+				"echo      curl -fsSL " + src + " ^| sh\r\n" +
+				"echo.\r\n" +
+				"echo  Questions? Email hello@stockyard.dev\r\n" +
+				"echo.\r\n" +
+				"pause\r\n"
+		default:
+			http.Error(w, "unsupported os; use macos, linux, or windows", 400)
+			return
+		}
+
+		w.Header().Set("Content-Type", contentType)
+		w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Cache-Control", "public, max-age=60")
+		w.Write([]byte(body))
+	})
+
 	// Launch demo video — explicit short URL for sharing on HN, Reddit, X, etc.
 	// Uses http.ServeContent so the player can do Range requests for seeking.
 	mux.HandleFunc("GET /launch.mp4", func(w http.ResponseWriter, r *http.Request) {
