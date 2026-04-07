@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -25,12 +26,19 @@ func GenerateKeyPair() (*KeyPair, error) {
 }
 
 // LoadKeyPair loads a keypair from base64-encoded strings.
+// LoadKeyPair loads a keypair from base64-encoded strings. Accepts any of the
+// four common base64 variants for forgiveness when env vars are pasted by hand:
+// URL-safe (RawURLEncoding) — what PublicKeyB64/PrivateKeyB64 produce — plus
+// URL-safe with padding, standard with padding, and standard without padding.
+// Without this forgiveness, a misconfigured Railway env var (e.g. someone
+// pasting standard base64 with + and / chars instead of URL-safe with - and _)
+// would silently orphan the entire apiserver via mountAPIServer's failure path.
 func LoadKeyPair(pubB64, privB64 string) (*KeyPair, error) {
-	pub, err := base64.RawURLEncoding.DecodeString(pubB64)
+	pub, err := decodeKeyB64(pubB64)
 	if err != nil {
 		return nil, fmt.Errorf("license: decode public key: %w", err)
 	}
-	priv, err := base64.RawURLEncoding.DecodeString(privB64)
+	priv, err := decodeKeyB64(privB64)
 	if err != nil {
 		return nil, fmt.Errorf("license: decode private key: %w", err)
 	}
@@ -41,6 +49,28 @@ func LoadKeyPair(pubB64, privB64 string) (*KeyPair, error) {
 		return nil, fmt.Errorf("license: invalid private key size %d", len(priv))
 	}
 	return &KeyPair{PublicKey: ed25519.PublicKey(pub), PrivateKey: ed25519.PrivateKey(priv)}, nil
+}
+
+// decodeKeyB64 tries each of the four common base64 variants and returns the
+// first one that decodes successfully. Strips whitespace and trailing newlines
+// because Railway env var dashboards often introduce them on copy-paste.
+func decodeKeyB64(s string) ([]byte, error) {
+	s = strings.TrimSpace(s)
+	encodings := []*base64.Encoding{
+		base64.RawURLEncoding, // canonical — what PublicKeyB64() produces
+		base64.URLEncoding,    // URL-safe with padding
+		base64.StdEncoding,    // standard with padding
+		base64.RawStdEncoding, // standard without padding
+	}
+	var lastErr error
+	for _, enc := range encodings {
+		b, err := enc.DecodeString(s)
+		if err == nil {
+			return b, nil
+		}
+		lastErr = err
+	}
+	return nil, lastErr
 }
 
 // PublicKeyB64 returns the base64url-encoded public key (for embedding in binaries).
