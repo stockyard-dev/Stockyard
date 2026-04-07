@@ -1251,26 +1251,28 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 
 	// Serve /og-{name}.png from root — Open Graph social share images
 	// referenced by og:image meta tags on the homepage, pricing, constitution,
-	// veterans, and any future page that wants its own social card.
-	// Files live in the embedded site root (e.g. og-constitution.png).
-	mux.HandleFunc("GET /og-{name}.png", func(w http.ResponseWriter, r *http.Request) {
-		name := r.PathValue("name")
-		// Whitelist alphanumerics + hyphens to prevent path traversal
-		for _, c := range name {
-			if !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-') {
+	// and veterans pages. Four explicit handlers because Go 1.22 ServeMux
+	// wildcards must be complete path segments and can't have literal text
+	// like "og-" as a prefix on the same segment. This was tried first as
+	// "GET /og-{name}.png" and panicked at boot:
+	//   panic: parsing "GET /og-{name}.png": at offset 5: bad wildcard segment
+	// Adding new OG images is a 4-line registration here per image.
+	serveOGImage := func(name string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			data, err := fs.ReadFile(sub, "og-"+name+".png")
+			if err != nil {
 				http.NotFound(w, r)
 				return
 			}
+			w.Header().Set("Content-Type", "image/png")
+			w.Header().Set("Cache-Control", "public, max-age=86400, immutable")
+			w.Write(data)
 		}
-		data, err := fs.ReadFile(sub, "og-"+name+".png")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Cache-Control", "public, max-age=86400, immutable")
-		w.Write(data)
-	})
+	}
+	mux.HandleFunc("GET /og-homepage.png", serveOGImage("homepage"))
+	mux.HandleFunc("GET /og-pricing.png", serveOGImage("pricing"))
+	mux.HandleFunc("GET /og-constitution.png", serveOGImage("constitution"))
+	mux.HandleFunc("GET /og-veterans.png", serveOGImage("veterans"))
 
 	// Serve bundles search index for homepage async load
 	mux.HandleFunc("GET /bundles-search.json", func(w http.ResponseWriter, r *http.Request) {
