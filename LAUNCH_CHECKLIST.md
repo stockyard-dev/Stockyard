@@ -121,9 +121,16 @@ curl -sI https://stockyard.dev/sitemap.xml | head -1
 | Recommend concurrency cap | ✅ |
 | Cloudflare cache audit | ✅ |
 | `www.stockyard.dev` DNS + Railway domain | ✅ |
+| Constitution + Veterans pages live | ✅ |
+| Homepage trust line + footer commitments | ✅ |
+| Pricing price-lock banner + veteran row | ✅ |
+| OS install buttons on 195 bundle pages | ✅ |
+| OS install buttons on 134 tool pages | ✅ |
+| `/api/installer/{os}` endpoint (Mac/Linux/Win) | ✅ |
 | HTTP → HTTPS redirect | 📌 footnote (not blocking real users) |
 | `/launch.mp4` Range header strip | 📌 footnote (cosmetic) |
 | Real test-mode end-to-end Stripe walkthrough | ⏳ optional |
+| `og-constitution.png` / `og-veterans.png` | ⏳ social shares render plain text until uploaded |
 
 ## 🧯 Status: green for launch
 
