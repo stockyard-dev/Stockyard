@@ -1249,6 +1249,29 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
+	// Serve /og-{name}.png from root — Open Graph social share images
+	// referenced by og:image meta tags on the homepage, pricing, constitution,
+	// veterans, and any future page that wants its own social card.
+	// Files live in the embedded site root (e.g. og-constitution.png).
+	mux.HandleFunc("GET /og-{name}.png", func(w http.ResponseWriter, r *http.Request) {
+		name := r.PathValue("name")
+		// Whitelist alphanumerics + hyphens to prevent path traversal
+		for _, c := range name {
+			if !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-') {
+				http.NotFound(w, r)
+				return
+			}
+		}
+		data, err := fs.ReadFile(sub, "og-"+name+".png")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Cache-Control", "public, max-age=86400, immutable")
+		w.Write(data)
+	})
+
 	// Serve bundles search index for homepage async load
 	mux.HandleFunc("GET /bundles-search.json", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "bundles-search.json")
