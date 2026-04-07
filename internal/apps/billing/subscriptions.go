@@ -34,6 +34,12 @@ var stripeProducts = map[string]string{
 }
 
 // registerStripeSubscriptionRoutes adds checkout and subscription management.
+//
+// Note: there is also a /api/checkout endpoint, but it lives in
+// internal/apiserver/server.go and is registered via mountAPIServer in
+// internal/engine/apibridge.go. The legacy /api/checkout is the one that
+// frontends call with {plan, interval} body shape. Don't register a duplicate
+// here — Go 1.22 ServeMux panics on conflicts.
 func (a *App) registerStripeSubscriptionRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/billing/stripe/prices", a.handleStripePrices)
 	mux.HandleFunc("POST /api/billing/stripe/checkout", a.handleStripeCheckout)
@@ -132,6 +138,7 @@ func (a *App) handleStripeCheckout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{
+		"url":          result["url"], // legacy field name — frontends check d.url
 		"checkout_url": result["url"],
 		"session_id":   result["id"],
 		"tier":         req.Tier,

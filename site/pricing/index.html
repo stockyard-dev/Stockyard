@@ -121,7 +121,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75
       <li>Priority support</li>
       <li>Unlimited everything</li>
     </ul>
-    <a href="#" class="btn btn-outline" id="all-cta" onclick="event.preventDefault();fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:'individual'})}).then(function(r){return r.json()}).then(function(d){if(d.url)window.location=d.url})">Start Trial</a>
+    <a href="#" class="btn btn-outline" id="all-cta">Start Trial</a>
     <p style="font-family:var(--font-mono);font-size:.55rem;color:var(--cream-muted);margin-top:.6rem">$299.99/yr (save 17%)</p>
   </div>
 
@@ -189,7 +189,13 @@ var bundle=p.get('bundle');
 function doCheckout(btn,body){
   var orig=btn.textContent;
   btn.textContent='Loading...';btn.style.opacity='.6';
-  fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  // Translate legacy {plan} or {bundle} body shape into the working
+  // {tier, period} shape that /api/billing/stripe/checkout expects.
+  var apiBody={tier:body.tier||'individual',period:body.period||'monthly'};
+  if(body.bundle){apiBody.ref=body.bundle}
+  if(body.ref){apiBody.ref=body.ref}
+  if(body.email){apiBody.email=body.email}
+  fetch('/api/billing/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(apiBody)})
   .then(function(r){return r.json()})
   .then(function(d){
     if(d.url){window.location=d.url}

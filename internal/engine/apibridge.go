@@ -31,11 +31,27 @@ func mountAPIServer(mux *http.ServeMux, dataDir string, authUpdater apiserver.Au
 	// License keypair — generate ephemeral if not configured
 	pubKey := os.Getenv("STOCKYARD_PUBLIC_KEY")
 	privKey := os.Getenv("STOCKYARD_SIGNING_KEY")
+	useEphemeral := false
 	if pubKey == "" || privKey == "" {
 		log.Println("[apibridge] STOCKYARD_PUBLIC_KEY / STOCKYARD_SIGNING_KEY not set — generating ephemeral keypair")
-		kp, err := license.GenerateKeyPair()
-		if err != nil {
-			log.Printf("[apibridge] failed to generate keypair: %v", err)
+		useEphemeral = true
+	}
+	if !useEphemeral {
+		// Validate the configured keypair before committing to it. If decoding
+		// fails (e.g. the env var is hex when base64 is expected), fall through
+		// to ephemeral generation rather than killing the entire apiserver.
+		// This used to silently orphan /api/checkout, /api/billing/*, all
+		// licensing routes, and the entire customer/exchange API surface
+		// because of a single malformed env var. Now it logs and falls back.
+		if _, lerr := license.LoadKeyPair(pubKey, privKey); lerr != nil {
+			log.Printf("[apibridge] STOCKYARD_PUBLIC_KEY / STOCKYARD_SIGNING_KEY are present but invalid (%v) — falling back to ephemeral keypair so the apiserver still mounts. Fix the env vars to use the persistent keypair.", lerr)
+			useEphemeral = true
+		}
+	}
+	if useEphemeral {
+		kp, gerr := license.GenerateKeyPair()
+		if gerr != nil {
+			log.Printf("[apibridge] failed to generate ephemeral keypair: %v", gerr)
 			return false
 		}
 		pubKey = kp.PublicKeyB64()
@@ -45,7 +61,9 @@ func mountAPIServer(mux *http.ServeMux, dataDir string, authUpdater apiserver.Au
 
 	kp, err := license.LoadKeyPair(pubKey, privKey)
 	if err != nil {
-		log.Printf("[apibridge] load keypair: %v", err)
+		// Should be unreachable now — both branches above produce valid keys —
+		// but leave the safety check in place.
+		log.Printf("[apibridge] load keypair (post-validation): %v", err)
 		return false
 	}
 
