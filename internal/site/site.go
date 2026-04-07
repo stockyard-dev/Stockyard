@@ -282,6 +282,7 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/cloud/", "/pricing/", "/docs/", "/products/",
 		"/exchange/", "/observe/", "/modules/", "/benchmarks/",
 		"/privacy/", "/terms/", "/changelog/",
+		"/constitution/", "/veterans/",
 		"/studio/", "/forge/", "/trust/", "/guide/", "/team/",
 		"/docs/quickstart/", "/docs/docker/", "/docs/auth/", "/docs/proxy/", "/docs/aliasing/",
 		"/docs/observe/", "/docs/trust/", "/docs/studio/",

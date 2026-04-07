@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free for Veterans &mdash; Stockyard</title>
+<meta name="description" content="Every Stockyard tool, free for life, for every U.S. military veteran. No verification, no expiration, no catch.">
+
+<meta property="og:title" content="Stockyard for Veterans &mdash; Free for Life">
+<meta property="og:description" content="Self-hosted business tools, free forever for every U.S. military veteran. Your data stays on your hardware.">
+<meta property="og:image" content="https://stockyard.dev/og-veterans.png">
+<meta property="og:url" content="https://stockyard.dev/veterans/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stockyard for Veterans &mdash; Free for Life">
+<meta name="twitter:description" content="Self-hosted business tools, free forever for every U.S. military veteran. Your data stays on your hardware.">
+<meta name="twitter:image" content="https://stockyard.dev/og-veterans.png">
+
+<link rel="canonical" href="https://stockyard.dev/veterans/">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag("js",new Date());
+gtag("config","G-BR9VHNFEEE");
+gtag("config","AW-18046975504");
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#191410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f5ebd6;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--cream);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1.2rem 2rem;border-bottom:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;max-width:1200px;margin:0 auto}
+.nav-brand{font-family:var(--font-mono);font-size:.95rem;font-weight:600;color:var(--cream);letter-spacing:1px;display:flex;align-items:center;gap:.5rem}
+.nav-brand:hover{color:var(--rust-light)}
+.nav-links{display:flex;gap:1.6rem;font-family:var(--font-mono);font-size:.78rem}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.veterans-page{max-width:720px;margin:0 auto;padding:4rem 1.5rem 5rem;font-family:var(--font-serif);line-height:1.8;color:var(--cream)}
+.veterans-page .eyebrow{text-align:center;font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem}
+.veterans-page h1{font-size:clamp(2.2rem,5.5vw,3rem);text-align:center;margin-bottom:1rem;line-height:1.15;letter-spacing:1px;color:var(--cream)}
+.veterans-page .sub-headline{text-align:center;font-style:italic;color:var(--cream-dim);font-size:1.1rem;margin-bottom:3.5rem;max-width:560px;margin-left:auto;margin-right:auto}
+
+.veterans-page h2{font-size:1.4rem;color:var(--rust-light);margin-top:3rem;margin-bottom:1rem;border-bottom:1px solid var(--bg3);padding-bottom:.6rem}
+.veterans-page p{margin-bottom:1.4rem;color:var(--cream)}
+.veterans-page p.lead{font-size:1.05rem;color:var(--cream-dim);font-style:italic}
+
+.veterans-page .claim-box{background:var(--bg2);border:2px solid var(--rust);padding:2.5rem 2rem;margin:3rem 0;text-align:center}
+.veterans-page .claim-box h3{font-family:var(--font-mono);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:var(--cream);margin-bottom:1rem;font-weight:700}
+.veterans-page .claim-box p.claim-instructions{font-size:1rem;color:var(--cream);margin-bottom:1.5rem;font-style:normal}
+.veterans-page .claim-button{display:inline-block;padding:1.1rem 2.2rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;font-weight:700;transition:background .2s,transform .1s}
+.veterans-page .claim-button:hover{background:var(--rust-light);transform:translateY(-1px);color:var(--cream)}
+.veterans-page .claim-button:active{transform:translateY(0)}
+.veterans-page .claim-footnote{font-size:.8rem;color:var(--cream-dim);font-style:italic;margin-top:1.5rem;margin-bottom:0;line-height:1.6}
+
+.veterans-page .promise-list{background:var(--bg2);border-left:3px solid var(--rust);padding:1.8rem 2rem 1.8rem 2.2rem;margin:2rem 0}
+.veterans-page .promise-list ul{list-style:none;padding:0;margin:0}
+.veterans-page .promise-list li{padding:.5rem 0 .5rem 1.8rem;position:relative;color:var(--cream);line-height:1.6}
+.veterans-page .promise-list li::before{content:'\2713';position:absolute;left:0;top:.5rem;color:var(--rust-light);font-weight:700;font-size:1.1rem;font-family:var(--font-mono)}
+
+.veterans-page .signature-block{margin-top:4rem;padding-top:2.5rem;border-top:1px solid var(--bg3);text-align:center}
+.veterans-page .signature-block .name{font-family:var(--font-mono);font-size:.9rem;color:var(--cream);margin-bottom:.3rem}
+.veterans-page .signature-block .title{font-family:var(--font-mono);font-size:.75rem;color:var(--cream-dim)}
+
+.veterans-page .related-links{margin-top:2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;letter-spacing:1px}
+.veterans-page .related-links a{color:var(--rust-light);text-decoration:none;margin:0 .8rem}
+.veterans-page .related-links a:hover{color:var(--cream)}
+
+footer{text-align:center;padding:2rem;font-size:.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3);margin-top:3rem}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/for/">Bundles</a><a href="/tools/">Tools</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="/veterans/">Veterans</a></div>
+</nav>
+
+<article class="veterans-page">
+
+<div class="eyebrow">For Those Who Have Served</div>
+<h1>Free for Life</h1>
+<p class="sub-headline">Every Stockyard tool, every bundle, every feature. For every U.S. military veteran. Forever.</p>
+
+<h2>The offer</h2>
+
+<p>If you are a veteran of the United States Armed Forces or active-duty service member, every Stockyard tool is yours at no cost for as long as Stockyard exists. Not a 30-day trial. Not a discount. Not a promotional period. Lifetime access to everything, free, forever.</p>
+
+<p>This is not a marketing campaign. It is Article III, Section 4 of the <a href="/constitution/">Stockyard Constitution</a>, which means it is a binding commitment that cannot be revoked.</p>
+
+<h2>Why your data stays where it belongs</h2>
+
+<p>You already know better than most that what's on someone else's server is no longer yours. You were trained to think about information as something to protect, not something to hand to vendors you'll never meet. Most business software today violates everything you learned about operational security &mdash; your client list, your financials, your operational data, all sitting on infrastructure you don't control, accessible to people you'll never know, in places you can't audit.</p>
+
+<p>Stockyard is built the opposite way. Every tool runs on your own computer. Your data lives in files you can see in folders you control. There is no cloud sync. No telemetry. No vendor employees with database access. No third party that could be compromised, subpoenaed, or shut down. The threat model is exactly one machine: yours.</p>
+
+<p>If Stockyard the company disappeared tomorrow, your tools would keep running forever. They don't depend on us. They never did.</p>
+
+<h2>Why you, specifically</h2>
+
+<p>Starting a business in your first year is brutal. The software bills add up fast. Most veterans I've talked to are paying $300-500 a month in SaaS subscriptions before they've made their first dollar. That kills businesses that should have made it.</p>
+
+<p>I can give Stockyard away to veterans because there is nothing for me to host or maintain on your behalf. Your computer does the work. I just built the tools. The marginal cost of one more veteran user is essentially zero.</p>
+
+<p>And honestly, I want veterans using this software because the principles I built it around are principles veterans already understand. You don't need to be convinced that data sovereignty matters. You don't need to be convinced that vendor lock-in is a problem. You don't need to be convinced that software should still work if the company that made it disappears. You already know all of this. I built Stockyard for people who already know.</p>
+
+<h2>What "free forever" actually means</h2>
+
+<div class="promise-list">
+<ul>
+<li>No trial expiration</li>
+<li>No "free tier" with limits</li>
+<li>No upsell to a paid version</li>
+<li>No removing features later and charging for them</li>
+<li>No changing the terms in two years</li>
+<li>No requirement to maintain a subscription you'd cancel anyway</li>
+<li>No data hostage situation if you stop using it</li>
+<li>No catch, hidden or otherwise</li>
+</ul>
+</div>
+
+<p>Every Stockyard tool, every bundle, the desktop app, every feature I build in the future &mdash; all of it, yours, for as long as you want to use it.</p>
+
+<div class="claim-box">
+<h3>How to Claim It</h3>
+<p class="claim-instructions">Email me with your name and a sentence about your business.</p>
+<a href="mailto:hello@stockyard.dev?subject=Veteran%20-%20Free%20Access%20Request" class="claim-button">
+  hello@stockyard.dev
+</a>
+<p class="claim-footnote">
+No forms. No uploads. No verification. I trust you.<br>
+You'll have your account set up the same day.
+</p>
+</div>
+
+<h2>The honor system</h2>
+
+<p>I'm not asking for a DD-214 or any other documentation right now. The honor system works because most people are honest, and the few who aren't were never going to pay anyway. If Stockyard ever gets big enough that fraud becomes a real problem, I'll add verification &mdash; and I'll do it transparently. Until then, I'd rather treat veterans the way I'd want to be treated.</p>
+
+<h2>Welcome</h2>
+
+<p>If you've made it this far, you're probably the kind of person Stockyard was built for. Email me. Tell me about your business. I'll get you set up today and you can start using the tools tonight.</p>
+
+<p>Thank you for your service.</p>
+
+<div class="signature-block">
+  <div class="name">Michael</div>
+  <div class="title">Founder, Stockyard</div>
+</div>
+
+<div class="related-links">
+<a href="/constitution/">The Constitution &rarr;</a>
+<a href="/">Try the Search &rarr;</a>
+</div>
+
+</article>
+
+<footer>
+  <p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:.5rem"><a href="/">Home</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a></p>
+  <p style="margin-top:.5rem;font-size:.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
+  <p style="margin-top:.3rem;font-size:.65rem;color:var(--cream-muted)">hello@stockyard.dev</p>
+</footer>
+
+</body>
+</html>

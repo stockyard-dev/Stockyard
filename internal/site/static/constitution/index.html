@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Stockyard Constitution</title>
+<meta name="description" content="The binding principles that define what Stockyard is and what it will never become. Adopted April 8, 2026.">
+
+<meta property="og:title" content="The Stockyard Constitution">
+<meta property="og:description" content="A binding public commitment from a software company that refuses to participate in the SaaS hostage economy.">
+<meta property="og:image" content="https://stockyard.dev/og-constitution.png">
+<meta property="og:url" content="https://stockyard.dev/constitution/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Stockyard Constitution">
+<meta name="twitter:description" content="A binding public commitment from a software company that refuses to participate in the SaaS hostage economy.">
+<meta name="twitter:image" content="https://stockyard.dev/og-constitution.png">
+
+<link rel="canonical" href="https://stockyard.dev/constitution/">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag("js",new Date());
+gtag("config","G-BR9VHNFEEE");
+gtag("config","AW-18046975504");
+</script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#191410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f5ebd6;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--cream);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+
+.nav{padding:1.2rem 2rem;border-bottom:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;max-width:1200px;margin:0 auto}
+.nav-brand{font-family:var(--font-mono);font-size:.95rem;font-weight:600;color:var(--cream);letter-spacing:1px;display:flex;align-items:center;gap:.5rem}
+.nav-brand:hover{color:var(--rust-light)}
+.nav-links{display:flex;gap:1.6rem;font-family:var(--font-mono);font-size:.78rem}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.constitution-page{max-width:720px;margin:0 auto;padding:4rem 1.5rem 5rem;font-family:var(--font-serif);line-height:1.8;color:var(--cream)}
+.constitution-page .eyebrow{text-align:center;font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem}
+.constitution-page h1{font-size:clamp(2rem,5vw,2.8rem);text-align:center;margin-bottom:.6rem;line-height:1.2;letter-spacing:1px;color:var(--cream)}
+.constitution-page .adopted{text-align:center;font-family:var(--font-mono);font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--cream-muted);margin-bottom:3.5rem}
+.constitution-page .intro{font-style:italic;color:var(--cream-dim);border-left:3px solid var(--rust);padding:.5rem 0 .5rem 1.5rem;margin-bottom:2.5rem;font-size:1rem}
+
+.constitution-page h2{font-size:1.5rem;color:var(--rust-light);margin-top:3.5rem;margin-bottom:1rem;border-bottom:1px solid var(--bg3);padding-bottom:.6rem;font-family:var(--font-serif)}
+.constitution-page h2 .article-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);display:block;margin-bottom:.3rem}
+.constitution-page h2.preamble-heading{font-family:var(--font-serif)}
+
+.constitution-page h3{font-family:var(--font-mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-top:2rem;margin-bottom:.6rem;font-weight:700}
+.constitution-page p{margin-bottom:1.4rem;color:var(--cream)}
+
+.constitution-page .signature-block{margin-top:5rem;padding-top:2.5rem;border-top:1px solid var(--bg3);text-align:center}
+.constitution-page .signature-block .name{font-family:var(--font-mono);font-size:.9rem;color:var(--cream);margin-bottom:.3rem}
+.constitution-page .signature-block .title{font-family:var(--font-mono);font-size:.75rem;color:var(--cream-dim);margin-bottom:.3rem}
+.constitution-page .signature-block .date{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);letter-spacing:1px}
+
+.constitution-page .contact-note{text-align:center;margin-top:3rem;font-size:.85rem;color:var(--cream-muted);font-family:var(--font-mono);line-height:1.7}
+.constitution-page .contact-note a{color:var(--rust-light);text-decoration:none;border-bottom:1px solid var(--rust)}
+
+.constitution-page .related-links{margin-top:2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;letter-spacing:1px}
+.constitution-page .related-links a{color:var(--rust-light);text-decoration:none;margin:0 .8rem}
+.constitution-page .related-links a:hover{color:var(--cream)}
+
+footer{text-align:center;padding:2rem;font-size:.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3);margin-top:3rem}
+footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+  <div class="nav-links"><a href="/for/">Bundles</a><a href="/tools/">Tools</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a><a href="/constitution/">Constitution</a></div>
+</nav>
+
+<article class="constitution-page">
+
+<div class="eyebrow">A Binding Commitment</div>
+<h1>The Stockyard Constitution</h1>
+<div class="adopted">Adopted April 8, 2026</div>
+
+<p class="intro">This document defines what Stockyard is, what it will never become, and the obligations we accept toward the people who trust us with their work. It is not a marketing document. It is a commitment.</p>
+
+<h2 class="preamble-heading">Preamble</h2>
+
+<p>Software has become a hostage situation. Small business owners pay monthly fees to companies that hold their data on servers they cannot see, accessible to employees they will never meet, governed by terms that change without their consent. The work people do every day &mdash; their client relationships, their financial records, their operational history &mdash; sits on infrastructure they do not own and cannot control.</p>
+
+<p>We refuse to build that kind of company.</p>
+
+<p>Stockyard exists to give people back ownership of the tools they use to run their businesses, their organizations, and their lives. Every line of code, every architectural decision, every business policy serves that purpose. This constitution is our public commitment to the principles that purpose requires.</p>
+
+<h2><span class="article-label">Article I</span>Ownership</h2>
+
+<h3>Section 1</h3>
+<p>The data belongs to the user. Always. Without exception. Without conditions. From the moment a Stockyard tool creates a file on a user's computer, that file belongs to them. We have no claim to it, no copy of it, no access to it, and no ability to take it away.</p>
+
+<h3>Section 2</h3>
+<p>The software runs on the user's hardware. Every Stockyard tool is a single binary that executes on the user's own machine. There is no cloud component required for the software to function. There is no server we operate that holds user data. There is no point at which a user's information passes through infrastructure controlled by us or any third party.</p>
+
+<h3>Section 3</h3>
+<p>The user can leave at any time and take everything with them. Every Stockyard tool can export every record it holds in standard, open formats. If a user decides to stop using Stockyard, they keep their data, their files, and their ability to use that data with any other tool they choose. We will never lock anyone in.</p>
+
+<h2><span class="article-label">Article II</span>Permanence</h2>
+
+<h3>Section 1</h3>
+<p>The software will continue to function regardless of our existence. The Stockyard tools do not depend on our servers, our license validation systems, or our ongoing operation. A binary installed today will continue to run on the user's hardware for as long as that hardware continues to function, even if Stockyard the company ceases to exist tomorrow.</p>
+
+<h3>Section 2</h3>
+<p>The user is never forced to update. Updates are offered, not required. A user who is satisfied with the version of a Stockyard tool they have installed today can continue running that exact version forever. We will never disable old versions, force migrations, or require updates that change how the tool works.</p>
+
+<h3>Section 3</h3>
+<p>The user can move their entire installation by copying a folder. Every Stockyard tool stores its data in plain SQLite files in a directory the user controls. Backing up the data means copying the folder. Moving to a new computer means moving the folder. There is no proprietary backup format, no migration tool required, no vendor assistance needed.</p>
+
+<h2><span class="article-label">Article III</span>Pricing Honor</h2>
+
+<h3>Section 1</h3>
+<p>The price you sign up at is the price you pay forever. If we ever raise the price of any Stockyard subscription tier, every customer who is actively subscribed at the old price keeps that price for as long as they remain a subscriber. New customers pay the new price. Existing customers are not affected.</p>
+
+<h3>Section 2</h3>
+<p>We will never introduce hidden costs. The price displayed on the day a customer subscribes includes everything that customer needs. We will never add per-feature fees, per-record fees, per-export fees, or any other charge beyond the published subscription price.</p>
+
+<h3>Section 3</h3>
+<p>We will never gate existing features behind new pricing tiers. Once a feature is included in a subscription tier, it stays included in that tier forever. If we build new features and decide to charge more for them, we will create new tiers for those features. Existing customers will never lose access to what they originally paid for.</p>
+
+<h3>Section 4</h3>
+<p>Veterans pay nothing, ever. Every veteran of the United States Armed Forces and every active-duty service member receives a lifetime license to all Stockyard tools at no cost. This is not a promotional offer with an expiration date. It is a permanent provision of this constitution. As long as Stockyard exists, veterans will have free access to everything we build.</p>
+
+<h2><span class="article-label">Article IV</span>Privacy and Operational Security</h2>
+
+<h3>Section 1</h3>
+<p>We do not collect telemetry without consent. Stockyard tools do not phone home. They do not report usage statistics. They do not transmit any information about the user, their data, or their activity to us or to any third party unless the user has explicitly opted in.</p>
+
+<h3>Section 2</h3>
+<p>We do not have backdoors. There is no hidden access to user installations. There is no master key that lets us read user data. There is no remote administration capability that we can use to inspect or modify what is happening on a user's computer. The software does what its source code says it does, and nothing more.</p>
+
+<h3>Section 3</h3>
+<p>We will not comply with surveillance demands by building tools to make compliance easier. If a government agency or court orders us to provide user data, we will respond honestly: we do not have it. The data is on the user's hardware, not ours. If they want it, they will have to ask the user directly. We will never build infrastructure designed to make user data accessible to any third party, regardless of who is asking or what reason they give.</p>
+
+<h3>Section 4</h3>
+<p>We will not sell user information because we do not have it to sell. The architecture makes this physically impossible, not merely policy-prohibited. There is no database of user records on our systems. There is no analytics warehouse. There is no data lake. The only information we have about any customer is the email address they used to subscribe and the fact that they have an active license.</p>
+
+<h2><span class="article-label">Article V</span>Communication</h2>
+
+<h3>Section 1</h3>
+<p>The founder reads every email personally. Every message sent to hello@stockyard.dev is read by Michael, the founder. This commitment holds at every scale. As Stockyard grows, the systems that support email handling may change, but the personal review of every customer message will remain. If this becomes impossible due to volume, we will publicly acknowledge that change rather than pretend the founder is still reading everything.</p>
+
+<h3>Section 2</h3>
+<p>Bad news is communicated immediately and honestly. If a Stockyard tool has a bug, we will say so. If a security issue is discovered, we will disclose it. If a feature is being removed, we will explain why. If we make a mistake, we will own it publicly. We will never spin, obfuscate, or hide information that customers deserve to know.</p>
+
+<h3>Section 3</h3>
+<p>Marketing claims must be verifiable. Every statement we make about Stockyard's capabilities, security, performance, or business practices must be something a customer can verify independently. If we cannot prove a claim, we will not make it.</p>
+
+<h2><span class="article-label">Article VI</span>The Limits of Our Authority</h2>
+
+<h3>Section 1</h3>
+<p>We will not change this constitution to weaken it. New articles can be added. Existing articles can be strengthened. But no amendment will reduce the protections offered to existing customers. The constitution in effect on the day a customer subscribes is the constitution that protects them for the duration of their subscription, regardless of any future changes.</p>
+
+<h3>Section 2</h3>
+<p>We will not delegate these obligations. If Stockyard hires employees, takes investment, restructures as a different kind of company, or undergoes any other organizational change, this constitution remains binding. The obligations belong to the company, not to any individual within it.</p>
+
+<h3>Section 3</h3>
+<p>We commit to using this constitution as a non-negotiable starting point in any acquisition discussion. We will walk away from any deal that requires weakening the protections offered to existing customers. We accept that this may reduce the price an acquirer is willing to pay, and we consider that an acceptable cost of keeping our promises.</p>
+
+<h3>Section 4</h3>
+<p>If we break any provision of this constitution, customers are entitled to call us out publicly, and we commit to either honoring the broken provision or accepting the public consequences of breaking it. We have no legal team to hide behind. We have no PR firm to manage the fallout. We have only our reputation, and we are choosing to bind it to these promises.</p>
+
+<h2><span class="article-label">Article VII</span>To Those Who Have Served</h2>
+
+<p>This constitution exists in part because of you.</p>
+
+<p>Veterans understand operational security in their bones. You were trained that information is a weapon. You learned that what you do not control can be used against you. You came home to a civilian world where every business is expected to hand its sensitive data to companies that may not exist tomorrow, on terms that may change without warning, governed by laws that may not protect you.</p>
+
+<p>When veterans start businesses, they often discover that the software bills add up to more than they pay themselves in their first year. They discover that their client list is on someone else's server. They discover that the tools they depend on can disappear with a press release. The civilian software economy is hostile to small business owners in general, and especially hostile to people who understand exactly what is being asked of them.</p>
+
+<p>Stockyard is built differently because it has to be. Veterans deserve tools that respect their hard-earned understanding of how information should be protected. Veterans deserve software that will still work in five years regardless of what happens to the company that made it. Veterans deserve to keep what they build without paying rent on it forever.</p>
+
+<p>The free lifetime access for veterans is not charity. It is recognition that the values veterans bring to their businesses are the same values this company is built on. We are not giving you something. We are acknowledging that you already know what we are trying to build, and we want you to have it.</p>
+
+<p>Thank you for your service. Welcome to Stockyard.</p>
+
+<div class="signature-block">
+  <div class="name">Michael</div>
+  <div class="title">Founder, Stockyard</div>
+  <div class="date">April 8, 2026</div>
+</div>
+
+<div class="contact-note">
+Questions about this constitution? Email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a>.<br>
+I read every message personally.
+</div>
+
+<div class="related-links">
+<a href="/veterans/">For Veterans &rarr;</a>
+<a href="/">Back to Stockyard &rarr;</a>
+</div>
+
+</article>
+
+<footer>
+  <p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard. Wrangle your Stack.</p>
+  <p style="margin-top:.5rem"><a href="/">Home</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/tools/">Tools</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/docs/">Docs</a></p>
+  <p style="margin-top:.5rem;font-size:.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
+  <p style="margin-top:.3rem;font-size:.65rem;color:var(--cream-muted)">hello@stockyard.dev</p>
+</footer>
+
+</body>
+</html>
