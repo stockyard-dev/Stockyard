@@ -304,6 +304,8 @@ func isPublicRoute(method, path string) bool {
 			return true
 		case path == "/api/openapi.json":
 			return true
+		case strings.HasPrefix(path, "/api/installer/"):
+			return true // Public OS installer downloads (Mac/Linux/Windows buttons on bundle and tool pages)
 		case strings.HasPrefix(path, "/api/lasso/share/"):
 			return true // Public share retrieval for /compare/{id} page
 		case strings.HasPrefix(path, "/api/replay/share/"):
