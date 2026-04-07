@@ -74,7 +74,18 @@ type Recommender struct {
 	portMap    map[string]int    // slug → default port
 	nameMap    map[string]string // slug → display name
 	recCache   *RecCache         // Layer 2 normalized cache
+	// llmSem caps concurrent LLM calls to protect Anthropic rate limits and
+	// prevent goroutine pile-ups on launch traffic spikes. Cache hits don't
+	// touch the semaphore — only the L3 LLM-bound code path does. When the
+	// semaphore is full, requests get a fast 503 with a "try again" message
+	// instead of slowly piling up while waiting for an LLM slot.
+	llmSem chan struct{}
 }
+
+// MaxConcurrentLLMCalls is the cap on simultaneous Anthropic-bound recommend
+// requests. Cache hits aren't counted. Tuned for a single-replica Railway
+// deployment; bump on multi-replica autoscale.
+const MaxConcurrentLLMCalls = 5
 
 // NewRecommender creates the recommendation system.
 func NewRecommender(db *sql.DB) *Recommender {
@@ -92,6 +103,7 @@ func NewRecommender(db *sql.DB) *Recommender {
 		slugSet:    make(map[string]bool),
 		portMap:    make(map[string]int),
 		nameMap:    make(map[string]string),
+		llmSem:     make(chan struct{}, MaxConcurrentLLMCalls),
 	}
 
 	r.recCache = NewRecCache(db)
@@ -232,6 +244,38 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	if os.Getenv("ANTHROPIC_API_KEY") == "" && os.Getenv("OPENAI_API_KEY") == "" {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"error": "AI recommendations unavailable", "fallback": true})
+		return
+	}
+
+	// Acquire LLM slot — fast 503 if all slots are taken. The semaphore caps
+	// concurrent Anthropic calls at MaxConcurrentLLMCalls so a launch traffic
+	// spike with many novel queries can't blow Anthropic's rate limits or pile
+	// up unbounded goroutines. Cache hits skipped this entirely.
+	select {
+	case r.llmSem <- struct{}{}:
+		defer func() { <-r.llmSem }()
+	case <-time.After(50 * time.Millisecond):
+		log.Printf("[recommend] LLM semaphore full (%d in flight) — degraded fallback for %q", MaxConcurrentLLMCalls, normalized)
+		// If quick-match has a slug, redirect to the static bundle instead of 503ing.
+		if slug := QuickMatchLookup(normalized); slug != "" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"slug":        slug,
+				"fallback":    true,
+				"degraded":    true,
+				"redirect_to": "/for/" + slug + "/",
+				"message":     "AI recommendations are temporarily busy — showing the closest static bundle instead",
+			})
+			return
+		}
+		w.Header().Set("Retry-After", "5")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(map[string]any{
+			"error":    "AI recommendations are temporarily busy — try again in a moment",
+			"fallback": true,
+			"retry_in": 5,
+		})
 		return
 	}
 
