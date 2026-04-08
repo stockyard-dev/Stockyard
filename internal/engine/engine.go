@@ -549,6 +549,12 @@ Docs:      https://stockyard.dev/docs
 	// proxy hook; in production aigen calls show up in observe_traces
 	// automatically with the "source: aigen" tag.
 
+	// Register the aigen module's built-in self-test task. Real tools
+	// register their own tasks in their own init() functions; this is the
+	// one task that ships with aigen itself so the engine has something to
+	// exercise the full pipeline against on every deploy.
+	aigen.RegisterBuiltins()
+
 	// Register dashboard, SSE, and management API
 	dashboard.Register(srv.Mux(), pc.Product)
 	broadcaster.RegisterSSE(srv.Mux())
@@ -694,6 +700,38 @@ Docs:      https://stockyard.dev/docs
 			"providers": 16,
 			"products": 29,
 			"endpoints": "360+",
+		})
+	})
+
+	// aigen selftest — runs the built-in aigen.self_test task against the
+	// live model through the proxy chain. Use this to verify aigen is wired
+	// up end to end on every deploy. Returns the validated output, the trace
+	// id, the eval results, and a curl command to read the captured prompt
+	// and completion from the trace store.
+	srv.Mux().HandleFunc("POST /api/aigen/selftest", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		ctx := r.Context()
+		out, err := aigen.Generate(ctx, aigen.Request{
+			Task: "aigen.self_test",
+			// Empty Examples → falls back to ColdStart
+		})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]any{
+				"ok":    false,
+				"error": err.Error(),
+				"hint":  "if this is a schema or style violation the model returned valid JSON but it failed validation — read the trace via /api/observe/traces?source=aigen&limit=1",
+			})
+			return
+		}
+		// Run the registered evals against the actual output for extra confidence
+		evalFailures, _ := aigen.RunEval("aigen.self_test")
+		json.NewEncoder(w).Encode(map[string]any{
+			"ok":            len(evalFailures) == 0,
+			"output":        out,
+			"eval_failures": evalFailures,
+			"registered_tasks": aigen.ListTasks(),
+			"hint":          "to read the captured prompt and completion: curl -H 'X-Admin-Key: $KEY' '/api/observe/traces?source=aigen&limit=1'",
 		})
 	})
 
