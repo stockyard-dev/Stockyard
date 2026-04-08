@@ -57,13 +57,18 @@ function TeamPicker(){
 function App(){
   const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!ss('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!ss('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
   const[teamVer,setTeamVer]=useState(0);
+  const[mobileNavOpen,setMobileNavOpen]=useState(false);
   const View=VIEWS[active]||OverviewView;
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!ss('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
   useEffect(()=>{const h=()=>setTeamVer(v=>v+1);window.addEventListener('teamchange',h);return()=>window.removeEventListener('teamchange',h)},[]);
+  useEffect(()=>{setMobileNavOpen(false)},[active]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
   if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
-  return html`<div class="shell"><nav class="nav">
+  return html`<div class="shell ${mobileNavOpen?'mobile-nav-open':''}">
+    <button class="mobile-nav-toggle" onClick=${()=>setMobileNavOpen(v=>!v)} aria-label="Menu">${mobileNavOpen?'\u2715':'\u2630'}</button>
+    <div class="mobile-nav-backdrop" onClick=${()=>setMobileNavOpen(false)}></div>
+    <nav class="nav">
     <div class="nav-brand" onClick=${()=>setActive('overview')}><span class="nav-brand-text">Stockyard</span></div>
     <${TeamPicker}/>
     <div class="nav-divider"></div><div class="nav-section">Apps</div>

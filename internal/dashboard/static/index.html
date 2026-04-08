@@ -1398,13 +1398,18 @@ function TeamPicker(){
 function App(){
   const[active,setActive]=useState('overview');const[authed,setAuthed]=useState(!!ss('sy_admin_key'));const[onboarded,setOnboarded]=useState(!!ss('sy_onboarded'));const[needsOnboard,setNeedsOnboard]=useState(false);
   const[teamVer,setTeamVer]=useState(0);
+  const[mobileNavOpen,setMobileNavOpen]=useState(false);
   const View=VIEWS[active]||OverviewView;
   useEffect(()=>{(async()=>{const r=await api('/api/proxy/modules');if(r._error===401||r._error===403){setAuthed(false);return}setAuthed(true);if(!ss('sy_onboarded')){const u=await api('/api/auth/users');if(!u.users||u.users.length===0){setNeedsOnboard(true)}}})()},[]);
   useEffect(()=>{const h=()=>setTeamVer(v=>v+1);window.addEventListener('teamchange',h);return()=>window.removeEventListener('teamchange',h)},[]);
+  useEffect(()=>{setMobileNavOpen(false)},[active]);
   if(!authed)return html`<${AuthGate} onAuth=${()=>setAuthed(true)}/>`;
   const logout=()=>{setAdminKey('');setAuthed(false)};
   if(needsOnboard)return html`<${Onboarding} onComplete=${()=>setNeedsOnboard(false)}/>`;
-  return html`<div class="shell"><nav class="nav">
+  return html`<div class="shell ${mobileNavOpen?'mobile-nav-open':''}">
+    <button class="mobile-nav-toggle" onClick=${()=>setMobileNavOpen(v=>!v)} aria-label="Menu">${mobileNavOpen?'\u2715':'\u2630'}</button>
+    <div class="mobile-nav-backdrop" onClick=${()=>setMobileNavOpen(false)}></div>
+    <nav class="nav">
     <div class="nav-brand" onClick=${()=>setActive('overview')}><span class="nav-brand-text">Stockyard</span></div>
     <${TeamPicker}/>
     <div class="nav-divider"></div><div class="nav-section">Apps</div>
@@ -1485,7 +1490,8 @@ render(html`<${App}/>`,document.getElementById('root'));
 .onboard-content{min-height:180px}
 
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg3)}::-webkit-scrollbar-thumb:hover{background:var(--leather)}
-@media(max-width:900px){.nav{display:none}.stats-row{flex-wrap:wrap}.stats-row .stat{min-width:45%}.app-grid{grid-template-columns:1fr}.content{padding:24px 16px}.settings-layout{flex-direction:column}.settings-sidebar{width:100%;min-width:0}}
+.mobile-nav-toggle{display:none}.mobile-nav-backdrop{display:none}
+@media(max-width:900px){.mobile-nav-toggle{display:flex;align-items:center;justify-content:center;position:fixed;top:10px;right:10px;z-index:200;width:44px;height:44px;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-size:1.3rem;font-family:var(--font-mono);cursor:pointer;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.3)}.nav{position:fixed;top:0;left:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform 0.2s ease;box-shadow:2px 0 16px rgba(0,0,0,0.5)}.shell.mobile-nav-open .nav{transform:translateX(0)}.shell.mobile-nav-open .mobile-nav-backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:140}.stats-row{flex-wrap:wrap}.stats-row .stat{min-width:45%}.app-grid{grid-template-columns:1fr}.content{padding:60px 16px 24px}.settings-layout{flex-direction:column}.settings-sidebar{width:100%;min-width:0}}
 .live-feed{display:flex;flex-direction:column;gap:4px;max-height:calc(100vh - 320px);overflow-y:auto}
 .live-event{background:var(--bg);border:1px solid var(--bg3);padding:8px 12px;transition:border-color 0.2s;animation:fadeIn 0.3s ease-out}
 .live-event:first-child{border-color:var(--leather-light)}
