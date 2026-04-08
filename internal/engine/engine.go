@@ -543,11 +543,59 @@ Docs:      https://stockyard.dev/docs
 		}
 		return resp.Choices[0].Message.Content, nil
 	})
-	// The proxy hook in hooks.go already writes traces with full bodies for
-	// every call (including aigen calls, since they tag _source=aigen). The
-	// aigen-specific recorder is a no-op fallback for tests that bypass the
-	// proxy hook; in production aigen calls show up in observe_traces
-	// automatically with the "source: aigen" tag.
+	// Wire the trace recorder so every aigen.Generate call writes to
+	// observe_traces directly. The proxy hook in hooks.go only fires on
+	// HTTP-layer requests; aigen calls go in-process via handler(ctx, req)
+	// and skip that hook. This recorder is the in-process equivalent —
+	// same SQL insert, same source tag, same fields, just called from the
+	// aigen module instead of from the HTTP middleware. Traces appear in
+	// the observe dashboard with source=aigen and the task name in tags.
+	aigen.SetTraceRecorder(func(req aigen.Request, task aigen.Task, systemPrompt, userPrompt, response string, generr error, dur time.Duration) {
+		traceID := genTraceID()
+		status := "ok"
+		if generr != nil {
+			status = "error"
+		}
+		// Reconstruct the canonical request body that the proxy hook would
+		// have written, so the trace is shaped identically regardless of
+		// whether it came in over HTTP or via aigen.
+		reqObj := map[string]any{
+			"model": task.Model,
+			"messages": []map[string]string{
+				{"role": "system", "content": systemPrompt},
+				{"role": "user", "content": userPrompt},
+			},
+		}
+		if task.Model == "" {
+			reqObj["model"] = "gpt-4o-mini"
+		}
+		reqBodyBytes, _ := json.Marshal(reqObj)
+		// Cap bodies at 64KB to match the HTTP path
+		const maxBodyBytes = 65536
+		reqBody := string(reqBodyBytes)
+		if len(reqBody) > maxBodyBytes {
+			reqBody = reqBody[:maxBodyBytes]
+		}
+		respBody := response
+		if len(respBody) > maxBodyBytes {
+			respBody = respBody[:maxBodyBytes]
+		}
+		tagsJSON, _ := json.Marshal(map[string]string{
+			"source":  "aigen",
+			"task":    task.Name,
+			"user_id": req.UserID,
+			"team_id": req.TeamID,
+		})
+		now := time.Now().UTC().Format(time.RFC3339)
+		_, dbErr := db.Conn().Exec(`INSERT INTO observe_traces
+			(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source, request_body, user_id, team_id)
+			VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+			traceID, traceID, "aigen", task.Name, "", reqObj["model"], status,
+			dur.Milliseconds(), 0, 0, 0.0, "{}", now, respBody, string(tagsJSON), "aigen", reqBody, req.UserID, req.TeamID)
+		if dbErr != nil {
+			log.Printf("[aigen-trace] failed to record: %v", dbErr)
+		}
+	})
 
 	// Register the aigen module's built-in self-test task. Real tools
 	// register their own tasks in their own init() functions; this is the
