@@ -3,13 +3,10 @@
 package memory
 
 import (
-	"bytes"
 	"crypto/rand"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 	"math"
 	"net/http"
@@ -35,6 +32,8 @@ func (a *App) Migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// Register the memory.summarize aigen task (idempotent via sync.Once).
+	registerMemoryAigenTasks()
 	log.Printf("[memory] migrations applied")
 	return nil
 }
@@ -265,21 +264,26 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Summarize via LLM if proxy is available, otherwise concatenate
-	var summaryText string
-	if a.proxyPort > 0 && a.proxyPort <= 65535 {
-		combined := strings.Join(contents, "\n---\n")
-		if len(combined) > 4000 {
-			combined = combined[:4000]
-		}
-		summaryText = a.llmSummarize(combined, len(oldIDs))
-	}
-	if summaryText == "" {
-		// Fallback: simple concatenation
-		summaryText = "Summary of " + fmt.Sprintf("%d", len(oldIDs)) + " older memories: " + strings.Join(contents, " | ")
-		if len(summaryText) > 2000 {
-			summaryText = summaryText[:2000]
-		}
+	// PRESERVE-ON-FAILURE SEMANTICS: we call aigen to generate the summary
+	// and ONLY if it succeeds do we delete the original entries. Previously
+	// this handler called a free-form LLM via HTTP loopback, and if the
+	// model returned bad output it would still write the bad output and
+	// delete the originals. That meant a single bad AI call caused permanent
+	// data loss. The aigen path has schema validation, evals, and a hard
+	// rejection on empty output, so "aigen succeeded" is a stronger
+	// guarantee than "llmSummarize returned a non-empty string".
+	summaryText, aigenErr := a.aigenSummarize(r.Context(), contents)
+	if aigenErr != nil {
+		// Refuse to summarize rather than destructive-delete with a bad
+		// fallback. The user's data stays intact. They can retry.
+		log.Printf("[memory] summarize rejected by aigen for user=%s: %v", userID, aigenErr)
+		writeMemJSON(w, http.StatusOK, map[string]any{
+			"status":  "summary_rejected",
+			"reason":  aigenErr.Error(),
+			"kept":    len(oldIDs),
+			"message": "the AI summarization was rejected by validation; your memory entries are unchanged",
+		})
+		return
 	}
 
 	summaryID := generateMemoryID()
@@ -300,54 +304,6 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 }
 
 // --- Trigram similarity (lightweight, no external embeddings) ---
-
-// llmSummarize calls the proxy to generate a real summary of conversation memories.
-func (a *App) llmSummarize(content string, entryCount int) string {
-	prompt := fmt.Sprintf("Summarize these %d conversation memory entries into a concise paragraph. "+
-		"Preserve key facts, names, decisions, and action items. Be specific, not generic.\n\n%s", entryCount, content)
-
-	body, _ := json.Marshal(map[string]any{
-		"model":      "gpt-4o-mini",
-		"messages":   []map[string]string{{"role": "user", "content": prompt}},
-		"max_tokens": 300,
-	})
-
-	url := fmt.Sprintf("http://127.0.0.1:%d/v1/chat/completions", a.proxyPort)
-	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
-	if err != nil {
-		return ""
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Stockyard-Source", "memory-summarizer")
-
-	resp, err := (&http.Client{Timeout: 30 * time.Second}).Do(req)
-	if err != nil {
-		log.Printf("[memory] summarize LLM call failed: %v", err)
-		return ""
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		respBody = []byte{}
-	}
-	if resp.StatusCode >= 400 {
-		log.Printf("[memory] summarize LLM returned %d", resp.StatusCode)
-		return ""
-	}
-
-	var result struct {
-		Choices []struct {
-			Message struct {
-				Content string `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
-	}
-	if json.Unmarshal(respBody, &result) != nil || len(result.Choices) == 0 {
-		return ""
-	}
-	return result.Choices[0].Message.Content
-}
 
 func trigramVec(text string) map[string]float64 {
 	text = strings.ToLower(strings.TrimSpace(text))
