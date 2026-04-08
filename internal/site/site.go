@@ -388,7 +388,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/providers/xai/",
 		"/llm-proxy-for-cursor/",
 		"/llm-proxy-for-teams/",
-		"/llm-proxy/",
 		"/how-to-reduce-llm-costs/",
 		"/llm-request-replay/",
 		"/prompt-version-control/",
@@ -1312,6 +1311,13 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			}
 		}
 	}
+
+	// /llm-proxy/ was an older landing page that has been folded into
+	// /proxy-only/, which is now the canonical proxy product page. Permanent
+	// redirect so old links keep working and search engines update their index.
+	mux.HandleFunc("GET /llm-proxy/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/proxy-only/", http.StatusMovedPermanently)
+	})
 
 	// Serve bundles search index for homepage async load
 	mux.HandleFunc("GET /bundles-search.json", func(w http.ResponseWriter, r *http.Request) {

@@ -7,9 +7,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>LLM Proxy-Only Mode — Route Requests Without the Full Platform — Stockyard</title>
-<meta name="description" content="Use Stockyard as just an LLM proxy. One endpoint across 16 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies.">
+<meta name="description" content="Use Stockyard as just an LLM proxy. One endpoint across 38 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies.">
 <meta property="og:title" content="Use Stockyard as Just a Proxy">
-<meta property="og:description" content="One endpoint for 16 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
+<meta property="og:description" content="One endpoint for 38 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/proxy-only/">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -245,7 +245,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <div class="section">
   <h2 class="section-label">What you gain vs what you give up</h2>
-  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 16 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
+  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 38 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
   <p style="font-size:0.95rem;color:var(--cream-dim)"><strong style="color:var(--cream)">What you give up:</strong> roughly 200ms of added latency per request (the middleware chain). Your requests route through one more hop. If you need sub-millisecond proxy overhead or horizontal scaling across many nodes, a lighter proxy or direct provider calls may be a better fit.</p>
 </div>
 
@@ -293,7 +293,7 @@ providers:
   <h2>Frequently Asked Questions</h2>
     <div class="faq-item"><div class="faq-q">Can I use Stockyard as just a proxy without the other features?</div><div class="faq-a">Yes. Proxy-only is a first-class use case. Install the binary, set your provider key, and route requests through one endpoint. Tracing, audit, and the other products are there if you want them later, but they are not required.</div></div>
     <div class="faq-item"><div class="faq-q">Does proxy-only mode cost anything?</div><div class="faq-a">No. The Community tier is free and includes the full proxy with all 76 middleware modules, 16 provider integrations, caching, rate limiting, and cost tracking. No credit card required.</div></div>
-    <div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 16 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
+    <div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 38 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
     <div class="faq-item"><div class="faq-q">Do I need Docker or Redis to run the proxy?</div><div class="faq-a">No. Stockyard ships as a single Go binary with embedded SQLite. No Docker, no Redis, no Postgres, no external dependencies. Download and run.</div></div>
 </section>
 
@@ -323,7 +323,7 @@ providers:
       "name": "What providers does the proxy support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Stockyard supports 16 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured."
+        "text": "Stockyard supports 38 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured."
       }
     },
     {
@@ -342,7 +342,7 @@ providers:
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Stockyard LLM Proxy",
-  "description": "Self-hosted LLM proxy with 76 middleware modules, 16 providers, caching, rate limiting, and cost tracking. One binary, zero dependencies.",
+  "description": "Self-hosted LLM proxy with 76 middleware modules, 38 providers, caching, rate limiting, and cost tracking. One binary, zero dependencies.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Linux, macOS, Windows",
   "url": "https://stockyard.dev/proxy-only/",

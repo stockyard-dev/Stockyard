@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="The True Cost of LLM APIs in 2026: 40+ Models Compared — Stockyard">
-<meta property="og:description" content="We compiled pricing for 40+ models across 16 providers. GPT-4o, Claude, Gemini, Llama, Mistral, DeepSeek, Grok — what does 1 million tokens actually cost?">
+<meta property="og:description" content="We compiled pricing for 40+ models across 38 providers. GPT-4o, Claude, Gemini, Llama, Mistral, DeepSeek, Grok — what does 1 million tokens actually cost?">
 <meta property="og:url" content="https://stockyard.dev/blog/llm-api-pricing-2026/">
 <meta property="og:type" content="article">
 <meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
@@ -15,10 +15,10 @@
 <title>The True Cost of LLM APIs in 2026: 40+ Models Compared — Stockyard</title>
 <link rel="canonical" href="https://stockyard.dev/blog/llm-api-pricing-2026/">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"The True Cost of LLM APIs in 2026: 40+ Models Compared","author":{"@type":"Person","name":"Michael"},"datePublished":"2026-03-22","dateModified":"2026-03-30","publisher":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"},"description":"Pricing for 40+ models across 16 providers. What does 1 million tokens actually cost? Plus how to cut your bill 50-80%.","url":"https://stockyard.dev/blog/llm-api-pricing-2026/","image":"https://stockyard.dev/site-assets/assets/marketing/og-card.png"}
+{"@context":"https://schema.org","@type":"Article","headline":"The True Cost of LLM APIs in 2026: 40+ Models Compared","author":{"@type":"Person","name":"Michael"},"datePublished":"2026-03-22","dateModified":"2026-03-30","publisher":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"},"description":"Pricing for 40+ models across 38 providers. What does 1 million tokens actually cost? Plus how to cut your bill 50-80%.","url":"https://stockyard.dev/blog/llm-api-pricing-2026/","image":"https://stockyard.dev/site-assets/assets/marketing/og-card.png"}
 </script>
 <link rel="alternate" type="application/rss+xml" title="Stockyard Blog" href="/blog/feed.xml">
-<meta name="description" content="We compiled pricing for 40+ models across 16 providers. GPT-4o, Claude, Gemini, Llama, Mistral, DeepSeek — what does 1 million tokens actually cost?">
+<meta name="description" content="We compiled pricing for 40+ models across 38 providers. GPT-4o, Claude, Gemini, Llama, Mistral, DeepSeek — what does 1 million tokens actually cost?">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -114,7 +114,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
   <h1>The True Cost of LLM APIs in 2026: 40+ Models Compared</h1>
   <div class="post-meta"><time datetime="2026-03-22">March 22, 2026</time> &middot; Michael &middot; 10 min read</div>
 
-  <p>We maintain a pricing table for 40+ models across 16 providers, compiled into <a href="https://github.com/stockyard-dev/Stockyard">Stockyard&rsquo;s</a> binary for real-time cost tracking. Here&rsquo;s every model we track, what it costs, and where the real value is.</p>
+  <p>We maintain a pricing table for 40+ models across 38 providers, compiled into <a href="https://github.com/stockyard-dev/Stockyard">Stockyard&rsquo;s</a> binary for real-time cost tracking. Here&rsquo;s every model we track, what it costs, and where the real value is.</p>
 
   <p>All prices are per 1 million tokens. Output tokens are always more expensive than input because the model does more work generating them.</p>
 
@@ -212,7 +212,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
   <p><strong>4. Trim your prompts.</strong> Audit your system prompts monthly. Remove examples that aren&rsquo;t improving quality. Compress instructions. Every token you remove from a system prompt saves money on every single request.</p>
 
-  <p><strong>5. Failover to cheaper providers.</strong> If OpenAI returns a 429, don&rsquo;t retry on OpenAI &mdash; failover to Anthropic or Groq. You avoid the retry cost and get faster recovery. Stockyard&rsquo;s <code>failover</code> module handles this automatically across all 16 providers.</p>
+  <p><strong>5. Failover to cheaper providers.</strong> If OpenAI returns a 429, don&rsquo;t retry on OpenAI &mdash; failover to Anthropic or Groq. You avoid the retry cost and get faster recovery. Stockyard&rsquo;s <code>failover</code> module handles this automatically across all 38 providers.</p>
 
   <h2>The Math: What This Costs in Practice</h2>
 
