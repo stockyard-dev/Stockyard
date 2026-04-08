@@ -30,17 +30,32 @@ func registerKnowledgeAigenTask() {
 	knowledgeRegisterOnce.Do(func() {
 		aigen.Register(aigen.Task{
 			Name: "knowledge.suggest_entry",
-			// NOTE ON PROMPT DESIGN: the previous iteration of this prompt
-			// said "name the exact version, flag, function, or behavior"
-			// which made the model MUCH MORE likely to confabulate by
-			// slapping "Go 1.20" onto every fact whether or not it knew
-			// the right version. Classic Goodhart: the model optimized
-			// for "mention a version" rather than "be accurate". Reverting
-			// to a more conservative framing that discourages fabricated
-			// citations without demanding them. See HANDOFF notes: the
-			// broader finding is that you can't prompt a model into
-			// factual accuracy by asking for specificity — the model will
-			// produce whatever satisfies the surface of the rule.
+			// DESIGN NOTES (learned from 16+ live production runs):
+			//
+			// Iteration 1 (original): broad prompt, source field allowed.
+			//   Result: model produced intro-tutorial content and
+			//   confabulated version numbers ("Go 1.21 introduced
+			//   Stringer", "Go 1.19 introduced type parameters"). 2 of 5
+			//   outputs factually wrong.
+			//
+			// Iteration 2 (Goodhart'd): added "name the exact version,
+			//   flag, function, or behavior" as a rule. Made things
+			//   DRAMATICALLY worse. Every output got a version number
+			//   stapled to it, mostly wrong. The positive instruction
+			//   overrode the negative "do not confabulate" rule.
+			//   6 of 8 outputs factually wrong.
+			//
+			// Iteration 3 (conservative): removed the "name the version"
+			//   positive rule, kept only negative ones. 6 of 8 outputs
+			//   correct, 1 version confabulation ("Go 1.12 maintained
+			//   insertion order"), 1 semantic inversion.
+			//
+			// Iteration 4 (this one, structural): drop the source field
+			//   entirely from the schema. The model cannot confabulate a
+			//   citation for a field that doesn't exist. This is the
+			//   general aigen design rule: when a field attracts
+			//   fabrication, delete the field. Trust accuracy over
+			//   completeness.
 			SystemPrompt: "You are helping a domain expert extend their " +
 				"knowledge base. Given a few of their existing entries, " +
 				"suggest exactly one more entry in the same voice, shape, " +
@@ -49,34 +64,26 @@ func registerKnowledgeAigenTask() {
 				"your fact must be a tip. If they are definitions, your " +
 				"fact must be a definition. Match the voice exactly. " +
 				"(2) Do NOT confabulate. If you are not confident a fact " +
-				"is true, do not include it. Rather fall back to a more " +
-				"general but true statement than a specific false one. " +
-				"(3) Do NOT cite a version number unless you are certain " +
-				"the version is correct. It is better to omit the source " +
-				"field entirely than to fabricate a citation. (4) Avoid " +
+				"is true, pick a different fact. Factual accuracy is " +
+				"more important than variety or coverage. (3) Do NOT " +
+				"cite version numbers. If a version is relevant, phrase " +
+				"the fact without the specific version (e.g., 'recent " +
+				"Go versions' instead of 'Go 1.20'). (4) Avoid " +
 				"intro-tutorial phrasing. Return JSON only.",
 			Schema: aigen.Schema{
 				Type:     "object",
 				Required: []string{"fact"},
 				Properties: map[string]aigen.Property{
-					"fact":   {Type: "string", MaxLength: 400},
-					"source": {Type: "string", MaxLength: 200},
+					// source field intentionally removed — the model
+					// confabulated citations when it existed.
+					"fact": {Type: "string", MaxLength: 400},
 				},
 			},
 			MaxOutputTokens: 200,
 			ColdStart: []map[string]any{
-				{
-					"fact":   "Go 1.22 ServeMux panics at boot on duplicate route registration rather than silently overriding the earlier handler.",
-					"source": "Go 1.22 release notes",
-				},
-				{
-					"fact":   "SQLite PRAGMA journal_mode=WAL enables concurrent readers while a single writer holds the lock, improving throughput on read-heavy workloads.",
-					"source": "SQLite WAL documentation",
-				},
-				{
-					"fact":   "Railway containers do not support the VOLUME Dockerfile directive; attempting to use one will fail the build with a non-obvious error.",
-					"source": "Railway deployment docs",
-				},
+				{"fact": "Go 1.22 ServeMux panics at boot on duplicate route registration rather than silently overriding the earlier handler."},
+				{"fact": "SQLite PRAGMA journal_mode=WAL enables concurrent readers while a single writer holds the lock, improving throughput on read-heavy workloads."},
+				{"fact": "Railway containers do not support the VOLUME Dockerfile directive; attempting to use one will fail the build with a non-obvious error."},
 			},
 			Evals: []aigen.Eval{
 				{
