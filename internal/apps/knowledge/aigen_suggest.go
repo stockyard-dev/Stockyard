@@ -142,7 +142,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/aigen"
+	"github.com/stockyard-dev/aigen"
 )
 
 // registerAigenTask registers the knowledge.suggest_entry aigen task.

@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/agent"
-	"github.com/stockyard-dev/stockyard/internal/aigen"
+	"github.com/stockyard-dev/aigen"
 	"github.com/stockyard-dev/stockyard/internal/api"
 	"github.com/stockyard-dev/stockyard/internal/apiserver"
 	"github.com/stockyard-dev/stockyard/internal/apps/billing"
