@@ -16,6 +16,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/aigen"
 )
@@ -69,7 +70,13 @@ func registerKnowledgeAigenTask() {
 				"cite version numbers. If a version is relevant, phrase " +
 				"the fact without the specific version (e.g., 'recent " +
 				"Go versions' instead of 'Go 1.20'). (4) Avoid " +
-				"intro-tutorial phrasing. Return JSON only.",
+				"intro-tutorial phrasing. (5) If the Input contains a " +
+				"field named 'recent_suggestions_to_avoid', your output " +
+				"MUST NOT duplicate or paraphrase any of those facts. " +
+				"Pick a DIFFERENT gotcha from the same domain. Variety " +
+				"across calls matters — the user is calling this " +
+				"repeatedly to build out their knowledge base, and " +
+				"repeats waste their time. Return JSON only.",
 			Schema: aigen.Schema{
 				Type:     "object",
 				Required: []string{"fact"},
@@ -221,6 +228,28 @@ func indexOfFold(s, sub string) int {
 // them as few-shot examples to aigen.Generate. The returned suggestion is
 // shown to the user as a preview — it is NOT automatically added to the KB.
 // The user decides whether to accept it.
+//
+// Variety controls (added in iteration 7 after observing 4-of-10 convergence
+// on "defer LIFO order" phrased four different ways across runs):
+//
+//  1. Example shuffling. The SQL pulls the 8 most recent entries but we
+//     only pass a random 5 of them to the model. Different runs see
+//     different subsets of context, which nudges the model toward
+//     different regions of the domain.
+//
+//  2. Recent-suggestion exclusion. The last 6 accepted-or-shown suggestions
+//     for this KB are passed as an avoid list in Request.Input. The system
+//     prompt tells the model not to repeat them. This is the structural
+//     fix for variety collapse — without it, the model defaults to the
+//     small set of canonical gotchas it prefers (defer LIFO, maps
+//     not concurrent-safe, etc) and rehashes them.
+//
+// The recent-suggestions buffer is in-memory per-process, not persisted.
+// That's intentional: the buffer exists to prevent within-session
+// repetition during a suggest-accept-suggest flow. Cross-session variety
+// comes naturally from the random example shuffle. A persistent store
+// would add complexity for marginal benefit and could itself become a
+// slop source if the buffer gets stale.
 func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 	kbID := r.PathValue("id")
 
@@ -232,7 +261,7 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Load the most recent 8 entries as few-shot grounding.
+	// Load the most recent 8 entries as candidate few-shot grounding.
 	//
 	// IMPORTANT: we only select `fact` here, not `source`, even though
 	// the database has both. The aigen task schema only declares the
@@ -240,9 +269,7 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 	// unexpected fields in the model's output. If we pass the `source`
 	// field as part of examples, the model sees a {fact, source} shape
 	// and produces {fact, source} output, which then fails validation
-	// 100% of the time. This was caught by running 10 live calls
-	// against iteration 4 and watching all 10 reject with 'unexpected
-	// field "source"'.
+	// 100% of the time.
 	//
 	// The general design rule (aigen gotcha #N): the shape of few-shot
 	// examples must match the shape of the output schema EXACTLY. If
@@ -259,15 +286,24 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var examples []map[string]any
+	var allEntries []map[string]any
 	for rows.Next() {
 		var fact string
 		if scanErr := rows.Scan(&fact); scanErr != nil {
 			continue
 		}
-		examples = append(examples, map[string]any{
-			"fact": fact,
-		})
+		allEntries = append(allEntries, map[string]any{"fact": fact})
+	}
+
+	// Randomly pick 5 of the available entries to vary context across calls.
+	// If fewer than 5 entries exist, use all of them.
+	examples := shuffleAndTake(allEntries, 5)
+
+	// Look up recent suggestions for this KB to pass as an avoid list.
+	recent := a.getRecentSuggestions(kbID)
+	input := map[string]any{}
+	if len(recent) > 0 {
+		input["recent_suggestions_to_avoid"] = recent
 	}
 
 	// Call aigen. If the KB is empty, examples is nil and aigen will
@@ -277,6 +313,7 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 	out, err := aigen.Generate(r.Context(), aigen.Request{
 		Task:     "knowledge.suggest_entry",
 		Examples: examples,
+		Input:    input,
 	})
 	if err != nil {
 		w.WriteHeader(500)
@@ -287,11 +324,18 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Record the suggestion in the recent-suggestions buffer so future
+	// calls can avoid repeating it.
+	if fact, ok := out["fact"].(string); ok && fact != "" {
+		a.rememberSuggestion(kbID, fact)
+	}
+
 	writeJSON(w, map[string]any{
-		"kb_id":      kbID,
-		"suggestion": out,
-		"note":       "this is a preview — the suggestion is not added to the knowledge base until you POST it to /entries",
+		"kb_id":              kbID,
+		"suggestion":         out,
+		"note":               "this is a preview — the suggestion is not added to the knowledge base until you POST it to /entries",
 		"example_count_used": len(examples),
+		"avoid_count":        len(recent),
 	})
 }
 
@@ -308,6 +352,73 @@ func (o *onceDo) Do(f func()) {
 }
 
 func newOnce() *onceDo { return &onceDo{} }
+
+// shuffleAndTake returns up to n randomly-chosen elements from src without
+// mutating src. Used to vary the few-shot examples across consecutive
+// suggest calls so the model sees different subsets of context. If len(src)
+// <= n, returns a shallow copy of src.
+func shuffleAndTake(src []map[string]any, n int) []map[string]any {
+	if len(src) == 0 {
+		return nil
+	}
+	if len(src) <= n {
+		out := make([]map[string]any, len(src))
+		copy(out, src)
+		return out
+	}
+	// Fisher-Yates on a copy of the index set, take first n.
+	idx := make([]int, len(src))
+	for i := range idx {
+		idx[i] = i
+	}
+	// math/rand would be fine here but crypto/rand is already imported
+	// by the knowledge package. Use a cheap nondeterministic seed.
+	seed := time.Now().UnixNano()
+	r := seed
+	for i := len(idx) - 1; i > 0; i-- {
+		r = r*1103515245 + 12345
+		j := int(uint(r>>16)) % (i + 1)
+		idx[i], idx[j] = idx[j], idx[i]
+	}
+	out := make([]map[string]any, n)
+	for k := 0; k < n; k++ {
+		out[k] = src[idx[k]]
+	}
+	return out
+}
+
+// getRecentSuggestions returns a copy of the recent-suggestions buffer for
+// a given KB. Buffer is in-memory, per-process, capped at 6 entries. Used
+// by handleSuggestEntry to build an avoid list passed to the next aigen
+// call via Request.Input.
+func (a *App) getRecentSuggestions(kbID string) []string {
+	a.recentSuggestionsMu.Lock()
+	defer a.recentSuggestionsMu.Unlock()
+	if a.recentSuggestions == nil {
+		return nil
+	}
+	buf := a.recentSuggestions[kbID]
+	out := make([]string, len(buf))
+	copy(out, buf)
+	return out
+}
+
+// rememberSuggestion appends a fact to the recent-suggestions buffer for a
+// given KB. Buffer is a simple ring of 6; older entries are dropped.
+func (a *App) rememberSuggestion(kbID, fact string) {
+	a.recentSuggestionsMu.Lock()
+	defer a.recentSuggestionsMu.Unlock()
+	if a.recentSuggestions == nil {
+		a.recentSuggestions = make(map[string][]string)
+	}
+	const ringCap = 6
+	buf := a.recentSuggestions[kbID]
+	buf = append(buf, fact)
+	if len(buf) > ringCap {
+		buf = buf[len(buf)-ringCap:]
+	}
+	a.recentSuggestions[kbID] = buf
+}
 
 // JSON body decode helper used by the suggest handler only.
 var _ = json.Decoder{} // keep the import for future use

@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -19,6 +20,12 @@ type App struct {
 	conn                 *sql.DB
 	audit                func(string, string, string, string, any)
 	reportMarketplaceFee func(string, int64) // Stripe metered billing callback
+
+	// recentSuggestionsMu guards the recentSuggestions map which is the
+	// in-memory buffer of recent aigen suggest_entry outputs per KB. Used
+	// by handleSuggestEntry to pass an avoid list to the next aigen call.
+	recentSuggestionsMu sync.Mutex
+	recentSuggestions   map[string][]string // kb_id -> last N suggested facts
 }
 
 // New creates a new knowledge App backed by the given database.
