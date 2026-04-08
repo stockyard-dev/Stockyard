@@ -54,8 +54,8 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .section{padding:3rem 2rem;max-width:800px;margin:0 auto}
 .section-label{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.5rem;text-align:center}
 .section p{font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem;line-height:1.8;text-align:center}
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:2rem 0}
-.tool-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem;transition:border-color 0.2s}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin:2rem 0}
+.tool-card{background:var(--bg2);border:1px solid var(--bg3);padding:0;transition:border-color 0.2s;overflow:hidden;display:flex;flex-direction:column}.tool-card img.tool-mockup{width:100%;height:auto;display:block;border-bottom:1px solid var(--bg3);background:#1a1410}.tool-card-body{padding:0.85rem 1rem 1rem}.tool-card .tool-name,.tool-card-body .tool-name{margin-bottom:0.25rem}.tool-card-body .tool-desc{line-height:1.45}
 .tool-card:hover{border-color:var(--rust)}
 .tool-name{font-family:var(--font-mono);font-size:0.85rem;color:var(--cream);margin-bottom:0.3rem}
 .tool-desc{font-size:0.8rem;color:var(--cream-dim)}
@@ -133,33 +133,19 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
   <div class="section-label">7 tools included</div>
   <div class="tool-grid">
       <div class="tool-card">
-        <div class="tool-name">Menu</div>
-        <div class="tool-desc">Digital menu management</div>
-      </div>
+        <a href="/menu/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-menu.svg" alt="Menu dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Menu</div><div class="tool-desc">Digital menu management</div></div></a></div>
       <div class="tool-card">
-        <div class="tool-name">Estimate</div>
-        <div class="tool-desc">Quotes and estimates</div>
-      </div>
+        <a href="/estimate/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-estimate.svg" alt="Estimate dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Estimate</div><div class="tool-desc">Quotes and estimates</div></div></a></div>
       <div class="tool-card">
-        <div class="tool-name">Dossier</div>
-        <div class="tool-desc">Contact records and directory</div>
-      </div>
+        <a href="/dossier/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-dossier.svg" alt="Dossier dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Dossier</div><div class="tool-desc">Contact records and directory</div></div></a></div>
       <div class="tool-card">
-        <div class="tool-name">Recipe</div>
-        <div class="tool-desc">Recipe management</div>
-      </div>
+        <a href="/recipe/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-recipe.svg" alt="Recipe dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Recipe</div><div class="tool-desc">Recipe management</div></div></a></div>
       <div class="tool-card">
-        <div class="tool-name">Billfold</div>
-        <div class="tool-desc">Invoicing and payments</div>
-      </div>
+        <a href="/billfold/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-billfold.svg" alt="Billfold dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Billfold</div><div class="tool-desc">Invoicing and payments</div></div></a></div>
       <div class="tool-card">
-        <div class="tool-name">Booking</div>
-        <div class="tool-desc">Appointment scheduling</div>
-      </div>
+        <a href="/booking/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-booking.svg" alt="Booking dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Booking</div><div class="tool-desc">Appointment scheduling</div></div></a></div>
       <div class="tool-card">
-        <div class="tool-name">Quartermaster</div>
-        <div class="tool-desc">Inventory management</div>
-      </div>
+        <a href="/quartermaster/" style="text-decoration:none;color:inherit;display:block"><img src="/site-assets/assets/screenshots/tool-quartermaster.svg" alt="Quartermaster dashboard mockup" loading="lazy" class="tool-mockup"><div class="tool-card-body"><div class="tool-name">Quartermaster</div><div class="tool-desc">Inventory management</div></div></a></div>
   </div>
 </div>
 
