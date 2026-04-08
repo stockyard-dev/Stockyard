@@ -520,19 +520,22 @@ func (a *App) handleListFavorites(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleRecordTrace(w http.ResponseWriter, r *http.Request) {
 	var t struct {
-		ID        string  `json:"id"`
-		RequestID string  `json:"request_id"`
-		ParentID  string  `json:"parent_id"`
-		Service   string  `json:"service"`
-		Operation string  `json:"operation"`
-		Provider  string  `json:"provider"`
-		Model     string  `json:"model"`
-		Status    string  `json:"status"`
-		Duration  int64   `json:"duration_ms"`
-		TokensIn  int64   `json:"tokens_in"`
-		TokensOut int64   `json:"tokens_out"`
-		CostUSD   float64 `json:"cost_usd"`
-		Metadata  any     `json:"metadata"`
+		ID           string  `json:"id"`
+		RequestID    string  `json:"request_id"`
+		ParentID     string  `json:"parent_id"`
+		Service      string  `json:"service"`
+		Operation    string  `json:"operation"`
+		Provider     string  `json:"provider"`
+		Model        string  `json:"model"`
+		Status       string  `json:"status"`
+		Duration     int64   `json:"duration_ms"`
+		TokensIn     int64   `json:"tokens_in"`
+		TokensOut    int64   `json:"tokens_out"`
+		CostUSD      float64 `json:"cost_usd"`
+		Metadata     any     `json:"metadata"`
+		RequestBody  string  `json:"request_body"`
+		ResponseBody string  `json:"response_body"`
+		Source       string  `json:"source"`
 	}
 	json.NewDecoder(r.Body).Decode(&t)
 	if t.ID == "" {
@@ -545,8 +548,16 @@ func (a *App) handleRecordTrace(w http.ResponseWriter, r *http.Request) {
 	if marshalErr != nil {
 		meta = []byte("{}")
 	}
-	a.conn.Exec(`INSERT INTO observe_traces (id, request_id, parent_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		t.ID, t.RequestID, t.ParentID, t.Service, t.Operation, t.Provider, t.Model, t.Status, t.Duration, t.TokensIn, t.TokensOut, t.CostUSD, string(meta))
+	// Cap body sizes to prevent unbounded growth — 64KB per body should hold any sane prompt/completion
+	const maxBodyBytes = 65536
+	if len(t.RequestBody) > maxBodyBytes {
+		t.RequestBody = t.RequestBody[:maxBodyBytes] + "...[truncated]"
+	}
+	if len(t.ResponseBody) > maxBodyBytes {
+		t.ResponseBody = t.ResponseBody[:maxBodyBytes] + "...[truncated]"
+	}
+	a.conn.Exec(`INSERT INTO observe_traces (id, request_id, parent_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, request_body, response_body, source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		t.ID, t.RequestID, t.ParentID, t.Service, t.Operation, t.Provider, t.Model, t.Status, t.Duration, t.TokensIn, t.TokensOut, t.CostUSD, string(meta), t.RequestBody, t.ResponseBody, t.Source)
 
 	// Update daily cost rollup
 	today := time.Now().UTC().Format("2006-01-02")

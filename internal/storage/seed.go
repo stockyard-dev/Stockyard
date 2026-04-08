@@ -123,12 +123,35 @@ func (db *DB) SeedDemoData(project string) {
 				tokIn, tokOut, cost, latency, status, reqBody, errMsg,
 			)
 
+			// Synthesize a plausible response body for each demo prompt so the
+			// observe dashboard has something to show. Real proxy calls capture
+			// bodies via recordObserveTrace in hooks.go.
+			respBody := ""
+			if status == 200 {
+				responses := map[string]string{
+					"Summarize the quarterly earnings report":            "Q3 revenue was $4.2M, up 18% YoY. Operating margin held at 22%. The strongest growth came from the enterprise tier (+34%) while SMB was flat. Cash on hand: $12.4M, runway 18 months.",
+					"Write a Python function for binary search":          "def binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: lo = mid + 1\n        else: hi = mid - 1\n    return -1",
+					"Translate this email to Spanish":                    "Estimado cliente,\n\nGracias por su mensaje. Hemos recibido su solicitud y le responderemos en un plazo de 24 horas.\n\nSaludos cordiales,\nEl equipo",
+					"Generate 5 product names for a coffee brand":        "1. Morning Reckoning\n2. Slow Pour Co.\n3. Bright Hour\n4. The Daily Grind\n5. Cardinal Coffee",
+					"Explain the difference between TCP and UDP":         "TCP is connection-oriented and guarantees delivery and order. It does this with handshakes, acknowledgements, and retransmissions, which adds latency. UDP is connectionless and fire-and-forget. No guarantees, no ordering, no retransmits, but it's faster and has lower overhead. Use TCP for things that must arrive correctly (HTTP, file transfer). Use UDP for things where speed matters more than reliability (video calls, DNS, gaming).",
+					"Review this pull request for security issues":      "Looks mostly fine. Two concerns: (1) The user input on line 47 is concatenated directly into a SQL query — use parameterized queries instead. (2) The new endpoint at /api/admin/users is missing the authMiddleware. It's accessible without a token. Both are blockers.",
+					"Create a SQL query for monthly active users":        "SELECT date_trunc('month', last_seen) AS month, COUNT(DISTINCT user_id) AS mau FROM events WHERE last_seen >= now() - interval '12 months' GROUP BY month ORDER BY month DESC;",
+					"Draft a professional response to this complaint":   "Hi [name],\n\nThank you for letting me know about this. I'm sorry the order didn't arrive on time. I've checked with our shipping team and the package was delayed at the carrier sorting facility. It should arrive by Friday. As a goodwill gesture I've refunded your shipping fee, which you should see back on your card within 3 business days.\n\nIf there's anything else I can do, please let me know.",
+					"Analyze sentiment of customer reviews":              "Of the 142 reviews analyzed, 68% were positive (mostly praising quality and customer service), 22% were neutral (factual descriptions, no strong opinion), and 10% were negative. The negative cluster centered on shipping delays (47%) and packaging damage (28%). Recommend prioritizing the shipping issue.",
+					"Generate test cases for the auth module":            "1. Valid login with correct password → success\n2. Valid login with wrong password → error, no lockout\n3. Five wrong passwords in a row → account lockout for 15 min\n4. Login after lockout expires → success\n5. Login with email that doesn't exist → same error message as wrong password (no enumeration)\n6. Login with malformed JWT → 401\n7. Login with expired JWT → 401, refresh suggested\n8. Login with valid refresh token → new access token issued",
+				}
+				respBody = responses[prompt]
+				if respBody == "" {
+					respBody = "Done. Let me know if you need anything else."
+				}
+			}
+
 			// Insert into observe_traces table
 			tx.Exec(`
 				INSERT OR IGNORE INTO observe_traces (id, request_id, service, operation, provider, model,
-					status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at)
-				VALUES (?, ?, 'proxy', 'chat.completions', ?, ?, ?, ?, ?, ?, ?, '{}', ?)`,
-				"t-"+id, id, m.provider, m.model, traceStatus, latency, tokIn, tokOut, cost, ts.Format(time.RFC3339),
+					status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, request_body, response_body)
+				VALUES (?, ?, 'proxy', 'chat.completions', ?, ?, ?, ?, ?, ?, ?, '{}', ?, ?, ?)`,
+				"t-"+id, id, m.provider, m.model, traceStatus, latency, tokIn, tokOut, cost, ts.Format(time.RFC3339), reqBody, respBody,
 			)
 
 			// Aggregate costs
