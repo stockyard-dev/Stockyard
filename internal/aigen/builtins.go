@@ -12,7 +12,10 @@ package aigen
 // functions that call aigen.Register(). This file is for the tasks that
 // don't belong to any particular tool.
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 var builtinsRegistered sync.Once
 
@@ -69,6 +72,57 @@ func RegisterBuiltins() {
 						}
 						if len(n) < 3 || len(n) > 60 {
 							return false, "name length outside 3-60 range"
+						}
+						return true, ""
+					},
+				},
+				{
+					// Caught by reading production logs: model returned
+					// {duration_min: 50, name: "45-min massage"} — schema-valid,
+					// internally inconsistent. This eval extracts the first
+					// integer from the name (if any) and verifies it matches
+					// duration_min. If the name contains a duration reference,
+					// it MUST match.
+					Name: "name_duration_matches_field_duration",
+					Check: func(out map[string]any) (bool, string) {
+						name, _ := out["name"].(string)
+						dur, ok := out["duration_min"].(float64)
+						if !ok {
+							return true, "" // handled by other eval
+						}
+						// Extract the first integer run from the name
+						var numStr string
+						for i := 0; i < len(name); i++ {
+							c := name[i]
+							if c >= '0' && c <= '9' {
+								numStr += string(c)
+							} else if numStr != "" {
+								break
+							}
+						}
+						if numStr == "" {
+							// No number in name (e.g., "Initial intake") — no constraint to check
+							return true, ""
+						}
+						var nameNum int
+						for _, c := range numStr {
+							nameNum = nameNum*10 + int(c-'0')
+						}
+						// For hour references like "1-hour haircut", treat 1 as 60
+						// Look at the substring after the number to decide units.
+						rest := ""
+						for i := 0; i < len(name); i++ {
+							if name[i] >= '0' && name[i] <= '9' {
+								continue
+							}
+							rest = name[i:]
+							break
+						}
+						if len(rest) >= 4 && (rest[:4] == "-hou" || rest[:4] == " hou") {
+							nameNum *= 60
+						}
+						if nameNum != int(dur) {
+							return false, fmt.Sprintf("name has %d but duration_min=%d", nameNum, int(dur))
 						}
 						return true, ""
 					},
