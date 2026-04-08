@@ -51,6 +51,8 @@ func (a *App) Migrate(conn *sql.DB) error {
 	}
 	// Backfill FTS5 index from existing entries (rebuild syncs from content table)
 	conn.Exec("INSERT INTO knowledge_entries_fts(knowledge_entries_fts) VALUES('rebuild')")
+	// Register the aigen suggest_entry task (idempotent via sync.Once)
+	registerKnowledgeAigenTask()
 	log.Printf("[knowledge] migrations applied")
 	return nil
 }
@@ -134,6 +136,7 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 
 	// Entries
 	mux.HandleFunc("POST /api/knowledge/bases/{id}/entries", a.handleAddEntry)
+	mux.HandleFunc("POST /api/knowledge/bases/{id}/entries/suggest", a.handleSuggestEntry)
 	mux.HandleFunc("GET /api/knowledge/bases/{id}/entries", a.handleListEntries)
 	mux.HandleFunc("PUT /api/knowledge/entries/{id}", a.handleUpdateEntry)
 	mux.HandleFunc("DELETE /api/knowledge/entries/{id}", a.handleDeleteEntry)
