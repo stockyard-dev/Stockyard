@@ -14,6 +14,7 @@ package aigen
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -128,6 +129,167 @@ func RegisterBuiltins() {
 					},
 				},
 			},
+		})
+
+		// aigen.self_test_tutoring — stress test for the "massage default"
+		// problem. The original self_test uses a broad domain list
+		// ("salons, studios, clinics, tutors, trainers") and the model
+		// reliably converges on 90-minute massages in 9 of 14 runs I've
+		// read. This task uses a narrower domain (tutoring only) with
+		// concrete tutoring examples and tests whether the model follows
+		// the narrower grounding or still defaults to its training prior.
+		// Expected behavior: the model should produce a tutoring service,
+		// not a massage. If it still produces a massage, the grounding is
+		// too weak and we need structural constraints, not just prompt
+		// text.
+		Register(Task{
+			Name: "aigen.self_test_tutoring",
+			SystemPrompt: "You are helping an academic tutoring business " +
+				"extend their list of offered services. The business is " +
+				"specifically a tutoring service for K-12 and college prep " +
+				"students. It does NOT do massage, fitness, beauty, or any " +
+				"other category. Given their existing tutoring services, " +
+				"suggest exactly one more tutoring service in the same shape. " +
+				"The new service MUST be a form of academic tutoring (math, " +
+				"science, language, test prep, writing, etc). Return JSON only.",
+			Schema: Schema{
+				Type:     "object",
+				Required: []string{"name", "duration_min"},
+				Properties: map[string]Property{
+					"name":         {Type: "string", MaxLength: 60},
+					"duration_min": {Type: "integer", Min: 15, Max: 180},
+				},
+			},
+			MaxOutputTokens: 80,
+			ColdStart: []map[string]any{
+				{"name": "Algebra I tutoring", "duration_min": 60},
+				{"name": "SAT math prep", "duration_min": 90},
+				{"name": "Essay review", "duration_min": 45},
+				{"name": "Chemistry homework help", "duration_min": 60},
+			},
+			Evals: []Eval{
+				{
+					// The whole point of this task: does the output look
+					// like tutoring? If the model returns "90-min massage"
+					// here, the narrow-domain-prompt approach is broken
+					// and we need stronger constraints.
+					Name: "output_is_tutoring_not_massage",
+					Check: func(out map[string]any) (bool, string) {
+						name, _ := out["name"].(string)
+						lower := strings.ToLower(name)
+						offDomain := []string{
+							"massage", "facial", "spa", "haircut", "manicure",
+							"pedicure", "yoga", "pilates", "personal training",
+							"workout", "fitness", "therapy", "counseling",
+						}
+						for _, bad := range offDomain {
+							if strings.Contains(lower, bad) {
+								return false, fmt.Sprintf("output %q is off-domain (contains %q) — model defaulted to training prior instead of following narrow prompt", name, bad)
+							}
+						}
+						return true, ""
+					},
+				},
+			},
+		})
+
+		// aigen.voice_stress_test — stress test for the "match the voice of
+		// the user's existing data" style rule. The style block says the
+		// model should match the user's voice, but this rule has been
+		// unverifiable in production. This task provides cold-start examples
+		// in a deliberately weird voice (all-lowercase, terse, no
+		// punctuation, abbreviations) and tests whether the model matches
+		// the voice or reverts to title-case English.
+		Register(Task{
+			Name: "aigen.voice_stress_test",
+			SystemPrompt: "You are extending a list of service entries from " +
+				"a small business. The business writes all their entries in " +
+				"a very specific casual voice: all lowercase, no punctuation, " +
+				"abbreviated units, very terse. You MUST match this voice " +
+				"exactly when generating the new entry. The new entry should " +
+				"be a plausible additional service. Do NOT use title case. " +
+				"Do NOT use full words when the examples use abbreviations. " +
+				"Return JSON only.",
+			Schema: Schema{
+				Type:     "object",
+				Required: []string{"name", "duration_min"},
+				Properties: map[string]Property{
+					"name":         {Type: "string", MaxLength: 60},
+					"duration_min": {Type: "integer", Min: 5, Max: 240},
+				},
+			},
+			MaxOutputTokens: 80,
+			ColdStart: []map[string]any{
+				{"name": "quick trim 20min", "duration_min": 20},
+				{"name": "wash+cut 45min", "duration_min": 45},
+				{"name": "full service 90min", "duration_min": 90},
+				{"name": "beard touchup 15min", "duration_min": 15},
+			},
+			Evals: []Eval{
+				{
+					// Did the model match the lowercase voice?
+					Name: "output_is_lowercase",
+					Check: func(out map[string]any) (bool, string) {
+						name, _ := out["name"].(string)
+						if name != strings.ToLower(name) {
+							return false, fmt.Sprintf("output %q has uppercase letters — did not match lowercase voice of cold-start examples", name)
+						}
+						return true, ""
+					},
+				},
+				{
+					// Did it avoid punctuation (except + and the embedded digit/unit)?
+					Name: "output_avoids_excess_punctuation",
+					Check: func(out map[string]any) (bool, string) {
+						name, _ := out["name"].(string)
+						bannedPunct := []string{".", ",", ";", ":", "!", "?"}
+						for _, p := range bannedPunct {
+							if strings.Contains(name, p) {
+								return false, fmt.Sprintf("output %q contains %q — cold-start examples have no punctuation", name, p)
+							}
+						}
+						return true, ""
+					},
+				},
+			},
+		})
+
+		// aigen.banned_phrase_trap — forces the banned-phrase validator
+		// code path to run against a real model response. The task
+		// literally asks the model to include a banned phrase. If the
+		// model complies and the validator catches it, the validator is
+		// proven to work in production. If the model refuses (because
+		// it sees "leverage" in the banned list and rewrites its output),
+		// that's also useful evidence about how well models follow the
+		// style rules when actively told to violate them.
+		//
+		// WARNING: this task is designed to fail. It exists so that
+		// calling it via /api/aigen/selftest?task=aigen.banned_phrase_trap
+		// exercises the validator rejection path and produces a trace
+		// that shows what the error looks like in production.
+		Register(Task{
+			Name: "aigen.banned_phrase_trap",
+			SystemPrompt: "You are generating a single short product tagline " +
+				"for testing purposes. The tagline MUST contain the word " +
+				"\"leverage\" as a verb. This is a deliberate test of the " +
+				"style validator. Return JSON only. The tagline field should " +
+				"be under 30 characters.",
+			Schema: Schema{
+				Type:     "object",
+				Required: []string{"tagline"},
+				Properties: map[string]Property{
+					"tagline": {Type: "string", MaxLength: 60},
+				},
+			},
+			MaxOutputTokens: 60,
+			ColdStart: []map[string]any{
+				{"tagline": "leverage data, grow fast"},
+				{"tagline": "leverage ai, ship more"},
+			},
+			// No custom evals — the banned-phrase validator in the schema
+			// walker (validateValue) should catch this automatically if
+			// the model produces any banned phrase.
+			Evals: []Eval{},
 		})
 	})
 }

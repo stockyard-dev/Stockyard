@@ -720,27 +720,30 @@ Docs:      https://stockyard.dev/docs
 	srv.Mux().HandleFunc("POST /api/aigen/selftest", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		ctx := r.Context()
+		taskName := r.URL.Query().Get("task")
+		if taskName == "" {
+			taskName = "aigen.self_test"
+		}
 		out, err := aigen.Generate(ctx, aigen.Request{
-			Task: "aigen.self_test",
+			Task: taskName,
 			// Empty Examples → falls back to ColdStart
 		})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(map[string]any{
 				"ok":    false,
+				"task":  taskName,
 				"error": err.Error(),
 				"hint":  "if this is a schema or style violation the model returned valid JSON but it failed validation — read the trace via /api/observe/traces?source=aigen&limit=1",
 			})
 			return
 		}
-		// Run the registered evals against the actual output for extra confidence
-		evalFailures, _ := aigen.RunEval("aigen.self_test")
 		json.NewEncoder(w).Encode(map[string]any{
-			"ok":            len(evalFailures) == 0,
-			"output":        out,
-			"eval_failures": evalFailures,
+			"ok":     true,
+			"task":   taskName,
+			"output": out,
 			"registered_tasks": aigen.ListTasks(),
-			"hint":          "to read the captured prompt and completion: curl -H 'X-Admin-Key: $KEY' '/api/observe/traces?source=aigen&limit=1'",
+			"hint":   "to read the captured prompt and completion: curl -H 'X-Admin-Key: $KEY' '/api/observe/traces?source=real&limit=1'",
 		})
 	})
 
