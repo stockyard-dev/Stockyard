@@ -227,16 +227,18 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75
 <script>
 var p=new URLSearchParams(window.location.search);
 var bundle=p.get('bundle');
+var refParam=p.get('ref');
 
 function doCheckout(btn,body){
   var orig=btn.textContent;
   btn.textContent='Loading...';btn.style.opacity='.6';
-  // Translate legacy {plan} or {bundle} body shape into the working
-  // {tier, period} shape that /api/billing/stripe/checkout expects.
-  var apiBody={tier:body.tier||'individual',period:body.period||'monthly'};
-  if(body.bundle){apiBody.ref=body.bundle}
-  if(body.ref){apiBody.ref=body.ref}
+  // Pass fields straight through to /api/billing/stripe/checkout.
+  // Backend accepts: {bundle, tier, email, ref}.
+  var apiBody={};
+  if(body.bundle){apiBody.bundle=body.bundle}
+  if(body.tier){apiBody.tier=body.tier}
   if(body.email){apiBody.email=body.email}
+  if(refParam){apiBody.ref=refParam}
   fetch('/api/billing/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(apiBody)})
   .then(function(r){return r.json()})
   .then(function(d){
@@ -252,11 +254,11 @@ if(bundle){
   bundleBtn.textContent='Start Trial — $0 today';
   bundleBtn.onclick=function(e){e.preventDefault();doCheckout(this,{bundle:bundle})};
 }else{
-  bundleBtn.href='/';
+  bundleBtn.href='/for/';
   bundleBtn.textContent='Find Your Bundle';
 }
 
-document.getElementById('all-cta').onclick=function(e){e.preventDefault();doCheckout(this,{plan:'individual'})};
+document.getElementById('all-cta').onclick=function(e){e.preventDefault();doCheckout(this,{tier:'all_tools'})};
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
