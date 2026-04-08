@@ -5,12 +5,136 @@ package knowledge
 // the user's existing entries as few-shot grounding and asks the model to
 // propose one additional fact in the same voice and domain.
 //
-// The whole integration is deliberately small (~120 lines) because part of
-// the point is to answer the ergonomics question: how much code does it
-// take to add an AI feature to an existing tool via the aigen module? If
-// the answer is "a single file of under 150 lines" then aigen is ready for
-// general use across the other 163 tools. If it's more than that, there
-// are ergonomic gaps to fix before scaling out.
+// =============================================================================
+// CASE STUDY: 7 iterations of reducing slop on a single aigen task
+// =============================================================================
+//
+// This task has gone through 7 iterations, each driven by reading 10 real
+// production traces and finding a specific slop pattern. No model was
+// swapped, no temperature was changed. Every improvement came from
+// tightening the task definition based on observed failure modes. The
+// full timeline is recorded below as a reference for future tool authors
+// integrating aigen.
+//
+// Iteration 1: original prompt, {fact, source} schema.
+//   Hit rate: 3/5 (60%)
+//   Failures: 2 confabulated version numbers with confident sources —
+//     "Go 1.21 introduced Stringer" (wrong — Go 1.0)
+//     "Go 1.19 introduced type parameters" (wrong — Go 1.18)
+//   Plus: generic intro-tutorial content instead of gotchas.
+//
+// Iteration 2: stronger prompt, added "name the exact version, flag,
+//   function, or behavior" as a hard rule.
+//   Hit rate: 2/8 (25%) — GOT WORSE.
+//   Failures: every output got a version number stapled to it, most wrong.
+//     "Go 1.20 introduced type parameters" (wrong — 1.18)
+//     "Go 1.20 added the unsafe.Pointer type" (wrong — since Go 1.0)
+//     "Go 1.20 introduced the error chain features" (wrong — 1.13)
+//     "In Go 1.20, io.NopCloser" (wrong — since early Go)
+//   Root cause: textbook Goodhart. The positive instruction ("name a
+//   version") overrode the negative instruction ("do not confabulate").
+//   Model fabricated versions to satisfy the rule.
+//   Lesson: positive prompt rules beat negative rules, even when you
+//   explicitly tell the model not to do the bad thing the positive rule
+//   incentivizes. Don't use positive rules for accuracy constraints.
+//
+// Iteration 3: reverted the "name the version" rule. Kept only negative
+//   framings and "prefer omitting source to fabricating it".
+//   Hit rate: 6/8 (75%)
+//   Failures: 1 version confabulation ("Go 1.12 maintained insertion order"
+//     — false), 1 semantic inversion ("field names cannot start with
+//     lowercase" — that's literally how you make them unexported in Go).
+//   Lesson: negative rules don't completely stop the model from including
+//   the attractor; they just reduce frequency. For high-stakes factual
+//   constraints, you need a structural fix.
+//
+// Iteration 4: structural fix — dropped the source field from the schema
+//   entirely. The model cannot confabulate citations for a field that
+//   doesn't exist.
+//   Hit rate: 0/10 (0%) — BROKE.
+//   Failures: 10/10 schema validation rejections with "unexpected field
+//   'source' (not in schema)". Root cause: the handleSuggestEntry handler
+//   was still SELECTing 'fact, source' from the DB and passing both in
+//   the examples map. The model saw examples with source and produced
+//   output with source, which the validator correctly rejected.
+//   Lesson: the shape of few-shot examples MUST match the output schema
+//   exactly. When changing a schema, check all the call sites that build
+//   Request.Examples. This is the first real ergonomic gotcha for aigen
+//   tool authors and worth documenting prominently.
+//
+// Iteration 5: changed the SQL to "SELECT fact" only. Examples now match
+//   the schema shape.
+//   Hit rate: 7/10 (70%) real gotchas, 1 eval rejection, 2 subtle
+//   failures.
+//   Failures: 1 version confabulation ("Go 1.21 introduced any" — wrong,
+//   that was 1.18), 1 textbook intro slipped past ("Go uses a zero value
+//   for uninitialized variables"). The eval rejection was a "make sure
+//   to" phrase correctly caught by fact_is_concrete_not_truism.
+//
+// Iteration 6: added two targeted evals: no_go_version_numbers
+//   (regex-rejects any "Go 1.N" or "Go 2.N") and expanded the vague-phrase
+//   list to include "zero value for" family.
+//   Hit rate: 9/10 (90%).
+//   Failures: 4 of 10 runs converged on "defer LIFO order" phrased four
+//   different ways. Hit rate was high but the outputs weren't diverse
+//   enough to be useful — the user calling suggest_entry 10 times would
+//   see 4 variants of the same fact. This is variety collapse, not a
+//   truthfulness problem.
+//   Lesson: the model has a small set of canonical go-to facts per
+//   domain. Without active variety pressure, it rehashes them.
+//
+// Iteration 7 (current): two structural variety fixes.
+//   (a) Example shuffling: pull 8 candidate entries from the KB, randomly
+//       take 5 per call via shuffleAndTake. Different runs see different
+//       subsets of context.
+//   (b) Recent-suggestion avoid list: in-memory ring buffer of the last 6
+//       suggested facts per KB on the App struct, passed to the model as
+//       Request.Input['recent_suggestions_to_avoid']. System prompt has
+//       a new rule 5: do NOT duplicate or paraphrase any of those facts.
+//   Hit rate: 10/10 eval-passing. 7 real gotchas, 1 factually wrong
+//   ("reading from a closed channel panics" — wrong, only SENDING on a
+//   closed channel panics), 2 paraphrased duplicates ("nil pointer panic"
+//   appeared three times in slightly different wording).
+//   Lesson: variety controls prevented the defer-LIFO convergence but
+//   the model still paraphrases around the avoid list. Paraphrase-level
+//   deduplication would need semantic similarity, not string equality.
+//   The factual error about closed channels is not catchable by regex
+//   evals — it requires either an LLM-as-judge verification pass or the
+//   user reviewing each suggestion before accepting it. Since the
+//   feature is designed as a preview (handler returns a suggestion,
+//   user decides whether to add it), this residual error rate is
+//   acceptable at the architecture level.
+//
+// SUMMARY: 7 iterations, 60% → 100% eval-passing, 60% → 70% truly-correct.
+// The remaining 30% accuracy gap is a combination of paraphrase-level
+// duplication (fixable with semantic similarity) and domain-specific
+// factual errors (require an LLM-as-judge or human review). The review
+// step is load-bearing for this kind of task.
+//
+// AIGEN DESIGN RULES EXTRACTED FROM THESE ITERATIONS:
+//
+//   1. The shape of few-shot examples must match the output schema
+//      exactly. Strip any extra fields from user data before passing.
+//
+//   2. Positive prompt rules beat negative ones, often disastrously.
+//      Don't use positive rules for accuracy constraints. "Name the
+//      version" is worse than silence.
+//
+//   3. Structural fixes beat prompt engineering. When a field attracts
+//      fabrication, delete the field. When a phrase attracts
+//      confabulation, regex-reject the phrase.
+//
+//   4. Prompts control voice and format. Prompts cannot control factual
+//      accuracy. The only way to prevent factual slop is grounding in
+//      real user data or a post-validation human/LLM review.
+//
+//   5. Variety failures are distinct from truthfulness failures and
+//      need their own controls: example shuffling + exclusion hints.
+//
+//   6. For tasks where residual factual errors are unavoidable, design
+//      the feature as a preview + user review rather than auto-apply.
+//
+// =============================================================================
 
 import (
 	"encoding/json"
