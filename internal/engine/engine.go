@@ -512,13 +512,21 @@ Docs:      https://stockyard.dev/docs
 	// Wire aigen — the shared chokepoint for every tool's AI features. The
 	// transport routes through the in-process proxy handler chain (not over
 	// HTTP loopback), so aigen calls automatically get rate limiting,
-	// failover, the existing observe trace hook, and everything else the
-	// proxy middleware chain provides — and they show up in observe_traces
-	// like any other proxy traffic, tagged with the aigen task name.
+	// failover, the existing observe trace hook (which captures prompt,
+	// completion, tokens_in, tokens_out, cost, and failover metadata), and
+	// everything else the proxy middleware chain provides. Traces appear in
+	// observe_traces with service=proxy and tags source=aigen + task=<name>
+	// so the dashboard can filter them.
 	aigen.SetTransport(func(ctx context.Context, model, systemPrompt, userPrompt string, maxTokens int) (string, error) {
 		mt := maxTokens
 		if mt == 0 {
 			mt = 200
+		}
+		// Pull task name from context if present so we can tag the trace.
+		taskName, _ := ctx.Value(aigen.TaskContextKey{}).(string)
+		tags := map[string]string{"source": "aigen"}
+		if taskName != "" {
+			tags["task"] = taskName
 		}
 		req := &provider.Request{
 			Model: model,
@@ -527,7 +535,7 @@ Docs:      https://stockyard.dev/docs
 				{Role: "user", Content: userPrompt},
 			},
 			MaxTokens: &mt,
-			Tags:      map[string]string{"source": "aigen"},
+			Tags:      tags,
 			Extra:     map[string]any{"_source": "aigen"},
 		}
 		// Default to a fast cheap model when the task didn't specify one.
@@ -543,59 +551,12 @@ Docs:      https://stockyard.dev/docs
 		}
 		return resp.Choices[0].Message.Content, nil
 	})
-	// Wire the trace recorder so every aigen.Generate call writes to
-	// observe_traces directly. The proxy hook in hooks.go only fires on
-	// HTTP-layer requests; aigen calls go in-process via handler(ctx, req)
-	// and skip that hook. This recorder is the in-process equivalent —
-	// same SQL insert, same source tag, same fields, just called from the
-	// aigen module instead of from the HTTP middleware. Traces appear in
-	// the observe dashboard with source=aigen and the task name in tags.
-	aigen.SetTraceRecorder(func(req aigen.Request, task aigen.Task, systemPrompt, userPrompt, response string, generr error, dur time.Duration) {
-		traceID := genTraceID()
-		status := "ok"
-		if generr != nil {
-			status = "error"
-		}
-		// Reconstruct the canonical request body that the proxy hook would
-		// have written, so the trace is shaped identically regardless of
-		// whether it came in over HTTP or via aigen.
-		reqObj := map[string]any{
-			"model": task.Model,
-			"messages": []map[string]string{
-				{"role": "system", "content": systemPrompt},
-				{"role": "user", "content": userPrompt},
-			},
-		}
-		if task.Model == "" {
-			reqObj["model"] = "gpt-4o-mini"
-		}
-		reqBodyBytes, _ := json.Marshal(reqObj)
-		// Cap bodies at 64KB to match the HTTP path
-		const maxBodyBytes = 65536
-		reqBody := string(reqBodyBytes)
-		if len(reqBody) > maxBodyBytes {
-			reqBody = reqBody[:maxBodyBytes]
-		}
-		respBody := response
-		if len(respBody) > maxBodyBytes {
-			respBody = respBody[:maxBodyBytes]
-		}
-		tagsJSON, _ := json.Marshal(map[string]string{
-			"source":  "aigen",
-			"task":    task.Name,
-			"user_id": req.UserID,
-			"team_id": req.TeamID,
-		})
-		now := time.Now().UTC().Format(time.RFC3339)
-		_, dbErr := db.Conn().Exec(`INSERT INTO observe_traces
-			(id, request_id, service, operation, provider, model, status, duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at, response_body, tags, source, request_body, user_id, team_id)
-			VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-			traceID, traceID, "aigen", task.Name, "", reqObj["model"], status,
-			dur.Milliseconds(), 0, 0, 0.0, "{}", now, respBody, string(tagsJSON), "aigen", reqBody, req.UserID, req.TeamID)
-		if dbErr != nil {
-			log.Printf("[aigen-trace] failed to record: %v", dbErr)
-		}
-	})
+	// NOTE: we intentionally do NOT call aigen.SetTraceRecorder() here.
+	// The proxy hook in hooks.go already fires on in-process handler calls
+	// and already captures tokens_in/tokens_out/cost from resp.Usage. An
+	// in-process recorder would double-count (one row from the recorder,
+	// one row from the hook) and would have zero tokens because the
+	// transport only passes back the response string, not the Usage.
 
 	// Register the aigen module's built-in self-test task. Real tools
 	// register their own tasks in their own init() functions; this is the

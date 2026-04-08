@@ -276,6 +276,12 @@ func validateTask(t Task) error {
 	return nil
 }
 
+// TaskContextKey is the context key used to pass the current task name
+// through to the transport. The engine's proxy transport reads this off the
+// context so it can tag traces with the task name. Exported so downstream
+// engine code can use the same key type.
+type TaskContextKey struct{}
+
 // Generate is the only way for a tool to call the LLM. It composes the
 // prompt, calls the proxy, validates the output, runs evals, and writes a
 // trace to observe_traces with the full prompt and completion captured.
@@ -286,6 +292,11 @@ func Generate(ctx context.Context, req Request) (map[string]any, error) {
 	if !ok {
 		return nil, fmt.Errorf("aigen: task %q not registered", req.Task)
 	}
+
+	// Attach the task name to the context so the transport can read it
+	// back when building provider request tags. This is how the proxy trace
+	// hook ends up tagging aigen traces with the specific task name.
+	ctx = context.WithValue(ctx, TaskContextKey{}, task.Name)
 
 	examples := req.Examples
 	if len(examples) > MaxExamples {
