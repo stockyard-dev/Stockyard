@@ -223,7 +223,7 @@ func recordObserveTrace(conn *sql.DB, traceID string, req *provider.Request, res
 		traceID, traceID, "proxy", "chat.completion", prov, model, status,
 		dur.Milliseconds(), tokIn, tokOut, costUSD, "{}", now, responseBody, tagsJSON, source, requestBody, userID, teamID)
 	if err != nil {
-		// Table might not exist if apps aren't registered — silent skip
+		log.Printf("[observe-hook] INSERT failed trace_id=%s err=%v", traceID, err)
 		return
 	}
 
