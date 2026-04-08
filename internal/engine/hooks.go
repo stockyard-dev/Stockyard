@@ -83,6 +83,21 @@ func appHooksMiddleware(conn *sql.DB) proxy.Middleware {
 				}
 			}
 			source, _ := req.Extra["_source"].(string)
+			// TEMP DEBUG: log what tags + source the hook actually sees
+			if len(req.Tags) > 0 || source != "" {
+				slog.Info("[trace-hook-debug] tags+source captured",
+					"trace_id", traceID,
+					"tags", req.Tags,
+					"source", source,
+					"extra_keys", extraKeys(req.Extra),
+				)
+			} else {
+				slog.Info("[trace-hook-debug] tags+source EMPTY at hook time",
+					"trace_id", traceID,
+					"req_addr", fmt.Sprintf("%p", req),
+					"extra_keys", extraKeys(req.Extra),
+				)
+			}
 			go recordObserveTrace(conn, traceID, req, resp, err, duration, respBody, req.Tags, source, req.UserID, req.TeamID)
 
 			// Auto-feed platform products (Relic, Crucible) from every request
@@ -891,4 +906,13 @@ func seedTrustData(conn *sql.DB) {
 			"system_boot", "system", "", "genesis", detail, "", hash, now)
 		log.Printf("[trust] seeded genesis ledger entry + %d default policies", policyCount)
 	}
+}
+
+// extraKeys returns the sorted keys of a Request.Extra map for debug logging.
+func extraKeys(m map[string]any) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
 }
