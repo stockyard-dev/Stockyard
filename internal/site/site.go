@@ -376,39 +376,16 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		servePage(w, r, data, "public, max-age=300")
 	})
 
-	// Alternative-to pages — /alternative-to/{slug}/
+	// /alternative-to/ → /for/ (preserve any old SEO backlinks; inner pages
+	// were removed in the gut, so the bare path redirects and any deeper
+	// path 404s — that's the same as having no handler, just nicer.)
 	mux.HandleFunc("GET /alternative-to/", func(w http.ResponseWriter, r *http.Request) {
-		path := strings.TrimPrefix(r.URL.Path, "/")
-		if path == "alternative-to/" || path == "alternative-to" {
-			http.Redirect(w, r, "/for/", 302)
-			return
-		}
-		if strings.HasSuffix(path, "/") {
-			path = path + "index.html"
-		} else {
-			path = path + "/index.html"
-		}
-		data, err := fs.ReadFile(sub, path)
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		servePage(w, r, data, "public, max-age=300")
+		http.Redirect(w, r, "/for/", http.StatusFound)
 	})
 
 	// Redirects for renamed products
 	mux.HandleFunc("GET /proxy/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy-only/", http.StatusMovedPermanently)
-	})
-
-	// /compare/{id} — serve compare page for any share ID (wildcard)
-	mux.HandleFunc("GET /compare/{id}", func(w http.ResponseWriter, r *http.Request) {
-		data, err := fs.ReadFile(sub, "compare/index.html")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		servePage(w, r, data, "public, max-age=60")
 	})
 
 	// Product tool install scripts — serve /{tool}/install.sh for every tool with download tracking
@@ -797,20 +774,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 		w.Write(data)
 	})
-	// Serve sub-sitemaps
-	for _, smName := range []string{"sitemap-tools.xml", "sitemap-comparisons.xml", "sitemap-blog.xml", "sitemap-docs.xml", "sitemap-pages.xml", "sitemap-bundles.xml", "sitemap-alternatives.xml"} {
-		name := smName
-		mux.HandleFunc("GET /"+name, func(w http.ResponseWriter, r *http.Request) {
-			data, err := fs.ReadFile(sub, name)
-			if err != nil {
-				http.NotFound(w, r)
-				return
-			}
-			w.Header().Set("Content-Type", "application/xml")
-			w.Header().Set("Cache-Control", "public, max-age=3600")
-			w.Write(data)
-		})
-	}
 
 
 	// Serve RSS feed
@@ -919,17 +882,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 				code, ipHash, page, ua)
 		}()
 		w.WriteHeader(204)
-	})
-
-	mux.HandleFunc("GET /blog/feed.xml", func(w http.ResponseWriter, r *http.Request) {
-		data, err := fs.ReadFile(sub, "blog/feed.xml")
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-		w.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
-		w.Header().Set("Cache-Control", "public, max-age=3600")
-		w.Write(data)
 	})
 
 	// Public install stats (aggregate only, no PII)
