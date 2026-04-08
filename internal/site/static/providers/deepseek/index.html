@@ -72,34 +72,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand">&#9651; Stockyard</a>
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
-  <div class="nav-overlay" onclick="toggleNav()"></div>
+  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
   <div class="nav-links">
-    <div class="nav-drop">
-      <span class="nav-drop-trigger" onclick="toggleDrop(this)">Tools <span class="drop-arrow">&#9662;</span></span>
-      <div class="nav-drop-menu">
-        <a href="/tools/">Browse All Tools</a>
-        <a href="/cli/" style="color:var(--gold)">Install via CLI</a>
-        <a href="/stacks/">Curated Stacks</a>
-        <div class="drop-section">By Category</div>
-        <a href="/tools/?category=developer">Developer Tools</a>
-        <a href="/tools/?category=operations">Operations</a>
-        <a href="/tools/?category=creator">Creator &amp; Business</a>
-        <a href="/tools/?category=finance">Finance</a>
-        <a href="/tools/?category=personal">Personal</a>
-        <div class="drop-section">Popular</div>
-        <a href="/corral/">Corral</a>
-        <a href="/gate/">Gate</a>
-        <a href="/headcount/">Headcount</a>
-        <a href="/saltlick/">Salt Lick</a>
-      </div>
-    </div>
-    <a href="/pricing/" style="color:var(--gold)">Complete</a>
+    <a href="/for/">Bundles</a>
+    <a href="/tools/">Tools</a>
     <a href="/pricing/">Pricing</a>
-    <a href="/platform/">Platform</a>
     <a href="/docs/">Docs</a>
-    <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a>
   </div>
 </nav>
 
