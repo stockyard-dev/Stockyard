@@ -7,9 +7,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
 <title>Stockyard Ledger &mdash; Self-hosted double-entry bookkeeping</title>
-<meta name="description" content="Track income, expenses, assets, and liabilities with real double-entry accounting. Generate P&amp;L and balance sheets. QuickBooks Simple Start withou">
+<meta name="description" content="Real double-entry bookkeeping in a single binary. Chart of accounts, P&amp;L, balance sheet, accountant export. Your books in a SQLite file you own. 14-day free trial.">
 <meta property="og:title" content="Stockyard Ledger &mdash; Self-hosted double-entry bookkeeping">
-<meta property="og:description" content="Track income, expenses, assets, and liabilities with real double-entry accounting. Generate P&amp;L and balance sheets. QuickBooks Simple Start withou">
+<meta property="og:description" content="Real double-entry bookkeeping in a single binary. Chart of accounts, P&amp;L, balance sheet, accountant export. Your books in a SQLite file you own.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stockyard.dev/ledger/">
 <meta property="og:image" content="https://stockyard.dev/og-tool-ledger.png">
@@ -95,7 +95,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .install-port-note{font-family:var(--font-mono);font-size:0.7rem;color:var(--cream-muted);text-align:center;margin-top:1rem}
 .install-port-note code{background:var(--bg);padding:2px 6px;border:1px solid var(--bg3);color:var(--cream-dim)}
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Ledger","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"14-day free trial"},{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Bundle monthly"}],"description":"Track income, expenses, assets, and liabilities with real double-entry accounting. Generate P&amp;L and balance sheets. QuickBooks Simple Start without QuickBoo"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Ledger","applicationCategory":"DeveloperApplication","operatingSystem":"Linux, macOS","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","description":"14-day free trial"},{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Bundle monthly"}],"description":"Real double-entry bookkeeping in a single binary. Chart of accounts, P&amp;L, balance sheet, accountant export. Your books in a SQLite file you own. 14-day free trial."}</script>
 
 <style>
 .related-section{padding:2rem;max-width:820px;margin:0 auto;border-top:1px solid var(--bg3)}
@@ -121,7 +121,7 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 
 <div class="hero">
   <div class="eyebrow">Focused Tool &middot; Apache 2.0 &middot; Single Binary &middot; Finance & Business</div>
-  <h1>Self-hosted <span class=&quot;accent&quot;>double-entry bookkeeping</span></h1>
+  <h1>Self-hosted <span class="accent">double-entry bookkeeping</span></h1>
   <p class="sub">Track income, expenses, assets, and liabilities with real double-entry accounting. Generate P&amp;L and balance sheets. QuickBooks Simple Start without QuickBooks having your financials.</p>
   <div class="cta-group">
     <a href="https://github.com/stockyard-dev/stockyard-ledger" class="btn btn-primary">Install Ledger Free</a>
@@ -129,34 +129,33 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Ledger is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/transactions</code> &mdash; list all transactions with optional search and filter query parameters</li><li><code>POST /api/transactions</code> &mdash; create a new transaction record</li><li><code>GET /api/transactions/{id}</code> &mdash; retrieve a single transaction by ID</li><li><code>PUT /api/transactions/{id}</code> &mdash; update an existing transaction</li><li><code>DELETE /api/transactions/{id}</code> &mdash; remove a transaction</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
+<div class="section">
+  <div class="section-label">How it works</div>
+  <h2>Real double-entry, not transaction logging.</h2>
+  <p>Most "bookkeeping" apps for small operators are really transaction trackers with a category column. They ask you to remember whether something was income or expense and trust you to get it right. Real double-entry doesn't work that way. Every entry has two sides, a debit on one account and a credit on another, and the totals always balance. If you spent fifty dollars on stamps, that's a fifty dollar credit to your bank account and a fifty dollar debit to office expenses. Two entries, one transaction, books always tied out.</p>
+  <p>Ledger does the actual accounting. You set up your chart of accounts once. Cash, accounts receivable, equipment, payables, owner's equity, the categories your operation actually uses. Every transaction records both sides automatically based on which accounts you pick. Run a P&amp;L for any date range and the numbers come out of the ledger, not a spreadsheet you maintain on the side. Same for the balance sheet. Same for the account-level statements your accountant asks for at year-end.</p>
 </div>
 
 <div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A solo developer built a weekend project that needed transactions tracking. Instead of spinning up Postgres and writing an admin panel, they added Ledger as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
-</div></div><div class="section">
-  <div class="section-label">What Ledger replaces</div>
-  <p>Most transactions tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Ledger exists because neither option makes sense when you just need a reliable double-entry bookkeeping under your own control.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/transactions</code> — List all transactions. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/transactions</code> — Create a new transaction. Send JSON with at least <code>description</code></li><li><code>GET /api/transactions/{id}</code> — Fetch one transaction by ID</li><li><code>PUT /api/transactions/{id}</code> — Update fields on an existing transaction</li><li><code>DELETE /api/transactions/{id}</code> — Remove a transaction</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>Each transaction record carries fields for description, amount, type, category, account. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering through the lifecycle. Backups are a file copy of the SQLite database in the data directory.</p>
+  <div class="section-label">What you can hand to your accountant</div>
+  <p>A printable P&amp;L by date range. A balance sheet snapshot. A general ledger export with every entry, every account hit, every running balance. CSV that opens in Excel without surgery. Tax-category tagging so come April you're not retroactively guessing what a charge was for. None of this leaves your computer unless you email the file yourself.</p>
+</div></div>
+
+<div class="section">
+  <div class="section-label">What Ledger doesn't do (read this part)</div>
+  <p>No payroll. If you have W-2 employees, you still need a payroll service. Ledger will record the journal entry once you've run payroll elsewhere, but it won't calculate withholding or file your 941s. No bank-feed sync. QuickBooks pulls transactions from your bank automatically, Ledger does not, by design. You'll either type entries in or import a CSV from your bank statement. No e-invoicing, no tax-rate lookup tables for thirty countries, no payment processing. If you need any of that, QuickBooks Online is probably the right call. Ledger is for the case where you've decided that owning your books and your data matters more than the convenience of automated bank feeds.</p>
 </div>
-<div class="section-alt">
-  <div class="section-alt-inner">
-    <div class="section-label">Replaces</div>
-    <h2>QuickBooks Simple Start at $15/mo.</h2>
-    <p>Self-hosted double-entry bookkeeping. Self-hosted on your infrastructure. Your data never leaves your server.</p>
-  </div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who it's for</div>
+  <p>Solo operators. Freelancers. Side projects that grew up. One-person shops that need real books for taxes but don't want to hand a startup a permanent copy of their financial life. Anyone who's been burned by a bookkeeping SaaS getting acquired or sunset. People whose accountant is fine with a CSV export and a balance sheet, which is most accountants.</p>
+</div></div>
+
+<div class="section">
+  <div class="section-label">What it replaces</div>
+  <h2>QuickBooks Simple Start, FreshBooks, Wave.</h2>
+  <p>All cloud, all subscription, all storing your financials on someone else's server. Ledger gives you the same core capability the small-operator tier of those products is selling: chart of accounts, double-entry, P&amp;L, balance sheet, accountant export. What you give up is the bank-feed sync and the white-glove import wizards. What you get back is your data on disk in a SQLite file you can back up by copying a folder and open with any tool on earth.</p>
+  <p style="margin-top:1rem"><a href="/ledger/vs-quickbooks/">Read the full Ledger vs QuickBooks comparison &rarr;</a></p>
 </div>
 
 <div class="section">
