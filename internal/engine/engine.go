@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/stockyard-dev/stockyard/internal/agent"
+	"github.com/stockyard-dev/stockyard/internal/aigen"
 	"github.com/stockyard-dev/stockyard/internal/api"
 	"github.com/stockyard-dev/stockyard/internal/apiserver"
 	"github.com/stockyard-dev/stockyard/internal/apps/billing"
@@ -507,6 +508,46 @@ Docs:      https://stockyard.dev/docs
 		EmbedCache:       embedCache,
 		ProviderResolver: providerFactory.ResolveProvider,
 	})
+
+	// Wire aigen — the shared chokepoint for every tool's AI features. The
+	// transport routes through the in-process proxy handler chain (not over
+	// HTTP loopback), so aigen calls automatically get rate limiting,
+	// failover, the existing observe trace hook, and everything else the
+	// proxy middleware chain provides — and they show up in observe_traces
+	// like any other proxy traffic, tagged with the aigen task name.
+	aigen.SetTransport(func(ctx context.Context, model, systemPrompt, userPrompt string, maxTokens int) (string, error) {
+		mt := maxTokens
+		if mt == 0 {
+			mt = 200
+		}
+		req := &provider.Request{
+			Model: model,
+			Messages: []provider.Message{
+				{Role: "system", Content: systemPrompt},
+				{Role: "user", Content: userPrompt},
+			},
+			MaxTokens: &mt,
+			Tags:      map[string]string{"source": "aigen"},
+			Extra:     map[string]any{"_source": "aigen"},
+		}
+		// Default to a fast cheap model when the task didn't specify one.
+		if req.Model == "" {
+			req.Model = "gpt-4o-mini"
+		}
+		resp, err := handler(ctx, req)
+		if err != nil {
+			return "", err
+		}
+		if resp == nil || len(resp.Choices) == 0 {
+			return "", fmt.Errorf("aigen: empty response from proxy")
+		}
+		return resp.Choices[0].Message.Content, nil
+	})
+	// The proxy hook in hooks.go already writes traces with full bodies for
+	// every call (including aigen calls, since they tag _source=aigen). The
+	// aigen-specific recorder is a no-op fallback for tests that bypass the
+	// proxy hook; in production aigen calls show up in observe_traces
+	// automatically with the "source: aigen" tag.
 
 	// Register dashboard, SSE, and management API
 	dashboard.Register(srv.Mux(), pc.Product)
