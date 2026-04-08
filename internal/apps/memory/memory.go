@@ -233,10 +233,18 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 	var count int
 	a.conn.QueryRow("SELECT COUNT(*) FROM memory_entries WHERE user_id = ?", userID).Scan(&count)
 
-	// Simple summarization: combine old entries into a summary entry.
+	// Normal path: only summarize entries older than 7 days. The ?force=1
+	// query parameter bypasses this for operator testing and for running
+	// the weekly quality gate — you can trigger a summarization on a test
+	// user's fresh entries without waiting a week. Not a user-facing flag;
+	// it's an admin/debug escape hatch.
+	ageFilter := "AND created_at < datetime('now', '-7 days')"
+	if r.URL.Query().Get("force") == "1" {
+		ageFilter = ""
+	}
 	rows, err := a.conn.Query(`
 		SELECT id, content FROM memory_entries
-		WHERE user_id = ? AND created_at < datetime('now', '-7 days')
+		WHERE user_id = ? `+ageFilter+`
 		ORDER BY created_at ASC LIMIT 20
 	`, userID)
 	if err != nil {
