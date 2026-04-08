@@ -205,12 +205,19 @@ func TestCatalog(t *testing.T) {
 	if len(plans) < 3 {
 		t.Errorf("expected at least 3 plans, got %d", len(plans))
 	}
-	pro := PlanBySlug("pro")
-	if pro == nil {
-		t.Fatal("pro plan not found")
+	allTools := PlanBySlug("all_tools")
+	if allTools == nil {
+		t.Fatal("all_tools plan not found")
 	}
-	if pro.PriceCents != 9999 {
-		t.Errorf("pro price = %d, want 9999", pro.PriceCents)
+	if allTools.PriceCents != 2999 {
+		t.Errorf("all_tools price = %d, want 2999", allTools.PriceCents)
+	}
+	bundle := PlanBySlug("bundle")
+	if bundle == nil {
+		t.Fatal("bundle plan not found")
+	}
+	if bundle.PriceCents != 799 {
+		t.Errorf("bundle price = %d, want 799", bundle.PriceCents)
 	}
 }
 

@@ -3,10 +3,22 @@ package apiserver
 import "strings"
 
 // ─── Pricing Plans ─────────────────────────────────────────────────────
-// Stockyard LLM Platform uses a 3-tier pricing model:
-//   Community (free, self-hosted) → Individual ($29.99/mo) → Pro ($99.99/mo)
-// All tiers include the full proxy (76 modules, 16 providers, unlimited requests).
-// Paid tiers unlock advanced features like request replay, cost routing, and red-team testing.
+// Stockyard's real pricing model (post-Stripe-cleanup, late March 2026):
+//   Proxy            — free forever, Apache 2.0, separate GitHub release
+//   Bundle           — $7.99/mo, one small-business bundle, 14-day trial
+//   All Tools        — $29.99/mo, every Stockyard tool, 14-day trial
+//   Veterans         — free for life, license grant, verification required
+//
+// The live checkout for paid plans goes through /api/billing/stripe/checkout
+// (internal/apps/billing/subscriptions.go) using the tier names "bundle"
+// and "all_tools". This file's Plans()/PlanBySlug() are consumed by the
+// informational endpoints /api/plans and /api/products.
+//
+// FOLLOW-UP: the older "individual"/"pro"/"team"/"enterprise" tier
+// vocabulary is still load-bearing in license generation, webhook
+// handling, upgrade prompts, and the legacy /api/checkout fallback.
+// That cleanup is intentionally out of scope here — see the priority
+// list in the most recent HANDOFF.
 
 // Plan represents a Stockyard pricing tier.
 type Plan struct {
@@ -25,15 +37,14 @@ type Plan struct {
 func Plans() []Plan {
 	return []Plan{
 		{
-			Slug: "free", Name: "Community", Tagline: "Full proxy. Self-hosted. Free forever.",
+			Slug: "proxy", Name: "Proxy", Tagline: "Free LLM proxy. Self-hosted. Apache 2.0.",
 			PriceCents: 0,
 			Features: []string{
-				"Full proxy + 76 modules",
-				"All 16 providers",
+				"Self-hosted single binary",
+				"All major LLM providers",
 				"Unlimited requests",
-				"16 core apps included",
-				"Cost routing (100/day)",
-				"SQLite storage",
+				"Your data never leaves your machine",
+				"Apache 2.0 — fully open source",
 				"Community support",
 			},
 			Limits: map[string]string{
@@ -44,44 +55,58 @@ func Plans() []Plan {
 			},
 		},
 		{
-			Slug: "individual", Name: "Individual", Tagline: "Advanced features for solo developers.",
-			PriceCents:  2999,  // $29.99/mo
-			AnnualCents: 29990, // $299.90/yr
+			Slug: "bundle", Name: "Bundle", Tagline: "One small-business toolkit. Your choice of bundle.",
+			PriceCents:  799,  // $7.99/mo
+			AnnualCents: 7990, // $79.90/yr (10x monthly per pricing convention)
 			Features: []string{
-				"Everything in Community",
-				"Request replay",
-				"Auction model bidding",
-				"Hallucination detection",
-				"Quality gates",
-				"Provenance tracking",
+				"Pick one bundle for your line of work",
+				"Every tool in that bundle",
+				"Self-hosted, runs on your computer",
+				"14-day free trial, cancel anytime",
 				"Email support",
 			},
 			Limits: map[string]string{
-				"requests":  "unlimited",
+				"bundles":   "1",
 				"retention": "unlimited",
 				"support":   "email",
 				"users":     "unlimited",
 			},
+			StripePriceID: "price_1TK19YRkoFWvoLHJzDqhOCzi",
 		},
 		{
-			Slug: "pro", Name: "Pro", Tagline: "Full platform. All 29 products.",
-			PriceCents:  9999,  // $99.99/mo
-			AnnualCents: 99990, // $999.90/yr
+			Slug: "all_tools", Name: "All Tools", Tagline: "Every Stockyard tool. Every bundle.",
+			PriceCents:  2999,  // $29.99/mo
+			AnnualCents: 29990, // $299.90/yr
 			Features: []string{
-				"Everything in Individual",
-				"Cost routing (unlimited)",
-				"Prompt evolution",
-				"Load testing",
-				"Chaos engineering",
-				"Red-team + persona testing",
-				"Cortex memory, Ramrod orchestration",
-				"All 29 platform products",
-				"RBAC, SSO, priority support",
+				"Every tool in the catalog",
+				"Every bundle",
+				"Use as many as you want",
+				"Self-hosted, runs on your computer",
+				"14-day free trial, cancel anytime",
+				"Priority email support",
 			},
 			Limits: map[string]string{
-				"requests":  "unlimited",
+				"bundles":   "unlimited",
+				"tools":     "unlimited",
 				"retention": "unlimited",
 				"support":   "priority",
+				"users":     "unlimited",
+			},
+			StripePriceID: "price_1TK19YRkoFWvoLHJrcFsCi6V",
+		},
+		{
+			Slug: "veterans", Name: "Veterans", Tagline: "Free for life. Thank you for your service.",
+			PriceCents: 0,
+			Features: []string{
+				"Same as All Tools",
+				"No cost, no expiration",
+				"Verification required at signup",
+			},
+			Limits: map[string]string{
+				"bundles":   "unlimited",
+				"tools":     "unlimited",
+				"retention": "unlimited",
+				"support":   "email",
 				"users":     "unlimited",
 			},
 		},
