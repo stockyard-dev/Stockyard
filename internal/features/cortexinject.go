@@ -30,6 +30,19 @@ func CortexInjectMiddleware(cortexDB *store.DB, maxMemories int) proxy.Middlewar
 				return next(ctx, req)
 			}
 
+			// Skip aigen-sourced calls. Aigen tasks have tightly curated
+			// prompts with specific cold-start examples and narrow token
+			// budgets. Injecting 91 tokens of generic platform metrics
+			// ('relic.certificate_count: 68', 'gpt-4o-mini averages
+			// 1689ms', etc) dilutes the few-shot signal and wastes ~16%
+			// of the input token budget on content that's irrelevant to
+			// any aigen task. Measured on trace tr_e8136305f6bc18fc3e7a5ff78fe0e690
+			// (2026-04-08): 363 chars / 91 tokens of cortex boilerplate
+			// on an aigen.self_test_tutoring call with 573 input tokens.
+			if src, ok := req.Extra["_source"].(string); ok && src == "aigen" {
+				return next(ctx, req)
+			}
+
 			// Extract keywords from user messages
 			keywords := cortexExtractKeywords(req.Messages)
 			if len(keywords) == 0 {
