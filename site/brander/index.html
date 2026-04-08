@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Brander is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/assets</code> &mdash; list all assets with optional search and filter query parameters</li><li><code>POST /api/assets</code> &mdash; create a new asset record</li><li><code>GET /api/assets/{id}</code> &mdash; retrieve a single asset by ID</li><li><code>PUT /api/assets/{id}</code> &mdash; update an existing asset</li><li><code>DELETE /api/assets/{id}</code> &mdash; remove a asset</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">Why self-host your brand asset manager</div>
-  <p>The overhead of managing assets tends to grow quietly until someone asks why the team is paying four different subscriptions for overlapping features. Brander replaces that stack with a single process that starts in under a second.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>Download the binary and run it. Brander starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
-</div></div><div class="section">
-  <div class="section-label">Under the hood</div>
-  <p>Point <code>curl</code> at <code>/api/assets</code> to interact with Brander programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/assets</code> — List all assets. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/assets</code> — Create a new asset. Send JSON with at least <code>name</code></li><li><code>GET /api/assets/{id}</code> — Fetch one asset by ID</li><li><code>PUT /api/assets/{id}</code> — Update fields on an existing asset</li><li><code>DELETE /api/assets/{id}</code> — Remove a asset</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Brandfolder at $450/mo.</h2>
-    <p>Self-hosted brand asset manager. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Brandfolder ($450/mo).</h2>
+    <p>Upload logos, color palettes, fonts, and brand guidelines. Share a link to the right asset instantly. No more 'can you send me the logo?' Slack messages for the tenth time. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

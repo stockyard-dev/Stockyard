@@ -129,26 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">Why self-host your service registry and discovery</div>
-  <p>Privacy-conscious teams often build internal services workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Switchboard gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
-</div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>Point <code>curl</code> at <code>/api/services</code> to interact with Switchboard programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A solo developer built a weekend project that needed services tracking. Instead of spinning up Postgres and writing an admin panel, they added Switchboard as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/services</code> — List all services. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/services</code> — Create a new service. Send JSON with at least <code>name</code></li><li><code>GET /api/services/{id}</code> — Fetch one service by ID</li><li><code>PUT /api/services/{id}</code> — Update fields on an existing service</li><li><code>DELETE /api/services/{id}</code> — Remove a service</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Consul at $0.023/hr.</h2>
-    <p>Self-hosted service registry and discovery. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Consul ($0.023/hr).</h2>
+    <p>Register your services, expose a discovery API, route traffic to healthy instances. Consul without the HashiCorp license concerns and the steep learning curve. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

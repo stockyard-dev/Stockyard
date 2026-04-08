@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Curator is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/recipes</code> &mdash; list all recipes with optional search and filter query parameters</li><li><code>POST /api/recipes</code> &mdash; create a new recipe record</li><li><code>GET /api/recipes/{id}</code> &mdash; retrieve a single recipe by ID</li><li><code>PUT /api/recipes/{id}</code> &mdash; update an existing recipe</li><li><code>DELETE /api/recipes/{id}</code> &mdash; remove a recipe</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">Why self-host your recipe and meal planner</div>
-  <p>SaaS tools hold your data hostage. Export formats are incomplete, migrations are painful, and pricing changes whenever the vendor feels like it. Curator stores everything in SQLite on your own server. Your data is a file you control, back up, and query directly.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>Download the binary and run it. Curator starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
-</div></div><div class="section">
-  <div class="section-label">How Curator runs</div>
-  <p>Point <code>curl</code> at <code>/api/recipes</code> to interact with Curator programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/recipes</code> — List all recipes. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/recipes</code> — Create a new recipe. Send JSON with at least <code>title</code></li><li><code>GET /api/recipes/{id}</code> — Fetch one recipe by ID</li><li><code>PUT /api/recipes/{id}</code> — Update fields on an existing recipe</li><li><code>DELETE /api/recipes/{id}</code> — Remove a recipe</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Paprika App at $29.99 + sync fees.</h2>
-    <p>Self-hosted recipe and meal planner. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Paprika App ($29.99 + sync fees).</h2>
+    <p>Save recipes, plan a week of meals, generate a shopping list. The tool everyone builds in Notion and then abandons. Actually useful when the shopping list is one click away. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

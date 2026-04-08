@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Broadside is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/press_releases</code> &mdash; list all press_releases with optional search and filter query parameters</li><li><code>POST /api/press_releases</code> &mdash; create a new pressrelease record</li><li><code>GET /api/press_releases/{id}</code> &mdash; retrieve a single pressrelease by ID</li><li><code>PUT /api/press_releases/{id}</code> &mdash; update an existing pressrelease</li><li><code>DELETE /api/press_releases/{id}</code> &mdash; remove a pressrelease</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The problem</div>
-  <p>Running a press release tracker should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Broadside is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
-</div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>Install Broadside with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating press releases. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Who runs this</div>
-  <p>A freelance consultant keeps Broadside running on a home server. Client press releases stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/press_releases</code> — List all press releases. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/press_releases</code> — Create a new pressrelease. Send JSON with at least <code>title</code></li><li><code>GET /api/press_releases/{id}</code> — Fetch one pressrelease by ID</li><li><code>PUT /api/press_releases/{id}</code> — Update fields on an existing pressrelease</li><li><code>DELETE /api/press_releases/{id}</code> — Remove a pressrelease</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>PR agency workflow at $2,000+/mo.</h2>
-    <p>Self-hosted press release tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces PR agency workflow ($2,000+/mo).</h2>
+    <p>Write your release, log which journalists you contacted, track responses, manage follow-ups. PR agencies charge thousands for this workflow. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

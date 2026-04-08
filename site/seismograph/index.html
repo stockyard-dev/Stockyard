@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Seismograph is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/events</code> &mdash; list all events with optional search and filter query parameters</li><li><code>POST /api/events</code> &mdash; create a new event record</li><li><code>GET /api/events/{id}</code> &mdash; retrieve a single event by ID</li><li><code>PUT /api/events/{id}</code> &mdash; update an existing event</li><li><code>DELETE /api/events/{id}</code> &mdash; remove a event</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">What Seismograph replaces</div>
-  <p>Teams outgrow spreadsheet-based events tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Seismograph is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Seismograph</div>
-  <p>A devops team integrates Seismograph into their CI pipeline. A post-deploy hook creates a event record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches events by keyword to find related records without switching tools.</p>
-</div></div><div class="section">
-  <div class="section-label">How Seismograph runs</div>
-  <p>Start Seismograph with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create events through the web interface or POST JSON to the API. Filter by source, severity, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/events</code> — List all events. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/events</code> — Create a new event. Send JSON with at least <code>name</code></li><li><code>GET /api/events/{id}</code> — Fetch one event by ID</li><li><code>PUT /api/events/{id}</code> — Update fields on an existing event</li><li><code>DELETE /api/events/{id}</code> — Remove a event</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Sentry at $26/mo.</h2>
-    <p>Self-hosted error tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Sentry ($26/mo).</h2>
+    <p>Your app POSTs errors, Seismograph deduplicates, groups, and alerts. Self-hosted Sentry for teams who can't send exception data to a third party. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

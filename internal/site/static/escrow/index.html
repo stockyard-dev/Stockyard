@@ -129,26 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">What Escrow replaces</div>
-  <p>Most requests tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Escrow exists because neither option makes sense when you just need a reliable approval workflow engine under your own control.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>A regulated company runs Escrow inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
-</div></div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>The data model stores each request with 5 fields: title, requester, approver, amount, status. All fields are queryable through the search API. The dashboard renders requests as cards with color-coded status indicators and inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/requests</code> — List all requests. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/requests</code> — Create a new request. Send JSON with at least <code>title</code></li><li><code>GET /api/requests/{id}</code> — Fetch one request by ID</li><li><code>PUT /api/requests/{id}</code> — Update fields on an existing request</li><li><code>DELETE /api/requests/{id}</code> — Remove a request</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>ServiceNow at $100+/user/mo.</h2>
-    <p>Self-hosted approval workflow engine. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces ServiceNow ($100+/user/mo).</h2>
+    <p>Define multi-step approval workflows for any request — code deploys, budget spend, access grants. Your own ServiceNow approval layer without ServiceNow's enterprise pricing. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

@@ -129,48 +129,13 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Registry is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/entries</code> &mdash; list all entries with optional search and filter query parameters</li><li><code>POST /api/entries</code> &mdash; create a new entry record</li><li><code>GET /api/entries/{id}</code> &mdash; retrieve a single entry by ID</li><li><code>PUT /api/entries/{id}</code> &mdash; update an existing entry</li><li><code>DELETE /api/entries/{id}</code> &mdash; remove a entry</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">What Registry replaces</div>
-  <p>Most entries tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Registry exists because neither option makes sense when you just need a reliable container and package registry under your own control.</p>
-</div><div class="section">
-  <div class="section-label">What Registry replaces</div>
-  <p>Most entries tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Registry exists because neither option makes sense when you just need a reliable container and package registry under your own control.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>Download the binary and run it. Registry starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
-</div></div><div class="section">
-  <div class="section-label">How Registry runs</div>
-  <p>Install Registry with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating entries. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/entries</code> — List all entries. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/entries</code> — Create a new entry. Send JSON with at least <code>name</code></li><li><code>GET /api/entries/{id}</code> — Fetch one entry by ID</li><li><code>PUT /api/entries/{id}</code> — Update fields on an existing entry</li><li><code>DELETE /api/entries/{id}</code> — Remove a entry</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
-<div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>Download the binary and run it. Registry starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
-</div></div><div class="section">
-  <div class="section-label">How Registry runs</div>
-  <p>Install Registry with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating entries. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/entries</code> — List all entries. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/entries</code> — Create a new entry. Send JSON with at least <code>name</code></li><li><code>GET /api/entries/{id}</code> — Fetch one entry by ID</li><li><code>PUT /api/entries/{id}</code> — Update fields on an existing entry</li><li><code>DELETE /api/entries/{id}</code> — Remove a entry</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>GitHub Packages at $4/user/mo.</h2>
-    <p>Self-hosted container and package registry. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces GitHub Packages ($4/user/mo).</h2>
+    <p>Host your Docker images and private npm/PyPI packages. Pull from your own registry instead of a public one. Your private Artifact Registry without the Google Cloud dependency. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

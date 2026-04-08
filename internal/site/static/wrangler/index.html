@@ -166,14 +166,8 @@ curl -s -X POST http://localhost:9060/api/pipelines/daily-sync/run</pre>
     <div class="uc-card"><div class="uc-name">CSV/JSON ingestion</div><div class="uc-desc">Drop files into a directory, Wrangler picks them up, validates the schema, transforms rows, and loads them into your target database or API.</div></div>
   </div>
 
-<div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Teams outgrow spreadsheet-based workers tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Wrangler is a single binary that handles the same job without the recurring bill.</p>
-</div>
-<div class="section">
-  <div class="section-label">How it works</div>
-  <p>Start Wrangler with a port and a data directory. It creates its SQLite database on first run. Create workers through the web interface or POST JSON to the API. Filter and search by keyword.</p>
-</div>
+
+
 <div class="section">
   <div class="section-label">In practice</div>
   <p>Define your data pipeline as a series of steps. Wrangler pulls from sources, transforms the data, and pushes to destinations. Runs on a schedule or triggered by webhooks. No managed ETL service required.</p>

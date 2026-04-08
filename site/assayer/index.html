@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Assayer is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/subscriptions</code> &mdash; list all subscriptions with optional search and filter query parameters</li><li><code>POST /api/subscriptions</code> &mdash; create a new subscription record</li><li><code>GET /api/subscriptions/{id}</code> &mdash; retrieve a single subscription by ID</li><li><code>PUT /api/subscriptions/{id}</code> &mdash; update an existing subscription</li><li><code>DELETE /api/subscriptions/{id}</code> &mdash; remove a subscription</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">What Assayer replaces</div>
-  <p>When regulators or clients ask where your subscriptions data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Assayer makes that answer straightforward because the data never leaves your infrastructure.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Assayer</div>
-  <p>An agency managing subscriptions for multiple clients runs one Assayer instance per client on isolated VMs. Each instance gets its own data directory. There is no shared database, no multi-tenant risk, no worry about one client's data appearing in another client's export.</p>
-</div></div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>The data model stores each subscription with 7 fields: customer name, plan, mrr, status, start date. All fields are queryable through the search API. The dashboard renders subscriptions as cards with color-coded status indicators and inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/subscriptions</code> — List all subscriptions. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/subscriptions</code> — Create a new subscription. Send JSON with at least <code>customer_name</code></li><li><code>GET /api/subscriptions/{id}</code> — Fetch one subscription by ID</li><li><code>PUT /api/subscriptions/{id}</code> — Update fields on an existing subscription</li><li><code>DELETE /api/subscriptions/{id}</code> — Remove a subscription</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Baremetrics at $50/mo.</h2>
-    <p>Self-hosted revenue and subscription tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Baremetrics ($50/mo).</h2>
+    <p>Log your MRR, track churn, visualize growth, forecast runway. For bootstrapped founders who want real revenue metrics without paying Baremetrics $50/mo. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

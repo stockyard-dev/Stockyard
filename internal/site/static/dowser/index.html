@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Dowser is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/checks</code> &mdash; list all checks with optional search and filter query parameters</li><li><code>POST /api/checks</code> &mdash; create a new check record</li><li><code>GET /api/checks/{id}</code> &mdash; retrieve a single check by ID</li><li><code>PUT /api/checks/{id}</code> &mdash; update an existing check</li><li><code>DELETE /api/checks/{id}</code> &mdash; remove a check</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The problem</div>
-  <p>The moment you store checks in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Dowser puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Dowser</div>
-  <p>A regulated company runs Dowser inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
-</div></div><div class="section">
-  <div class="section-label">How Dowser runs</div>
-  <p>The data model stores each check with 8 fields: name, source, rule, column name, severity. All fields are queryable through the search API. The dashboard renders checks as cards with inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/checks</code> — List all checks. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/checks</code> — Create a new check. Send JSON with at least <code>name</code></li><li><code>GET /api/checks/{id}</code> — Fetch one check by ID</li><li><code>PUT /api/checks/{id}</code> — Update fields on an existing check</li><li><code>DELETE /api/checks/{id}</code> — Remove a check</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Great Expectations at engineering time.</h2>
-    <p>Self-hosted data quality monitor. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Great Expectations (engineering time).</h2>
+    <p>Define expectations for your data — no nulls in this column, values in this range — run them on a schedule, alert on violations. Great Expectations without the Python complexity. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

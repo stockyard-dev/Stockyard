@@ -129,33 +129,15 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Concierge is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/checklists</code> &mdash; list all checklists with optional search and filter query parameters</li><li><code>POST /api/checklists</code> &mdash; create a new checklist record</li><li><code>GET /api/checklists/{id}</code> &mdash; retrieve a single checklist by ID</li><li><code>PUT /api/checklists/{id}</code> &mdash; update an existing checklist</li><li><code>DELETE /api/checklists/{id}</code> &mdash; remove a checklist</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
-
-<div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>A devops team integrates Concierge into their CI pipeline. A post-deploy hook creates a checklist record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches checklists by keyword to find related records without switching tools.</p>
-</div></div><div class="section">
+<div class="section">
   <div class="section-label">The problem</div>
   <p>Every checklist your team creates contains context that matters — customer name, template, steps, progress, assignee. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Concierge keeps it local.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/checklists</code> — List all checklists. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/checklists</code> — Create a new checklist. Send JSON with at least <code>customer_name</code></li><li><code>GET /api/checklists/{id}</code> — Fetch one checklist by ID</li><li><code>PUT /api/checklists/{id}</code> — Update fields on an existing checklist</li><li><code>DELETE /api/checklists/{id}</code> — Remove a checklist</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div><div class="section">
-  <div class="section-label">How Concierge runs</div>
-  <p>Start Concierge with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create checklists through the web interface or POST JSON to the API. Filter by template, steps, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
 </div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Appcues at $249/mo.</h2>
-    <p>Self-hosted customer onboarding checklists. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Appcues ($249/mo).</h2>
+    <p>Define onboarding steps per product tier, embed them in your app via script tag, track completion per user. Appcues charges $249/mo for this. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

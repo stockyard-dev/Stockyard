@@ -197,14 +197,8 @@ curl -s "http://localhost:8750/api/evidence/export?from=2026-01-01" \
     <div class="uc-card"><div class="uc-name">EU AI Act compliance logging</div><div class="uc-desc">Apply the eu_ai_act policy template and Brand tracks all AI inference calls, automated decisions, and human overrides — the records the regulation requires.</div></div>
   </div>
 
-<div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Most audit entries tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Brand exists because neither option makes sense when you just need a reliable audit trail and compliance log under your own control.</p>
-</div>
-<div class="section">
-  <div class="section-label">How it works</div>
-  <p>Deploy Brand as a systemd service, a Docker container, or a bare process. It reads PORT and DATA_DIR. The /api/health endpoint returns status for monitoring.</p>
-</div>
+
+
 <div class="section">
   <div class="section-label">In practice</div>
   <p>Every API call, config change, and access event gets a hash-chained, tamper-evident log entry. When compliance asks "who changed what and when," you point them at Brand's audit ledger instead of digging through application logs.</p>

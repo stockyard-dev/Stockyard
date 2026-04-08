@@ -130,25 +130,17 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </div>
 
 <div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>When regulators or clients ask where your issues data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Bounty makes that answer straightforward because the data never leaves your infrastructure.</p>
-</div><div class="section">
   <div class="section-label">How it works</div>
   <p>Deploy as a single binary. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. The dashboard at <code>/ui</code> gives you a list view with filters and a Kanban board with drag-and-drop between Open, In Progress, and Closed columns. Projects, milestones, comments, and an activity log are all built in. The <code>/api/health</code> endpoint returns service status for your monitoring stack.</p>
 </div><div class="section-alt"><div class="section-alt-inner">
   <div class="section-label">In practice</div>
   <p>A dev team uses the Kanban board to manage their sprint: drag issues from Open to In Progress when you start work, then to Closed when done. Milestones track release goals with progress bars. Comments keep discussion threaded under each issue. The activity log shows who did what and when.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/projects</code> — List projects</li><li><code>POST /api/projects</code> — Create a project</li><li><code>GET /api/issues?project_id=&amp;status=&amp;priority=</code> — List issues with filters</li><li><code>POST /api/issues</code> — Create issue (title, project_id, priority, labels, assignee)</li><li><code>POST /api/issues/{id}/status</code> — Set status (open, in_progress, closed)</li><li><code>POST /api/issues/{id}/comments</code> — Add a comment</li><li><code>GET /api/milestones</code> — List milestones with progress</li><li><code>GET /api/activity</code> — Activity log with timestamps</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for monitoring</li>
-  </ul>
-</div>
+</div></div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>GitHub Issues (private) at $4/user/mo.</h2>
-    <p>Self-hosted bug tracker and issue manager. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces GitHub Issues (private) ($4/user/mo).</h2>
+    <p>Create issues, triage them, assign them, track resolution. GitHub Issues but on your own server for repos that shouldn't be on GitHub or teams who want full data control. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

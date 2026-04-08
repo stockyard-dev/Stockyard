@@ -129,26 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">What Trailhead replaces</div>
-  <p>Most habits tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Trailhead exists because neither option makes sense when you just need a reliable habit and goal tracker under your own control.</p>
-</div><div class="section">
-  <div class="section-label">Under the hood</div>
-  <p>On first launch, Trailhead initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a habit is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>Run Trailhead on any server where you can execute a binary. The dashboard is immediately available at localhost, and the REST API integrates with your existing scripts and workflows. No external dependencies to configure, no managed service to subscribe to.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/habits</code> — List all habits. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/habits</code> — Create a new habit. Send JSON with at least <code>name</code></li><li><code>GET /api/habits/{id}</code> — Fetch one habit by ID</li><li><code>PUT /api/habits/{id}</code> — Update fields on an existing habit</li><li><code>DELETE /api/habits/{id}</code> — Remove a habit</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Habitica Pro at $5/mo.</h2>
-    <p>Self-hosted habit and goal tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Habitica Pro ($5/mo).</h2>
+    <p>Define habits, check in daily, visualize streaks and completion rates. Habitica without the game layer, Streaks without the iOS lock-in. Your goals on your server. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

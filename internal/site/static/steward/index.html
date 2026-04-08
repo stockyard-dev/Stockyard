@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Steward is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/expenses</code> &mdash; list all expenses with optional search and filter query parameters</li><li><code>POST /api/expenses</code> &mdash; create a new expense record</li><li><code>GET /api/expenses/{id}</code> &mdash; retrieve a single expense by ID</li><li><code>PUT /api/expenses/{id}</code> &mdash; update an existing expense</li><li><code>DELETE /api/expenses/{id}</code> &mdash; remove a expense</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The problem</div>
-  <p>The moment you store expenses in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Steward puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
-</div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>Each expense record carries fields for description, amount, category, vendor, date. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering through the lifecycle. Backups are a file copy of the SQLite database in the data directory.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A non-profit with no DevOps budget downloads the Steward binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/expenses</code> — List all expenses. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/expenses</code> — Create a new expense. Send JSON with at least <code>description</code></li><li><code>GET /api/expenses/{id}</code> — Fetch one expense by ID</li><li><code>PUT /api/expenses/{id}</code> — Update fields on an existing expense</li><li><code>DELETE /api/expenses/{id}</code> — Remove a expense</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Expensify at $5/user/mo.</h2>
-    <p>Self-hosted expense tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Expensify ($5/user/mo).</h2>
+    <p>Submit expenses, attach receipts, approve or reject, export to CSV. Expensify charges $5/user/mo for this. One binary, your data. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

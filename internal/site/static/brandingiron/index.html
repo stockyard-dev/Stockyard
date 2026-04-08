@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Branding Iron is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/templates</code> &mdash; list all templates with optional search and filter query parameters</li><li><code>POST /api/templates</code> &mdash; create a new template record</li><li><code>GET /api/templates/{id}</code> &mdash; retrieve a single template by ID</li><li><code>PUT /api/templates/{id}</code> &mdash; update an existing template</li><li><code>DELETE /api/templates/{id}</code> &mdash; remove a template</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The problem</div>
-  <p>Teams outgrow spreadsheet-based templates tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Branding Iron is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>A freelance consultant keeps Branding Iron running on a home server. Client templates stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
-</div></div><div class="section">
-  <div class="section-label">How Branding Iron runs</div>
-  <p>Deploy Branding Iron as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and templates count, which you can wire into your existing monitoring stack.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/templates</code> — List all templates. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/templates</code> — Create a new template. Send JSON with at least <code>name</code></li><li><code>GET /api/templates/{id}</code> — Fetch one template by ID</li><li><code>PUT /api/templates/{id}</code> — Update fields on an existing template</li><li><code>DELETE /api/templates/{id}</code> — Remove a template</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Beamer at $49/mo.</h2>
-    <p>Self-hosted release notes manager. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Beamer ($49/mo).</h2>
+    <p>Write release notes, publish them to a changelog page, notify subscribers by email. Your public-facing changelog without the $29/mo Beamer or Headway subscription. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

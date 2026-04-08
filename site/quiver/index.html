@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Quiver is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/reading_items</code> &mdash; list all reading_items with optional search and filter query parameters</li><li><code>POST /api/reading_items</code> &mdash; create a new readingitem record</li><li><code>GET /api/reading_items/{id}</code> &mdash; retrieve a single readingitem by ID</li><li><code>PUT /api/reading_items/{id}</code> &mdash; update an existing readingitem</li><li><code>DELETE /api/reading_items/{id}</code> &mdash; remove a readingitem</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">Why self-host your reading list and learning tracker</div>
-  <p>Privacy-conscious teams often build internal reading items workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Quiver gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>A solo developer built a weekend project that needed reading items tracking. Instead of spinning up Postgres and writing an admin panel, they added Quiver as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
-</div></div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>The data model stores each readingitem with 9 fields: title, author, url, type, status. All fields are queryable through the search API. The dashboard renders reading items as cards with color-coded status indicators and inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/reading_items</code> — List all reading items. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/reading_items</code> — Create a new readingitem. Send JSON with at least <code>title</code></li><li><code>GET /api/reading_items/{id}</code> — Fetch one readingitem by ID</li><li><code>PUT /api/reading_items/{id}</code> — Update fields on an existing readingitem</li><li><code>DELETE /api/reading_items/{id}</code> — Remove a readingitem</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Readwise at $7.99/mo.</h2>
-    <p>Self-hosted reading list and learning tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Readwise ($7.99/mo).</h2>
+    <p>Save articles, books, and courses. Mark progress, take notes, track completion. The thing you mean to build in Notion but never actually use. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

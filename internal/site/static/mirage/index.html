@@ -132,23 +132,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <div class="section">
   <div class="section-label">The problem</div>
   <p>Testing against real APIs is slow, flaky, and expensive. WireMock needs a JVM. Mockoon needs Electron. Cloud-hosted mocks add latency and another service dependency. Mirage is a single binary that serves mock HTTP endpoints from SQLite. Define a route, set a response body and status code, and your tests hit a local server that never goes down.</p>
-</div><div class="section">
-  <div class="section-label">Under the hood</div>
-  <p>The data model stores each mockservice with 7 fields: name, path, method, response body, status code. All fields are queryable through the search API. The dashboard renders mock services as cards with color-coded status indicators and inline metadata. Creating, editing, and deleting records is immediate — no save-and-deploy cycle.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>Run Mirage alongside your test suite. Point your HTTP client at Mirage's port instead of the real API. Define mock endpoints through the dashboard or API. Your CI pipeline gets deterministic responses every time, with no network calls, no API rate limits, and no surprise failures from upstream services being down.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/mock_services</code> — List all mock services. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/mock_services</code> — Create a new mockservice. Send JSON with at least <code>name</code></li><li><code>GET /api/mock_services/{id}</code> — Fetch one mockservice by ID</li><li><code>PUT /api/mock_services/{id}</code> — Update fields on an existing mockservice</li><li><code>DELETE /api/mock_services/{id}</code> — Remove a mockservice</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
 </div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Mockoon at $9/mo.</h2>
-    <p>Self-hosted mock server. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Mockoon ($9/mo).</h2>
+    <p>Define mock HTTP endpoints with expected responses, test your app against them, simulate error conditions and latency. The local service double every integration test needs. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

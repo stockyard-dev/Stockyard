@@ -129,26 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Running a data pipeline orchestrator should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Pipeline is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
-</div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>Start Pipeline with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create pipelines through the web interface or POST JSON to the API. Filter by steps, schedule, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>A non-profit with no DevOps budget downloads the Pipeline binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/pipelines</code> — List all pipelines. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/pipelines</code> — Create a new pipeline. Send JSON with at least <code>name</code></li><li><code>GET /api/pipelines/{id}</code> — Fetch one pipeline by ID</li><li><code>PUT /api/pipelines/{id}</code> — Update fields on an existing pipeline</li><li><code>DELETE /api/pipelines/{id}</code> — Remove a pipeline</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Apache Airflow at $0 but expensive to run.</h2>
-    <p>Self-hosted data pipeline orchestrator. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Apache Airflow ($0 but expensive to run).</h2>
+    <p>Define data pipelines as DAGs, schedule them, monitor their execution, retry failures. Apache Airflow without the Kubernetes operator and the 2-hour setup. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

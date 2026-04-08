@@ -110,26 +110,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Most transactions tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Ledger II exists because neither option makes sense when you just need a reliable personal finance tracker under your own control.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A non-profit with no DevOps budget downloads the Ledger II binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
-</div></div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>Deploy Ledger II as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and transactions count, which you can wire into your existing monitoring stack.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/transactions</code> — List all transactions. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/transactions</code> — Create a new transaction. Send JSON with at least <code>description</code></li><li><code>GET /api/transactions/{id}</code> — Fetch one transaction by ID</li><li><code>PUT /api/transactions/{id}</code> — Update fields on an existing transaction</li><li><code>DELETE /api/transactions/{id}</code> — Remove a transaction</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>YNAB at $14.99/mo.</h2>
-    <p>Self-hosted personal finance tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces YNAB ($14.99/mo).</h2>
+    <p>Track income, expenses, net worth, and budgets. Link bank accounts via CSV import, categorize transactions, visualize trends. YNAB without YNAB's servers holding your financial data. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

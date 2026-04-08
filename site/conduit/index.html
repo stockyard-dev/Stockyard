@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Conduit is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/integrations</code> &mdash; list all integrations with optional search and filter query parameters</li><li><code>POST /api/integrations</code> &mdash; create a new integration record</li><li><code>GET /api/integrations/{id}</code> &mdash; retrieve a single integration by ID</li><li><code>PUT /api/integrations/{id}</code> &mdash; update an existing integration</li><li><code>DELETE /api/integrations/{id}</code> &mdash; remove a integration</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>Run Conduit on any server where you can execute a binary. The dashboard is immediately available at localhost, and the REST API integrates with your existing scripts and workflows. No external dependencies to configure, no managed service to subscribe to.</p>
-</div></div><div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Privacy-conscious teams often build internal integrations workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Conduit gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/integrations</code> — List all integrations. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/integrations</code> — Create a new integration. Send JSON with at least <code>name</code></li><li><code>GET /api/integrations/{id}</code> — Fetch one integration by ID</li><li><code>PUT /api/integrations/{id}</code> — Update fields on an existing integration</li><li><code>DELETE /api/integrations/{id}</code> — Remove a integration</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div><div class="section">
-  <div class="section-label">How it works</div>
-  <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any integration to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/integrations</code>. Responses are JSON. Authentication is handled at the network level — put Conduit behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Zapier at $19.99/mo.</h2>
-    <p>Self-hosted data sync engine. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Zapier ($19.99/mo).</h2>
+    <p>Define a source, define a destination, define a schedule. Syncs data between any two HTTP endpoints on a cron. No Zapier, no Make, no cloud middleware. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

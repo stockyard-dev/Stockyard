@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Prospector is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/deals</code> &mdash; list all deals with optional search and filter query parameters</li><li><code>POST /api/deals</code> &mdash; create a new deal record</li><li><code>GET /api/deals/{id}</code> &mdash; retrieve a single deal by ID</li><li><code>PUT /api/deals/{id}</code> &mdash; update an existing deal</li><li><code>DELETE /api/deals/{id}</code> &mdash; remove a deal</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The problem</div>
-  <p>The moment you store deals in someone else's cloud, you have accepted their terms, their pricing changes, and their uptime. Prospector puts that decision back in your hands with a standalone binary that runs anywhere you can run a Linux process.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A freelance consultant keeps Prospector running on a home server. Client deals stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
-</div></div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>Point <code>curl</code> at <code>/api/deals</code> to interact with Prospector programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/deals</code> — List all deals. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/deals</code> — Create a new deal. Send JSON with at least <code>name</code></li><li><code>GET /api/deals/{id}</code> — Fetch one deal by ID</li><li><code>PUT /api/deals/{id}</code> — Update fields on an existing deal</li><li><code>DELETE /api/deals/{id}</code> — Remove a deal</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>HubSpot CRM at data leaves your control.</h2>
-    <p>Self-hosted sales pipeline tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces HubSpot CRM (data leaves your control).</h2>
+    <p>Leads, stages, notes, follow-up dates, won/lost tracking. HubSpot CRM is free but sends all your data to HubSpot. This stays on your server. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

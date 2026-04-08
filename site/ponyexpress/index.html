@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Pony Express is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/deliveries</code> &mdash; list all deliveries with optional search and filter query parameters</li><li><code>POST /api/deliveries</code> &mdash; create a new delivery record</li><li><code>GET /api/deliveries/{id}</code> &mdash; retrieve a single delivery by ID</li><li><code>PUT /api/deliveries/{id}</code> &mdash; update an existing delivery</li><li><code>DELETE /api/deliveries/{id}</code> &mdash; remove a delivery</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">What Pony Express replaces</div>
-  <p>SaaS tools hold your data hostage. Export formats are incomplete, migrations are painful, and pricing changes whenever the vendor feels like it. Pony Express stores everything in SQLite on your own server. Your data is a file you control, back up, and query directly.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Pony Express</div>
-  <p>A non-profit with no DevOps budget downloads the Pony Express binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
-</div></div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>Start Pony Express with a port and a data directory. It creates its SQLite database on first run and serves both the API and the dashboard on the same port. Create deliveries through the web interface or POST JSON to the API. Filter by channel, subject, or search by keyword. Update records with PUT, delete with DELETE. The stats endpoint returns aggregate counts grouped by status for monitoring.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/deliveries</code> — List all deliveries. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/deliveries</code> — Create a new delivery. Send JSON with at least <code>recipient</code></li><li><code>GET /api/deliveries/{id}</code> — Fetch one delivery by ID</li><li><code>PUT /api/deliveries/{id}</code> — Update fields on an existing delivery</li><li><code>DELETE /api/deliveries/{id}</code> — Remove a delivery</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Mailchimp Transactional at $20/mo.</h2>
-    <p>Self-hosted transactional email sender. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Mailchimp Transactional ($20/mo).</h2>
+    <p>Define email templates, send via your own SMTP or SES account, track opens and clicks, manage unsubscribes. Your owned Mailchimp transactional tier without the $25/mo. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

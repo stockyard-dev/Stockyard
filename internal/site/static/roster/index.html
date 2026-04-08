@@ -129,33 +129,15 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Roster is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/members</code> &mdash; list all members with optional search and filter query parameters</li><li><code>POST /api/members</code> &mdash; create a new member record</li><li><code>GET /api/members/{id}</code> &mdash; retrieve a single member by ID</li><li><code>PUT /api/members/{id}</code> &mdash; update an existing member</li><li><code>DELETE /api/members/{id}</code> &mdash; remove a member</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
-
 <div class="section">
   <div class="section-label">The case for owning your data</div>
   <p>Every member your team creates contains context that matters — name, email, role, department, phone. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Roster keeps it local.</p>
-</div><div class="section">
-  <div class="section-label">How it works</div>
-  <p>On first launch, Roster initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a member is a POST with JSON — the only required field is name. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>A devops team integrates Roster into their CI pipeline. A post-deploy hook creates a member record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches members by keyword to find related records without switching tools.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/members</code> — List all members. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/members</code> — Create a new member. Send JSON with at least <code>name</code></li><li><code>GET /api/members/{id}</code> — Fetch one member by ID</li><li><code>PUT /api/members/{id}</code> — Update fields on an existing member</li><li><code>DELETE /api/members/{id}</code> — Remove a member</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
 </div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Rippling HRIS at $8/user/mo.</h2>
-    <p>Self-hosted team directory. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Rippling HRIS ($8/user/mo).</h2>
+    <p>Your company org chart, contact list, and team finder — searchable, filterable, linkable. The internal phonebook that HR departments maintain in spreadsheets. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

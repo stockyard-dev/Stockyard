@@ -129,26 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">Why self-host your dependency manifest tracker</div>
-  <p>When regulators or clients ask where your components data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Manifest makes that answer straightforward because the data never leaves your infrastructure.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Manifest</div>
-  <p>A devops team integrates Manifest into their CI pipeline. A post-deploy hook creates a component record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches components by keyword to find related records without switching tools.</p>
-</div></div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>Install Manifest with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating components. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/components</code> — List all components. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/components</code> — Create a new component. Send JSON with at least <code>name</code></li><li><code>GET /api/components/{id}</code> — Fetch one component by ID</li><li><code>PUT /api/components/{id}</code> — Update fields on an existing component</li><li><code>DELETE /api/components/{id}</code> — Remove a component</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>FOSSA at $149/mo.</h2>
-    <p>Self-hosted dependency manifest tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces FOSSA ($149/mo).</h2>
+    <p>Track every library, framework, and service your projects depend on. Know which versions are running where, get alerted on end-of-life dates and security advisories. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

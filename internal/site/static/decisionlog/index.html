@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Decisionlog is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/decisions</code> &mdash; list all decisions with optional search and filter query parameters</li><li><code>POST /api/decisions</code> &mdash; create a new decision record</li><li><code>GET /api/decisions/{id}</code> &mdash; retrieve a single decision by ID</li><li><code>PUT /api/decisions/{id}</code> &mdash; update an existing decision</li><li><code>DELETE /api/decisions/{id}</code> &mdash; remove a decision</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The case for owning your data</div>
-  <p>Running a decision log should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Decisionlog is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>A non-profit with no DevOps budget downloads the Decisionlog binary, sets two environment variables, and runs it on the same Linux box that handles their email. It has been running for three months without intervention. When they need to update, they download the new binary and restart the process.</p>
-</div></div><div class="section">
-  <div class="section-label">Under the hood</div>
-  <p>Deploy Decisionlog as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and decisions count, which you can wire into your existing monitoring stack.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/decisions</code> — List all decisions. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/decisions</code> — Create a new decision. Send JSON with at least <code>title</code></li><li><code>GET /api/decisions/{id}</code> — Fetch one decision by ID</li><li><code>PUT /api/decisions/{id}</code> — Update fields on an existing decision</li><li><code>DELETE /api/decisions/{id}</code> — Remove a decision</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Notion (decision log use) at $8/user/mo.</h2>
-    <p>Self-hosted decision log. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Notion (decision log use) ($8/user/mo).</h2>
+    <p>Record important decisions, the context, the reasoning, and the outcome. Search back through your decision history. The tool that makes 'why did I decide that?' answerable a year later. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

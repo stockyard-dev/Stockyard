@@ -129,26 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">What Headcount replaces</div>
-  <p>Teams outgrow spreadsheet-based events tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Headcount is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
-</div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>On first launch, Headcount initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Track page views with a lightweight script tag or send custom events via the API. The dashboard shows visitors, page views, referrers, funnels, and retention cohorts. No cookies required, no GDPR banner needed.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>Add the tracking snippet to your site. Headcount captures page views, unique visitors, and referral sources without sending any data to third parties. Build funnels to see where users drop off. Track retention to see who comes back. Export CSV reports when you need numbers for a board deck or investor update.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/events</code> — List all events. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/events</code> — Create a new event. Send JSON with at least <code>name</code></li><li><code>GET /api/events/{id}</code> — Fetch one event by ID</li><li><code>PUT /api/events/{id}</code> — Update fields on an existing event</li><li><code>DELETE /api/events/{id}</code> — Remove a event</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
+
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Mixpanel at $20/mo.</h2>
-    <p>Self-hosted user analytics. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Mixpanel ($20/mo).</h2>
+    <p>Track signups, logins, active users, and funnels. No cookie banners, no GDPR nightmares — your data stays on your server. Mixpanel for teams who can't send user behavior to a SaaS. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

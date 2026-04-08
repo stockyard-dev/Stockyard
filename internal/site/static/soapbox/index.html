@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Soapbox is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/questions</code> &mdash; list all questions with optional search and filter query parameters</li><li><code>POST /api/questions</code> &mdash; create a new question record</li><li><code>GET /api/questions/{id}</code> &mdash; retrieve a single question by ID</li><li><code>PUT /api/questions/{id}</code> &mdash; update an existing question</li><li><code>DELETE /api/questions/{id}</code> &mdash; remove a question</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Running a internal Q&amp;A and Stack Overflow should not require a Kubernetes cluster, a managed database, and a DevOps team to keep it running. Soapbox is one file. Download it, run it, point your browser at it. That is the entire setup.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A devops team integrates Soapbox into their CI pipeline. A post-deploy hook creates a question record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches questions by keyword to find related records without switching tools.</p>
-</div></div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>On first launch, Soapbox initializes a WAL-mode SQLite database and starts an HTTP server. The web dashboard and API share the same port. Creating a question is a POST with JSON — the only required field is title. The response includes the generated ID and timestamp. Listing supports search, filtering, and returns items in reverse chronological order.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/questions</code> — List all questions. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/questions</code> — Create a new question. Send JSON with at least <code>title</code></li><li><code>GET /api/questions/{id}</code> — Fetch one question by ID</li><li><code>PUT /api/questions/{id}</code> — Update fields on an existing question</li><li><code>DELETE /api/questions/{id}</code> — Remove a question</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Stack Overflow for Teams at $6/user/mo.</h2>
-    <p>Self-hosted internal Q&amp;A and Stack Overflow. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Stack Overflow for Teams ($6/user/mo).</h2>
+    <p>Ask questions, answer them, vote, mark as resolved. The knowledge that lives in Slack DMs, made searchable and permanent. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

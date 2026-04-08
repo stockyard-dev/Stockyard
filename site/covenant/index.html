@@ -132,23 +132,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 <div class="section">
   <div class="section-label">Why self-host your policy and compliance manager</div>
   <p>Every policy your team creates contains context that matters — title, body, version, ack count, status. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Covenant keeps it local.</p>
-</div><div class="section">
-  <div class="section-label">Architecture</div>
-  <p>Each policy record carries fields for title, body, version, ack count, status. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering through the lifecycle. Backups are a file copy of the SQLite database in the data directory.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">Real-world usage</div>
-  <p>A solo developer built a weekend project that needed policies tracking. Instead of spinning up Postgres and writing an admin panel, they added Covenant as a sidecar process. The REST API covered every operation the project needed. Development time saved: roughly a full day.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/policies</code> — List all policies. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/policies</code> — Create a new policy. Send JSON with at least <code>title</code></li><li><code>GET /api/policies/{id}</code> — Fetch one policy by ID</li><li><code>PUT /api/policies/{id}</code> — Update fields on an existing policy</li><li><code>DELETE /api/policies/{id}</code> — Remove a policy</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
 </div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Drata at $1,000+/mo.</h2>
-    <p>Self-hosted policy and compliance manager. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Drata ($1,000+/mo).</h2>
+    <p>Write policies, version them, require team acknowledgment, track who's read what. SOC 2 prep without the $2,000/mo compliance SaaS. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

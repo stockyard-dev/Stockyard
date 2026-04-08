@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Sundial is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/time_entries</code> &mdash; list all time_entries with optional search and filter query parameters</li><li><code>POST /api/time_entries</code> &mdash; create a new timeentry record</li><li><code>GET /api/time_entries/{id}</code> &mdash; retrieve a single timeentry by ID</li><li><code>PUT /api/time_entries/{id}</code> &mdash; update an existing timeentry</li><li><code>DELETE /api/time_entries/{id}</code> &mdash; remove a timeentry</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">In practice</div>
-  <p>A regulated company runs Sundial inside their air-gapped network. No data leaves the building. Compliance auditors can inspect the SQLite file directly. When the team needs a report, they query the API and format the output however the auditor expects.</p>
-</div></div><div class="section">
-  <div class="section-label">The problem</div>
-  <p>When regulators or clients ask where your time entries data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Sundial makes that answer straightforward because the data never leaves your infrastructure.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/time_entries</code> — List all time entries. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/time_entries</code> — Create a new timeentry. Send JSON with at least <code>description</code></li><li><code>GET /api/time_entries/{id}</code> — Fetch one timeentry by ID</li><li><code>PUT /api/time_entries/{id}</code> — Update fields on an existing timeentry</li><li><code>DELETE /api/time_entries/{id}</code> — Remove a timeentry</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div><div class="section">
-  <div class="section-label">How Sundial runs</div>
-  <p>Each timeentry record carries fields for description, project, task, duration, start time. The API accepts partial updates, so you can PATCH individual fields without resubmitting the entire record. Listing endpoints support <code>?q=</code> for keyword search and <code>?status=</code> for filtering. Backups are a file copy of the SQLite database in the data directory.</p>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Toggl Track at $9/mo.</h2>
-    <p>Self-hosted time tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Toggl Track ($9/mo).</h2>
+    <p>Start a timer, tag it to a project or client, stop it, see where your time actually goes. Toggl charges $9/mo. This is a binary with a dashboard. For freelancers who invoice by the hour. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

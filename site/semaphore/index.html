@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Semaphore is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/team_members</code> &mdash; list all team_members with optional search and filter query parameters</li><li><code>POST /api/team_members</code> &mdash; create a new teammember record</li><li><code>GET /api/team_members/{id}</code> &mdash; retrieve a single teammember by ID</li><li><code>PUT /api/team_members/{id}</code> &mdash; update an existing teammember</li><li><code>DELETE /api/team_members/{id}</code> &mdash; remove a teammember</li><li><code>GET /api/stats</code> &mdash; aggregated statistics</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The case for owning your data</div>
-  <p>When regulators or clients ask where your team members data is stored, the best answer is a specific server you own in a specific jurisdiction you chose. Semaphore makes that answer straightforward because the data never leaves your infrastructure.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Semaphore</div>
-  <p>A devops team integrates Semaphore into their CI pipeline. A post-deploy hook creates a teammember record via the API. The stats endpoint feeds a Grafana panel. When something goes wrong, the team searches team members by keyword to find related records without switching tools.</p>
-</div></div><div class="section">
-  <div class="section-label">How Semaphore runs</div>
-  <p>Deploy Semaphore as a systemd service, a Docker container, or a bare process behind tmux. It reads two environment variables: <code>PORT</code> and <code>DATA_DIR</code>. Everything else is self-contained. The <code>/api/health</code> endpoint returns the service status and team members count, which you can wire into your existing monitoring stack.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/team_members</code> — List all team members. Supports <code>?q=keyword</code> for search</li><li><code>POST /api/team_members</code> — Create a new teammember. Send JSON with at least <code>name</code></li><li><code>GET /api/team_members/{id}</code> — Fetch one teammember by ID</li><li><code>PUT /api/team_members/{id}</code> — Update fields on an existing teammember</li><li><code>DELETE /api/team_members/{id}</code> — Remove a teammember</li><li><code>GET /api/stats</code> — Returns total count</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Slack status at $7.25/user/mo.</h2>
-    <p>Self-hosted team availability board. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Slack status ($7.25/user/mo).</h2>
+    <p>Set your status (focused, available, out), see your team's status at a glance, set auto-return times. Slack's status feature but on your own infrastructure. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 

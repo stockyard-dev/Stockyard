@@ -129,33 +129,12 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Paddock II is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/plants</code> &mdash; list all plants with optional search and filter query parameters</li><li><code>POST /api/plants</code> &mdash; create a new plant record</li><li><code>GET /api/plants/{id}</code> &mdash; retrieve a single plant by ID</li><li><code>PUT /api/plants/{id}</code> &mdash; update an existing plant</li><li><code>DELETE /api/plants/{id}</code> &mdash; remove a plant</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
-</div>
 
-<div class="section">
-  <div class="section-label">The case for owning your data</div>
-  <p>Privacy-conscious teams often build internal plants workflows in Notion or Google Sheets because the alternative is a $200/month SaaS contract. Paddock II gives you a purpose-built tool at a fraction of the cost, running on infrastructure you already control.</p>
-</div><div class="section">
-  <div class="section-label">How Paddock II runs</div>
-  <p>Install Paddock II with the one-line shell script or download the binary directly from GitHub. Run it, open <code>/ui</code>, and start creating plants. The SQLite database lives in a single file under the data directory. To migrate to a new server, copy the binary and the data directory. That is the entire migration procedure.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Paddock II</div>
-  <p>A freelance consultant keeps Paddock II running on a home server. Client plants stay on local disk, which simplifies the privacy section of every contract. The search endpoint powers a custom dashboard built with a static site generator. Total infrastructure cost: the electricity to run a Raspberry Pi.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/plants</code> — List all plants. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/plants</code> — Create a new plant. Send JSON with at least <code>name</code></li><li><code>GET /api/plants/{id}</code> — Fetch one plant by ID</li><li><code>PUT /api/plants/{id}</code> — Update fields on an existing plant</li><li><code>DELETE /api/plants/{id}</code> — Remove a plant</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
-</div>
 <div class="section-alt">
   <div class="section-alt-inner">
     <div class="section-label">Replaces</div>
-    <h2>Planta Premium at $7.99/mo.</h2>
-    <p>Self-hosted plant and garden tracker. Self-hosted on your infrastructure. Your data never leaves your server.</p>
+    <h2>Replaces Planta Premium ($2.99/mo).</h2>
+    <p>Log your plants, watering schedules, growth notes, harvest yields. For serious gardeners who outgrew the notes app. Surprisingly large audience, completely underserved by software. Your data lives in a SQLite file on your disk that you can back up by copying a folder, move to another machine, or query directly with any SQLite tool. The binary keeps running if Stockyard disappears tomorrow, because it is Apache 2.0 and you have a copy.</p>
   </div>
 </div>
 
