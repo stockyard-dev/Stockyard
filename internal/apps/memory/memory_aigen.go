@@ -78,18 +78,25 @@ func registerMemoryAigenTasks() {
 			//    typical of a developer's own memory notes, not prose
 			//    prose.
 			SystemPrompt: "You are compressing a list of older conversation " +
-				"memory entries into a single short summary. The summary " +
-				"REPLACES the original entries in the user's memory store, " +
-				"so it must preserve any concrete facts, names, decisions, " +
-				"and action items from the entries. Rules: (1) Write in the " +
-				"same terse voice as the entries themselves — no prose, no " +
-				"tutorial framing. (2) Do NOT start with 'The user', 'This " +
-				"conversation', 'In summary', or similar meta-framing. " +
+				"memory entries into a single short summary. The entries " +
+				"to compress are provided in Input.entries_to_summarize " +
+				"as a JSON array of strings. Read them and produce one " +
+				"summary that preserves concrete facts, names, decisions, " +
+				"and action items from the entries. The summary REPLACES " +
+				"the original entries in the user's memory store, so any " +
+				"information you omit is lost. Rules: (1) Write in the " +
+				"same terse voice as the entries themselves — no prose, " +
+				"no tutorial framing. (2) Do NOT start with 'The user', " +
+				"'This conversation', 'In summary', or similar meta-framing. " +
 				"Just state the facts. (3) Do NOT refuse, apologize, or " +
-				"mention being an AI. (4) If there is nothing concrete to " +
-				"preserve, return a brief statement naming the topics " +
-				"covered rather than a generic placeholder. (5) The summary " +
-				"must be shorter than the input total. Return JSON only.",
+				"mention being an AI. Do NOT return 'No specific topics " +
+				"provided' or similar placeholders — if there really is " +
+				"nothing to summarize you still have at least the topic " +
+				"names to list. (4) Ignore the cold-start examples in " +
+				"the EXAMPLES section — those are voice references, not " +
+				"the actual content to summarize. Only Input.entries_to_summarize " +
+				"contains the real content. (5) The summary must be " +
+				"shorter than the input total. Return JSON only.",
 			Schema: aigen.Schema{
 				Type:     "object",
 				Required: []string{"summary"},
@@ -142,6 +149,19 @@ func registerMemoryAigenTasks() {
 							"to summarize,",
 							"these memories",
 							"these entries",
+							// Added iteration 2 after reading traces:
+							// the model was returning "No specific topics
+							// provided for summary." and looping that
+							// refusal back as a few-shot example on
+							// subsequent calls, degrading every call
+							// into the same useless meta-response.
+							"no specific topics",
+							"no topics provided",
+							"no specific content",
+							"no concrete",
+							"no specific facts",
+							"cannot be summarized",
+							"could not be summarized",
 						}
 						for _, p := range refusalPatterns {
 							if strings.Contains(lower, p) {
@@ -184,19 +204,47 @@ func registerMemoryAigenTasks() {
 // from handleSummarize. Returns the summary string and an error. If err
 // is non-nil, the caller MUST NOT delete the original entries — destructive
 // data loss on a failed AI call is the worst case we're protecting against.
+//
+// DESIGN NOTE — transformation tasks vs generation tasks:
+//
+// For generation tasks (like knowledge.suggest_entry), aigen.Request.Examples
+// doubles as "examples of good output" — you're asking the model to produce
+// one more item that fits the existing set. The examples' shape matches the
+// output schema exactly, and the model uses them as few-shot teachers for
+// both voice and factual grounding.
+//
+// For transformation tasks (like this one — summarize N things into 1 thing),
+// the input and output shapes are different. Using Examples would mean
+// passing raw-entry content as if each one were a summary, and the model
+// interprets them as output teachers — picking up whatever pattern is there.
+// We learned this the hard way: on iteration 1, previous summaries (including
+// "No specific topics provided for summary") got fed back as Examples, the
+// model dutifully followed the meta-refusal pattern, and every call
+// produced the same useless output.
+//
+// The fix is to pass the raw entries via Input (which becomes part of the
+// user message, framed as data to process) rather than via Examples
+// (which are framed as output to imitate). The task's ColdStart still
+// provides voice/shape grounding via the aigen contract's fallback path,
+// and Input provides the actual content to transform.
+//
+// This is the general design rule for transformation tasks. Worth writing
+// up in the aigen module's README when the module grows a second
+// transformation-style task.
 func (a *App) aigenSummarize(ctx context.Context, contents []string) (string, error) {
-	// Build examples from the content. Each example is {summary: content}
-	// — not ideal because the content isn't actually a summary, but the
-	// aigen examples are voice/shape grounding, not output teacher. The
-	// model sees the entries-to-summarize via the examples path.
-	examples := make([]map[string]any, 0, len(contents))
-	for _, c := range contents {
-		examples = append(examples, map[string]any{"summary": c})
+	if len(contents) == 0 {
+		return "", fmt.Errorf("memory.summarize: nothing to summarize")
 	}
 
 	out, err := aigen.Generate(ctx, aigen.Request{
-		Task:     "memory.summarize",
-		Examples: examples,
+		Task: "memory.summarize",
+		// Examples is intentionally empty. The task has ColdStart examples
+		// that grounding voice and shape. The actual input data is passed
+		// via Input below.
+		Examples: nil,
+		Input: map[string]any{
+			"entries_to_summarize": contents,
+		},
 	})
 	if err != nil {
 		return "", err

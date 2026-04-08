@@ -238,13 +238,22 @@ func (a *App) handleSummarize(w http.ResponseWriter, r *http.Request) {
 	// the weekly quality gate — you can trigger a summarization on a test
 	// user's fresh entries without waiting a week. Not a user-facing flag;
 	// it's an admin/debug escape hatch.
+	//
+	// EXCLUDE prior auto-summaries. Otherwise each summarize call loads
+	// its own previous output as input, compresses it again, and over
+	// time the user's memory devolves into layers of summaries-of-
+	// summaries with progressively less information each round. The
+	// exclusion keeps auto-summaries as terminal records until the user
+	// explicitly deletes them or another process cleans them up.
 	ageFilter := "AND created_at < datetime('now', '-7 days')"
 	if r.URL.Query().Get("force") == "1" {
 		ageFilter = ""
 	}
 	rows, err := a.conn.Query(`
 		SELECT id, content FROM memory_entries
-		WHERE user_id = ? `+ageFilter+`
+		WHERE user_id = ?
+		  AND (summary IS NULL OR summary != 'auto-summary')
+		  `+ageFilter+`
 		ORDER BY created_at ASC LIMIT 20
 	`, userID)
 	if err != nil {
