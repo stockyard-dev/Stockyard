@@ -1295,6 +1295,24 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		}
 	}
 
+	// Per-tool OG images: same pattern as bundles, reading catalog.json.
+	if catalogData, err := fs.ReadFile(sub, "tools/catalog.json"); err == nil {
+		var catalog []struct {
+			Slug string `json:"slug"`
+		}
+		if json.Unmarshal(catalogData, &catalog) == nil {
+			seenTool := map[string]bool{}
+			for _, t := range catalog {
+				if t.Slug == "" || seenTool[t.Slug] {
+					continue
+				}
+				seenTool[t.Slug] = true
+				slug := t.Slug // capture for closure
+				mux.HandleFunc("GET /og-tool-"+slug+".png", serveOGImage("tool-"+slug))
+			}
+		}
+	}
+
 	// Serve bundles search index for homepage async load
 	mux.HandleFunc("GET /bundles-search.json", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "bundles-search.json")
