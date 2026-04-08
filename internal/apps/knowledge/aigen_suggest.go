@@ -31,15 +31,22 @@ func registerKnowledgeAigenTask() {
 		aigen.Register(aigen.Task{
 			Name: "knowledge.suggest_entry",
 			SystemPrompt: "You are helping a domain expert extend their " +
-				"knowledge base. Given a few of their existing entries " +
-				"(which are short factual statements about their domain), " +
+				"knowledge base. Given a few of their existing entries, " +
 				"suggest exactly one more entry in the same voice, shape, " +
-				"and subject area. The new fact must be: (1) plausibly " +
-				"true in the same domain as the existing entries, (2) " +
-				"written in the same tone and length, (3) specific and " +
-				"concrete rather than generic advice. Do NOT suggest " +
-				"vague truisms. Do NOT suggest facts outside the domain " +
-				"of the existing entries. Return JSON only.",
+				"and subject area. CRITICAL RULES: (1) Read the existing " +
+				"entries carefully to understand what KIND of fact they " +
+				"are — if they are gotchas, your fact must be a gotcha; " +
+				"if they are tips, your fact must be a tip; if they are " +
+				"definitions, your fact must be a definition. Do NOT " +
+				"confuse a 'things that bit me' knowledge base with a " +
+				"'intro tutorial' one. (2) Every claim MUST be specific " +
+				"and verifiable: name the exact version, flag, function, " +
+				"or behavior. Generic advice and textbook-level summaries " +
+				"are forbidden. (3) Do NOT confabulate version numbers. " +
+				"If you are not certain a feature landed in a specific " +
+				"version, do not cite a version. (4) If you cannot " +
+				"produce a fact that meets these rules, return a narrower " +
+				"fact rather than a vague one. Return JSON only.",
 			Schema: aigen.Schema{
 				Type:     "object",
 				Required: []string{"fact"},
@@ -68,10 +75,6 @@ func registerKnowledgeAigenTask() {
 					Name: "fact_is_concrete_not_truism",
 					Check: func(out map[string]any) (bool, string) {
 						fact, _ := out["fact"].(string)
-						// Crude but effective heuristic: a concrete fact
-						// usually names something specific (a version, a
-						// command, a flag, a number, a product). Flag the
-						// generic-advice cases that usually slip past.
 						vague := []string{
 							"it is important to",
 							"make sure to",
@@ -80,11 +83,58 @@ func registerKnowledgeAigenTask() {
 							"one should",
 							"you should always",
 							"it is recommended",
+							"allowing for",
+							"can reduce",
+							"to handle concurrent access",
+							"for effective",
+							"write more general",
 						}
 						lower := fact
 						for _, v := range vague {
 							if contains(lower, v) {
-								return false, fmt.Sprintf("fact contains vague advice phrase %q — not a concrete fact", v)
+								return false, fmt.Sprintf("fact contains vague intro-tutorial phrase %q — not a specific gotcha or technical claim", v)
+							}
+						}
+						return true, ""
+					},
+				},
+				{
+					// Caught by reading logs on the first real integration:
+					// the model cited "Go 1.21 release notes" for the
+					// Stringer interface (wrong — that's been in fmt since
+					// 1.0) and "Go 1.19 release notes" for type parameters
+					// (wrong — 1.18). Confabulated version numbers are
+					// worse than missing ones because they look authoritative.
+					// This eval flags facts that reference a specific Go
+					// version without the fact naming a concrete function,
+					// flag, or behavior change that's tied to that version.
+					// It can't verify accuracy — only a human reading the
+					// logs can — but it can reject the most obvious shape
+					// of confabulation where the model gestures at a
+					// version to sound authoritative.
+					Name: "no_unsupported_version_claims",
+					Check: func(out map[string]any) (bool, string) {
+						fact, _ := out["fact"].(string)
+						// Pattern: "Go 1.NN introduced X" or "Go 1.NN added X"
+						// where X is a generic concept name rather than a
+						// specific new symbol. The heuristic here: if the
+						// fact uses the phrase "introduced the need for",
+						// "introduced \<generic noun\>", "added the
+						// ability to", or similar hand-wavy verbs, it's
+						// probably confabulation.
+						confabulationTells := []string{
+							"introduced the need",
+							"introduced the concept",
+							"added the ability to",
+							"added the option to",
+							"significantly improved",
+							"has a new mode",
+							"new mode for",
+						}
+						lower := fact
+						for _, t := range confabulationTells {
+							if contains(lower, t) {
+								return false, fmt.Sprintf("fact uses confabulation-shaped phrase %q — rewrite to name the specific function/flag/API instead of gesturing at a generic feature", t)
 							}
 						}
 						return true, ""
