@@ -429,13 +429,13 @@ func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 	var reqID, svc, op, prov, model, status, meta, created string
 	var dur, tokIn, tokOut int64
 	var cost float64
-	var respBody, tagsJSON, traceSource, traceTeamID sql.NullString
+	var reqBody, respBody, tagsJSON, traceSource, traceTeamID sql.NullString
 	err := a.conn.QueryRow(`SELECT request_id, service, operation, provider, model, status,
 		duration_ms, tokens_in, tokens_out, cost_usd, metadata_json, created_at,
-		COALESCE(response_body, ''), COALESCE(tags, '{}'), COALESCE(source, ''), COALESCE(team_id, '')
+		COALESCE(request_body, ''), COALESCE(response_body, ''), COALESCE(tags, '{}'), COALESCE(source, ''), COALESCE(team_id, '')
 		FROM observe_traces WHERE id = ?`, id).
 		Scan(&reqID, &svc, &op, &prov, &model, &status, &dur, &tokIn, &tokOut, &cost, &meta, &created,
-			&respBody, &tagsJSON, &traceSource, &traceTeamID)
+			&reqBody, &respBody, &tagsJSON, &traceSource, &traceTeamID)
 	if err != nil {
 		w.WriteHeader(404)
 		writeJSON(w, map[string]string{"error": "trace not found"})
@@ -456,7 +456,7 @@ func (a *App) handleGetTrace(w http.ResponseWriter, r *http.Request) {
 		"provider": prov, "model": model, "status": status,
 		"duration_ms": dur, "tokens_in": tokIn, "tokens_out": tokOut,
 		"cost_usd": cost, "metadata": metadata, "created_at": created,
-		"response_body": respBody.String, "tags": tagsJSON.String, "source": traceSource.String,
+		"request_body": reqBody.String, "response_body": respBody.String, "tags": tagsJSON.String, "source": traceSource.String,
 	})
 }
 
