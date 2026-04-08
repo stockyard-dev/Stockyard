@@ -188,6 +188,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does Sentry cost?","acceptedAnswer":{"@type":"Answer","text":"Sentry Team is $26/mo for 50k errors. Business is $80/mo. Self-hosted Sentry requires Kafka, Clickhouse, Postgres, and Redis."}},{"@type":"Question","name":"Is Seismograph a Sentry alternative?","acceptedAnswer":{"@type":"Answer","text":"For basic error tracking (capture, group, alert), yes. Seismograph does not replace Sentry&#x27;s performance monitoring or session replay."}}]}</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script src="/site-assets/assets/sticky-cta.js" defer></script>
+<script src="/site-assets/assets/sticky-cta.js?v=2" defer></script>
 </body>
 </html>

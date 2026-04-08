@@ -193,6 +193,6 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does Lasso use cookies?","acceptedAnswer":{"@type":"Answer","text":"No. Lasso performs a simple HTTP redirect with no cookies, no tracking pixels, and no JavaScript on the redirect page."}},{"@type":"Question","name":"Is this GDPR compliant?","acceptedAnswer":{"@type":"Answer","text":"Self-hosted link tracking avoids third-party data transfer. You process click data on your own server. Disclose it in your privacy policy. Consult your legal team for your specific requirements."}},{"@type":"Question","name":"Can I use my own domain?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pro tier supports custom domains. Point your DNS and Lasso handles the rest. Your short links use your domain, not a third-party brand."}}]}</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script src="/site-assets/assets/sticky-cta.js" defer></script>
+<script src="/site-assets/assets/sticky-cta.js?v=2" defer></script>
 </body>
 </html>

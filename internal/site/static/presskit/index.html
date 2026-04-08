@@ -297,7 +297,7 @@ async function startCheckout(plan, interval) {
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script src="/site-assets/assets/sticky-cta.js" defer></script>
+<script src="/site-assets/assets/sticky-cta.js?v=2" defer></script>
 <script>(function(){var ua=navigator.userAgent.toLowerCase();var os='unknown';if(ua.indexOf('mac')!==-1&&ua.indexOf('iphone')===-1&&ua.indexOf('ipad')===-1)os='mac';else if(ua.indexOf('win')!==-1)os='windows';else if(ua.indexOf('linux')!==-1&&ua.indexOf('android')===-1)os='linux';if(os==='unknown')return;var btns=document.querySelectorAll('.install-btn-'+os);for(var i=0;i<btns.length;i++){var b=btns[i];b.classList.add('install-btn-recommended');var badge=document.createElement('span');badge.textContent='RECOMMENDED FOR YOU';badge.className='install-btn-badge';b.appendChild(badge);}})();</script>
 </body>
 </html>
