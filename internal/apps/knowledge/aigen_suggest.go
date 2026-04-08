@@ -30,23 +30,31 @@ func registerKnowledgeAigenTask() {
 	knowledgeRegisterOnce.Do(func() {
 		aigen.Register(aigen.Task{
 			Name: "knowledge.suggest_entry",
+			// NOTE ON PROMPT DESIGN: the previous iteration of this prompt
+			// said "name the exact version, flag, function, or behavior"
+			// which made the model MUCH MORE likely to confabulate by
+			// slapping "Go 1.20" onto every fact whether or not it knew
+			// the right version. Classic Goodhart: the model optimized
+			// for "mention a version" rather than "be accurate". Reverting
+			// to a more conservative framing that discourages fabricated
+			// citations without demanding them. See HANDOFF notes: the
+			// broader finding is that you can't prompt a model into
+			// factual accuracy by asking for specificity — the model will
+			// produce whatever satisfies the surface of the rule.
 			SystemPrompt: "You are helping a domain expert extend their " +
 				"knowledge base. Given a few of their existing entries, " +
 				"suggest exactly one more entry in the same voice, shape, " +
-				"and subject area. CRITICAL RULES: (1) Read the existing " +
-				"entries carefully to understand what KIND of fact they " +
-				"are — if they are gotchas, your fact must be a gotcha; " +
-				"if they are tips, your fact must be a tip; if they are " +
-				"definitions, your fact must be a definition. Do NOT " +
-				"confuse a 'things that bit me' knowledge base with a " +
-				"'intro tutorial' one. (2) Every claim MUST be specific " +
-				"and verifiable: name the exact version, flag, function, " +
-				"or behavior. Generic advice and textbook-level summaries " +
-				"are forbidden. (3) Do NOT confabulate version numbers. " +
-				"If you are not certain a feature landed in a specific " +
-				"version, do not cite a version. (4) If you cannot " +
-				"produce a fact that meets these rules, return a narrower " +
-				"fact rather than a vague one. Return JSON only.",
+				"and KIND of fact. Rules: (1) If the existing entries are " +
+				"gotchas, your fact must be a gotcha. If they are tips, " +
+				"your fact must be a tip. If they are definitions, your " +
+				"fact must be a definition. Match the voice exactly. " +
+				"(2) Do NOT confabulate. If you are not confident a fact " +
+				"is true, do not include it. Rather fall back to a more " +
+				"general but true statement than a specific false one. " +
+				"(3) Do NOT cite a version number unless you are certain " +
+				"the version is correct. It is better to omit the source " +
+				"field entirely than to fabricate a citation. (4) Avoid " +
+				"intro-tutorial phrasing. Return JSON only.",
 			Schema: aigen.Schema{
 				Type:     "object",
 				Required: []string{"fact"},
