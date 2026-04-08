@@ -1274,6 +1274,27 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 	mux.HandleFunc("GET /og-constitution.png", serveOGImage("constitution"))
 	mux.HandleFunc("GET /og-veterans.png", serveOGImage("veterans"))
 
+	// Per-bundle OG images: registered programmatically from bundles.json so we
+	// don't have to maintain 195 handlers by hand. Concrete paths only (no
+	// wildcards), so Go 1.22 ServeMux is happy. The seen-map protects against
+	// duplicate slugs in the JSON (which would otherwise panic at boot).
+	if bundlesData, err := fs.ReadFile(sub, "tools/bundles.json"); err == nil {
+		var bundles []struct {
+			Slug string `json:"slug"`
+		}
+		if json.Unmarshal(bundlesData, &bundles) == nil {
+			seenOG := map[string]bool{}
+			for _, b := range bundles {
+				if b.Slug == "" || seenOG[b.Slug] {
+					continue
+				}
+				seenOG[b.Slug] = true
+				slug := b.Slug // capture for closure
+				mux.HandleFunc("GET /og-for-"+slug+".png", serveOGImage("for-"+slug))
+			}
+		}
+	}
+
 	// Serve bundles search index for homepage async load
 	mux.HandleFunc("GET /bundles-search.json", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "bundles-search.json")
