@@ -64,7 +64,7 @@ function Modal({title,onClose,children}){return html`<div class="modal-overlay" 
 function DataTable({columns,rows,emptyMsg,onRowClick}){
   if(!rows||rows.length===0)return html`<div class="empty-state">${emptyMsg||'No data yet.'}</div>`;
   const gc=columns.map(c=>c.width||'1fr').join(' ');
-  return html`<div class="data-table"><div class="dt-head" style="grid-template-columns:${gc}">${columns.map(c=>html`<span key=${c.key}>${c.label}</span>`)}</div><div class="dt-body">${rows.map((row,i)=>html`<div key=${row.id||i} class="dt-row ${onRowClick?'dt-clickable':''}" style="grid-template-columns:${gc}" onClick=${()=>onRowClick&&onRowClick(row)}>${columns.map(c=>html`<span key=${c.key} class="${c.mono?'mono':''} ${c.accent?'dt-accent':''}">${c.render?c.render(row):row[c.key]||'\u2014'}</span>`)}</div>`)}</div></div>`;
+  return html`<div class="data-table"><div class="dt-head" style="grid-template-columns:${gc}">${columns.map(c=>html`<span key=${c.key}>${c.label}</span>`)}</div><div class="dt-body">${rows.map((row,i)=>html`<div key=${row.id||i} class="dt-row ${onRowClick?'dt-clickable':''}" style="grid-template-columns:${gc}" onClick=${()=>onRowClick&&onRowClick(row)}>${columns.map(c=>html`<span key=${c.key} data-label=${c.label} class="${c.mono?'mono':''} ${c.accent?'dt-accent':''}">${c.render?c.render(row):row[c.key]||'\u2014'}</span>`)}</div>`)}</div></div>`;
 }
 
 function UpgradeBanner(){
@@ -257,16 +257,16 @@ function ProxyView(){
       <${Btn} small onClick=${()=>bulkToggle('all',false)} disabled=${!d('modules').some(m=>m.enabled)}>Disable All<//><${Btn} small onClick=${()=>bulkToggle('all',true)}>Enable All<//></div>
       <div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 80px 80px 80px"><span>Module</span><span>Category</span><span>Chain</span><span>Status</span><span>Toggle</span></div>
       <div class="dt-body">${filtered.map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 80px 80px 80px">
-        <span class="mono">${m.name}</span><span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
-        <span>${m.in_chain?html`<${Badge} text="live" variant="success"/>`:html`<${Badge} text="db" variant="muted"/>`}</span>
-        <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
-        <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
+        <span class="mono" data-label="Module">${m.name}</span><span class="mono" data-label="Category" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
+        <span data-label="Chain">${m.in_chain?html`<${Badge} text="live" variant="success"/>`:html`<${Badge} text="db" variant="muted"/>`}</span>
+        <span data-label="Status"><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
+        <span data-label="Toggle"><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
       </div>`)}</div></div>`:
     tab==='chain'?html`<div class="data-table"><div class="dt-head" style="grid-template-columns:1.5fr 100px 100px 80px"><span>Middleware</span><span>Category</span><span>Status</span><span>Toggle</span></div>
       <div class="dt-body">${d('modules').filter(m=>m.in_chain).map(m=>html`<div key=${m.name} class="dt-row" style="grid-template-columns:1.5fr 100px 100px 80px">
-        <span class="mono">${m.name}</span><span class="mono" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
-        <span><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
-        <span><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
+        <span class="mono" data-label="Middleware">${m.name}</span><span class="mono" data-label="Category" style="font-size:0.72rem;color:var(--cream-muted)">${m.category||'general'}</span>
+        <span data-label="Status"><${Badge} text=${m.enabled?'on':'off'} variant=${m.enabled?'success':'muted'}/></span>
+        <span data-label="Toggle"><button class="toggle-btn ${m.enabled?'on':''}" onClick=${()=>toggleModule(m.name,m.enabled)}><span class="toggle-knob"></span></button></span>
       </div>`)}</div></div>`:
     tab==='providers'?html`<div class="stats-row" style="margin-bottom:12px"><${Stat} label="Configured" value=${d('providers').length} accent/><${Stat} label="Active" value=${d('providers').filter(p=>p.status==='active').length} sub="healthy"/><${Stat} label="Errors" value=${d('providers').reduce((s,p)=>s+(p.error_count||0),0)} sub=${d('providers').some(p=>p.error_count>0)?'check logs':'none'}/></div>
       <${DataTable} columns=${[{key:'name',label:'Provider',width:'1fr',mono:true},{key:'status',label:'Status',width:'120px',render:r=>html`<${Badge} text=${r.status||'configured'} variant=${r.status==='active'?'success':r.status==='error'?'danger':'muted'}/>`},{key:'errors',label:'Errors',width:'80px',mono:true,render:r=>r.error_count||0},{key:'reqs',label:'Requests',width:'100px',mono:true,render:r=>fmt.num(r.request_count||0)}]} rows=${d('providers')} emptyMsg="No providers configured. Set OPENAI_API_KEY or ANTHROPIC_API_KEY as environment variables and restart."/>`:
@@ -1447,6 +1447,7 @@ render(html`<${App}/>`,document.getElementById('root'));
 .data-table{background:var(--bg2);border:1px solid var(--bg3);overflow:hidden}.dt-head{display:grid;padding:10px 20px;font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--cream-muted);border-bottom:1px solid var(--bg3);background:var(--bg)}
 .dt-body{max-height:480px;overflow-y:auto}.dt-row{display:grid;padding:10px 20px;font-size:0.85rem;align-items:center;border-bottom:1px solid var(--bg3);transition:background 0.1s;cursor:default}.dt-row:last-child{border-bottom:none}.dt-row:hover{background:rgba(46,38,30,0.5)}
 .dt-row.dt-clickable{cursor:pointer}.dt-row.dt-clickable:hover{background:rgba(196,93,44,0.06)}.dt-row .mono{font-family:var(--font-mono);font-size:0.78rem}.dt-accent{color:var(--gold)!important;font-weight:600}
+@media(max-width:720px){.dt-head{display:none}.dt-body{max-height:none}.dt-row{display:block!important;grid-template-columns:none!important;padding:14px 16px}.dt-row>span{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0;min-height:28px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:right}.dt-row>span:last-child{border-bottom:none}.dt-row>span[data-label]::before{content:attr(data-label);font-family:var(--font-mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--cream-muted);text-align:left;flex-shrink:0}.dt-row>span.mono{word-break:break-all}}
 .badge{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}
 .badge.success{background:var(--green-s);color:var(--green)}.badge.warn{background:var(--amber-s);color:var(--amber)}.badge.danger{background:var(--red-s);color:var(--red)}.badge.muted{background:var(--muted-s);color:var(--cream-muted)}.badge:not(.success):not(.warn):not(.danger):not(.muted){background:rgba(196,93,44,0.12);color:var(--rust-light)}
 .app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.app-card{background:var(--bg2);border:1px solid var(--bg3);padding:20px;transition:all 0.15s}.app-card:hover{border-color:var(--leather)}
