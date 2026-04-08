@@ -129,34 +129,31 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Surveyor is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/responses</code> &mdash; list all responses with optional search and filter query parameters</li><li><code>POST /api/responses</code> &mdash; create a new formresponse record</li><li><code>GET /api/responses/{id}</code> &mdash; retrieve a single formresponse by ID</li><li><code>PUT /api/responses/{id}</code> &mdash; update an existing formresponse</li><li><code>DELETE /api/responses/{id}</code> &mdash; remove a formresponse</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
+<div class="section">
+  <div class="section-label">How it works</div>
+  <h2>Build a form, share a link, see the responses come in.</h2>
+  <p>Drag-and-drop form builder for the field types you actually use: short text, long text, multiple choice, checkboxes, dropdowns, ratings, dates, file uploads, signature pads, and a few others. Each form gets a public URL you can share or embed in any web page with a one-line iframe. Responses land in a table view in your dashboard the moment they're submitted, with the ability to filter, sort, search, mark as reviewed, and export to CSV. Every form has its own admin URL so you can hand the form to a coworker without giving them the run of the rest of your data.</p>
 </div>
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Conditional logic</div>
+  <p>This is the part Typeform charges $25/mo for. Show a question only if the previous answer was "yes". Skip a section if the respondent picked option B. Branch into different question paths based on a multiple-choice answer. Surveyor includes it on the free tier because gating basic form logic behind a paywall is the kind of thing that made you want to self-host in the first place.</p>
+</div></div>
+
 <div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Every formresponse your team creates contains context that matters — name, respondent, answers, score, status. When that data lives in a third-party service, you are one acquisition or policy change away from losing access. Surveyor keeps it local.</p>
-</div><div class="section">
-  <div class="section-label">Setup and daily use</div>
-  <p>The dashboard opens at <code>/ui</code> and gives you a search bar, status filters, and a create form. Double-click any formresponse to edit it inline. Behind the dashboard, every operation maps to a REST endpoint under <code>/api/responses</code>. Responses are JSON. Authentication is handled at the network level — put Surveyor behind your VPN or reverse proxy, and it serves requests to whoever can reach it.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">A typical setup</div>
-  <p>Run Surveyor on any server where you can execute a binary. The dashboard is immediately available at localhost, and the REST API integrates with your existing scripts and workflows. No external dependencies to configure, no managed service to subscribe to.</p>
-</div></div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/responses</code> — List all responses. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/responses</code> — Create a new formresponse. Send JSON with at least <code>name</code></li><li><code>GET /api/responses/{id}</code> — Fetch one formresponse by ID</li><li><code>PUT /api/responses/{id}</code> — Update fields on an existing formresponse</li><li><code>DELETE /api/responses/{id}</code> — Remove a formresponse</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
+  <div class="section-label">What Surveyor doesn't do (read this part)</div>
+  <p>No payment collection. If you need to take money on a form, Stripe Checkout is two lines of HTML and you should just use that. No video questions. No "calculator" output type that totals scores into a quote, that's a different product. No native Salesforce sync or Mailchimp integration; you export CSV or hit the responses webhook from your own scripts. No spam-fighting CAPTCHA out of the box (you can stick Cloudflare Turnstile in front if you need it). If you're running a 50,000-response political survey with payment processing and Salesforce sync, Typeform Business or Tally is probably the right call. Surveyor is for the case where you just need a real form on your own server collecting real data into a SQLite file.</p>
 </div>
-<div class="section-alt">
-  <div class="section-alt-inner">
-    <div class="section-label">Replaces</div>
-    <h2>Typeform at $25/mo.</h2>
-    <p>Self-hosted form builder and survey tool. Self-hosted on your infrastructure. Your data never leaves your server.</p>
-  </div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who it's for</div>
+  <p>Therapists collecting intake forms. Tattoo studios collecting waivers (though Stockyard has Waiver too). Event organizers collecting RSVPs. Solo SaaS founders collecting beta signups. Researchers collecting structured responses they can't legally put in a third-party tool. Anyone whose form data is sensitive enough that "the company that hosts our forms got acquired by an ad-tech firm" would be a bad sentence to read in an email.</p>
+</div></div>
+
+<div class="section">
+  <div class="section-label">What it replaces</div>
+  <h2>Typeform, Tally, Google Forms, Jotform.</h2>
+  <p>Typeform is $25/mo for conditional logic. Tally is free with limits but cloud-only. Google Forms is free but Google sees every response. Jotform starts at $34/mo and stores everything on Jotform servers. Surveyor gives you the form builder, the public form pages, the embed code, the response inbox, and conditional logic, all in a single binary that runs on your own machine. What you give up is the polished marketing site, the email templates, the integrations marketplace. What you get back is your respondents' answers in a SQLite file you own.</p>
 </div>
 
 <div class="section">

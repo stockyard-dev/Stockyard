@@ -129,34 +129,31 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
   </div>
 </div>
 
-  <h2>Full REST API</h2>
-  <p>Every operation in Dossier is available through a JSON REST API. No SDK required — use curl, fetch, or any HTTP client.</p>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.82rem">
-    <li><code>GET /api/contacts</code> &mdash; list all contacts with optional search and filter query parameters</li><li><code>POST /api/contacts</code> &mdash; create a new contact record</li><li><code>GET /api/contacts/{id}</code> &mdash; retrieve a single contact by ID</li><li><code>PUT /api/contacts/{id}</code> &mdash; update an existing contact</li><li><code>DELETE /api/contacts/{id}</code> &mdash; remove a contact</li><li><code>GET /api/stats</code> &mdash; aggregated statistics with status breakdown</li><li><code>GET /api/health</code> &mdash; health check endpoint for monitoring</li>
-  </ul>
+<div class="section">
+  <div class="section-label">How it works</div>
+  <h2>The list is the easy part. The follow-ups are the hard part.</h2>
+  <p>A CRM is just a list of people you should keep talking to. Anyone can keep names and emails in a spreadsheet, that's not the problem. The hard part is remembering when you last talked to each one, what you said, and what you owe them next. Dossier is built around that loop. Every contact has an interaction log you append to when you send an email or take a call. Every contact can have a follow-up date that lights up in your dashboard when it comes due. Deals get attached to contacts so you know which conversations are about which opportunities.</p>
 </div>
 
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">What's actually in a record</div>
+  <p>A name, an email, a phone number if you have it, the company they're at, however you tagged them. Then the interaction log: dated entries you write yourself when something happens. Then any deals: name, value, stage, expected close date. Then notes: a freeform field for everything that doesn't fit the rest. That's it. The whole thing is a SQLite file on your disk that you can back up by copying a folder.</p>
+</div></div>
+
 <div class="section">
-  <div class="section-label">What Dossier replaces</div>
-  <p>Teams outgrow spreadsheet-based contacts tracking around the same time they realize SaaS alternatives want $15 to $50 per seat per month. Dossier is a single binary that handles the same job without the recurring bill or the vendor dependency.</p>
-</div><div class="section-alt"><div class="section-alt-inner">
-  <div class="section-label">How teams use Dossier</div>
-  <p>Download the binary and run it. Dossier starts serving immediately with a dashboard at localhost and a REST API for automation. No cloud account, no API keys to provision, no monthly invoice. Your data lives in a SQLite file you can back up, move, or query directly.</p>
-</div></div><div class="section">
-  <div class="section-label">How it works</div>
-  <p>Point <code>curl</code> at <code>/api/contacts</code> to interact with Dossier programmatically. The API follows predictable REST conventions: GET to list or fetch, POST to create, PUT to update, DELETE to remove. The response schema matches the internal data model exactly, so what you see in the dashboard is what the API returns.</p>
-</div><div class="section">
-  <div class="section-label">Endpoints</div>
-  <ul style="color:var(--cream-dim);line-height:2.2;padding-left:1.2rem;font-family:var(--font-mono);font-size:.8rem">
-    <li><code>GET /api/contacts</code> — List all contacts. Supports <code>?q=keyword</code> for search and <code>?status=value</code> for filtering</li><li><code>POST /api/contacts</code> — Create a new contact. Send JSON with at least <code>name</code></li><li><code>GET /api/contacts/{id}</code> — Fetch one contact by ID</li><li><code>PUT /api/contacts/{id}</code> — Update fields on an existing contact</li><li><code>DELETE /api/contacts/{id}</code> — Remove a contact</li><li><code>GET /api/stats</code> — Returns total count and breakdown by status</li><li><code>GET /api/health</code> — Returns <code>{"status":"ok"}</code> for uptime monitoring</li>
-  </ul>
+  <div class="section-label">What Dossier doesn't do (read this part)</div>
+  <p>No automatic email sync. Dossier won't connect to your Gmail and pull in conversations, you log things yourself when they matter. No drip email campaigns. No marketing automation. No web tracking pixels, no live chat widget, no lead scoring AI, no calendar booking links (Stockyard has Booking for that, separately). If you need any of those things, HubSpot or Pipedrive is probably the right call. Dossier is for the case where "I just want a list of people, a place to write what I told them, and a reminder to follow up next Tuesday" is actually what you want, and you don't want HubSpot owning the list.</p>
 </div>
-<div class="section-alt">
-  <div class="section-alt-inner">
-    <div class="section-label">Replaces</div>
-    <h2>HubSpot CRM at free but data leaves.</h2>
-    <p>Self-hosted contact and CRM manager. Self-hosted on your infrastructure. Your data never leaves your server.</p>
-  </div>
+
+<div class="section-alt"><div class="section-alt-inner">
+  <div class="section-label">Who it's for</div>
+  <p>Solo founders selling to maybe 200 people. Freelancers tracking past clients. Independent consultants keeping a relationship map. Investors keeping a portfolio update log. Anyone whose CRM job is "I keep meaning to get back to that person, did I email her yet?" and who knows the answer is in their head, not in a $50/seat/month dashboard.</p>
+</div></div>
+
+<div class="section">
+  <div class="section-label">What it replaces</div>
+  <h2>HubSpot CRM, Pipedrive, Less Annoying CRM, Notion CRM templates.</h2>
+  <p>HubSpot CRM is free but your contact list lives on HubSpot's server permanently. Pipedrive is $14/seat/mo. Less Annoying CRM is $15/user/mo. Notion CRM templates have no follow-up reminders and no real queries. Dossier gives you the core list + log + reminder + deal loop without the SaaS subscription or the data ownership question. What you give up is automation, integrations, and reporting dashboards. What you get back is your contact list as a SQLite file you control completely, that keeps working if Stockyard disappears tomorrow.</p>
 </div>
 
 <div class="section">

@@ -191,20 +191,6 @@ code{font-family:var(--font-mono);font-size:.85em;background:var(--bg2);padding:
     <div class="uc-card"><div class="uc-name">Debug staging webhook failures</div><div class="uc-desc">Something drops in staging but you can't reproduce it. Corral captures everything so you can see exactly what arrived and replay it against the fixed version.</div></div>
     <div class="uc-card"><div class="uc-name">Fan one event out to multiple services</div><div class="uc-desc">One Stripe event needs to hit billing, Slack, and analytics. Set up forward rules for all three, with configurable retry on failure.</div></div>
   </div>
-
-<div class="section">
-  <div class="section-label">Why this exists</div>
-  <p>Most endpoints tools fall into two camps: free products that harvest your data, or enterprise platforms that cost more than the problem they solve. Corral exists because neither option makes sense when you just need a reliable webhook inbox under your own control.</p>
-</div>
-<div class="section">
-  <div class="section-label">How it works</div>
-  <p>Start Corral with a port and a data directory. It creates its SQLite database on first run. Create endpoints through the web interface or POST JSON to the API. Filter and search by keyword.</p>
-</div>
-<div class="section">
-  <div class="section-label">In practice</div>
-  <p>A consultant keeps Corral running on a home server. Client endpoints stay on local disk, simplifying privacy in every contract.</p>
-</div>
-
 </section>
 
 <!-- D. Free vs Pro -->
