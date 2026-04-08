@@ -212,9 +212,24 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Load the most recent 8 entries as few-shot grounding
+	// Load the most recent 8 entries as few-shot grounding.
+	//
+	// IMPORTANT: we only select `fact` here, not `source`, even though
+	// the database has both. The aigen task schema only declares the
+	// `fact` field, and the schema validator strictly rejects any
+	// unexpected fields in the model's output. If we pass the `source`
+	// field as part of examples, the model sees a {fact, source} shape
+	// and produces {fact, source} output, which then fails validation
+	// 100% of the time. This was caught by running 10 live calls
+	// against iteration 4 and watching all 10 reject with 'unexpected
+	// field "source"'.
+	//
+	// The general design rule (aigen gotcha #N): the shape of few-shot
+	// examples must match the shape of the output schema EXACTLY. If
+	// the user's underlying data has more fields, strip them before
+	// passing to aigen.
 	rows, err := a.conn.Query(
-		"SELECT fact, source FROM knowledge_entries WHERE kb_id = ? ORDER BY created_at DESC LIMIT 8",
+		"SELECT fact FROM knowledge_entries WHERE kb_id = ? ORDER BY created_at DESC LIMIT 8",
 		kbID,
 	)
 	if err != nil {
@@ -226,13 +241,12 @@ func (a *App) handleSuggestEntry(w http.ResponseWriter, r *http.Request) {
 
 	var examples []map[string]any
 	for rows.Next() {
-		var fact, source string
-		if scanErr := rows.Scan(&fact, &source); scanErr != nil {
+		var fact string
+		if scanErr := rows.Scan(&fact); scanErr != nil {
 			continue
 		}
 		examples = append(examples, map[string]any{
-			"fact":   fact,
-			"source": source,
+			"fact": fact,
 		})
 	}
 
