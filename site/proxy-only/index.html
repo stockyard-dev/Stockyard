@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>LLM Proxy-Only Mode — Route Requests Without the Full Platform — Stockyard</title>
-<meta name="description" content="Use Stockyard as just an LLM proxy. One endpoint across 38 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies.">
-<meta property="og:title" content="Use Stockyard as Just a Proxy">
-<meta property="og:description" content="One endpoint for 38 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://stockyard.dev/proxy-only/">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://stockyard.dev/proxy-only/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="Use Stockyard as just an LLM proxy. One endpoint across 38 providers, no forced platform adoption. Single Go binary, embedded SQLite, zero dependencies." name="description"/>
+<meta content="Use Stockyard as Just a Proxy" property="og:title"/>
+<meta content="One endpoint for 38 LLM providers. One binary, zero dependencies. Install in five minutes, trace every request from day one." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://stockyard.dev/proxy-only/" property="og:url"/>
+<meta content="https://stockyard.dev/site-assets/assets/marketing/og-card.png" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<link href="https://stockyard.dev/proxy-only/" rel="canonical"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -71,9 +72,9 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer{text-align:center;padding:2rem;font-size:0.75rem;font-family:var(--font-mono);color:var(--cream-muted);border-top:1px solid var(--bg3)}
 footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .sig{font-family:var(--font-serif);font-style:italic;color:var(--leather-light);font-size:0.9rem}
-</style>
+
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Stockyard","item":"https://stockyard.dev/"},{"@type":"ListItem","position":2,"name":"Proxy-Only Mode","item":"https://stockyard.dev/proxy-only/"}]}
@@ -81,162 +82,146 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links">
-    <a href="/for/">Bundles</a>
-    <a href="/tools/">Tools</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
-  </div>
+<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+
+<a href="/pricing/">Pricing</a>
+
+</div>
 </nav>
-
 <section class="hero">
-  <div class="eyebrow">Self-Hosted LLM Proxy</div>
-  <h1>Use Stockyard as <span class="accent">just an LLM proxy.</span></h1>
-  <p class="sub">Point your app at Stockyard and route requests to OpenAI, Anthropic, Google, Ollama, and 34 more providers through a single stable endpoint. No Redis, no Postgres, no Docker.</p>
+<div class="eyebrow">Self-Hosted LLM Proxy</div>
+<h1>Use Stockyard as <span class="accent">just an LLM proxy.</span></h1>
+<p class="sub">Point your app at Stockyard and route requests to OpenAI, Anthropic, Google, Ollama, and 34 more providers through a single stable endpoint. No Redis, no Postgres, no Docker.</p>
 </section>
-
 <div class="section">
-  <h2 class="section-label">Install and proxy in 60 seconds</h2>
-  <div class="code-block">
+<h2 class="section-label">Install and proxy in 60 seconds</h2>
+<div class="code-block">
 <span class="cmd">$ curl -fsSL stockyard.dev/install.sh | sh</span>
 <span class="output">✓ Stockyard installed (~25MB)</span>
-
 <span class="cmd">$ stockyard</span>
 <span class="output">Proxy: http://localhost:4200/v1</span>
 <span class="output">✓ 76 modules active</span>
 <span class="output">Console: http://localhost:4200/ui</span>
-
 <span class="comment"># Use it like you'd use OpenAI directly</span>
 <span class="cmd">$ curl localhost:4200/v1/chat/completions \</span>
 <span class="cmd">  -H "Authorization: Bearer $OPENAI_API_KEY" \</span>
 <span class="cmd">  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hello"}]}'</span>
-  </div>
-  <p style="font-size:0.85rem;color:var(--cream-dim);text-align:center;margin-top:1rem">That request just passed through 76 middleware modules. Traced, logged, audited — automatically.</p>
 </div>
-
+<p style="font-size:0.85rem;color:var(--cream-dim);text-align:center;margin-top:1rem">That request just passed through 76 middleware modules. Traced, logged, audited — automatically.</p>
+</div>
 <div class="section" style="padding-bottom:2rem">
-  <h2 class="section-label">Change one line in your code</h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-    <div>
-      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Python</div>
-      <div class="code-block" style="margin:0;font-size:0.75rem">
+<h2 class="section-label">Change one line in your code</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+<div>
+<div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Python</div>
+<div class="code-block" style="margin:0;font-size:0.75rem">
 <span class="cmd">client = OpenAI(</span>
 <span class="cmd">  base_url=<span class="str">"http://localhost:4200/v1"</span></span>
 <span class="cmd">)</span>
-      </div>
-    </div>
-    <div>
-      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Node / TypeScript</div>
-      <div class="code-block" style="margin:0;font-size:0.75rem">
+</div>
+</div>
+<div>
+<div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Node / TypeScript</div>
+<div class="code-block" style="margin:0;font-size:0.75rem">
 <span class="cmd">const openai = new OpenAI({</span>
 <span class="cmd">  baseURL: <span class="str">"http://localhost:4200/v1"</span></span>
 <span class="cmd">});</span>
-      </div>
-    </div>
-    <div>
-      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Cursor / Windsurf / Copilot</div>
-      <div class="code-block" style="margin:0;font-size:0.75rem">
+</div>
+</div>
+<div>
+<div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">Cursor / Windsurf / Copilot</div>
+<div class="code-block" style="margin:0;font-size:0.75rem">
 <span class="comment"># Editor settings → API Base URL:</span>
 <span class="cmd">http://localhost:4200/v1</span>
-      </div>
-    </div>
-    <div>
-      <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">LangChain / LlamaIndex / Any SDK</div>
-      <div class="code-block" style="margin:0;font-size:0.75rem">
+</div>
+</div>
+<div>
+<div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather);margin-bottom:0.4rem">LangChain / LlamaIndex / Any SDK</div>
+<div class="code-block" style="margin:0;font-size:0.75rem">
 <span class="comment"># Any OpenAI-compatible SDK works.</span>
 <span class="comment"># Just change the base URL.</span>
-      </div>
-    </div>
-  </div>
-  <p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)"><a href="/docs/integrations/">Full integration docs</a> &middot; <a href="/docs/editors/">Editor setup guides</a></p>
 </div>
-
+</div>
+</div>
+<p style="text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:0.75rem;color:var(--cream-muted)"> · </p>
+</div>
 <section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">What you get on free tier</h2>
-    <div class="fact-grid">
-      <div class="fact"><div class="fact-num">40</div><div class="fact-label">LLM providers</div></div>
-      <div class="fact"><div class="fact-num">76</div><div class="fact-label">middleware modules</div></div>
-      <div class="fact"><div class="fact-num">~25</div><div class="fact-label">MB binary</div></div>
-      <div class="fact"><div class="fact-num">0</div><div class="fact-label">external dependencies</div></div>
-    </div>
-  </div>
-</section>
-
-<div class="section">
-  <h2 class="section-label">What the proxy gives you immediately</h2>
-
-  <div class="step">
-    <span class="step-num">1</span>
-    <div class="step-body">
-      <h3>Tracing on every request</h3>
-      <p>Cost, latency, token count, model, and provider — recorded automatically. Query traces through the API or browse them in the dashboard.</p>
-      <span class="step-free">Free — Lookout</span>
-    </div>
-  </div>
-
-  <div class="step">
-    <span class="step-num">2</span>
-    <div class="step-body">
-      <h3>Tamper-proof audit ledger</h3>
-      <p>Every request gets a hash-chained ledger entry. You can prove what was sent, what came back, and that nothing was altered.</p>
-      <span class="step-free">Free — Brand</span>
-    </div>
-  </div>
-
-  <div class="step">
-    <span class="step-num">3</span>
-    <div class="step-body">
-      <h3>Runtime controls</h3>
-      <p>Rate limiting, token budgets, content filtering, PII redaction, prompt injection detection — all configurable per-route, all running in the middleware chain.</p>
-      <span class="step-free">Free — 76 modules</span>
-    </div>
-  </div>
-
-  <div class="step">
-    <span class="step-num">4</span>
-    <div class="step-body">
-      <h3><a href="/what-is-llm-failover/" style="color:var(--cream)">Failover routing</a></h3>
-      <p>If a provider goes down, Stockyard fails over to the next one automatically. Model-aware routing sends Claude requests to Anthropic first, GPT requests to OpenAI first.</p>
-      <span class="step-free">Free — Chute</span>
-    </div>
-  </div>
-
-  <div class="step">
-    <span class="step-num">5</span>
-    <div class="step-body">
-      <h3>Model aliasing</h3>
-      <p>Map stable names like "fast" or "smart" to real models underneath. Swap providers later without touching app code.</p>
-      <span class="step-free">Free — Alias API</span>
-    </div>
-  </div>
+<div class="section-alt-inner">
+<h2 class="section-label">What you get on free tier</h2>
+<div class="fact-grid">
+<div class="fact"><div class="fact-num">40</div><div class="fact-label">LLM providers</div></div>
+<div class="fact"><div class="fact-num">76</div><div class="fact-label">middleware modules</div></div>
+<div class="fact"><div class="fact-num">~25</div><div class="fact-label">MB binary</div></div>
+<div class="fact"><div class="fact-num">0</div><div class="fact-label">external dependencies</div></div>
 </div>
-
+</div>
+</section>
+<div class="section">
+<h2 class="section-label">What the proxy gives you immediately</h2>
+<div class="step">
+<span class="step-num">1</span>
+<div class="step-body">
+<h3>Tracing on every request</h3>
+<p>Cost, latency, token count, model, and provider — recorded automatically. Query traces through the API or browse them in the dashboard.</p>
+<span class="step-free">Free — Lookout</span>
+</div>
+</div>
+<div class="step">
+<span class="step-num">2</span>
+<div class="step-body">
+<h3>Tamper-proof audit ledger</h3>
+<p>Every request gets a hash-chained ledger entry. You can prove what was sent, what came back, and that nothing was altered.</p>
+<span class="step-free">Free — Brand</span>
+</div>
+</div>
+<div class="step">
+<span class="step-num">3</span>
+<div class="step-body">
+<h3>Runtime controls</h3>
+<p>Rate limiting, token budgets, content filtering, PII redaction, prompt injection detection — all configurable per-route, all running in the middleware chain.</p>
+<span class="step-free">Free — 76 modules</span>
+</div>
+</div>
+<div class="step">
+<span class="step-num">4</span>
+<div class="step-body">
+<h3></h3>
+<p>If a provider goes down, Stockyard fails over to the next one automatically. Model-aware routing sends Claude requests to Anthropic first, GPT requests to OpenAI first.</p>
+<span class="step-free">Free — Chute</span>
+</div>
+</div>
+<div class="step">
+<span class="step-num">5</span>
+<div class="step-body">
+<h3>Model aliasing</h3>
+<p>Map stable names like "fast" or "smart" to real models underneath. Swap providers later without touching app code.</p>
+<span class="step-free">Free — Alias API</span>
+</div>
+</div>
+</div>
 <section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">You don't have to use everything</h2>
-    <p style="font-size:0.95rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto 1.5rem">Stockyard ships with 164+ tools and 76 modules, but you don't need to configure any of them. Install it, point your app at it, and the proxy works out of the box. Tracing, auditing, and controls are automatic. Everything else is optional — turn it on when a real need shows up.</p>
-    <p style="font-size:0.85rem;color:var(--cream-muted);text-align:center;font-family:var(--font-mono)">Most people start with just the proxy. That's the whole idea.</p>
-  </div>
-</section>
-
-<div class="section">
-  <h2 class="section-label">What you gain vs what you give up</h2>
-  <p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 38 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
-  <p style="font-size:0.95rem;color:var(--cream-dim)"><strong style="color:var(--cream)">What you give up:</strong> roughly 200ms of added latency per request (the middleware chain). Your requests route through one more hop. If you need sub-millisecond proxy overhead or horizontal scaling across many nodes, a lighter proxy or direct provider calls may be a better fit.</p>
+<div class="section-alt-inner">
+<h2 class="section-label">You don't have to use everything</h2>
+<p style="font-size:0.95rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto 1.5rem">Stockyard ships with 164+ tools and 76 modules, but you don't need to configure any of them. Install it, point your app at it, and the proxy works out of the box. Tracing, auditing, and controls are automatic. Everything else is optional — turn it on when a real need shows up.</p>
+<p style="font-size:0.85rem;color:var(--cream-muted);text-align:center;font-family:var(--font-mono)">Most people start with just the proxy. That's the whole idea.</p>
 </div>
-
+</section>
+<div class="section">
+<h2 class="section-label">What you gain vs what you give up</h2>
+<p style="font-size:0.95rem;color:var(--cream-dim);margin-bottom:1rem"><strong style="color:var(--cream)">What you gain:</strong> one stable endpoint for 38 providers, automatic request tracing and cost tracking, response caching, rate limiting, model aliasing, failover routing, and a web console. All from one binary with no external dependencies.</p>
+<p style="font-size:0.95rem;color:var(--cream-dim)"><strong style="color:var(--cream)">What you give up:</strong> roughly 200ms of added latency per request (the middleware chain). Your requests route through one more hop. If you need sub-millisecond proxy overhead or horizontal scaling across many nodes, a lighter proxy or direct provider calls may be a better fit.</p>
+</div>
 <div class="section" style="padding-top:0">
-  <div style="background:var(--bg2);border-left:3px solid var(--green-light);padding:1rem 1.2rem;font-size:0.85rem;color:var(--cream-dim)">
-    <strong style="color:var(--green-light);font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase">No phone-home</strong><br>
-    Stockyard does not send telemetry, analytics, or usage data. Your requests go to the LLM providers you configure and nowhere else. <a href="/does-stockyard-phone-home/">Full details &rarr;</a>
-  </div>
+<div style="background:var(--bg2);border-left:3px solid var(--green-light);padding:1rem 1.2rem;font-size:0.85rem;color:var(--cream-dim)">
+<strong style="color:var(--green-light);font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase">No phone-home</strong><br/>
+    Stockyard does not send telemetry, analytics, or usage data. Your requests go to the LLM providers you configure and nowhere else. 
 </div>
-
+</div>
 <div class="section">
-  <h2 class="section-label">Example: proxy-only config</h2>
-  <div class="code-block">
+<h2 class="section-label">Example: proxy-only config</h2>
+<div class="code-block">
 <span class="comment"># stockyard.yaml -- proxy-only setup</span>
 <span class="comment"># Just set your provider keys. Everything else is automatic.</span>
 
@@ -248,33 +233,29 @@ providers:
 
 <span class="comment"># Tracing, cost tracking, and audit logging are on by default.</span>
 <span class="comment"># No modules to configure. No YAML to write beyond this.</span>
-  </div>
 </div>
-
+</div>
 <div class="section">
-  <p style="font-size:0.9rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto">OpenAI, Anthropic, Google Gemini, Mistral, <a href="/providers/cohere/">Cohere</a>, Groq, Together AI, Fireworks, Perplexity, DeepSeek, Ollama, LM Studio, <a href="/providers/azure-openai/">Azure OpenAI</a>, AWS Bedrock, OpenRouter, and any OpenAI-compatible endpoint.</p>
+<p style="font-size:0.9rem;color:var(--cream-dim);text-align:center;max-width:600px;margin:0 auto">OpenAI, Anthropic, Google Gemini, Mistral, , Groq, Together AI, Fireworks, Perplexity, DeepSeek, Ollama, LM Studio, , AWS Bedrock, OpenRouter, and any OpenAI-compatible endpoint.</p>
 </div>
-
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
-  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Start with just the proxy.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. One SQLite file. Every request traced. Install in under a minute, no credit card needed.</p>
-  <a href="/docs/quickstart/" class="btn btn-primary">Install Stockyard</a>
-  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
-    <a href="/docs/proxy/" style="color:var(--cream-muted)">Proxy Docs →</a>
-    <a href="/docs/aliasing/" style="color:var(--cream-muted)">Model Aliasing →</a>
-    <a href="/vs/litellm/" style="color:var(--cream-muted)">vs LiteLLM →</a>
-  </div>
-  <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">BSL 1.1</a></div>
-</section>
+<h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Start with just the proxy.</h2>
+<p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. One SQLite file. Every request traced. Install in under a minute, no credit card needed.</p>
 
+<div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+
+
+
+</div>
+<div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>·</span><span>·</span></div>
+</section>
 <section class="faq-section">
-  <h2>Frequently Asked Questions</h2>
-    <div class="faq-item"><div class="faq-q">Can I use Stockyard as just a proxy without the other features?</div><div class="faq-a">Yes. Proxy-only is a first-class use case. Install the binary, set your provider key, and route requests through one endpoint. Tracing, audit, and the other products are there if you want them later, but they are not required.</div></div>
-    <div class="faq-item"><div class="faq-q">Does proxy-only mode cost anything?</div><div class="faq-a">No. The Community tier is free and includes the full proxy with all 76 middleware modules, 16 provider integrations, caching, rate limiting, and cost tracking. No credit card required.</div></div>
-    <div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 38 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
-    <div class="faq-item"><div class="faq-q">Do I need Docker or Redis to run the proxy?</div><div class="faq-a">No. Stockyard ships as a single Go binary with embedded SQLite. No Docker, no Redis, no Postgres, no external dependencies. Download and run.</div></div>
+<h2>Frequently Asked Questions</h2>
+<div class="faq-item"><div class="faq-q">Can I use Stockyard as just a proxy without the other features?</div><div class="faq-a">Yes. Proxy-only is a first-class use case. Install the binary, set your provider key, and route requests through one endpoint. Tracing, audit, and the other products are there if you want them later, but they are not required.</div></div>
+<div class="faq-item"><div class="faq-q">Does proxy-only mode cost anything?</div><div class="faq-a">No. The Community tier is free and includes the full proxy with all 76 middleware modules, 16 provider integrations, caching, rate limiting, and cost tracking. No credit card required.</div></div>
+<div class="faq-item"><div class="faq-q">What providers does the proxy support?</div><div class="faq-a">Stockyard supports 38 LLM providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Together AI, Fireworks, Ollama, and more. Set an environment variable and the provider is auto-configured.</div></div>
+<div class="faq-item"><div class="faq-q">Do I need Docker or Redis to run the proxy?</div><div class="faq-a">No. Stockyard ships as a single Go binary with embedded SQLite. No Docker, no Redis, no Postgres, no external dependencies. Download and run.</div></div>
 </section>
-
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -336,13 +317,13 @@ providers:
   }
 }
 </script>
-<div class="explore-bar">Explore: <a href="/best-self-hosted-llm-proxy/">Best self-hosted proxy</a> &middot; <a href="/llm-gateway-vs-proxy/">Gateway vs proxy</a> &middot; <a href="/one-binary-llm-proxy/">One binary</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a></div>
-<div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 164 self-hosted tools &mdash; <a href="/tools/" style="color:var(--leather-light)">browse the catalog</a> or <a href="/pricing/" style="color:var(--gold)">get everything — 14-day free trial</a>.</div>
+<div class="explore-bar">Explore:  ·  ·  · </div>
+<div style="text-align:center;padding:2rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:0.78rem;color:var(--leather)">Stockyard also makes 164 self-hosted tools —  or <a href="/pricing/" style="color:var(--gold)">get everything — 14-day free trial</a>.</div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 <script>
@@ -364,6 +345,6 @@ document.querySelectorAll(".code-block, pre").forEach(function(el){
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script src="/site-assets/assets/sticky-cta.js?v=2" defer></script>
+<script defer="" src="/site-assets/assets/sticky-cta.js?v=2"></script>
 </body>
 </html>

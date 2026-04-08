@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
 <title>Install Stockyard for Vintage &amp; Classic Car Owners</title>
-<meta name="description" content="Install 6 self-hosted tools for Vintage &amp; Classic Car Owners in 60 seconds.">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="Install 6 self-hosted tools for Vintage &amp; Classic Car Owners in 60 seconds." name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -36,15 +37,14 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.7r
 </style>
 </head>
 <body>
-<nav class="nav"><a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a></nav>
+<nav class="nav"><a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a></nav>
 <div class="main">
 <h1>Install Stockyard for Vintage &amp; Classic Car Owners</h1>
 <p class="sub">6 tools. 60 seconds. Your data stays on your machine.</p>
-
 <div class="step">
 <div class="step-num">Step 1 — Run one command</div>
 <h3>Open Terminal and paste this:</h3>
-<div class="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=>this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/vintage-car/install.sh | bash</div>
+<div class="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''));this.style.borderColor='var(--gold)';setTimeout(()=&gt;this.style.borderColor='',2000)">curl -fsSL https://stockyard.dev/for/vintage-car/install.sh | bash</div>
 <p>This downloads 6 tools into <code style="font-family:var(--font-mono);background:var(--bg);padding:.1rem .3rem;font-size:.82em">~/stockyard-vintage-car/</code> and creates start/stop scripts.</p>
 <details style="margin-top:.8rem;font-size:.82rem;color:var(--cream-dim)">
 <summary style="cursor:pointer;color:var(--leather-light)">Don't have Terminal?</summary>
@@ -53,14 +53,12 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.7r
 <p><strong>Linux:</strong> Press Ctrl+Alt+T.</p>
 </details>
 </div>
-
 <div class="step">
 <div class="step-num">Step 2 — Start your tools</div>
 <h3>Run the start script:</h3>
-<div class="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''))">cd ~/stockyard-vintage-car && ./start.sh</div>
+<div class="cmd" onclick="navigator.clipboard.writeText(this.textContent.trim().replace('click to copy',''))">cd ~/stockyard-vintage-car &amp;&amp; ./start.sh</div>
 <p>Your browser will open automatically. All tools run in the background.</p>
 </div>
-
 <div class="step">
 <div class="step-num">Step 3 — You're running</div>
 <h3>Your tools:</h3>
@@ -74,7 +72,6 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.7r
 <tr><td>Collection</td><td>localhost:9100</td></tr>
 </table>
 </div>
-
 <div class="step" style="border-color:var(--gold)">
 <div class="step-num" style="color:var(--gold)">License key</div>
 <h3>Activate unlimited access</h3>
@@ -82,16 +79,15 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.7r
 <div class="cmd" onclick="navigator.clipboard.writeText('export STOCKYARD_LICENSE_KEY=SY-your_key_from_email')">export STOCKYARD_LICENSE_KEY=SY-your_key_from_email</div>
 <p>Add this line to <code style="font-family:var(--font-mono);background:var(--bg);padding:.1rem .3rem;font-size:.82em">~/.bashrc</code> or <code style="font-family:var(--font-mono);background:var(--bg);padding:.1rem .3rem;font-size:.82em">~/.zshrc</code> so it persists.</p>
 </div>
-
 <div class="note">
 <strong>Your data</strong> lives in <code style="font-family:var(--font-mono)">~/stockyard-vintage-car/data/</code>. Back up by copying this folder. Move to a new computer by moving this folder. Standard SQLite files — open with any tool.
 </div>
 </div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 </body>
 </html>

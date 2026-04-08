@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="robots" content="noindex,nofollow">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<meta charset="utf-8"/>
+<meta content="noindex,nofollow" name="robots"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
 <title>Subscription Confirmed — Stockyard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--gold:#d4a843;--green:#4a8c5c;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -77,9 +78,9 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 .install-advanced summary:hover{color:var(--rust-light)}
 .install-advanced pre{margin-top:.5rem;padding:.6rem .8rem;background:var(--bg);border:1px solid var(--bg3);font-size:.68rem;color:var(--cream-dim);overflow-x:auto;font-family:var(--font-mono);white-space:pre-wrap;word-break:break-all;cursor:default}
 </style>
-<meta property="og:image" content="https://stockyard.dev/og-homepage.png">
-<link rel="canonical" href="https://stockyard.dev/billing/success/">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<meta content="https://stockyard.dev/og-homepage.png" property="og:image"/>
+<link href="https://stockyard.dev/billing/success/" rel="canonical"/>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag("js",new Date());
@@ -96,55 +97,48 @@ gtag("event","conversion",{send_to:"AW-18046975504/do8vCJHW6pQcEJD8u51D",value:_
 </head>
 <body>
 <div class="card">
-  <div class="icon">&#10003;</div>
-  <h1>You're subscribed to Pro.</h1>
+<div class="icon">✓</div>
+<h1>You're subscribed to Pro.</h1>
+<div class="steps">
+<div class="step">
+<div class="step-num">1</div>
+<div class="step-body">
+<div class="step-title">Check your email</div>
+<div class="step-desc">Your license key has been sent to the address you used at checkout. The email comes from <strong>hello@stockyard.dev</strong>. Check your spam folder if it doesn't arrive within 5 minutes.</div>
+</div>
+</div>
+<div class="step">
+<div class="step-num">2</div>
+<div class="step-body">
+<div class="step-title">Set the license key environment variable</div>
+<div class="step-desc">The key is a string starting with <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">SY-</code>. Set it before starting the tool:</div>
+<pre id="env-example">STOCKYARD_LICENSE_KEY=SY-your_key_here stockyard-corral</pre>
+<div class="step-desc" id="all-envs" style="margin-top:.4rem;font-size:.78rem">All tools use the same env var: <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">STOCKYARD_LICENSE_KEY</code>. One key works for all tools.</div>
+</div>
+</div>
+<div class="step">
+<div class="step-num">3</div>
+<div class="step-body">
+<div class="step-title">Verify Pro is active</div>
+<div class="step-desc">The startup log will show <strong style="color:var(--green-light)">License: Pro (your@email.com)</strong>. The dashboard at <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">/ui</code> will also show the Pro badge.</div>
+</div>
+</div>
+</div>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <div class="step-title">Check your email</div>
-        <div class="step-desc">Your license key has been sent to the address you used at checkout. The email comes from <strong>hello@stockyard.dev</strong>. Check your spam folder if it doesn't arrive within 5 minutes.</div>
-      </div>
-    </div>
 
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <div class="step-title">Set the license key environment variable</div>
-        <div class="step-desc">The key is a string starting with <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">SY-</code>. Set it before starting the tool:</div>
-        <pre id="env-example">STOCKYARD_LICENSE_KEY=SY-your_key_here stockyard-corral</pre>
-        <div class="step-desc" style="margin-top:.4rem;font-size:.78rem" id="all-envs">All tools use the same env var: <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">STOCKYARD_LICENSE_KEY</code>. One key works for all tools.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <div class="step-title">Verify Pro is active</div>
-        <div class="step-desc">The startup log will show <strong style="color:var(--green-light)">License: Pro (your@email.com)</strong>. The dashboard at <code style="font-family:var(--font-mono);font-size:.82em;background:var(--bg3);padding:.1rem .3rem">/ui</code> will also show the Pro badge.</div>
-      </div>
-    </div>
-  </div>
-
-  <a href="/hub/" class="cta" style="background:var(--gold)">Open Your Hub</a>
-  <a href="/docs/" class="cta" style="background:transparent;border:2px solid var(--leather);margin-left:.5rem">Docs</a>
-
-  <div class="note">
-    <strong style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather-light)">Key not arriving?</strong><br>
+<div class="note">
+<strong style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--leather-light)">Key not arriving?</strong><br/>
     Email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your payment confirmation and we'll send the key manually within a few hours.
   </div>
 </div>
-
 <p style="font-family:var(--font-mono);font-size:.7rem;color:var(--leather);text-align:center">
-  <a href="/" style="color:var(--leather)">Stockyard</a> &middot;
-  <a href="/corral/" style="color:var(--leather)">Corral</a> &middot;
-  <a href="/gate/" style="color:var(--leather)">Gate</a> &middot;
-  <a href="/trough/" style="color:var(--leather)">Trough</a> &middot;
-  <a href="/fence/" style="color:var(--leather)">Fence</a> &middot;
-  <a href="/brand/" style="color:var(--leather)">Brand</a>
+<a href="/" style="color:var(--leather)">Stockyard</a> ·
+   ·
+   ·
+   ·
+   ·
+  
 </p>
-
 <script>
 var params = new URLSearchParams(window.location.search);
 var product = params.get('product') || '';
@@ -258,12 +252,12 @@ function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-drop')){document.querySelectorAll('.nav-drop-menu').forEach(function(m){m.classList.remove('open')})}})
 </script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
-<script src="/site-assets/assets/sticky-cta.js?v=2" defer></script>
+<script defer="" src="/site-assets/assets/sticky-cta.js?v=2"></script>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 </body>
 </html>

@@ -1,24 +1,25 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/site-assets/assets/brand/favicon-192.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/site-assets/assets/brand/favicon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>Billing: Usage Metering &amp; AI Billing — Stockyard</title>
-<meta name="description" content="Per-customer usage metering, flexible billing plans, credits system, and Stripe integration. Built for AI products that need usage-based pricing.">
-<meta property="og:title" content="Billing: Usage Metering & AI Billing — Stockyard">
-<meta property="og:description" content="Per-customer usage metering, flexible billing plans, credits system, and Stripe integration. Built for AI products that need usage-based pricing.">
-<meta property="og:url" content="https://stockyard.dev/billing/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="Per-customer usage metering, flexible billing plans, credits system, and Stripe integration. Built for AI products that need usage-based pricing." name="description"/>
+<meta content="Billing: Usage Metering &amp; AI Billing — Stockyard" property="og:title"/>
+<meta content="Per-customer usage metering, flexible billing plans, credits system, and Stripe integration. Built for AI products that need usage-based pricing." property="og:description"/>
+<meta content="https://stockyard.dev/billing/" property="og:url"/>
+<meta content="website" property="og:type"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="https://stockyard.dev/site-assets/assets/marketing/og-card.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -136,7 +137,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 .drop-arrow{font-size:.6rem}
 @media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
 </style>
-<link rel="canonical" href="https://stockyard.dev/billing/">
+<link href="https://stockyard.dev/billing/" rel="canonical"/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -159,159 +160,144 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 }
 </script>
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
-
+<a class="skip-link" href="#main">Skip to content</a>
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links">
-    <a href="/for/">Bundles</a>
-    <a href="/tools/">Tools</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
-  </div>
+<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+
+<a href="/pricing/">Pricing</a>
+
+</div>
 </nav>
-
 <section class="page-hero" id="main">
-  <div class="eyebrow">App 06 &mdash; Billing</div>
-  <h1>Usage metering meets <span class="accent">AI billing.</span></h1>
-  <p class="sub">Per-customer usage metering, flexible billing plans, credits system, and Stripe integration&mdash;built for AI products that need usage-based pricing.</p>
-  <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Get Started</a>
-    <a href="#api" class="btn btn-secondary">See the API</a>
-  </div>
-</section>
+<div class="eyebrow">App 06 — Billing</div>
+<h1>Usage metering meets <span class="accent">AI billing.</span></h1>
+<p class="sub">Per-customer usage metering, flexible billing plans, credits system, and Stripe integration—built for AI products that need usage-based pricing.</p>
+<div class="cta-group">
 
+<a class="btn btn-secondary" href="#api">See the API</a>
+</div>
+</section>
 <section class="features">
-  <div class="features-inner">
-    <h2 class="section-label leather">What Billing does</h2>
-    <div class="feat-grid">
-      <div class="feat">
-        <h3 class="feat-name">Per-Customer Metering</h3>
-        <div class="feat-desc">Track usage by customer, model, and time period &mdash; automatic cost attribution.</div>
-      </div>
-      <div class="feat">
-        <h3 class="feat-name">Flexible Plans</h3>
-        <div class="feat-desc">Create billing plans with request limits, model access controls, and spend caps.</div>
-      </div>
-      <div class="feat">
-        <h3 class="feat-name">Credits System</h3>
-        <div class="feat-desc">Pre-paid credits with automatic deduction, low-balance warnings, and top-ups.</div>
-      </div>
-      <div class="feat">
-        <h3 class="feat-name">Stripe Integration</h3>
-        <div class="feat-desc">Native Stripe sync for invoicing, webhooks, and payment processing.</div>
-      </div>
-    </div>
-  </div>
+<div class="features-inner">
+<h2 class="section-label leather">What Billing does</h2>
+<div class="feat-grid">
+<div class="feat">
+<h3 class="feat-name">Per-Customer Metering</h3>
+<div class="feat-desc">Track usage by customer, model, and time period — automatic cost attribution.</div>
+</div>
+<div class="feat">
+<h3 class="feat-name">Flexible Plans</h3>
+<div class="feat-desc">Create billing plans with request limits, model access controls, and spend caps.</div>
+</div>
+<div class="feat">
+<h3 class="feat-name">Credits System</h3>
+<div class="feat-desc">Pre-paid credits with automatic deduction, low-balance warnings, and top-ups.</div>
+</div>
+<div class="feat">
+<h3 class="feat-name">Stripe Integration</h3>
+<div class="feat-desc">Native Stripe sync for invoicing, webhooks, and payment processing.</div>
+</div>
+</div>
+</div>
 </section>
-
 <section class="features" style="background:var(--bg);border-top:none">
-  <div class="features-inner">
-    <h2 class="section-label leather">Additional capabilities</h2>
-    <div class="feat-grid">
-      <div class="feat">
-        <h3 class="feat-name">Revenue Advances</h3>
-        <div class="feat-desc">Get paid early based on usage patterns. Predictable cash flow for growing AI businesses.</div>
-      </div>
-      <div class="feat">
-        <h3 class="feat-name">Usage Insurance</h3>
-        <div class="feat-desc">Protect against unexpected usage spikes. Set thresholds and automatic safeguards for your billing.</div>
-      </div>
-      <div class="feat">
-        <h3 class="feat-name">Tax Reporting</h3>
-        <div class="feat-desc">Automated tax report generation. Stay compliant across jurisdictions without manual effort.</div>
-      </div>
-      <div class="feat">
-        <h3 class="feat-name">Marketplace Billing</h3>
-        <div class="feat-desc">Reseller and marketplace revenue sharing. Split payments and track commissions automatically.</div>
-      </div>
-    </div>
-  </div>
+<div class="features-inner">
+<h2 class="section-label leather">Additional capabilities</h2>
+<div class="feat-grid">
+<div class="feat">
+<h3 class="feat-name">Revenue Advances</h3>
+<div class="feat-desc">Get paid early based on usage patterns. Predictable cash flow for growing AI businesses.</div>
+</div>
+<div class="feat">
+<h3 class="feat-name">Usage Insurance</h3>
+<div class="feat-desc">Protect against unexpected usage spikes. Set thresholds and automatic safeguards for your billing.</div>
+</div>
+<div class="feat">
+<h3 class="feat-name">Tax Reporting</h3>
+<div class="feat-desc">Automated tax report generation. Stay compliant across jurisdictions without manual effort.</div>
+</div>
+<div class="feat">
+<h3 class="feat-name">Marketplace Billing</h3>
+<div class="feat-desc">Reseller and marketplace revenue sharing. Split payments and track commissions automatically.</div>
+</div>
+</div>
+</div>
 </section>
-
 <section class="api-section" id="api">
-  <h2 class="section-label">The API</h2>
-  <p style="color:var(--cream-dim);font-size:0.95rem">Create billing customers, query usage, purchase credits &mdash; all REST.</p>
-
-  <div class="code-block">
+<h2 class="section-label">The API</h2>
+<p style="color:var(--cream-dim);font-size:0.95rem">Create billing customers, query usage, purchase credits — all REST.</p>
+<div class="code-block">
 <span class="comment"># Create a billing customer</span>
 <span class="cmd">curl -X POST /api/billing/customers \</span>
 <span class="cmd">  -d '{"name":"Acme Corp",</span>
 <span class="cmd">       "email":"billing@acme.com",</span>
 <span class="cmd">       "plan":"growth",</span>
 <span class="cmd">       "stripe_id":"cus_abc123"}'</span>
-
 <span class="comment"># Get usage for a customer</span>
 <span class="cmd">curl GET /api/billing/usage?customer=cust_01\</span>
 <span class="cmd">  &amp;from=2026-03-01T00:00:00Z\</span>
 <span class="cmd">  &amp;to=2026-03-21T00:00:00Z\</span>
 <span class="cmd">  &amp;group_by=model</span>
-
 <span class="comment"># Purchase credits</span>
 <span class="cmd">curl -X POST /api/billing/credits/purchase \</span>
 <span class="cmd">  -d '{"customer":"cust_01",</span>
 <span class="cmd">       "amount":10000,</span>
 <span class="cmd">       "currency":"usd",</span>
 <span class="cmd">       "payment_method":"pm_stripe_xyz"}'</span>
-  </div>
-</section>
-
-<section class="page-cta">
-  <h2>Bill with confidence.</h2>
-  <p>Billing ships with every Stockyard instance. Self-hosted or Cloud.</p>
-  <div class="cta-group">
-    <a href="/guide/" class="btn btn-primary">Get Started</a>
-    <a href="/" class="btn btn-secondary">Back to platform</a>
-  </div>
-</section>
-
-<section class="related-apps">
-  <div class="related-label">Other apps in the platform</div>
-  <div class="related-grid">
-    <a href="/observe/"><div class="r-name">Lookout</div><div class="r-desc">Traces, costs, alerts</div></a>
-    <a href="/team/"><div class="r-name">Team</div><div class="r-desc">Users, roles, permissions</div></a>
-    <a href="/exchange/"><div class="r-name">Trading Post</div><div class="r-desc">Multi-provider routing</div></a>
-  </div>
-
-<div style="margin-top:4rem;padding-top:2rem;border-top:1px solid var(--leather-dim,#3d3428)">
-  <h3 style="font-size:1rem;color:var(--leather,#8b7355);font-family:var(--font-mono,'JetBrains Mono',monospace);letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5rem">Compare Stockyard</h3>
-  <p style="color:var(--cream-dim,#bfb5a3)">
-    <a href="/vs/litellm/" style="color:var(--rust-light,#e8975a)">vs LiteLLM</a> &middot;
-    <a href="/vs/helicone/" style="color:var(--rust-light,#e8975a)">vs Helicone</a> &middot;
-    <a href="/vs/portkey/" style="color:var(--rust-light,#e8975a)">vs Portkey</a> &middot;
-    <a href="/pricing/" style="color:var(--rust-light,#e8975a)">Pricing</a> &middot;
-    <a href="/blog/" style="color:var(--rust-light,#e8975a)">Blog</a>
-  </p>
 </div>
-
 </section>
+<section class="page-cta">
+<h2>Bill with confidence.</h2>
+<p>Billing ships with every Stockyard instance. Self-hosted or Cloud.</p>
+<div class="cta-group">
 
+<a class="btn btn-secondary" href="/">Back to platform</a>
+</div>
+</section>
+<section class="related-apps">
+<div class="related-label">Other apps in the platform</div>
+<div class="related-grid">
+<div class="r-name">Lookout</div><div class="r-desc">Traces, costs, alerts</div>
+<div class="r-name">Team</div><div class="r-desc">Users, roles, permissions</div>
+<div class="r-name">Trading Post</div><div class="r-desc">Multi-provider routing</div>
+</div>
+<div style="margin-top:4rem;padding-top:2rem;border-top:1px solid var(--leather-dim,#3d3428)">
+<h3 style="font-size:1rem;color:var(--leather,#8b7355);font-family:var(--font-mono,'JetBrains Mono',monospace);letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5rem">Compare Stockyard</h3>
+<p style="color:var(--cream-dim,#bfb5a3)">
+ ·
+     ·
+     ·
+    <a href="/pricing/" style="color:var(--rust-light,#e8975a)">Pricing</a> ·
+    
+</p>
+</div>
+</section>
 <div style="max-width:700px;margin:2rem auto;padding:2rem;border-top:1px solid var(--bg3,#2e261e)">
-  <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#a0845c;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem">Related</div>
-  <div style="display:flex;gap:1rem;flex-wrap:wrap">
-    <a href="/pricing/" style="flex:1;min-width:140px;padding:0.8rem;border:1px solid #2e261e;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:#bfb5a3;text-decoration:none">Pricing</a>
-    <a href="/tools/" style="flex:1;min-width:140px;padding:0.8rem;border:1px solid #2e261e;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:#bfb5a3;text-decoration:none">Fabric</a>
-  </div>
+<div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#a0845c;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem">Related</div>
+<div style="display:flex;gap:1rem;flex-wrap:wrap">
+<a href="/pricing/" style="flex:1;min-width:140px;padding:0.8rem;border:1px solid #2e261e;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:#bfb5a3;text-decoration:none">Pricing</a>
+
+</div>
 </div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
-
 <script>
 function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var l=document.querySelector('.nav-links');if(l&&l.classList.contains('open'))toggleNav();}});
 </script>
-
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script src="/site-assets/assets/sticky-cta.js?v=2" defer></script>
+<script defer="" src="/site-assets/assets/sticky-cta.js?v=2"></script>
 </body>
 </html>

@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>Stockyard for Self-Hosters -- Self-Hosted LLM Proxy -- Stockyard</title>
-<meta name="description" content="Self-host your LLM infrastructure. One binary, SQLite, Docker-friendly. No SaaS dependency, no data leaving your server.">
-<meta property="og:title" content="Stockyard for Self-Hosters">
-<meta property="og:description" content="Your data, your server, your control. A self-hosted LLM proxy that runs as a single binary with Docker support and zero external dependencies.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://stockyard.dev/for/self-hosters/">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://stockyard.dev/for/self-hosters/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="Self-host your LLM infrastructure. One binary, SQLite, Docker-friendly. No SaaS dependency, no data leaving your server." name="description"/>
+<meta content="Stockyard for Self-Hosters" property="og:title"/>
+<meta content="Your data, your server, your control. A self-hosted LLM proxy that runs as a single binary with Docker support and zero external dependencies." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://stockyard.dev/for/self-hosters/" property="og:url"/>
+<meta content="https://stockyard.dev/site-assets/assets/marketing/og-card.png" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<link href="https://stockyard.dev/for/self-hosters/" rel="canonical"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -59,72 +60,66 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 @media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
 </style>
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links">
-    <a href="/for/">Bundles</a>
-    <a href="/tools/">Tools</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
-  </div>
-</nav>
+<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
 
-<section class="hero">
-  <div class="eyebrow">For Self-Hosters</div>
-  <h1>Your server. <span class="accent">Your data. Your rules.</span></h1>
-  <p class="sub">Stockyard runs on your infrastructure. One binary, one SQLite file, Docker-ready. No SaaS dependency, no data leaving your network, no usage-based pricing for the platform itself.</p>
-</section>
+<a href="/pricing/">Pricing</a>
 
-<div class="section">
-  <h2 class="section-label">Why self-host your LLM proxy</h2>
-  <p>Managed LLM gateways like Helicone and Portkey are good products, but they add a dependency. Your prompts and responses pass through their servers. Your usage data lives on their infrastructure. If they have an outage, your proxy is down.</p>
-  <p>Self-hosting means your LLM traffic stays on your network. The only external calls are to the LLM providers you configure (OpenAI, Anthropic, etc.). Stockyard itself does not phone home, does not collect telemetry, and does not require an internet connection beyond reaching your providers.</p>
 </div>
-
+</nav>
+<section class="hero">
+<div class="eyebrow">For Self-Hosters</div>
+<h1>Your server. <span class="accent">Your data. Your rules.</span></h1>
+<p class="sub">Stockyard runs on your infrastructure. One binary, one SQLite file, Docker-ready. No SaaS dependency, no data leaving your network, no usage-based pricing for the platform itself.</p>
+</section>
+<div class="section">
+<h2 class="section-label">Why self-host your LLM proxy</h2>
+<p>Managed LLM gateways like Helicone and Portkey are good products, but they add a dependency. Your prompts and responses pass through their servers. Your usage data lives on their infrastructure. If they have an outage, your proxy is down.</p>
+<p>Self-hosting means your LLM traffic stays on your network. The only external calls are to the LLM providers you configure (OpenAI, Anthropic, etc.). Stockyard itself does not phone home, does not collect telemetry, and does not require an internet connection beyond reaching your providers.</p>
+</div>
 <section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">Deploy your way</h2>
-    <p><strong>Bare metal or VM:</strong> Download the binary, run it. Works on any Linux machine.</p>
-    <div class="code-block">
+<div class="section-alt-inner">
+<h2 class="section-label">Deploy your way</h2>
+<p><strong>Bare metal or VM:</strong> Download the binary, run it. Works on any Linux machine.</p>
+<div class="code-block">
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
 <span class="cmd">export OPENAI_API_KEY=sk-your-key</span>
 <span class="cmd">stockyard</span>
 <span class="output"># Stockyard running on :4200</span>
-    </div>
-    <p><strong>Docker:</strong> One container, one volume for the SQLite database. See the <a href="/docs/docker/">Docker guide</a> for docker-compose.yml examples including reverse proxy and OTEL sidecar setups.</p>
-    <p><strong>Railway, Fly.io, or any container platform:</strong> Stockyard deploys anywhere a Docker container runs. We run on Railway ourselves. See the <a href="/docs/railway-deploy/">Railway guide</a>.</p>
-  </div>
-</section>
-
-<div class="section">
-  <h2 class="section-label">What you control</h2>
-  <p><strong>Data residency.</strong> Traces, costs, and audit logs never leave your server. The SQLite file is the entire database.</p>
-  <p><strong>Updates.</strong> You choose when to upgrade. Download a new binary when you are ready, not when a SaaS provider pushes a change.</p>
-  <p><strong>Backups.</strong> <a href="/how-stockyard-backups-work/">Copy one file</a>. No managed backup service, no snapshot scheduler.</p>
-  <p><strong>Network.</strong> Monitor exactly what leaves your server. Stockyard only connects to the LLM providers you configure. <a href="/does-stockyard-phone-home/">No telemetry, no analytics.</a></p>
 </div>
-
-<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
-  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Self-hosted means self-hosted.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. Free tier. No SaaS dependency.</p>
-  <a href="/docs/quickstart/" class="btn btn-primary">Install Stockyard</a>
-  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
-    <a href="/docs/docker/" style="color:var(--cream-muted)">Docker guide &rarr;</a>
-    <a href="/single-binary/" style="color:var(--cream-muted)">Why single binary &rarr;</a>
-  </div>
-  <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">Licensing</a></div>
+<p><strong>Docker:</strong> One container, one volume for the SQLite database. See the  for docker-compose.yml examples including reverse proxy and OTEL sidecar setups.</p>
+<p><strong>Railway, Fly.io, or any container platform:</strong> Stockyard deploys anywhere a Docker container runs. We run on Railway ourselves. See the .</p>
+</div>
 </section>
+<div class="section">
+<h2 class="section-label">What you control</h2>
+<p><strong>Data residency.</strong> Traces, costs, and audit logs never leave your server. The SQLite file is the entire database.</p>
+<p><strong>Updates.</strong> You choose when to upgrade. Download a new binary when you are ready, not when a SaaS provider pushes a change.</p>
+<p><strong>Backups.</strong> . No managed backup service, no snapshot scheduler.</p>
+<p><strong>Network.</strong> Monitor exactly what leaves your server. Stockyard only connects to the LLM providers you configure. </p>
+</div>
+<section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
+<h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Self-hosted means self-hosted.</h2>
+<p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. Free tier. No SaaS dependency.</p>
 
-<div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> &middot; <a href="/self-hosted-llm-proxy/">Self-hosted proxy</a> &middot; <a href="/openai-compatible-proxy/">OpenAI-compatible</a></div>
+<div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+
+
+</div>
+<div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>·</span><span>·</span></div>
+</section>
+<div class="explore-bar">Explore: <a href="/proxy-only/">Proxy-only mode</a> ·  · </div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 <script>
@@ -146,6 +141,6 @@ document.querySelectorAll(".code-block, pre").forEach(function(el){
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script src="/site-assets/assets/sticky-cta.js?v=9" defer></script>
+<script defer="" src="/site-assets/assets/sticky-cta.js?v=9"></script>
 </body>
 </html>

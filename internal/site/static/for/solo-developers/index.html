@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>Stockyard for Solo Developers -- LLM Proxy for Indie Devs</title>
-<meta name="description" content="One binary, one SQLite file, zero ops overhead. Stockyard gives solo developers a full LLM proxy with tracing, caching, and guardrails without needing a platform team.">
-<meta property="og:title" content="Stockyard for Solo Developers">
-<meta property="og:description" content="You ship alone. Your LLM infrastructure should not require a team. One binary, full control, free tier.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://stockyard.dev/for/solo-developers/">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://stockyard.dev/for/solo-developers/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="One binary, one SQLite file, zero ops overhead. Stockyard gives solo developers a full LLM proxy with tracing, caching, and guardrails without needing a platform team." name="description"/>
+<meta content="Stockyard for Solo Developers" property="og:title"/>
+<meta content="You ship alone. Your LLM infrastructure should not require a team. One binary, full control, free tier." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://stockyard.dev/for/solo-developers/" property="og:url"/>
+<meta content="https://stockyard.dev/site-assets/assets/marketing/og-card.png" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<link href="https://stockyard.dev/for/solo-developers/" rel="canonical"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -58,90 +59,80 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 @media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
 </style>
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links">
-    <a href="/for/">Bundles</a>
-    <a href="/tools/">Tools</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
-  </div>
+<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+
+<a href="/pricing/">Pricing</a>
+
+</div>
 </nav>
-
 <section class="hero">
-  <div class="eyebrow">For Solo Developers</div>
-  <h1>You ship alone. <span class="accent">Your infra should keep up.</span></h1>
-  <p class="sub">Stockyard is a single binary that gives you the LLM infrastructure a platform team would build: proxy, tracing, caching, guardrails, failover. Install in 5 minutes, run it forever, never think about it again.</p>
+<div class="eyebrow">For Solo Developers</div>
+<h1>You ship alone. <span class="accent">Your infra should keep up.</span></h1>
+<p class="sub">Stockyard is a single binary that gives you the LLM infrastructure a platform team would build: proxy, tracing, caching, guardrails, failover. Install in 5 minutes, run it forever, never think about it again.</p>
 </section>
-
 <div class="section">
-  <h2 class="section-label">The solo dev problem</h2>
-  <p>You are building something with LLM APIs. You need cost tracking so you do not blow your budget. You need caching so development does not cost a fortune. You need failover so your app does not break when OpenAI has an outage. You need logging so you can debug production issues.</p>
-  <p>The usual answer is: assemble five services, write some glue code, maintain it all yourself. That is a full-time job on top of the full-time job of building your product.</p>
-  <p>Stockyard collapses all of that into one binary you install once. It runs in the background, handles the infrastructure, and lets you focus on the thing you are actually building.</p>
+<h2 class="section-label">The solo dev problem</h2>
+<p>You are building something with LLM APIs. You need cost tracking so you do not blow your budget. You need caching so development does not cost a fortune. You need failover so your app does not break when OpenAI has an outage. You need logging so you can debug production issues.</p>
+<p>The usual answer is: assemble five services, write some glue code, maintain it all yourself. That is a full-time job on top of the full-time job of building your product.</p>
+<p>Stockyard collapses all of that into one binary you install once. It runs in the background, handles the infrastructure, and lets you focus on the thing you are actually building.</p>
 </div>
-
 <section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">What you get on the free tier</h2>
-    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto 1.5rem">The Community tier includes the full proxy, all 76 middleware modules, all 38 providers, the web console, and the API. No credit card, no time limit. The core platform is fully functional on the free tier.</p>
-    <p style="text-align:center;font-size:0.85rem;color:var(--cream-muted)">Paid tiers add higher rate limits, priority support, and advanced features. But the proxy, tracing, caching, and guardrails are free.</p>
-  </div>
-</section>
-
-<div class="section">
-  <h2 class="section-label">How solo devs typically use it</h2>
-  <p><strong style="color:var(--cream)">As a local dev proxy.</strong> Point your app at localhost:4200 instead of api.openai.com. Every request gets traced and costed automatically. Enable caching to avoid paying for the same prompt during development. When you ship, the same proxy runs in production.</p>
-  <p><strong style="color:var(--cream)">As a cost safety net.</strong> Set a daily spending cap with the costcap module. If your app has a bug that sends 10,000 requests in a loop, the proxy cuts it off before you get a surprise bill. You can also set per-model rate limits.</p>
-  <p><strong style="color:var(--cream)">As a model router.</strong> Use model aliasing to map "fast" to gpt-4o-mini and "smart" to claude-sonnet-4-5. Swap models later without touching your app code. Test new models by changing one alias instead of redeploying.</p>
-  <p><strong style="color:var(--cream)">As a multi-provider gateway.</strong> Set up OpenAI and Anthropic keys. If one provider goes down, Stockyard fails over to the other automatically. Your users never see an error.</p>
+<div class="section-alt-inner">
+<h2 class="section-label">What you get on the free tier</h2>
+<p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto 1.5rem">The Community tier includes the full proxy, all 76 middleware modules, all 38 providers, the web console, and the API. No credit card, no time limit. The core platform is fully functional on the free tier.</p>
+<p style="text-align:center;font-size:0.85rem;color:var(--cream-muted)">Paid tiers add higher rate limits, priority support, and advanced features. But the proxy, tracing, caching, and guardrails are free.</p>
 </div>
-
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">The ops footprint</h2>
-    <p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto 1.5rem">One binary. One SQLite file. One port. Backups are copying a file. Upgrades are downloading a new binary. There is no Postgres to maintain, no Redis to restart, no Docker Compose to debug at 2am.</p>
-    <p style="text-align:center;font-size:0.85rem;color:var(--cream-muted)">If you can run a Go binary on a $5 VPS, you can run Stockyard.</p>
-  </div>
 </section>
-
 <div class="section">
-  <h2 class="section-label">Getting started</h2>
-  <div class="code-block">
+<h2 class="section-label">How solo devs typically use it</h2>
+<p><strong style="color:var(--cream)">As a local dev proxy.</strong> Point your app at localhost:4200 instead of api.openai.com. Every request gets traced and costed automatically. Enable caching to avoid paying for the same prompt during development. When you ship, the same proxy runs in production.</p>
+<p><strong style="color:var(--cream)">As a cost safety net.</strong> Set a daily spending cap with the costcap module. If your app has a bug that sends 10,000 requests in a loop, the proxy cuts it off before you get a surprise bill. You can also set per-model rate limits.</p>
+<p><strong style="color:var(--cream)">As a model router.</strong> Use model aliasing to map "fast" to gpt-4o-mini and "smart" to claude-sonnet-4-5. Swap models later without touching your app code. Test new models by changing one alias instead of redeploying.</p>
+<p><strong style="color:var(--cream)">As a multi-provider gateway.</strong> Set up OpenAI and Anthropic keys. If one provider goes down, Stockyard fails over to the other automatically. Your users never see an error.</p>
+</div>
+<section class="section-alt">
+<div class="section-alt-inner">
+<h2 class="section-label">The ops footprint</h2>
+<p style="text-align:center;font-size:0.95rem;color:var(--cream-dim);max-width:640px;margin:0 auto 1.5rem">One binary. One SQLite file. One port. Backups are copying a file. Upgrades are downloading a new binary. There is no Postgres to maintain, no Redis to restart, no Docker Compose to debug at 2am.</p>
+<p style="text-align:center;font-size:0.85rem;color:var(--cream-muted)">If you can run a Go binary on a $5 VPS, you can run Stockyard.</p>
+</div>
+</section>
+<div class="section">
+<h2 class="section-label">Getting started</h2>
+<div class="code-block">
 <span class="comment"># Install</span>
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
-
 <span class="comment"># Set your provider key and start</span>
 <span class="cmd">export OPENAI_API_KEY=sk-...</span>
 <span class="cmd">stockyard</span>
-
 <span class="comment"># Point your app at the proxy</span>
 <span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
-  </div>
-  <p>That is it. Your app now has tracing, cost tracking, caching, rate limiting, and failover. All running in one process, all configured through the web console at <code>localhost:4200/ui</code>.</p>
 </div>
-
+<p>That is it. Your app now has tracing, cost tracking, caching, rate limiting, and failover. All running in one process, all configured through the web console at <code>localhost:4200/ui</code>.</p>
+</div>
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
-  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Build your product, not your infrastructure.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. Free tier. No platform team required.</p>
-  <a href="/docs/quickstart/" class="btn btn-primary">Install in 5 minutes</a>
-  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
-    <a href="/proxy-only/" style="color:var(--cream-muted)">Start with just the proxy &rarr;</a>
-    <a href="/single-binary/" style="color:var(--cream-muted)">Why single binary? &rarr;</a>
-  </div>
-  <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">Licensing</a></div>
-</section>
+<h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Build your product, not your infrastructure.</h2>
+<p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. Free tier. No platform team required.</p>
 
-<div class="explore-bar">Explore: <a href="/model-aliasing/">Model aliasing</a> &middot; <a href="/why-sqlite/">Why SQLite</a> &middot; <a href="/vs/litellm/">vs LiteLLM</a></div>
+<div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+<a href="/proxy-only/" style="color:var(--cream-muted)">Start with just the proxy →</a>
+
+</div>
+<div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>·</span><span>·</span></div>
+</section>
+<div class="explore-bar">Explore:  ·  · </div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 <script>
@@ -163,6 +154,6 @@ document.querySelectorAll(".code-block, pre").forEach(function(el){
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script src="/site-assets/assets/sticky-cta.js?v=9" defer></script>
+<script defer="" src="/site-assets/assets/sticky-cta.js?v=9"></script>
 </body>
 </html>

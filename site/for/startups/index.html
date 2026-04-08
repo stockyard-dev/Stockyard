@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/site-assets/assets/brand/favicon-32.png">
-<link rel="apple-touch-icon" href="/site-assets/assets/brand/apple-touch-icon.png">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>Stockyard for Startups -- LLM Proxy for Small Teams -- Stockyard</title>
-<meta name="description" content="Ship AI features without building LLM infrastructure. Stockyard gives startups proxy, tracing, caching, and guardrails in one binary. Free tier, no ops overhead.">
-<meta property="og:title" content="Stockyard for Startups">
-<meta property="og:description" content="You are shipping AI features. You do not have a platform team. Stockyard handles the infrastructure so you can focus on the product.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://stockyard.dev/for/startups/">
-<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://stockyard.dev/for/startups/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="Ship AI features without building LLM infrastructure. Stockyard gives startups proxy, tracing, caching, and guardrails in one binary. Free tier, no ops overhead." name="description"/>
+<meta content="Stockyard for Startups" property="og:title"/>
+<meta content="You are shipping AI features. You do not have a platform team. Stockyard handles the infrastructure so you can focus on the product." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://stockyard.dev/for/startups/" property="og:url"/>
+<meta content="https://stockyard.dev/site-assets/assets/marketing/og-card.png" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<link href="https://stockyard.dev/for/startups/" rel="canonical"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#c9892a;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -59,77 +60,70 @@ footer a{color:var(--cream-muted)}footer a:hover{color:var(--cream)}
 @media(max-width:768px){.nav-drop-menu{display:none;position:static;background:transparent;border:none;padding:0 0 0 1rem;box-shadow:none;margin-top:.3rem}.nav-drop-menu.open{display:block}.nav-drop-menu a{font-size:.95rem;padding:.3rem 0}}
 </style>
 <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links">
-    <a href="/for/">Bundles</a>
-    <a href="/tools/">Tools</a>
-    <a href="/pricing/">Pricing</a>
-    <a href="/docs/">Docs</a>
-  </div>
-</nav>
+<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
 
-<section class="hero">
-  <div class="eyebrow">For Startups</div>
-  <h1>Ship the product. <span class="accent">Not the infrastructure.</span></h1>
-  <p class="sub">You are a small team shipping AI features. You need cost tracking, caching, and failover, but you do not have the headcount to build and maintain LLM infrastructure. Stockyard gives you the infrastructure in one binary.</p>
-</section>
+<a href="/pricing/">Pricing</a>
 
-<div class="section">
-  <h2 class="section-label">The startup problem</h2>
-  <p>You need LLM API access for your product. You start with a raw API key. Then you need cost tracking because your runway depends on knowing where money goes. Then caching, because iterating on prompts during development burns through budget you cannot afford to waste. Then failover, because a user churned after seeing an error during an OpenAI outage. Then guardrails, because someone tried to jailbreak your prompt and you found out from a screenshot on Twitter.</p>
-  <p>Each of these is a separate problem that a larger company would solve with a dedicated platform team. You do not have a platform team. You have 3-10 people trying to ship before the next board meeting.</p>
 </div>
-
-<section class="section-alt">
-  <div class="section-alt-inner">
-    <h2 class="section-label">What Stockyard replaces</h2>
-    <p><strong>Cost tracking service.</strong> Stockyard traces every request with model, tokens, and cost. Queryable through the API and visible in the dashboard.</p>
-    <p><strong>Caching layer.</strong> Exact match and semantic caching built in. No Redis to run.</p>
-    <p><strong>Failover system.</strong> Model-aware routing with circuit breakers. If one provider goes down, traffic routes to the next.</p>
-    <p><strong>Guardrails service.</strong> PII redaction, prompt injection detection, content filtering. All in the middleware chain.</p>
-    <p><strong>Observability backend.</strong> Request traces with full context. Export to Jaeger, Grafana, or any OTEL backend if you want external dashboards.</p>
-    <p style="margin-top:1.5rem;font-size:0.85rem;color:var(--cream-muted)">All of this runs in one process, stores data in one SQLite file, and is available on the free tier.</p>
-  </div>
+</nav>
+<section class="hero">
+<div class="eyebrow">For Startups</div>
+<h1>Ship the product. <span class="accent">Not the infrastructure.</span></h1>
+<p class="sub">You are a small team shipping AI features. You need cost tracking, caching, and failover, but you do not have the headcount to build and maintain LLM infrastructure. Stockyard gives you the infrastructure in one binary.</p>
 </section>
-
 <div class="section">
-  <h2 class="section-label">Grow into it</h2>
-  <p>Start with just the proxy. That alone gives you a single endpoint for all providers, automatic tracing, and the ability to swap models without redeploying.</p>
-  <p>Add caching when your dev costs get noticeable. Enable guardrails when you go to production. Set up failover when you have users who depend on uptime. Set a spending cap when you need to protect your runway from a bad week of API calls.</p>
-  <p>Each capability is a middleware module you toggle on when a real need shows up, not a service you deploy and maintain. The infrastructure grows with your product, not ahead of it.</p>
-  <div class="code-block">
+<h2 class="section-label">The startup problem</h2>
+<p>You need LLM API access for your product. You start with a raw API key. Then you need cost tracking because your runway depends on knowing where money goes. Then caching, because iterating on prompts during development burns through budget you cannot afford to waste. Then failover, because a user churned after seeing an error during an OpenAI outage. Then guardrails, because someone tried to jailbreak your prompt and you found out from a screenshot on Twitter.</p>
+<p>Each of these is a separate problem that a larger company would solve with a dedicated platform team. You do not have a platform team. You have 3-10 people trying to ship before the next board meeting.</p>
+</div>
+<section class="section-alt">
+<div class="section-alt-inner">
+<h2 class="section-label">What Stockyard replaces</h2>
+<p><strong>Cost tracking service.</strong> Stockyard traces every request with model, tokens, and cost. Queryable through the API and visible in the dashboard.</p>
+<p><strong>Caching layer.</strong> Exact match and semantic caching built in. No Redis to run.</p>
+<p><strong>Failover system.</strong> Model-aware routing with circuit breakers. If one provider goes down, traffic routes to the next.</p>
+<p><strong>Guardrails service.</strong> PII redaction, prompt injection detection, content filtering. All in the middleware chain.</p>
+<p><strong>Observability backend.</strong> Request traces with full context. Export to Jaeger, Grafana, or any OTEL backend if you want external dashboards.</p>
+<p style="margin-top:1.5rem;font-size:0.85rem;color:var(--cream-muted)">All of this runs in one process, stores data in one SQLite file, and is available on the free tier.</p>
+</div>
+</section>
+<div class="section">
+<h2 class="section-label">Grow into it</h2>
+<p>Start with just the proxy. That alone gives you a single endpoint for all providers, automatic tracing, and the ability to swap models without redeploying.</p>
+<p>Add caching when your dev costs get noticeable. Enable guardrails when you go to production. Set up failover when you have users who depend on uptime. Set a spending cap when you need to protect your runway from a bad week of API calls.</p>
+<p>Each capability is a middleware module you toggle on when a real need shows up, not a service you deploy and maintain. The infrastructure grows with your product, not ahead of it.</p>
+<div class="code-block">
 <span class="comment"># Install and run (under 60 seconds)</span>
 <span class="cmd">curl -fsSL stockyard.dev/install.sh | sh</span>
 <span class="cmd">export OPENAI_API_KEY=sk-your-key</span>
 <span class="cmd">stockyard</span>
-
 <span class="comment"># Your app changes one line</span>
 <span class="cmd">export OPENAI_BASE_URL=http://localhost:4200/v1</span>
-  </div>
 </div>
-
+</div>
 <section style="padding:5rem 2rem;text-align:center;max-width:600px;margin:0 auto">
-  <h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Focus on the product.</h2>
-  <p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. Free tier. Grows with you.</p>
-  <a href="/docs/quickstart/" class="btn btn-primary">Install in 5 minutes</a>
-  <div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
-    <a href="/for/solo-developers/" style="color:var(--cream-muted)">For solo devs &rarr;</a>
-    <a href="/proxy-only/" style="color:var(--cream-muted)">Start with just the proxy &rarr;</a>
-  </div>
-  <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>&middot;</span><a href="/changelog/" style="color:var(--cream-muted)">Changelog</a><span>&middot;</span><a href="/open-source-vs-bsl/" style="color:var(--cream-muted)">Licensing</a></div>
-</section>
+<h2 style="font-size:clamp(1.4rem,4vw,2rem);margin-bottom:1rem">Focus on the product.</h2>
+<p style="color:var(--cream-dim);font-style:italic;margin-bottom:2rem">One binary. Free tier. Grows with you.</p>
 
-<div class="explore-bar">Explore: <a href="/openai-compatible-proxy/">OpenAI-compatible</a> &middot; <a href="/model-aliasing/">Model aliasing</a> &middot; <a href="/why-sqlite/">Why SQLite</a></div>
+<div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-family:var(--font-mono);font-size:0.7rem;flex-wrap:wrap">
+<a href="/for/solo-developers/" style="color:var(--cream-muted)">For solo devs →</a>
+<a href="/proxy-only/" style="color:var(--cream-muted)">Start with just the proxy →</a>
+</div>
+<div style="display:flex;gap:1.5rem;justify-content:center;margin-top:1.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-muted);flex-wrap:wrap"><a href="https://github.com/stockyard-dev/Stockyard" style="color:var(--cream-muted)">GitHub</a><span>·</span><span>·</span></div>
+</section>
+<div class="explore-bar">Explore:  ·  · </div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 <script>function toggleNav(){var t=document.querySelector('.nav-toggle'),l=document.querySelector('.nav-links'),o=document.querySelector('.nav-overlay');if(t&&l){t.classList.toggle('open');l.classList.toggle('open');if(o)o.classList.toggle('open');document.body.style.overflow=l.classList.contains('open')?'hidden':'';}}</script>
 <script>
@@ -151,6 +145,6 @@ document.querySelectorAll(".code-block, pre").forEach(function(el){
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 <script>function toggleDrop(el){var m=el.parentElement.querySelector('.nav-drop-menu');m.classList.toggle('open')}
 function toggleNav(){document.querySelector('.nav-links').classList.toggle('open');document.querySelector('.nav-overlay').classList.toggle('open')}</script>
-<script src="/site-assets/assets/sticky-cta.js?v=9" defer></script>
+<script defer="" src="/site-assets/assets/sticky-cta.js?v=9"></script>
 </body>
 </html>

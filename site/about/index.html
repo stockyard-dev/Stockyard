@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
 <title>About — Stockyard</title>
-<meta name="description" content="Stockyard is built by one person. 164+ self-hosted tools, $7.99/mo bundles, 14-day free trial. Here's why.">
-<meta property="og:title" content="About Stockyard">
-<meta property="og:description" content="One developer. 164+ tools. Zero cloud dependencies. Here's the story.">
-<link rel="canonical" href="https://stockyard.dev/about/">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<meta content="Stockyard is built by one person. 164+ self-hosted tools, $7.99/mo bundles, 14-day free trial. Here's why." name="description"/>
+<meta content="About Stockyard" property="og:title"/>
+<meta content="One developer. 164+ tools. Zero cloud dependencies. Here's the story." property="og:description"/>
+<link href="https://stockyard.dev/about/" rel="canonical"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -31,57 +32,42 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
 </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");</script>
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
-  <div class="nav-links"><a href="/for/">Bundles</a><a href="/tools/">Tools</a><a href="/pricing/">Pricing</a><a href="/docs/">Docs</a></div>
+<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<div class="nav-links"><a href="/for/">Bundles</a><a href="/pricing/">Pricing</a></div>
 </nav>
-
 <div class="content">
-  <h1>Built by one person who got tired of paying for software.</h1>
-
-  <p>yall my name is Michael. I build Stockyard.</p>
-
-  <p>I used to run a small operation that needed scheduling, invoicing, a contact list, and basic project tracking. Four separate SaaS products. Four monthly bills. Four logins. Four places where my data lived on someone else's server.</p>
-
-  <p>One day I did the math. I was paying over $150 a month for tools that each had maybe 3 features I actually used. And every one of them could have been a SQLite database and a web form.</p>
-
-  <p>So I built that.</p>
-
-  <div class="highlight">
+<h1>Built by one person who got tired of paying for software.</h1>
+<p>yall my name is Michael. I build Stockyard.</p>
+<p>I used to run a small operation that needed scheduling, invoicing, a contact list, and basic project tracking. Four separate SaaS products. Four monthly bills. Four logins. Four places where my data lived on someone else's server.</p>
+<p>One day I did the math. I was paying over $150 a month for tools that each had maybe 3 features I actually used. And every one of them could have been a SQLite database and a web form.</p>
+<p>So I built that.</p>
+<div class="highlight">
     Stockyard is a collection of small, focused tools that run on your computer. Each one is a single binary file. No Docker, no Node, no Postgres, no cloud. Download it, run it, use it. Your data is a file on your hard drive.
   </div>
-
-  <p>Every tool is written in Go with embedded SQLite. The entire thing compiles to a single executable. You can back up your data by copying a folder. You can move to a new machine by moving that folder. If Stockyard disappears tomorrow, your data is still a standard SQLite file you can open with any tool on earth.</p>
-
-  <div class="stats">
-    <div class="stat"><span class="num">164+</span><span class="lbl">tools</span></div>
-    <div class="stat"><span class="num">195</span><span class="lbl">bundles</span></div>
-    <div class="stat"><span class="num">0</span><span class="lbl">cloud dependencies</span></div>
-    <div class="stat"><span class="num">1</span><span class="lbl">developer</span></div>
-  </div>
-
-  <p><strong>Why bundles?</strong> Because a therapist doesn't need the same tools as a minecraft server admin. Instead of selling you 164 tools you'll never use, I put together bundles for specific communities. Therapists get client records, invoicing, session notes, intake forms, and booking. A tattoo shop gets those plus waivers and a portfolio. A pickleball club gets reservations, tournament brackets, and check-ins.</p>
-
-  <p><strong>Why self-hosted?</strong> Because your client list and your financial records shouldn't live on a startup's server that might get acquired, hacked, or shut down. Because you should be able to run your tools without an internet connection. Because $7.99/mo is less than what most of these tools charge individually, and you get to keep everything when you leave.</p>
-
-  <p><strong>Why one person?</strong> Because small teams ship faster, charge less, and don't have investors pushing them to add enterprise features nobody asked for. I answer emails. I fix bugs. I don't have a sales team.</p>
-
-  <p>The LLM proxy is <a href="/proxy-only/">open source</a> (Apache 2.0). The tools are BSL 1.1, which means you can read the code, run it yourself, and after 4 years it converts to open source automatically. I'm not trying to lock you in. I'm trying to earn your $7.99 every month by building tools that are worth using.</p>
-
-  <p>If you have questions, ideas, complaints, or just want to say hey: <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a></p>
-
-  <p class="sig">Michael<br><span style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);font-style:normal">Founder, Stockyard</span></p>
+<p>Every tool is written in Go with embedded SQLite. The entire thing compiles to a single executable. You can back up your data by copying a folder. You can move to a new machine by moving that folder. If Stockyard disappears tomorrow, your data is still a standard SQLite file you can open with any tool on earth.</p>
+<div class="stats">
+<div class="stat"><span class="num">164+</span><span class="lbl">tools</span></div>
+<div class="stat"><span class="num">195</span><span class="lbl">bundles</span></div>
+<div class="stat"><span class="num">0</span><span class="lbl">cloud dependencies</span></div>
+<div class="stat"><span class="num">1</span><span class="lbl">developer</span></div>
 </div>
-
+<p><strong>Why bundles?</strong> Because a therapist doesn't need the same tools as a minecraft server admin. Instead of selling you 164 tools you'll never use, I put together bundles for specific communities. Therapists get client records, invoicing, session notes, intake forms, and booking. A tattoo shop gets those plus waivers and a portfolio. A pickleball club gets reservations, tournament brackets, and check-ins.</p>
+<p><strong>Why self-hosted?</strong> Because your client list and your financial records shouldn't live on a startup's server that might get acquired, hacked, or shut down. Because you should be able to run your tools without an internet connection. Because $7.99/mo is less than what most of these tools charge individually, and you get to keep everything when you leave.</p>
+<p><strong>Why one person?</strong> Because small teams ship faster, charge less, and don't have investors pushing them to add enterprise features nobody asked for. I answer emails. I fix bugs. I don't have a sales team.</p>
+<p>The LLM proxy is <a href="/proxy-only/">open source</a> (Apache 2.0). The tools are BSL 1.1, which means you can read the code, run it yourself, and after 4 years it converts to open source automatically. I'm not trying to lock you in. I'm trying to earn your $7.99 every month by building tools that are worth using.</p>
+<p>If you have questions, ideas, complaints, or just want to say hey: <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a></p>
+<p class="sig">Michael<br/><span style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);font-style:normal">Founder, Stockyard</span></p>
+</div>
 <footer>
-  <p class="sig">Stockyard. Wrangle your Stack.</p>
-  <p style="margin-top:0.5rem"><a href="/tools/">Tools</a> &middot; <a href="/for/">Bundles</a> &middot; <a href="/pricing/">Pricing</a> &middot; <a href="/about/">About</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-  <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> &middot; <a href="/veterans/">For Veterans</a> &middot; <a href="/pricing/">Price Lock</a></p>
-  <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<p class="sig">Stockyard. Wrangle your Stack.</p>
+<p style="margin-top:0.5rem"> · <a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> ·  · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
+<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
 </body>
 </html>
