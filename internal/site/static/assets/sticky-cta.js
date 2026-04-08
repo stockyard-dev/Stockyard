@@ -48,7 +48,7 @@
   var bar=document.createElement('div');
   bar.id='sticky-cta';
   bar.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap">'
-    +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;color:#f0e6d3">164 tools. <strong style="color:#d4a843">$29.99/mo</strong> <span style="font-size:0.65rem;color:#d4a843">14-day free trial</span></span>'
+    +'<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;color:#f0e6d3">150+ tools. <strong style="color:#d4a843">$29.99/mo</strong> <span style="font-size:0.65rem;color:#d4a843">14-day free trial</span></span>'
     +'<a href="/pricing/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;padding:0.45rem 1.2rem;background:#c45d2c;color:#f0e6d3;border:none;text-decoration:none;white-space:nowrap">Get Complete &rarr;</a>'
     +'<a href="/tools/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.68rem;color:#bfb5a3;text-decoration:none;white-space:nowrap">Browse tools</a>'
     +'<button onclick="this.parentElement.parentElement.style.display=\'none\'" style="background:none;border:none;color:#7a7060;cursor:pointer;font-size:1.1rem;padding:0 0.3rem;line-height:1" aria-label="Close">&times;</button>'
@@ -89,7 +89,7 @@
       var box=document.createElement('div');
       box.style.cssText='margin:2rem 0;padding:1.5rem;border:1px solid #c45d2c;background:#241e18;text-align:center';
       box.innerHTML='<div style="font-family:\'JetBrains Mono\',monospace;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:#c45d2c;margin-bottom:0.6rem">Stockyard Complete</div>'
-        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.5rem;font-weight:700">164 self-hosted tools. 14-day free trial.</div>'
+        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.5rem;font-weight:700">150+ self-hosted tools. 14-day free trial.</div>'
         +'<div style="font-size:0.82rem;color:#bfb5a3;font-style:italic;margin-bottom:1rem">Single binary each. SQLite storage. No dependencies.</div>'
         +'<a href="/pricing/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;padding:0.5rem 1.5rem;background:#c45d2c;color:#f0e6d3;text-decoration:none;display:inline-block">See what\'s included &rarr;</a>';
       paras[4].parentNode.insertBefore(box,paras[4].nextSibling);
@@ -104,7 +104,7 @@
       var banner=document.createElement('div');
       banner.style.cssText='margin-top:1.5rem;padding:1.2rem 1.5rem;border:2px solid #d4a843;background:rgba(212,168,67,0.06);text-align:center';
       banner.innerHTML='<div style="font-family:\'JetBrains Mono\',monospace;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#d4a843;margin-bottom:0.5rem">Better deal</div>'
-        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.4rem">Get <strong>all 164 tools</strong> — <strong style="color:#d4a843">$29.99/mo</strong></div>'
+        +'<div style="font-size:0.95rem;color:#f0e6d3;margin-bottom:0.4rem">Get <strong>all 150+ tools</strong> — <strong style="color:#d4a843">$29.99/mo</strong></div>'
         +'<div style="font-size:0.78rem;color:#bfb5a3;font-style:italic;margin-bottom:0.8rem">This tool plus 163 others. 14-day free trial. Cancel any time.</div>'
         +'<a href="/pricing/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.78rem;padding:0.5rem 1.5rem;background:#d4a843;color:#1a1410;text-decoration:none;display:inline-block;font-weight:600">Get Complete &rarr;</a>';
       grid.parentNode.insertBefore(banner,grid.nextSibling);
@@ -125,7 +125,7 @@
         +'<div style="font-size:0.88rem;color:#f0e6d3;margin-bottom:0.5rem">'+toolName+' is a single binary with SQLite storage. No Docker, no external database, no cloud dependency. Free tier included.</div>'
         +'<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.8rem">'
         +'<a href="/'+parts[0]+'/#install" style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;padding:0.4rem 1rem;background:#c45d2c;color:#f0e6d3;text-decoration:none">Try '+toolName+' free &rarr;</a>'
-        +'<a href="/pricing/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.72rem;color:#d4a843;text-decoration:none;padding:0.4rem 0">or all 164 tools — $29.99/mo, 14-day free trial</a>'
+        +'<a href="/pricing/" style="font-family:\'JetBrains Mono\',monospace;font-size:0.72rem;color:#d4a843;text-decoration:none;padding:0.4rem 0">or all 150+ tools — $29.99/mo, 14-day free trial</a>'
         +'</div>';
       target.parentNode.insertBefore(verdict,target);
     }
