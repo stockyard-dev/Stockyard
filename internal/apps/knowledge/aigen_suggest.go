@@ -103,6 +103,15 @@ func registerKnowledgeAigenTask() {
 							"to handle concurrent access",
 							"for effective",
 							"write more general",
+							// Caught by reading run 9 of iteration 5:
+							// "Go uses a zero value for uninitialized
+							// variables; for example, the zero value for
+							// an int is 0." That's textbook intro content.
+							// Zero values are a language fundamental, not
+							// a gotcha.
+							"zero value for",
+							"the zero value for",
+							"for example, the zero value",
 						}
 						lower := fact
 						for _, v := range vague {
@@ -114,29 +123,40 @@ func registerKnowledgeAigenTask() {
 					},
 				},
 				{
-					// Caught by reading logs on the first real integration:
-					// the model cited "Go 1.21 release notes" for the
-					// Stringer interface (wrong — that's been in fmt since
-					// 1.0) and "Go 1.19 release notes" for type parameters
-					// (wrong — 1.18). Confabulated version numbers are
-					// worse than missing ones because they look authoritative.
-					// This eval flags facts that reference a specific Go
-					// version without the fact naming a concrete function,
-					// flag, or behavior change that's tied to that version.
-					// It can't verify accuracy — only a human reading the
-					// logs can — but it can reject the most obvious shape
-					// of confabulation where the model gestures at a
-					// version to sound authoritative.
-					Name: "no_unsupported_version_claims",
+					// Caught by reading logs across iterations 1-5:
+					// confabulated version numbers are the most common
+					// factual error. Even after the 'do not cite version
+					// numbers' prompt rule, the model still slips them in.
+					// Run 7 of iteration 5 said "Go 1.21 introduced a new
+					// type, any" (wrong — that was 1.18). The simplest
+					// structural defense is to reject ANY fact that
+					// mentions a Go version number at all, since we told
+					// the model not to in the prompt. This is strict but
+					// it's the only reliable way to stop the confabulation.
+					//
+					// If future tasks legitimately need version numbers
+					// (e.g., a KB specifically about version history),
+					// register a separate task with a different eval set.
+					Name: "no_go_version_numbers",
 					Check: func(out map[string]any) (bool, string) {
 						fact, _ := out["fact"].(string)
-						// Pattern: "Go 1.NN introduced X" or "Go 1.NN added X"
-						// where X is a generic concept name rather than a
-						// specific new symbol. The heuristic here: if the
-						// fact uses the phrase "introduced the need for",
-						// "introduced \<generic noun\>", "added the
-						// ability to", or similar hand-wavy verbs, it's
-						// probably confabulation.
+						// Match "Go 1." or "Go 2." followed by digits
+						for i := 0; i < len(fact)-4; i++ {
+							if (fact[i] == 'G' || fact[i] == 'g') && fact[i+1] == 'o' && fact[i+2] == ' ' && (fact[i+3] == '1' || fact[i+3] == '2') && fact[i+4] == '.' {
+								if i+5 < len(fact) && fact[i+5] >= '0' && fact[i+5] <= '9' {
+									return false, "fact contains a Go version number (e.g., 'Go 1.21') — confabulation risk, rewrite to omit the version"
+								}
+							}
+						}
+						return true, ""
+					},
+				},
+				{
+					// Kept from iteration 1. Catches the gesture-at-a-
+					// feature confabulation shape.
+					Name: "no_confabulation_tells",
+					Check: func(out map[string]any) (bool, string) {
+						fact, _ := out["fact"].(string)
 						confabulationTells := []string{
 							"introduced the need",
 							"introduced the concept",
