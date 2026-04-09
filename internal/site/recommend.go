@@ -177,6 +177,31 @@ func (r *Recommender) allowIP(ipHash string) (ok bool, remaining int) {
 	return true, perIPLimit - len(fresh)
 }
 
+// isPrewarmRequest returns true if the request carries a valid
+// prewarm bypass token. The server looks up STOCKYARD_PREWARM_TOKEN
+// from the environment on every call (not cached) so the token can
+// be rotated by editing the Railway env var without a redeploy.
+// Empty env var = bypass is closed, header is ignored entirely.
+// A mismatched header is logged at low volume (once per unique
+// header value we see) to help spot brute-force attempts.
+//
+// Bypass means: skip the per-IP rate limit only. The global
+// MaxConcurrentLLMCalls semaphore still applies — prewarm still
+// cannot saturate more than 5 LLM slots at a time. That's the
+// correct behavior because the semaphore is protecting Anthropic's
+// rate limits, not our wallet.
+func (r *Recommender) isPrewarmRequest(req *http.Request) bool {
+	got := req.Header.Get("X-Stockyard-Prewarm")
+	if got == "" {
+		return false
+	}
+	want := os.Getenv("STOCKYARD_PREWARM_TOKEN")
+	if want == "" {
+		return false
+	}
+	return got == want
+}
+
 // NewRecommender creates the recommendation system.
 func NewRecommender(db *sql.DB) *Recommender {
 	// Create table
@@ -426,35 +451,46 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	// requests get a 429 with Retry-After, and the frontend falls
 	// back to the quick-match slug if one exists (same degraded-path
 	// treatment as a semaphore-full response).
+	//
+	// Bypass: requests carrying a valid X-Stockyard-Prewarm token
+	// (matched against the STOCKYARD_PREWARM_TOKEN env var) skip the
+	// per-IP limit entirely. This is how cmd/prewarm warms the cache
+	// for 195 bundles from a single IP without tripping the gate.
+	// The global LLM semaphore still applies to prewarm traffic.
+	prewarm := r.isPrewarmRequest(req)
 	ipHashFull := sha256.Sum256([]byte(req.RemoteAddr))
 	ipHash := fmt.Sprintf("%x", ipHashFull)[:12]
-	if ok, remaining := r.allowIP(ipHash); !ok {
-		_ = remaining // always 0 on reject
-		log.Printf("[recommend] per-IP rate limit hit: ip=%s limit=%d/%s", ipHash, perIPLimit, perIPWindow)
-		if slug := QuickMatchLookup(normalized); slug != "" {
+	if !prewarm {
+		if ok, remaining := r.allowIP(ipHash); !ok {
+			_ = remaining // always 0 on reject
+			log.Printf("[recommend] per-IP rate limit hit: ip=%s limit=%d/%s", ipHash, perIPLimit, perIPWindow)
+			if slug := QuickMatchLookup(normalized); slug != "" {
+				w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", perIPLimit))
+				w.Header().Set("X-RateLimit-Remaining", "0")
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(map[string]any{
+					"slug":        slug,
+					"fallback":    true,
+					"degraded":    true,
+					"redirect_to": "/for/" + slug + "/",
+					"message":     "You've generated a lot of toolkits in the last hour — showing the closest static bundle instead",
+				})
+				return
+			}
+			w.Header().Set("Retry-After", "3600")
 			w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", perIPLimit))
 			w.Header().Set("X-RateLimit-Remaining", "0")
 			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusTooManyRequests)
 			json.NewEncoder(w).Encode(map[string]any{
-				"slug":        slug,
-				"fallback":    true,
-				"degraded":    true,
-				"redirect_to": "/for/" + slug + "/",
-				"message":     "You've generated a lot of toolkits in the last hour — showing the closest static bundle instead",
+				"error":    fmt.Sprintf("Too many toolkit generations from this connection — limit %d per hour", perIPLimit),
+				"fallback": true,
+				"retry_in": int(perIPWindow.Seconds()),
 			})
 			return
 		}
-		w.Header().Set("Retry-After", "3600")
-		w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", perIPLimit))
-		w.Header().Set("X-RateLimit-Remaining", "0")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusTooManyRequests)
-		json.NewEncoder(w).Encode(map[string]any{
-			"error":    fmt.Sprintf("Too many toolkit generations from this connection — limit %d per hour", perIPLimit),
-			"fallback": true,
-			"retry_in": int(perIPWindow.Seconds()),
-		})
-		return
+	} else {
+		log.Printf("[recommend] prewarm bypass: skipping per-IP limit for ip=%s", ipHash)
 	}
 
 	// Acquire LLM slot — fast 503 if all slots are taken. The semaphore caps
@@ -876,18 +912,28 @@ func (r *Recommender) ServeCachedBundle(slug string) ([]byte, bool) {
 // GenerateInstallScript creates a full bundle install script for a cached
 // AI bundle OR a static catalog bundle. The resolution order is:
 //
-//  1. generated_bundles table — a previous LLM call cached a RecommendResult
-//     for this slug, and we serve the full script with any per-tool
-//     personalization configs the LLM produced.
-//  2. bundles.json — the slug is a static catalog bundle (one of the 195
-//     entries under site/tools/bundles.json). We synthesize a minimal
-//     RecommendResult from the bundle's tool list and generate a script
-//     that installs the same binaries with the same scaffolding. The
-//     script still fetches /api/toolkit/{slug}/config/{tool} for each
-//     tool; those requests 404 gracefully (the script uses `|| true`),
-//     so tools start with their built-in defaults. If the LLM later
-//     caches a result for this slug, the same install.sh URL will
-//     automatically start serving personalized configs.
+//  1. lookupResult(slug) — checks recCache (Layer 2) first and then the
+//     legacy generated_bundles table. This is the same helper
+//     HandleToolkitConfigs / HandleToolConfig use, so a pre-warmed
+//     recCache entry serves all three endpoints consistently.
+//     recCache is keyed by normalized_input OR bundle_slug, so a POST
+//     to /api/recommend with the bundle slug as the description (the
+//     shape cmd/prewarm uses) lands a row that lookupResult can find
+//     directly by slug. A POST with a natural-language description
+//     lands a row whose normalized_input matches that description
+//     instead, and the install URL for the LLM-generated sluggified
+//     bundle id still finds it via the legacy table fallback.
+//  2. synthesizeResultForBundle(slug) — slug is a static catalog
+//     bundle (one of the 195 entries in site/tools/bundles.json) with
+//     no LLM-cached result yet. We synthesize a minimal RecommendResult
+//     from the bundle's tool list and generate a script that installs
+//     the same binaries with the same scaffolding. The script still
+//     fetches /api/toolkit/{slug}/config/{tool} for each tool; those
+//     requests 404 gracefully (the script uses `|| true`), so tools
+//     start with their built-in defaults. Once the LLM caches a
+//     result for this slug (e.g., via cmd/prewarm), the same install.sh
+//     URL automatically starts serving personalized configs without
+//     any code change.
 //
 // Returning (nil, false) means neither a cached AI result nor a static
 // bundle entry exists for this slug — the route handler will 404.
@@ -895,10 +941,12 @@ func (r *Recommender) GenerateInstallScript(slug string) ([]byte, bool) {
 	var result RecommendResult
 
 	// 1. Cached AI bundle (LLM path, includes personalized configs).
-	var resultJSON string
-	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, slug).Scan(&resultJSON)
-	if err == nil {
-		json.Unmarshal([]byte(resultJSON), &result)
+	//    lookupResult checks recCache first (by normalized_input OR
+	//    bundle_slug), then legacy generated_bundles. This is the only
+	//    path where personalized configs are actually in the result —
+	//    the synthesize path below doesn't have any.
+	if cached := r.lookupResult(slug); cached != nil {
+		result = *cached
 	}
 
 	// 2. Fall back to static catalog bundle (bundles.json path).
