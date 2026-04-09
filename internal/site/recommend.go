@@ -96,12 +96,86 @@ type Recommender struct {
 	// semaphore is full, requests get a fast 503 with a "try again" message
 	// instead of slowly piling up while waiting for an LLM slot.
 	llmSem chan struct{}
+	// ipRateMu guards ipRateHits. The rate limiter is a sliding-window
+	// counter keyed by the sha256 hash of the remote address, tracking
+	// only L3 LLM-bound requests. Cache hits (L1/L2/legacy) are not
+	// counted — those are cheap and don't need rate limiting. A bad
+	// actor hammering the endpoint can blow through the 5-concurrent
+	// global cap over time; this is the per-IP cap that bounds their
+	// per-hour damage on top of that.
+	ipRateMu   sync.Mutex
+	ipRateHits map[string][]time.Time
 }
 
 // MaxConcurrentLLMCalls is the cap on simultaneous Anthropic-bound recommend
 // requests. Cache hits aren't counted. Tuned for a single-replica Railway
 // deployment; bump on multi-replica autoscale.
 const MaxConcurrentLLMCalls = 5
+
+// Per-IP rate limit on L3 LLM calls. The window is rolling: any request
+// whose IP has already made perIPLimit L3 calls in the last perIPWindow
+// gets a 429 before we ever touch the semaphore. Cache hits are not
+// counted and are never rate-limited. Tuned for "a real human playing
+// with the toolkit builder" — maybe 5 generations in a sitting — with
+// enough headroom for a curious tire-kicker, but low enough that a
+// scraper loop with 100 rotating descriptions hits the wall fast.
+//
+// At Haiku pricing (~$0.015/call), the per-IP ceiling costs at most
+// perIPLimit * $0.015 per hour, so a single IP maxing out the limit
+// costs us $0.15/hour. With 100 concurrent maxed-out attackers that's
+// still under $15/hour — bounded, not panic-inducing.
+const (
+	perIPLimit  = 10
+	perIPWindow = 1 * time.Hour
+)
+
+// allowIP returns true if this IP hash has made fewer than perIPLimit
+// L3 calls in the last perIPWindow. Always returns (remaining, limit)
+// so callers can emit proper X-RateLimit-* headers without a second
+// lookup. On reject the call is NOT counted (the attempt bounces at
+// the gate, so retry-after works as expected).
+//
+// Also opportunistically prunes ipRateHits when it grows past 10k
+// entries — good enough for a single-replica Railway deploy at current
+// traffic levels.
+func (r *Recommender) allowIP(ipHash string) (ok bool, remaining int) {
+	r.ipRateMu.Lock()
+	defer r.ipRateMu.Unlock()
+
+	now := time.Now()
+	cutoff := now.Add(-perIPWindow)
+
+	// Prune this IP's old entries.
+	hits := r.ipRateHits[ipHash]
+	fresh := hits[:0]
+	for _, t := range hits {
+		if t.After(cutoff) {
+			fresh = append(fresh, t)
+		}
+	}
+
+	if len(fresh) >= perIPLimit {
+		r.ipRateHits[ipHash] = fresh
+		return false, 0
+	}
+
+	fresh = append(fresh, now)
+	r.ipRateHits[ipHash] = fresh
+
+	// Opportunistic GC when the map gets large. Anything that hasn't
+	// hit us in the last window can be dropped — its counter was 0
+	// anyway. Cheap because len() is cheap and we only walk the map
+	// when len > threshold, not on every request.
+	if len(r.ipRateHits) > 10000 {
+		for k, v := range r.ipRateHits {
+			if len(v) == 0 || (len(v) > 0 && v[len(v)-1].Before(cutoff)) {
+				delete(r.ipRateHits, k)
+			}
+		}
+	}
+
+	return true, perIPLimit - len(fresh)
+}
 
 // NewRecommender creates the recommendation system.
 func NewRecommender(db *sql.DB) *Recommender {
@@ -120,6 +194,7 @@ func NewRecommender(db *sql.DB) *Recommender {
 		portMap:    make(map[string]int),
 		nameMap:    make(map[string]string),
 		bundles:    make(map[string]*CatalogBundle),
+		ipRateHits: make(map[string][]time.Time),
 		llmSem:     make(chan struct{}, MaxConcurrentLLMCalls),
 	}
 
@@ -342,6 +417,43 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	if os.Getenv("ANTHROPIC_API_KEY") == "" && os.Getenv("OPENAI_API_KEY") == "" {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"error": "AI recommendations unavailable", "fallback": true})
+		return
+	}
+
+	// Per-IP rate limit on L3 calls. Bounces a scraper loop before it
+	// ever touches the LLM semaphore, so a single bad IP can't burn
+	// through 5 concurrent slots repeatedly in a minute. Rejected
+	// requests get a 429 with Retry-After, and the frontend falls
+	// back to the quick-match slug if one exists (same degraded-path
+	// treatment as a semaphore-full response).
+	ipHashFull := sha256.Sum256([]byte(req.RemoteAddr))
+	ipHash := fmt.Sprintf("%x", ipHashFull)[:12]
+	if ok, remaining := r.allowIP(ipHash); !ok {
+		_ = remaining // always 0 on reject
+		log.Printf("[recommend] per-IP rate limit hit: ip=%s limit=%d/%s", ipHash, perIPLimit, perIPWindow)
+		if slug := QuickMatchLookup(normalized); slug != "" {
+			w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", perIPLimit))
+			w.Header().Set("X-RateLimit-Remaining", "0")
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]any{
+				"slug":        slug,
+				"fallback":    true,
+				"degraded":    true,
+				"redirect_to": "/for/" + slug + "/",
+				"message":     "You've generated a lot of toolkits in the last hour — showing the closest static bundle instead",
+			})
+			return
+		}
+		w.Header().Set("Retry-After", "3600")
+		w.Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", perIPLimit))
+		w.Header().Set("X-RateLimit-Remaining", "0")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusTooManyRequests)
+		json.NewEncoder(w).Encode(map[string]any{
+			"error":    fmt.Sprintf("Too many toolkit generations from this connection — limit %d per hour", perIPLimit),
+			"fallback": true,
+			"retry_in": int(perIPWindow.Seconds()),
+		})
 		return
 	}
 
@@ -663,9 +775,16 @@ RULES:
 	// failover, spend tracking, and caching — none of which we want to
 	// reimplement here. This makes the recommendation pipeline a first-class
 	// dogfooding consumer of stockyard-proxy.
+	//
+	// max_tokens is 4000, down from 6000. A typical generated bundle
+	// serializes to ~1500-2000 output tokens (measured against a live
+	// Haiku 4.5 call for a 7-tool bike-repair bundle), so 4000 leaves
+	// ~2x headroom while capping worst-case streaming duration. Raise
+	// if "Haiku escalation → Sonnet" log lines start citing truncated
+	// JSON as the failure cause.
 	reqBody, _ := json.Marshal(map[string]any{
 		"model":      model,
-		"max_tokens": 6000,
+		"max_tokens": 4000,
 		"messages": []map[string]string{
 			{"role": "user", "content": prompt},
 		},
@@ -677,17 +796,34 @@ RULES:
 	// Tag for spend attribution in the proxy's request log.
 	httpReq.Header.Set("X-Stockyard-Source", "site/recommend")
 
-	client := &http.Client{Timeout: 45 * time.Second}
+	// 60s client timeout. A live Haiku 4.5 call with the current prompt
+	// (~4-5KB input) and typical output (~1500-2000 tokens) takes
+	// ~30-40s wall clock through the proxy, so 45s was uncomfortably
+	// close to the tail. 60s gives the slowest generations room to
+	// complete without tripping the fallback path. If we see a lot of
+	// "LLM call via proxy ... failed: context deadline exceeded" in
+	// logs, that's the signal to investigate Anthropic-side latency
+	// or to shrink the prompt / output.
+	client := &http.Client{Timeout: 60 * time.Second}
+	llmStart := time.Now()
 	resp, err := client.Do(httpReq)
+	llmDur := time.Since(llmStart)
 	if err != nil {
+		log.Printf("[recommend] LLM call via proxy failed after %s: %v", llmDur.Round(time.Millisecond), err)
 		return nil, fmt.Errorf("LLM call via proxy %s failed: %w", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		body, _ := io.ReadAll(resp.Body)
+		log.Printf("[recommend] LLM proxy %d after %s: %s", resp.StatusCode, llmDur.Round(time.Millisecond), string(body))
 		return nil, fmt.Errorf("LLM proxy returned %d: %s", resp.StatusCode, string(body))
 	}
+
+	// Wall-clock log so p50/p95 latency per model shows up in Railway
+	// logs without a metrics pipeline. Tagged with model so Haiku vs
+	// Sonnet timings are separable.
+	log.Printf("[recommend] LLM call OK: model=%s duration=%s", model, llmDur.Round(time.Millisecond))
 
 	// Parse OpenAI chat-completions response (the proxy translates from
 	// upstream Anthropic format on the way back).
