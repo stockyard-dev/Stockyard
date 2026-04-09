@@ -115,7 +115,26 @@ func (a *App) handleStripeCheckout(w http.ResponseWriter, r *http.Request) {
 		baseURL = "https://stockyard.dev"
 	}
 
-	successURL := baseURL + "/billing/success?session_id={CHECKOUT_SESSION_ID}"
+	// The success page reads bundle/product/amount from query params to
+	// render the right post-purchase markup. Without these the page
+	// falls back to a stale "You're subscribed to Pro" template that
+	// confuses bundle buyers and reports the wrong value to GA. Stripe
+	// substitutes {CHECKOUT_SESSION_ID} server-side; everything else
+	// is set here at session-creation time.
+	//
+	// Amount is in dollars (not cents) since GA conversion events
+	// expect a numeric value parameter and the success page passes it
+	// straight through. Bundle is $7.99, all_tools is $29.99.
+	successAmount := "29.99"
+	if req.Bundle != "" {
+		successAmount = "7.99"
+	}
+	successURL := baseURL + "/billing/success?session_id={CHECKOUT_SESSION_ID}" +
+		"&product=" + url.QueryEscape(productKey) +
+		"&amount=" + successAmount
+	if req.Bundle != "" {
+		successURL += "&bundle=" + url.QueryEscape(req.Bundle)
+	}
 	cancelURL := baseURL + "/pricing/"
 	if req.Bundle != "" {
 		cancelURL = baseURL + "/for/" + req.Bundle + "/"

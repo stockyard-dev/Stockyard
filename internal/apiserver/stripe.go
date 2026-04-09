@@ -228,6 +228,13 @@ func (s *StripeClient) GetSubscription(subID string) (map[string]any, error) {
 	return s.stripeGet("/subscriptions/" + subID)
 }
 
+// GetCheckoutSession retrieves a checkout session by ID. Used by the
+// post-purchase success page to look up the customer and resolve the
+// minted license without requiring the user to sign in.
+func (s *StripeClient) GetCheckoutSession(sessionID string) (map[string]any, error) {
+	return s.stripeGet("/checkout/sessions/" + sessionID)
+}
+
 // GetCustomer retrieves a customer from Stripe.
 func (s *StripeClient) GetCustomer(cusID string) (map[string]any, error) {
 	return s.stripeGet("/customers/" + cusID)
@@ -841,6 +848,152 @@ func (wh *WebhookHandler) handleSubscriptionDeleted(raw json.RawMessage) error {
 	}
 
 	return wh.db.UpdateLicenseStatus(subID, "canceled")
+}
+
+// HandleSessionLookup is the public-facing endpoint that the post-checkout
+// success page polls to retrieve the minted license without requiring the
+// user to sign in or check email first. The page passes the Stripe checkout
+// session_id (which Stripe substitutes into the success URL via the
+// {CHECKOUT_SESSION_ID} placeholder) and we walk session → customer →
+// license. This is the read-only twin of the webhook write path: the
+// webhook mints licenses on payment, this endpoint surfaces them to the
+// browser tab that just paid.
+//
+// Race condition: the success page typically loads ~1-3 seconds before
+// the webhook fires (Stripe redirects faster than it sends webhooks). The
+// endpoint returns 202 with {ready:false} when the session exists but no
+// license is found yet, so the client can poll. Once the webhook has
+// written the license row, subsequent calls return 200 with the full
+// payload. The page polls every 1s for up to 30s before giving up and
+// telling the user to check their email.
+//
+// Security model: knowing a session_id is sufficient to retrieve the
+// license key. This is acceptable because session IDs are unguessable
+// (Stripe-generated random tokens, ~50 chars) and only handed to the
+// purchaser via the redirect. Anyone with the session_id is by
+// construction the buyer. We do NOT echo the customer email or any
+// other PII, only the license key + bundle metadata needed to render
+// the install page. There is no list endpoint and no enumeration path.
+func (wh *WebhookHandler) HandleSessionLookup(w http.ResponseWriter, r *http.Request) {
+	// CORS headers for the success page (same-origin in prod, but
+	// future-proofs the endpoint for any embed use case).
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("Content-Type", "application/json")
+
+	sessionID := r.URL.Query().Get("session_id")
+	if sessionID == "" {
+		// Also accept path param: /api/billing/session/{id}
+		sessionID = r.PathValue("id")
+	}
+	if sessionID == "" {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error":"missing session_id"}`))
+		return
+	}
+	// Sanity check: Stripe session IDs are alphanumeric + underscore.
+	// Reject anything weird before hitting the Stripe API.
+	for _, c := range sessionID {
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+			(c >= '0' && c <= '9') || c == '_') {
+			w.WriteHeader(400)
+			w.Write([]byte(`{"error":"invalid session_id"}`))
+			return
+		}
+	}
+	if len(sessionID) < 10 || len(sessionID) > 200 {
+		w.WriteHeader(400)
+		w.Write([]byte(`{"error":"invalid session_id"}`))
+		return
+	}
+
+	if wh.stripe == nil {
+		w.WriteHeader(503)
+		w.Write([]byte(`{"error":"stripe not configured"}`))
+		return
+	}
+
+	// Step 1: Fetch the session from Stripe.
+	session, err := wh.stripe.GetCheckoutSession(sessionID)
+	if err != nil {
+		log.Printf("session lookup: stripe fetch failed for %s: %v", sessionID, err)
+		w.WriteHeader(404)
+		w.Write([]byte(`{"error":"session not found"}`))
+		return
+	}
+
+	// Step 2: Pull customer ID + bundle metadata from the session.
+	stripeCustomerID := jsonStr(session, "customer")
+	if stripeCustomerID == "" {
+		w.WriteHeader(202)
+		w.Write([]byte(`{"ready":false,"reason":"customer not yet attached"}`))
+		return
+	}
+
+	bundle := ""
+	product := ""
+	if meta, ok := session["metadata"].(map[string]any); ok {
+		bundle = jsonStr(meta, "bundle")
+		product = jsonStr(meta, "product")
+	}
+
+	// Step 3: Look up the license by Stripe customer ID. The license
+	// row only exists after the webhook has fired and written it. If
+	// no license yet, return 202 ready=false so the client polls.
+	licenses, err := wh.db.GetLicensesByCustomer(stripeCustomerID)
+	if err != nil || len(licenses) == 0 {
+		w.WriteHeader(202)
+		// Pass through the bundle/product so the client can render
+		// loading-state UI without waiting for the license — the
+		// "Stockyard for Barber Shops" header can appear immediately
+		// even while the key is still being minted.
+		resp := map[string]any{
+			"ready":   false,
+			"reason":  "license not yet minted, webhook still processing",
+			"bundle":  bundle,
+			"product": product,
+		}
+		if bundle != "" {
+			if title, _ := wh.lookupBundleDisplay(bundle); title != "" {
+				resp["bundle_title"] = title
+			}
+		}
+		body, _ := json.Marshal(resp)
+		w.Write(body)
+		return
+	}
+
+	// Step 4: Found a license. Return the most recent one (handles
+	// edge case of multiple licenses for one customer e.g. tier
+	// upgrade or bundle resubscription).
+	lic := licenses[len(licenses)-1]
+
+	// If the license product is "bundle:<slug>" we extract the slug
+	// and look up the cached LLM display title — same helper as the
+	// trial welcome email so the post-purchase page reads in the
+	// same voice as the email it triggers.
+	bundleSlug := bundle
+	bundleTitle := ""
+	if strings.HasPrefix(lic.Product, "bundle:") {
+		bundleSlug = strings.TrimPrefix(lic.Product, "bundle:")
+	}
+	if bundleSlug != "" {
+		if title, _ := wh.lookupBundleDisplay(bundleSlug); title != "" {
+			bundleTitle = title
+		}
+	}
+
+	resp := map[string]any{
+		"ready":        true,
+		"license_key":  lic.LicenseKey,
+		"product":      lic.Product,
+		"tier":         lic.Tier,
+		"bundle":       bundleSlug,
+		"bundle_title": bundleTitle,
+		"status":       lic.Status,
+	}
+	body, _ := json.Marshal(resp)
+	w.Write(body)
 }
 
 // handlePaymentFailed logs payment failure (license stays active for grace period).

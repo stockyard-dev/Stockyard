@@ -148,6 +148,13 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /webhooks/stripe", s.webhook.HandleWebhook)
 	s.mux.HandleFunc("POST /api/stripe/webhook", s.webhook.HandleWebhook) // alias for Stripe-configured URL
 
+	// Public read of a checkout session → license. Used by the post-purchase
+	// success page to surface the license key inline without making the
+	// customer leave the tab to check email. See HandleSessionLookup for
+	// the security model (session_id is the auth credential).
+	s.mux.HandleFunc("GET /api/billing/session", s.webhook.HandleSessionLookup)
+	s.mux.HandleFunc("GET /api/billing/session/{id}", s.webhook.HandleSessionLookup)
+
 	// Public API — checkout & portal (rate limited)
 	s.mux.HandleFunc("POST /api/checkout", s.rateLimited(s.handleCheckout))
 	s.mux.HandleFunc("POST /api/portal", s.rateLimited(s.handlePortal))
@@ -203,6 +210,13 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	// Stripe webhook
 	mux.HandleFunc("POST /webhooks/stripe", s.webhook.HandleWebhook)
 	mux.HandleFunc("POST /api/stripe/webhook", s.webhook.HandleWebhook) // alias
+
+	// Public read of a checkout session → license. Used by the post-purchase
+	// success page to surface the license key inline without making the
+	// customer leave the tab to check email. See HandleSessionLookup for
+	// the security model (session_id is the auth credential).
+	mux.HandleFunc("GET /api/billing/session", s.webhook.HandleSessionLookup)
+	mux.HandleFunc("GET /api/billing/session/{id}", s.webhook.HandleSessionLookup)
 
 	// Checkout & portal
 	mux.HandleFunc("POST /api/checkout", s.handleCheckout)
