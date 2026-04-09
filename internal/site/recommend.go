@@ -1102,7 +1102,7 @@ func renderCachedBundlePage(slug string, r *RecommendResult) []byte {
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
-<title>Stockyard for %s — %s</title>
+<title>%s — Stockyard</title>
 <meta name="description" content="Self-hosted tools for %s. %d tools, $7.99/mo. Your data stays on your hardware.">
 <meta property="og:title" content="Stockyard — %s">
 <meta property="og:description" content="%d self-hosted tools for %s. $7.99/mo.">
@@ -1120,7 +1120,7 @@ func renderCachedBundlePage(slug string, r *RecommendResult) []byte {
 <div class="section" style="text-align:center"><p style="color:var(--cream-muted);font-size:.85rem">Not exactly right? <a href="/">Tell us what you do</a> and we'll customize your toolkit.</p></div>
 <footer><p style="font-style:italic;font-family:var(--font-serif);color:var(--leather-light)">Stockyard. Wrangle your Stack.</p><p style="margin-top:.5rem"><a href="/for/">Bundles</a> · <a href="/tools/">Tools</a> · <a href="/pricing/">Pricing</a></p></footer>
 </body></html>`,
-		he(r.Audience), he(r.Title),
+		he(r.Title),
 		he(r.Audience), len(r.Tools),
 		he(r.Title), len(r.Tools), he(r.Audience),
 		slug,
