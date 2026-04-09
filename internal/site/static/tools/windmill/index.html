@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>Windmill — Self-hosted data pipeline visualizer</title>
+<meta name="description" content="Connect your existing jobs and scripts, visualize their dependencies, see what ran and when. The DAG view for teams not ready for Airflow.">
+<meta property="og:title" content="Windmill — Stockyard">
+<meta property="og:description" content="Connect your existing jobs and scripts, visualize their dependencies, see what ran and when. The DAG view for teams not ready for Airflow.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/tools/windmill/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/screenshots/tool-windmill.svg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://stockyard.dev/tools/windmill/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard Windmill","description":"Connect your existing jobs and scripts, visualize their dependencies, see what ran and when. The DAG view for teams not ready for Airflow.","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS, Windows","offers":{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly subscription, 14-day free trial"},"author":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}
+</script>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.hero{max-width:780px;margin:0 auto;padding:3rem 2rem 1.5rem;text-align:center}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
+.eyebrow a{color:var(--leather)}
+.eyebrow a:hover{color:var(--gold)}
+.hero h1{font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:.75rem}
+.hero .tagline{font-family:var(--font-serif);font-style:italic;font-size:1.05rem;color:var(--leather-light);margin-bottom:2rem}
+.mockup{max-width:880px;margin:0 auto 3rem;padding:0 1.5rem}
+.mockup img{width:100%;height:auto;display:block;border:1px solid var(--bg3);background:var(--bg2)}
+.mockup-cap{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted);text-align:center;margin-top:.6rem;letter-spacing:1px;text-transform:uppercase}
+.section{padding:2.5rem 2rem;max-width:780px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.25rem;text-align:center}
+.section p{font-size:.98rem;color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.compare{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.3rem 1.5rem;margin:1.5rem 0;font-family:var(--font-mono)}
+.compare-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.compare-row+.compare-row{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--bg3)}
+.compare-label{font-size:.65rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1.5px}
+.compare-val{font-size:.9rem;color:var(--cream)}
+.compare-val .price{color:var(--gold)}
+.compare-val .strike{color:var(--cream-muted);text-decoration:line-through}
+.install{background:var(--bg2);border:1px solid var(--bg3);padding:1.25rem;margin:1.5rem 0;font-family:var(--font-mono)}
+.install-label{font-size:.65rem;color:var(--leather-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem}
+.install-cmd{background:var(--bg);border:1px solid var(--bg3);padding:.75rem .9rem;font-size:.75rem;color:var(--gold);word-break:break-all;cursor:pointer;line-height:1.5}
+.install-cmd:hover{border-color:var(--gold)}
+.bundles-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.bundle-chip{display:inline-block;padding:.4rem .8rem;background:var(--bg2);border:1px solid var(--bg3);font-family:var(--font-mono);font-size:.7rem;color:var(--cream-dim);text-transform:lowercase}
+.bundle-chip:hover{border-color:var(--rust);color:var(--gold)}
+.cta{text-align:center;padding:2.5rem 2rem 3rem}
+.cta-price{font-family:var(--font-mono);font-size:1.3rem;margin-bottom:.3rem;color:var(--cream)}
+.cta-sub{font-family:var(--font-mono);font-size:.72rem;color:var(--cream-muted);margin-bottom:1.5rem}
+.btn{display:inline-block;padding:.8rem 1.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;cursor:pointer;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;transition:background .2s}
+.btn:hover{background:var(--rust-light);color:#fff}
+.btn-ghost{background:transparent;color:var(--cream-dim);border:1px solid var(--bg3);margin-left:.5rem}
+.btn-ghost:hover{background:var(--bg2);color:var(--cream)}
+.cta-hint{font-size:.68rem;color:var(--cream-muted);margin-top:1rem;font-family:var(--font-mono)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.72rem;color:var(--leather);border-top:1px solid var(--bg3);margin-top:2rem}
+footer .sig{font-style:italic;font-family:var(--font-serif);color:var(--leather-light);display:block;margin-bottom:.5rem;font-size:.85rem}
+@media(max-width:600px){.hero{padding:2rem 1.2rem 1rem}.section{padding:2rem 1.2rem}.mockup{padding:0 1rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--leather:#8a6a4a;--leather-light:#6a4a2a;--rust:#b04a1e;--rust-light:#c45d2c;--gold:#a67d1e;--green:#3a7c4e}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+<a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none" aria-hidden="true"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+<a href="/tools/">Tools</a>
+<a href="/pricing/">Pricing</a>
+</div>
+</nav>
+<div class="hero">
+<div class="eyebrow"><a href="/tools/?category=developer">Developer Tool</a></div>
+<h1>Windmill</h1>
+<p class="tagline">Self-hosted data pipeline visualizer</p>
+</div>
+<div class="mockup">
+<img src="/site-assets/assets/screenshots/tool-windmill.svg?v=9" alt="Windmill dashboard mockup" loading="lazy" width="720" height="480">
+<div class="mockup-cap">Dashboard preview — windmill running on your own machine</div>
+</div>
+<div class="section">
+<div class="section-label">What it does</div>
+<p>Connect your existing jobs and scripts, visualize their dependencies, see what ran and when. The DAG view for teams not ready for Airflow.</p>
+<div class="compare">
+<div class="compare-row">
+<span class="compare-label">Replaces</span>
+<span class="compare-val">Prefect Cloud <span class="strike">$0 + managed infra</span></span>
+</div>
+<div class="compare-row">
+<span class="compare-label">Stockyard Windmill</span>
+<span class="compare-val"><span class="price">$7.99/mo</span> · self-hosted · your data</span>
+</div>
+</div>
+</div>
+<div class="section"><div class="section-label">What you get</div><p>Unlimited jobs, dependency graph, run history, failure alerts. Self-hosted on your hardware, no usage caps, no phone-home, your data stays on disk forever.</p></div>
+<div class="section">
+<div class="section-label">Install</div>
+<div class="install">
+<div class="install-label">Terminal · macOS / Linux / Windows</div>
+<div class="install-cmd" onclick="navigator.clipboard.writeText(this.textContent.trim());this.style.borderColor='var(--gold)'">curl -fsSL https://stockyard.dev/install/windmill.sh | sh</div>
+</div>
+<p style="font-size:.78rem;color:var(--cream-muted);text-align:center;font-family:var(--font-mono);margin-top:.8rem">One ~13MB binary. No Docker, no dependencies, no background daemons.</p>
+</div>
+
+<div class="cta">
+<div class="cta-price">14 days free</div>
+<div class="cta-sub">Then $7.99/mo. Cancel anytime. Your data stays.</div>
+<a href="/pricing/?tool=windmill" class="btn">Start 14-day trial</a>
+<a href="/tools/" class="btn btn-ghost">Browse all tools</a>
+<div class="cta-hint">Credit card required. $0 charged today. Reads always work even after trial ends.</div>
+</div>
+<footer>
+<span class="sig">Stockyard. Wrangle your Stack.</span>
+<a href="/for/">Bundles</a> · <a href="/tools/">Tools</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a>
+</footer>
+</body>
+</html>

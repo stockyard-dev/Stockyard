@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/site-assets/assets/brand/favicon.ico">
+<title>All Tools — Stockyard</title>
+<meta name="description" content="164 self-hosted tools in the Stockyard catalog. Browse by category, see what each looks like, install with one command.">
+<meta property="og:title" content="Stockyard — All Tools">
+<meta property="og:description" content="164 self-hosted tools. Dashboard previews and one-line install for every one.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://stockyard.dev/tools/">
+<meta property="og:image" content="https://stockyard.dev/site-assets/assets/marketing/og-card.png">
+<link rel="canonical" href="https://stockyard.dev/tools/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#5ba86e;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}
+a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.hero{max-width:780px;margin:0 auto;padding:3rem 2rem 1.5rem;text-align:center}
+.eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
+.eyebrow a{color:var(--leather)}
+.eyebrow a:hover{color:var(--gold)}
+.hero h1{font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:.75rem}
+.hero .tagline{font-family:var(--font-serif);font-style:italic;font-size:1.05rem;color:var(--leather-light);margin-bottom:2rem}
+.mockup{max-width:880px;margin:0 auto 3rem;padding:0 1.5rem}
+.mockup img{width:100%;height:auto;display:block;border:1px solid var(--bg3);background:var(--bg2)}
+.mockup-cap{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted);text-align:center;margin-top:.6rem;letter-spacing:1px;text-transform:uppercase}
+.section{padding:2.5rem 2rem;max-width:780px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1.25rem;text-align:center}
+.section p{font-size:.98rem;color:var(--cream-dim);margin-bottom:1rem;line-height:1.8}
+.compare{background:var(--bg2);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1.3rem 1.5rem;margin:1.5rem 0;font-family:var(--font-mono)}
+.compare-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.compare-row+.compare-row{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--bg3)}
+.compare-label{font-size:.65rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1.5px}
+.compare-val{font-size:.9rem;color:var(--cream)}
+.compare-val .price{color:var(--gold)}
+.compare-val .strike{color:var(--cream-muted);text-decoration:line-through}
+.install{background:var(--bg2);border:1px solid var(--bg3);padding:1.25rem;margin:1.5rem 0;font-family:var(--font-mono)}
+.install-label{font-size:.65rem;color:var(--leather-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem}
+.install-cmd{background:var(--bg);border:1px solid var(--bg3);padding:.75rem .9rem;font-size:.75rem;color:var(--gold);word-break:break-all;cursor:pointer;line-height:1.5}
+.install-cmd:hover{border-color:var(--gold)}
+.bundles-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.bundle-chip{display:inline-block;padding:.4rem .8rem;background:var(--bg2);border:1px solid var(--bg3);font-family:var(--font-mono);font-size:.7rem;color:var(--cream-dim);text-transform:lowercase}
+.bundle-chip:hover{border-color:var(--rust);color:var(--gold)}
+.cta{text-align:center;padding:2.5rem 2rem 3rem}
+.cta-price{font-family:var(--font-mono);font-size:1.3rem;margin-bottom:.3rem;color:var(--cream)}
+.cta-sub{font-family:var(--font-mono);font-size:.72rem;color:var(--cream-muted);margin-bottom:1.5rem}
+.btn{display:inline-block;padding:.8rem 1.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;cursor:pointer;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;transition:background .2s}
+.btn:hover{background:var(--rust-light);color:#fff}
+.btn-ghost{background:transparent;color:var(--cream-dim);border:1px solid var(--bg3);margin-left:.5rem}
+.btn-ghost:hover{background:var(--bg2);color:var(--cream)}
+.cta-hint{font-size:.68rem;color:var(--cream-muted);margin-top:1rem;font-family:var(--font-mono)}
+footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.72rem;color:var(--leather);border-top:1px solid var(--bg3);margin-top:2rem}
+footer .sig{font-style:italic;font-family:var(--font-serif);color:var(--leather-light);display:block;margin-bottom:.5rem;font-size:.85rem}
+@media(max-width:600px){.hero{padding:2rem 1.2rem 1rem}.section{padding:2rem 1.2rem}.mockup{padding:0 1rem}}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--leather:#8a6a4a;--leather-light:#6a4a2a;--rust:#b04a1e;--rust-light:#c45d2c;--gold:#a67d1e;--green:#3a7c4e}}
+
+.catalog-head{max-width:780px;margin:0 auto;padding:3rem 2rem 1rem;text-align:center}
+.catalog-head h1{font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:.6rem}
+.catalog-head .sub{font-family:var(--font-mono);font-size:.8rem;color:var(--cream-muted)}
+.cat-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:.5rem;padding:0 1rem 2rem;font-family:var(--font-mono);font-size:.72rem}
+.cat-nav a{padding:.4rem .8rem;border:1px solid var(--bg3);color:var(--cream-dim);text-transform:uppercase;letter-spacing:1px}
+.cat-nav a:hover{border-color:var(--rust);color:var(--gold)}
+.cat-section{max-width:1180px;margin:0 auto;padding:2rem 1.5rem}
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--bg3)}
+.cat-label{font-family:var(--font-mono);font-size:.85rem;color:var(--rust);text-transform:uppercase;letter-spacing:3px}
+.cat-count{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted)}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+.tool-card{background:var(--bg2);border:1px solid var(--bg3);display:flex;flex-direction:column;transition:border-color .2s;overflow:hidden}
+.tool-card:hover{border-color:var(--rust)}
+.tool-thumb img{width:100%;height:auto;display:block;border-bottom:1px solid var(--bg3);background:var(--bg)}
+.tool-body{padding:.85rem 1rem 1rem}
+.tool-name{font-family:var(--font-mono);font-size:.85rem;color:var(--cream);margin-bottom:.3rem}
+.tool-tag{font-size:.75rem;color:var(--cream-dim);line-height:1.45}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+</head>
+<body>
+<nav class="nav">
+<a href="/" class="nav-brand"><svg viewBox="0 0 64 64" width="24" height="24" fill="none" aria-hidden="true"><rect x="8" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="28" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="48" y="8" width="8" height="48" rx="2.5" fill="#e8753a"/><rect x="8" y="27" width="48" height="7" rx="2.5" fill="#c4a87a"/></svg>Stockyard</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+<a href="/tools/">Tools</a>
+<a href="/pricing/">Pricing</a>
+</div>
+</nav>
+<div class="catalog-head">
+<h1>All Tools</h1>
+<p class="sub">164 self-hosted tools · one install command · $7.99/mo for the bundle</p>
+</div>
+<div class="cat-nav">
+<a href="#cat-developer">Developer</a>
+<a href="#cat-operations">Operations</a>
+<a href="#cat-creator">Creator</a>
+<a href="#cat-personal">Personal</a>
+<a href="#cat-finance">Finance</a>
+<a href="#cat-business">Business</a>
+</div>
+<div class="cat-section" id="cat-developer">
+<div class="cat-head"><div class="cat-label">Developer</div><div class="cat-count">61 tools</div></div>
+<div class="tool-grid"><a class="tool-card" href="/tools/almanac3/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-almanac3.svg?v=9" alt="Almanac III dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Almanac III</div>
+<div class="tool-tag">Self-hosted data dictionary and schema registry</div>
+</div>
+</a><a class="tool-card" href="/tools/assay/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-assay.svg?v=9" alt="Assay dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Assay</div>
+<div class="tool-tag">Self-hosted API testing suite</div>
+</div>
+</a><a class="tool-card" href="/tools/assay2/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-assay2.svg?v=9" alt="Assay II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Assay II</div>
+<div class="tool-tag">Self-hosted API contract tester</div>
+</div>
+</a><a class="tool-card" href="/tools/bandolier/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-bandolier.svg?v=9" alt="Bandolier dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Bandolier</div>
+<div class="tool-tag">Self-hosted environment variable manager</div>
+</div>
+</a><a class="tool-card" href="/tools/barrage/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-barrage.svg?v=9" alt="Barrage dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Barrage</div>
+<div class="tool-tag">Self-hosted load tester</div>
+</div>
+</a><a class="tool-card" href="/tools/bellringer/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-bellringer.svg?v=9" alt="Bellringer dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Bellringer</div>
+<div class="tool-tag">Self-hosted web push notification server</div>
+</div>
+</a><a class="tool-card" href="/tools/bounty/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-bounty.svg?v=9" alt="Bounty dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Bounty</div>
+<div class="tool-tag">Self-hosted bug tracker and issue manager</div>
+</div>
+</a><a class="tool-card" href="/tools/cartridge/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-cartridge.svg?v=9" alt="Cartridge dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Cartridge</div>
+<div class="tool-tag">Self-hosted config and settings manager</div>
+</div>
+</a><a class="tool-card" href="/tools/cartwright/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-cartwright.svg?v=9" alt="Cartwright dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Cartwright</div>
+<div class="tool-tag">Self-hosted dashboard and report builder</div>
+</div>
+</a><a class="tool-card" href="/tools/codex/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-codex.svg?v=9" alt="Codex dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Codex</div>
+<div class="tool-tag">Self-hosted code snippet manager</div>
+</div>
+</a><a class="tool-card" href="/tools/conduit/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-conduit.svg?v=9" alt="Conduit dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Conduit</div>
+<div class="tool-tag">Self-hosted data sync engine</div>
+</div>
+</a><a class="tool-card" href="/tools/corral/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-corral.svg?v=9" alt="Corral dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Corral</div>
+<div class="tool-tag">Self-hosted webhook inbox</div>
+</div>
+</a><a class="tool-card" href="/tools/crucible/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-crucible.svg?v=9" alt="Crucible dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Crucible</div>
+<div class="tool-tag">Self-hosted A/B testing engine</div>
+</div>
+</a><a class="tool-card" href="/tools/crucible2/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-crucible2.svg?v=9" alt="Crucible II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Crucible II</div>
+<div class="tool-tag">Self-hosted code review checklist manager</div>
+</div>
+</a><a class="tool-card" href="/tools/cutoff/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-cutoff.svg?v=9" alt="Cutoff dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Cutoff</div>
+<div class="tool-tag">Self-hosted API rate limiter</div>
+</div>
+</a><a class="tool-card" href="/tools/dispatch/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-dispatch.svg?v=9" alt="Dispatch dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Dispatch</div>
+<div class="tool-tag">Self-hosted task dispatch and routing</div>
+</div>
+</a><a class="tool-card" href="/tools/dowser/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-dowser.svg?v=9" alt="Dowser dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Dowser</div>
+<div class="tool-tag">Self-hosted data quality monitor</div>
+</div>
+</a><a class="tool-card" href="/tools/drifter/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-drifter.svg?v=9" alt="Drifter dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Drifter</div>
+<div class="tool-tag">Self-hosted database browser</div>
+</div>
+</a><a class="tool-card" href="/tools/drover/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-drover.svg?v=9" alt="Drover dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Drover</div>
+<div class="tool-tag">Self-hosted background job queue</div>
+</div>
+</a><a class="tool-card" href="/tools/embargo/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-embargo.svg?v=9" alt="Embargo dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Embargo</div>
+<div class="tool-tag">Self-hosted feature flag manager</div>
+</div>
+</a><a class="tool-card" href="/tools/fence/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-fence.svg?v=9" alt="Fence dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Fence</div>
+<div class="tool-tag">Self-hosted API key vault</div>
+</div>
+</a><a class="tool-card" href="/tools/gate/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-gate.svg?v=9" alt="Gate dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Gate</div>
+<div class="tool-tag">Self-hosted reverse proxy and auth gateway</div>
+</div>
+</a><a class="tool-card" href="/tools/githost/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-githost.svg?v=9" alt="Githost dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Githost</div>
+<div class="tool-tag">Self-hosted Git repository host</div>
+</div>
+</a><a class="tool-card" href="/tools/granary/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-granary.svg?v=9" alt="Granary dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Granary</div>
+<div class="tool-tag">Self-hosted object and file storage</div>
+</div>
+</a><a class="tool-card" href="/tools/hub/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-hub.svg?v=9" alt="Hub dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Hub</div>
+<div class="tool-tag">Self-hosted request relay and inspector</div>
+</div>
+</a><a class="tool-card" href="/tools/ironworks/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-ironworks.svg?v=9" alt="Ironworks dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Ironworks</div>
+<div class="tool-tag">Self-hosted build artifact storage</div>
+</div>
+</a><a class="tool-card" href="/tools/lasso/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-lasso.svg?v=9" alt="Lasso dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Lasso</div>
+<div class="tool-tag">Self-hosted link shortener</div>
+</div>
+</a><a class="tool-card" href="/tools/mainspring/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-mainspring.svg?v=9" alt="Mainspring dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Mainspring</div>
+<div class="tool-tag">Self-hosted cron job scheduler</div>
+</div>
+</a><a class="tool-card" href="/tools/manifest/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-manifest.svg?v=9" alt="Manifest dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Manifest</div>
+<div class="tool-tag">Self-hosted dependency manifest tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/metrics/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-metrics.svg?v=9" alt="Metrics dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Metrics</div>
+<div class="tool-tag">Self-hosted real-time metrics dashboard</div>
+</div>
+</a><a class="tool-card" href="/tools/mirage/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-mirage.svg?v=9" alt="Mirage dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Mirage</div>
+<div class="tool-tag">Self-hosted mock server</div>
+</div>
+</a><a class="tool-card" href="/tools/ordnance/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-ordnance.svg?v=9" alt="Ordnance dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Ordnance</div>
+<div class="tool-tag">Self-hosted vulnerability scanner</div>
+</div>
+</a><a class="tool-card" href="/tools/parcel/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-parcel.svg?v=9" alt="Parcel dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Parcel</div>
+<div class="tool-tag">Self-hosted package registry proxy</div>
+</div>
+</a><a class="tool-card" href="/tools/parcelproxy/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-parcelproxy.svg?v=9" alt="Parcel Proxy dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Parcel Proxy</div>
+<div class="tool-tag">Self-hosted package registry proxy</div>
+</div>
+</a><a class="tool-card" href="/tools/pathfinder/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-pathfinder.svg?v=9" alt="Pathfinder dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Pathfinder</div>
+<div class="tool-tag">Self-hosted URL routing and proxy rules manager</div>
+</div>
+</a><a class="tool-card" href="/tools/pipeline/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-pipeline.svg?v=9" alt="Pipeline dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Pipeline</div>
+<div class="tool-tag">Self-hosted data pipeline orchestrator</div>
+</div>
+</a><a class="tool-card" href="/tools/plumb/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-plumb.svg?v=9" alt="Plumb dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Plumb</div>
+<div class="tool-tag">Self-hosted database migration tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/probe/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-probe.svg?v=9" alt="Probe dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Probe</div>
+<div class="tool-tag">Self-hosted HTTP request inspector</div>
+</div>
+</a><a class="tool-card" href="/tools/rampart/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-rampart.svg?v=9" alt="Rampart dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Rampart</div>
+<div class="tool-tag">Self-hosted IP blocklist manager</div>
+</div>
+</a><a class="tool-card" href="/tools/rangeland/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-rangeland.svg?v=9" alt="Rangeland dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Rangeland</div>
+<div class="tool-tag">Self-hosted multi-tenant workspace manager</div>
+</div>
+</a><a class="tool-card" href="/tools/registry/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-registry.svg?v=9" alt="Registry dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Registry</div>
+<div class="tool-tag">Self-hosted container and package registry</div>
+</div>
+</a><a class="tool-card" href="/tools/relay/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-relay.svg?v=9" alt="Relay dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Relay</div>
+<div class="tool-tag">Self-hosted webhook relay</div>
+</div>
+</a><a class="tool-card" href="/tools/rustler/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-rustler.svg?v=9" alt="Rustler dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Rustler</div>
+<div class="tool-tag">Self-hosted web scraper and data collector</div>
+</div>
+</a><a class="tool-card" href="/tools/scaffold/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-scaffold.svg?v=9" alt="Scaffold dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Scaffold</div>
+<div class="tool-tag">Self-hosted project scaffolding server</div>
+</div>
+</a><a class="tool-card" href="/tools/scout/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-scout.svg?v=9" alt="Scout dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Scout</div>
+<div class="tool-tag">Self-hosted dependency scanner</div>
+</div>
+</a><a class="tool-card" href="/tools/seismograph/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-seismograph.svg?v=9" alt="Seismograph dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Seismograph</div>
+<div class="tool-tag">Self-hosted error tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/silo/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-silo.svg?v=9" alt="Silo dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Silo</div>
+<div class="tool-tag">Self-hosted data isolation and partitioning layer</div>
+</div>
+</a><a class="tool-card" href="/tools/smelter/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-smelter.svg?v=9" alt="Smelter dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Smelter</div>
+<div class="tool-tag">Self-hosted data transformation API</div>
+</div>
+</a><a class="tool-card" href="/tools/spur/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-spur.svg?v=9" alt="Spur dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Spur</div>
+<div class="tool-tag">Self-hosted task runner and automation</div>
+</div>
+</a><a class="tool-card" href="/tools/stampede/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-stampede.svg?v=9" alt="Stampede dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Stampede</div>
+<div class="tool-tag">Self-hosted load balancer and traffic router</div>
+</div>
+</a><a class="tool-card" href="/tools/strongbox/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-strongbox.svg?v=9" alt="Strongbox dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Strongbox</div>
+<div class="tool-tag">Self-hosted secret manager</div>
+</div>
+</a><a class="tool-card" href="/tools/switchboard/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-switchboard.svg?v=9" alt="Switchboard dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Switchboard</div>
+<div class="tool-tag">Self-hosted service registry and discovery</div>
+</div>
+</a><a class="tool-card" href="/tools/switchman/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-switchman.svg?v=9" alt="Switchman dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Switchman</div>
+<div class="tool-tag">Self-hosted blue-green deploy manager</div>
+</div>
+</a><a class="tool-card" href="/tools/tally/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-tally.svg?v=9" alt="Tally dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Tally</div>
+<div class="tool-tag">Self-hosted counter and gauge API</div>
+</div>
+</a><a class="tool-card" href="/tools/ticker/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-ticker.svg?v=9" alt="Ticker dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Ticker</div>
+<div class="tool-tag">Self-hosted metrics and time series dashboard</div>
+</div>
+</a><a class="tool-card" href="/tools/tinderbox/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-tinderbox.svg?v=9" alt="Tinderbox dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Tinderbox</div>
+<div class="tool-tag">Self-hosted CI/CD trigger server</div>
+</div>
+</a><a class="tool-card" href="/tools/trough/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-trough.svg?v=9" alt="Trough dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Trough</div>
+<div class="tool-tag">Self-hosted LLM API cost monitor</div>
+</div>
+</a><a class="tool-card" href="/tools/viaduct/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-viaduct.svg?v=9" alt="Viaduct dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Viaduct</div>
+<div class="tool-tag">Self-hosted API version router</div>
+</div>
+</a><a class="tool-card" href="/tools/watcher/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-watcher.svg?v=9" alt="Watcher dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Watcher</div>
+<div class="tool-tag">Self-hosted file change monitor</div>
+</div>
+</a><a class="tool-card" href="/tools/windmill/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-windmill.svg?v=9" alt="Windmill dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Windmill</div>
+<div class="tool-tag">Self-hosted data pipeline visualizer</div>
+</div>
+</a><a class="tool-card" href="/tools/wrangler/" data-category="developer">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-wrangler.svg?v=9" alt="Wrangler dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Wrangler</div>
+<div class="tool-tag">Self-hosted ETL and data pipeline runner</div>
+</div>
+</a></div>
+</div><div class="cat-section" id="cat-operations">
+<div class="cat-head"><div class="cat-label">Operations</div><div class="cat-count">34 tools</div></div>
+<div class="tool-grid"><a class="tool-card" href="/tools/announcements/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-announcements.svg?v=9" alt="Announcements dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Announcements</div>
+<div class="tool-tag">Self-hosted internal announcement board</div>
+</div>
+</a><a class="tool-card" href="/tools/bellwether/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-bellwether.svg?v=9" alt="Bellwether dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Bellwether</div>
+<div class="tool-tag">Self-hosted uptime and health monitor</div>
+</div>
+</a><a class="tool-card" href="/tools/brand/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-brand.svg?v=9" alt="Brand dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Brand</div>
+<div class="tool-tag">Self-hosted audit trail and compliance log</div>
+</div>
+</a><a class="tool-card" href="/tools/campfire/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-campfire.svg?v=9" alt="Campfire dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Campfire</div>
+<div class="tool-tag">Self-hosted async team standup tool</div>
+</div>
+</a><a class="tool-card" href="/tools/chronicle/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-chronicle.svg?v=9" alt="Chronicle dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Chronicle</div>
+<div class="tool-tag">Self-hosted event log</div>
+</div>
+</a><a class="tool-card" href="/tools/courier/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-courier.svg?v=9" alt="Courier dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Courier</div>
+<div class="tool-tag">Self-hosted internal message queue</div>
+</div>
+</a><a class="tool-card" href="/tools/covenant/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-covenant.svg?v=9" alt="Covenant dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Covenant</div>
+<div class="tool-tag">Self-hosted policy and compliance manager</div>
+</div>
+</a><a class="tool-card" href="/tools/deposition/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-deposition.svg?v=9" alt="Deposition dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Deposition</div>
+<div class="tool-tag">Self-hosted tamper-evident audit log</div>
+</div>
+</a><a class="tool-card" href="/tools/escrow/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-escrow.svg?v=9" alt="Escrow dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Escrow</div>
+<div class="tool-tag">Self-hosted approval workflow engine</div>
+</div>
+</a><a class="tool-card" href="/tools/gazette2/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-gazette2.svg?v=9" alt="Gazette II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Gazette II</div>
+<div class="tool-tag">Self-hosted internal blog and news feed</div>
+</div>
+</a><a class="tool-card" href="/tools/grapevine/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-grapevine.svg?v=9" alt="Grapevine dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Grapevine</div>
+<div class="tool-tag">Self-hosted knowledge base and FAQ</div>
+</div>
+</a><a class="tool-card" href="/tools/handbook/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-handbook.svg?v=9" alt="Handbook dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Handbook</div>
+<div class="tool-tag">Self-hosted internal wiki and knowledge base</div>
+</div>
+</a><a class="tool-card" href="/tools/headcount/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-headcount.svg?v=9" alt="Headcount dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Headcount</div>
+<div class="tool-tag">Self-hosted user analytics</div>
+</div>
+</a><a class="tool-card" href="/tools/hearthside/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-hearthside.svg?v=9" alt="Hearthside dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Hearthside</div>
+<div class="tool-tag">Self-hosted sprint retrospective tool</div>
+</div>
+</a><a class="tool-card" href="/tools/homestead/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-homestead.svg?v=9" alt="Homestead dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Homestead</div>
+<div class="tool-tag">Self-hosted server inventory and monitor</div>
+</div>
+</a><a class="tool-card" href="/tools/inquest/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-inquest.svg?v=9" alt="Inquest dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Inquest</div>
+<div class="tool-tag">Self-hosted incident manager</div>
+</div>
+</a><a class="tool-card" href="/tools/mailbag/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-mailbag.svg?v=9" alt="Mailbag dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Mailbag</div>
+<div class="tool-tag">Self-hosted email archive</div>
+</div>
+</a><a class="tool-card" href="/tools/megaphone/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-megaphone.svg?v=9" alt="Megaphone dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Megaphone</div>
+<div class="tool-tag">Self-hosted status page with notifications</div>
+</div>
+</a><a class="tool-card" href="/tools/muster/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-muster.svg?v=9" alt="Muster dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Muster</div>
+<div class="tool-tag">Self-hosted deployment tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/notify/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-notify.svg?v=9" alt="Notify dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Notify</div>
+<div class="tool-tag">Self-hosted SMS and notification sender</div>
+</div>
+</a><a class="tool-card" href="/tools/outfitter/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-outfitter.svg?v=9" alt="Outfitter dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Outfitter</div>
+<div class="tool-tag">Self-hosted employee onboarding manager</div>
+</div>
+</a><a class="tool-card" href="/tools/outpost/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-outpost.svg?v=9" alt="Outpost dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Outpost</div>
+<div class="tool-tag">Self-hosted remote server monitor</div>
+</div>
+</a><a class="tool-card" href="/tools/paddock/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-paddock.svg?v=9" alt="Paddock dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Paddock</div>
+<div class="tool-tag">Self-hosted public status page</div>
+</div>
+</a><a class="tool-card" href="/tools/prairie/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-prairie.svg?v=9" alt="Prairie dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Prairie</div>
+<div class="tool-tag">Self-hosted kanban project board</div>
+</div>
+</a><a class="tool-card" href="/tools/quarry/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-quarry.svg?v=9" alt="Quarry dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Quarry</div>
+<div class="tool-tag">Self-hosted log aggregator and search</div>
+</div>
+</a><a class="tool-card" href="/tools/roster/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-roster.svg?v=9" alt="Roster dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Roster</div>
+<div class="tool-tag">Self-hosted team directory</div>
+</div>
+</a><a class="tool-card" href="/tools/roundup/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-roundup.svg?v=9" alt="Roundup dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Roundup</div>
+<div class="tool-tag">Self-hosted task manager</div>
+</div>
+</a><a class="tool-card" href="/tools/saddlebag/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-saddlebag.svg?v=9" alt="Saddlebag dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Saddlebag</div>
+<div class="tool-tag">Self-hosted file manager</div>
+</div>
+</a><a class="tool-card" href="/tools/saloon/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-saloon.svg?v=9" alt="Saloon dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Saloon</div>
+<div class="tool-tag">Self-hosted team chat</div>
+</div>
+</a><a class="tool-card" href="/tools/semaphore/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-semaphore.svg?v=9" alt="Semaphore dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Semaphore</div>
+<div class="tool-tag">Self-hosted team availability board</div>
+</div>
+</a><a class="tool-card" href="/tools/sentinel/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-sentinel.svg?v=9" alt="Sentinel dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Sentinel</div>
+<div class="tool-tag">Self-hosted alert manager</div>
+</div>
+</a><a class="tool-card" href="/tools/signalman/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-signalman.svg?v=9" alt="Signalman dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Signalman</div>
+<div class="tool-tag">Self-hosted alerting rules engine</div>
+</div>
+</a><a class="tool-card" href="/tools/soapbox/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-soapbox.svg?v=9" alt="Soapbox dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Soapbox</div>
+<div class="tool-tag">Self-hosted internal Q&amp;A and Stack Overflow</div>
+</div>
+</a><a class="tool-card" href="/tools/telegraph/" data-category="operations">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-telegraph.svg?v=9" alt="Telegraph dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Telegraph</div>
+<div class="tool-tag">Self-hosted notification hub</div>
+</div>
+</a></div>
+</div><div class="cat-section" id="cat-creator">
+<div class="cat-head"><div class="cat-label">Creator</div><div class="cat-count">23 tools</div></div>
+<div class="tool-grid"><a class="tool-card" href="/tools/agora/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-agora.svg?v=9" alt="Agora dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Agora</div>
+<div class="tool-tag">Self-hosted voting and polling tool</div>
+</div>
+</a><a class="tool-card" href="/tools/brander/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-brander.svg?v=9" alt="Brander dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Brander</div>
+<div class="tool-tag">Self-hosted brand asset manager</div>
+</div>
+</a><a class="tool-card" href="/tools/brandingiron/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-brandingiron.svg?v=9" alt="Branding Iron dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Branding Iron</div>
+<div class="tool-tag">Self-hosted release notes manager</div>
+</div>
+</a><a class="tool-card" href="/tools/broadside/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-broadside.svg?v=9" alt="Broadside dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Broadside</div>
+<div class="tool-tag">Self-hosted press release tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/cartograph/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-cartograph.svg?v=9" alt="Cartograph dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Cartograph</div>
+<div class="tool-tag">Self-hosted sitemap generator and crawler</div>
+</div>
+</a><a class="tool-card" href="/tools/chalkboard/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-chalkboard.svg?v=9" alt="Chalkboard dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Chalkboard</div>
+<div class="tool-tag">Self-hosted collaborative whiteboard</div>
+</div>
+</a><a class="tool-card" href="/tools/concierge/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-concierge.svg?v=9" alt="Concierge dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Concierge</div>
+<div class="tool-tag">Self-hosted customer onboarding checklists</div>
+</div>
+</a><a class="tool-card" href="/tools/crossroads/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-crossroads.svg?v=9" alt="Crossroads dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Crossroads</div>
+<div class="tool-tag">Self-hosted URL shortener</div>
+</div>
+</a><a class="tool-card" href="/tools/glossary/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-glossary.svg?v=9" alt="Glossary dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Glossary</div>
+<div class="tool-tag">Self-hosted term and jargon manager</div>
+</div>
+</a><a class="tool-card" href="/tools/parlor/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-parlor.svg?v=9" alt="Parlor dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Parlor</div>
+<div class="tool-tag">Self-hosted live chat widget</div>
+</div>
+</a><a class="tool-card" href="/tools/pasture/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-pasture.svg?v=9" alt="Pasture dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Pasture</div>
+<div class="tool-tag">Self-hosted content scheduler</div>
+</div>
+</a><a class="tool-card" href="/tools/podium/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-podium.svg?v=9" alt="Podium dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Podium</div>
+<div class="tool-tag">Self-hosted product feedback tool</div>
+</div>
+</a><a class="tool-card" href="/tools/ponyexpress/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-ponyexpress.svg?v=9" alt="Pony Express dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Pony Express</div>
+<div class="tool-tag">Self-hosted transactional email sender</div>
+</div>
+</a><a class="tool-card" href="/tools/portfolio/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-portfolio.svg?v=9" alt="Portfolio dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Portfolio</div>
+<div class="tool-tag">Self-hosted portfolio and gallery</div>
+</div>
+</a><a class="tool-card" href="/tools/post/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-post.svg?v=9" alt="Post dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Post</div>
+<div class="tool-tag">Self-hosted blog engine</div>
+</div>
+</a><a class="tool-card" href="/tools/presskit/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-presskit.svg?v=9" alt="Presskit dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Presskit</div>
+<div class="tool-tag">Self-hosted press kit and media page</div>
+</div>
+</a><a class="tool-card" href="/tools/pulpit/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-pulpit.svg?v=9" alt="Pulpit dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Pulpit</div>
+<div class="tool-tag">Self-hosted presentation tool</div>
+</div>
+</a><a class="tool-card" href="/tools/saltlick/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-saltlick.svg?v=9" alt="Salt Lick dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Salt Lick</div>
+<div class="tool-tag">Self-hosted feature flag service</div>
+</div>
+</a><a class="tool-card" href="/tools/scribe/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-scribe.svg?v=9" alt="Scribe dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Scribe</div>
+<div class="tool-tag">Self-hosted transcription and note taker</div>
+</div>
+</a><a class="tool-card" href="/tools/surveyor/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-surveyor.svg?v=9" alt="Surveyor dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Surveyor</div>
+<div class="tool-tag">Self-hosted form builder and survey tool</div>
+</div>
+</a><a class="tool-card" href="/tools/surveyor2/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-surveyor2.svg?v=9" alt="Surveyor II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Surveyor II</div>
+<div class="tool-tag">Self-hosted NPS and satisfaction tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/typeset/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-typeset.svg?v=9" alt="Typeset dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Typeset</div>
+<div class="tool-tag">Self-hosted documentation generator</div>
+</div>
+</a><a class="tool-card" href="/tools/wateringhole/" data-category="creator">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-wateringhole.svg?v=9" alt="Watering Hole dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Watering Hole</div>
+<div class="tool-tag">Self-hosted community forum</div>
+</div>
+</a></div>
+</div><div class="cat-section" id="cat-personal">
+<div class="cat-head"><div class="cat-label">Personal</div><div class="cat-count">18 tools</div></div>
+<div class="tool-grid"><a class="tool-card" href="/tools/almanac/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-almanac.svg?v=9" alt="Almanac dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Almanac</div>
+<div class="tool-tag">Self-hosted personal journal</div>
+</div>
+</a><a class="tool-card" href="/tools/apothecary/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-apothecary.svg?v=9" alt="Apothecary dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Apothecary</div>
+<div class="tool-tag">Self-hosted health and medication tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/archive/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-archive.svg?v=9" alt="Archive dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Archive</div>
+<div class="tool-tag">Self-hosted content archive and clipping service</div>
+</div>
+</a><a class="tool-card" href="/tools/archivist/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-archivist.svg?v=9" alt="Archivist dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Archivist</div>
+<div class="tool-tag">Self-hosted personal document manager</div>
+</div>
+</a><a class="tool-card" href="/tools/cellar/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-cellar.svg?v=9" alt="Cellar dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Cellar</div>
+<div class="tool-tag">Self-hosted wine and spirits inventory</div>
+</div>
+</a><a class="tool-card" href="/tools/cipher/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-cipher.svg?v=9" alt="Cipher dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Cipher</div>
+<div class="tool-tag">Self-hosted password manager</div>
+</div>
+</a><a class="tool-card" href="/tools/curator/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-curator.svg?v=9" alt="Curator dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Curator</div>
+<div class="tool-tag">Self-hosted recipe and meal planner</div>
+</div>
+</a><a class="tool-card" href="/tools/decisionlog/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-decisionlog.svg?v=9" alt="Decisionlog dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Decisionlog</div>
+<div class="tool-tag">Self-hosted decision log</div>
+</div>
+</a><a class="tool-card" href="/tools/feedreader/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-feedreader.svg?v=9" alt="Feedreader dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Feedreader</div>
+<div class="tool-tag">Self-hosted RSS and news aggregator</div>
+</div>
+</a><a class="tool-card" href="/tools/meridian/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-meridian.svg?v=9" alt="Meridian dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Meridian</div>
+<div class="tool-tag">Self-hosted life dashboard</div>
+</div>
+</a><a class="tool-card" href="/tools/notebook/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-notebook.svg?v=9" alt="Notebook dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Notebook</div>
+<div class="tool-tag">Self-hosted personal note-taking app</div>
+</div>
+</a><a class="tool-card" href="/tools/paddock2/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-paddock2.svg?v=9" alt="Paddock II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Paddock II</div>
+<div class="tool-tag">Self-hosted plant and garden tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/quartermaster/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-quartermaster.svg?v=9" alt="Quartermaster dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Quartermaster</div>
+<div class="tool-tag">Self-hosted home inventory manager</div>
+</div>
+</a><a class="tool-card" href="/tools/quiver/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-quiver.svg?v=9" alt="Quiver dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Quiver</div>
+<div class="tool-tag">Self-hosted reading list and learning tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/recipe/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-recipe.svg?v=9" alt="Recipe dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Recipe</div>
+<div class="tool-tag">Self-hosted recipe management</div>
+</div>
+</a><a class="tool-card" href="/tools/sundial/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-sundial.svg?v=9" alt="Sundial dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Sundial</div>
+<div class="tool-tag">Self-hosted time tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/trailhead/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-trailhead.svg?v=9" alt="Trailhead dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Trailhead</div>
+<div class="tool-tag">Self-hosted habit and goal tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/waystation/" data-category="personal">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-waystation.svg?v=9" alt="Waystation dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Waystation</div>
+<div class="tool-tag">Self-hosted travel and trip planner</div>
+</div>
+</a></div>
+</div><div class="cat-section" id="cat-finance">
+<div class="cat-head"><div class="cat-label">Finance</div><div class="cat-count">16 tools</div></div>
+<div class="tool-grid"><a class="tool-card" href="/tools/assayer/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-assayer.svg?v=9" alt="Assayer dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Assayer</div>
+<div class="tool-tag">Self-hosted revenue and subscription tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/billfold/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-billfold.svg?v=9" alt="Billfold dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Billfold</div>
+<div class="tool-tag">Self-hosted invoice generator</div>
+</div>
+</a><a class="tool-card" href="/tools/billfold2/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-billfold2.svg?v=9" alt="Billfold II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Billfold II</div>
+<div class="tool-tag">Self-hosted contractor timesheet and billing</div>
+</div>
+</a><a class="tool-card" href="/tools/books/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-books.svg?v=9" alt="Books dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Books</div>
+<div class="tool-tag">Self-hosted business bookkeeping</div>
+</div>
+</a><a class="tool-card" href="/tools/consortium/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-consortium.svg?v=9" alt="Consortium dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Consortium</div>
+<div class="tool-tag">Self-hosted vendor and supplier tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/deed/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-deed.svg?v=9" alt="Deed dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Deed</div>
+<div class="tool-tag">Self-hosted digital asset and license registry</div>
+</div>
+</a><a class="tool-card" href="/tools/dividend/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-dividend.svg?v=9" alt="Dividend dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Dividend</div>
+<div class="tool-tag">Self-hosted affiliate program manager</div>
+</div>
+</a><a class="tool-card" href="/tools/dossier/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-dossier.svg?v=9" alt="Dossier dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Dossier</div>
+<div class="tool-tag">Self-hosted contact and CRM manager</div>
+</div>
+</a><a class="tool-card" href="/tools/exchequer/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-exchequer.svg?v=9" alt="Exchequer dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Exchequer</div>
+<div class="tool-tag">Self-hosted budget tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/grubstake/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-grubstake.svg?v=9" alt="Grubstake dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Grubstake</div>
+<div class="tool-tag">Self-hosted crowdfunding and pre-orders</div>
+</div>
+</a><a class="tool-card" href="/tools/ledger/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-ledger.svg?v=9" alt="Ledger dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Ledger</div>
+<div class="tool-tag">Self-hosted double-entry bookkeeping</div>
+</div>
+</a><a class="tool-card" href="/tools/ledger2/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-ledger2.svg?v=9" alt="Ledger II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Ledger II</div>
+<div class="tool-tag">Self-hosted personal finance tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/pennant/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-pennant.svg?v=9" alt="Pennant dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Pennant</div>
+<div class="tool-tag">Self-hosted loyalty and points system</div>
+</div>
+</a><a class="tool-card" href="/tools/prospector/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-prospector.svg?v=9" alt="Prospector dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Prospector</div>
+<div class="tool-tag">Self-hosted sales pipeline tracker</div>
+</div>
+</a><a class="tool-card" href="/tools/prospector2/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-prospector2.svg?v=9" alt="Prospector II dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Prospector II</div>
+<div class="tool-tag">Self-hosted lead scoring engine</div>
+</div>
+</a><a class="tool-card" href="/tools/steward/" data-category="finance">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-steward.svg?v=9" alt="Steward dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Steward</div>
+<div class="tool-tag">Self-hosted expense tracker</div>
+</div>
+</a></div>
+</div><div class="cat-section" id="cat-business">
+<div class="cat-head"><div class="cat-label">Business</div><div class="cat-count">12 tools</div></div>
+<div class="tool-grid"><a class="tool-card" href="/tools/booking/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-booking.svg?v=9" alt="Booking dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Booking</div>
+<div class="tool-tag">Self-hosted appointment scheduling</div>
+</div>
+</a><a class="tool-card" href="/tools/breeding/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-breeding.svg?v=9" alt="Breeding dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Breeding</div>
+<div class="tool-tag">Self-hosted pedigree and breeding records</div>
+</div>
+</a><a class="tool-card" href="/tools/checkin/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-checkin.svg?v=9" alt="Checkin dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Checkin</div>
+<div class="tool-tag">Self-hosted attendance and check-in tracking</div>
+</div>
+</a><a class="tool-card" href="/tools/curriculum/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-curriculum.svg?v=9" alt="Curriculum dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Curriculum</div>
+<div class="tool-tag">Self-hosted lesson planning</div>
+</div>
+</a><a class="tool-card" href="/tools/estimate/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-estimate.svg?v=9" alt="Estimate dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Estimate</div>
+<div class="tool-tag">Self-hosted quotes and estimates</div>
+</div>
+</a><a class="tool-card" href="/tools/fleet/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-fleet.svg?v=9" alt="Fleet dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Fleet</div>
+<div class="tool-tag">Self-hosted vehicle and fleet management</div>
+</div>
+</a><a class="tool-card" href="/tools/harvest/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-harvest.svg?v=9" alt="Harvest dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Harvest</div>
+<div class="tool-tag">Self-hosted crop and harvest tracking</div>
+</div>
+</a><a class="tool-card" href="/tools/menu/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-menu.svg?v=9" alt="Menu dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Menu</div>
+<div class="tool-tag">Self-hosted digital menu management</div>
+</div>
+</a><a class="tool-card" href="/tools/permit/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-permit.svg?v=9" alt="Permit dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Permit</div>
+<div class="tool-tag">Self-hosted permit and license tracking</div>
+</div>
+</a><a class="tool-card" href="/tools/reservation/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-reservation.svg?v=9" alt="Reservation dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Reservation</div>
+<div class="tool-tag">Self-hosted table and space reservations</div>
+</div>
+</a><a class="tool-card" href="/tools/tournament/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-tournament.svg?v=9" alt="Tournament dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Tournament</div>
+<div class="tool-tag">Self-hosted tournament brackets</div>
+</div>
+</a><a class="tool-card" href="/tools/waiver/" data-category="business">
+<div class="tool-thumb"><img src="/site-assets/assets/screenshots/tool-waiver.svg?v=9" alt="Waiver dashboard" loading="lazy"></div>
+<div class="tool-body">
+<div class="tool-name">Waiver</div>
+<div class="tool-tag">Self-hosted digital consent forms</div>
+</div>
+</a></div>
+</div>
+<footer>
+<span class="sig">Stockyard. Wrangle your Stack.</span>
+<a href="/for/">Bundles</a> · <a href="/tools/">Tools</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a>
+</footer>
+</body>
+</html>
