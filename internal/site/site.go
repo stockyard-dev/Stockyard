@@ -21,7 +21,6 @@ import (
 //go:embed static
 var staticFiles embed.FS
 
-
 const affiliateSchema = `
 CREATE TABLE IF NOT EXISTS affiliates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -225,7 +224,6 @@ func servePage(w http.ResponseWriter, r *http.Request, data []byte, cacheControl
 	w.Write(data)
 }
 
-
 // installRateLimit tracks install requests per IP to prevent abuse.
 var (
 	installLimiter   = make(map[string]int64)
@@ -332,12 +330,26 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		if path == "for/" || path == "for" {
 			path = "for/index.html"
 		} else if strings.HasSuffix(path, "/install.sh") {
-			// Install script — try static first, then AI-generated
-			data, err := fs.ReadFile(sub, path)
-			if err != nil && recommender != nil {
-				// Try AI-generated install script
-				slug := strings.TrimPrefix(path, "for/")
-				slug = strings.TrimSuffix(slug, "/install.sh")
+			// Install script — prefer the generator over the static file.
+			//
+			// The generator produces a download-from-GitHub-releases script
+			// with a proper bundle directory, start.sh/stop.sh scaffolding,
+			// per-tool data dirs, and (when the LLM cache is warm) personalized
+			// config.json downloads. For an uncached static catalog slug it
+			// synthesizes a RecommendResult from bundles.json, so every paying
+			// customer on /for/{slug}/install.sh gets the same good install
+			// experience as someone who typed a custom description on the
+			// homepage.
+			//
+			// The legacy static files under site/for/{slug}/install.sh are
+			// kept as a fallback-of-a-fallback: if the generator can't produce
+			// a script for this slug (unknown slug, bundles.json missing,
+			// etc.), we still serve whatever hand-written script the repo has
+			// for that path. That way this change can't silently break a
+			// listed bundle that the generator happens not to know about yet.
+			slug := strings.TrimPrefix(path, "for/")
+			slug = strings.TrimSuffix(slug, "/install.sh")
+			if recommender != nil {
 				if script, ok := recommender.GenerateInstallScript(slug); ok {
 					recordInstall(db, r, "/"+path)
 					w.Header().Set("Content-Type", "text/plain; charset=utf-8")
@@ -346,6 +358,9 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 					return
 				}
 			}
+			// Generator miss — fall back to any static install.sh shipped in
+			// the embedded FS for this bundle.
+			data, err := fs.ReadFile(sub, path)
 			if err != nil {
 				http.NotFound(w, r)
 				return
@@ -413,7 +428,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 	}
 
 	// Serve install script (with persistent download tracking)
-
 
 	mux.HandleFunc("GET /install-menu.sh", func(w http.ResponseWriter, r *http.Request) {
 		data, err := fs.ReadFile(sub, "install-menu.sh")
@@ -775,7 +789,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
-
 	// Serve RSS feed
 
 	// Affiliate program API
@@ -811,16 +824,16 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			if len(code) < 2 {
 				code = "ref-" + code
 			}
-			
+
 			db.Exec("INSERT OR IGNORE INTO affiliates (code, name, email) VALUES (?, ?, ?)",
 				code, req.Name, req.Email)
-			
+
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]string{
-				"code": code,
-				"link": "https://stockyard.dev/?ref=" + code,
+				"code":         code,
+				"link":         "https://stockyard.dev/?ref=" + code,
 				"install_link": "https://stockyard.dev/install.sh?ref=" + code,
-				"tools_link": "https://stockyard.dev/tools/?ref=" + code,
+				"tools_link":   "https://stockyard.dev/tools/?ref=" + code,
 			})
 		})
 
@@ -833,26 +846,26 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 				json.NewEncoder(w).Encode(map[string]string{"error": "code parameter required"})
 				return
 			}
-			
+
 			var totalClicks int64
 			db.QueryRow("SELECT COUNT(*) FROM referral_clicks WHERE code = ?", code).Scan(&totalClicks)
-			
+
 			var uniqueClicks int64
 			db.QueryRow("SELECT COUNT(DISTINCT ip_hash) FROM referral_clicks WHERE code = ?", code).Scan(&uniqueClicks)
-			
+
 			var last7d int64
 			db.QueryRow("SELECT COUNT(*) FROM referral_clicks WHERE code = ? AND timestamp > datetime('now', '-7 days')", code).Scan(&last7d)
-			
+
 			var installs int64
 			db.QueryRow("SELECT COUNT(*) FROM install_events WHERE referrer LIKE ?", "%ref="+code+"%").Scan(&installs)
-			
+
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]any{
-				"code": code,
-				"total_clicks": totalClicks,
+				"code":          code,
+				"total_clicks":  totalClicks,
 				"unique_clicks": uniqueClicks,
-				"clicks_7d": last7d,
-				"installs": installs,
+				"clicks_7d":     last7d,
+				"installs":      installs,
 			})
 		})
 
@@ -860,7 +873,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		originalServePage := servePage
 		_ = originalServePage // suppress unused warning
 	}
-
 
 	// Track referral clicks on any page with ?ref= parameter
 	mux.HandleFunc("GET /api/affiliate/track", func(w http.ResponseWriter, r *http.Request) {

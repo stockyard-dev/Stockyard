@@ -64,16 +64,32 @@ type RecommendTool struct {
 	Config       json.RawMessage `json:"config,omitempty"`
 }
 
+// CatalogBundle is a minimal view of a bundles.json entry — enough to
+// synthesize a RecommendResult when a paying customer hits a static
+// catalog slug that has no LLM-cached result yet. Fields mirror
+// site/tools/bundles.json.
+type CatalogBundle struct {
+	Slug        string   `json:"slug"`
+	Name        string   `json:"name"`
+	Category    string   `json:"category"`
+	Headline    string   `json:"headline"`
+	Description string   `json:"description"`
+	Tools       []string `json:"tools"`
+	PriceAnchor string   `json:"price_anchor"`
+	Replaces    []string `json:"replaces"`
+}
+
 // Recommender handles AI-powered tool recommendations.
 type Recommender struct {
 	db         *sql.DB
 	catalog    string // formatted tool catalog for LLM prompt
 	llmBaseURL string // base URL for the local Stockyard proxy (OpenAI-compatible)
 	mu         sync.RWMutex
-	slugSet    map[string]bool   // known tool slugs for validation
-	portMap    map[string]int    // slug → default port
-	nameMap    map[string]string // slug → display name
-	recCache   *RecCache         // Layer 2 normalized cache
+	slugSet    map[string]bool           // known tool slugs for validation
+	portMap    map[string]int            // slug → default port
+	nameMap    map[string]string         // slug → display name
+	bundles    map[string]*CatalogBundle // bundle slug → catalog entry (static /for/ pages)
+	recCache   *RecCache                 // Layer 2 normalized cache
 	// llmSem caps concurrent LLM calls to protect Anthropic rate limits and
 	// prevent goroutine pile-ups on launch traffic spikes. Cache hits don't
 	// touch the semaphore — only the L3 LLM-bound code path does. When the
@@ -103,12 +119,14 @@ func NewRecommender(db *sql.DB) *Recommender {
 		slugSet:    make(map[string]bool),
 		portMap:    make(map[string]int),
 		nameMap:    make(map[string]string),
+		bundles:    make(map[string]*CatalogBundle),
 		llmSem:     make(chan struct{}, MaxConcurrentLLMCalls),
 	}
 
 	r.recCache = NewRecCache(db)
 	logCacheStats(r.recCache)
 	r.loadCatalog()
+	r.loadBundles()
 	return r
 }
 
@@ -160,6 +178,84 @@ func (r *Recommender) loadCatalog() {
 	}
 	r.catalog = strings.Join(lines, "\n")
 	log.Printf("[recommend] loaded %d tools for AI catalog", len(tools))
+}
+
+// loadBundles reads the static bundle catalog from site/tools/bundles.json
+// and populates r.bundles. This powers synthesizeResultForBundle, which is
+// used when a paying customer hits a static /for/{slug}/install.sh URL and
+// there is no LLM-cached result for that slug yet. Without this, every
+// paying customer would get the legacy curl-pipe-sh install.sh that ships
+// in site/for/{slug}/install.sh — which doesn't use the good install script
+// generator at all. With this, every static bundle gets the same proper
+// install experience as LLM-generated bundles: direct binary downloads
+// from GitHub releases, per-tool data directories, start.sh/stop.sh
+// scaffolding, and (when the cache warms up) personalized configs.
+func (r *Recommender) loadBundles() {
+	data, err := staticFiles.ReadFile("static/tools/bundles.json")
+	if err != nil {
+		log.Printf("[recommend] bundles.json not found — static bundle install fallback disabled: %v", err)
+		return
+	}
+	var list []*CatalogBundle
+	if err := json.Unmarshal(data, &list); err != nil {
+		log.Printf("[recommend] bundles.json parse error: %v", err)
+		return
+	}
+	for _, b := range list {
+		if b == nil || b.Slug == "" {
+			continue
+		}
+		r.bundles[b.Slug] = b
+	}
+	log.Printf("[recommend] loaded %d static bundles for install fallback", len(r.bundles))
+}
+
+// synthesizeResultForBundle builds a RecommendResult from a static
+// bundles.json entry. Used by GenerateInstallScript when the slug is a
+// known catalog bundle but has no LLM-cached result yet. The synthesized
+// result has no per-tool personalization configs — the install script
+// will still curl /api/toolkit/{slug}/config/{tool} for each tool, and
+// those requests will 404 gracefully (with `|| true` in the script), so
+// the tool binaries start with their built-in defaults. When someone
+// later runs the LLM on a static bundle and caches the result, the same
+// install.sh will automatically start serving personalized configs for
+// new installs — no code change required.
+func (r *Recommender) synthesizeResultForBundle(slug string) *RecommendResult {
+	b, ok := r.bundles[slug]
+	if !ok || b == nil || len(b.Tools) == 0 {
+		return nil
+	}
+	// Only include tools that exist in the catalog. Silently drops any
+	// stale tool slugs in bundles.json so the install script never
+	// references a binary that has no GitHub release.
+	var tools []RecommendTool
+	for _, toolSlug := range b.Tools {
+		if !r.slugSet[toolSlug] {
+			continue
+		}
+		label := r.nameMap[toolSlug]
+		if label == "" {
+			label = toolSlug
+		}
+		tools = append(tools, RecommendTool{
+			Slug:  toolSlug,
+			Label: label,
+			Desc:  "", // populated by the LLM path, not needed for install
+		})
+	}
+	if len(tools) == 0 {
+		return nil
+	}
+	title := b.Name
+	if title == "" {
+		title = "Stockyard for " + slug
+	}
+	return &RecommendResult{
+		Title:    title,
+		Audience: b.Headline,
+		Tools:    tools,
+		Slug:     slug,
+	}
 }
 
 // HandleRecommend processes a recommendation request through 3 cache layers:
@@ -290,11 +386,11 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 			log.Printf("[recommend] LLM failed, falling back to quick-match slug: %s", slug)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]any{
-				"slug":          slug,
-				"fallback":      true,
-				"degraded":      true,
-				"redirect_to":   "/for/" + slug + "/",
-				"message":       "AI recommendation timed out — showing the closest static bundle instead",
+				"slug":        slug,
+				"fallback":    true,
+				"degraded":    true,
+				"redirect_to": "/for/" + slug + "/",
+				"message":     "AI recommendation timed out — showing the closest static bundle instead",
 			})
 			return
 		}
@@ -571,16 +667,41 @@ func (r *Recommender) ServeCachedBundle(slug string) ([]byte, bool) {
 	return renderCachedBundlePage(slug, &result), true
 }
 
-// GenerateInstallScript creates a full bundle install script for a cached AI bundle.
+// GenerateInstallScript creates a full bundle install script for a cached
+// AI bundle OR a static catalog bundle. The resolution order is:
+//
+//  1. generated_bundles table — a previous LLM call cached a RecommendResult
+//     for this slug, and we serve the full script with any per-tool
+//     personalization configs the LLM produced.
+//  2. bundles.json — the slug is a static catalog bundle (one of the 195
+//     entries under site/tools/bundles.json). We synthesize a minimal
+//     RecommendResult from the bundle's tool list and generate a script
+//     that installs the same binaries with the same scaffolding. The
+//     script still fetches /api/toolkit/{slug}/config/{tool} for each
+//     tool; those requests 404 gracefully (the script uses `|| true`),
+//     so tools start with their built-in defaults. If the LLM later
+//     caches a result for this slug, the same install.sh URL will
+//     automatically start serving personalized configs.
+//
+// Returning (nil, false) means neither a cached AI result nor a static
+// bundle entry exists for this slug — the route handler will 404.
 func (r *Recommender) GenerateInstallScript(slug string) ([]byte, bool) {
+	var result RecommendResult
+
+	// 1. Cached AI bundle (LLM path, includes personalized configs).
 	var resultJSON string
 	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, slug).Scan(&resultJSON)
-	if err != nil {
-		return nil, false
+	if err == nil {
+		json.Unmarshal([]byte(resultJSON), &result)
 	}
 
-	var result RecommendResult
-	json.Unmarshal([]byte(resultJSON), &result)
+	// 2. Fall back to static catalog bundle (bundles.json path).
+	if len(result.Tools) == 0 {
+		if synth := r.synthesizeResultForBundle(slug); synth != nil {
+			result = *synth
+			log.Printf("[recommend] install script: synthesized from bundles.json for %q (%d tools, no LLM cache yet)", slug, len(result.Tools))
+		}
+	}
 
 	if len(result.Tools) == 0 {
 		return nil, false
@@ -729,7 +850,9 @@ func renderCachedBundlePage(slug string, r *RecommendResult) []byte {
 		slug, slug,
 		len(r.Tools), toolCards.String(),
 		func() string {
-			if replaces.Len() == 0 { return "" }
+			if replaces.Len() == 0 {
+				return ""
+			}
 			return fmt.Sprintf(`<div class="section" style="text-align:center;background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);padding:2rem"><div class="section-label">What it replaces</div><ul style="list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin:1rem 0">%s</ul><p style="font-size:.95rem;margin-top:1rem"><strong style="color:var(--rust-light)">You save ~$%d/year</strong></p></div>`, replaces.String(), r.SavingsPerYear)
 		}(),
 		slug,
@@ -763,6 +886,8 @@ func slugify(desc string) string {
 }
 
 func min(a, b int) int {
-	if a < b { return a }
+	if a < b {
+		return a
+	}
 	return b
 }
