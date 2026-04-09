@@ -73,6 +73,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:600px){.hero{padding:3rem 1.5rem 2rem}.section{padding:2rem 1.5rem}.tool-grid{grid-template-columns:1fr}.install{font-size:0.7rem}.nav-links{gap:0.8rem;font-size:0.7rem}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+a.tool-card{text-decoration:none;color:inherit;display:flex;flex-direction:column}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard for Theater &amp; Performing Arts","description":"Cast &amp; crew directory, ticketing/invoicing, production tasks, rehearsal schedules, contact lists, show announcements, budget, and audition forms. Self-hosted, $7.99/mo. 9 tools included.","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS","offers":{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly bundle subscription"},"author":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}
@@ -124,24 +125,33 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <div class="section">
 <div class="section-label">9 tools included</div>
 <div class="tool-grid">
-<div class="tool-card">
-<img alt="Dossier dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-dossier.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Dossier</div><div class="tool-desc">Contact records and directory</div></div></div>
-<div class="tool-card">
-<img alt="Billfold dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-billfold.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Billfold</div><div class="tool-desc">Invoicing and payments</div></div></div>
-<div class="tool-card">
-<img alt="Roundup dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-roundup.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Roundup</div><div class="tool-desc">Job and task tracking</div></div></div>
-<div class="tool-card">
-<img alt="Sundial dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-sundial.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Sundial</div><div class="tool-desc">Scheduling and calendar</div></div></div>
-<div class="tool-card">
-<img alt="Roster dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-roster.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Roster</div><div class="tool-desc">Team and member rosters</div></div></div>
-<div class="tool-card">
-<img alt="Announcements dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-announcements.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Announcements</div><div class="tool-desc">Announcements and updates</div></div></div>
-<div class="tool-card">
-<img alt="Steward dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-steward.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Steward</div><div class="tool-desc">Expense and income tracking</div></div></div>
-<div class="tool-card">
-<img alt="Surveyor dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-surveyor.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Surveyor</div><div class="tool-desc">Forms, intake, and registration</div></div></div>
-<div class="tool-card">
-<img alt="Reservation dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-reservation.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Reservation</div><div class="tool-desc">Space and table reservations</div></div></div>
+<a class="tool-card" href="/tools/dossier/">
+<img alt="Dossier dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-dossier.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Dossier</div><div class="tool-desc">Contact records and directory</div>
+</a></div>
+<a class="tool-card" href="/tools/billfold/">
+<img alt="Billfold dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-billfold.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Billfold</div><div class="tool-desc">Invoicing and payments</div>
+</a></div>
+<a class="tool-card" href="/tools/roundup/">
+<img alt="Roundup dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-roundup.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Roundup</div><div class="tool-desc">Job and task tracking</div>
+</a></div>
+<a class="tool-card" href="/tools/sundial/">
+<img alt="Sundial dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-sundial.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Sundial</div><div class="tool-desc">Scheduling and calendar</div>
+</a></div>
+<a class="tool-card" href="/tools/roster/">
+<img alt="Roster dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-roster.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Roster</div><div class="tool-desc">Team and member rosters</div>
+</a></div>
+<a class="tool-card" href="/tools/announcements/">
+<img alt="Announcements dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-announcements.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Announcements</div><div class="tool-desc">Announcements and updates</div>
+</a></div>
+<a class="tool-card" href="/tools/steward/">
+<img alt="Steward dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-steward.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Steward</div><div class="tool-desc">Expense and income tracking</div>
+</a></div>
+<a class="tool-card" href="/tools/surveyor/">
+<img alt="Surveyor dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-surveyor.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Surveyor</div><div class="tool-desc">Forms, intake, and registration</div>
+</a></div>
+<a class="tool-card" href="/tools/reservation/">
+<img alt="Reservation dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-reservation.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Reservation</div><div class="tool-desc">Space and table reservations</div>
+</a></div>
 </div>
 </div>
 <div class="replaces">

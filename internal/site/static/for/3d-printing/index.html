@@ -73,6 +73,7 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:0.7
 footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
 @media(max-width:600px){.hero{padding:3rem 1.5rem 2rem}.section{padding:2rem 1.5rem}.tool-grid{grid-template-columns:1fr}.install{font-size:0.7rem}.nav-links{gap:0.8rem;font-size:0.7rem}}
 @media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28}}
+a.tool-card{text-decoration:none;color:inherit;display:flex;flex-direction:column}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Stockyard for 3D Printing Enthusiasts","description":"Filament inventory, print log, print stats, material costs, print queue, and project tracking. Self-hosted, $7.99/mo. 8 tools included.","applicationCategory":"BusinessApplication","operatingSystem":"Linux, macOS","offers":{"@type":"Offer","price":"7.99","priceCurrency":"USD","description":"Monthly bundle subscription"},"author":{"@type":"Organization","name":"Stockyard","url":"https://stockyard.dev"}}
@@ -124,24 +125,31 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <div class="section">
 <div class="section-label">8 tools included</div>
 <div class="tool-grid">
-<div class="tool-card">
-<img alt="Quartermaster dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-quartermaster.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Quartermaster</div><div class="tool-desc">Inventory management</div></div></div>
-<div class="tool-card">
-<img alt="Notebook dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-notebook.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Notebook</div><div class="tool-desc">Notes and documentation</div></div></div>
-<div class="tool-card">
-<img alt="Tally dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-tally.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Tally</div><div class="tool-desc">Scoring and leaderboards</div></div></div>
-<div class="tool-card">
-<img alt="Steward dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-steward.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Steward</div><div class="tool-desc">Expense and income tracking</div></div></div>
-<div class="tool-card">
-<img alt="Sundial dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-sundial.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Sundial</div><div class="tool-desc">Scheduling and calendar</div></div></div>
-<div class="tool-card">
-<img alt="Roundup dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-roundup.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Roundup</div><div class="tool-desc">Job and task tracking</div></div></div>
+<a class="tool-card" href="/tools/quartermaster/">
+<img alt="Quartermaster dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-quartermaster.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Quartermaster</div><div class="tool-desc">Inventory management</div>
+</a></div>
+<a class="tool-card" href="/tools/notebook/">
+<img alt="Notebook dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-notebook.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Notebook</div><div class="tool-desc">Notes and documentation</div>
+</a></div>
+<a class="tool-card" href="/tools/tally/">
+<img alt="Tally dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-tally.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Tally</div><div class="tool-desc">Scoring and leaderboards</div>
+</a></div>
+<a class="tool-card" href="/tools/steward/">
+<img alt="Steward dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-steward.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Steward</div><div class="tool-desc">Expense and income tracking</div>
+</a></div>
+<a class="tool-card" href="/tools/sundial/">
+<img alt="Sundial dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-sundial.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Sundial</div><div class="tool-desc">Scheduling and calendar</div>
+</a></div>
+<a class="tool-card" href="/tools/roundup/">
+<img alt="Roundup dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-roundup.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Roundup</div><div class="tool-desc">Job and task tracking</div>
+</a></div>
 <div class="tool-card">
 <div class="tool-name">Collection</div>
 <div class="tool-desc">Collections and catalog</div>
 </div>
-<div class="tool-card">
-<img alt="Portfolio dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-portfolio.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Portfolio</div><div class="tool-desc">Gallery and portfolio</div></div></div>
+<a class="tool-card" href="/tools/portfolio/">
+<img alt="Portfolio dashboard mockup" class="tool-mockup" loading="lazy" src="/site-assets/assets/screenshots/tool-portfolio.svg?v=9"/><div class="tool-card-body"><div class="tool-name">Portfolio</div><div class="tool-desc">Gallery and portfolio</div>
+</a></div>
 </div>
 </div>
 <div class="replaces">
