@@ -92,13 +92,13 @@ To activate, set this environment variable before starting the tool:
 
   export STOCKYARD_LICENSE_KEY=%s
 
-The key is verified locally. No network call, no phone-home. Once your tool reads it, you are good.
+The key is verified on your computer. Nothing gets sent anywhere. Once your tool reads it, you are good.
 
 If you need help getting this running, just reply to this email. I read every message myself, usually within a few hours. A friendlier setup flow is on the way, but for now a short Terminal session is how it works.
 
 Heads up: Windows is not supported yet. If you are on Windows, reply and I will let you know as soon as it is.
 
-Your data stays on your machine forever. No cloud. No phone-home. If you cancel, you keep everything.
+Your data stays on your machine forever. No cloud. No data ever leaves your computer. If you cancel, you keep everything.
 
 Michael
 hello@stockyard.dev`, productName, tier, licenseKey, licenseKey)
@@ -145,7 +145,7 @@ If you have never opened Terminal, do not worry about it. Reply to this email an
 
 Heads up on Windows: it is not supported yet. If you are on Windows, reply and I will let you know the day it is.
 
-Your data stays on your machine forever. No cloud. No phone-home. If you cancel, you keep everything.
+Your data stays on your machine forever. No cloud. No data ever leaves your computer. If you cancel, you keep everything.
 
 Any questions at all, just reply. I read every message myself.
 
@@ -354,13 +354,13 @@ To activate, set this environment variable before starting the tool:
 
   export STOCKYARD_LICENSE_KEY=%s
 
-The key is verified locally. No network call, no phone-home. Once your tool reads it, you're good.
+The key is verified on your computer. Nothing gets sent anywhere. Once your tool reads it, you're good.
 
 If you need help getting this running, just reply to this email. I read every message myself, usually within a few hours. A friendlier setup flow is on the way, but for now a short Terminal session is how it works.
 
 Heads up: Windows is not supported yet. If you are on Windows, reply and I will let you know as soon as it is.
 
-Your data stays on your machine forever. No cloud. No phone-home. If you cancel, you keep everything.
+Your data stays on your machine forever. No cloud. No data ever leaves your computer. If you cancel, you keep everything.
 
 Michael
 hello@stockyard.dev`,
@@ -377,7 +377,7 @@ func (m *ResendMailer) SendCancellation(to, productName string) error {
 
 Your %s subscription has been canceled. You will not be billed again.
 
-Your license key will keep working until the end of the current billing period, so your tools continue to run normally until then. After that, the tools keep running but will show a "license expired" notice. Your data stays on your machine forever either way — nothing gets deleted, nothing phones home, nothing leaves your computer.
+Your license key will keep working until the end of the current billing period, so your tools continue to run normally until then. After that, the tools keep running but will show a "license expired" notice. Your data stays on your machine forever either way. Nothing gets deleted. Nothing gets sent anywhere. Nothing ever leaves your computer.
 
 If you want to come back later, you can resubscribe anytime at https://stockyard.dev/pricing and pick up where you left off.
 
@@ -404,7 +404,7 @@ func (m *ResendMailer) SendBundleTrialKey(to, bundleName, bundleSlug, licenseKey
 
 	body := fmt.Sprintf(`Hey,
 
-Thanks for starting a trial of %s. I am around if you need any help getting it running — just reply to this email.
+Thanks for starting a trial of %s. I am around if you need any help getting it running. Just reply to this email.
 
 %s
 
@@ -427,7 +427,7 @@ If you are comfortable with Terminal, copy and paste these two lines, one at a t
 
    export STOCKYARD_LICENSE_KEY=YOUR_KEY
 
-After both commands run, your tools are installed in ~/stockyard-%s/ on your computer. Reply to this email and tell me which tool you want to open first — I will send you the exact line to run and where to click once it opens in your browser.
+After both commands run, your tools are installed in ~/stockyard-%s/ on your computer. Reply to this email and tell me which tool you want to open first. I will send you the exact line to run and where to click once it opens in your browser.
 
 If you have never opened Terminal before
 -----------------------------------------
