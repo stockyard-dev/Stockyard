@@ -363,6 +363,17 @@ func isPublicRoute(method, path string) bool {
 	if method == "GET" && path == "/api/billing/stripe/prices" {
 		return true // public pricing data
 	}
+	// Post-purchase session lookup — public, the session_id IS the
+	// auth credential. See HandleSessionLookup in apiserver/stripe.go
+	// for the full security model. Used by /billing/success/ to
+	// surface the license key inline without forcing the customer
+	// to leave the tab to check email.
+	if method == "GET" && path == "/api/billing/session" {
+		return true
+	}
+	if method == "GET" && strings.HasPrefix(path, "/api/billing/session/") {
+		return true
+	}
 	// Live webhook demo (public, rate-limited in handler)
 	if strings.HasPrefix(path, "/api/demo/webhook") {
 		return true
