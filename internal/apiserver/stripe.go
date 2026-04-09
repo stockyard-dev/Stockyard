@@ -320,8 +320,8 @@ type WebhookHandler struct {
 	stripe       *StripeClient
 	keyPair      *license.KeyPair
 	mailer       Mailer
-	authUpdater  AuthTierUpdater // updates user tier in auth system (optional)
-	toolsPrivKey string          // hex Ed25519 private key for tool license issuance
+	authUpdater  AuthTierUpdater     // updates user tier in auth system (optional)
+	toolsPrivKey string              // hex Ed25519 private key for tool license issuance
 	bundleTools  map[string][]string // bundle slug → tool slugs
 	trialDrip    *TrialDripRunner    // trial reminder email runner (optional)
 }
@@ -454,6 +454,62 @@ func (wh *WebhookHandler) HandleWebhook(w http.ResponseWriter, r *http.Request) 
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+// lookupBundleDisplay reads the cached RecommendResult for a bundle slug
+// and returns a human-readable display name and tool label list suitable
+// for the trial welcome email.
+//
+// Every bundle purchase — whether the slug is a static catalog bundle like
+// "barber-salon" or a generator-created bundle like "stockyard-4fe270" —
+// goes through the recommender pipeline at some point, either via an
+// earlier /api/recommend call (static bundles are pre-warmed via
+// cmd/prewarm, generator bundles are warmed at generation time) or at
+// /for/{slug}/ first-visit. That means generated_bundles almost always
+// has a row for any slug that made it to checkout, and that row contains
+// both an LLM-generated Title ("Stockyard for Barber Shops & Hair Salons",
+// "Stockyard Operations & Intelligence Stack") and Tools with human
+// Label fields ("Customer Records", "Business Expenses") that read far
+// better in email copy than the raw slug or raw tool-slug lists.
+//
+// Returns empty strings/nil on miss so the caller can fall back to
+// slug-munging and the bundleTools map. Never returns an error — any
+// DB read failure is silently treated as a miss.
+func (wh *WebhookHandler) lookupBundleDisplay(slug string) (displayName string, toolLabels []string) {
+	if slug == "" || wh.db == nil {
+		return "", nil
+	}
+	var resultJSON string
+	err := wh.db.Conn().QueryRow(
+		`SELECT result_json FROM generated_bundles WHERE slug = ?`, slug,
+	).Scan(&resultJSON)
+	if err != nil {
+		return "", nil
+	}
+	// Minimal shape — we only need Title and Tools[*].Label. Use
+	// map[string]any rather than importing the Recommender's types
+	// across package boundaries.
+	var decoded struct {
+		Title string `json:"title"`
+		Tools []struct {
+			Label string `json:"label"`
+			Slug  string `json:"slug"`
+		} `json:"tools"`
+	}
+	if err := json.Unmarshal([]byte(resultJSON), &decoded); err != nil {
+		return "", nil
+	}
+	displayName = strings.TrimSpace(decoded.Title)
+	for _, t := range decoded.Tools {
+		label := strings.TrimSpace(t.Label)
+		if label == "" {
+			label = t.Slug // last-ditch fallback, still better than nothing
+		}
+		if label != "" {
+			toolLabels = append(toolLabels, label)
+		}
+	}
+	return displayName, toolLabels
 }
 
 // handleCheckoutCompleted processes a successful checkout — creates customer, generates license key, sends email.
@@ -616,20 +672,43 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 
 	if wh.mailer != nil {
 		if bundle != "" {
-			// Bundle purchase — send trial-aware email with install instructions
-			bundleDisplayName := "Stockyard Bundle"
-			if bundle != "" {
+			// Bundle purchase — send trial-aware email with install instructions.
+			//
+			// Try to pull the LLM-generated display title and human-readable
+			// tool labels from the cached RecommendResult. This works for
+			// both static catalog bundles (pre-warmed by cmd/prewarm) and
+			// generator-created bundles ("I run X" → /for/x-hash/). If the
+			// lookup misses for any reason, we fall back to slug-munging
+			// and the raw bundleTools slug list, which is the old behavior.
+			cachedName, cachedLabels := wh.lookupBundleDisplay(bundle)
+
+			bundleDisplayName := cachedName
+			if bundleDisplayName == "" {
+				// Fallback: munge the slug ("barber-salon" → "Barber salon").
+				// Ugly but safe when the cache miss is real (shouldn't happen
+				// post-prewarm, but belt and suspenders).
 				bundleDisplayName = strings.ReplaceAll(bundle, "-", " ")
 				if len(bundleDisplayName) > 0 {
 					bundleDisplayName = strings.ToUpper(bundleDisplayName[:1]) + bundleDisplayName[1:]
 				}
+				bundleDisplayName = "Stockyard for " + bundleDisplayName
 			}
+
 			trialEndStr := ""
 			if trialEnd > 0 {
 				trialEndStr = time.Unix(trialEnd, 0).UTC().Format("January 2, 2006")
 			}
-			bundleToolSlugs := wh.bundleTools[bundle]
-			if err := wh.mailer.SendBundleTrialKey(email, bundleDisplayName, bundle, licenseKey, trialEndStr, bundleToolSlugs); err != nil {
+
+			// Prefer LLM-labeled tools over raw bundleTools slugs. The raw
+			// slugs are things like "dossier" and "billfold" — meaningless
+			// to a non-developer buyer. The LLM labels are things like
+			// "Customer Records" and "Invoices" — actually readable.
+			toolList := cachedLabels
+			if len(toolList) == 0 {
+				toolList = wh.bundleTools[bundle]
+			}
+
+			if err := wh.mailer.SendBundleTrialKey(email, bundleDisplayName, bundle, licenseKey, trialEndStr, toolList); err != nil {
 				log.Printf("webhook: bundle trial email failed (non-fatal): %v", err)
 			}
 		} else {
@@ -713,16 +792,51 @@ func (wh *WebhookHandler) handleSubscriptionDeleted(raw json.RawMessage) error {
 	subID := jsonStr(sub, "id")
 	log.Printf("webhook: subscription deleted — sub=%s", subID)
 
+	// Look up the license once and reuse it for both the auth downgrade
+	// and the cancellation email. Previously the cancellation email was
+	// defined in mailer.go but never actually sent — the webhook branch
+	// only updated DB state, leaving the customer with no confirmation
+	// that their cancellation went through.
+	lic := wh.db.GetLicenseBySubscription(subID)
+
 	// Downgrade user tier in auth system
-	if wh.authUpdater != nil {
-		// Look up the license to get the email
-		lic := wh.db.GetLicenseBySubscription(subID)
-		if lic != nil && lic.Email != "" {
-			if err := wh.authUpdater.UpdateUserTierByEmail(lic.Email, "free"); err != nil {
-				log.Printf("webhook: auth tier downgrade failed (non-fatal): %v", err)
+	if wh.authUpdater != nil && lic != nil && lic.Email != "" {
+		if err := wh.authUpdater.UpdateUserTierByEmail(lic.Email, "free"); err != nil {
+			log.Printf("webhook: auth tier downgrade failed (non-fatal): %v", err)
+		} else {
+			log.Printf("webhook: auth tier downgraded to free for %s", lic.Email)
+		}
+	}
+
+	// Send cancellation confirmation email. Use the same
+	// lookupBundleDisplay helper as the trial welcome email so the
+	// customer sees the LLM-generated title ("Stockyard Operations &
+	// Intelligence Stack") instead of a munged slug ("Stockyard
+	// 4fe270"). Falls back to slug-munge or the license product field
+	// if the cache lookup misses.
+	if wh.mailer != nil && lic != nil && lic.Email != "" {
+		displayName := ""
+		// licProduct is stamped as "bundle:<slug>" for bundle purchases
+		// (see handleCheckoutCompleted line ~583).
+		if strings.HasPrefix(lic.Product, "bundle:") {
+			bundleSlug := strings.TrimPrefix(lic.Product, "bundle:")
+			if cachedName, _ := wh.lookupBundleDisplay(bundleSlug); cachedName != "" {
+				displayName = cachedName
 			} else {
-				log.Printf("webhook: auth tier downgraded to free for %s", lic.Email)
+				// Fallback to munged slug.
+				munged := strings.ReplaceAll(bundleSlug, "-", " ")
+				if len(munged) > 0 {
+					munged = strings.ToUpper(munged[:1]) + munged[1:]
+				}
+				displayName = "Stockyard for " + munged
 			}
+		} else if lic.Product != "" {
+			displayName = lic.Product
+		} else {
+			displayName = "Stockyard"
+		}
+		if err := wh.mailer.SendCancellation(lic.Email, displayName); err != nil {
+			log.Printf("webhook: cancellation email failed (non-fatal): %v", err)
 		}
 	}
 

@@ -373,7 +373,18 @@ hello@stockyard.dev`,
 func (m *ResendMailer) SendCancellation(to, productName string) error {
 	return m.sendResend(to,
 		fmt.Sprintf("Your %s subscription has been canceled", productName),
-		fmt.Sprintf("Your %s subscription has been canceled. Your key works until the billing period ends.\n\nRe-subscribe anytime at stockyard.dev/pricing\n\nMichael\nhello@stockyard.dev", productName),
+		fmt.Sprintf(`Hey,
+
+Your %s subscription has been canceled. You will not be billed again.
+
+Your license key will keep working until the end of the current billing period, so your tools continue to run normally until then. After that, the tools keep running but will show a "license expired" notice. Your data stays on your machine forever either way — nothing gets deleted, nothing phones home, nothing leaves your computer.
+
+If you want to come back later, you can resubscribe anytime at https://stockyard.dev/pricing and pick up where you left off.
+
+If you canceled by mistake, or if you canceled because something was broken or frustrating, please reply and tell me what happened. I read every message myself and I would genuinely like to know what went wrong.
+
+Michael
+hello@stockyard.dev`, productName),
 	)
 }
 
@@ -384,45 +395,56 @@ func (m *ResendMailer) SendCancellation(to, productName string) error {
 func (m *ResendMailer) SendBundleTrialKey(to, bundleName, bundleSlug, licenseKey, trialEndDate string, tools []string) error {
 	toolList := strings.Join(tools, ", ")
 	if toolList == "" {
-		toolList = "(the full bundle)"
+		toolList = "every Stockyard tool"
 	}
-	trialLine := "Trial ends " + trialEndDate + ". After that it is $7.99/mo, and you can cancel anytime by replying to this email."
+	trialLine := "Your trial ends " + trialEndDate + ". After that it is $7.99/mo, and you can cancel anytime by replying to this email."
 	if trialEndDate == "" {
 		trialLine = "You are on a 14-day free trial. After that it is $7.99/mo, and you can cancel anytime by replying to this email."
 	}
 
 	body := fmt.Sprintf(`Hey,
 
-Thanks for starting a trial of Stockyard for %s. Your license key is below and I am around if you need any help getting it running.
-
-Your license key:
-
-  %s
+Thanks for starting a trial of %s. I am around if you need any help getting it running — just reply to this email.
 
 %s
 
-Tools you get with this bundle: %s.
+Your license key (you will need this in step 2 below):
 
-Here is how to install it on a Mac or Linux computer. If you are comfortable with Terminal, the whole install is two commands:
+%s
 
-  curl -fsSL https://stockyard.dev/for/%s/install.sh | sh
-  export STOCKYARD_LICENSE_KEY=%s
+What is included: %s.
 
-Each tool in your bundle runs as its own small program on your computer. Once install finishes, reply to this email and tell me which one you want to try first. I will send you the exact line to run and where to click once it opens.
+How to install on a Mac or Linux computer
+------------------------------------------
 
-If you have never opened Terminal, do not worry about it. Reply to this email and tell me what kind of computer you have. I will walk you through it over email or jump on a quick call. A friendlier one-click installer is on the way, but I did not want to make you wait on it to get started.
+If you are comfortable with Terminal, copy and paste these two lines, one at a time. The first line downloads and installs your tools. The second line activates your license so the tools know you are a paying customer.
 
-Heads up on Windows: it is not supported yet. If you are on Windows, reply and I will let you know the day it is.
+1. Install:
 
-Your data stays on your machine forever. No cloud. No phone-home. If you cancel, you keep everything.
+   curl -fsSL https://stockyard.dev/for/%s/install.sh | sh
+
+2. Activate (paste your license key from above where it says YOUR_KEY):
+
+   export STOCKYARD_LICENSE_KEY=YOUR_KEY
+
+After both commands run, your tools are installed in ~/stockyard-%s/ on your computer. Reply to this email and tell me which tool you want to open first — I will send you the exact line to run and where to click once it opens in your browser.
+
+If you have never opened Terminal before
+-----------------------------------------
+
+Do not worry about any of that. Reply to this email and tell me what kind of computer you have (Mac, Linux, or Windows) and I will walk you through it over email or hop on a quick call. A friendlier one-click installer is on the way, but I did not want to make you wait on it to get started.
+
+Heads up on Windows: it is not supported yet. If you are on Windows, reply and I will let you know the day it is ready.
+
+Your data stays on your machine forever. No cloud. No data ever leaves your computer. If you cancel, you keep everything you have entered.
 
 Any questions at all, just reply. I read every message myself.
 
 Michael
 hello@stockyard.dev`,
-		bundleName, licenseKey, trialLine, toolList, bundleSlug, licenseKey)
+		bundleName, trialLine, licenseKey, toolList, bundleSlug, bundleSlug)
 
-	return m.sendResend(to, fmt.Sprintf("Welcome to Stockyard for %s", bundleName), body)
+	return m.sendResend(to, fmt.Sprintf("Welcome to %s", bundleName), body)
 }
 
 func (m *ResendMailer) SendTrialReminder(to, bundleName string, daysLeft int) error {
