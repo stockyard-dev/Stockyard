@@ -261,7 +261,9 @@ func (r *Recommender) synthesizeResultForBundle(slug string) *RecommendResult {
 // HandleRecommend processes a recommendation request through 3 cache layers:
 // Layer 1: Quick match (keyword map, ~200 entries, <1ms)
 // Layer 2: Normalized cache (SQLite, catches variations, <5ms)
-// Layer 3: LLM call (Anthropic API, 2-4 seconds, ~$0.005)
+// Layer 3: LLM call (Haiku 4.5 default, Sonnet 4 fallback, 2-4 seconds,
+//
+//	~$0.01-0.02 typical, ~$0.05 worst case on Sonnet escalation)
 func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		http.Error(w, "POST required", 405)
@@ -375,7 +377,7 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	result, err := r.callLLM(desc)
+	result, modelUsed, err := r.callLLMWithFallback(desc)
 	if err != nil {
 		log.Printf("[recommend] LLM error: %v", err)
 
@@ -400,7 +402,10 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	// Validate tool slugs
+	// Validate tool slugs. callLLMWithFallback already checked that
+	// Haiku returned at least 3 valid tools (or escalated to Sonnet),
+	// but Sonnet's output still needs the same filter applied here so
+	// the stored/returned result only contains catalog slugs.
 	var valid []RecommendTool
 	for _, t := range result.Tools {
 		if r.slugSet[t.Slug] {
@@ -432,7 +437,7 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	r.db.Exec(`INSERT OR REPLACE INTO generated_bundles (slug, description, result_json, views) VALUES (?, ?, ?, 1)`,
 		genSlug, desc, string(resultJSON))
 
-	log.Printf("[recommend] L3 LLM call: %q → %s (%d tools)", normalized, genSlug, len(result.Tools))
+	log.Printf("[recommend] L3 %s: %q → %s (%d tools)", modelUsed, normalized, genSlug, len(result.Tools))
 	r.recordGeneration(genSlug, desc, "L3", req.RemoteAddr, len(result.Tools))
 
 	finalResult := personalize(result, businessName)
@@ -534,7 +539,72 @@ func (r *Recommender) lookupResult(slug string) *RecommendResult {
 	return nil
 }
 
-func (r *Recommender) callLLM(description string) (*RecommendResult, error) {
+// Model IDs used by callLLMWithFallback. Haiku 4.5 is the default because
+// it's roughly 4x cheaper than Sonnet 4 at comparable quality for a
+// structured-JSON task like this one, and because routing cost-optimized
+// model selection through our own proxy is the dogfooding story we sell
+// to developers. Sonnet 4 is the fallback for cases where Haiku either
+// errors, returns invalid JSON, or picks fewer than 3 valid tool slugs.
+//
+// Both are hardcoded here rather than env-vars because changing the model
+// is a prompt-quality decision, not an ops decision — if Haiku output
+// starts degrading on a particular vertical, we want the change to land
+// in a commit with a test, not an env flag.
+const (
+	modelPrimary  = "claude-haiku-4-5-20251001"
+	modelFallback = "claude-sonnet-4-20250514"
+)
+
+// callLLMWithFallback tries Haiku first, escalates to Sonnet if Haiku
+// errors out or returns a result that doesn't validate (fewer than 3
+// valid tool slugs from the catalog, or malformed JSON that failed to
+// unmarshal into a RecommendResult). Returns the result, the model that
+// actually served it (for logging / future analytics), and any error
+// from the final attempt.
+//
+// Only two model attempts, no retry-on-same-model: if Sonnet also
+// returns an error or a weak result, we surface that to the caller and
+// let HandleRecommend fall back to the quick-match slug or an error
+// response.
+func (r *Recommender) callLLMWithFallback(description string) (*RecommendResult, string, error) {
+	// Primary attempt: Haiku 4.5.
+	result, err := r.callLLM(description, modelPrimary)
+	if err == nil && result != nil && r.countValidTools(result) >= 3 {
+		return result, "haiku-4.5", nil
+	}
+
+	// Escalate to Sonnet 4. Log why so we can tune the Haiku prompt
+	// later if escalation rate gets high.
+	haikuValid := 0
+	if result != nil {
+		haikuValid = r.countValidTools(result)
+	}
+	log.Printf("[recommend] Haiku escalation → Sonnet: err=%v haiku_valid_tools=%d", err, haikuValid)
+
+	sonnet, sonnetErr := r.callLLM(description, modelFallback)
+	if sonnetErr != nil {
+		return nil, "", fmt.Errorf("both models failed: haiku=%v, sonnet=%v", err, sonnetErr)
+	}
+	return sonnet, "sonnet-4-fallback", nil
+}
+
+// countValidTools returns the number of tools in `result` whose slug
+// exists in the catalog. Used by callLLMWithFallback to decide whether
+// Haiku's output is strong enough or should escalate to Sonnet.
+func (r *Recommender) countValidTools(result *RecommendResult) int {
+	if result == nil {
+		return 0
+	}
+	n := 0
+	for _, t := range result.Tools {
+		if r.slugSet[t.Slug] {
+			n++
+		}
+	}
+	return n
+}
+
+func (r *Recommender) callLLM(description, model string) (*RecommendResult, error) {
 	prompt := fmt.Sprintf(`You are the toolkit builder for Stockyard, a platform of self-hosted business tools. Each tool is a standalone binary (~13MB) that stores data in SQLite on the user's own hardware. No cloud. No dependencies. No accounts.
 
 AVAILABLE TOOLS:
@@ -594,7 +664,7 @@ RULES:
 	// reimplement here. This makes the recommendation pipeline a first-class
 	// dogfooding consumer of stockyard-proxy.
 	reqBody, _ := json.Marshal(map[string]any{
-		"model":      "claude-sonnet-4-20250514",
+		"model":      model,
 		"max_tokens": 6000,
 		"messages": []map[string]string{
 			{"role": "user", "content": prompt},
