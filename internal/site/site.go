@@ -424,15 +424,27 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		http.Redirect(w, r, "/proxy-only/", http.StatusMovedPermanently)
 	})
 
-	// Product tool install scripts — serve /{tool}/install.sh for every tool with download tracking
+	// Product tool install scripts — serve /{tool}/install.sh for every tool with download tracking.
+	// Also register a 301 redirect from the bare /{tool}/ URL to the canonical /tools/{tool}/
+	// landing page, because the old legacy /{tool}/ URLs (which used to have index.html files
+	// back when tools had their own dedicated landing pages) now 404 — every one of the 164 tool
+	// slug URLs was dead until this loop registered the redirect. That's 164 broken URLs silently
+	// killing conversion: ad clicks, shared links, typed-by-memory URLs, cached search results all
+	// landed on the 404 page. The /tools/{tool}/ pages shipped earlier this week have the full SVG
+	// mockup, description, install command, and bundle cross-links — exactly what a prospect needs.
 	toolInstallDirs, _ := fs.ReadDir(sub, ".")
 	for _, entry := range toolInstallDirs {
 		if !entry.IsDir() {
 			continue
 		}
 		t := entry.Name()
-		// Check if this dir has an install.sh
+		// Check if this dir has an install.sh — skip non-tool dirs like /about/, /pricing/, /for/
 		if _, err := fs.ReadFile(sub, t+"/install.sh"); err != nil {
+			continue
+		}
+		// Skip if the dir also has an index.html — some legacy dirs have both, and their
+		// existing handlers should win. None today, but defensive against future additions.
+		if _, err := fs.ReadFile(sub, t+"/index.html"); err == nil {
 			continue
 		}
 		mux.HandleFunc("GET /"+t+"/install.sh", func(w http.ResponseWriter, r *http.Request) {
@@ -445,6 +457,11 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 			w.Header().Set("Cache-Control", "public, max-age=300")
 			w.Write(data)
+		})
+		// Bare-slug redirect: /{tool}/ → /tools/{tool}/. Uses {$} exact-match so it doesn't
+		// collide with /{tool}/install.sh registered just above.
+		mux.HandleFunc("GET /"+t+"/{$}", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/tools/"+t+"/", http.StatusMovedPermanently)
 		})
 	}
 
