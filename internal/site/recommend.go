@@ -177,29 +177,37 @@ func (r *Recommender) allowIP(ipHash string) (ok bool, remaining int) {
 	return true, perIPLimit - len(fresh)
 }
 
-// isPrewarmRequest returns true if the request carries a valid
-// prewarm bypass token. The server looks up STOCKYARD_PREWARM_TOKEN
-// from the environment on every call (not cached) so the token can
-// be rotated by editing the Railway env var without a redeploy.
-// Empty env var = bypass is closed, header is ignored entirely.
-// A mismatched header is logged at low volume (once per unique
-// header value we see) to help spot brute-force attempts.
+// isPrewarmRequest returns two booleans: whether the request carries
+// a valid prewarm bypass token, and whether it also asks for a
+// force-refresh (cache bypass for L1/L2/legacy, direct L3 regen).
+// The force flag is only honored when the token also matches — an
+// unauthenticated client can't set X-Stockyard-Prewarm-Force on its
+// own and have it do anything.
 //
-// Bypass means: skip the per-IP rate limit only. The global
-// MaxConcurrentLLMCalls semaphore still applies — prewarm still
-// cannot saturate more than 5 LLM slots at a time. That's the
-// correct behavior because the semaphore is protecting Anthropic's
-// rate limits, not our wallet.
-func (r *Recommender) isPrewarmRequest(req *http.Request) bool {
+// The server looks up STOCKYARD_PREWARM_TOKEN from the environment
+// on every call (not cached) so the token can be rotated by editing
+// the Railway env var without a redeploy. Empty env var = bypass is
+// closed, both headers are ignored entirely.
+//
+// Bypass means: skip the per-IP rate limit. Force means: also skip
+// L1/L2/legacy cache lookups so a stale entry (tools but no configs
+// from a pre-personalization run) can be overwritten by a fresh L3
+// generation. The global MaxConcurrentLLMCalls semaphore still
+// applies in both cases because that semaphore is protecting
+// Anthropic's rate limits, not our wallet.
+func (r *Recommender) isPrewarmRequest(req *http.Request) (ok, force bool) {
 	got := req.Header.Get("X-Stockyard-Prewarm")
 	if got == "" {
-		return false
+		return false, false
 	}
 	want := os.Getenv("STOCKYARD_PREWARM_TOKEN")
 	if want == "" {
-		return false
+		return false, false
 	}
-	return got == want
+	if got != want {
+		return false, false
+	}
+	return true, req.Header.Get("X-Stockyard-Prewarm-Force") == "1"
 }
 
 // NewRecommender creates the recommendation system.
@@ -387,52 +395,67 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	normalized := normalizeInput(desc)
 	businessName := extractBusinessName(desc)
 
+	// Prewarm bypass check. Decided early so the cache layers can
+	// short-circuit out for force-refresh requests. Force is only
+	// honored when the token is also valid, so an unauthenticated
+	// client can't bypass the cache just by setting the Force header.
+	prewarm, prewarmForce := r.isPrewarmRequest(req)
+	if prewarmForce {
+		log.Printf("[recommend] prewarm force-refresh: skipping L1/L2/legacy for %q", normalized)
+	}
+
 	// ── Layer 1: Quick Match ──────────────────────────────
-	if slug := QuickMatchLookup(normalized); slug != "" {
-		if cached, ok := r.recCache.Get(slug); ok {
+	if !prewarmForce {
+		if slug := QuickMatchLookup(normalized); slug != "" {
+			if cached, ok := r.recCache.Get(slug); ok {
+				result := personalize(cached, businessName)
+				result.Slug = slug
+				result.Cached = true
+				r.recordGeneration(slug, desc, "L1", req.RemoteAddr, len(result.Tools))
+				log.Printf("[recommend] L1 quick-match hit: %q → %s", normalized, slug)
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(result)
+				return
+			}
+			// Slug matched but no cache entry yet — fall through to check generated_bundles
+			// then LLM if needed
+			log.Printf("[recommend] L1 quick-match slug %q exists but no cache entry yet", slug)
+		}
+	}
+
+	// ── Layer 2: Normalized Cache ─────────────────────────
+	if !prewarmForce {
+		if cached, ok := r.recCache.Get(normalized); ok {
 			result := personalize(cached, businessName)
-			result.Slug = slug
 			result.Cached = true
-			r.recordGeneration(slug, desc, "L1", req.RemoteAddr, len(result.Tools))
-			log.Printf("[recommend] L1 quick-match hit: %q → %s", normalized, slug)
+			r.recordGeneration(result.Slug, desc, "L2", req.RemoteAddr, len(result.Tools))
+			log.Printf("[recommend] L2 cache hit: %q", normalized)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(result)
 			return
 		}
-		// Slug matched but no cache entry yet — fall through to check generated_bundles
-		// then LLM if needed
-		log.Printf("[recommend] L1 quick-match slug %q exists but no cache entry yet", slug)
-	}
-
-	// ── Layer 2: Normalized Cache ─────────────────────────
-	if cached, ok := r.recCache.Get(normalized); ok {
-		result := personalize(cached, businessName)
-		result.Cached = true
-		r.recordGeneration(result.Slug, desc, "L2", req.RemoteAddr, len(result.Tools))
-		log.Printf("[recommend] L2 cache hit: %q", normalized)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result)
-		return
 	}
 
 	// ── Legacy: Check old generated_bundles table ─────────
-	oldSlug := slugify(desc)
-	var oldCached string
-	err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, oldSlug).Scan(&oldCached)
-	if err == nil {
-		r.db.Exec(`UPDATE generated_bundles SET views = views + 1, last_viewed = datetime('now') WHERE slug = ?`, oldSlug)
-		var result RecommendResult
-		json.Unmarshal([]byte(oldCached), &result)
-		result.Slug = oldSlug
-		result.Cached = true
-		// Migrate to new cache for future hits
-		r.recCache.Set(normalized, oldSlug, &result)
-		result2 := personalize(&result, businessName)
-		r.recordGeneration(oldSlug, desc, "legacy", req.RemoteAddr, len(result2.Tools))
-		log.Printf("[recommend] legacy cache hit (migrated): %q → %s", normalized, oldSlug)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result2)
-		return
+	if !prewarmForce {
+		oldSlug := slugify(desc)
+		var oldCached string
+		err := r.db.QueryRow(`SELECT result_json FROM generated_bundles WHERE slug = ?`, oldSlug).Scan(&oldCached)
+		if err == nil {
+			r.db.Exec(`UPDATE generated_bundles SET views = views + 1, last_viewed = datetime('now') WHERE slug = ?`, oldSlug)
+			var result RecommendResult
+			json.Unmarshal([]byte(oldCached), &result)
+			result.Slug = oldSlug
+			result.Cached = true
+			// Migrate to new cache for future hits
+			r.recCache.Set(normalized, oldSlug, &result)
+			result2 := personalize(&result, businessName)
+			r.recordGeneration(oldSlug, desc, "legacy", req.RemoteAddr, len(result2.Tools))
+			log.Printf("[recommend] legacy cache hit (migrated): %q → %s", normalized, oldSlug)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(result2)
+			return
+		}
 	}
 
 	// ── Layer 3: LLM Call ─────────────────────────────────
@@ -457,7 +480,8 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 	// per-IP limit entirely. This is how cmd/prewarm warms the cache
 	// for 195 bundles from a single IP without tripping the gate.
 	// The global LLM semaphore still applies to prewarm traffic.
-	prewarm := r.isPrewarmRequest(req)
+	// `prewarm` was captured earlier so the cache-skip logic could
+	// share the same decision.
 	ipHashFull := sha256.Sum256([]byte(req.RemoteAddr))
 	ipHash := fmt.Sprintf("%x", ipHashFull)[:12]
 	if !prewarm {

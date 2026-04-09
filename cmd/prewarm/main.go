@@ -86,6 +86,7 @@ func main() {
 		dryRun       bool
 		timeout      time.Duration
 		prewarmToken string
+		force        bool
 	)
 
 	flag.StringVar(&baseURL, "base", envOr("BASE_URL", "https://stockyard.dev"), "Base URL for /api/recommend")
@@ -95,6 +96,7 @@ func main() {
 	flag.BoolVar(&dryRun, "dry-run", os.Getenv("DRY_RUN") != "", "Print plan without POSTing")
 	flag.DurationVar(&timeout, "timeout", 90*time.Second, "Per-request HTTP timeout")
 	flag.StringVar(&prewarmToken, "token", os.Getenv("PREWARM_TOKEN"), "Shared secret for X-Stockyard-Prewarm header (must match server's STOCKYARD_PREWARM_TOKEN env var to bypass per-IP rate limit)")
+	flag.BoolVar(&force, "force", os.Getenv("PREWARM_FORCE") != "", "Bypass L1/L2/legacy caches and force a fresh L3 LLM call. Use when stale cache entries have tools but no per-tool configs (i.e. /api/toolkit/{slug}/configs returns {}). Requires a valid prewarm token.")
 	flag.Parse()
 
 	if prewarmToken == "" {
@@ -165,7 +167,7 @@ func main() {
 			defer func() { <-sem }()
 
 			start := time.Now()
-			status := warmOne(client, baseURL, bundle.Slug, prewarmToken)
+			status := warmOne(client, baseURL, bundle.Slug, prewarmToken, force)
 			dur := time.Since(start).Round(time.Millisecond)
 
 			switch status {
@@ -199,13 +201,14 @@ func main() {
 // warmOne POSTs a single bundle slug to /api/recommend and returns:
 //   - "ok"         on a successful L3 generation
 //   - "cached"     on a response with cached:true (already warmed)
-//   - "error: ..." on any failure mode (HTTP error, bad JSON, fewer
-//     than 3 tools, explicit error field in the response)
+//   - "error: ..." on any failure mode
 //
-// Rate-limit 429s and semaphore-full 503s are retried once with a
-// short backoff, since both are transient and the prewarm run is the
-// only big consumer of the endpoint.
-func warmOne(client *http.Client, baseURL, slug, prewarmToken string) string {
+// If force is true, sends an X-Stockyard-Prewarm-Force header which
+// (when the server-side prewarm token also matches) causes
+// HandleRecommend to skip all cache lookups and go directly to L3.
+// This is how we overwrite stale cache entries that have tools but
+// no per-tool configs from an older run.
+func warmOne(client *http.Client, baseURL, slug, prewarmToken string, force bool) string {
 	url := baseURL + "/api/recommend"
 	body, _ := json.Marshal(map[string]string{"description": slug})
 
@@ -221,6 +224,9 @@ func warmOne(client *http.Client, baseURL, slug, prewarmToken string) string {
 		// match this value, we'll start hitting 429s after the
 		// 10th bundle — check the handler logs.
 		req.Header.Set("X-Stockyard-Prewarm", prewarmToken)
+		if force {
+			req.Header.Set("X-Stockyard-Prewarm-Force", "1")
+		}
 
 		resp, err := client.Do(req)
 		if err != nil {
