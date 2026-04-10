@@ -67,7 +67,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .replaces-list li{background:var(--bg2);border:1px solid var(--bg3);padding:.25rem .7rem;font-family:var(--font-mono);font-size:.72rem;color:var(--cream-dim)}
 .anchor{font-size:.95rem;margin-top:1rem}.anchor strong{color:var(--rust-light)}
 .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:1.5rem 0 2rem}
-.tool-card{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;transition:border-color .2s}.tool-card:hover{border-color:var(--rust)}
+.tool-card{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;transition:border-color .2s;text-decoration:none;color:inherit;display:block}.tool-card:hover{border-color:var(--rust)}.tool-card:hover h4{color:var(--rust-light)}
 .tool-card h4{font-size:.85rem;margin-bottom:.3rem;font-family:var(--font-mono)}
 .tool-card p{font-size:.78rem;color:var(--cream-dim);line-height:1.5}
 .bun-foot{text-align:center;padding:1.5rem 0;border-top:1px solid var(--bg3);margin-top:2rem}
@@ -287,7 +287,7 @@ function selectBundle(slug){
 var b=B.find(function(x){return x.slug===slug});if(!b)return;
 RD.style.display='none';CS.style.display='none';
 history.replaceState(null,'','/?q='+encodeURIComponent(slug));
-var tc=b.tools.map(function(t){return'<div class="tool-card"><h4>'+esc(t.label)+'</h4><p>'+esc(t.desc)+'</p></div>'}).join('');
+var tc=b.tools.map(function(t){return'<a class="tool-card" href="/tools/'+esc(t.slug)+'/"><h4>'+esc(t.label)+'</h4><p>'+esc(t.desc)+'</p></a>'}).join('');
 var rh='';
 if(b.replaces&&b.replaces.length){
 var ri=b.replaces.map(function(r){return'<li>'+esc(r)+'</li>'}).join('');
@@ -321,7 +321,7 @@ clearInterval(di);SP.style.display='none';
 if(data.fallback&&data.redirect_to){window.location.href=data.redirect_to;return}
 if(data.fallback||data.error){doSearch(desc.split(' ')[0]);showAB();return}
 // Render AI result
-var tc=data.tools.map(function(t){return'<div class="tool-card"><h4 style="font-family:var(--font-mono);font-size:.82rem;margin-bottom:.3rem">'+esc(t.label)+'</h4><p style="font-size:.78rem;color:var(--cream-dim)">'+esc(t.desc)+'</p><p style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-top:.3rem">Replaces '+esc(t.replaces)+' ($'+t.replaces_cost+'/mo)</p></div>'}).join('');
+var tc=data.tools.map(function(t){return'<a class="tool-card" href="/tools/'+esc(t.slug)+'/"><h4 style="font-family:var(--font-mono);font-size:.82rem;margin-bottom:.3rem">'+esc(t.label)+'</h4><p style="font-size:.78rem;color:var(--cream-dim)">'+esc(t.desc)+'</p><p style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-top:.3rem">Replaces '+esc(t.replaces)+' ($'+t.replaces_cost+'/mo)</p></a>'}).join('');
 var slug=data.slug||'custom';
 BR.innerHTML='<div class="bundle-detail" style="animation:fadeIn .3s ease"><div class="bun-eye">Your Custom Toolkit</div><h2 class="bun-h">'+esc(data.title)+'</h2><p class="bun-sub">'+data.tools.length+' self-hosted tools for '+esc(data.audience)+'</p>'+installButtons(slug)+'<div style="text-align:center;margin:1rem 0 2rem"><a href="/for/'+esc(slug)+'/" style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);text-decoration:none;border-bottom:1px solid var(--bg3)">VIEW FULL BUNDLE PAGE &rarr;</a></div><div style="text-align:center;margin:2rem 0;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem"><p style="font-size:.85rem;color:var(--cream-dim)">You\'re probably paying <strong style="color:var(--rust-light)">~$'+data.total_replaces_cost+'/mo</strong> in SaaS fees</p><p style="font-family:var(--font-mono);font-size:1.3rem;margin-top:.5rem;color:var(--gold)">Save ~$'+data.savings_per_year+'/year with Stockyard</p></div><div class="bun-section-label">'+data.tools.length+' tools, built for you</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p>14 days free. Then <strong>$7.99/mo</strong>. Cancel anytime. Your data stays.</p><a href="/pricing/?bundle='+esc(slug)+'" class="btn" style="margin-top:1rem">Start 14-Day Trial</a><p style="font-size:.7rem;color:var(--cream-muted);margin-top:.8rem;font-family:var(--font-mono)">Credit card required. $0 charged today.</p></div></div>';
 highlightOS();
