@@ -627,13 +627,22 @@ func (r *Recommender) recordGeneration(slug, desc, layer, ipAddr string, toolCou
 	)
 }
 
-// HandleToolkitCount returns the total number of toolkit generations.
+// HandleToolkitCount returns the total number of toolkit generations
+// plus an ISO-8601 timestamp of the most recent one. The timestamp
+// powers the "last built X minutes ago" line on the homepage hero.
+// Empty latest_at is treated as "no data yet" by the frontend and
+// hides the relative-time line without breaking the count render.
 func (r *Recommender) HandleToolkitCount(w http.ResponseWriter, req *http.Request) {
 	var count int64
-	r.db.QueryRow("SELECT COUNT(*) FROM toolkit_generations").Scan(&count)
+	var latest sql.NullString
+	r.db.QueryRow("SELECT COUNT(*), COALESCE(MAX(created_at), '') FROM toolkit_generations").Scan(&count, &latest)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "public, max-age=30")
-	json.NewEncoder(w).Encode(map[string]int64{"count": count})
+	resp := map[string]any{"count": count}
+	if latest.Valid && latest.String != "" {
+		resp["latest_at"] = latest.String
+	}
+	json.NewEncoder(w).Encode(resp)
 }
 
 // HandleToolkitConfigs returns all per-tool configs for a generated bundle.
