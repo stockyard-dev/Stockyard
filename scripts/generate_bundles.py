@@ -1,6 +1,48 @@
 #!/usr/bin/env python3
-"""Generate bundle landing pages and install scripts from bundles.json."""
-import json, os, html
+"""
+╔══════════════════════════════════════════════════════════════════════════╗
+║  DO NOT RUN THIS SCRIPT WITHOUT READING THE WARNING BELOW.               ║
+║                                                                          ║
+║  This generator is OUT OF SYNC with the live bundle pages under          ║
+║  site/for/. Running it will cause the following user-visible damage      ║
+║  across all 195 bundle landing pages:                                    ║
+║                                                                          ║
+║    1. DESTROYS per-tool SVG mockup thumbnails. The live pages have an    ║
+║       <img class="tool-mockup"> on every tool card. This generator       ║
+║       does not emit them — a rerun deletes 1000+ mockup images.          ║
+║                                                                          ║
+║    2. DESTROYS tool-card <a> anchor wrappers. scripts/link_bundle_       ║
+║       tool_cards.py (no longer in repo) wrapped 1398 tool cards on       ║
+║       195 bundle pages in <a href="/tools/{slug}/"> anchors. This        ║
+║       generator emits <div> instead. Rerun = bundle drill-down no        ║
+║       longer links to tool landing pages. Dead conversion path.          ║
+║                                                                          ║
+║    3. REWRITES all tool-card name/description strings from a stale      ║
+║       hand-maintained TOOL_INFO dict (47 entries) rather than the       ║
+║       canonical site/tools/catalog.json (164 entries). 117 tools         ║
+║       get their labels replaced with literal "Developer tool" text.      ║
+║                                                                          ║
+║    4. REWRITES the <title> tag format to "Stockyard for X — Y" when      ║
+║       some live pages have been hand-tuned to "Y — Stockyard".           ║
+║                                                                          ║
+║    5. Writes site/sitemap-bundles.xml which is not in git and is a       ║
+║       zombie side-effect file.                                           ║
+║                                                                          ║
+║  BEFORE THIS SCRIPT CAN BE USED AGAIN, it needs to be updated to:        ║
+║    - Emit <a class="tool-card" href="/tools/{slug}/"> instead of <div>   ║
+║    - Emit <img class="tool-mockup"> inside each tool card pointing to    ║
+║      the canonical mockup SVG for that tool                              ║
+║    - Load tool metadata from site/tools/catalog.json (use CATALOG_PATH   ║
+║      constant already defined below), NOT the stale TOOL_INFO dict       ║
+║    - Preserve the current <title> format used on live pages              ║
+║                                                                          ║
+║  To force-run this script after you have verified the above is fixed,   ║
+║  set the environment variable STOCKYARD_ALLOW_BUNDLE_REGEN=yes.          ║
+║                                                                          ║
+║  If you hit this guard by accident: nothing was written. You're fine.   ║
+╚══════════════════════════════════════════════════════════════════════════╝
+"""
+import json, os, sys, html
 
 SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'site')
 BUNDLES_PATH = os.path.join(SITE_DIR, 'tools', 'bundles.json')
@@ -430,6 +472,30 @@ def gen_sitemap(bundles):
 
 
 def main():
+    # Refuse to run unless the operator has explicitly acknowledged that the
+    # generator is known-stale (see module docstring for full damage report).
+    # This guard exists because an accidental `python scripts/generate_bundles.py`
+    # would overwrite 195 live bundle pages and silently destroy tool-card
+    # mockups, anchor wrappers, and 117 tool descriptions. Override requires
+    # STOCKYARD_ALLOW_BUNDLE_REGEN=yes in the environment.
+    if os.environ.get('STOCKYARD_ALLOW_BUNDLE_REGEN', '').lower() not in ('yes', '1', 'true'):
+        sys.stderr.write(
+            "\n"
+            "ERROR: scripts/generate_bundles.py is out of sync with the live\n"
+            "bundle pages under site/for/. Running it would destroy per-tool\n"
+            "SVG mockups, tool-card anchor links, and ~117 tool descriptions.\n"
+            "Read the banner at the top of this file for details.\n"
+            "\n"
+            "If you have fixed the generator and are certain you want to\n"
+            "regenerate every bundle page, re-run with:\n"
+            "\n"
+            "    STOCKYARD_ALLOW_BUNDLE_REGEN=yes python scripts/generate_bundles.py\n"
+            "\n"
+            "No files have been modified.\n"
+            "\n"
+        )
+        sys.exit(2)
+
     bundles = json.load(open(BUNDLES_PATH))
     print(f"Loaded {len(bundles)} bundles")
     
