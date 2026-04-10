@@ -169,7 +169,7 @@ var quickMatch = map[string]string{
 	"gym":                    "gym",
 	"fitness studio":         "gym",
 	"crossfit":               "gym",
-	"yoga studio":            "gym",
+	"yoga studio":            "yoga-studio",
 	"coworking":              "coworking",
 	"coworking space":        "coworking",
 
