@@ -115,6 +115,8 @@ var quickMatch = map[string]string{
 	"accountant":        "accountant-tax",
 	"tax preparer":      "accountant-tax",
 	"cpa":               "accountant-tax",
+	"accounting":        "accountant-tax",
+	"accounting firm":   "accountant-tax",
 
 	// Professional Services
 	"photographer":         "photography",
