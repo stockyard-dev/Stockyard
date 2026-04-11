@@ -163,6 +163,10 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **pricing: fix $7.99-with-150+-tools meta conflation, hide annual prices** (2026-04-11)
+- **homepage: remove download button, add 'now let's make it yours' transition + chip row** (2026-04-11)
+- **fix(recommender): route 'yoga studio' to yoga-studio bundle, not gym** (2026-04-10)
+- **bundles: fix recommender keyword poaching, esp. the yogau2192gym hijack** (2026-04-10)
 - **homepage: fix overlaps on yoga dashboard SVG** (2026-04-10)
 - **homepage: yoga dashboard SVG + dev-cta rewrite** (2026-04-10)
 - **homepage: restore screenreader accessibility on hero mockup cards** (2026-04-10)
@@ -179,10 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **site: link bundle tool cards to /tools/{slug}/ landing pages** (2026-04-09)
 - **site: register /tools/ prefix handler for per-tool landing pages** (2026-04-09)
 - **site: add per-tool landing pages + fix broken bundle install chain** (2026-04-09)
-- **site: shorten bundle landing page titles to fit SEO cutoff** (2026-04-09)
-- **auth: whitelist /api/billing/session as public route** (2026-04-09)
-- **billing/success: rewrite post-purchase page + add session lookup endpoint** (2026-04-09)
-- **mailer: strip em dashes and phone-home language from every template** (2026-04-09)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
