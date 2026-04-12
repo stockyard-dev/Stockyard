@@ -160,3 +160,127 @@ func TestEmitJSON(t *testing.T) {
 		t.Errorf("unexpected JSON output: %s", out)
 	}
 }
+
+// mkManifest is a test helper that builds a Manifest.Raw-aware fake
+// via JSON round-trip so eventsBlock's map-of-any reads work.
+func mkManifest(t *testing.T, slug string, publishes, subscribes []Event, wildcard bool) *Manifest {
+	t.Helper()
+	evts := map[string]any{}
+	pack := func(es []Event) []any {
+		out := make([]any, 0, len(es))
+		for _, e := range es {
+			m := map[string]any{"topic": e.Topic}
+			if e.External {
+				m["external"] = true
+			}
+			out = append(out, m)
+		}
+		return out
+	}
+	evts["publishes"] = pack(publishes)
+	evts["subscribes"] = pack(subscribes)
+	if wildcard {
+		evts["wildcard"] = true
+	}
+	return &Manifest{
+		SchemaVersion: "1",
+		Tool:          &ToolIdentity{Slug: slug, DisplayName: slug, Version: "1.0.0"},
+		Events:        evts,
+	}
+}
+
+func TestCheckEventGraph_HappyAndW042(t *testing.T) {
+	ms := map[string]*Manifest{
+		"dossier":   mkManifest(t, "dossier", []Event{{Topic: "contacts.created"}, {Topic: "contacts.deleted"}}, nil, false),
+		"headcount": mkManifest(t, "headcount", nil, []Event{{Topic: "contacts.created"}}, false),
+	}
+	paths := map[string]string{"dossier": "a.json", "headcount": "b.json"}
+	f := checkEventGraph(ms, paths)
+	c := codes(f)
+	if c["E040"] || c["E041"] {
+		t.Errorf("unexpected errors: %v", c)
+	}
+	if !c["W042"] {
+		t.Errorf("expected W042 for contacts.deleted, got %v", c)
+	}
+}
+
+func TestCheckEventGraph_E040_MissingPublisher(t *testing.T) {
+	ms := map[string]*Manifest{
+		"a": mkManifest(t, "a", nil, []Event{{Topic: "ghost.event"}}, false),
+		"b": mkManifest(t, "b", []Event{{Topic: "other.thing"}}, nil, false),
+	}
+	f := checkEventGraph(ms, map[string]string{"a": "a.json", "b": "b.json"})
+	if !codes(f)["E040"] {
+		t.Errorf("expected E040 for unmatched subscriber, got %v", codes(f))
+	}
+}
+
+func TestCheckEventGraph_ExternalEscapesE040(t *testing.T) {
+	ms := map[string]*Manifest{
+		"a": mkManifest(t, "a", nil, []Event{{Topic: "stripe.webhook", External: true}}, false),
+		"b": mkManifest(t, "b", []Event{{Topic: "x"}}, nil, false),
+	}
+	f := checkEventGraph(ms, map[string]string{"a": "a.json", "b": "b.json"})
+	if codes(f)["E040"] {
+		t.Errorf("external:true should suppress E040, got %v", f)
+	}
+}
+
+func TestCheckEventGraph_WildcardExemptFromE040(t *testing.T) {
+	ms := map[string]*Manifest{
+		"a": mkManifest(t, "a", nil, []Event{{Topic: "whatever"}}, true),
+		"b": mkManifest(t, "b", []Event{{Topic: "x"}}, nil, false),
+	}
+	f := checkEventGraph(ms, map[string]string{"a": "a.json", "b": "b.json"})
+	if codes(f)["E040"] {
+		t.Errorf("wildcard:true should exempt from E040, got %v", f)
+	}
+}
+
+func TestCheckEventGraph_E041_OldVersionHeldOpen(t *testing.T) {
+	// publisher-a still emits orders.placed.v1; publisher-b emits v2;
+	// sole subscriber is stuck on v1 -> E041 on publisher-a.
+	ms := map[string]*Manifest{
+		"a":   mkManifest(t, "a", []Event{{Topic: "orders.placed.v1"}}, nil, false),
+		"b":   mkManifest(t, "b", []Event{{Topic: "orders.placed.v2"}}, nil, false),
+		"sub": mkManifest(t, "sub", nil, []Event{{Topic: "orders.placed.v1"}}, false),
+	}
+	f := checkEventGraph(ms, map[string]string{"a": "a.json", "b": "b.json", "sub": "s.json"})
+	if !codes(f)["E041"] {
+		t.Errorf("expected E041, got %v", codes(f))
+	}
+}
+
+func TestCheckEventGraph_E041_QuietWhenSubscriberMigrated(t *testing.T) {
+	ms := map[string]*Manifest{
+		"a":   mkManifest(t, "a", []Event{{Topic: "orders.placed.v1"}}, nil, false),
+		"b":   mkManifest(t, "b", []Event{{Topic: "orders.placed.v2"}}, nil, false),
+		"sub": mkManifest(t, "sub", nil, []Event{{Topic: "orders.placed.v2"}}, false),
+	}
+	f := checkEventGraph(ms, map[string]string{"a": "a.json", "b": "b.json", "sub": "s.json"})
+	if codes(f)["E041"] {
+		t.Errorf("E041 should be quiet when subscriber is on latest, got %v", f)
+	}
+}
+
+func TestTopicVersion(t *testing.T) {
+	cases := []struct {
+		in   string
+		base string
+		v    int
+	}{
+		{"plain.topic", "plain.topic", 0},
+		{"orders.placed.v1", "orders.placed", 1},
+		{"orders.placed.v42", "orders.placed", 42},
+		{"orders.v0", "orders.v0", 0}, // v0 treated as unversioned per convention
+		{"orders.vx", "orders.vx", 0},
+		{"a.b.c.v3", "a.b.c", 3},
+	}
+	for _, c := range cases {
+		b, v := topicVersion(c.in)
+		if b != c.base || v != c.v {
+			t.Errorf("topicVersion(%q) = (%q,%d), want (%q,%d)", c.in, b, v, c.base, c.v)
+		}
+	}
+}

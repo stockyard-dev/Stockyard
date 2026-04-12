@@ -124,9 +124,46 @@ func main() {
 		}
 	}
 
+	type loaded struct {
+		path string
+		m    *Manifest
+	}
+	var parsed []loaded
+
 	var findings []Finding
 	for _, p := range manifests {
+		// validateFile returns findings; we also want the parsed manifest
+		// for the cross-tool pass below. Re-read here rather than change
+		// validateFile's signature — it's not hot.
 		findings = append(findings, validateFile(p, catalog, *catalogPath != "")...)
+		if b, err := os.ReadFile(p); err == nil {
+			var m Manifest
+			if json.Unmarshal(b, &m) == nil {
+				_ = json.Unmarshal(b, &m.Raw)
+				parsed = append(parsed, loaded{p, &m})
+			}
+		}
+	}
+
+	// E040 / E041 / W042: cross-tool event graph. Skipped with a warning
+	// in single-file mode per VALIDATOR-SPEC.md §3.5.
+	if len(parsed) == 1 {
+		findings = append(findings, Finding{
+			Code:     "W043",
+			Severity: "warning",
+			Path:     parsed[0].path,
+			Message:  "single-file mode: cross-tool event graph checks (E040/E041/W042) skipped",
+		})
+	} else if len(parsed) > 1 {
+		ms := make(map[string]*Manifest, len(parsed))
+		paths := make(map[string]string, len(parsed))
+		for _, l := range parsed {
+			if l.m.Tool != nil {
+				ms[l.m.Tool.Slug] = l.m
+				paths[l.m.Tool.Slug] = l.path
+			}
+		}
+		findings = append(findings, checkEventGraph(ms, paths)...)
 	}
 
 	hasError := emit(findings, *asJSON, *asGitHub, *strict)
@@ -377,4 +414,200 @@ func escapeGitHubCmd(s string) string {
 		}
 	}
 	return string(out)
+}
+
+// Event is one publish/subscribe entry in a manifest's events block.
+// Fields match VALIDATOR-SPEC.md §3.5. Unknown fields are ignored.
+type Event struct {
+	Topic    string `json:"topic"`
+	External bool   `json:"external"` // E040 escape hatch: subscriber declares topic comes from outside
+}
+
+// eventsBlock extracts publishes/subscribes/wildcard from a Manifest.Raw.
+// The Manifest struct types events as map[string]any because shape is
+// advisory until §3.5 — this helper does the shape read lazily, so a
+// malformed events block never trips non-event checks.
+func eventsBlock(m *Manifest) (publishes, subscribes []Event, wildcard bool) {
+	if m.Events == nil {
+		return
+	}
+	if v, ok := m.Events["wildcard"].(bool); ok {
+		wildcard = v
+	}
+	extract := func(key string) []Event {
+		arr, ok := m.Events[key].([]any)
+		if !ok {
+			return nil
+		}
+		out := make([]Event, 0, len(arr))
+		for _, item := range arr {
+			entry, _ := item.(map[string]any)
+			if entry == nil {
+				continue
+			}
+			e := Event{}
+			if t, ok := entry["topic"].(string); ok {
+				e.Topic = t
+			}
+			if x, ok := entry["external"].(bool); ok {
+				e.External = x
+			}
+			if e.Topic != "" {
+				out = append(out, e)
+			}
+		}
+		return out
+	}
+	return extract("publishes"), extract("subscribes"), wildcard
+}
+
+// topicVersion returns the (base, version) of a topic name. Unversioned
+// topics return version 0. Versioned topics follow the ".vN" convention
+// per bus ADR 001, e.g. "orders.placed.v2" -> ("orders.placed", 2).
+func topicVersion(topic string) (string, int) {
+	// Walk back from the end looking for ".vN".
+	for i := len(topic) - 1; i > 1; i-- {
+		if topic[i] == '.' {
+			suffix := topic[i+1:]
+			if len(suffix) >= 2 && suffix[0] == 'v' {
+				n := 0
+				ok := true
+				for _, c := range suffix[1:] {
+					if c < '0' || c > '9' {
+						ok = false
+						break
+					}
+					n = n*10 + int(c-'0')
+				}
+				if ok && n > 0 {
+					return topic[:i], n
+				}
+			}
+			break
+		}
+	}
+	return topic, 0
+}
+
+// checkEventGraph implements E040/E041/W042 per VALIDATOR-SPEC.md §3.5.
+// Inputs are keyed by slug; paths lets us attribute findings back to the
+// file that caused them.
+func checkEventGraph(manifests map[string]*Manifest, paths map[string]string) []Finding {
+	// Build: publishers[topic] -> set of slugs that publish it.
+	// Also track the max version published per base topic (for E041).
+	publishers := map[string]map[string]bool{}
+	maxVerPerBase := map[string]int{}
+	versionsPerBase := map[string]map[int]bool{}
+	for slug, m := range manifests {
+		pubs, _, _ := eventsBlock(m)
+		for _, e := range pubs {
+			if publishers[e.Topic] == nil {
+				publishers[e.Topic] = map[string]bool{}
+			}
+			publishers[e.Topic][slug] = true
+			base, v := topicVersion(e.Topic)
+			if versionsPerBase[base] == nil {
+				versionsPerBase[base] = map[int]bool{}
+			}
+			versionsPerBase[base][v] = true
+			if v > maxVerPerBase[base] {
+				maxVerPerBase[base] = v
+			}
+		}
+	}
+
+	subscribedTopics := map[string]bool{}
+	// Collect which base topics have a subscriber on the latest version,
+	// used by E041 to decide whether an old version has migrated readers.
+	subscribersAtLatest := map[string]bool{}
+
+	var findings []Finding
+
+	// Stable slug iteration for deterministic output.
+	slugs := make([]string, 0, len(manifests))
+	for s := range manifests {
+		slugs = append(slugs, s)
+	}
+	sort.Strings(slugs)
+
+	for _, slug := range slugs {
+		m := manifests[slug]
+		_, subs, wildcard := eventsBlock(m)
+		if wildcard {
+			continue
+		}
+		for _, e := range subs {
+			subscribedTopics[e.Topic] = true
+			base, v := topicVersion(e.Topic)
+			if maxVerPerBase[base] > 0 && v == maxVerPerBase[base] {
+				subscribersAtLatest[base] = true
+			}
+			if e.External {
+				continue // E040 escape hatch
+			}
+			if len(publishers[e.Topic]) == 0 {
+				findings = append(findings, Finding{
+					Code:     "E040",
+					Severity: "error",
+					Path:     paths[slug],
+					Message:  "subscribes to topic '" + e.Topic + "' which no tool in the run publishes (and external:true not set)",
+				})
+			}
+		}
+	}
+
+	// E041: versioned topic where an older version is still published but
+	// no subscriber has moved to the latest. Flag the older-version publishers.
+	for base, vers := range versionsPerBase {
+		latest := maxVerPerBase[base]
+		if latest < 2 {
+			continue // no upgrade has happened; E041 has no signal
+		}
+		if subscribersAtLatest[base] {
+			continue // migration is in progress
+		}
+		// No subscriber on the latest — old versions that are still
+		// published are holding the drop open.
+		for v := range vers {
+			if v == 0 || v >= latest {
+				continue
+			}
+			topic := fmt.Sprintf("%s.v%d", base, v)
+			for slug := range publishers[topic] {
+				findings = append(findings, Finding{
+					Code:     "E041",
+					Severity: "error",
+					Path:     paths[slug],
+					Message:  "publishes '" + topic + "' but no subscriber has migrated to '" + fmt.Sprintf("%s.v%d", base, latest) + "'",
+				})
+			}
+		}
+	}
+
+	// W042: published but never subscribed. Iterate in sorted topic order
+	// so output is deterministic.
+	topics := make([]string, 0, len(publishers))
+	for t := range publishers {
+		topics = append(topics, t)
+	}
+	sort.Strings(topics)
+	for _, t := range topics {
+		if subscribedTopics[t] {
+			continue
+		}
+		// Attribute the warning to any one publisher (stable choice).
+		pubSlugs := make([]string, 0, len(publishers[t]))
+		for s := range publishers[t] {
+			pubSlugs = append(pubSlugs, s)
+		}
+		sort.Strings(pubSlugs)
+		findings = append(findings, Finding{
+			Code:     "W042",
+			Severity: "warning",
+			Path:     paths[pubSlugs[0]],
+			Message:  "topic '" + t + "' is published but no tool in the run subscribes to it",
+		})
+	}
+
+	return findings
 }
