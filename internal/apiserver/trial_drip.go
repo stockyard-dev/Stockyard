@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 )
@@ -98,6 +99,13 @@ func (td *TrialDripRunner) Stop() {
 }
 
 func (td *TrialDripRunner) tick() {
+	// Kill switch: set STOCKYARD_TRIAL_DRIP_DISABLED=1 in the environment
+	// to turn off all drip emails without a code change. Added after an
+	// incident where a swallowed UPDATE error caused day-3 emails to
+	// re-fire hourly. Safe to flip on while a real fix is in flight.
+	if os.Getenv("STOCKYARD_TRIAL_DRIP_DISABLED") == "1" {
+		return
+	}
 	now := time.Now().UTC()
 
 	rows, err := td.db.Query(`SELECT id, email, bundle_slug, bundle_name, trial_start, trial_end, 
