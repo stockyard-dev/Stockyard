@@ -1,0 +1,24 @@
+{
+  "schema_version": "99",
+  "tool": {
+    "slug": "busted",
+    "version": "0.1.0"
+  },
+  "data_model": {
+    "tables": [
+      {
+        "name": "things",
+        "columns": [
+          {"name": "id", "type": "text", "primary_key": true, "editable": true},
+          {"name": "count", "type": "bigint"},
+          {"name": "status", "type": "integer", "enum": ["a", "b"]},
+          {"name": "ssn", "type": "text", "pii": true}
+        ],
+        "sync": "sometimes",
+        "backup": "encrypted"
+      }
+    ]
+  },
+  "config": {"fields": []},
+  "events": {}
+}

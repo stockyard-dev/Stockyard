@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "tool": {
+    "slug": "dossier",
+    "display_name": "Dossier",
+    "version": "1.0.0",
+    "description": "Contact and company relationship tracker.",
+    "category": "crm"
+  },
+  "data_model": {
+    "tables": [
+      {
+        "name": "contacts",
+        "columns": [
+          {"name": "id", "type": "text", "primary_key": true},
+          {"name": "name", "type": "text", "required": true, "display": "Name"},
+          {"name": "email", "type": "text", "pii": true, "display": "Email"},
+          {"name": "status", "type": "text", "enum": ["active", "archived"]},
+          {"name": "created_at", "type": "timestamp", "editable": false}
+        ],
+        "sync": "replicated",
+        "backup": "encrypted"
+      }
+    ]
+  },
+  "config": {"fields": []},
+  "events": {"publishes": [], "subscribes": []}
+}
