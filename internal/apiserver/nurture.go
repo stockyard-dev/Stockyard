@@ -293,7 +293,7 @@ func (nr *NurtureRunner) tick() {
 				continue // Not due yet
 			}
 
-			// Check if already sent
+			// Check if already sent (by day) OR sent anything to this email in last 23h
 			var count int
 			if err := nr.db.QueryRow("SELECT COUNT(*) FROM nurture_log WHERE email=? AND day=?",
 				email, tmpl.Day).Scan(&count); err != nil {
@@ -302,6 +302,16 @@ func (nr *NurtureRunner) tick() {
 			}
 			if count > 0 {
 				continue // Already sent
+			}
+
+			// Belt-and-suspenders: don't send ANY nurture email to the same address
+			// more than once per 23 hours, even if the per-day dedup row is missing
+			// (guards against lost DB state on ephemeral volumes).
+			var recent int
+			if err := nr.db.QueryRow(
+				"SELECT COUNT(*) FROM nurture_log WHERE email=? AND sent_at > datetime('now','-23 hours')",
+				email).Scan(&recent); err == nil && recent > 0 {
+				continue
 			}
 
 			// Send it

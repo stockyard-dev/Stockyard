@@ -1578,9 +1578,14 @@ Docs:      https://stockyard.dev/docs
 	}
 
 	// Start nurture email sequence (checks hourly, sends drip emails to captured leads)
+	// Disabled by default — set NURTURE_ENABLED=1 to re-enable.
 	mailer := apiserver.NewMailer()
 	nurture := apiserver.NewNurtureRunner(db.Conn(), mailer)
-	nurture.Start()
+	if os.Getenv("NURTURE_ENABLED") == "1" {
+		nurture.Start()
+	} else {
+		log.Printf("nurture: disabled (set NURTURE_ENABLED=1 to enable)")
+	}
 
 	// Wire mailer to apps that need it (e.g., team invites)
 	if len(pc.Apps) > 0 {
