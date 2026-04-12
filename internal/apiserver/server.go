@@ -176,6 +176,8 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
 	s.mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 	s.mux.HandleFunc("POST /api/admin/backup", s.adminAuth(s.handleAdminBackup))
+	s.mux.HandleFunc("GET /api/admin/trial-drip/suspects", s.adminAuth(s.handleAdminTrialDripSuspects))
+	s.mux.HandleFunc("POST /api/admin/trial-drip/mark-sent", s.adminAuth(s.handleAdminTrialDripMarkSent))
 
 	// Cloud API
 	s.mux.HandleFunc("POST /api/cloud/tenants", s.rateLimited(s.handleCloudSignup))
@@ -239,6 +241,8 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
 	mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 	mux.HandleFunc("POST /api/admin/backup", s.adminAuth(s.handleAdminBackup))
+	mux.HandleFunc("GET /api/admin/trial-drip/suspects", s.adminAuth(s.handleAdminTrialDripSuspects))
+	mux.HandleFunc("POST /api/admin/trial-drip/mark-sent", s.adminAuth(s.handleAdminTrialDripMarkSent))
 
 	// Cloud
 	mux.HandleFunc("POST /api/cloud/tenants", s.handleCloudSignup)
