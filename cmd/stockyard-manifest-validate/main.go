@@ -98,6 +98,7 @@ func main() {
 		strict      = flag.Bool("strict", false, "promote warnings to errors")
 		asJSON      = flag.Bool("json", false, "machine-readable JSON output")
 		asGitHub    = flag.Bool("github", false, "emit GitHub Actions workflow commands (annotations)")
+		allowSingle = flag.Bool("allow-single-file", false, "suppress W043 when only one manifest is in the run (for per-repo CI)")
 	)
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: %s [flags] <manifest-or-dir>...\n", os.Args[0])
@@ -148,12 +149,14 @@ func main() {
 	// E040 / E041 / W042: cross-tool event graph. Skipped with a warning
 	// in single-file mode per VALIDATOR-SPEC.md §3.5.
 	if len(parsed) == 1 {
-		findings = append(findings, Finding{
-			Code:     "W043",
-			Severity: "warning",
-			Path:     parsed[0].path,
-			Message:  "single-file mode: cross-tool event graph checks (E040/E041/W042) skipped",
-		})
+		if !*allowSingle {
+			findings = append(findings, Finding{
+				Code:     "W043",
+				Severity: "warning",
+				Path:     parsed[0].path,
+				Message:  "single-file mode: cross-tool event graph checks (E040/E041/W042) skipped; pass --allow-single-file if this is intentional",
+			})
+		}
 	} else if len(parsed) > 1 {
 		ms := make(map[string]*Manifest, len(parsed))
 		paths := make(map[string]string, len(parsed))
