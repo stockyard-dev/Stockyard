@@ -66,10 +66,25 @@ func TestStrictPromotesWarnings(t *testing.T) {
 		t.Fatal("expected at least one warning in bad fixture")
 	}
 	// Simulate --strict: emit() mutates severity.
-	emit(f, true, true)
+	emit(f, true, false, true)
 	for _, x := range f {
 		if x.Severity == "warning" {
 			t.Errorf("strict did not promote warning: %s", x.Code)
+		}
+	}
+}
+
+func TestEscapeGitHubCmd(t *testing.T) {
+	cases := map[string]string{
+		"plain":              "plain",
+		"with %":             "with %25",
+		"line1\nline2":       "line1%0Aline2",
+		"cr\rhere":           "cr%0Dhere",
+		"100% done\nand ok":  "100%25 done%0Aand ok",
+	}
+	for in, want := range cases {
+		if got := escapeGitHubCmd(in); got != want {
+			t.Errorf("escapeGitHubCmd(%q) = %q, want %q", in, got, want)
 		}
 	}
 }

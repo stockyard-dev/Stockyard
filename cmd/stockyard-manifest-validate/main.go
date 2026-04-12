@@ -4,6 +4,9 @@
 // This first pass covers: E001-E004 (structural), E010-E014 (type-level),
 // E030-E033 (catalog equality). Cross-tool event graph (E040-E042) is
 // deferred until more than one tool ships a real manifest.
+//
+// Output modes: plain text (default), --json, or --github (emits
+// ::warning/::error workflow commands for GitHub Actions annotations).
 package main
 
 import (
@@ -94,6 +97,7 @@ func main() {
 		catalogPath = flag.String("catalog", "", "path to site/tools/catalog.json (enables E030-E033)")
 		strict      = flag.Bool("strict", false, "promote warnings to errors")
 		asJSON      = flag.Bool("json", false, "machine-readable JSON output")
+		asGitHub    = flag.Bool("github", false, "emit GitHub Actions workflow commands (annotations)")
 	)
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: %s [flags] <manifest-or-dir>...\n", os.Args[0])
@@ -125,7 +129,7 @@ func main() {
 		findings = append(findings, validateFile(p, catalog, *catalogPath != "")...)
 	}
 
-	hasError := emit(findings, *asJSON, *strict)
+	hasError := emit(findings, *asJSON, *asGitHub, *strict)
 	if hasError {
 		os.Exit(1)
 	}
@@ -313,7 +317,7 @@ func checkCatalog(path string, m *Manifest, catalog map[string]CatalogEntry) []F
 	return f
 }
 
-func emit(findings []Finding, asJSON, strict bool) bool {
+func emit(findings []Finding, asJSON, asGitHub, strict bool) bool {
 	hasErr := false
 	for i := range findings {
 		if strict && findings[i].Severity == "warning" {
@@ -328,6 +332,24 @@ func emit(findings []Finding, asJSON, strict bool) bool {
 		fmt.Println(string(b))
 		return hasErr
 	}
+	if asGitHub {
+		// Emit GitHub Actions workflow commands. These render as inline
+		// annotations in the Checks tab and on the PR diff.
+		// Docs: https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions
+		for _, x := range findings {
+			level := "warning"
+			if x.Severity == "error" {
+				level = "error"
+			}
+			// Message must be single-line; escape newlines per GH spec.
+			msg := escapeGitHubCmd(x.Message)
+			fmt.Printf("::%s file=%s,title=%s::%s\n", level, x.Path, x.Code, msg)
+		}
+		if len(findings) == 0 {
+			fmt.Println("OK: all checks passed")
+		}
+		return hasErr
+	}
 	if len(findings) == 0 {
 		fmt.Println("OK: all checks passed")
 		return false
@@ -336,4 +358,23 @@ func emit(findings []Finding, asJSON, strict bool) bool {
 		fmt.Printf("%s  %s  %s: %s\n", x.Severity, x.Code, x.Path, x.Message)
 	}
 	return hasErr
+}
+
+// escapeGitHubCmd escapes characters that have meaning in workflow commands.
+// Per GH docs: %, \r, and \n must be URL-encoded in the message body.
+func escapeGitHubCmd(s string) string {
+	out := make([]byte, 0, len(s))
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '%':
+			out = append(out, '%', '2', '5')
+		case '\r':
+			out = append(out, '%', '0', 'D')
+		case '\n':
+			out = append(out, '%', '0', 'A')
+		default:
+			out = append(out, s[i])
+		}
+	}
+	return string(out)
 }
