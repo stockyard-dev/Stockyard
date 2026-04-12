@@ -63,6 +63,47 @@ func (td *TrialDripRunner) EnqueueTrial(email, bundleSlug, bundleName, trialEnd 
 }
 
 // MarkConverted marks a trial as converted to paid.
+// claim atomically reserves a drip slot for sending. Returns true iff exactly
+// one row was flipped from dayN_sent=0 to 1. On Exec error or zero rows
+// affected, returns false and the send is skipped. This closes the duplicate-
+// send race where a previous tick's UPDATE silently failed or another runner
+// claimed concurrently.
+var trialDripColumns = map[string]bool{
+	"day3_sent": true, "day7_sent": true, "day12_sent": true, "day14_sent": true,
+}
+
+func (td *TrialDripRunner) claim(id int, col, email string) bool {
+	if !trialDripColumns[col] {
+		log.Printf("trial_drip: claim called with bad column %q", col)
+		return false
+	}
+	q := fmt.Sprintf(`UPDATE trial_drip SET %s = 1 WHERE id = ? AND %s = 0`, col, col)
+	res, err := td.db.Exec(q, id)
+	if err != nil {
+		log.Printf("trial_drip: claim %s for %s: %v", col, email, err)
+		return false
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("trial_drip: claim %s RowsAffected for %s: %v", col, email, err)
+		return false
+	}
+	return n == 1
+}
+
+// unclaim reverses a claim when the subsequent send failed, so a later tick
+// can retry. Errors are logged but otherwise ignored — worst case the email
+// doesn't retry, which beats a re-send storm.
+func (td *TrialDripRunner) unclaim(id int, col, email string) {
+	if !trialDripColumns[col] {
+		return
+	}
+	q := fmt.Sprintf(`UPDATE trial_drip SET %s = 0 WHERE id = ?`, col)
+	if _, err := td.db.Exec(q, id); err != nil {
+		log.Printf("trial_drip: unclaim %s for %s: %v", col, email, err)
+	}
+}
+
 func (td *TrialDripRunner) MarkConverted(email string) {
 	td.db.Exec(`UPDATE trial_drip SET converted = 1 WHERE email = ? AND converted = 0`, email)
 }
@@ -147,48 +188,56 @@ func (td *TrialDripRunner) tick() {
 
 		// Day 3: feature tip
 		if daysSince >= 3 && d3 == 0 {
-			if err := td.mailer.Send(email,
-				"Quick tip — explore all your tools",
-				"You've been using Stockyard for 3 days. Quick tip:\n\n"+
-					"Each tool in your "+bundleName+" bundle runs on its own port. "+
-					"Check the install output for the full list of URLs.\n\n"+
-					"Try the CSV export on any tool: GET /api/{resource}/export.csv\n\n"+
-					daysLeftLine(daysLeft)+"\n\n— Michael, Stockyard",
-			); err != nil {
-				log.Printf("trial_drip: day 3 send error for %s: %v", email, err)
-			} else {
-				td.db.Exec(`UPDATE trial_drip SET day3_sent = 1 WHERE id = ?`, id)
-				sent++
+			if td.claim(id, "day3_sent", email) {
+				if err := td.mailer.Send(email,
+					"Quick tip — explore all your tools",
+					"You've been using Stockyard for 3 days. Quick tip:\n\n"+
+						"Each tool in your "+bundleName+" bundle runs on its own port. "+
+						"Check the install output for the full list of URLs.\n\n"+
+						"Try the CSV export on any tool: GET /api/{resource}/export.csv\n\n"+
+						daysLeftLine(daysLeft)+"\n\n— Michael, Stockyard",
+				); err != nil {
+					log.Printf("trial_drip: day 3 send error for %s: %v", email, err)
+					td.unclaim(id, "day3_sent", email)
+				} else {
+					sent++
+				}
 			}
 		}
 
 		// Day 7: midway check-in
 		if daysSince >= 7 && d7 == 0 {
-			if err := td.mailer.SendTrialReminder(email, bundleName, daysLeft); err != nil {
-				log.Printf("trial_drip: day 7 send error for %s: %v", email, err)
-			} else {
-				td.db.Exec(`UPDATE trial_drip SET day7_sent = 1 WHERE id = ?`, id)
-				sent++
+			if td.claim(id, "day7_sent", email) {
+				if err := td.mailer.SendTrialReminder(email, bundleName, daysLeft); err != nil {
+					log.Printf("trial_drip: day 7 send error for %s: %v", email, err)
+					td.unclaim(id, "day7_sent", email)
+				} else {
+					sent++
+				}
 			}
 		}
 
 		// Day 12: 2-day warning
 		if daysSince >= 12 && d12 == 0 {
-			if err := td.mailer.SendTrialReminder(email, bundleName, daysLeft); err != nil {
-				log.Printf("trial_drip: day 12 send error for %s: %v", email, err)
-			} else {
-				td.db.Exec(`UPDATE trial_drip SET day12_sent = 1 WHERE id = ?`, id)
-				sent++
+			if td.claim(id, "day12_sent", email) {
+				if err := td.mailer.SendTrialReminder(email, bundleName, daysLeft); err != nil {
+					log.Printf("trial_drip: day 12 send error for %s: %v", email, err)
+					td.unclaim(id, "day12_sent", email)
+				} else {
+					sent++
+				}
 			}
 		}
 
 		// Day 14+: trial ended — send conversion or declined email
 		if daysSince >= 14 && d14 == 0 {
-			if err := td.mailer.SendTrialConverted(email, bundleName); err != nil {
-				log.Printf("trial_drip: day 14 send error for %s: %v", email, err)
-			} else {
-				td.db.Exec(`UPDATE trial_drip SET day14_sent = 1 WHERE id = ?`, id)
-				sent++
+			if td.claim(id, "day14_sent", email) {
+				if err := td.mailer.SendTrialConverted(email, bundleName); err != nil {
+					log.Printf("trial_drip: day 14 send error for %s: %v", email, err)
+					td.unclaim(id, "day14_sent", email)
+				} else {
+					sent++
+				}
 			}
 		}
 	}
