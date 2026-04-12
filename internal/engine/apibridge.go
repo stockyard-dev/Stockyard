@@ -102,10 +102,15 @@ func mountAPIServer(mux *http.ServeMux, dataDir string, authUpdater apiserver.Au
 	}
 
 	// Wire trial drip runner for Stripe webhook → trial drip emails
+	// Disabled by default — set NURTURE_ENABLED=1 to re-enable.
 	trialDrip := apiserver.NewTrialDripRunner(db.Conn(), mailer)
-	trialDrip.Start()
+	if os.Getenv("NURTURE_ENABLED") == "1" {
+		trialDrip.Start()
+		log.Println("[apibridge] trial drip runner started")
+	} else {
+		log.Println("[apibridge] trial drip runner disabled (set NURTURE_ENABLED=1 to enable)")
+	}
 	srv.SetTrialDrip(trialDrip)
-	log.Println("[apibridge] trial drip runner started")
 
 	// CORS preflight for apiserver paths (stockyard.dev frontend calls these)
 	corsHandler := func(w http.ResponseWriter, r *http.Request) {
