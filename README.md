@@ -163,6 +163,18 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **bus: lift from stockyard-wip, land at github.com/stockyard-dev/stockyard/bus** (2026-04-12)
+- **admin: trial_drip suspects + mark-sent endpoints for Apr 12 cleanup** (2026-04-12)
+- **trial_drip: atomic claim-before-send, fix duplicate-send bug** (2026-04-12)
+- **trial_drip: add STOCKYARD_TRIAL_DRIP_DISABLED kill-switch** (2026-04-12)
+- **trial_drip: also gate behind NURTURE_ENABLED** (2026-04-12)
+- **nurture: disable by default, add 23h per-email rate limit** (2026-04-12)
+- **internal/manifestmigrate: skeleton per TOOL-SCHEMA-DESIGN.md §5** (2026-04-12)
+- **stockyard-manifest-validate: add --allow-single-file, unbreak tool-repo CI** (2026-04-12)
+- **stockyard-manifest-validate: implement E040/E041/W042 cross-tool event graph** (2026-04-12)
+- **stockyard-manifest-validate: raise test coverage 51% -> 62%** (2026-04-12)
+- **stockyard-manifest-validate: add --github output mode** (2026-04-12)
+- **step 2: add stockyard-manifest-validate (structural + type + catalog checks)** (2026-04-12)
 - **quick_match: add 'accounting' + 'accounting firm' -> accountant-tax** (2026-04-11)
 - **pricing: fix $7.99-with-150+-tools meta conflation, hide annual prices** (2026-04-11)
 - **homepage: remove download button, add 'now let's make it yours' transition + chip row** (2026-04-11)
@@ -171,18 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **homepage: fix overlaps on yoga dashboard SVG** (2026-04-10)
 - **homepage: yoga dashboard SVG + dev-cta rewrite** (2026-04-10)
 - **homepage: restore screenreader accessibility on hero mockup cards** (2026-04-10)
-- **scripts: guard generate_bundles.py against accidental runs** (2026-04-10)
-- **homepage: add trust-signal stats band between hero and promise section** (2026-04-10)
-- **homepage: expand nav to Bundles / Tools / Pricing / About / GitHub** (2026-04-10)
-- **homepage: add OS-detected download button above the fold** (2026-04-10)
-- **homepage: promote toolkit counter to hero trust signal** (2026-04-10)
-- **homepage: link tool cards in bundle/premade detail views to /tools/{slug}/** (2026-04-10)
-- **homepage: H1 rewrite + composite mockups + price badge + dev-cta fix** (2026-04-10)
-- **Revert "homepage: add price badge above fold + fix dev-cta tier contradiction"** (2026-04-09)
-- **site: redirect bare /{slug}/ URLs to /tools/{slug}/ landing pages** (2026-04-09)
-- **homepage: add price badge above fold + fix dev-cta tier contradiction** (2026-04-09)
-- **site: link bundle tool cards to /tools/{slug}/ landing pages** (2026-04-09)
-- **site: register /tools/ prefix handler for per-tool landing pages** (2026-04-09)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
