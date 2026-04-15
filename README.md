@@ -163,6 +163,9 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **desktop: Stripe checkout + success page with .stockyard-license download** (2026-04-15)
+- **site: serve /desktop/tools-index.json + .sig for desktop tool distribution** (2026-04-15)
+- **site: serve /desktop/updates.json + .sig for desktop auto-update** (2026-04-15)
 - **bus: lift from stockyard-wip, land at github.com/stockyard-dev/stockyard/bus** (2026-04-12)
 - **admin: trial_drip suspects + mark-sent endpoints for Apr 12 cleanup** (2026-04-12)
 - **trial_drip: atomic claim-before-send, fix duplicate-send bug** (2026-04-12)
@@ -180,9 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **homepage: remove download button, add 'now let's make it yours' transition + chip row** (2026-04-11)
 - **fix(recommender): route 'yoga studio' to yoga-studio bundle, not gym** (2026-04-10)
 - **bundles: fix recommender keyword poaching, esp. the yogau2192gym hijack** (2026-04-10)
-- **homepage: fix overlaps on yoga dashboard SVG** (2026-04-10)
-- **homepage: yoga dashboard SVG + dev-cta rewrite** (2026-04-10)
-- **homepage: restore screenreader accessibility on hero mockup cards** (2026-04-10)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
