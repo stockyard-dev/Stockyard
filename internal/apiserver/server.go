@@ -502,6 +502,27 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Desktop app checkout — $49.99 one-time (local) or $99.99/$249.99 annual (cloud).
+	// Plan slugs: desktop-local, desktop-cloud-single, desktop-cloud-multi.
+	// Env vars: STRIPE_PRICE_DESKTOP_LOCAL, STRIPE_PRICE_DESKTOP_CLOUD_SINGLE, STRIPE_PRICE_DESKTOP_CLOUD_MULTI.
+	if strings.HasPrefix(req.Plan, "desktop-") {
+		desktopTier := strings.TrimPrefix(req.Plan, "desktop-")
+		envKey := "STRIPE_PRICE_DESKTOP_" + strings.ToUpper(strings.ReplaceAll(desktopTier, "-", "_"))
+		priceID := os.Getenv(envKey)
+		if priceID == "" {
+			writeErr(w, http.StatusBadRequest, fmt.Sprintf("desktop pricing not configured — set %s", envKey))
+			return
+		}
+		url, err := s.stripe.CreateDesktopCheckoutSession(desktopTier, req.Email, priceID)
+		if err != nil {
+			log.Printf("desktop checkout error: %v", err)
+			writeErr(w, http.StatusInternalServerError, fmt.Sprintf("checkout: %v", err))
+			return
+		}
+		writeOK(w, map[string]string{"url": url})
+		return
+	}
+
 	product := req.Product
 	tier := req.Tier
 	if req.Plan != "" {

@@ -173,6 +173,60 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 	return url, nil
 }
 
+// CreateDesktopCheckoutSession creates a Stripe checkout for the
+// desktop app tiers. Local tier uses mode=payment (one-time $49.99);
+// Cloud tiers use mode=subscription (annual recurring).
+func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string) (string, error) {
+	if priceID == "" {
+		return "", fmt.Errorf("no Stripe price ID for desktop tier %s", tier)
+	}
+
+	// Stripe replaces {CHECKOUT_SESSION_ID} in the success URL with
+	// the real session ID on redirect.
+	successURL := "https://stockyard.dev/desktop/success/?session_id={CHECKOUT_SESSION_ID}"
+	cancelURL := "https://stockyard.dev/desktop/"
+
+	mode := "subscription"
+	if tier == "local" {
+		mode = "payment"
+	}
+
+	form := fmt.Sprintf(
+		"mode=%s"+
+			"&line_items[0][price]=%s"+
+			"&line_items[0][quantity]=1"+
+			"&success_url=%s"+
+			"&cancel_url=%s"+
+			"&metadata[product]=stockyard-desktop"+
+			"&metadata[tier]=%s",
+		mode, priceID, successURL, cancelURL, tier,
+	)
+
+	// Subscription metadata goes on subscription_data too so the
+	// renewal webhooks carry tier context forward.
+	if mode == "subscription" {
+		form += fmt.Sprintf(
+			"&subscription_data[metadata][product]=stockyard-desktop"+
+				"&subscription_data[metadata][tier]=%s",
+			tier,
+		)
+	}
+
+	if email != "" {
+		form += "&customer_email=" + email
+	}
+
+	result, err := s.stripePost("/checkout/sessions", form)
+	if err != nil {
+		return "", err
+	}
+	url, ok := result["url"].(string)
+	if !ok {
+		return "", fmt.Errorf("no checkout URL in response")
+	}
+	return url, nil
+}
+
 // CreateCheckoutSessionWithBundle creates a checkout session for a community bundle.
 func (s *StripeClient) CreateCheckoutSessionWithBundle(bundle, email, priceID, ref string) (string, error) {
 	if priceID == "" {
