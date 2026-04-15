@@ -556,6 +556,44 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		w.Write(data)
 	})
 
+	// Desktop tools-index catalog + detached Ed25519 signature.
+	//
+	// Same shape as updates.json above, different consumer: the desktop
+	// app's internal/tooldl package downloads this at bundle-assemble
+	// time to learn which tool binaries are fetchable, from where, and
+	// what sha256 to expect. Schema + producer workflow are documented
+	// in stockyard-desktop/docs/TOOLS-INDEX-FORMAT.md and ADR-001.
+	//
+	// Until the first tool release is cut under the ADR-001 naming
+	// convention, both 404 (client falls back to bundled-only mode,
+	// which is what the installer ships anyway).
+	//
+	// Operator workflow mirrors updates.json:
+	//   1. cd ../stockyard-desktop && go run ./cmd/release-prep
+	//   2. ./stockyard-signer sign -key <priv> release/dist/tools-index.json
+	//   3. Copy tools-index.json + .sig into this repo's site/desktop/
+	//   4. make site-sync && git push
+	mux.HandleFunc("GET /desktop/tools-index.json", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "desktop/tools-index.json")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+	mux.HandleFunc("GET /desktop/tools-index.json.sig", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "desktop/tools-index.json.sig")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+
 	// One-click OS installer endpoint — serves the bundle's install.sh as a
 	// downloadable file with an OS-appropriate filename. The audience is non-
 	// developers; the download flow is a strict upgrade over `curl | sh`.
