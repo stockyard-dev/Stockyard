@@ -518,6 +518,44 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		json.NewEncoder(w).Encode(DownloadStats(db))
 	})
 
+	// Desktop auto-update manifest + detached Ed25519 signature.
+	//
+	// The desktop client polls these URLs to learn about new releases.
+	// Until the first release is cut, both 404 (client handles this
+	// gracefully — auto-update stays off). When cutting a release:
+	//   1. Build + hash platform binaries
+	//   2. Write site/desktop/updates.json with schema=1
+	//   3. stockyard-signer sign -key <priv> site/desktop/updates.json
+	//      (produces site/desktop/updates.json.sig)
+	//   4. make site-sync && git push
+	//
+	// Short max-age: clients pick up new releases within ~minutes of
+	// a deploy, at the cost of more no-op polls. JSON manifest is tiny,
+	// this is the right tradeoff.
+	mux.HandleFunc("GET /desktop/updates.json", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "desktop/updates.json")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+	mux.HandleFunc("GET /desktop/updates.json.sig", func(w http.ResponseWriter, r *http.Request) {
+		data, err := fs.ReadFile(sub, "desktop/updates.json.sig")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		// Raw 64-byte Ed25519 signature. octet-stream is correct; the
+		// client (stockyard-desktop internal/updater) doesn't care about
+		// Content-Type and reads bytes verbatim.
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Cache-Control", "public, max-age=300")
+		w.Write(data)
+	})
+
 	// One-click OS installer endpoint — serves the bundle's install.sh as a
 	// downloadable file with an OS-appropriate filename. The audience is non-
 	// developers; the download flow is a strict upgrade over `curl | sh`.

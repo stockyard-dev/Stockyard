@@ -95,7 +95,7 @@ doctor: build
 
 # Sync site/ to internal/site/static/
 site-sync:
-	@find site -name "*.html" -o -name "*.xml" -o -name "*.sh" -o -name "*.txt" | while read f; do \
+	@find site -name "*.html" -o -name "*.xml" -o -name "*.sh" -o -name "*.txt" -o -name "*.json" -o -name "*.sig" | while read f; do \
 		dest="internal/site/static/$${f#site/}"; \
 		mkdir -p "$$(dirname "$$dest")"; \
 		cp "$$f" "$$dest"; \
