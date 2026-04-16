@@ -687,6 +687,168 @@ func (c *CloudService) HandleBackupByID(w http.ResponseWriter, r *http.Request) 
 
 // --- Site management ------------------------------------------------
 
+// --- Site management endpoints --------------------------------------
+
+// siteListItem is the JSON shape for GET /sites. Deliberately omits
+// internal row IDs — slug is the stable identifier the desktop uses
+// on all subsequent API calls, IDs are an implementation detail.
+type siteListItem struct {
+	Slug        string `json:"slug"`
+	DisplayName string `json:"display_name"`
+	CreatedAt   string `json:"created_at"`
+	BackupCount int64  `json:"backup_count"`
+	LastBackup  string `json:"last_backup,omitempty"` // RFC3339, empty if never backed up
+}
+
+// HandleSitesList returns the authenticated account's sites, oldest
+// first (so the first-created site — usually "default" — is at the
+// top). Includes a backup count and last-backup timestamp per site so
+// the UI can show activity indicators without a second round trip.
+//
+// For a brand-new Cloud account with no uploads yet, the "default"
+// site exists only if the desktop has already made at least one
+// backup attempt (resolveOrCreateSite is lazy). Fresh accounts
+// return an empty list, and the desktop handles that case by
+// falling back to the legacy behavior of passing X-Site-Slug=default
+// on next upload.
+func (c *CloudService) HandleSitesList(w http.ResponseWriter, r *http.Request) {
+	acct := c.requireSession(w, r)
+	if acct == nil {
+		return
+	}
+
+	// LEFT JOIN so sites with zero backups still appear. The
+	// aggregate filters site_id via the inner cloud_backup_blobs
+	// alias only; the outer site row is unconditional.
+	rows, err := c.db.conn.Query(`
+		SELECT s.slug, s.display_name, s.created_at,
+		       COUNT(b.id) AS backup_count,
+		       COALESCE(MAX(b.uploaded_at), '') AS last_backup
+		FROM cloud_sites s
+		LEFT JOIN cloud_backup_blobs b ON b.site_id = s.id
+		WHERE s.account_id = ?
+		GROUP BY s.id
+		ORDER BY s.id ASC
+	`, acct.ID)
+	if err != nil {
+		log.Printf("cloud sites list: %v", err)
+		writeJSON(w, 500, map[string]string{"error": "could not list sites"})
+		return
+	}
+	defer rows.Close()
+
+	sites := make([]siteListItem, 0)
+	for rows.Next() {
+		var it siteListItem
+		if err := rows.Scan(&it.Slug, &it.DisplayName, &it.CreatedAt,
+			&it.BackupCount, &it.LastBackup); err != nil {
+			log.Printf("cloud sites list scan: %v", err)
+			writeJSON(w, 500, map[string]string{"error": "could not list sites"})
+			return
+		}
+		sites = append(sites, it)
+	}
+
+	writeJSON(w, 200, map[string]any{
+		"sites": sites,
+		"tier":  acct.Tier,
+	})
+}
+
+// HandleSitesCreate adds a new site to the account. Cloud Single tier
+// is limited to 1 site (enforced here + by resolveOrCreateSite on
+// upload); Cloud Multi has no ceiling.
+//
+// Body: {"slug": "uptown", "display_name": "Uptown Studio"}
+// Slug is required, must match isValidSiteSlug; display_name is
+// optional and defaults to the slug.
+//
+// Idempotent: creating a site with an existing slug for the same
+// account returns 200 with the existing row, not an error. Makes
+// retry-friendly for flaky networks without needing PUT semantics.
+func (c *CloudService) HandleSitesCreate(w http.ResponseWriter, r *http.Request) {
+	acct := c.requireSession(w, r)
+	if acct == nil {
+		return
+	}
+
+	var body struct {
+		Slug        string `json:"slug"`
+		DisplayName string `json:"display_name"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		writeJSON(w, 400, map[string]string{"error": "invalid JSON body"})
+		return
+	}
+	slug := strings.ToLower(strings.TrimSpace(body.Slug))
+	if !isValidSiteSlug(slug) {
+		writeJSON(w, 400, map[string]string{
+			"error": "slug must be 1-40 characters, lowercase a-z, 0-9, and - only",
+		})
+		return
+	}
+	displayName := strings.TrimSpace(body.DisplayName)
+	if displayName == "" {
+		displayName = slug
+	}
+	if len(displayName) > 80 {
+		writeJSON(w, 400, map[string]string{"error": "display_name must be 80 characters or less"})
+		return
+	}
+
+	// Idempotency: if the slug already exists for this account,
+	// return it rather than a conflict. The display_name of an
+	// existing row is NOT updated — rename is a separate (future)
+	// endpoint.
+	var existingID int64
+	var existingDisplay, existingCreated string
+	err := c.db.conn.QueryRow(
+		`SELECT id, display_name, created_at FROM cloud_sites WHERE account_id = ? AND slug = ?`,
+		acct.ID, slug,
+	).Scan(&existingID, &existingDisplay, &existingCreated)
+	if err == nil {
+		writeJSON(w, 200, map[string]any{
+			"slug":         slug,
+			"display_name": existingDisplay,
+			"created_at":   existingCreated,
+			"created":      false,
+		})
+		return
+	}
+
+	// Tier enforcement for new sites. Cloud Single = 1 site max.
+	if acct.Tier == "cloud-single" {
+		var existing int64
+		c.db.conn.QueryRow(
+			`SELECT COUNT(*) FROM cloud_sites WHERE account_id = ?`, acct.ID,
+		).Scan(&existing)
+		if existing >= 1 {
+			writeJSON(w, 403, map[string]string{
+				"error": "Cloud Single supports one site. Upgrade to Cloud Multi for additional sites.",
+			})
+			return
+		}
+	}
+
+	res, err := c.db.conn.Exec(
+		`INSERT INTO cloud_sites (account_id, slug, display_name) VALUES (?, ?, ?)`,
+		acct.ID, slug, displayName,
+	)
+	if err != nil {
+		log.Printf("cloud sites create: %v", err)
+		writeJSON(w, 500, map[string]string{"error": "could not create site"})
+		return
+	}
+	_ = res
+	writeJSON(w, 200, map[string]any{
+		"slug":         slug,
+		"display_name": displayName,
+		"created":      true,
+	})
+}
+
+// --- Site management internals --------------------------------------
+
 var errSiteLimitExceeded = errors.New("site limit exceeded for tier")
 
 // resolveOrCreateSite looks up or lazily creates a site row. Enforces

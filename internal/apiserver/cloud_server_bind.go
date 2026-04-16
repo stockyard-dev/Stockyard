@@ -52,3 +52,9 @@ func (s *Server) cloudHandlerBackupList(w http.ResponseWriter, r *http.Request) 
 func (s *Server) cloudHandlerBackupByID(w http.ResponseWriter, r *http.Request) {
 	s.desktopCloud.HandleBackupByID(w, r)
 }
+func (s *Server) cloudHandlerSitesList(w http.ResponseWriter, r *http.Request) {
+	s.desktopCloud.HandleSitesList(w, r)
+}
+func (s *Server) cloudHandlerSitesCreate(w http.ResponseWriter, r *http.Request) {
+	s.desktopCloud.HandleSitesCreate(w, r)
+}
