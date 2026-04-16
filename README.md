@@ -163,6 +163,17 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **site: light-mode CSS for desktop, success, pricing, veterans pages** (2026-04-16)
+- **fix: cancel_at_period_end via separate API call (not checkout)** (2026-04-16)
+- **trial: 7-day Stripe trial flow for desktop tiers** (2026-04-16)
+- **checkout: monthly is the default env-var suffix (no _MONTHLY)** (2026-04-16)
+- **pricing: revise desktop tiers to $99 once / $19/mo / $49/mo** (2026-04-16)
+- **desktop: signed updates.json.sig for v0.1.0** (2026-04-16)
+- **desktop: signed updates.json for v0.1.0** (2026-04-16)
+- **desktop: re-sign tools-index with correct line endings + gitattributes fix** (2026-04-15)
+- **desktop: signed tools-index.json.sig** (2026-04-15)
+- **desktop: deploy unsigned tools-index.json (21 tools, 4 platforms)** (2026-04-16)
+- **site: desktop landing page, pricing rewrite, homepage update** (2026-04-16)
 - **desktop: Stripe checkout + success page with .stockyard-license download** (2026-04-15)
 - **site: serve /desktop/tools-index.json + .sig for desktop tool distribution** (2026-04-15)
 - **site: serve /desktop/updates.json + .sig for desktop auto-update** (2026-04-15)
@@ -172,17 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **trial_drip: add STOCKYARD_TRIAL_DRIP_DISABLED kill-switch** (2026-04-12)
 - **trial_drip: also gate behind NURTURE_ENABLED** (2026-04-12)
 - **nurture: disable by default, add 23h per-email rate limit** (2026-04-12)
-- **internal/manifestmigrate: skeleton per TOOL-SCHEMA-DESIGN.md §5** (2026-04-12)
-- **stockyard-manifest-validate: add --allow-single-file, unbreak tool-repo CI** (2026-04-12)
-- **stockyard-manifest-validate: implement E040/E041/W042 cross-tool event graph** (2026-04-12)
-- **stockyard-manifest-validate: raise test coverage 51% -> 62%** (2026-04-12)
-- **stockyard-manifest-validate: add --github output mode** (2026-04-12)
-- **step 2: add stockyard-manifest-validate (structural + type + catalog checks)** (2026-04-12)
-- **quick_match: add 'accounting' + 'accounting firm' -> accountant-tax** (2026-04-11)
-- **pricing: fix $7.99-with-150+-tools meta conflation, hide annual prices** (2026-04-11)
-- **homepage: remove download button, add 'now let's make it yours' transition + chip row** (2026-04-11)
-- **fix(recommender): route 'yoga studio' to yoga-studio bundle, not gym** (2026-04-10)
-- **bundles: fix recommender keyword poaching, esp. the yogau2192gym hijack** (2026-04-10)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
