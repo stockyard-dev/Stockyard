@@ -6,25 +6,27 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
 <title>Pricing — Stockyard</title>
-<meta content="Stockyard pricing. Free LLM proxy. $7.99/mo per bundle, $29.99/mo for all 150+ tools. 14-day free trial." name="description"/>
-<meta content="Stockyard Pricing — $7.99/mo with 14-day free trial" property="og:title"/>
-<meta content="Free open-source LLM proxy. $7.99/mo for one community bundle, $29.99/mo for all 150+ self-hosted tools. 14-day free trial. Your data stays on your hardware." property="og:description"/>
+<meta content="Stockyard pricing. Free LLM proxy. Desktop app: $49.99 one-time, or $99.99/$249.99 per year with cloud sync." name="description"/>
+<meta content="Stockyard Pricing — from $49.99 one-time" property="og:title"/>
+<meta content="Free open-source LLM proxy. Stockyard Desktop: $49.99 one-time for all 164 tools, or add cloud sync starting at $99.99/year." property="og:description"/>
 <meta content="https://stockyard.dev/og-pricing.png" property="og:image"/>
 <meta content="https://stockyard.dev/pricing/" property="og:url"/>
 <meta content="website" property="og:type"/>
 <meta content="summary_large_image" name="twitter:card"/>
-<meta content="Stockyard Pricing — $7.99/mo with 14-day free trial" name="twitter:title"/>
-<meta content="Free open-source LLM proxy. $7.99/mo for one community bundle, $29.99/mo for all 150+ self-hosted tools. 14-day free trial. Your data stays on your hardware." name="twitter:description"/>
+<meta content="Stockyard Pricing — from $49.99 one-time" name="twitter:title"/>
+<meta content="Free open-source LLM proxy. Stockyard Desktop: $49.99 one-time for all 164 tools, or add cloud sync starting at $99.99/year." name="twitter:description"/>
 <meta content="https://stockyard.dev/og-pricing.png" name="twitter:image"/>
 <link href="https://stockyard.dev/pricing/" rel="canonical"/>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-{"@type":"Question","name":"Is there a free trial?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every plan includes a 14-day free trial. Full access, no limits. Credit card required. Cancel anytime during the trial and you won't be charged."}},
-{"@type":"Question","name":"What happens to my data if I cancel?","acceptedAnswer":{"@type":"Answer","text":"Your data stays on your machine forever. Stockyard never deletes your data. Your SQLite files are standard database files you can open with any tool."}},
+{"@type":"Question","name":"What's the difference between Local and Cloud?","acceptedAnswer":{"@type":"Answer","text":"Local is the complete product on your machine — every tool, every bundle, no account required. Cloud adds encrypted backup and cross-device sync. The tools are identical."}},
+{"@type":"Question","name":"What happens to my data if I cancel?","acceptedAnswer":{"@type":"Answer","text":"Your data stays on your machine forever. Cloud sync stops if a subscription lapses, but every local feature keeps working. Your SQLite files are standard database files you can open with any tool."}},
 {"@type":"Question","name":"Is the LLM proxy really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The open-source proxy binary (Apache 2.0) is free forever. 38 providers, 76 middleware modules. No limits, no phone-home, no catch."}}
 ]}
 </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BR9VHNFEEE');</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
@@ -32,7 +34,7 @@ body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
 .nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
 .hero{max-width:700px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
 .hero h1{font-size:clamp(1.6rem,3.5vw,2.2rem);margin-bottom:1rem}
 .hero .sub{font-size:.95rem;color:var(--cream-dim);font-style:italic}
@@ -40,66 +42,58 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .tier{background:var(--bg2);border:2px solid var(--bg3);padding:2rem 1.5rem;text-align:center;position:relative;transition:border-color .2s}
 .tier:hover{border-color:var(--rust)}
 .tier.featured{border-color:var(--gold)}
-.tier-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:.6rem;padding:.2rem .8rem;letter-spacing:2px;text-transform:uppercase}
+.tier-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:.6rem;padding:.2rem .8rem;letter-spacing:2px;text-transform:uppercase;font-weight:600}
 .tier-name{font-family:var(--font-mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem}
 .tier-price{font-family:var(--font-mono);font-size:2.5rem;color:var(--cream);line-height:1}
 .tier-price .dollar{font-size:1.2rem;vertical-align:super;color:var(--cream-dim)}
-.tier-period{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);margin-bottom:.3rem}
-.tier-trial{font-family:var(--font-mono);font-size:.65rem;color:var(--gold);margin-bottom:1.2rem}
+.tier-period{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);margin-bottom:1.2rem}
 .tier-desc{font-size:.85rem;color:var(--cream-dim);margin-bottom:1.5rem;line-height:1.6}
 .tier-features{list-style:none;text-align:left;margin-bottom:1.5rem}
-.tier-features li{padding:.4rem 0;font-size:.8rem;color:var(--cream-dim);border-bottom:1px solid var(--bg3)}
-.tier-features li::before{content:'✓ ';color:var(--green)}
-.btn{display:inline-block;padding:.6rem 1.5rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;cursor:pointer;text-decoration:none;transition:background .2s}
-.btn:hover{background:var(--rust-light);color:#fff}
-.btn-outline{background:transparent;border:2px solid var(--leather);color:var(--cream)}
-.btn-outline:hover{border-color:var(--rust);color:var(--cream)}
-.section{max-width:700px;margin:0 auto;padding:3rem 2rem}
-.section h2{font-size:1.3rem;margin-bottom:1.5rem;text-align:center}
-.faq{margin-bottom:1.5rem}
-.faq h3{font-size:.9rem;margin-bottom:.5rem;color:var(--cream)}
-.faq p{font-size:.85rem;color:var(--cream-dim);line-height:1.7}
-.promise{background:var(--bg2);border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3);padding:3rem 2rem;text-align:center;margin:2rem 0}
-.promise h2{font-size:1.2rem;margin-bottom:1rem}
-.promise p{font-size:.88rem;color:var(--cream-dim);max-width:550px;margin:0 auto;line-height:1.8}
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
-@media(max-width:768px){.tiers{grid-template-columns:1fr}}
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green:#3a7a4a}}
+.tier-features li{font-size:.82rem;color:var(--cream-dim);padding:.35rem 0;border-bottom:1px dashed var(--bg3)}
+.tier-features li::before{content:"+";color:var(--green);margin-right:.5rem;font-weight:600}
+.btn{display:inline-block;padding:.8rem 1.2rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:background .2s;width:100%;text-decoration:none;text-align:center}
+.btn:hover{background:var(--rust-light);color:var(--cream)}
+.btn-outline{background:transparent;border:1px solid var(--bg3);color:var(--cream-dim)}
+.btn-outline:hover{background:var(--bg3);color:var(--cream);border-color:var(--rust)}
+.promise{max-width:720px;margin:0 auto 2rem;padding:2rem;background:var(--bg2);border-left:4px solid var(--rust)}
+.promise h2{font-size:1.2rem;margin-bottom:.5rem}.promise p{color:var(--cream-dim);font-size:.9rem}
+.section{max-width:720px;margin:2rem auto 3rem;padding:0 2rem}
+.section h2{font-size:1.3rem;margin-bottom:1.5rem;text-align:center;color:var(--leather-light)}
+.faq{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--bg3)}
+.faq h3{font-size:1rem;margin-bottom:.3rem}
+.faq p{color:var(--cream-dim);font-size:.88rem}
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted)}
+.sig{color:var(--leather-light);font-size:.8rem;margin-bottom:.5rem}
 </style>
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
 </head>
 <body>
 <nav class="nav">
 <a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
-<div class="nav-links"><a href="/for/">Bundles</a><a href="/pricing/">Pricing</a></div>
-</nav>
-<div class="hero">
-<h1>14 days free. Then pick your plan.</h1>
-<p class="sub">Every plan includes all features, no limits. Your data stays on your hardware forever.</p>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+<a href="/tools/">Tools</a>
+<a href="/desktop/" style="color:var(--rust-light)">Desktop</a>
+<a href="/about/">About</a>
+<a href="https://github.com/stockyard-dev/Stockyard" rel="noopener" target="_blank">GitHub</a>
 </div>
-<section style="max-width:720px;margin:1rem auto 3rem;padding:2rem;background:var(--bg2);border:2px solid var(--rust);text-align:center">
-<div style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:.8rem">
-    THE STOCKYARD PRICE LOCK
-  </div>
-<h2 style="font-size:1.4rem;margin-bottom:.8rem;color:var(--cream)">
-    The price you sign up at is the price you pay forever.
-  </h2>
-<p style="color:var(--cream-dim);font-size:.95rem;line-height:1.7;max-width:520px;margin:0 auto">
-    If we ever raise prices, every existing customer keeps their current rate. New customers pay the new price. You will never get a "we've updated our pricing" email from us. Ever.
-  </p>
-<p style="margin-top:1rem">
-<a href="/constitution/" style="color:var(--rust-light);font-family:var(--font-mono);font-size:.8rem;text-decoration:none">
-      Read the full Constitution →
-    </a>
-</p>
+</nav>
+<section class="hero">
+<h1>Simple pricing. No surprises.</h1>
+<p class="sub">Free proxy. One-time desktop purchase. Cloud sync if you want it.</p>
 </section>
+
+<section style="max-width:720px;margin:0 auto 1rem;padding:2rem;background:var(--bg2);border:2px solid var(--rust);text-align:center">
+<div style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:.8rem">THE STOCKYARD PRICE LOCK</div>
+<h2 style="font-size:1.4rem;margin-bottom:.8rem;color:var(--cream)">The price you sign up at is the price you pay forever.</h2>
+<p style="color:var(--cream-dim);font-size:.95rem;line-height:1.7;max-width:520px;margin:0 auto">If we ever raise prices, every existing customer keeps their current rate. New customers pay the new price. You will never get a "we've updated our pricing" email from us. Ever.</p>
+<p style="margin-top:1rem"><a href="/constitution/" style="color:var(--rust-light);font-family:var(--font-mono);font-size:.8rem">Read the full Constitution &rarr;</a></p>
+</section>
+
 <div class="tiers">
 <div class="tier">
 <div class="tier-name">Open-Source Proxy</div>
 <div class="tier-price" style="font-size:2rem">Free</div>
 <div class="tier-period">forever</div>
-<div class="tier-trial"> </div>
 <p class="tier-desc">The LLM proxy. Apache 2.0. No catch.</p>
 <ul class="tier-features">
 <li>38 LLM providers</li>
@@ -112,56 +106,49 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75
 </div>
 <div class="tier featured">
 <div class="tier-badge">Most Popular</div>
-<div class="tier-name">Bundle</div>
-<div class="tier-price"><span class="dollar">$</span>7.99</div>
-<div class="tier-period">per month</div>
-<div class="tier-trial">14-day free trial</div>
-<p class="tier-desc">One community bundle. All tools unlimited.</p>
+<div class="tier-name">Desktop — Local</div>
+<div class="tier-price"><span class="dollar">$</span>49.99</div>
+<div class="tier-period" style="color:var(--gold)">one-time</div>
+<p class="tier-desc">All 164 tools, all 195 bundles. Buy once, run forever. No account needed.</p>
 <ul class="tier-features">
-<li>5-10 tools per bundle</li>
-<li>Unlimited records</li>
-<li>All features unlocked</li>
-<li>Your data, your hardware</li>
-<li>Cancel anytime</li>
+<li>Every tool, every bundle</li>
+<li>Cross-tool automation</li>
+<li>AI-assisted edits included</li>
+<li>Your data, your machine</li>
+<li>No subscription</li>
 </ul>
-<a class="btn" href="/" id="bundle-cta">Start Trial — $0 today</a>
+<a class="btn" href="/desktop/">Get Stockyard Desktop</a>
 </div>
 <div class="tier">
-<div class="tier-name">All Tools</div>
-<div class="tier-price"><span class="dollar">$</span>29.99</div>
-<div class="tier-period">per month</div>
-<div class="tier-trial">14-day free trial</div>
-<p class="tier-desc">Every tool. 150+ binaries. For developers and power users.</p>
+<div class="tier-name">Desktop — Cloud</div>
+<div class="tier-price"><span class="dollar">$</span>99.99</div>
+<div class="tier-period">per year</div>
+<p class="tier-desc">Everything in Local, plus cloud backup and sync. Multi-site at $249.99/yr.</p>
 <ul class="tier-features">
-<li>All 150+ tools</li>
-<li>LLM proxy included</li>
-<li>Framework access</li>
-<li>Priority support</li>
-<li>Unlimited everything</li>
+<li>Everything in Local</li>
+<li>Encrypted cloud backup</li>
+<li>Cross-device sync</li>
+<li>Restore to any machine</li>
+<li>Email + priority support</li>
 </ul>
-<a class="btn btn-outline" href="#" id="all-cta">Start Trial</a>
+<a class="btn btn-outline" href="/desktop/">See Cloud Tiers</a>
 </div>
 </div>
+
 <section style="max-width:720px;margin:2rem auto;padding:1.5rem 2rem;background:var(--bg2);border-left:4px solid var(--rust);display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap">
 <div>
-<div style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:.3rem">
-      For Veterans
-    </div>
-<div style="font-size:1.1rem;margin-bottom:.3rem;color:var(--cream)">
-<strong>Free for life. Every tool. Every bundle.</strong>
+<div style="font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:.3rem">For Veterans</div>
+<div style="font-size:1.1rem;margin-bottom:.3rem;color:var(--cream)"><strong>Free for life. Every tool. Every bundle.</strong></div>
+<div style="font-size:.85rem;color:var(--cream-dim);font-style:italic">No verification, no expiration, no catch.</div>
 </div>
-<div style="font-size:.85rem;color:var(--cream-dim);font-style:italic">
-      No verification, no expiration, no catch.
-    </div>
-</div>
-<a href="/veterans/" style="padding:.8rem 1.5rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;text-decoration:none;white-space:nowrap;letter-spacing:1px">
-    GET FREE ACCESS →
-  </a>
+<a href="/veterans/" style="padding:.8rem 1.5rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;text-decoration:none;white-space:nowrap;letter-spacing:1px">GET FREE ACCESS &rarr;</a>
 </section>
+
 <div class="promise">
 <h2>Your data is never hostage.</h2>
-<p>Trial expires? Your SQLite files stay on disk, untouched, exportable. Cancel your subscription? Same thing. Move to a competitor? Copy the folder. Your data is a file on your computer. We never touch it.</p>
+<p>Cancel a subscription? Your data stays on your machine forever. Cloud sync stops but every local feature keeps working. Local tier has no subscription to cancel — it just works. Your data is a file on your computer. We never touch it.</p>
 </div>
+
 <div class="section">
 <h2>Frequently asked questions</h2>
 <div class="faq">
@@ -169,76 +156,29 @@ footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75
 <p>Each bundle is 5-10 tools picked for a specific community — therapists, barber shops, minecraft servers, dog breeders, and 190+ more. Visit <a href="/">stockyard.dev</a> and type what you do to see yours.</p>
 </div>
 <div class="faq">
-<h3>Do I need a credit card for the trial?</h3>
-<p>Yes. You get full access for 14 days. Cancel before day 14 and you're never charged.</p>
+<h3>What's the difference between Local and Cloud?</h3>
+<p>Local is the complete product on your machine — every tool, every bundle, no account required. Cloud adds encrypted backup and cross-device sync. The tools are identical. <a href="/desktop/">Full comparison here.</a></p>
 </div>
 <div class="faq">
-<h3>What happens when my trial ends?</h3>
-<p>Your subscription starts automatically. Your tools keep running. Nothing changes except the trial banner disappears.</p>
-</div>
-<div class="faq">
-<h3>What if I cancel?</h3>
-<p>Your tools stop accepting new records after the billing period ends. Your existing data stays on your machine forever. Export everything as CSV at any time. Re-subscribe and pick up where you left off.</p>
+<h3>Is there a free trial?</h3>
+<p>The app runs in trial mode without a license. Local is $49.99 one-time. If it's not for you, email us and we'll sort it out.</p>
 </div>
 <div class="faq">
 <h3>Is the proxy really free?</h3>
 <p>Yes. The open-source proxy is Apache 2.0. Free forever. No limits. No phone-home. 38 LLM providers, 76 middleware modules. <a href="/proxy-only/">Download it here.</a></p>
 </div>
 <div class="faq">
-<h3>Can I switch bundles?</h3>
-<p>Email hello@stockyard.dev and we'll switch you. Your old tools keep running.</p>
-</div>
-<div class="faq">
-<h3>Do you offer refunds?</h3>
-<p>Yes. Email hello@stockyard.dev within 30 days of any charge. No questions.</p>
-</div>
-<div class="faq">
 <h3>Where does my data live?</h3>
-<p>On your machine. In SQLite files. Back up by copying the folder. We never see your data.</p>
+<p>On your machine. In SQLite files. Back up by copying the folder. We never see your data. Cloud tiers add optional encrypted backup to our servers, but the local copy is always the source of truth.</p>
 </div>
 </div>
+
 <footer>
 <p class="sig">Stockyard. Your tools, your data, your hardware.</p>
-<p style="margin-top:0.5rem"><a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
+<p style="margin-top:0.5rem"><a href="/for/">Bundles</a> · <a href="/desktop/">Desktop</a> · <a href="/about/">About</a> · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
 <p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
 <p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
 </footer>
-<script>
-var p=new URLSearchParams(window.location.search);
-var bundle=p.get('bundle');
-var refParam=p.get('ref');
-
-function doCheckout(btn,body){
-  var orig=btn.textContent;
-  btn.textContent='Loading...';btn.style.opacity='.6';
-  // Pass fields straight through to /api/billing/stripe/checkout.
-  // Backend accepts: {bundle, tier, email, ref}.
-  var apiBody={};
-  if(body.bundle){apiBody.bundle=body.bundle}
-  if(body.tier){apiBody.tier=body.tier}
-  if(body.email){apiBody.email=body.email}
-  if(refParam){apiBody.ref=refParam}
-  fetch('/api/billing/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(apiBody)})
-  .then(function(r){return r.json()})
-  .then(function(d){
-    if(d.url){window.location=d.url}
-    else{btn.textContent=d.error||'Error — try again';btn.style.opacity='1';setTimeout(function(){btn.textContent=orig;},3000)}
-  })
-  .catch(function(){btn.textContent='Error — try again';btn.style.opacity='1';setTimeout(function(){btn.textContent=orig},3000)});
-}
-
-var bundleBtn=document.getElementById('bundle-cta');
-if(bundle){
-  bundleBtn.href='#';
-  bundleBtn.textContent='Start Trial — $0 today';
-  bundleBtn.onclick=function(e){e.preventDefault();doCheckout(this,{bundle:bundle})};
-}else{
-  bundleBtn.href='/for/';
-  bundleBtn.textContent='Find Your Bundle';
-}
-
-document.getElementById('all-cta').onclick=function(e){e.preventDefault();doCheckout(this,{tier:'all_tools'})};
-</script>
 <script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

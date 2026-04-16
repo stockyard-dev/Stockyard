@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<title>Stockyard Desktop — Self-hosted toolkit for your business</title>
+<meta content="Self-hosted desktop app. Every tool, every bundle, your machine. $49.99 one-time. Cloud sync optional." name="description"/>
+<meta content="Stockyard Desktop — Self-hosted toolkit for your business" property="og:title"/>
+<meta content="Self-hosted desktop app. Every tool, every bundle, your machine. $49.99 one-time. Cloud sync optional at $99.99 or $249.99 a year." property="og:description"/>
+<meta content="https://stockyard.dev/og-pricing.png" property="og:image"/>
+<meta content="https://stockyard.dev/desktop/" property="og:url"/>
+<meta content="website" property="og:type"/>
+<link href="https://stockyard.dev/desktop/" rel="canonical"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BR9VHNFEEE');</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--green-light:#6bb87f;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+
+.hero{max-width:760px;margin:0 auto;padding:4rem 2rem 1.5rem;text-align:center}
+.hero-eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:1rem}
+.hero h1{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:1rem;line-height:1.25}
+.hero .sub{font-size:1rem;color:var(--cream-dim);max-width:600px;margin:0 auto}
+
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;max-width:1040px;margin:3rem auto;padding:0 2rem}
+.tier{background:var(--bg2);border:2px solid var(--bg3);padding:2rem 1.5rem;text-align:center;position:relative;transition:border-color .2s;display:flex;flex-direction:column}
+.tier:hover{border-color:var(--rust)}
+.tier.featured{border-color:var(--gold)}
+.tier-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:.6rem;padding:.25rem .9rem;letter-spacing:2px;text-transform:uppercase;font-weight:600}
+.tier-name{font-family:var(--font-mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1rem}
+.tier-price{font-family:var(--font-mono);font-size:2.4rem;color:var(--cream);line-height:1}
+.tier-price .dollar{font-size:1.1rem;vertical-align:super;color:var(--cream-dim)}
+.tier-period{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);margin-bottom:.3rem}
+.tier-period.one-time{color:var(--gold)}
+.tier-desc{font-size:.85rem;color:var(--cream-dim);margin:1rem 0 1.4rem;line-height:1.6;min-height:3em}
+.tier-features{list-style:none;text-align:left;margin-bottom:1.5rem;flex:1}
+.tier-features li{font-size:.82rem;color:var(--cream-dim);padding:.4rem 0;border-bottom:1px dashed var(--bg3);display:flex;align-items:flex-start;gap:.5rem}
+.tier-features li::before{content:"+";color:var(--green-light);font-weight:600;flex-shrink:0}
+.tier-features li.muted{color:var(--cream-muted)}
+.tier-features li.muted::before{content:"\2014";color:var(--bg3)}
+.btn{display:inline-block;padding:.85rem 1.4rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;width:100%;transition:background .2s;text-decoration:none;text-align:center}
+.btn:hover{background:var(--rust-light);color:var(--cream)}
+.btn-outline{background:transparent;border:1px solid var(--bg3);color:var(--cream-dim)}
+.btn-outline:hover{background:var(--bg3);color:var(--cream);border-color:var(--rust)}
+
+.compare{max-width:780px;margin:3rem auto;padding:0 2rem}
+.compare h2{font-size:1.3rem;text-align:center;margin-bottom:1.5rem;color:var(--leather-light)}
+.compare-table{width:100%;border-collapse:collapse;font-size:.85rem;background:var(--bg2);border:1px solid var(--bg3)}
+.compare-table th,.compare-table td{padding:.7rem 1rem;text-align:center;border-bottom:1px solid var(--bg3)}
+.compare-table th{font-family:var(--font-mono);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--leather-light);background:var(--bg3)}
+.compare-table td:first-child{text-align:left;color:var(--cream-dim)}
+.compare-table .yes{color:var(--green-light)}
+.compare-table .no{color:var(--cream-muted)}
+
+.promise{max-width:720px;margin:3rem auto 4rem;padding:2rem;background:var(--bg2);border-left:4px solid var(--rust);text-align:left}
+.promise h2{font-size:1.2rem;margin-bottom:.7rem;color:var(--cream)}
+.promise p{color:var(--cream-dim);font-size:.92rem;margin-bottom:.7rem}
+.promise p:last-child{margin-bottom:0}
+
+.faq-section{max-width:720px;margin:3rem auto;padding:0 2rem}
+.faq-section h2{font-size:1.3rem;text-align:center;margin-bottom:2rem;color:var(--leather-light)}
+.faq{margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--bg3)}
+.faq h3{font-size:1rem;margin-bottom:.5rem;color:var(--cream)}
+.faq p{color:var(--cream-dim);font-size:.9rem}
+
+.foot{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted)}
+.foot a{color:var(--leather-light)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<a class="nav-brand" href="/">
+<svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard
+</a>
+<div class="nav-links">
+<a href="/for/">Bundles</a>
+<a href="/tools/">Tools</a>
+<a href="/desktop/" style="color:var(--rust-light)">Desktop</a>
+<a href="/about/">About</a>
+<a href="https://github.com/stockyard-dev/Stockyard" rel="noopener" target="_blank">GitHub</a>
+</div>
+</nav>
+
+<section class="hero">
+<div class="hero-eyebrow">STOCKYARD DESKTOP</div>
+<h1>Every tool, every bundle, your machine.</h1>
+<p class="sub">One desktop app. 164 self-hosted tools. Pick a bundle for what you do, or run them all. Your data lives on your computer, not someone else's cloud.</p>
+</section>
+
+<div class="tiers">
+
+<div class="tier">
+<div class="tier-name">Local</div>
+<div class="tier-price"><span class="dollar">$</span>49.99</div>
+<div class="tier-period one-time">one-time</div>
+<p class="tier-desc">Buy once, run forever. Your machine, your data, no account required.</p>
+<ul class="tier-features">
+<li>All 164 tools</li>
+<li>All 195 bundles</li>
+<li>Cross-tool automation</li>
+<li>AI-assisted edits included</li>
+<li class="muted">No cloud backup</li>
+<li class="muted">No cross-device sync</li>
+</ul>
+<button class="btn" onclick="checkout('desktop-local')">Buy Local</button>
+</div>
+
+<div class="tier featured">
+<div class="tier-badge">Most Popular</div>
+<div class="tier-name">Cloud Single Site</div>
+<div class="tier-price"><span class="dollar">$</span>99.99</div>
+<div class="tier-period">per year</div>
+<p class="tier-desc">Everything in Local, plus encrypted backup and sync across your devices at one location.</p>
+<ul class="tier-features">
+<li>Everything in Local</li>
+<li>Encrypted cloud backup</li>
+<li>Restore to any new machine</li>
+<li>Sync across devices at one location</li>
+<li>Email support</li>
+<li class="muted">Single business location</li>
+</ul>
+<button class="btn" onclick="checkout('desktop-cloud-single')">Subscribe</button>
+</div>
+
+<div class="tier">
+<div class="tier-name">Cloud Multi-Site</div>
+<div class="tier-price"><span class="dollar">$</span>249.99</div>
+<div class="tier-period">per year</div>
+<p class="tier-desc">For owners running multiple locations. Each site is a separate, isolated namespace.</p>
+<ul class="tier-features">
+<li>Everything in Cloud Single Site</li>
+<li>Unlimited locations</li>
+<li>Isolated data per site</li>
+<li>Multi-site dashboard</li>
+<li>Priority support</li>
+</ul>
+<button class="btn btn-outline" onclick="checkout('desktop-cloud-multi')">Subscribe</button>
+</div>
+
+</div>
+
+<div class="compare">
+<h2>What's actually different</h2>
+<table class="compare-table">
+<thead>
+<tr><th></th><th>Local</th><th>Cloud Single</th><th>Cloud Multi</th></tr>
+</thead>
+<tbody>
+<tr><td>All 164 tools</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>All 195 bundles</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Cross-tool automation</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>AI-assisted edits</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Works offline</td><td class="yes">Always</td><td class="yes">Always</td><td class="yes">Always</td></tr>
+<tr><td>Cloud backup</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Cross-device sync</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Multiple locations</td><td class="no">No</td><td class="no">One site</td><td class="yes">Unlimited</td></tr>
+<tr><td>Account required</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Billing</td><td>One-time</td><td>Annual</td><td>Annual</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="promise">
+<h2>The Local tier is a real product, not a trial.</h2>
+<p>Local includes every tool, every bundle, every feature that runs on your machine. Cloud Single and Cloud Multi add cloud — they don't add features. If you don't want your data leaving your machine, Local is the entire product.</p>
+<p>If your cloud subscription ever lapses, your local features keep working. The data on your machine is yours, period. We never take it away.</p>
+</div>
+
+<section class="faq-section">
+<h2>Frequently asked questions</h2>
+
+<div class="faq">
+<h3>Is there a free trial?</h3>
+<p>Without a license the app runs in trial mode with limited functionality. The Local tier is a one-time purchase at $49.99 with all tools and bundles unlocked.</p>
+</div>
+
+<div class="faq">
+<h3>What happens if Stockyard the company disappears?</h3>
+<p>The Local tier license has no expiry. The binary keeps working. Your data stays on your machine in standard SQLite files. You can open them with any tool.</p>
+</div>
+
+<div class="faq">
+<h3>What if my Cloud subscription lapses?</h3>
+<p>Cloud sync stops. Every local feature keeps working. Your data on your machine is never affected.</p>
+</div>
+
+<div class="faq">
+<h3>What's a "site"?</h3>
+<p>A site is a logical location. "Downtown Studio" and "Uptown Studio" are two sites with separate data. One business at one address running ten bundles is one site. Most customers are single-site.</p>
+</div>
+
+<div class="faq">
+<h3>Can I upgrade later?</h3>
+<p>Yes. Local to Cloud Single is a prorated upgrade. Cloud Single to Cloud Multi too. Downgrades work in the other direction with no data loss.</p>
+</div>
+
+<div class="faq">
+<h3>How is this different from the per-bundle subscription?</h3>
+<p>The desktop app replaces it. The old per-bundle subscription model has been retired in favor of one app, all tools, three pricing tiers based on cloud needs.</p>
+</div>
+
+</section>
+
+<div class="foot">
+Stockyard Desktop runs on macOS, Windows, and Linux.<br/>
+Questions? <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a>
+</div>
+
+<script>
+function checkout(plan) {
+  gtag('event', 'desktop_checkout_clicked', { plan: plan });
+  fetch('/api/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan: plan })
+  })
+  .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, body: d }; }); })
+  .then(function(res) {
+    if (res.ok && res.body && res.body.url) {
+      window.location.href = res.body.url;
+    } else {
+      var msg = (res.body && res.body.error) || 'Checkout temporarily unavailable. Please try again or email hello@stockyard.dev.';
+      alert(msg);
+    }
+  })
+  .catch(function() {
+    alert('Checkout temporarily unavailable. Please try again or email hello@stockyard.dev.');
+  });
+}
+</script>
+
+</body>
+</html>

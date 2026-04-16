@@ -8,9 +8,9 @@
 <link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
 <link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>Stockyard — Self-hosted tools for your business, hobby, or community</title>
-<meta content="200 tool bundles for every community. Type what you do, get your tools. One install. Self-hosted, no cloud. $7.99/mo." name="description"/>
+<meta content="200 tool bundles for every community. Type what you do, get your tools. One app. Self-hosted. $49.99 one-time." name="description"/>
 <meta content="Stockyard — Your tools. Your data. Your hardware." property="og:title"/>
-<meta content="200 tool bundles for every community. Type what you do, get your tools. $7.99/mo." property="og:description"/>
+<meta content="200 tool bundles for every community. Type what you do, get your tools. $49.99 one-time." property="og:description"/>
 <meta content="website" property="og:type"/>
 <meta content="https://stockyard.dev/" property="og:url"/>
 <meta content="https://stockyard.dev/og-homepage.png" property="og:image"/>
@@ -127,6 +127,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <div class="nav-links">
 <a href="/for/">Bundles</a>
 <a href="/tools/">Tools</a>
+<a href="/desktop/" style="color:var(--rust-light)">Desktop</a>
 <a href="/pricing/">Pricing</a>
 <a href="/about/">About</a>
 <a href="https://github.com/stockyard-dev/Stockyard" rel="noopener" target="_blank">GitHub</a>
@@ -162,7 +163,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 <text x="18" y="198" class="d-t d-di" font-size="9">&#9675; Waivers</text>
 <text x="18" y="220" class="d-t d-di" font-size="9">&#9675; Announcements</text>
 <text x="18" y="242" class="d-t d-di" font-size="9">&#9675; Notes</text>
-<text x="18" y="410" class="d-t d-mu" font-size="7">7 tools &#183; $7.99/mo</text>
+<text x="18" y="410" class="d-t d-mu" font-size="7">7 tools &#183; $49.99</text>
 <text x="18" y="424" class="d-t d-mu" font-size="7">self-hosted</text>
 <!-- main content -->
 <text x="170" y="58" class="d-t d-cr" font-size="15" font-weight="700">Today at Bloom</text>
@@ -252,7 +253,7 @@ footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-
 </svg>
 <figcaption style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);letter-spacing:1px;margin-top:.5rem">EXAMPLE DASHBOARD · BLOOM YOGA STUDIO</figcaption>
 </figure>
-<div style="text-align:center;margin:0 auto 1.8rem;font-family:var(--font-mono);font-size:.8rem;letter-spacing:.5px;color:var(--cream)"><span style="color:var(--gold);font-weight:600">$7.99/mo</span> for your community bundle <span style="color:var(--cream-muted)">·</span> 14-day free trial</div>
+<div style="text-align:center;margin:0 auto 1.8rem;font-family:var(--font-mono);font-size:.8rem;letter-spacing:.5px;color:var(--cream)"><span style="color:var(--gold);font-weight:600">$49.99</span> one-time for the full desktop app <span style="color:var(--cream-muted)">·</span> <a href="/desktop/" style="color:var(--rust-light)">see plans</a></div>
 <section class="hero-pivot" aria-label="Now build your custom toolkit">
 <h2>Now let's make it yours.</h2>
 <p>Type your business or hobby. We'll do the rest.</p>
@@ -444,8 +445,8 @@ var tc=b.tools.map(function(t){return'<a class="tool-card" href="/tools/'+esc(t.
 var rh='';
 if(b.replaces&&b.replaces.length){
 var ri=b.replaces.map(function(r){return'<li>'+esc(r)+'</li>'}).join('');
-rh='<div class="replaces"><h3>Stop paying for tools you could own</h3><ul class="replaces-list">'+ri+'</ul>'+(b.price_anchor?'<p class="anchor">That adds up to <strong>'+esc(b.price_anchor)+'</strong>. Stockyard is <strong>$7.99/mo</strong>.</p>':'')+'</div>'}
-BR.innerHTML='<div class="bundle-detail"><div class="bun-eye">Stockyard for '+esc(b.name)+'</div><h2 class="bun-h">'+esc(b.headline)+'</h2><p class="bun-sub">'+esc(b.description)+'</p>'+installButtons(b.slug)+rh+'<div class="bun-section-label">'+b.tools.length+' tools included</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p>14 days free. Then <strong>$7.99/mo</strong>. Cancel anytime. Your data stays.</p><a href="/pricing/?bundle='+esc(b.slug)+'" class="btn" style="margin-top:1rem">Start 14-Day Trial</a></div></div>';
+rh='<div class="replaces"><h3>Stop paying for tools you could own</h3><ul class="replaces-list">'+ri+'</ul>'+(b.price_anchor?'<p class="anchor">That adds up to <strong>'+esc(b.price_anchor)+'</strong>. Stockyard is <strong>$49.99 one-time</strong>.</p>':'')+'</div>'}
+BR.innerHTML='<div class="bundle-detail"><div class="bun-eye">Stockyard for '+esc(b.name)+'</div><h2 class="bun-h">'+esc(b.headline)+'</h2><p class="bun-sub">'+esc(b.description)+'</p>'+installButtons(b.slug)+rh+'<div class="bun-section-label">'+b.tools.length+' tools included</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p><strong>$49.99 one-time</strong>. All tools, all bundles. Your data stays.</p><a href="/desktop/" class="btn" style="margin-top:1rem">Get Stockyard Desktop</a></div></div>';
 BR.style.display='block';
 highlightOS();
 gtag('event','bundle_view',{bundle_slug:slug})
@@ -454,7 +455,7 @@ gtag('event','bundle_view',{bundle_slug:slug})
 function showCat(cat){
 var matches=B.filter(function(b){return b.category===cat}).sort(function(a,b){return a.name.localeCompare(b.name)});
 CS.style.display='none';
-BR.innerHTML='<div class="bundle-detail"><button class="back-btn" onclick="CS.style.display=\'\';BR.style.display=\'none\'">\u2190 Back</button><h2 class="bun-h">'+esc(cat)+'</h2><div class="bundle-list">'+matches.map(function(b){return'<button class="bundle-list-item" onclick="SI.value=\''+b.slug+'\';selectBundle(\''+b.slug+'\')"><strong>'+esc(b.name)+'</strong><span>'+esc(b.headline)+'</span><span class="tool-count">'+b.tools.length+' tools \u00b7 $7.99/mo</span></button>'}).join('')+'</div></div>';
+BR.innerHTML='<div class="bundle-detail"><button class="back-btn" onclick="CS.style.display=\'\';BR.style.display=\'none\'">\u2190 Back</button><h2 class="bun-h">'+esc(cat)+'</h2><div class="bundle-list">'+matches.map(function(b){return'<button class="bundle-list-item" onclick="SI.value=\''+b.slug+'\';selectBundle(\''+b.slug+'\')"><strong>'+esc(b.name)+'</strong><span>'+esc(b.headline)+'</span><span class="tool-count">'+b.tools.length+' tools \u00b7 $49.99</span></button>'}).join('')+'</div></div>';
 BR.style.display='block'
 }
 
@@ -476,7 +477,7 @@ if(data.fallback||data.error){doSearch(desc.split(' ')[0]);showAB();return}
 // Render AI result
 var tc=data.tools.map(function(t){return'<a class="tool-card" href="/tools/'+esc(t.slug)+'/"><h4 style="font-family:var(--font-mono);font-size:.82rem;margin-bottom:.3rem">'+esc(t.label)+'</h4><p style="font-size:.78rem;color:var(--cream-dim)">'+esc(t.desc)+'</p><p style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-top:.3rem">Replaces '+esc(t.replaces)+' ($'+t.replaces_cost+'/mo)</p></a>'}).join('');
 var slug=data.slug||'custom';
-BR.innerHTML='<div class="bundle-detail" style="animation:fadeIn .3s ease"><div class="bun-eye">Your Custom Toolkit</div><h2 class="bun-h">'+esc(data.title)+'</h2><p class="bun-sub">'+data.tools.length+' self-hosted tools for '+esc(data.audience)+'</p>'+installButtons(slug)+'<div style="text-align:center;margin:1rem 0 2rem"><a href="/for/'+esc(slug)+'/" style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);text-decoration:none;border-bottom:1px solid var(--bg3)">VIEW FULL BUNDLE PAGE &rarr;</a></div><div style="text-align:center;margin:2rem 0;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem"><p style="font-size:.85rem;color:var(--cream-dim)">You\'re probably paying <strong style="color:var(--rust-light)">~$'+data.total_replaces_cost+'/mo</strong> in SaaS fees</p><p style="font-family:var(--font-mono);font-size:1.3rem;margin-top:.5rem;color:var(--gold)">Save ~$'+data.savings_per_year+'/year with Stockyard</p></div><div class="bun-section-label">'+data.tools.length+' tools, built for you</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p>14 days free. Then <strong>$7.99/mo</strong>. Cancel anytime. Your data stays.</p><a href="/pricing/?bundle='+esc(slug)+'" class="btn" style="margin-top:1rem">Start 14-Day Trial</a><p style="font-size:.7rem;color:var(--cream-muted);margin-top:.8rem;font-family:var(--font-mono)">Credit card required. $0 charged today.</p></div></div>';
+BR.innerHTML='<div class="bundle-detail" style="animation:fadeIn .3s ease"><div class="bun-eye">Your Custom Toolkit</div><h2 class="bun-h">'+esc(data.title)+'</h2><p class="bun-sub">'+data.tools.length+' self-hosted tools for '+esc(data.audience)+'</p>'+installButtons(slug)+'<div style="text-align:center;margin:1rem 0 2rem"><a href="/for/'+esc(slug)+'/" style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);text-decoration:none;border-bottom:1px solid var(--bg3)">VIEW FULL BUNDLE PAGE &rarr;</a></div><div style="text-align:center;margin:2rem 0;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem"><p style="font-size:.85rem;color:var(--cream-dim)">You\'re probably paying <strong style="color:var(--rust-light)">~$'+data.total_replaces_cost+'/mo</strong> in SaaS fees</p><p style="font-family:var(--font-mono);font-size:1.3rem;margin-top:.5rem;color:var(--gold)">Save ~$'+data.savings_per_year+'/year with Stockyard</p></div><div class="bun-section-label">'+data.tools.length+' tools, built for you</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p><strong>$49.99 one-time</strong>. All tools, all bundles. Your data stays.</p><a href="/desktop/" class="btn" style="margin-top:1rem">Get Stockyard Desktop</a><p style="font-size:.7rem;color:var(--cream-muted);margin-top:.8rem;font-family:var(--font-mono)"></p></div></div>';
 highlightOS();
 BR.style.display='block';
 history.replaceState(null,'','/?q='+encodeURIComponent(desc));

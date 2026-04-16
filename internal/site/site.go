@@ -286,6 +286,8 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/proxy-only/",
 		"/billing/success/",
 		"/billing/cancel/",
+		"/desktop/",
+		"/desktop/success/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)
