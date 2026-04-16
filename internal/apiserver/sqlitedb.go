@@ -701,6 +701,28 @@ func (db *SqliteDB) UnclaimWebhookEvent(eventID string) error {
 	return err
 }
 
+// CountBackupsInWindow returns how many cloud_backup_blobs rows exist
+// for the given account within the last windowSeconds seconds. Used
+// by the backup upload handler to enforce sliding-window rate limits
+// — a single indexed COUNT query per upload is cheap enough to run
+// inline.
+//
+// Uses SQLite's datetime('now', '-N seconds') directly to avoid any
+// format-string mismatch between Go and SQLite's stored TEXT. Matches
+// the pattern in cloud_retention.go.
+func (db *SqliteDB) CountBackupsInWindow(accountID int64, windowSeconds int) (int, error) {
+	var n int
+	err := db.conn.QueryRow(
+		`SELECT COUNT(*) FROM cloud_backup_blobs
+		 WHERE account_id = ? AND uploaded_at > datetime('now', ?)`,
+		accountID, fmt.Sprintf("-%d seconds", windowSeconds),
+	).Scan(&n)
+	if err != nil {
+		return 0, err
+	}
+	return n, nil
+}
+
 func (db *SqliteDB) Stats() map[string]any {
 	var custCount, activeCount, totalCount, canceledCount int64
 	db.conn.QueryRow("SELECT COUNT(*) FROM customers").Scan(&custCount)

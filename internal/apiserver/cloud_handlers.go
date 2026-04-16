@@ -1,12 +1,13 @@
 // Package apiserver — Cloud backend HTTP handlers.
 //
 // Endpoints wired in server.go:
-//   POST /api/cloud/login/request   — { email } → send magic link
-//   GET  /api/cloud/login/verify    — ?token=... → set session cookie + redirect
-//   POST /api/cloud/logout          — revoke session
-//   GET  /api/cloud/me              — return current account info
-//   POST /api/cloud/backup          — upload encrypted blob
-//   GET  /api/cloud/backup/latest   — download most recent blob
+//
+//	POST /api/cloud/login/request   — { email } → send magic link
+//	GET  /api/cloud/login/verify    — ?token=... → set session cookie + redirect
+//	POST /api/cloud/logout          — revoke session
+//	GET  /api/cloud/me              — return current account info
+//	POST /api/cloud/backup          — upload encrypted blob
+//	GET  /api/cloud/backup/latest   — download most recent blob
 //
 // Cookie: HttpOnly, Secure, SameSite=Lax, 30-day expiry. Name
 // `sy_cloud_session`. The cookie value is the raw session token; the
@@ -14,7 +15,9 @@
 package apiserver
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -227,7 +230,7 @@ func (c *CloudService) HandleLoginRequest(w http.ResponseWriter, r *http.Request
 	}
 
 	writeJSON(w, 200, map[string]string{
-		"status": "ok",
+		"status":  "ok",
 		"message": "If that email is a Cloud customer, a login link is on its way. Check your inbox.",
 	})
 }
@@ -350,20 +353,33 @@ func (c *CloudService) HandleMe(w http.ResponseWriter, r *http.Request) {
 // --- Backup upload --------------------------------------------------
 
 // maxBackupSize caps individual backup uploads. 100MB is generous for
-// per-site SQLite tarballs; revisit if real-world data grows past it.
+// v0 — most small-business data volumes are well under this. Enforced
+// both pre-flight (Content-Length check) and post-write (tee+size).
 const maxBackupSize = 100 * 1024 * 1024
+
+// Rate limits for backup uploads per cloud account. Sized for
+// "Stockyard-scale small business that backs up a few times a day" —
+// runaway clients (loop bug, malicious script) exceed them quickly,
+// normal customers don't notice. The two windows compose: you can
+// burst up to 10 per hour, but not more than 100 total per day.
+// Enforced via CountBackupsInWindow.
+const (
+	backupsPerHourLimit = 10
+	backupsPerDayLimit  = 100
+)
 
 // HandleBackupUpload accepts an encrypted blob from the desktop app.
 // The body is stored as-is; we never see plaintext.
 //
 // Required headers:
-//   X-Site-Slug      — site this backup belongs to. Must exist and
-//                      be owned by the current account. For Cloud
-//                      Single accounts we auto-create the default
-//                      site on first upload.
-//   X-Sha256         — hex SHA-256 of the body, verified server-side.
-//   X-Client-Version — optional desktop app version, logged for
-//                      debugging.
+//
+//	X-Site-Slug      — site this backup belongs to. Must exist and
+//	                   be owned by the current account. For Cloud
+//	                   Single accounts we auto-create the default
+//	                   site on first upload.
+//	X-Sha256         — hex SHA-256 of the body, verified server-side.
+//	X-Client-Version — optional desktop app version, logged for
+//	                   debugging.
 func (c *CloudService) HandleBackupUpload(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeJSON(w, 405, map[string]string{"error": "POST required"})
@@ -395,6 +411,56 @@ func (c *CloudService) HandleBackupUpload(w http.ResponseWriter, r *http.Request
 	}
 	expectedSha := strings.ToLower(strings.TrimSpace(r.Header.Get("X-Sha256")))
 
+	// Rate limiting: sliding window via cloud_backup_blobs timestamps.
+	// Moderate limits sized for "Stockyard-scale small business that
+	// backs up a few times a day" — a runaway client exceeds them
+	// quickly, normal customers don't notice. Limits checked in
+	// order (tightest first) and 429 returned with Retry-After
+	// pointing at the window's reset.
+	// A DB error on the count query fails OPEN — we'd rather
+	// accept an occasional extra upload than block a legitimate one.
+	if n, err := c.db.CountBackupsInWindow(acct.ID, 3600); err == nil && n >= backupsPerHourLimit {
+		w.Header().Set("Retry-After", "3600")
+		writeJSON(w, 429, map[string]string{
+			"error":       "upload rate limit exceeded",
+			"limit":       fmt.Sprintf("%d per hour", backupsPerHourLimit),
+			"retry_after": "3600",
+		})
+		log.Printf("cloud backup: rate-limited account=%d (hour) count=%d", acct.ID, n)
+		return
+	} else if err != nil {
+		log.Printf("cloud backup: rate check (hour) failed account=%d: %v (failing open)", acct.ID, err)
+	}
+	if n, err := c.db.CountBackupsInWindow(acct.ID, 86400); err == nil && n >= backupsPerDayLimit {
+		w.Header().Set("Retry-After", "86400")
+		writeJSON(w, 429, map[string]string{
+			"error":       "upload rate limit exceeded",
+			"limit":       fmt.Sprintf("%d per day", backupsPerDayLimit),
+			"retry_after": "86400",
+		})
+		log.Printf("cloud backup: rate-limited account=%d (day) count=%d", acct.ID, n)
+		return
+	} else if err != nil {
+		log.Printf("cloud backup: rate check (day) failed account=%d: %v (failing open)", acct.ID, err)
+	}
+
+	// Pre-flight size check. If the client sets Content-Length (every
+	// reasonable client does, including our own desktop), reject
+	// oversize uploads BEFORE writing anything to disk. Without this,
+	// a 200MB upload would be fully written to the blob store via the
+	// tee reader, THEN detected as over-size, THEN deleted — wasteful
+	// disk I/O every time an oversize client retries. A client that
+	// omits Content-Length falls through to the post-write check
+	// below, which still protects us but at higher cost.
+	if cl := r.ContentLength; cl > 0 && cl > maxBackupSize {
+		writeJSON(w, 413, map[string]string{
+			"error":    "backup exceeds 100MB limit",
+			"max_size": fmt.Sprintf("%d", maxBackupSize),
+			"got":      fmt.Sprintf("%d", cl),
+		})
+		return
+	}
+
 	// Resolve or create the site row.
 	siteID, err := c.resolveOrCreateSite(acct, siteSlug)
 	if err != nil {
@@ -411,7 +477,25 @@ func (c *CloudService) HandleBackupUpload(w http.ResponseWriter, r *http.Request
 	}
 
 	// Write to blob store while hashing.
-	key := fmt.Sprintf("acct-%d-site-%d-%d.blob", acct.ID, siteID, time.Now().UnixNano())
+	// Blob key = acct-{N}-site-{N}-{nanoseconds}-{random}.blob
+	// The random suffix prevents key collisions on the extraordinarily
+	// rare chance that two uploads for the same (account, site) land
+	// in the same nanosecond. Without it, os.Rename would silently
+	// overwrite the earlier blob while its metadata row still pointed
+	// at the key — a later restore-by-id would return the wrong data.
+	// 8 random bytes = 64 bits of entropy, making collisions
+	// effectively impossible.
+	var randSuffix [8]byte
+	if _, err := rand.Read(randSuffix[:]); err != nil {
+		log.Printf("cloud backup: rand.Read failed: %v", err)
+		writeJSON(w, 500, map[string]string{"error": "internal error"})
+		return
+	}
+	key := fmt.Sprintf("acct-%d-site-%d-%d-%x.blob",
+		acct.ID, siteID,
+		time.Now().UnixNano(),
+		binary.BigEndian.Uint64(randSuffix[:]),
+	)
 	limited := io.LimitReader(r.Body, maxBackupSize+1)
 	hash := sha256.New()
 	tee := io.TeeReader(limited, hash)
