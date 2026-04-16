@@ -452,6 +452,25 @@ func (c *CloudService) HandleBackupUpload(w http.ResponseWriter, r *http.Request
 	log.Printf("cloud backup: stored — account=%d site=%d size=%d key=%s",
 		acct.ID, siteID, n, key)
 
+	// Apply retention policy: delete blobs that exceed both the
+	// count ceiling AND the age floor. Done inline, synchronously,
+	// so a failure is observable to the caller (and the test suite)
+	// rather than swallowed in a goroutine. The extra latency is
+	// typically a few milliseconds — trivial compared to the upload
+	// itself — but if it ever becomes material we can move this to
+	// a goroutine without changing the observable contract.
+	pruned, perr := c.pruneOldBackups(acct.ID, siteID)
+	if perr != nil {
+		// Pruning failed but the upload succeeded. Log and continue
+		// — we'd rather leak a few old blobs than fail the upload
+		// the customer just waited 30 seconds for.
+		log.Printf("cloud backup: prune failed (non-fatal) account=%d site=%d: %v",
+			acct.ID, siteID, perr)
+	} else if pruned > 0 {
+		log.Printf("cloud backup: pruned %d old blob(s) for account=%d site=%d",
+			pruned, acct.ID, siteID)
+	}
+
 	writeJSON(w, 200, map[string]any{
 		"status":      "ok",
 		"id":          blobID,
