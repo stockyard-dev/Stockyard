@@ -11,6 +11,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--green-light:#6bb87f;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green:#3a7a4a;--green-light:#4a9050}}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;line-height:1.6}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .card{max-width:580px;width:100%;background:var(--bg2);border:1px solid var(--bg3);border-top:3px solid var(--gold);padding:2.5rem 2rem}
@@ -18,7 +19,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .icon.trial{color:var(--gold)}
 h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
 .subtitle{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--leather-light);margin-bottom:1.5rem}
-.trial-banner{background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.3);padding:.9rem 1rem;margin-bottom:1.5rem;font-size:.88rem;color:var(--cream);text-align:center}
+.trial-banner{background:color-mix(in srgb, var(--gold) 12%, transparent);border:1px solid color-mix(in srgb, var(--gold) 35%, transparent);padding:.9rem 1rem;margin-bottom:1.5rem;font-size:.88rem;color:var(--cream);text-align:center}
 .trial-banner strong{color:var(--gold);font-family:var(--font-mono);font-size:.82rem;letter-spacing:.5px}
 .trial-banner-sub{font-size:.78rem;color:var(--cream-dim);margin-top:.4rem}
 .key-section{background:var(--bg);border-left:3px solid var(--rust);padding:1rem 1.2rem;margin-bottom:1.5rem}
