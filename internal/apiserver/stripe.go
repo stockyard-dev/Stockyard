@@ -452,6 +452,10 @@ type WebhookHandler struct {
 	desktopPrivKey string              // hex Ed25519 private key for desktop app license issuance
 	bundleTools    map[string][]string // bundle slug → tool slugs
 	trialDrip      *TrialDripRunner    // trial reminder email runner (optional)
+	// cloudAccountCreator is called after a Cloud tier permanent
+	// license is minted, to upsert a cloud_accounts row so the
+	// customer can log in. nil when Cloud backend is disabled.
+	cloudAccountCreator func(email, tier, stripeCustomerID, stripeSubID string) error
 }
 
 // NewWebhookHandler creates a new webhook processor.
@@ -1099,6 +1103,18 @@ func (wh *WebhookHandler) handleInvoicePaymentSucceeded(raw json.RawMessage) err
 		}
 	}
 
+	// Upsert the cloud_accounts row so the customer can sign in to
+	// the Cloud backend. Non-fatal if disabled (nil) or if it fails
+	// — the customer still has a valid license key and we can
+	// back-fill the account later if needed.
+	if wh.cloudAccountCreator != nil {
+		if err := wh.cloudAccountCreator(email, tier, customerID, subscriptionID); err != nil {
+			log.Printf("webhook: cloud account upsert failed (non-fatal): %v", err)
+		} else {
+			log.Printf("webhook: cloud account upserted for %s (%s)", email, tier)
+		}
+	}
+
 	log.Printf("webhook: desktop trial → permanent — customer=%s tier=%s sub=%s",
 		customerID, tier, subscriptionID)
 	return nil
@@ -1130,10 +1146,22 @@ func (wh *WebhookHandler) handleSubscriptionUpdated(raw json.RawMessage) error {
 			}
 		}
 		wh.db.UpdateLicenseStatus(subID, "active")
+		// Mirror into cloud_accounts if this is a Cloud tier.
+		if tier == "cloud-single" || tier == "cloud-multi" {
+			if err := wh.db.UpdateCloudAccountStatus(subID, "active"); err != nil {
+				log.Printf("webhook: cloud account status update failed (non-fatal): %v", err)
+			}
+		}
 	case "past_due":
 		log.Printf("webhook: subscription past due — sub=%s (keeping active, sending warning)", subID)
+		if tier == "cloud-single" || tier == "cloud-multi" {
+			_ = wh.db.UpdateCloudAccountStatus(subID, "past_due")
+		}
 	case "canceled", "unpaid":
 		wh.db.UpdateLicenseStatus(subID, "canceled")
+		if tier == "cloud-single" || tier == "cloud-multi" {
+			_ = wh.db.UpdateCloudAccountStatus(subID, "canceled")
+		}
 	}
 
 	return nil

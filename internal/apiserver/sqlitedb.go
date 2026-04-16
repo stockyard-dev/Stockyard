@@ -104,7 +104,7 @@ func (db *SqliteDB) migrate() error {
 		return err
 	}
 
-	migrations := []string{apiMigrationV1, apiMigrationV2, apiMigrationV3, apiMigrationV4}
+	migrations := []string{apiMigrationV1, apiMigrationV2, apiMigrationV3, apiMigrationV4, apiMigrationV5Cloud}
 
 	for i, m := range migrations {
 		v := i + 1

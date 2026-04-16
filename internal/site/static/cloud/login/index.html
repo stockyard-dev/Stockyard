@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign in to Stockyard Cloud</title>
+<meta content="noindex,nofollow" name="robots"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#6bb87f;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green-light:#4a9050}}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;line-height:1.6}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.card{max-width:480px;width:100%;background:var(--bg2);border:1px solid var(--bg3);border-top:3px solid var(--gold);padding:2.5rem 2rem}
+h1{font-size:1.5rem;text-align:center;margin-bottom:.5rem}
+.subtitle{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--leather-light);margin-bottom:2rem}
+p{color:var(--cream-dim);font-size:.95rem;margin-bottom:1.2rem;text-align:center}
+label{display:block;font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-bottom:.5rem}
+input[type=email]{width:100%;padding:.75rem .9rem;font-family:var(--font-mono);font-size:.9rem;border:1px solid var(--bg3);background:var(--bg);color:var(--cream);margin-bottom:1.2rem}
+input[type=email]:focus{outline:none;border-color:var(--rust)}
+button{width:100%;padding:.85rem 1.4rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:background .15s}
+button:hover:not(:disabled){background:var(--rust-light)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.msg{padding:1rem;background:var(--bg);border-left:3px solid var(--green-light);margin-top:1.2rem;font-size:.9rem;color:var(--cream-dim);display:none}
+.msg.show{display:block}
+.msg.err{border-left-color:var(--rust)}
+.footer{margin-top:2rem;text-align:center;font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted)}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Sign in to Stockyard Cloud</h1>
+<div class="subtitle">CLOUD SINGLE &middot; CLOUD MULTI</div>
+<p>We&rsquo;ll email you a link to sign in. No password.</p>
+<form id="f" onsubmit="return submitForm(event)">
+<label for="email">Email</label>
+<input type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com"/>
+<button type="submit" id="b">Email me a sign-in link</button>
+</form>
+<div class="msg" id="m"></div>
+<div class="footer">Need to purchase first? <a href="/desktop/">See Cloud tiers &rarr;</a></div>
+</div>
+<script>
+function submitForm(e){
+  e.preventDefault();
+  var email=document.getElementById('email').value.trim();
+  var b=document.getElementById('b');
+  var m=document.getElementById('m');
+  m.className='msg';
+  b.disabled=true;b.textContent='Sending\u2026';
+  fetch('/api/cloud/desktop/login/request',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:email})
+  }).then(function(r){return r.json().then(function(d){return{ok:r.ok,body:d}})})
+    .then(function(res){
+      if(res.ok){
+        m.textContent=(res.body&&res.body.message)||'Check your inbox for a sign-in link.';
+        m.className='msg show';
+        b.textContent='Link sent';
+      }else{
+        m.textContent=(res.body&&res.body.error)||'Could not send link.';
+        m.className='msg show err';
+        b.disabled=false;b.textContent='Email me a sign-in link';
+      }
+    }).catch(function(){
+      m.textContent='Network error. Try again.';
+      m.className='msg show err';
+      b.disabled=false;b.textContent='Email me a sign-in link';
+    });
+  return false;
+}
+</script>
+</body>
+</html>

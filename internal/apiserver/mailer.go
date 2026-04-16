@@ -44,8 +44,14 @@ type Mailer interface {
 	SendTrialConverted(to, bundleName string) error
 	SendCancellation(to, productName string) error
 	// Desktop trial flow (added Apr 16 2026 for the 7-day card-capture trial).
+	// Kept on the interface for backwards-compat with older webhook paths
+	// that may still reference it; no longer called by current code.
 	SendDesktopTrialKey(to, tier, licenseKey string, trialEndUnix int64) error
 	SendDesktopLicenseConverted(to, tier, licenseKey string) error
+	// Cloud magic-link sign-in. One URL, single-use, 15-minute TTL.
+	// The link contains the raw token; caller is responsible for
+	// generating and storing the token hash before calling this.
+	SendCloudMagicLink(to, link string) error
 	// Send sends a plain-text email to one recipient.
 	Send(to, subject, body string) error
 }
@@ -656,4 +662,39 @@ func escapeJSON(s string) string {
 	s = strings.ReplaceAll(s, "\r", `\r`)
 	s = strings.ReplaceAll(s, "\t", `\t`)
 	return s
+}
+
+// --- Cloud magic-link emails ----------------------------------------
+
+// Subject & body shared across Mailer implementations.
+const cloudMagicLinkSubject = "Your Stockyard Cloud sign-in link"
+
+func cloudMagicLinkBody(link string) string {
+	return fmt.Sprintf(`Click the link below to sign in to your Stockyard Cloud account.
+This link expires in 15 minutes and can only be used once.
+
+%s
+
+If you didn't request this, you can safely ignore this email.
+
+— Stockyard
+hello@stockyard.dev
+`, link)
+}
+
+// SMTPMailer
+func (m *SMTPMailer) SendCloudMagicLink(to, link string) error {
+	return m.send(to, cloudMagicLinkSubject, cloudMagicLinkBody(link))
+}
+
+// LogMailer — for local development. Logs the link to stdout so a
+// developer running `make run` can copy it from the terminal.
+func (m *LogMailer) SendCloudMagicLink(to, link string) error {
+	log.Printf("[MAIL:cloud-magic-link] to=%s link=%s", to, link)
+	return nil
+}
+
+// ResendMailer
+func (m *ResendMailer) SendCloudMagicLink(to, link string) error {
+	return m.sendResend(to, cloudMagicLinkSubject, cloudMagicLinkBody(link))
 }

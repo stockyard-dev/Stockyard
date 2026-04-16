@@ -96,6 +96,12 @@ type Server struct {
 	mux      *http.ServeMux
 	port     int
 	adminKey string // simple admin API key for protected endpoints
+
+	// desktopCloud handles the Cloud Single / Cloud Multi desktop
+	// tier backend: accounts, magic-link auth, encrypted backup
+	// upload/download. nil until wired; gated by STOCKYARD_CLOUD_ENABLED
+	// env var at route-registration time.
+	desktopCloud *CloudService
 }
 
 // AuthTierUpdater updates a user's tier in the auth system.
@@ -122,6 +128,42 @@ func NewServer(cfg ServerConfig, db *SqliteDB, stripe *StripeClient, kp *license
 		mux:      http.NewServeMux(),
 		port:     cfg.Port,
 		adminKey: cfg.AdminKey,
+	}
+
+	// Desktop Cloud backend (Cloud Single / Cloud Multi tiers).
+	// Feature-flagged via STOCKYARD_CLOUD_ENABLED=1. When disabled
+	// (default), endpoints return 503 so the checkout flow still
+	// works but no backup/restore/sync is offered yet.
+	//
+	// Blob storage: STOCKYARD_CLOUD_BLOB_DIR (e.g. Railway volume at
+	// /data/cloud-blobs). Missing dir → endpoints return 503 on
+	// write paths, same "not configured" error.
+	if os.Getenv("STOCKYARD_CLOUD_ENABLED") == "1" {
+		var blobs BlobStore
+		if dir := os.Getenv("STOCKYARD_CLOUD_BLOB_DIR"); dir != "" {
+			lb, err := NewLocalBlobStore(dir)
+			if err != nil {
+				log.Printf("cloud: blob store init failed at %s: %v (uploads will 503)", dir, err)
+			} else {
+				blobs = lb
+				log.Printf("cloud: blob store ready at %s", dir)
+			}
+		} else {
+			log.Printf("cloud: STOCKYARD_CLOUD_BLOB_DIR unset; backup uploads will 503 until configured")
+		}
+
+		siteBase := os.Getenv("STOCKYARD_SITE_URL")
+		if siteBase == "" {
+			siteBase = "https://stockyard.dev"
+		}
+		// Cookies are Secure in prod (siteBase is https) — strip
+		// for local dev when siteBase is http://localhost.
+		cookieSecure := strings.HasPrefix(siteBase, "https://")
+
+		s.desktopCloud = NewCloudService(db, mailer, blobs, siteBase, cookieSecure)
+		// Connect the Stripe webhook to the cloud account creation path.
+		s.webhook.cloudAccountCreator = s.desktopCloud.accountCreator()
+		log.Printf("cloud: enabled (siteBase=%s, cookieSecure=%v)", siteBase, cookieSecure)
 	}
 
 	s.seedExchange()
@@ -179,13 +221,23 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/admin/trial-drip/suspects", s.adminAuth(s.handleAdminTrialDripSuspects))
 	s.mux.HandleFunc("POST /api/admin/trial-drip/mark-sent", s.adminAuth(s.handleAdminTrialDripMarkSent))
 
-	// Cloud API
+	// Cloud API (legacy LLM-proxy cloud)
 	s.mux.HandleFunc("POST /api/cloud/tenants", s.rateLimited(s.handleCloudSignup))
 	s.mux.HandleFunc("GET /api/cloud/tenant", s.handleCloudGetTenant)
 	s.mux.HandleFunc("PUT /api/cloud/keys", s.handleCloudUpdateKeys)
 	s.mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
 	s.mux.HandleFunc("GET /api/cloud/usage", s.handleCloudUsage)
 	s.mux.HandleFunc("POST /api/cloud/upgrade", s.handleCloudUpgrade)
+
+	// Desktop Cloud API — accounts + magic-link auth + backup blobs.
+	// All routes return 503 if STOCKYARD_CLOUD_ENABLED != 1
+	// (s.desktopCloud is nil in that case; cloudGuard short-circuits).
+	s.mux.HandleFunc("POST /api/cloud/desktop/login/request", s.cloudGuard(s.cloudHandlerLoginRequest))
+	s.mux.HandleFunc("GET /api/cloud/desktop/login/verify", s.cloudGuard(s.cloudHandlerLoginVerify))
+	s.mux.HandleFunc("POST /api/cloud/desktop/logout", s.cloudGuard(s.cloudHandlerLogout))
+	s.mux.HandleFunc("GET /api/cloud/desktop/me", s.cloudGuard(s.cloudHandlerMe))
+	s.mux.HandleFunc("POST /api/cloud/desktop/backup", s.cloudGuard(s.cloudHandlerBackupUpload))
+	s.mux.HandleFunc("GET /api/cloud/desktop/backup/latest", s.cloudGuard(s.cloudHandlerBackupLatest))
 
 	// Exchange API
 	s.mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
@@ -251,6 +303,14 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /api/cloud/config", s.handleCloudUpdateConfig)
 	mux.HandleFunc("GET /api/cloud/usage", s.handleCloudUsage)
 	mux.HandleFunc("POST /api/cloud/upgrade", s.handleCloudUpgrade)
+
+	// Desktop Cloud API
+	mux.HandleFunc("POST /api/cloud/desktop/login/request", s.cloudGuard(s.cloudHandlerLoginRequest))
+	mux.HandleFunc("GET /api/cloud/desktop/login/verify", s.cloudGuard(s.cloudHandlerLoginVerify))
+	mux.HandleFunc("POST /api/cloud/desktop/logout", s.cloudGuard(s.cloudHandlerLogout))
+	mux.HandleFunc("GET /api/cloud/desktop/me", s.cloudGuard(s.cloudHandlerMe))
+	mux.HandleFunc("POST /api/cloud/desktop/backup", s.cloudGuard(s.cloudHandlerBackupUpload))
+	mux.HandleFunc("GET /api/cloud/desktop/backup/latest", s.cloudGuard(s.cloudHandlerBackupLatest))
 
 	// Exchange (marketplace)
 	mux.HandleFunc("GET /api/exchange", s.handleExchangeList)

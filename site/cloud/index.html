@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stockyard Cloud</title>
+<meta content="noindex,nofollow" name="robots"/>
+<link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green-light:#6bb87f;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green-light:#4a9050}}
+body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);min-height:100vh;padding:2rem 1.5rem;line-height:1.6}
+a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+.container{max-width:640px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:.5rem}
+.subtitle{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:2rem}
+.card{background:var(--bg2);border:1px solid var(--bg3);padding:1.8rem;margin-bottom:1.2rem}
+.card h2{font-size:1.1rem;margin-bottom:.8rem;color:var(--leather-light)}
+.kv{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.85rem;padding:.4rem 0;border-bottom:1px dashed var(--bg3)}
+.kv:last-child{border-bottom:none}
+.kv-key{color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px;font-size:.7rem;padding-top:.1rem}
+.kv-val{color:var(--cream)}
+.status-active{color:var(--green-light)}
+.status-past-due{color:var(--gold)}
+.status-canceled{color:var(--rust-light)}
+.note{color:var(--cream-dim);font-size:.9rem;font-style:italic}
+.btn{display:inline-block;padding:.5rem 1rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:1px solid var(--bg3);background:transparent;color:var(--cream-dim);text-decoration:none}
+.btn:hover{background:var(--bg3);color:var(--cream)}
+.loading{color:var(--cream-muted);font-style:italic;font-family:var(--font-mono);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Stockyard Cloud</h1>
+<div class="subtitle">YOUR ACCOUNT</div>
+
+<div class="card" id="account-card">
+<h2>Account</h2>
+<div class="loading" id="acct-loading">Loading\u2026</div>
+<div id="acct-details" style="display:none">
+<div class="kv"><span class="kv-key">Email</span><span class="kv-val" id="acct-email">&mdash;</span></div>
+<div class="kv"><span class="kv-key">Tier</span><span class="kv-val" id="acct-tier">&mdash;</span></div>
+<div class="kv"><span class="kv-key">Status</span><span class="kv-val" id="acct-status">&mdash;</span></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Backup &amp; sync</h2>
+<p class="note">Encrypted backup and sync are configured from inside the Stockyard Desktop app. Paste your license key into the app and it will handle the rest.</p>
+</div>
+
+<div class="card">
+<h2>Support</h2>
+<p class="note">Questions? Email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> and we&rsquo;ll reply within a day.</p>
+</div>
+
+<div style="text-align:center;margin-top:2rem">
+<button class="btn" onclick="logout()">Sign out</button>
+</div>
+</div>
+
+<script>
+fetch('/api/cloud/desktop/me',{headers:{'Accept':'application/json'}})
+  .then(function(r){
+    if(r.status===401){window.location.href='/cloud/login/';return null}
+    return r.json()
+  })
+  .then(function(d){
+    if(!d)return;
+    document.getElementById('acct-loading').style.display='none';
+    document.getElementById('acct-details').style.display='block';
+    document.getElementById('acct-email').textContent=d.email||'';
+    var tierLabels={'cloud-single':'Cloud Single Site','cloud-multi':'Cloud Multi-Site'};
+    document.getElementById('acct-tier').textContent=tierLabels[d.tier]||d.tier||'';
+    var s=document.getElementById('acct-status');
+    s.textContent=(d.status||'').toUpperCase();
+    s.className='kv-val status-'+(d.status||'');
+  })
+  .catch(function(){
+    document.getElementById('acct-loading').textContent='Could not load account. Try refreshing.';
+  });
+
+function logout(){
+  fetch('/api/cloud/desktop/logout',{method:'POST'}).then(function(){
+    window.location.href='/cloud/login/';
+  });
+}
+</script>
+</body>
+</html>
