@@ -242,14 +242,13 @@ func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string)
 		priceID, successURL, cancelURL, licenseTier, licenseTier,
 	)
 
-	// Local tier: cancel after the first paid cycle. Customer is
-	// charged once on day 7, subscription is marked to cancel at the
-	// end of the year-long billing period (so no renewal charge).
-	// Cloud tiers omit this and renew normally until the customer
-	// cancels via the billing portal.
-	if licenseTier == "local" {
-		form += "&subscription_data[cancel_at_period_end]=true"
-	}
+	// Local tier: schedule the subscription to cancel after the
+	// first paid cycle. Stripe's checkout API doesn't accept
+	// cancel_at_period_end nested under subscription_data, so we
+	// can't set it here — instead, handleCheckoutCompleted's desktop
+	// branch issues a separate POST /v1/subscriptions/{id} call to
+	// flip the flag right after the subscription is created.
+	_ = licenseTier // retained for future use; flag is set in webhook
 
 	if email != "" {
 		form += "&customer_email=" + email
@@ -319,6 +318,21 @@ func (s *StripeClient) CreateCheckoutSessionWithBundle(bundle, email, priceID, r
 // GetSubscription retrieves a subscription from Stripe.
 func (s *StripeClient) GetSubscription(subID string) (map[string]any, error) {
 	return s.stripeGet("/subscriptions/" + subID)
+}
+
+// SetSubscriptionCancelAtPeriodEnd flips Stripe's cancel_at_period_end
+// flag on an existing subscription. Used for the desktop Local tier:
+// the subscription is created via checkout (which doesn't accept this
+// flag), then immediately marked to cancel after one paid cycle so the
+// customer is charged exactly once.
+func (s *StripeClient) SetSubscriptionCancelAtPeriodEnd(subID string, cancel bool) error {
+	val := "false"
+	if cancel {
+		val = "true"
+	}
+	form := "cancel_at_period_end=" + val
+	_, err := s.stripePost("/subscriptions/"+subID, form)
+	return err
 }
 
 // GetCheckoutSession retrieves a checkout session by ID. Used by the
@@ -680,6 +694,23 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 			// but if Stripe ever changes behavior we'd rather fail loudly
 			// than silently mint a permanent license off the trial path.
 			return fmt.Errorf("desktop subscription has no trial_end — refusing to mint")
+		}
+
+		// Local tier: flip cancel_at_period_end on the subscription so
+		// it auto-cancels after the first paid cycle. Stripe's
+		// /checkout/sessions doesn't accept this flag in
+		// subscription_data, so it has to be set in a follow-up call
+		// once the subscription exists. We do it here, in the webhook,
+		// before the customer's card is charged on day 7. Failure here
+		// is logged but non-fatal — worst case the customer sees a
+		// renewal in their billing portal a year out and can cancel
+		// it themselves.
+		if tier == "local" {
+			if err := wh.stripe.SetSubscriptionCancelAtPeriodEnd(subscriptionID, true); err != nil {
+				log.Printf("webhook: desktop Local cancel_at_period_end set failed (non-fatal, customer may see year-out renewal): %v", err)
+			} else {
+				log.Printf("webhook: desktop Local cancel_at_period_end=true set for sub=%s", subscriptionID)
+			}
 		}
 
 		if customerID == "" || email == "" {
