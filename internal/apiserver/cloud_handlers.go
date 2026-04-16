@@ -55,7 +55,22 @@ func NewCloudService(db *SqliteDB, mailer Mailer, blobs BlobStore, siteBase stri
 
 // requireSession returns the CloudAccount the current request is
 // authenticated as, or writes a 401 and returns nil.
+//
+// Two auth paths, tried in order:
+//
+//  1. Authorization: Bearer <license-key> — used by the desktop app,
+//     which has no cookie jar. The license key was issued by the same
+//     backend, so we look it up in the licenses table and resolve to
+//     the linked cloud_accounts row by email.
+//  2. Cookie session — used by the browser /cloud/ dashboard.
+//
+// Either path must resolve to an active cloud_accounts row. Accounts
+// with status="canceled" are treated as authenticated for read paths
+// but blocked on write paths at the handler level.
 func (c *CloudService) requireSession(w http.ResponseWriter, r *http.Request) *CloudAccount {
+	if acct := c.authByBearer(r); acct != nil {
+		return acct
+	}
 	cookie, err := r.Cookie(sessionCookie)
 	if err != nil || cookie.Value == "" {
 		writeJSON(w, 401, map[string]string{"error": "not logged in"})
@@ -64,6 +79,46 @@ func (c *CloudService) requireSession(w http.ResponseWriter, r *http.Request) *C
 	acct, err := c.db.LookupSession(cookie.Value)
 	if err != nil {
 		writeJSON(w, 401, map[string]string{"error": "session expired"})
+		return nil
+	}
+	return acct
+}
+
+// authByBearer resolves a license-key bearer token to a cloud account.
+// Returns nil (not an error) when no bearer header is present — so the
+// caller can fall through to cookie auth without logging a spurious
+// miss. A present-but-invalid bearer also returns nil; the caller will
+// 401 via the cookie path.
+//
+// Chain: bearer license key → licenses row → email → cloud_accounts.
+// Only "stockyard-desktop" product with tier cloud-single or
+// cloud-multi counts; Local-tier license keys cannot authenticate to
+// Cloud because Local customers don't have a cloud account.
+func (c *CloudService) authByBearer(r *http.Request) *CloudAccount {
+	header := r.Header.Get("Authorization")
+	if !strings.HasPrefix(header, "Bearer ") {
+		return nil
+	}
+	key := strings.TrimSpace(strings.TrimPrefix(header, "Bearer "))
+	if key == "" {
+		return nil
+	}
+	lic, err := c.db.GetLicenseByKey(key)
+	if err != nil || lic == nil {
+		return nil
+	}
+	if lic.Product != "stockyard-desktop" {
+		return nil
+	}
+	if lic.Tier != "cloud-single" && lic.Tier != "cloud-multi" {
+		return nil
+	}
+	if lic.Status != "active" {
+		// "canceled", "trial" licenses don't grant cloud access.
+		return nil
+	}
+	acct, err := c.db.GetCloudAccountByEmail(lic.Email)
+	if err != nil {
 		return nil
 	}
 	return acct
