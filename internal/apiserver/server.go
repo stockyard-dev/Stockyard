@@ -502,9 +502,19 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Desktop app checkout — $49.99 one-time (local) or $99.99/$249.99 annual (cloud).
-	// Plan slugs: desktop-local, desktop-cloud-single, desktop-cloud-multi.
-	// Env vars: STRIPE_PRICE_DESKTOP_LOCAL, STRIPE_PRICE_DESKTOP_CLOUD_SINGLE, STRIPE_PRICE_DESKTOP_CLOUD_MULTI.
+	// Desktop app checkout. Plan slugs:
+	//   desktop-local                  → $99 one-time
+	//   desktop-cloud-single-monthly   → $19/mo
+	//   desktop-cloud-single-annual    → $190/yr
+	//   desktop-cloud-multi-monthly    → $49/mo
+	//   desktop-cloud-multi-annual     → $490/yr
+	//
+	// Env vars:
+	//   STRIPE_PRICE_DESKTOP_LOCAL
+	//   STRIPE_PRICE_DESKTOP_CLOUD_SINGLE_MONTHLY
+	//   STRIPE_PRICE_DESKTOP_CLOUD_SINGLE_ANNUAL
+	//   STRIPE_PRICE_DESKTOP_CLOUD_MULTI_MONTHLY
+	//   STRIPE_PRICE_DESKTOP_CLOUD_MULTI_ANNUAL
 	if strings.HasPrefix(req.Plan, "desktop-") {
 		desktopTier := strings.TrimPrefix(req.Plan, "desktop-")
 		envKey := "STRIPE_PRICE_DESKTOP_" + strings.ToUpper(strings.ReplaceAll(desktopTier, "-", "_"))

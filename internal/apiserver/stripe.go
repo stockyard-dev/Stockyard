@@ -174,8 +174,11 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 }
 
 // CreateDesktopCheckoutSession creates a Stripe checkout for the
-// desktop app tiers. Local tier uses mode=payment (one-time $49.99);
-// Cloud tiers use mode=subscription (annual recurring).
+// desktop app tiers. Local tier uses mode=payment (one-time $99);
+// Cloud tiers use mode=subscription (monthly or annual recurring).
+//
+// tier values: "local", "cloud-single-monthly", "cloud-single-annual",
+//              "cloud-multi-monthly", "cloud-multi-annual"
 func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string) (string, error) {
 	if priceID == "" {
 		return "", fmt.Errorf("no Stripe price ID for desktop tier %s", tier)
@@ -191,6 +194,16 @@ func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string)
 		mode = "payment"
 	}
 
+	// Normalize tier metadata: strip the billing-interval suffix so
+	// the webhook handler can map cleanly to a license tier name.
+	licenseTier := tier
+	switch {
+	case strings.HasPrefix(tier, "cloud-single"):
+		licenseTier = "cloud-single"
+	case strings.HasPrefix(tier, "cloud-multi"):
+		licenseTier = "cloud-multi"
+	}
+
 	form := fmt.Sprintf(
 		"mode=%s"+
 			"&line_items[0][price]=%s"+
@@ -199,7 +212,7 @@ func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string)
 			"&cancel_url=%s"+
 			"&metadata[product]=stockyard-desktop"+
 			"&metadata[tier]=%s",
-		mode, priceID, successURL, cancelURL, tier,
+		mode, priceID, successURL, cancelURL, licenseTier,
 	)
 
 	// Subscription metadata goes on subscription_data too so the
@@ -208,7 +221,7 @@ func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string)
 		form += fmt.Sprintf(
 			"&subscription_data[metadata][product]=stockyard-desktop"+
 				"&subscription_data[metadata][tier]=%s",
-			tier,
+			licenseTier,
 		)
 	}
 
