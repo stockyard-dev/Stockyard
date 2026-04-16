@@ -46,3 +46,9 @@ func (s *Server) cloudHandlerBackupUpload(w http.ResponseWriter, r *http.Request
 func (s *Server) cloudHandlerBackupLatest(w http.ResponseWriter, r *http.Request) {
 	s.desktopCloud.HandleBackupLatest(w, r)
 }
+func (s *Server) cloudHandlerBackupList(w http.ResponseWriter, r *http.Request) {
+	s.desktopCloud.HandleBackupList(w, r)
+}
+func (s *Server) cloudHandlerBackupByID(w http.ResponseWriter, r *http.Request) {
+	s.desktopCloud.HandleBackupByID(w, r)
+}

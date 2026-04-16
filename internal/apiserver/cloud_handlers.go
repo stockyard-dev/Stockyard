@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -493,6 +494,177 @@ func (c *CloudService) HandleBackupLatest(w http.ResponseWriter, r *http.Request
 	`, acct.ID, siteSlug).Scan(&blobKey, &shaHex, &size)
 	if err != nil {
 		writeJSON(w, 404, map[string]string{"error": "no backup found for that site"})
+		return
+	}
+
+	body, err := c.blobs.Get(blobKey)
+	if err != nil {
+		log.Printf("cloud backup: fetch %s: %v", blobKey, err)
+		writeJSON(w, 500, map[string]string{"error": "could not read backup"})
+		return
+	}
+	defer body.Close()
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", size))
+	w.Header().Set("X-Sha256", shaHex)
+	w.Header().Set("Cache-Control", "no-store")
+	if _, err := io.Copy(w, body); err != nil {
+		log.Printf("cloud backup: stream %s: %v", blobKey, err)
+	}
+}
+
+// --- Backup history -------------------------------------------------
+
+// backupListDefaultLimit and backupListMaxLimit bound the page size.
+// Default is 20 (matches the UI's initial load); max is 100 so a
+// malicious or confused client can't ask for "all 10,000" in one hit.
+const (
+	backupListDefaultLimit = 20
+	backupListMaxLimit     = 100
+)
+
+// backupListItem is the shape returned by HandleBackupList for each
+// row. Deliberately does NOT include blob_key (that's an internal
+// storage detail, not something the desktop needs to see).
+type backupListItem struct {
+	ID            int64  `json:"id"`
+	UploadedAt    string `json:"uploaded_at"` // RFC3339
+	SizeBytes     int64  `json:"size_bytes"`
+	Sha256        string `json:"sha256"`
+	ClientVersion string `json:"client_version,omitempty"`
+	SiteSlug      string `json:"site_slug"`
+}
+
+// HandleBackupList returns the N most recent backups for the account,
+// newest first. Supports ?site=<slug> to scope to one site (default
+// "default"), ?limit=N (capped at backupListMaxLimit), and ?before=ID
+// for cursor-based pagination ("load more" sends the oldest ID it
+// currently has; server returns the next page older than that).
+//
+// Why cursor pagination instead of offset: uploads are append-only and
+// timestamp-ordered, so ID order == upload order. Cursor pagination
+// avoids the classic offset-shifts-when-new-items-arrive problem,
+// which matters if a backup completes while the UI is paginating.
+func (c *CloudService) HandleBackupList(w http.ResponseWriter, r *http.Request) {
+	acct := c.requireSession(w, r)
+	if acct == nil {
+		return
+	}
+	siteSlug := strings.TrimSpace(r.URL.Query().Get("site"))
+	if siteSlug == "" {
+		siteSlug = "default"
+	}
+	limit := backupListDefaultLimit
+	if v := r.URL.Query().Get("limit"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			limit = n
+		}
+	}
+	if limit > backupListMaxLimit {
+		limit = backupListMaxLimit
+	}
+	beforeID := int64(0)
+	if v := r.URL.Query().Get("before"); v != "" {
+		if n, err := strconv.ParseInt(v, 10, 64); err == nil && n > 0 {
+			beforeID = n
+		}
+	}
+
+	// Build the query. SQL with parameterized inputs, no string-
+	// concatenation — beforeID is always bound as a parameter.
+	query := `
+		SELECT b.id, b.uploaded_at, b.size_bytes, b.sha256_hex,
+		       COALESCE(b.client_version, ''), s.slug
+		FROM cloud_backup_blobs b
+		JOIN cloud_sites s ON s.id = b.site_id
+		WHERE b.account_id = ? AND s.slug = ?
+	`
+	args := []any{acct.ID, siteSlug}
+	if beforeID > 0 {
+		query += ` AND b.id < ?`
+		args = append(args, beforeID)
+	}
+	query += ` ORDER BY b.id DESC LIMIT ?`
+	args = append(args, limit+1) // +1 so we can tell if there's more
+
+	rows, err := c.db.conn.Query(query, args...)
+	if err != nil {
+		log.Printf("cloud backup list: query: %v", err)
+		writeJSON(w, 500, map[string]string{"error": "could not list backups"})
+		return
+	}
+	defer rows.Close()
+
+	items := make([]backupListItem, 0, limit)
+	for rows.Next() {
+		var it backupListItem
+		if err := rows.Scan(&it.ID, &it.UploadedAt, &it.SizeBytes,
+			&it.Sha256, &it.ClientVersion, &it.SiteSlug); err != nil {
+			log.Printf("cloud backup list: scan: %v", err)
+			writeJSON(w, 500, map[string]string{"error": "could not list backups"})
+			return
+		}
+		items = append(items, it)
+	}
+
+	// Detect "has more" by whether we got limit+1 rows; trim the extra.
+	hasMore := false
+	if len(items) > limit {
+		items = items[:limit]
+		hasMore = true
+	}
+
+	// next_before is the ID the client should send for the next page,
+	// or 0 if there are no more pages. The desktop just plumbs this
+	// through — it doesn't need to know the semantics.
+	nextBefore := int64(0)
+	if hasMore && len(items) > 0 {
+		nextBefore = items[len(items)-1].ID
+	}
+
+	writeJSON(w, 200, map[string]any{
+		"backups":     items,
+		"has_more":    hasMore,
+		"next_before": nextBefore,
+	})
+}
+
+// HandleBackupByID returns the encrypted blob for a specific backup ID.
+// Enforces ownership: the blob's account_id must match the authenticated
+// account. A non-owned or missing ID returns 404 (not 403) so enumerating
+// valid IDs across accounts doesn't leak existence information.
+func (c *CloudService) HandleBackupByID(w http.ResponseWriter, r *http.Request) {
+	acct := c.requireSession(w, r)
+	if acct == nil {
+		return
+	}
+	if c.blobs == nil {
+		writeJSON(w, 503, map[string]string{"error": "backup storage not yet configured"})
+		return
+	}
+
+	idStr := r.PathValue("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil || id <= 0 {
+		writeJSON(w, 400, map[string]string{"error": "invalid backup id"})
+		return
+	}
+
+	var (
+		blobKey string
+		shaHex  string
+		size    int64
+	)
+	err = c.db.conn.QueryRow(`
+		SELECT blob_key, sha256_hex, size_bytes
+		FROM cloud_backup_blobs
+		WHERE id = ? AND account_id = ?
+	`, id, acct.ID).Scan(&blobKey, &shaHex, &size)
+	if err != nil {
+		// 404 regardless of whether it doesn't exist or isn't ours —
+		// no enumeration leakage.
+		writeJSON(w, 404, map[string]string{"error": "backup not found"})
 		return
 	}
 

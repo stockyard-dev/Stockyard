@@ -238,6 +238,8 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/cloud/desktop/me", s.cloudGuard(s.cloudHandlerMe))
 	s.mux.HandleFunc("POST /api/cloud/desktop/backup", s.cloudGuard(s.cloudHandlerBackupUpload))
 	s.mux.HandleFunc("GET /api/cloud/desktop/backup/latest", s.cloudGuard(s.cloudHandlerBackupLatest))
+	s.mux.HandleFunc("GET /api/cloud/desktop/backups", s.cloudGuard(s.cloudHandlerBackupList))
+	s.mux.HandleFunc("GET /api/cloud/desktop/backup/{id}", s.cloudGuard(s.cloudHandlerBackupByID))
 
 	// Exchange API
 	s.mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
@@ -311,6 +313,8 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/cloud/desktop/me", s.cloudGuard(s.cloudHandlerMe))
 	mux.HandleFunc("POST /api/cloud/desktop/backup", s.cloudGuard(s.cloudHandlerBackupUpload))
 	mux.HandleFunc("GET /api/cloud/desktop/backup/latest", s.cloudGuard(s.cloudHandlerBackupLatest))
+	mux.HandleFunc("GET /api/cloud/desktop/backups", s.cloudGuard(s.cloudHandlerBackupList))
+	mux.HandleFunc("GET /api/cloud/desktop/backup/{id}", s.cloudGuard(s.cloudHandlerBackupByID))
 
 	// Exchange (marketplace)
 	mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
