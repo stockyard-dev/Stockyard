@@ -322,7 +322,7 @@ hello@stockyard.dev`, tierName, licenseKey)
 func desktopTierDisplayName(tier string) string {
 	switch tier {
 	case "local":
-		return "Local (one-time, $99)"
+		return "Local (one-time, $299)"
 	case "cloud-single":
 		return "Cloud Single Site"
 	case "cloud-multi":

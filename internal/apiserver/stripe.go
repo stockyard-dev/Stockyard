@@ -179,24 +179,22 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 //
 // tier values: "local", "cloud-single-monthly", "cloud-single-annual",
 //              "cloud-multi-monthly", "cloud-multi-annual"
+//
 // CreateDesktopCheckoutSession creates a Stripe checkout for the
-// desktop app tiers. All tiers use mode=subscription with a 7-day
-// free trial (card capture, no charge until day 7).
+// desktop app tiers. No free trial on any tier — customer pays at
+// checkout and gets their license immediately.
 //
 // Tier semantics:
-//   - local: $99/year recurring with cancel_at_period_end=true.
-//     Customer is charged $99 once at end of trial; subscription
-//     auto-cancels after the first paid cycle so no second-year
-//     charge ever happens. Functionally a one-time purchase wrapped
-//     in Stripe's subscription primitives because Stripe doesn't
-//     have a clean "trial then one-time charge" mode.
-//   - cloud-single / cloud-multi: standard recurring subscription
-//     with 7-day trial. Auto-renews until cancelled.
+//   - local: $299 one-time (mode=payment). True one-time purchase.
+//     Permanent license minted from checkout.session.completed.
+//   - cloud-single / cloud-multi: recurring subscription, no trial.
+//     Customer is charged immediately at checkout. Permanent license
+//     minted from invoice.payment_succeeded (first paid invoice).
 //
-// IMPORTANT: For Local tier to work as documented, the Stripe price
-// behind STRIPE_PRICE_DESKTOP_LOCAL must be a recurring yearly price
-// (not one-time). If it's a one-time price, Stripe will reject this
-// call with an error and the customer sees a checkout error.
+// IMPORTANT: Stripe price IDs must match the tier's mode:
+//   - STRIPE_PRICE_DESKTOP_LOCAL must be a one-time price ($299).
+//   - STRIPE_PRICE_DESKTOP_CLOUD_* must be recurring prices.
+//     Mismatches will be rejected by Stripe at checkout-creation time.
 func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string) (string, error) {
 	if priceID == "" {
 		return "", fmt.Errorf("no Stripe price ID for desktop tier %s", tier)
@@ -218,37 +216,51 @@ func (s *StripeClient) CreateDesktopCheckoutSession(tier, email, priceID string)
 		licenseTier = "cloud-multi"
 	}
 
-	// Every desktop tier is mode=subscription so we get Stripe's
-	// trial primitives. Local pretends to be a subscription that
-	// cancels itself after one charge (Option A from
-	// docs/HANDOFF-STRIPE-TRIAL.md).
-	form := fmt.Sprintf(
-		"mode=subscription"+
-			"&line_items[0][price]=%s"+
-			"&line_items[0][quantity]=1"+
-			"&success_url=%s"+
-			"&cancel_url=%s"+
-			"&metadata[product]=stockyard-desktop"+
-			"&metadata[tier]=%s"+
-			// 7-day card-capture trial on every tier
-			"&subscription_data[trial_period_days]=7"+
-			// Subscription metadata mirrors session metadata so
-			// invoice.payment_succeeded webhooks (which only carry
-			// the subscription, not the original session) can still
-			// resolve the tier name when minting the permanent
-			// license.
-			"&subscription_data[metadata][product]=stockyard-desktop"+
-			"&subscription_data[metadata][tier]=%s",
-		priceID, successURL, cancelURL, licenseTier, licenseTier,
-	)
-
-	// Local tier: schedule the subscription to cancel after the
-	// first paid cycle. Stripe's checkout API doesn't accept
-	// cancel_at_period_end nested under subscription_data, so we
-	// can't set it here — instead, handleCheckoutCompleted's desktop
-	// branch issues a separate POST /v1/subscriptions/{id} call to
-	// flip the flag right after the subscription is created.
-	_ = licenseTier // retained for future use; flag is set in webhook
+	var form string
+	if licenseTier == "local" {
+		// Local: true one-time purchase. mode=payment with a
+		// one-time price. No subscription, no trial, no
+		// cancel_at_period_end dance. Webhook mints permanent
+		// license on checkout.session.completed.
+		form = fmt.Sprintf(
+			"mode=payment"+
+				"&line_items[0][price]=%s"+
+				"&line_items[0][quantity]=1"+
+				"&success_url=%s"+
+				"&cancel_url=%s"+
+				"&metadata[product]=stockyard-desktop"+
+				"&metadata[tier]=%s"+
+				// Stripe payment_intent_data metadata is only
+				// strictly needed if we later handle
+				// payment_intent events directly; session
+				// metadata above is what the webhook reads.
+				"&payment_intent_data[metadata][product]=stockyard-desktop"+
+				"&payment_intent_data[metadata][tier]=%s",
+			priceID, successURL, cancelURL, licenseTier, licenseTier,
+		)
+	} else {
+		// Cloud: recurring subscription, no trial. Customer is
+		// charged immediately at checkout. invoice.payment_succeeded
+		// fires with billing_reason=subscription_create, which
+		// mints the permanent cloud license.
+		form = fmt.Sprintf(
+			"mode=subscription"+
+				"&line_items[0][price]=%s"+
+				"&line_items[0][quantity]=1"+
+				"&success_url=%s"+
+				"&cancel_url=%s"+
+				"&metadata[product]=stockyard-desktop"+
+				"&metadata[tier]=%s"+
+				// Subscription metadata mirrors session metadata so
+				// invoice.payment_succeeded webhooks (which only carry
+				// the subscription, not the original session) can still
+				// resolve the tier name when minting the permanent
+				// license.
+				"&subscription_data[metadata][product]=stockyard-desktop"+
+				"&subscription_data[metadata][tier]=%s",
+			priceID, successURL, cancelURL, licenseTier, licenseTier,
+		)
+	}
 
 	if email != "" {
 		form += "&customer_email=" + email
@@ -668,107 +680,83 @@ func (wh *WebhookHandler) handleCheckoutCompleted(raw json.RawMessage) error {
 	// with trial_end if the subscription has a trial period.
 	var trialEnd int64
 
-	// Desktop app purchase. Every desktop checkout uses
-	// mode=subscription with trial_period_days=7, so we always look
-	// up the subscription's trial_end and mint a tier=trial license
-	// here. The permanent license (tier=local|cloud-single|cloud-multi)
-	// is minted later by handleInvoicePaymentSucceeded once Stripe
-	// charges the card on day 7.
+	// Desktop app purchase. No free trial on any desktop tier —
+	// customer pays at checkout and gets a permanent license.
+	//
+	// Flow by tier:
+	//   - local: mode=payment, no subscription. Permanent license
+	//     minted here (checkout.session.completed).
+	//   - cloud-single / cloud-multi: mode=subscription, no trial.
+	//     The customer is charged immediately; their permanent
+	//     license is minted from invoice.payment_succeeded with
+	//     billing_reason=subscription_create (see handleInvoicePaymentSucceeded).
+	//     We do NOT mint anything for cloud here — the invoice
+	//     webhook is the single source of truth for cloud licenses
+	//     so we don't double-issue.
 	if product == "stockyard-desktop" {
 		if wh.desktopPrivKey == "" {
 			return fmt.Errorf("desktop checkout completed but STOCKYARD_DESKTOP_PRIVATE_KEY not set — cannot mint license")
 		}
-		if subscriptionID == "" {
-			return fmt.Errorf("desktop checkout missing subscription ID")
-		}
-		sub, err := wh.stripe.GetSubscription(subscriptionID)
-		if err != nil {
-			return fmt.Errorf("fetch subscription: %w", err)
-		}
-		if te, ok := sub["trial_end"].(float64); ok && te > 0 {
-			trialEnd = int64(te)
-		}
-		if trialEnd == 0 {
-			// No trial on this subscription? Should never happen given
-			// CreateDesktopCheckoutSession always sets trial_period_days=7,
-			// but if Stripe ever changes behavior we'd rather fail loudly
-			// than silently mint a permanent license off the trial path.
-			return fmt.Errorf("desktop subscription has no trial_end — refusing to mint")
-		}
-
-		// Local tier: flip cancel_at_period_end on the subscription so
-		// it auto-cancels after the first paid cycle. Stripe's
-		// /checkout/sessions doesn't accept this flag in
-		// subscription_data, so it has to be set in a follow-up call
-		// once the subscription exists. We do it here, in the webhook,
-		// before the customer's card is charged on day 7. Failure here
-		// is logged but non-fatal — worst case the customer sees a
-		// renewal in their billing portal a year out and can cancel
-		// it themselves.
-		if tier == "local" {
-			if err := wh.stripe.SetSubscriptionCancelAtPeriodEnd(subscriptionID, true); err != nil {
-				log.Printf("webhook: desktop Local cancel_at_period_end set failed (non-fatal, customer may see year-out renewal): %v", err)
-			} else {
-				log.Printf("webhook: desktop Local cancel_at_period_end=true set for sub=%s", subscriptionID)
-			}
-		}
-
 		if customerID == "" || email == "" {
 			return fmt.Errorf("desktop checkout missing customer or email")
 		}
-		log.Printf("webhook: desktop trial start — customer=%s email=%s tier=%s sub=%s trial_end=%s",
-			customerID, email, tier, subscriptionID,
-			time.Unix(trialEnd, 0).UTC().Format(time.RFC3339))
 
-		// Mint trial license. tier=trial regardless of which paid tier
-		// the customer eventually buys — the permanent license issued
-		// on day 7 carries the actual tier (local/cloud-single/cloud-multi).
-		licenseKey, err := issueDesktopLicenseKey(wh.desktopPrivKey, "trial", customerID, email, trialEnd)
-		if err != nil {
-			return fmt.Errorf("issue desktop trial license: %w", err)
+		// Cloud tiers: leave license minting to invoice.payment_succeeded.
+		// We still upsert the customer here so subsequent invoice
+		// webhooks can resolve the email without an extra Stripe
+		// round-trip.
+		if tier == "cloud-single" || tier == "cloud-multi" {
+			if subscriptionID == "" {
+				return fmt.Errorf("desktop cloud checkout missing subscription ID")
+			}
+			if _, err := wh.db.UpsertCustomer(customerID, email, ""); err != nil {
+				return fmt.Errorf("upsert customer: %w", err)
+			}
+			log.Printf("webhook: desktop cloud checkout — customer=%s email=%s tier=%s sub=%s (license minted on invoice.payment_succeeded)",
+				customerID, email, tier, subscriptionID)
+			return nil
 		}
 
-		// Persist customer + license. Store the eventual paid tier on
-		// the license row in the Tier field so the success-page lookup
-		// and the day-7 mint can both resolve it without re-fetching
-		// the Stripe subscription.
+		// Local tier: mint permanent license right now. No trial,
+		// no subscription, no expiry. expiresAt=0 is the "never
+		// expires" sentinel the desktop binary honors per TIERS.md.
+		if tier != "local" {
+			return fmt.Errorf("desktop checkout with unexpected tier=%s (expected local, cloud-single, or cloud-multi)", tier)
+		}
+
+		licenseKey, err := issueDesktopLicenseKey(wh.desktopPrivKey, "local", customerID, email, 0)
+		if err != nil {
+			return fmt.Errorf("issue desktop local license: %w", err)
+		}
+
 		cust, err := wh.db.UpsertCustomer(customerID, email, "")
 		if err != nil {
 			return fmt.Errorf("upsert customer: %w", err)
 		}
 		rec := &LicenseRecord{
-			CustomerID:           cust.ID,
-			StripeCustomerID:     customerID,
-			StripeSubscriptionID: subscriptionID,
-			Product:              "stockyard-desktop",
-			Tier:                 tier, // the eventual paid tier (local, cloud-single, cloud-multi)
-			LicenseKey:           licenseKey,
-			Status:               "trial",
-			Email:                email,
-			ExpiresAt:            time.Unix(trialEnd, 0),
+			CustomerID:       cust.ID,
+			StripeCustomerID: customerID,
+			// StripeSubscriptionID intentionally empty for Local —
+			// mode=payment does not create a subscription.
+			Product:    "stockyard-desktop",
+			Tier:       "local",
+			LicenseKey: licenseKey,
+			Status:     "active",
+			Email:      email,
+			// ExpiresAt left zero so queries that sort by expiry
+			// naturally put permanent Local licenses at the end.
 		}
 		if err := wh.db.CreateLicense(rec); err != nil {
-			return fmt.Errorf("store desktop trial license: %w", err)
+			return fmt.Errorf("store desktop local license: %w", err)
 		}
 
-		// Send activation email with the trial license key.
 		if wh.mailer != nil {
-			if err := wh.mailer.SendDesktopTrialKey(email, tier, licenseKey, trialEnd); err != nil {
-				log.Printf("webhook: desktop trial email failed (non-fatal): %v", err)
+			if err := wh.mailer.SendDesktopLicenseConverted(email, "local", licenseKey); err != nil {
+				log.Printf("webhook: desktop local welcome email failed (non-fatal): %v", err)
 			}
 		}
 
-		// Schedule the day-6 reminder via the existing trial drip
-		// runner. We reuse the bundle-trial slot (the runner doesn't
-		// care about the bundle slug, only about the trial_end timing).
-		if wh.trialDrip != nil {
-			displayName := "Stockyard Desktop"
-			trialEndRFC := time.Unix(trialEnd, 0).UTC().Format(time.RFC3339)
-			wh.trialDrip.EnqueueTrial(email, "stockyard-desktop", displayName, trialEndRFC)
-		}
-
-		log.Printf("webhook: desktop trial license issued — customer=%s tier=%s expires=%s",
-			customerID, tier, time.Unix(trialEnd, 0).Format("2006-01-02"))
+		log.Printf("webhook: desktop local permanent license issued — customer=%s", customerID)
 		return nil
 	}
 

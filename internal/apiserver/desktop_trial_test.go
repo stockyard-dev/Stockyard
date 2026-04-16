@@ -160,7 +160,7 @@ func TestIssueDesktopLicenseKey_BadKeyRejected(t *testing.T) {
 
 func TestDesktopTierDisplayName(t *testing.T) {
 	cases := map[string]string{
-		"local":         "Local (one-time, $99)",
+		"local":         "Local (one-time, $299)",
 		"cloud-single":  "Cloud Single Site",
 		"cloud-multi":   "Cloud Multi-Site",
 		"unknown-tier":  "unknown-tier", // pass-through

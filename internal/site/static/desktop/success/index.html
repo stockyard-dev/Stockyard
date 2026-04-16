@@ -16,12 +16,8 @@ body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);min-h
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .card{max-width:580px;width:100%;background:var(--bg2);border:1px solid var(--bg3);border-top:3px solid var(--gold);padding:2.5rem 2rem}
 .icon{font-size:2.5rem;text-align:center;color:var(--green-light);margin-bottom:.5rem;line-height:1}
-.icon.trial{color:var(--gold)}
 h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
 .subtitle{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--leather-light);margin-bottom:1.5rem}
-.trial-banner{background:color-mix(in srgb, var(--gold) 12%, transparent);border:1px solid color-mix(in srgb, var(--gold) 35%, transparent);padding:.9rem 1rem;margin-bottom:1.5rem;font-size:.88rem;color:var(--cream);text-align:center}
-.trial-banner strong{color:var(--gold);font-family:var(--font-mono);font-size:.82rem;letter-spacing:.5px}
-.trial-banner-sub{font-size:.78rem;color:var(--cream-dim);margin-top:.4rem}
 .key-section{background:var(--bg);border-left:3px solid var(--rust);padding:1rem 1.2rem;margin-bottom:1.5rem}
 .key-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-bottom:.5rem}
 .key-value{font-family:var(--font-mono);font-size:.7rem;color:var(--cream);word-break:break-all;line-height:1.5}
@@ -40,27 +36,19 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
 .step{display:flex;gap:.8rem;margin-bottom:.8rem;align-items:flex-start}
 .step-num{font-family:var(--font-mono);font-size:.7rem;background:var(--bg3);color:var(--gold);width:1.6rem;height:1.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.2rem}
 .step-text{font-size:.88rem;color:var(--cream-dim)}
-.note{padding:1rem;background:var(--bg);border:1px dashed var(--bg3);font-size:.82rem;color:var(--cream-dim);margin-bottom:1.5rem}
-.note strong{color:var(--cream)}
 .footer{margin-top:2rem;text-align:center;font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted)}
-.hidden{display:none}
 </style>
 </head>
 <body>
 
 <div class="card">
-  <div class="icon" id="icon">&#10003;</div>
-  <h1 id="headline">You're all set.</h1>
+  <div class="icon">&#10003;</div>
+  <h1>You&rsquo;re all set.</h1>
   <div class="subtitle" id="tier-label">STOCKYARD DESKTOP</div>
 
-  <div class="trial-banner hidden" id="trial-banner">
-    <strong>7-day free trial active</strong>
-    <div class="trial-banner-sub" id="trial-banner-sub">Your card will be charged on day 7. Cancel anytime in your billing portal.</div>
-  </div>
-
   <div class="key-section">
-    <div class="key-label" id="key-label">Your License Key</div>
-    <div class="key-value placeholder" id="key-value">Retrieving your license...</div>
+    <div class="key-label">Your License Key</div>
+    <div class="key-value placeholder" id="key-value">Retrieving your license&hellip;</div>
     <div class="key-status" id="key-status">Connecting</div>
   </div>
 
@@ -84,14 +72,6 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
       <span class="step-text">Drop the downloaded file, or paste the key. Done.</span>
     </div>
   </div>
-
-  <div class="note hidden" id="trial-note">
-    <strong>What happens on day 7?</strong> If your card is charged
-    successfully, we'll email you a new permanent license — drop that
-    one into the app to replace this trial license. If you cancel
-    before day 7 in your <a href="/billing/">billing portal</a>, you
-    won't be charged and this trial expires naturally.
-  </div>
 </div>
 
 <div class="footer">
@@ -106,39 +86,21 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
 
   var keyValueEl = document.getElementById('key-value');
   var keyStatusEl = document.getElementById('key-status');
-  var keyLabelEl = document.getElementById('key-label');
   var downloadBtn = document.getElementById('download-btn');
   var copyBtn = document.getElementById('copy-btn');
   var tierLabel = document.getElementById('tier-label');
-  var headline = document.getElementById('headline');
-  var icon = document.getElementById('icon');
-  var trialBanner = document.getElementById('trial-banner');
-  var trialBannerSub = document.getElementById('trial-banner-sub');
-  var trialNote = document.getElementById('trial-note');
   var licenseKey = null;
 
-  // Maps the eventual paid tier (returned in license.tier) to a
-  // human-readable label. License STATUS (trial vs active) is
-  // surfaced separately via the trial banner — these names are the
-  // tier the customer is on or trialing toward.
   var tierNames = {
     'local': 'LOCAL',
     'cloud-single': 'CLOUD SINGLE SITE',
     'cloud-multi': 'CLOUD MULTI-SITE'
   };
 
-  // Trial-end-charge amounts. Used in the banner sub-copy so the
-  // customer sees exactly what's coming. Keep in sync with
-  // STRIPE_PRICE_DESKTOP_* env vars on the backend.
-  var trialChargeText = {
-    'local': '$99 (one-time)',
-    'cloud-single': '$19/month or $190/year',
-    'cloud-multi': '$49/month or $490/year'
-  };
-
-  // Poll for the license key. Stripe redirects the customer here
-  // before the webhook fires, so the first few polls return
-  // ready=false. Backoff totals ~30s before fallback to email.
+  // Stripe redirects here before the webhook fires. Local goes through
+  // checkout.session.completed (fast); Cloud goes through the extra
+  // invoice.payment_succeeded hop (slower). Backoff totals ~30s before
+  // we fall back to "check your email".
   var pollSchedule = [1000, 1000, 1000, 1000, 1000, 2000, 2000, 2000, 3000, 3000];
   var pollAttempt = 0;
 
@@ -157,12 +119,12 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
         tierLabel.textContent = 'STOCKYARD DESKTOP \u2014 ' + label;
       }
       if (res.ok && res.body && res.body.ready && res.body.license_key) {
-        showLicenseKey(res.body.license_key, res.body.status, res.body.tier);
+        showLicenseKey(res.body.license_key);
         return;
       }
       pollAttempt++;
       if (pollAttempt < pollSchedule.length) {
-        setKeyStatus('Finalizing your purchase... (' + pollAttempt + '/' + pollSchedule.length + ')');
+        setKeyStatus('Finalizing your purchase\u2026 (' + pollAttempt + '/' + pollSchedule.length + ')');
         setTimeout(lookupSession, pollSchedule[pollAttempt - 1]);
       } else {
         setKeyError('Still processing. Check your email for the license key from hello@stockyard.dev.');
@@ -178,7 +140,7 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
     });
   }
 
-  function showLicenseKey(key, status, tier) {
+  function showLicenseKey(key) {
     licenseKey = key;
     keyValueEl.textContent = key;
     keyValueEl.classList.remove('placeholder');
@@ -186,28 +148,7 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
     keyStatusEl.classList.add('ready');
     downloadBtn.disabled = false;
     copyBtn.disabled = false;
-
-    // Adaptive copy for trial vs permanent. The status field is
-    // "trial" during the 7-day window and "active" after Stripe
-    // charges the card on day 7 and the permanent license is minted.
-    if (status === 'trial') {
-      headline.textContent = 'Your trial is live.';
-      icon.classList.add('trial');
-      keyLabelEl.textContent = 'Your Trial License Key';
-      trialBanner.classList.remove('hidden');
-      trialNote.classList.remove('hidden');
-      var charge = trialChargeText[tier] || '';
-      if (charge) {
-        trialBannerSub.textContent = 'Your card will be charged ' + charge + ' on day 7. Cancel anytime in your billing portal.';
-      }
-    } else {
-      headline.textContent = 'You\u2019re all set.';
-      keyLabelEl.textContent = 'Your License Key';
-      trialBanner.classList.add('hidden');
-      trialNote.classList.add('hidden');
-    }
-
-    gtag('event', 'desktop_license_ready', { method: 'success_page', license_status: status || 'unknown' });
+    gtag('event', 'desktop_license_ready', { method: 'success_page' });
   }
   function setKeyStatus(msg) { keyStatusEl.textContent = msg; }
   function setKeyError(msg) {
@@ -216,7 +157,6 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
     keyStatusEl.textContent = 'Check your email';
   }
 
-  // Download as a .stockyard-license file.
   window.downloadLicense = function() {
     if (!licenseKey) return;
     var blob = new Blob([licenseKey + '\n'], { type: 'application/octet-stream' });
@@ -232,7 +172,6 @@ h1{font-size:1.6rem;text-align:center;margin-bottom:.4rem}
     gtag('event', 'desktop_license_downloaded', { method: 'success_page' });
   };
 
-  // Copy the raw key string to clipboard.
   window.copyKey = function() {
     if (!licenseKey) return;
     var done = function() {

@@ -5,9 +5,9 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
 <title>Stockyard Desktop — Self-hosted toolkit for your business</title>
-<meta content="Self-hosted desktop app. Every tool, every bundle, your machine. $99 one-time. Cloud sync from $19/mo." name="description"/>
+<meta content="Self-hosted desktop app. Every tool, every bundle, your machine. $299 one-time. Cloud sync from $49/mo." name="description"/>
 <meta content="Stockyard Desktop — Self-hosted toolkit for your business" property="og:title"/>
-<meta content="Self-hosted desktop app. $99 one-time for the local product, or $19/mo for cloud sync, $49/mo for multi-location." property="og:description"/>
+<meta content="Self-hosted desktop app. $299 one-time for the local product, or $49/mo for cloud sync, $129/mo for multi-location." property="og:description"/>
 <meta content="https://stockyard.dev/og-pricing.png" property="og:image"/>
 <meta content="https://stockyard.dev/desktop/" property="og:url"/>
 <meta content="website" property="og:type"/>
@@ -105,7 +105,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <section class="hero">
 <div class="hero-eyebrow">STOCKYARD DESKTOP</div>
 <h1>Every tool, every bundle, your machine.</h1>
-<p class="sub">One desktop app. 164 self-hosted tools. Pick a bundle for what you do, or run them all. Your data lives on your computer, not someone else's cloud. 7-day free trial on every tier.</p>
+<p class="sub">One desktop app. 164 self-hosted tools. Pick a bundle for what you do, or run them all. Your data lives on your computer, not someone else's cloud.</p>
 </section>
 
 <div class="billing-toggle">
@@ -118,10 +118,10 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
 <div class="tier">
 <div class="tier-name">Local</div>
-<div class="tier-price"><span class="dollar">$</span>99</div>
+<div class="tier-price"><span class="dollar">$</span>299</div>
 <div class="tier-period one-time">one-time</div>
-<div class="tier-period-sub">7-day free trial</div>
-<p class="tier-desc">Buy once, run forever. Your machine, your data, no account required.</p>
+<div class="tier-period-sub">Buy once, own forever</div>
+<p class="tier-desc">Your machine, your data, no account required. No subscription, no renewal.</p>
 <ul class="tier-features">
 <li>All 164 tools</li>
 <li>All 195 bundles</li>
@@ -130,15 +130,15 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <li class="muted">No cloud backup</li>
 <li class="muted">No cross-device sync</li>
 </ul>
-<button class="btn" onclick="checkout('desktop-local')">Start free trial</button>
+<button class="btn" onclick="checkout('desktop-local')">Buy Local &mdash; $299</button>
 </div>
 
 <div class="tier featured">
 <div class="tier-badge">Most Popular</div>
 <div class="tier-name">Cloud Single Site</div>
-<div class="tier-price"><span class="dollar">$</span><span data-monthly="19" data-annual="190">19</span></div>
+<div class="tier-price"><span class="dollar">$</span><span data-monthly="49" data-annual="490">49</span></div>
 <div class="tier-period"><span data-monthly="per month" data-annual="per year">per month</span></div>
-<div class="tier-period-sub">7-day free trial</div>
+<div class="tier-period-sub"><span data-monthly="billed monthly" data-annual="$40.83/mo effective &middot; save ~17%">billed monthly</span></div>
 <p class="tier-desc">Everything in Local, plus encrypted backup and sync across your devices at one location.</p>
 <ul class="tier-features">
 <li>Everything in Local</li>
@@ -148,14 +148,14 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <li>Email support</li>
 <li class="muted">Single business location</li>
 </ul>
-<button class="btn" data-plan-monthly="desktop-cloud-single-monthly" data-plan-annual="desktop-cloud-single-annual" onclick="checkoutToggle(this)">Start free trial</button>
+<button class="btn" data-plan-monthly="desktop-cloud-single-monthly" data-plan-annual="desktop-cloud-single-annual" onclick="checkoutToggle(this)">Start Cloud Single</button>
 </div>
 
 <div class="tier">
 <div class="tier-name">Cloud Multi-Site</div>
-<div class="tier-price"><span class="dollar">$</span><span data-monthly="49" data-annual="490">49</span></div>
+<div class="tier-price"><span class="dollar">$</span><span data-monthly="129" data-annual="1290">129</span></div>
 <div class="tier-period"><span data-monthly="per month" data-annual="per year">per month</span></div>
-<div class="tier-period-sub">7-day free trial</div>
+<div class="tier-period-sub"><span data-monthly="billed monthly" data-annual="$107.50/mo effective &middot; save ~17%">billed monthly</span></div>
 <p class="tier-desc">For owners running multiple locations. Each site is a separate, isolated namespace.</p>
 <ul class="tier-features">
 <li>Everything in Cloud Single Site</li>
@@ -164,7 +164,7 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <li>Multi-site dashboard</li>
 <li>Priority support</li>
 </ul>
-<button class="btn btn-outline" data-plan-monthly="desktop-cloud-multi-monthly" data-plan-annual="desktop-cloud-multi-annual" onclick="checkoutToggle(this)">Start free trial</button>
+<button class="btn btn-outline" data-plan-monthly="desktop-cloud-multi-monthly" data-plan-annual="desktop-cloud-multi-annual" onclick="checkoutToggle(this)">Start Cloud Multi</button>
 </div>
 
 </div>
@@ -191,22 +191,22 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </div>
 
 <div class="promise">
-<h2>The Local tier is a real product, not a trial.</h2>
-<p>Local includes every tool, every bundle, every feature that runs on your machine. Cloud Single and Cloud Multi add cloud — they don't add features. If you don't want your data leaving your machine, Local is the entire product.</p>
-<p>If your cloud subscription ever lapses, your local features keep working. The data on your machine is yours, period. We never take it away.</p>
+<h2>The Local tier is the full product.</h2>
+<p>Local includes every tool, every bundle, every feature that runs on your machine. Cloud Single and Cloud Multi add cloud &mdash; they don&rsquo;t add features. If you don&rsquo;t want your data leaving your machine, Local is the entire product.</p>
+<p>If your Cloud subscription ever lapses, your local features keep working. The data on your machine is yours, period. We never take it away.</p>
 </div>
 
 <section class="faq-section">
 <h2>Frequently asked questions</h2>
 
 <div class="faq">
-<h3>How does the free trial work?</h3>
-<p>Every tier offers 7 days free with card capture. You enter your card at checkout, get full access immediately, and aren't charged until day 7. Cancel before day 7 in the billing portal and you won't be charged.</p>
+<h3>Can I try it before I buy?</h3>
+<p>The proxy platform is free and open-source at <a href="/proxy-only/">stockyard.dev</a>, and every bundle has a detailed tools list you can review before purchase. If you have questions before buying, email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> and we&rsquo;ll answer within a day.</p>
 </div>
 
 <div class="faq">
 <h3>What happens if Stockyard the company disappears?</h3>
-<p>The Local tier license has no expiry. The binary keeps working. Your data stays on your machine in standard SQLite files. You can open them with any tool.</p>
+<p>The Local license has no expiry. The binary keeps working. Your data stays on your machine in standard SQLite files. You can open them with any tool.</p>
 </div>
 
 <div class="faq">
@@ -215,18 +215,18 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </div>
 
 <div class="faq">
-<h3>What's a "site"?</h3>
-<p>A site is a logical location. "Downtown Studio" and "Uptown Studio" are two sites with separate data. One business at one address running ten bundles is one site. Most customers are single-site.</p>
+<h3>What&rsquo;s a &ldquo;site&rdquo;?</h3>
+<p>A site is a logical location. &ldquo;Downtown Studio&rdquo; and &ldquo;Uptown Studio&rdquo; are two sites with separate data. One business at one address running ten bundles is one site. Most customers are single-site.</p>
 </div>
 
 <div class="faq">
 <h3>Can I upgrade later?</h3>
-<p>Yes. Local to Cloud Single is a prorated upgrade. Cloud Single to Cloud Multi too. Downgrades work in the other direction with no data loss.</p>
+<p>Yes &mdash; email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your license key and we&rsquo;ll apply a credit for what you&rsquo;ve already paid toward the new tier.</p>
 </div>
 
 <div class="faq">
 <h3>How does this compare to HoneyBook or Mindbody?</h3>
-<p>HoneyBook is $348-1,548/year. Mindbody is $1,188+/year per location. Stockyard Local is $99 once. Cloud Single is $190/year for one location. Cloud Multi is $490/year for unlimited locations. We're cheaper because the software runs on your machine, not our servers.</p>
+<p>HoneyBook is $348&ndash;1,548/year. Mindbody is $1,188+/year per location. Stockyard Local is $299 once &mdash; that&rsquo;s it, no renewal. Cloud Single is $490/year for one location. Cloud Multi is $1,290/year for unlimited locations. We&rsquo;re cheaper because the software runs on your machine, not our servers.</p>
 </div>
 
 </section>
