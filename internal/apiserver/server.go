@@ -504,20 +504,22 @@ func (s *Server) handleCheckout(w http.ResponseWriter, r *http.Request) {
 
 	// Desktop app checkout. Plan slugs:
 	//   desktop-local                  → $99 one-time
-	//   desktop-cloud-single-monthly   → $19/mo
-	//   desktop-cloud-single-annual    → $190/yr
-	//   desktop-cloud-multi-monthly    → $49/mo
-	//   desktop-cloud-multi-annual     → $490/yr
+	//   desktop-cloud-single-monthly   → $19/mo  (env: STRIPE_PRICE_DESKTOP_CLOUD_SINGLE)
+	//   desktop-cloud-single-annual    → $190/yr (env: STRIPE_PRICE_DESKTOP_CLOUD_SINGLE_ANNUAL)
+	//   desktop-cloud-multi-monthly    → $49/mo  (env: STRIPE_PRICE_DESKTOP_CLOUD_MULTI)
+	//   desktop-cloud-multi-annual     → $490/yr (env: STRIPE_PRICE_DESKTOP_CLOUD_MULTI_ANNUAL)
 	//
-	// Env vars:
-	//   STRIPE_PRICE_DESKTOP_LOCAL
-	//   STRIPE_PRICE_DESKTOP_CLOUD_SINGLE_MONTHLY
-	//   STRIPE_PRICE_DESKTOP_CLOUD_SINGLE_ANNUAL
-	//   STRIPE_PRICE_DESKTOP_CLOUD_MULTI_MONTHLY
-	//   STRIPE_PRICE_DESKTOP_CLOUD_MULTI_ANNUAL
+	// Convention: monthly is the default (no suffix on env var name);
+	// annual gets the explicit _ANNUAL suffix. Keeps the env var
+	// surface area smaller and matches the "monthly is the default
+	// billing interval" mental model.
 	if strings.HasPrefix(req.Plan, "desktop-") {
 		desktopTier := strings.TrimPrefix(req.Plan, "desktop-")
-		envKey := "STRIPE_PRICE_DESKTOP_" + strings.ToUpper(strings.ReplaceAll(desktopTier, "-", "_"))
+		// Strip the default -monthly suffix before building the env
+		// var name. Only -annual (and any future variants like
+		// -lifetime) gets reflected in the env var.
+		envSuffix := strings.TrimSuffix(desktopTier, "-monthly")
+		envKey := "STRIPE_PRICE_DESKTOP_" + strings.ToUpper(strings.ReplaceAll(envSuffix, "-", "_"))
 		priceID := os.Getenv(envKey)
 		if priceID == "" {
 			writeErr(w, http.StatusBadRequest, fmt.Sprintf("desktop pricing not configured — set %s", envKey))
