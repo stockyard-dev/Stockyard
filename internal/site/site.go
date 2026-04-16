@@ -278,7 +278,6 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 	// Serve known page routes as their index.html
 	pages := []string{
 		"/about/",
-		"/pricing/",
 		"/privacy/",
 		"/terms/",
 		"/constitution/",
@@ -319,6 +318,17 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 			servePage(w, r, data, "public, max-age=300")
 		})
 	}
+
+	// Pricing redirect. /pricing/ was the old canonical pricing URL; as
+	// of the April 2026 site rewrite it redirects to /desktop/ which is
+	// the canonical pricing page. 301 so search engines update the
+	// indexed URL; old inbound links keep working indefinitely.
+	mux.HandleFunc("GET /pricing/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/desktop/", http.StatusMovedPermanently)
+	})
+	mux.HandleFunc("GET /pricing", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/desktop/", http.StatusMovedPermanently)
+	})
 
 	// AI recommendation endpoint
 	if recommender != nil {

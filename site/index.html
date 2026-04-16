@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -7,10 +6,10 @@
 <link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
 <link href="/site-assets/assets/brand/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
 <link href="/site-assets/assets/brand/apple-touch-icon.png" rel="apple-touch-icon"/>
-<title>Stockyard — Self-hosted tools for your business, hobby, or community</title>
-<meta content="200 tool bundles for every community. Type what you do, get your tools. One app. Self-hosted. $299 one-time." name="description"/>
-<meta content="Stockyard — Your tools. Your data. Your hardware." property="og:title"/>
-<meta content="200 tool bundles for every community. Type what you do, get your tools. $299 one-time." property="og:description"/>
+<title>Stockyard — Business software that runs on your computer</title>
+<meta content="Stockyard is one app that replaces your scheduling, invoicing, and customer-management SaaS. Runs on your Mac, Windows, or Linux computer. $49/month with cloud backup, or $299 once for local-only." name="description"/>
+<meta content="Stockyard — Business software on your own computer" property="og:title"/>
+<meta content="One app. Scheduling, invoices, customers, email. Runs on your computer. $49/mo or $299 once." property="og:description"/>
 <meta content="website" property="og:type"/>
 <meta content="https://stockyard.dev/" property="og:url"/>
 <meta content="https://stockyard.dev/og-homepage.png" property="og:image"/>
@@ -19,474 +18,451 @@
 <link href="https://stockyard.dev/" rel="canonical"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BR9VHNFEEE');</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;--rust:#c45d2c;--rust-light:#e8753a;--leather:#a0845c;--leather-light:#c4a87a;--cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;--gold:#d4a843;--green:#4a9e5c;--font-serif:'Libre Baskerville',Georgia,serif;--font-mono:'JetBrains Mono',monospace}
+:root{
+  --bg:#1a1410;--bg2:#241e18;--bg3:#2e261e;
+  --rust:#c45d2c;--rust-light:#e8753a;
+  --leather:#a0845c;--leather-light:#c4a87a;
+  --cream:#f0e6d3;--cream-dim:#bfb5a3;--cream-muted:#7a7060;
+  --gold:#d4a843;--green:#4a9e5c;--green-light:#6bb87f;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+@media(prefers-color-scheme:light){
+  :root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green:#3a7a4a;--green-light:#4a9050}
+}
 body{background:var(--bg);color:var(--cream);font-family:var(--font-serif);line-height:1.7;overflow-x:hidden}
 a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
+
+/* ── Nav ──────────────────────────────────────────────────────────── */
 .nav{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bg3)}
-.nav-brand{font-family:var(--font-mono);font-size:0.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
-.nav-links{display:flex;gap:1.5rem;font-size:0.85rem;font-family:var(--font-mono)}.nav-links a{color:var(--cream-dim)}.nav-links a:hover{color:var(--rust-light)}
-.hero{max-width:720px;margin:0 auto;padding:5rem 2rem 2rem;text-align:center}
-.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.25;margin-bottom:1rem}
-.hero .sub{font-size:1rem;color:var(--cream-dim);font-style:italic;max-width:540px;margin:0 auto 2.5rem;line-height:1.8}
-.search-box{max-width:600px;margin:0 auto;text-align:left}
-.search-box label{font-size:1.05rem;color:var(--cream-dim);font-style:italic;display:block;margin-bottom:0.8rem;text-align:center}
-.search-wrap{position:relative}
-#search{width:100%;padding:1rem 1.2rem;font-size:1.1rem;font-family:var(--font-serif);background:var(--bg2);border:2px solid var(--bg3);color:var(--cream);outline:none;transition:border-color .2s}
-#search:focus{border-color:var(--rust)}
-#search::placeholder{color:var(--cream-muted);font-style:italic}
-#results{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--bg3);border-top:none;z-index:100;max-height:350px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.result-item{display:block;width:100%;padding:.8rem 1.2rem;text-align:left;background:none;border:none;border-bottom:1px solid var(--bg3);cursor:pointer;color:var(--cream);font-family:var(--font-serif);transition:background .15s}
-.result-item:hover{background:var(--bg3)}
-.result-item strong{display:block;font-size:.95rem;margin-bottom:.2rem}
-.result-item span{font-size:.8rem;color:var(--cream-dim)}
-.no-results{padding:1rem 1.2rem;color:var(--cream-muted);font-size:.9rem}
-.categories{max-width:800px;margin:3rem auto;text-align:center;padding:0 2rem}
-.categories h2{font-size:.85rem;color:var(--leather-light);font-family:var(--font-mono);letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5rem}
-.cat-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}
-.cat-grid button{padding:.5rem 1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:.75rem;cursor:pointer;transition:border-color .2s,color .2s}
-.cat-grid button:hover{border-color:var(--rust);color:var(--cream)}
-#bundle-result{display:none;max-width:900px;margin:0 auto;padding:0 2rem 3rem}
-.bundle-detail{animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.bun-eye{font-family:var(--font-mono);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--leather);margin-bottom:1rem}
-.bun-h{font-size:clamp(1.6rem,3.5vw,2.2rem);line-height:1.2;margin-bottom:.8rem}
-.bun-sub{font-size:.95rem;color:var(--cream-dim);font-style:italic;line-height:1.7;margin-bottom:2rem}
-.install-methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
-.method{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem}
-.method h4{font-family:var(--font-mono);font-size:.7rem;color:var(--leather-light);letter-spacing:1px;margin-bottom:.8rem;text-transform:uppercase}
-.install-cmd{background:var(--bg);border:1px solid var(--bg3);padding:.6rem .8rem;font-family:var(--font-mono);font-size:.72rem;color:var(--gold);word-break:break-all;cursor:pointer;position:relative;transition:border-color .2s}
-.install-cmd:hover{border-color:var(--rust)}
-.install-cmd::after{content:'click to copy';position:absolute;right:.5rem;top:50%;transform:translateY(-50%);font-size:.5rem;color:var(--cream-muted);text-transform:uppercase;letter-spacing:1px}
-.install-cmd.copied::after{content:'copied!';color:var(--green)}
-.btn{display:inline-block;padding:.6rem 1.2rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;text-decoration:none;border:none;cursor:pointer;transition:background .2s}.btn:hover{background:var(--rust-light);color:#fff}
-.replaces{margin:2rem 0;text-align:center}
-.replaces h3{margin-bottom:1rem;font-size:1.1rem}
-.replaces-list{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin:1rem 0}
-.replaces-list li{background:var(--bg2);border:1px solid var(--bg3);padding:.25rem .7rem;font-family:var(--font-mono);font-size:.72rem;color:var(--cream-dim)}
-.anchor{font-size:.95rem;margin-top:1rem}.anchor strong{color:var(--rust-light)}
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:1.5rem 0 2rem}
-.tool-card{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;transition:border-color .2s;text-decoration:none;color:inherit;display:block}.tool-card:hover{border-color:var(--rust)}.tool-card:hover h4{color:var(--rust-light)}
-.tool-card h4{font-size:.85rem;margin-bottom:.3rem;font-family:var(--font-mono)}
-.tool-card p{font-size:.78rem;color:var(--cream-dim);line-height:1.5}
-.bun-foot{text-align:center;padding:1.5rem 0;border-top:1px solid var(--bg3);margin-top:2rem}
-.bun-foot p{margin-bottom:.5rem;color:var(--cream-dim)}.bun-foot strong{color:var(--rust-light)}
-.bun-section-label{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--rust);margin-bottom:1rem}
-.back-btn{background:none;border:none;color:var(--rust-light);font-family:var(--font-mono);font-size:.8rem;cursor:pointer;padding:.5rem 0;margin-bottom:1rem;display:block}
-.bundle-list{display:flex;flex-direction:column;gap:.5rem}
-.bundle-list-item{display:block;width:100%;text-align:left;padding:1rem 1.2rem;background:var(--bg2);border:1px solid var(--bg3);cursor:pointer;color:var(--cream);font-family:var(--font-serif);transition:border-color .2s}
-.bundle-list-item:hover{border-color:var(--rust)}
-.bundle-list-item strong{display:block;margin-bottom:.3rem}
-.bundle-list-item span{font-size:.82rem;color:var(--cream-dim);display:block}
-.tool-count{font-family:var(--font-mono);font-size:.65rem;color:var(--leather);margin-top:.3rem}
-.promise{max-width:800px;margin:4rem auto;text-align:center;padding:0 2rem}
-.promise h2{font-size:1.5rem;margin-bottom:2rem}
-.promise-pts{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;margin-bottom:2rem}
-.pt{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.3rem;min-width:140px}
-.pt .num{font-family:var(--font-mono);font-size:1.6rem;color:var(--rust-light);display:block}
-.pt .lbl{font-size:.78rem;color:var(--cream-dim)}
-.promise-body{font-size:.9rem;color:var(--cream-dim);line-height:1.8;max-width:580px;margin:0 auto}
-.dev-cta{max-width:800px;margin:3rem auto;padding:2rem;background:var(--bg2);border:1px solid var(--bg3);text-align:center}
-.dev-cta h2{font-size:1.1rem;margin-bottom:.8rem}.dev-cta p{font-size:.88rem;color:var(--cream-dim);margin-bottom:1.2rem;line-height:1.7}
-.dev-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
-.dev-links a{font-family:var(--font-mono);font-size:.8rem}
-.about-cta{max-width:600px;margin:3rem auto;text-align:center;font-size:.88rem;color:var(--cream-dim);padding:0 2rem;line-height:1.8}
-footer{padding:2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--leather);border-top:1px solid var(--bg3)}
-footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif)}
-@media(max-width:768px){.install-methods{grid-template-columns:1fr}.tool-grid{grid-template-columns:1fr 1fr}.promise-pts{gap:.6rem}.pt{min-width:120px}.nav-links{gap:.8rem;font-size:.7rem}}
-.install-buttons{max-width:680px;margin:1.5rem 0;padding:1.5rem;background:var(--bg2);border:1px solid var(--bg3);text-align:left}
-.install-buttons-header{text-align:center;margin-bottom:1.2rem}
-.install-buttons-header h3{font-family:var(--font-mono);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream);margin-bottom:.4rem;font-weight:700}
-.install-buttons-header p{font-size:.8rem;color:var(--cream-dim);font-style:italic;margin:0}
-.install-buttons-grid{display:grid;grid-template-columns:1fr;gap:.6rem}
-@media(min-width:680px){.install-buttons-grid{grid-template-columns:repeat(3,1fr)}}
-.install-btn{display:flex;align-items:center;gap:.8rem;padding:1rem 1.1rem;background:var(--bg);border:1px solid var(--bg3);border-left:3px solid var(--rust);text-decoration:none;color:var(--cream);transition:border-color .15s,transform .15s,background .15s;position:relative}
-.install-btn:hover{border-color:var(--rust);border-left-color:var(--rust-light);transform:translateY(-1px);color:var(--cream)}
-.install-btn .os-icon{width:24px;height:24px;flex-shrink:0;color:var(--cream)}
-.install-btn-label{display:flex;flex-direction:column;gap:1px;min-width:0}
-.install-btn-title{font-family:var(--font-mono);font-size:.78rem;font-weight:700;color:var(--cream)}
-.install-btn-sub{font-size:.62rem;color:var(--cream-dim);font-family:var(--font-mono)}
-.install-btn-recommended{border-color:var(--rust-light);border-left-width:5px;background:var(--bg3)}
-.install-btn-badge{position:absolute;top:-8px;right:8px;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.5rem;padding:2px 7px;letter-spacing:1px;text-transform:uppercase}
-.install-mobile-note{display:none;background:var(--bg3);border-left:3px solid var(--gold);padding:.8rem 1rem;margin-bottom:1rem;font-size:.78rem;color:var(--cream-dim);font-style:italic;text-align:center;line-height:1.5}
-@media(max-width:680px){.install-mobile-note{display:block}}
-.install-advanced{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--bg3)}
-.install-advanced summary{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;outline:none}
-.install-advanced summary:hover{color:var(--rust-light)}
-.install-advanced pre{margin-top:.6rem;padding:.7rem .9rem;background:var(--bg);border:1px solid var(--bg3);font-size:.7rem;color:var(--cream-dim);overflow-x:auto;font-family:var(--font-mono);white-space:pre-wrap;word-break:break-all}
-@media(max-width:480px){.tool-grid{grid-template-columns:1fr}.hero{padding:3rem 1.5rem 1.5rem}}
-@media(prefers-color-scheme:light){:root{--bg:#faf7f2;--bg2:#f0ebe3;--bg3:#e0d9ce;--rust:#b04a1e;--rust-light:#c45d2c;--leather:#7a6544;--leather-light:#8b7355;--cream:#1a1410;--cream-dim:#4a4035;--cream-muted:#8a806e;--gold:#b08a28;--green:#3a7a4a}}
-.stats-band{max-width:1000px;margin:0 auto;padding:2.5rem 2rem;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;text-align:center}.stat{padding:0 .5rem;border-left:1px solid var(--bg3)}.stat:first-child{border-left:none}.stat-num{font-family:var(--font-mono);font-size:1.9rem;font-weight:600;color:var(--gold);line-height:1;letter-spacing:-1px}.stat-lbl{font-family:var(--font-mono);font-size:.62rem;color:var(--cream-muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:.5rem;line-height:1.4}.stat a{color:inherit;text-decoration:none}.stat a:hover .stat-num{color:var(--rust-light)}@media(max-width:720px){.stats-row{grid-template-columns:repeat(2,1fr);gap:1.5rem 1rem}.stat{border-left:none}.stat-num{font-size:1.5rem}.stats-band{padding:2rem 1rem}}@media(max-width:400px){.stats-row{grid-template-columns:1fr}}.hero-pivot{max-width:720px;margin:0 auto 1.4rem;padding:1.6rem 1rem;text-align:center;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}.hero-pivot h2{font-size:1.45rem;color:var(--cream);font-family:var(--font-serif);margin-bottom:.5rem;line-height:1.3;font-weight:700}.hero-pivot p{font-size:.92rem;color:var(--cream-dim);font-style:italic;margin:0}.hero-search-wrap{max-width:720px;margin:0 auto 1rem}#search.hero-input{padding:1.15rem 1.3rem;font-size:1.2rem;border-width:2px;background:var(--bg2);transition:border-color .2s,box-shadow .2s}#search.hero-input:focus{border-color:var(--rust);box-shadow:0 0 0 4px rgba(196,93,44,.15)}.hero-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-top:.9rem}.hero-chip{padding:.45rem .9rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream-dim);font-family:var(--font-mono);font-size:.72rem;cursor:pointer;transition:border-color .2s,color .2s,background .2s;border-radius:2px}.hero-chip:hover{border-color:var(--rust);color:var(--cream);background:var(--bg3)}.hero-chip-prefix{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted);letter-spacing:1px;text-transform:uppercase;margin-right:.4rem;align-self:center}.hero-browse{text-align:center;margin-top:1.2rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.5px}.hero-browse a{color:var(--leather-light);border-bottom:1px dotted var(--bg3);padding-bottom:1px}.hero-browse a:hover{color:var(--rust-light);border-color:var(--rust)}</style>
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BR9VHNFEEE"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-BR9VHNFEEE");gtag("config","AW-18046975504");</script>
+.nav-brand{font-family:var(--font-mono);font-size:.9rem;color:var(--leather-light);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}
+.nav-links a{color:var(--cream-dim)}
+.nav-links a:hover{color:var(--rust-light)}
+.nav-links a.cta{color:var(--rust-light)}
+
+/* ── Hero ─────────────────────────────────────────────────────────── */
+.hero{max-width:980px;margin:0 auto;padding:4rem 2rem 2rem;text-align:center}
+.hero-eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:1.2rem}
+.hero h1{font-size:clamp(1.9rem,4.2vw,2.8rem);line-height:1.25;margin-bottom:1.2rem;max-width:780px;margin-left:auto;margin-right:auto}
+.hero .sub{font-size:1.02rem;color:var(--cream-dim);max-width:640px;margin:0 auto 2rem;line-height:1.75}
+.hero-actions{display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem}
+.btn{display:inline-block;padding:.85rem 1.6rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:background .2s;text-decoration:none;text-align:center}
+.btn:hover{background:var(--rust-light);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--bg3);color:var(--cream-dim)}
+.btn-outline:hover{background:var(--bg3);color:var(--cream);border-color:var(--rust)}
+.hero-note{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);letter-spacing:.5px;margin-top:.8rem}
+
+/* ── App screenshot (mocked) ──────────────────────────────────────── */
+.shot-wrap{max-width:960px;margin:2rem auto 3rem;padding:0 2rem}
+.shot{background:var(--bg2);border:1px solid var(--bg3);box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative}
+@media(prefers-color-scheme:light){.shot{box-shadow:0 12px 40px rgba(74,64,53,.15)}}
+.shot svg{display:block;width:100%;height:auto}
+.shot-caption{font-family:var(--font-mono);font-size:.65rem;color:var(--cream-muted);letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-top:.9rem}
+
+/* ── Section: what it does ───────────────────────────────────────── */
+.what{max-width:820px;margin:4rem auto;padding:0 2rem}
+.section-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:1rem;text-align:center}
+.what h2{font-size:clamp(1.5rem,3vw,1.9rem);text-align:center;margin-bottom:2rem;line-height:1.3}
+.what-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:2rem}
+.what-col{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem 1.3rem}
+.what-col h3{font-family:var(--font-mono);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:.8rem}
+.what-col p{font-size:.9rem;color:var(--cream-dim);line-height:1.7}
+@media(max-width:720px){.what-grid{grid-template-columns:1fr;gap:1rem}}
+
+/* ── Section: why this vs others ─────────────────────────────────── */
+.versus{max-width:880px;margin:5rem auto;padding:0 2rem}
+.versus h2{font-size:clamp(1.5rem,3vw,1.9rem);text-align:center;margin-bottom:1rem;line-height:1.3}
+.versus p.lede{text-align:center;color:var(--cream-dim);font-size:.95rem;max-width:640px;margin:0 auto 2.5rem;font-style:italic}
+.versus-table{width:100%;border-collapse:collapse;font-size:.88rem;background:var(--bg2);border:1px solid var(--bg3)}
+.versus-table th,.versus-table td{padding:.9rem 1.1rem;text-align:left;border-bottom:1px solid var(--bg3)}
+.versus-table th{font-family:var(--font-mono);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);background:var(--bg3)}
+.versus-table td.name{font-weight:700;color:var(--cream)}
+.versus-table td.price{font-family:var(--font-mono);color:var(--cream-dim);text-align:right;white-space:nowrap}
+.versus-table tr.featured td{background:rgba(196,93,44,.08)}
+.versus-table tr.featured td.name{color:var(--rust-light)}
+.versus-table tr.featured td.price{color:var(--gold)}
+.versus-note{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);text-align:center;margin-top:1rem;font-style:italic}
+
+/* ── Section: what you get ───────────────────────────────────────── */
+.whatyouget{max-width:880px;margin:5rem auto;padding:0 2rem}
+.whatyouget h2{font-size:clamp(1.5rem,3vw,1.9rem);text-align:center;margin-bottom:1rem;line-height:1.3}
+.whatyouget .lede{text-align:center;color:var(--cream-dim);max-width:640px;margin:0 auto 2rem;font-size:.95rem;line-height:1.75}
+.whatyouget-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem auto 2.5rem;max-width:720px}
+.stat-box{background:var(--bg2);border:1px solid var(--bg3);padding:1.2rem 1rem;text-align:center}
+.stat-num{font-family:var(--font-mono);font-size:1.7rem;color:var(--gold);font-weight:600;line-height:1}
+.stat-lbl{font-family:var(--font-mono);font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--cream-muted);margin-top:.5rem}
+@media(max-width:720px){.whatyouget-stats{grid-template-columns:repeat(2,1fr)}}
+.examples{margin-top:2rem}
+.examples-label{text-align:center;font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:1.2rem}
+.examples-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.ex{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.1rem;text-decoration:none;color:inherit;transition:border-color .2s}
+.ex:hover{border-color:var(--rust)}
+.ex strong{display:block;font-size:.9rem;color:var(--cream);margin-bottom:.2rem}
+.ex span{font-size:.72rem;color:var(--cream-muted);font-family:var(--font-mono)}
+@media(max-width:720px){.examples-grid{grid-template-columns:repeat(2,1fr)}}
+.browse-more{text-align:center;margin-top:1.5rem}
+.browse-more a{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.5px}
+
+/* ── Section: pricing preview ────────────────────────────────────── */
+.pricing-preview{max-width:1000px;margin:5rem auto;padding:0 2rem}
+.pricing-preview h2{font-size:clamp(1.5rem,3vw,1.9rem);text-align:center;margin-bottom:1rem;line-height:1.3}
+.pricing-preview .lede{text-align:center;color:var(--cream-dim);max-width:600px;margin:0 auto 2rem;font-size:.95rem}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.tier{background:var(--bg2);border:2px solid var(--bg3);padding:1.8rem 1.4rem;text-align:center;position:relative;display:flex;flex-direction:column}
+.tier.featured{border-color:var(--gold)}
+.tier-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:.58rem;padding:.22rem .8rem;letter-spacing:2px;text-transform:uppercase;font-weight:600}
+.tier-name{font-family:var(--font-mono);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin-bottom:.9rem}
+.tier-price{font-family:var(--font-mono);font-size:2.2rem;color:var(--cream);line-height:1}
+.tier-price .dollar{font-size:1rem;vertical-align:super;color:var(--cream-dim)}
+.tier-period{font-family:var(--font-mono);font-size:.68rem;color:var(--cream-muted);margin-top:.25rem;margin-bottom:.4rem}
+.tier-period.one-time{color:var(--gold)}
+.tier-desc{font-size:.82rem;color:var(--cream-dim);margin:.9rem 0 1.3rem;line-height:1.6;min-height:3em}
+.tier-features{list-style:none;text-align:left;margin-bottom:1.3rem;flex:1}
+.tier-features li{font-size:.8rem;color:var(--cream-dim);padding:.35rem 0;border-bottom:1px dashed var(--bg3)}
+.tier-features li::before{content:"+";color:var(--green-light);margin-right:.5rem;font-weight:600}
+.pricing-link{text-align:center;margin-top:2rem;font-family:var(--font-mono);font-size:.78rem}
+@media(max-width:720px){.tiers{grid-template-columns:1fr}}
+
+/* ── Section: trust promise ──────────────────────────────────────── */
+.trust{max-width:780px;margin:5rem auto;padding:2.5rem 2rem;background:var(--bg2);border-left:4px solid var(--rust)}
+.trust h2{font-size:1.35rem;margin-bottom:1rem;color:var(--cream)}
+.trust p{color:var(--cream-dim);font-size:.95rem;margin-bottom:.9rem;line-height:1.75}
+.trust p:last-child{margin-bottom:0}
+.trust a{color:var(--rust-light)}
+
+/* ── Developer note at bottom ────────────────────────────────────── */
+.dev-note{max-width:780px;margin:4rem auto 2rem;padding:1.4rem 2rem;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--cream-muted);line-height:1.9;border-top:1px solid var(--bg3);border-bottom:1px solid var(--bg3)}
+.dev-note strong{color:var(--leather-light);font-weight:500;letter-spacing:1px;text-transform:uppercase;font-size:.65rem}
+.dev-note a{color:var(--rust-light)}
+
+footer{padding:2.5rem 2rem;text-align:center;font-family:var(--font-mono);font-size:.72rem;color:var(--leather)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif);margin-bottom:.6rem;font-size:.9rem}
+footer nav{margin-top:.6rem}
+footer nav a{color:var(--cream-muted);margin:0 .6rem}
+footer nav a:hover{color:var(--rust-light)}
+footer .fine{font-size:.65rem;color:var(--cream-muted);margin-top:.8rem}
+
+@media(max-width:640px){
+  .hero{padding-top:2.5rem}
+  .hero-actions{flex-direction:column;align-items:stretch;max-width:300px;margin:0 auto 1rem}
+  .nav-links{gap:.8rem;font-size:.75rem}
+}
+</style>
 </head>
 <body>
 <nav class="nav">
-<a class="nav-brand" href="/"><svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard</a>
+<a class="nav-brand" href="/">
+<svg fill="none" height="24" viewbox="0 0 64 64" width="24" aria-hidden="true">
+<rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect>
+<rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect>
+<rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect>
+<rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect>
+</svg>
+Stockyard
+</a>
 <div class="nav-links">
-<a href="/for/">Bundles</a>
-<a href="/tools/">Tools</a>
-<a href="/desktop/" style="color:var(--rust-light)">Desktop</a>
-<a href="/pricing/">Pricing</a>
+<a href="#what">How it works</a>
+<a href="/desktop/">Pricing</a>
 <a href="/about/">About</a>
-<a href="https://github.com/stockyard-dev/Stockyard" rel="noopener" target="_blank">GitHub</a>
+<a href="/desktop/" class="cta">Get Stockyard</a>
 </div>
 </nav>
+
+<!-- ── Hero ──────────────────────────────────────────────────────── -->
 <section class="hero">
-<h1>Self-hosted software for your business, hobby, or community.</h1>
-<p class="sub">Tell us what you do and we'll build your toolkit. Your data on your hardware, not someone else's cloud.</p>
-<div id="toolkit-counter" style="display:none;text-align:center;margin:0 auto 2rem;font-family:var(--font-mono)"><div style="font-size:2.2rem;font-weight:600;color:var(--gold);line-height:1;letter-spacing:-1px"><span id="counter-num"></span></div><div style="font-size:.7rem;color:var(--cream-muted);letter-spacing:2px;text-transform:uppercase;margin-top:.4rem">TOOLKITS BUILT SO FAR</div><div id="counter-latest" style="display:none;font-size:.65rem;color:var(--leather-light);letter-spacing:1px;margin-top:.35rem;font-style:italic"></div></div>
-<div class="hero-mockups" role="list" aria-label="Examples of tools in the Stockyard catalog" style="display:flex;gap:.8rem;max-width:740px;margin:0 auto 1.6rem;justify-content:center;flex-wrap:wrap"><div role="listitem" aria-label="Billfold invoice mockup showing a $2,330 total" style="flex:1 1 200px;max-width:230px;background:var(--bg2);border:1px solid var(--bg3);border-radius:3px;overflow:hidden;font-family:var(--font-mono);font-size:.55rem"><div style="background:var(--bg3);padding:.35rem .5rem;display:flex;gap:.25rem;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--rust)"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold)"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--green)"></span><span style="margin-left:.5rem;color:var(--cream-muted);font-size:.5rem">billfold · invoicing</span></div><div style="padding:.7rem .6rem"><div style="color:var(--leather-light);font-size:.5rem;letter-spacing:1px;margin-bottom:.4rem">INVOICE #0042</div><div style="display:flex;justify-content:space-between;color:var(--cream-dim);margin-bottom:.25rem"><span>Design work</span><span>$1,800</span></div><div style="display:flex;justify-content:space-between;color:var(--cream-dim);margin-bottom:.25rem"><span>Consulting</span><span>$450</span></div><div style="display:flex;justify-content:space-between;color:var(--cream-dim);margin-bottom:.5rem"><span>Hosting</span><span>$80</span></div><div style="border-top:1px solid var(--bg3);padding-top:.4rem;display:flex;justify-content:space-between"><span style="color:var(--cream)">Total</span><span style="color:var(--gold);font-weight:600">$2,330</span></div></div></div><div role="listitem" aria-label="Dossier customer list mockup with three recent contacts" style="flex:1 1 200px;max-width:230px;background:var(--bg2);border:1px solid var(--bg3);border-radius:3px;overflow:hidden;font-family:var(--font-mono);font-size:.55rem"><div style="background:var(--bg3);padding:.35rem .5rem;display:flex;gap:.25rem;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--rust)"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold)"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--green)"></span><span style="margin-left:.5rem;color:var(--cream-muted);font-size:.5rem">dossier · customers</span></div><div style="padding:.7rem .6rem"><div style="color:var(--leather-light);font-size:.5rem;letter-spacing:1px;margin-bottom:.4rem">3 RECENT</div><div style="color:var(--cream);margin-bottom:.3rem">Alvarez Farm Co.<div style="color:var(--cream-muted);font-size:.5rem">2 days ago</div></div><div style="color:var(--cream);margin-bottom:.3rem">Iron Ridge LLC<div style="color:var(--cream-muted);font-size:.5rem">5 days ago</div></div><div style="color:var(--cream)">Blue Heron Studio<div style="color:var(--cream-muted);font-size:.5rem">1 week ago</div></div></div></div><div role="listitem" aria-label="Trailhead habit tracker mockup with a 14-day streak grid" style="flex:1 1 200px;max-width:230px;background:var(--bg2);border:1px solid var(--bg3);border-radius:3px;overflow:hidden;font-family:var(--font-mono);font-size:.55rem"><div style="background:var(--bg3);padding:.35rem .5rem;display:flex;gap:.25rem;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--rust)"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold)"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--green)"></span><span style="margin-left:.5rem;color:var(--cream-muted);font-size:.5rem">trailhead · habits</span></div><div style="padding:.7rem .6rem"><div style="color:var(--leather-light);font-size:.5rem;letter-spacing:1px;margin-bottom:.4rem">APRIL · 14 DAY STREAK</div><div style="display:flex;gap:.15rem;flex-wrap:wrap;margin-bottom:.4rem"><span style="width:10px;height:10px;background:var(--rust)"></span><span style="width:10px;height:10px;background:var(--rust)"></span><span style="width:10px;height:10px;background:var(--rust)"></span><span style="width:10px;height:10px;background:var(--rust)"></span><span style="width:10px;height:10px;background:var(--rust)"></span><span style="width:10px;height:10px;background:var(--rust-light)"></span><span style="width:10px;height:10px;background:var(--rust-light)"></span><span style="width:10px;height:10px;background:var(--rust-light)"></span><span style="width:10px;height:10px;background:var(--rust-light)"></span><span style="width:10px;height:10px;background:var(--rust-light)"></span><span style="width:10px;height:10px;background:var(--leather)"></span><span style="width:10px;height:10px;background:var(--leather)"></span><span style="width:10px;height:10px;background:var(--leather)"></span><span style="width:10px;height:10px;background:var(--leather)"></span></div><div style="color:var(--cream-dim);font-size:.55rem">Morning run · done</div><div style="color:var(--cream-dim);font-size:.55rem">Read 30 min · done</div><div style="color:var(--cream-muted);font-size:.55rem">Write journal · pending</div></div></div></div>
-<figure class="hero-dashboard" style="max-width:740px;margin:0 auto 2rem;text-align:center">
-<svg viewBox="0 0 740 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Example Stockyard dashboard for a yoga studio showing upcoming classes, recent check-ins, and pending invoices" style="width:100%;height:auto;background:var(--bg2);border:1px solid var(--bg3);border-radius:3px;display:block">
+<div class="hero-eyebrow">For small business owners</div>
+<h1>You didn't start your business to pay six SaaS bills.</h1>
+<p class="sub">Stockyard is one app on your computer that replaces your scheduling tool, your invoice tool, your member management, and your email blasts. Your data lives in a file you own. Works offline. No per-seat fees. Starts at $49/month for cloud backup, or $299 once if you want to keep it all local.</p>
+<div class="hero-actions">
+<a href="/desktop/" class="btn">See pricing</a>
+<a href="#what" class="btn btn-outline">How it works</a>
+</div>
+<div class="hero-note">Mac, Windows, Linux. Your data stays on your computer.</div>
+</section>
+
+<!-- ── Mocked app screenshot ────────────────────────────────────── -->
+<div class="shot-wrap">
+<figure class="shot">
+<svg viewbox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stockyard desktop app showing a brewery dashboard">
+<defs>
 <style>
-.d-t{font-family:'JetBrains Mono',monospace;fill:#f0e6d3}
-.d-mu{fill:#7a7060}.d-di{fill:#bfb5a3}.d-cr{fill:#f0e6d3}
-.d-rs{fill:#e8753a}.d-go{fill:#d4a843}.d-gr{fill:#4a9e5c}
-.d-lb{fill:#c4a87a}
+.t{font-family:'JetBrains Mono',monospace}
+.tm{font-family:'Libre Baskerville',Georgia,serif}
+.mu{fill:#7a7060}.di{fill:#bfb5a3}.cr{fill:#f0e6d3}.rs{fill:#e8753a}.go{fill:#d4a843}.gr{fill:#6bb87f}.lb{fill:#c4a87a}
 </style>
+</defs>
+
 <!-- window chrome -->
-<rect width="740" height="26" fill="#2e261e"/>
-<circle cx="14" cy="13" r="4" fill="#c45d2c"/>
-<circle cx="28" cy="13" r="4" fill="#d4a843"/>
-<circle cx="42" cy="13" r="4" fill="#4a9e5c"/>
-<text x="370" y="17" class="d-t d-mu" font-size="9" text-anchor="middle">bloom yoga studio &#183; localhost:8080</text>
+<rect width="960" height="32" fill="#2e261e"/>
+<circle cx="18" cy="16" r="5" fill="#c45d2c"/>
+<circle cx="36" cy="16" r="5" fill="#d4a843"/>
+<circle cx="54" cy="16" r="5" fill="#4a9e5c"/>
+<text x="480" y="20" class="t mu" font-size="10" text-anchor="middle">Stockyard · Hopfield Brewing · Downtown</text>
+
 <!-- sidebar -->
-<rect x="0" y="26" width="150" height="414" fill="#1a1410"/>
-<text x="18" y="54" class="d-t d-rs" font-size="10" font-weight="700" letter-spacing="1">STOCKYARD</text>
-<text x="18" y="88" class="d-t d-cr" font-size="9">&#9646; Dashboard</text>
-<text x="18" y="110" class="d-t d-di" font-size="9">&#9675; Members</text>
-<text x="18" y="132" class="d-t d-di" font-size="9">&#9675; Classes</text>
-<text x="18" y="154" class="d-t d-di" font-size="9">&#9675; Check-ins</text>
-<text x="18" y="176" class="d-t d-di" font-size="9">&#9675; Invoices</text>
-<text x="18" y="198" class="d-t d-di" font-size="9">&#9675; Waivers</text>
-<text x="18" y="220" class="d-t d-di" font-size="9">&#9675; Announcements</text>
-<text x="18" y="242" class="d-t d-di" font-size="9">&#9675; Notes</text>
-<text x="18" y="410" class="d-t d-mu" font-size="7">7 tools &#183; $299</text>
-<text x="18" y="424" class="d-t d-mu" font-size="7">self-hosted</text>
-<!-- main content -->
-<text x="170" y="58" class="d-t d-cr" font-size="15" font-weight="700">Today at Bloom</text>
-<text x="170" y="74" class="d-t d-mu" font-size="9">Thursday, April 9 &#183; 42 members checked in this week</text>
+<rect x="0" y="32" width="180" height="528" fill="#1a1410"/>
+<text x="22" y="68" class="t rs" font-size="11" font-weight="700" letter-spacing="2">STOCKYARD</text>
+
+<text x="22" y="110" class="t cr" font-size="10">◼ Dashboard</text>
+<text x="22" y="136" class="t di" font-size="10">○ Taproom</text>
+<text x="22" y="160" class="t di" font-size="10">○ Inventory</text>
+<text x="22" y="184" class="t di" font-size="10">○ Customers</text>
+<text x="22" y="208" class="t di" font-size="10">○ Invoices</text>
+<text x="22" y="232" class="t di" font-size="10">○ Events</text>
+<text x="22" y="256" class="t di" font-size="10">○ Mailing list</text>
+<text x="22" y="280" class="t di" font-size="10">○ Expenses</text>
+<text x="22" y="304" class="t di" font-size="10">○ Analytics</text>
+
+<text x="22" y="500" class="t mu" font-size="8">Site: Downtown</text>
+<text x="22" y="514" class="t mu" font-size="8">Backup: 2 hours ago</text>
+<text x="22" y="530" class="t gr" font-size="8">● all synced</text>
+
+<!-- main header -->
+<text x="200" y="70" class="tm cr" font-size="17" font-weight="700">Today at Hopfield</text>
+<text x="200" y="90" class="t mu" font-size="10">Thursday, April 16 · 3 events this week · 248 taproom check-ins</text>
+
 <!-- stat cards -->
 <g>
-  <rect x="170" y="92" width="130" height="56" fill="#241e18" stroke="#2e261e"/>
-  <text x="182" y="108" class="d-t d-mu" font-size="7" letter-spacing="1">UPCOMING TODAY</text>
-  <text x="182" y="134" class="d-t d-go" font-size="22" font-weight="700">4</text>
-  <text x="210" y="134" class="d-t d-di" font-size="9">classes</text>
-  <rect x="308" y="92" width="130" height="56" fill="#241e18" stroke="#2e261e"/>
-  <text x="320" y="108" class="d-t d-mu" font-size="7" letter-spacing="1">ACTIVE MEMBERS</text>
-  <text x="320" y="134" class="d-t d-go" font-size="22" font-weight="700">87</text>
-  <text x="358" y="134" class="d-t d-di" font-size="9">this month</text>
-  <rect x="446" y="92" width="130" height="56" fill="#241e18" stroke="#2e261e"/>
-  <text x="458" y="108" class="d-t d-mu" font-size="7" letter-spacing="1">UNPAID INVOICES</text>
-  <text x="458" y="134" class="d-t d-rs" font-size="22" font-weight="700">3</text>
-  <text x="486" y="134" class="d-t d-di" font-size="9">$340.00</text>
-  <rect x="584" y="92" width="140" height="56" fill="#241e18" stroke="#2e261e"/>
-  <text x="596" y="108" class="d-t d-mu" font-size="7" letter-spacing="1">WAIVERS PENDING</text>
-  <text x="596" y="134" class="d-t d-go" font-size="22" font-weight="700">2</text>
-  <text x="624" y="134" class="d-t d-di" font-size="9">signatures</text>
-</g>
-<!-- class schedule -->
-<text x="170" y="180" class="d-t d-lb" font-size="8" letter-spacing="1">UPCOMING CLASSES</text>
-<line x1="170" y1="186" x2="556" y2="186" stroke="#2e261e"/>
-<g font-family="JetBrains Mono,monospace" font-size="9">
-  <text x="170" y="204" class="d-t d-cr">9:00 AM</text>
-  <text x="236" y="204" class="d-t d-cr">Morning Flow</text>
-  <text x="360" y="204" class="d-t d-di">Sarah K.</text>
-  <text x="456" y="204" class="d-t d-mu">studio A</text>
-  <text x="520" y="204" class="d-t d-gr">12/14</text>
-  <text x="170" y="222" class="d-t d-cr">10:30 AM</text>
-  <text x="236" y="222" class="d-t d-cr">Gentle Hatha</text>
-  <text x="360" y="222" class="d-t d-di">Marcus T.</text>
-  <text x="456" y="222" class="d-t d-mu">studio A</text>
-  <text x="520" y="222" class="d-t d-gr">8/14</text>
-  <text x="170" y="240" class="d-t d-cr">12:00 PM</text>
-  <text x="236" y="240" class="d-t d-cr">Power Vinyasa</text>
-  <text x="360" y="240" class="d-t d-di">Sarah K.</text>
-  <text x="456" y="240" class="d-t d-mu">studio B</text>
-  <text x="520" y="240" class="d-t d-go">14/14</text>
-  <text x="170" y="258" class="d-t d-cr">5:30 PM</text>
-  <text x="236" y="258" class="d-t d-cr">Restorative</text>
-  <text x="360" y="258" class="d-t d-di">Priya R.</text>
-  <text x="456" y="258" class="d-t d-mu">studio A</text>
-  <text x="520" y="258" class="d-t d-gr">6/12</text>
-</g>
-<!-- recent checkins -->
-<text x="170" y="294" class="d-t d-lb" font-size="8" letter-spacing="1">RECENT CHECK-INS</text>
-<line x1="170" y1="300" x2="556" y2="300" stroke="#2e261e"/>
-<g font-family="JetBrains Mono,monospace" font-size="9">
-  <text x="170" y="318" class="d-t d-mu">8:52 AM</text>
-  <text x="236" y="318" class="d-t d-cr">Rachel M.</text>
-  <text x="360" y="318" class="d-t d-di">Morning Flow</text>
-  <text x="556" y="318" class="d-t d-gr">&#10003;</text>
-  <text x="170" y="336" class="d-t d-mu">8:48 AM</text>
-  <text x="236" y="336" class="d-t d-cr">David L.</text>
-  <text x="360" y="336" class="d-t d-di">Morning Flow</text>
-  <text x="556" y="336" class="d-t d-gr">&#10003;</text>
-  <text x="170" y="354" class="d-t d-mu">8:45 AM</text>
-  <text x="236" y="354" class="d-t d-cr">Jenna P.</text>
-  <text x="360" y="354" class="d-t d-di">Morning Flow</text>
-  <text x="556" y="354" class="d-t d-gr">&#10003;</text>
-  <text x="170" y="372" class="d-t d-mu">8:41 AM</text>
-  <text x="236" y="372" class="d-t d-cr">Michael K.</text>
-  <text x="360" y="372" class="d-t d-di">Morning Flow</text>
-  <circle cx="548" cy="369" r="4" fill="#d4a843"/>
-</g>
-<!-- right panel: revenue -->
-<rect x="584" y="170" width="140" height="202" fill="#241e18" stroke="#2e261e"/>
-<text x="596" y="188" class="d-t d-mu" font-size="7" letter-spacing="1">REVENUE THIS MONTH</text>
-<text x="596" y="212" class="d-t d-go" font-size="18" font-weight="700">$8,420</text>
-<text x="596" y="228" class="d-t d-mu" font-size="7">up 12% vs last month</text>
-<rect x="596" y="272" width="14" height="30" fill="#a0845c"/>
-<rect x="614" y="262" width="14" height="40" fill="#a0845c"/>
-<rect x="632" y="252" width="14" height="50" fill="#c45d2c"/>
-<rect x="650" y="244" width="14" height="58" fill="#c45d2c"/>
-<rect x="668" y="238" width="14" height="64" fill="#e8753a"/>
-<rect x="686" y="232" width="14" height="70" fill="#e8753a"/>
-<rect x="704" y="226" width="14" height="76" fill="#d4a843"/>
+  <rect x="200" y="108" width="165" height="72" fill="#241e18" stroke="#2e261e"/>
+  <text x="214" y="128" class="t mu" font-size="8" letter-spacing="1">TAPROOM TODAY</text>
+  <text x="214" y="158" class="tm go" font-size="26" font-weight="700">52</text>
+  <text x="252" y="158" class="t di" font-size="10">check-ins</text>
+  <text x="214" y="172" class="t mu" font-size="8">up 8% vs last Thu</text>
 
-<text x="596" y="326" class="d-t d-lb" font-size="7" letter-spacing="1">DATA LOCATION</text>
-<text x="596" y="344" class="d-t d-cr" font-size="8">/home/you/</text>
-<text x="596" y="356" class="d-t d-cr" font-size="8">stockyard.db</text>
-<text x="596" y="368" class="d-t d-mu" font-size="7">one file. yours.</text>
+  <rect x="375" y="108" width="165" height="72" fill="#241e18" stroke="#2e261e"/>
+  <text x="389" y="128" class="t mu" font-size="8" letter-spacing="1">REVENUE TODAY</text>
+  <text x="389" y="158" class="tm go" font-size="26" font-weight="700">$2,840</text>
+  <text x="389" y="172" class="t mu" font-size="8">taproom + merch</text>
+
+  <rect x="550" y="108" width="165" height="72" fill="#241e18" stroke="#2e261e"/>
+  <text x="564" y="128" class="t mu" font-size="8" letter-spacing="1">LOW STOCK</text>
+  <text x="564" y="158" class="tm rs" font-size="26" font-weight="700">4</text>
+  <text x="602" y="158" class="t di" font-size="10">items</text>
+  <text x="564" y="172" class="t mu" font-size="8">hops, yeast, growlers</text>
+
+  <rect x="725" y="108" width="215" height="72" fill="#241e18" stroke="#2e261e"/>
+  <text x="739" y="128" class="t mu" font-size="8" letter-spacing="1">UPCOMING EVENT</text>
+  <text x="739" y="154" class="tm cr" font-size="13" font-weight="700">Trivia Night</text>
+  <text x="739" y="172" class="t mu" font-size="9">Sat 7pm · 34/50 RSVPs</text>
+</g>
+
+<!-- recent activity -->
+<text x="200" y="214" class="t lb" font-size="9" letter-spacing="1">RECENT ACTIVITY</text>
+<line x1="200" y1="220" x2="720" y2="220" stroke="#2e261e"/>
+<g class="t" font-size="10">
+  <text x="200" y="242" class="mu">4:12pm</text>
+  <text x="258" y="242" class="cr">Jenna R.</text>
+  <text x="340" y="242" class="di">bought a growler of Peach Saison</text>
+  <text x="608" y="242" class="go">$18.00</text>
+  <text x="200" y="264" class="mu">4:05pm</text>
+  <text x="258" y="264" class="cr">Walk-in</text>
+  <text x="340" y="264" class="di">pint: IPA + pint: Pilsner + pretzel</text>
+  <text x="608" y="264" class="go">$22.50</text>
+  <text x="200" y="286" class="mu">3:58pm</text>
+  <text x="258" y="286" class="cr">Dave K.</text>
+  <text x="340" y="286" class="di">renewed mug club membership</text>
+  <text x="608" y="286" class="go">$120.00</text>
+  <text x="200" y="308" class="mu">3:42pm</text>
+  <text x="258" y="308" class="cr">Maya S.</text>
+  <text x="340" y="308" class="di">check-in · Mug Club (#0041)</text>
+  <text x="608" y="308" class="gr">✓</text>
+  <text x="200" y="330" class="mu">3:20pm</text>
+  <text x="258" y="330" class="cr">Anonymous</text>
+  <text x="340" y="330" class="di">flight of 4: seasonals</text>
+  <text x="608" y="330" class="go">$14.00</text>
+  <text x="200" y="352" class="mu">2:55pm</text>
+  <text x="258" y="352" class="cr">Sean O.</text>
+  <text x="340" y="352" class="di">signed up for trivia night (Sat)</text>
+  <text x="608" y="352" class="gr">✓</text>
+</g>
+
+<!-- right panel: this week -->
+<rect x="740" y="200" width="200" height="240" fill="#241e18" stroke="#2e261e"/>
+<text x="754" y="220" class="t mu" font-size="8" letter-spacing="1">THIS WEEK</text>
+
+<text x="754" y="244" class="t di" font-size="9">Mon</text><rect x="790" y="238" width="40" height="8" fill="#a0845c"/>
+<text x="854" y="244" class="t mu" font-size="8">$1,210</text>
+<text x="754" y="262" class="t di" font-size="9">Tue</text><rect x="790" y="256" width="55" height="8" fill="#a0845c"/>
+<text x="854" y="262" class="t mu" font-size="8">$1,640</text>
+<text x="754" y="280" class="t di" font-size="9">Wed</text><rect x="790" y="274" width="68" height="8" fill="#c45d2c"/>
+<text x="854" y="280" class="t mu" font-size="8">$2,030</text>
+<text x="754" y="298" class="t di" font-size="9">Thu</text><rect x="790" y="292" width="95" height="8" fill="#e8753a"/>
+<text x="854" y="298" class="t cr" font-size="8">$2,840</text>
+<text x="754" y="316" class="t di" font-size="9">Fri</text><rect x="790" y="310" width="6" height="8" fill="#2e261e" stroke="#7a7060" stroke-dasharray="2"/>
+<text x="854" y="316" class="t mu" font-size="8">—</text>
+<text x="754" y="334" class="t di" font-size="9">Sat</text><rect x="790" y="328" width="6" height="8" fill="#2e261e" stroke="#7a7060" stroke-dasharray="2"/>
+<text x="854" y="334" class="t mu" font-size="8">—</text>
+<text x="754" y="352" class="t di" font-size="9">Sun</text><rect x="790" y="346" width="6" height="8" fill="#2e261e" stroke="#7a7060" stroke-dasharray="2"/>
+<text x="854" y="352" class="t mu" font-size="8">—</text>
+
+<line x1="754" y1="372" x2="920" y2="372" stroke="#2e261e"/>
+<text x="754" y="390" class="t mu" font-size="8" letter-spacing="1">MUG CLUB</text>
+<text x="754" y="410" class="tm go" font-size="17" font-weight="700">142</text>
+<text x="790" y="410" class="t di" font-size="9">active members</text>
+<text x="754" y="426" class="t mu" font-size="8">4 renew this week</text>
+
+<!-- bottom status bar -->
+<rect x="180" y="530" width="780" height="30" fill="#2e261e"/>
+<text x="200" y="549" class="t mu" font-size="8">/Users/you/Stockyard/hopfield.db</text>
+<text x="480" y="549" class="t mu" font-size="8">·</text>
+<text x="500" y="549" class="t gr" font-size="8">● working offline</text>
+<text x="700" y="549" class="t mu" font-size="8">Stockyard v0.2.0</text>
 </svg>
-<figcaption style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);letter-spacing:1px;margin-top:.5rem">EXAMPLE DASHBOARD · BLOOM YOGA STUDIO</figcaption>
+<figcaption class="shot-caption">Stockyard running on a Mac · Hopfield Brewing</figcaption>
 </figure>
-<div style="text-align:center;margin:0 auto 1.8rem;font-family:var(--font-mono);font-size:.8rem;letter-spacing:.5px;color:var(--cream)"><span style="color:var(--gold);font-weight:600">$299</span> one-time for the full desktop app <span style="color:var(--cream-muted)">·</span> <a href="/desktop/" style="color:var(--rust-light)">see plans</a></div>
-<section class="hero-pivot" aria-label="Now build your custom toolkit">
-<h2>Now let's make it yours.</h2>
-<p>Type your business or hobby. We'll do the rest.</p>
-</section>
-<div class="hero-search-wrap">
-<div class="search-wrap">
-<input autocomplete="off" enterkeyhint="go" id="search" class="hero-input" placeholder="i run a..." type="text" aria-label="Describe your business or hobby"/>
-<div id="results"></div>
 </div>
-<div class="hero-chips" role="list" aria-label="Example queries">
-<span class="hero-chip-prefix">try:</span>
-<button type="button" class="hero-chip" role="listitem" onclick="useChip(this)">yoga studio</button>
-<button type="button" class="hero-chip" role="listitem" onclick="useChip(this)">tattoo shop</button>
-<button type="button" class="hero-chip" role="listitem" onclick="useChip(this)">minecraft server</button>
-<button type="button" class="hero-chip" role="listitem" onclick="useChip(this)">therapist</button>
-<button type="button" class="hero-chip" role="listitem" onclick="useChip(this)">accounting firm</button>
+
+<!-- ── Section: what it does ─────────────────────────────────────── -->
+<section class="what" id="what">
+<div class="section-label">How it works</div>
+<h2>One app. Your computer. The tools a small business actually needs.</h2>
+<div class="what-grid">
+<div class="what-col">
+<h3>Install once</h3>
+<p>Download Stockyard for Mac, Windows, or Linux. Double-click to install, like any other app. No accounts to create, no server to set up, no per-seat fees.</p>
 </div>
-<div class="hero-browse"><a href="/for/">or browse all 195 community bundles →</a></div>
+<div class="what-col">
+<h3>Your data, your file</h3>
+<p>Everything Stockyard saves lives in a SQLite database on your computer. Back it up by copying a file. Move it to a new Mac by moving that file. Open it with any tool that reads SQLite.</p>
 </div>
-<button id="ai-btn" onclick="buildToolkit()" style="display:none;width:100%;margin-top:.8rem;padding:.8rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.85rem;border:2px solid var(--rust);cursor:pointer;transition:opacity .3s;letter-spacing:1px">Build My Toolkit →</button>
-<div id="spinner" style="display:none;text-align:center;padding:2rem;font-family:var(--font-mono);font-size:.8rem;color:var(--cream-dim)">Building your toolkit<span id="dots">...</span></div>
-<div style="text-align:center;margin-top:1.4rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:1px;color:var(--cream-muted)">
-      Protected by the
-      <a href="/constitution/" style="color:var(--rust-light);text-decoration:none;border-bottom:1px solid var(--rust)">Stockyard Constitution</a>
-       · 
-      <a href="/veterans/" style="color:var(--rust-light);text-decoration:none;border-bottom:1px solid var(--rust)">Free forever for veterans</a>
+<div class="what-col">
+<h3>Works without internet</h3>
+<p>The app runs on your computer. Your internet can go out, your ISP can have a bad day, and Stockyard keeps working. Cloud backup syncs when you're online and steps out of the way when you're not.</p>
 </div>
-<div style="text-align:center;margin-top:.6rem;font-family:var(--font-mono);font-size:.65rem;letter-spacing:1px;color:var(--cream-muted);opacity:.85">
-      This bundle builder runs on
-      <a href="/proxy-only/" style="color:var(--rust-light);text-decoration:none;border-bottom:1px solid var(--rust)">Stockyard's own LLM proxy</a>
-       ·  38 providers, 76 middleware modules
-    </div>
-</section>
-<section class="categories" id="categories">
-<h2>Or browse by category</h2>
-<div class="cat-grid">
-<button onclick="showCat('Healthcare')">Healthcare</button>
-<button onclick="showCat('Small Business')">Small Business</button>
-<button onclick="showCat('Gaming &amp; Servers')">Gaming Servers</button>
-<button onclick="showCat('Content Creators')">Content Creators</button>
-<button onclick="showCat('Organizations')">Organizations</button>
-<button onclick="showCat('Hobbies &amp; Enthusiasts')">Hobbies</button>
-<button onclick="showCat('Professional Services')">Professional</button>
-<button onclick="showCat('Education')">Education</button>
-<button onclick="showCat('Communities &amp; Groups')">Communities</button>
-<button onclick="showCat('Real Estate &amp; Property')">Property</button>
 </div>
 </section>
-<div id="bundle-result"></div>
-<section class="stats-band" aria-label="Stockyard at a glance"><div class="stats-row"><div class="stat"><div class="stat-num"><span id="days-since">21</span></div><div class="stat-lbl">Days since launch</div></div><div class="stat"><div class="stat-num">195</div><div class="stat-lbl">Community bundles</div></div><div class="stat"><div class="stat-num">164</div><div class="stat-lbl">Self-hosted tools</div></div><div class="stat"><div class="stat-num">38</div><div class="stat-lbl">LLM providers</div></div><div class="stat"><a href="https://github.com/stockyard-dev/Stockyard" target="_blank" rel="noopener"><div class="stat-num">100%</div><div class="stat-lbl">On GitHub</div></a></div></div></section>
-<section class="promise">
-<h2>Software that outlives the company that made it.</h2>
-<div class="promise-pts">
-<div class="pt"><span class="num">0</span><span class="lbl">cloud dependencies</span></div>
-<div class="pt"><span class="num">0</span><span class="lbl">accounts required</span></div>
-<div class="pt"><span class="num">SQLite</span><span class="lbl">your data is a file you own</span></div>
-<div class="pt"><span class="num">~9MB</span><span class="lbl">per tool binary</span></div>
-</div>
-<p class="promise-body">Every tool is a single binary. No Docker. No cloud. No internet required. If Stockyard disappears tomorrow, your tools keep running forever. Your data is in SQLite files you can open with any tool, back up by copying a folder, and move by moving a folder.</p>
+
+<!-- ── Section: versus ───────────────────────────────────────────── -->
+<section class="versus">
+<div class="section-label">Pricing in context</div>
+<h2>Small businesses shouldn't pay enterprise SaaS prices.</h2>
+<p class="lede">Here's what one year of software costs for a single-location small business, depending on what you pick.</p>
+<table class="versus-table">
+<thead>
+<tr><th>Option</th><th style="text-align:right">Year 1</th><th style="text-align:right">Year 3</th></tr>
+</thead>
+<tbody>
+<tr><td class="name">HoneyBook + Mailchimp + Calendly</td><td class="price">~$720</td><td class="price">~$2,160</td></tr>
+<tr><td class="name">Mindbody (one location)</td><td class="price">~$1,188</td><td class="price">~$3,564</td></tr>
+<tr><td class="name">17hats</td><td class="price">~$600</td><td class="price">~$1,800</td></tr>
+<tr class="featured"><td class="name">Stockyard Cloud Single</td><td class="price">$490</td><td class="price">$1,470</td></tr>
+<tr class="featured"><td class="name">Stockyard Local</td><td class="price">$299</td><td class="price">$299</td></tr>
+</tbody>
+</table>
+<p class="versus-note">Stockyard is cheaper because the software runs on your machine, not ours. We don't have per-customer server costs to pass to you.</p>
 </section>
-<section class="dev-cta">
-<div style="font-family:var(--font-mono);font-size:.68rem;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem">For developers</div>
-<h2 style="font-size:1.4rem;margin-bottom:.8rem">One proxy. 38 providers. Your keys, your server, your data.</h2>
-<p>The Stockyard proxy runs next to your app as a single ~25MB Go binary with zero external dependencies. Swap models via alias, rate-limit per team, trace every request, and keep every API key on your own hardware. Open source under Apache 2.0 and free to self-host forever.</p>
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.5rem 0;text-align:left">
-<div style="background:var(--bg);border:1px solid var(--bg3);padding:1rem;font-family:var(--font-mono);font-size:.7rem">
-<div style="color:var(--leather-light);font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.6rem">What's in the binary</div>
-<div style="color:var(--cream-dim);line-height:2">
-<span style="color:var(--gold)">&#9702;</span> 38 LLM providers (4 native, 29 compat, 5 local)<br>
-<span style="color:var(--gold)">&#9702;</span> 76 middleware modules<br>
-<span style="color:var(--gold)">&#9702;</span> 360+ API endpoints<br>
-<span style="color:var(--gold)">&#9702;</span> Embedded SQLite, no external DB<br>
-<span style="color:var(--gold)">&#9702;</span> ~25MB single binary, zero deps
+
+<!-- ── Section: what you get ─────────────────────────────────────── -->
+<section class="whatyouget">
+<div class="section-label">What's inside</div>
+<h2>Everything for your business, in one place.</h2>
+<p class="lede">Stockyard ships with every tool a small operation needs. Pick a bundle for your line of work, or mix and match. You pay once (or monthly for cloud), and all of this is included.</p>
+
+<div class="whatyouget-stats">
+<div class="stat-box"><div class="stat-num">164</div><div class="stat-lbl">Tools</div></div>
+<div class="stat-box"><div class="stat-num">195</div><div class="stat-lbl">Bundles</div></div>
+<div class="stat-box"><div class="stat-num">0</div><div class="stat-lbl">Per-seat fees</div></div>
+<div class="stat-box"><div class="stat-num">SQLite</div><div class="stat-lbl">Your data format</div></div>
+</div>
+
+<div class="examples">
+<div class="examples-label">Bundles for common businesses</div>
+<div class="examples-grid">
+<a class="ex" href="/for/brewery/"><strong>Brewery</strong><span>taproom, inventory, mug club</span></a>
+<a class="ex" href="/for/yoga-studio/"><strong>Yoga studio</strong><span>classes, members, check-ins</span></a>
+<a class="ex" href="/for/tattoo-shop/"><strong>Tattoo shop</strong><span>booking, waivers, invoices</span></a>
+<a class="ex" href="/for/contractor/"><strong>Contractor</strong><span>estimates, invoices, scheduling</span></a>
 </div>
 </div>
-<div style="background:var(--bg);border:1px solid var(--bg3);border-left:3px solid var(--rust);padding:1rem;font-family:var(--font-mono);font-size:.7rem">
-<div style="color:var(--leather-light);font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.6rem">Install</div>
-<div style="line-height:1.9">
-<div><span style="color:var(--rust-light);user-select:none">$ </span><span style="color:var(--cream)">curl -fsSL stockyard.dev/install.sh | sh</span></div>
-<div style="color:var(--cream-dim);padding-left:.8rem"><span style="color:var(--green)">&#10003;</span> Downloaded stockyard-proxy (24 MB)</div>
-<div style="color:var(--cream-dim);padding-left:.8rem"><span style="color:var(--green)">&#10003;</span> Listening on :8080</div>
-<div style="color:var(--cream-muted);font-size:.62rem;margin-top:.5rem;font-style:italic">One binary. Apache 2.0. No signup.</div>
-</div>
-</div>
-</div>
-<div class="dev-links">
-<a href="/proxy-only/">Proxy docs &rarr;</a>
-<a href="https://github.com/stockyard-dev/Stockyard" target="_blank" rel="noopener">GitHub repo &rarr;</a>
-</div>
+<div class="browse-more"><a href="/for/">Browse all 195 bundles →</a></div>
 </section>
-<section class="about-cta">
-<p>Built by a solo developer who got tired of paying $200/month for SaaS. Questions? <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> — I read every message.</p>
+
+<!-- ── Section: pricing preview ──────────────────────────────────── -->
+<section class="pricing-preview">
+<div class="section-label">Pricing</div>
+<h2>Pick your fit.</h2>
+<p class="lede">The software is the same either way. The difference is whether you want encrypted cloud backup.</p>
+
+<div class="tiers">
+<div class="tier">
+<div class="tier-name">Local</div>
+<div class="tier-price"><span class="dollar">$</span>299</div>
+<div class="tier-period one-time">one-time</div>
+<p class="tier-desc">Everything on your computer. Pay once, use forever.</p>
+<ul class="tier-features">
+<li>All 164 tools, all 195 bundles</li>
+<li>Works offline forever</li>
+<li>Your data in a SQLite file</li>
+<li>No subscription</li>
+</ul>
+<a href="/desktop/" class="btn btn-outline">See plan details</a>
+</div>
+
+<div class="tier featured">
+<div class="tier-badge">Most popular</div>
+<div class="tier-name">Cloud Single</div>
+<div class="tier-price"><span class="dollar">$</span>49</div>
+<div class="tier-period">per month</div>
+<p class="tier-desc">Everything in Local, plus encrypted cloud backup for one location.</p>
+<ul class="tier-features">
+<li>Everything in Local</li>
+<li>Encrypted cloud backup</li>
+<li>Restore to a new machine</li>
+<li>Email support</li>
+</ul>
+<a href="/desktop/" class="btn">See plan details</a>
+</div>
+
+<div class="tier">
+<div class="tier-name">Cloud Multi</div>
+<div class="tier-price"><span class="dollar">$</span>129</div>
+<div class="tier-period">per month</div>
+<p class="tier-desc">For businesses with multiple locations. Each site has its own isolated data.</p>
+<ul class="tier-features">
+<li>Everything in Cloud Single</li>
+<li>Unlimited locations</li>
+<li>Isolated data per site</li>
+<li>Priority support</li>
+</ul>
+<a href="/desktop/" class="btn btn-outline">See plan details</a>
+</div>
+</div>
+
+<div class="pricing-link"><a href="/desktop/">See full pricing page →</a></div>
 </section>
+
+<!-- ── Section: trust promise ────────────────────────────────────── -->
+<section class="trust">
+<h2>If Stockyard disappears tomorrow, your software keeps working.</h2>
+<p>The Local license has no expiry. The binary on your machine keeps running. Your data is in SQLite files you can open with any tool, back up by copying a folder, and move by moving a folder.</p>
+<p>We will never send you a "we've updated our pricing" email. If we raise prices, every existing customer keeps their current rate. That promise is called the <a href="/constitution/">Stockyard Constitution</a> and we've signed it publicly.</p>
+<p>Active service members and veterans get Stockyard Local free. <a href="/veterans/">Details here</a>.</p>
+</section>
+
+<!-- ── Developer note ────────────────────────────────────────────── -->
+<aside class="dev-note">
+<strong>For developers</strong><br>
+Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76 middleware modules. Not what you're looking for? Skip it. Developers building with it can start at <a href="/proxy-only/">/proxy-only/</a> or on <a href="https://github.com/stockyard-dev/Stockyard" rel="noopener">GitHub</a>.
+</aside>
+
 <footer>
 <p class="sig">Stockyard. Your tools, your data, your hardware.</p>
-<p style="margin-top:0.5rem"><a href="/for/">Bundles</a> · <a href="/pricing/">Pricing</a> · <a href="/about/">About</a> · <a href="https://github.com/stockyard-dev/Stockyard">GitHub</a></p>
-<p style="margin-top:0.5rem;font-size:0.7rem"><a href="/constitution/">The Constitution</a> · <a href="/veterans/">For Veterans</a> · <a href="/pricing/">Price Lock</a></p>
-<p style="margin-top:0.3rem;font-size:0.65rem;color:var(--cream-muted)">Questions? hello@stockyard.dev</p>
+<nav>
+<a href="/desktop/">Pricing</a>
+<a href="/for/">Bundles</a>
+<a href="/about/">About</a>
+<a href="/constitution/">Constitution</a>
+<a href="/veterans/">Veterans</a>
+<a href="/proxy-only/">Developers</a>
+<a href="https://github.com/stockyard-dev/Stockyard" rel="noopener">GitHub</a>
+</nav>
+<p class="fine">hello@stockyard.dev · Built by a solo developer in Minnesota · © 2026</p>
 </footer>
-<script>
-var B=[];
-function useChip(el){var v=(el&&el.textContent||"").trim();if(!v)return;var s=document.getElementById("search");if(!s)return;s.value="i run a "+v;s.dispatchEvent(new Event("input",{bubbles:true}));s.focus();if(typeof buildToolkit==="function"){buildToolkit()}}
-(function(){var launch=new Date("2026-03-19T00:00:00Z");var now=new Date();var days=Math.floor((now-launch)/86400000);if(days<1)days=1;var el=document.getElementById("days-since");if(el)el.textContent=days})();
-var SI=document.getElementById('search'),RD=document.getElementById('results'),BR=document.getElementById('bundle-result'),CS=document.getElementById('categories');
-fetch("/bundles-search.json").then(function(r){return r.json()}).then(function(d){B=d;var p=new URLSearchParams(window.location.search);var q=p.get("q");if(q){SI.value=q;doSearch(q)}}).catch(function(){});
-function relTime(iso){var t=new Date(iso.replace(" ","T")+(iso.indexOf("Z")<0&&iso.indexOf("+")<0?"Z":""));if(isNaN(t))return"";var s=Math.floor((Date.now()-t.getTime())/1000);if(s<0)s=0;if(s<60)return"last built just now";if(s<3600)return"last built "+Math.floor(s/60)+" minute"+(s<120?"":"s")+" ago";if(s<86400)return"last built "+Math.floor(s/3600)+" hour"+(s<7200?"":"s")+" ago";var days=Math.floor(s/86400);if(days<7)return"last built "+days+" day"+(days===1?"":"s")+" ago";return"last built "+t.toLocaleDateString(undefined,{month:"short",day:"numeric"})}fetch("/api/toolkit-count").then(function(r){return r.json()}).then(function(d){if(d.count>0){document.getElementById("counter-num").textContent=d.count.toLocaleString();document.getElementById("toolkit-counter").style.display="block";if(d.latest_at){var rt=relTime(d.latest_at);if(rt){var el=document.getElementById("counter-latest");el.textContent=rt;el.style.display="block"}}}}).catch(function(){});
 
-function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
-
-// Render the install-buttons component for a given bundle slug.
-// Mirrors the same component used on /for/{slug}/ and tool product pages
-// so the visual is consistent across every install touchpoint.
-function installButtons(slug){
-var s=esc(slug);
-return '<div class="install-buttons" data-bundle="'+s+'">'+
-'<div class="install-mobile-note">Stockyard runs on desktops and laptops. To install, open this page on your Mac, Windows, or Linux computer.</div>'+
-'<div class="install-buttons-grid">'+
-'<a href="/api/installer/macos?bundle='+s+'" class="install-btn install-btn-mac" download>'+
-'<svg class="os-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.64 2.16-3.91 2.26-3.97-1.23-1.8-3.15-2.05-3.83-2.08-1.63-.16-3.18.96-4.01.96-.83 0-2.11-.94-3.46-.91-1.78.03-3.42 1.04-4.34 2.63-1.85 3.2-.47 7.93 1.33 10.53.88 1.27 1.93 2.7 3.32 2.65 1.34-.05 1.84-.86 3.45-.86 1.61 0 2.06.86 3.46.83 1.43-.02 2.34-1.3 3.21-2.57.99-1.47 1.4-2.9 1.42-2.97-.03-.01-2.73-1.04-2.76-4.13zm-2.65-7.59c.74-.89 1.24-2.13 1.1-3.36-1.07.04-2.36.71-3.12 1.6-.69.79-1.29 2.05-1.13 3.26 1.19.09 2.41-.6 3.15-1.5z"/></svg>'+
-'<div class="install-btn-label"><span class="install-btn-title">Download for Mac</span><span class="install-btn-sub">macOS 11+ &middot; Universal</span></div></a>'+
-'<a href="/api/installer/windows?bundle='+s+'" class="install-btn install-btn-windows" download>'+
-'<svg class="os-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.479L10.502 4.45v7.249H3V5.479zm0 13.041l7.502 1.029V12.301H3v6.219zm8.351 1.157L21.5 21V12.301h-10.149v7.376zm0-15.354v7.376H21.5V3l-10.149 1.323z"/></svg>'+
-'<div class="install-btn-label"><span class="install-btn-title">Download for Windows</span><span class="install-btn-sub">Windows 10/11 &middot; 64-bit</span></div></a>'+
-'<a href="/api/installer/linux?bundle='+s+'" class="install-btn install-btn-linux" download>'+
-'<svg class="os-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14.62 8.35c-.42-.14-.59-.55-.59-.96 0-.41-.06-1.04-.21-1.46-.55-1.55-1.45-2.11-2.36-2.11-.92 0-1.82.56-2.37 2.11-.15.42-.21 1.05-.21 1.46 0 .41-.16.82-.59.96-1.94.66-3.36 2.39-3.6 4.45-.27 2.33.97 4.5 3.04 5.4.13.06.21.21.21.36v.74c0 .55.45 1 1 1h5c.55 0 1-.45 1-1v-.74c0-.15.08-.3.21-.36 2.07-.9 3.31-3.07 3.04-5.4-.24-2.06-1.66-3.79-3.6-4.45zM9.5 7.5c.55 0 1 .67 1 1.5s-.45 1.5-1 1.5-1-.67-1-1.5.45-1.5 1-1.5zm5 0c.55 0 1 .67 1 1.5s-.45 1.5-1 1.5-1-.67-1-1.5.45-1.5 1-1.5zM12 14c-1.1 0-2-.9-2-2 .67.5 1.27.75 2 .75s1.33-.25 2-.75c0 1.1-.9 2-2 2z"/></svg>'+
-'<div class="install-btn-label"><span class="install-btn-title">Download for Linux</span><span class="install-btn-sub">.tar.gz &middot; Any distro</span></div></a>'+
-'</div>'+
-'<details class="install-advanced"><summary>Advanced: install via terminal instead</summary>'+
-'<pre>curl -fsSL https://stockyard.dev/for/'+s+'/install.sh | sh</pre></details>'+
-'</div>';
-}
-// Highlight the user's OS button after install-buttons are rendered.
-// Called after every BR.innerHTML write because the buttons are added
-// dynamically — the page-load auto-detect on /for/{slug}/ pages doesn't
-// fire here.
-function highlightOS(){
-var ua=navigator.userAgent.toLowerCase(),os='unknown';
-if(ua.indexOf('mac')!==-1&&ua.indexOf('iphone')===-1&&ua.indexOf('ipad')===-1)os='mac';
-else if(ua.indexOf('win')!==-1)os='windows';
-else if(ua.indexOf('linux')!==-1&&ua.indexOf('android')===-1)os='linux';
-if(os==='unknown')return;
-var btns=document.querySelectorAll('.install-btn-'+os+':not(.install-btn-recommended)');
-for(var i=0;i<btns.length;i++){
-var b=btns[i];b.classList.add('install-btn-recommended');
-var badge=document.createElement('span');
-badge.textContent='RECOMMENDED FOR YOU';
-badge.className='install-btn-badge';
-b.appendChild(badge);
-}
-}
-
-var AB=document.getElementById('ai-btn'),SP=document.getElementById('spinner');
-function showAB(){AB.style.display='block'}
-function hideAB(){AB.style.display='none'}
-SI.addEventListener('input',function(){var v=this.value.trim();
-if(v.length<2){RD.style.display='none';BR.style.display='none';CS.style.display='';hideAB();return}
-doSearch(v);
-if(v.length>5){showAB()}else{hideAB()}
-});
-
-
-
-function doSearch(q){
-var ql=q.toLowerCase(),scored=[];
-B.forEach(function(b){
-var sc=0;
-if(b.slug===ql)sc+=100;
-if(b.name.toLowerCase().includes(ql))sc+=50;
-(b.keywords||[]).forEach(function(kw){if(kw===ql)sc+=40;else if(kw.startsWith(ql))sc+=20;else if(kw.includes(ql))sc+=10});
-(b.replaces||[]).forEach(function(r){if(r.toLowerCase().includes(ql))sc+=25});
-b.tools.forEach(function(t){if(t.label.toLowerCase().includes(ql))sc+=5});
-if(sc>0)scored.push({b:b,s:sc})
-});
-scored.sort(function(a,b){return b.s-a.s});
-if(!scored.length){
-RD.innerHTML='<div class="no-results">No matches. <a href="mailto:hello@stockyard.dev?subject=Bundle%20request:%20'+encodeURIComponent(q)+'">Tell us what you need \u2192</a></div>';
-RD.style.display='block';BR.style.display='none';CS.style.display='none';
-gtag('event','search_no_match',{search_term:q});return}
-var top=scored.slice(0,6);
-RD.innerHTML=top.map(function(s){return'<button class="result-item" onclick="selectBundle(\''+s.b.slug+'\')"><strong>'+esc(s.b.name)+'</strong><span>'+esc(s.b.headline)+'</span></button>'}).join('');
-RD.style.display='block';CS.style.display='none';
-}
-
-function selectBundle(slug){
-var b=B.find(function(x){return x.slug===slug});if(!b)return;
-RD.style.display='none';CS.style.display='none';
-history.replaceState(null,'','/?q='+encodeURIComponent(slug));
-var tc=b.tools.map(function(t){return'<a class="tool-card" href="/tools/'+esc(t.slug)+'/"><h4>'+esc(t.label)+'</h4><p>'+esc(t.desc)+'</p></a>'}).join('');
-var rh='';
-if(b.replaces&&b.replaces.length){
-var ri=b.replaces.map(function(r){return'<li>'+esc(r)+'</li>'}).join('');
-rh='<div class="replaces"><h3>Stop paying for tools you could own</h3><ul class="replaces-list">'+ri+'</ul>'+(b.price_anchor?'<p class="anchor">That adds up to <strong>'+esc(b.price_anchor)+'</strong>. Stockyard is <strong>$299 one-time</strong>.</p>':'')+'</div>'}
-BR.innerHTML='<div class="bundle-detail"><div class="bun-eye">Stockyard for '+esc(b.name)+'</div><h2 class="bun-h">'+esc(b.headline)+'</h2><p class="bun-sub">'+esc(b.description)+'</p>'+installButtons(b.slug)+rh+'<div class="bun-section-label">'+b.tools.length+' tools included</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p><strong>$299 one-time</strong>. All tools, all bundles. Your data stays.</p><a href="/desktop/" class="btn" style="margin-top:1rem">Get Stockyard Desktop</a></div></div>';
-BR.style.display='block';
-highlightOS();
-gtag('event','bundle_view',{bundle_slug:slug})
-}
-
-function showCat(cat){
-var matches=B.filter(function(b){return b.category===cat}).sort(function(a,b){return a.name.localeCompare(b.name)});
-CS.style.display='none';
-BR.innerHTML='<div class="bundle-detail"><button class="back-btn" onclick="CS.style.display=\'\';BR.style.display=\'none\'">\u2190 Back</button><h2 class="bun-h">'+esc(cat)+'</h2><div class="bundle-list">'+matches.map(function(b){return'<button class="bundle-list-item" onclick="SI.value=\''+b.slug+'\';selectBundle(\''+b.slug+'\')"><strong>'+esc(b.name)+'</strong><span>'+esc(b.headline)+'</span><span class="tool-count">'+b.tools.length+' tools \u00b7 $299</span></button>'}).join('')+'</div></div>';
-BR.style.display='block'
-}
-
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){RD.style.display='none'}});
-document.addEventListener('click',function(e){if(!e.target.closest('.search-wrap'))RD.style.display='none'});
-
-async function buildToolkit(){
-var desc=SI.value.trim();if(desc.length<5)return;
-RD.style.display='none';CS.style.display='none';BR.style.display='none';
-hideAB();SP.style.display='block';
-// Animate dots
-var di=setInterval(function(){var d=document.getElementById('dots');if(d)d.textContent=d.textContent.length>5?'.':d.textContent+'.'},400);
-try{
-var resp=await fetch('/api/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:desc})});
-var data=await resp.json();
-clearInterval(di);SP.style.display='none';
-if(data.fallback&&data.redirect_to){window.location.href=data.redirect_to;return}
-if(data.fallback||data.error){doSearch(desc.split(' ')[0]);showAB();return}
-// Render AI result
-var tc=data.tools.map(function(t){return'<a class="tool-card" href="/tools/'+esc(t.slug)+'/"><h4 style="font-family:var(--font-mono);font-size:.82rem;margin-bottom:.3rem">'+esc(t.label)+'</h4><p style="font-size:.78rem;color:var(--cream-dim)">'+esc(t.desc)+'</p><p style="font-family:var(--font-mono);font-size:.6rem;color:var(--cream-muted);margin-top:.3rem">Replaces '+esc(t.replaces)+' ($'+t.replaces_cost+'/mo)</p></a>'}).join('');
-var slug=data.slug||'custom';
-BR.innerHTML='<div class="bundle-detail" style="animation:fadeIn .3s ease"><div class="bun-eye">Your Custom Toolkit</div><h2 class="bun-h">'+esc(data.title)+'</h2><p class="bun-sub">'+data.tools.length+' self-hosted tools for '+esc(data.audience)+'</p>'+installButtons(slug)+'<div style="text-align:center;margin:1rem 0 2rem"><a href="/for/'+esc(slug)+'/" style="font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);text-decoration:none;border-bottom:1px solid var(--bg3)">VIEW FULL BUNDLE PAGE &rarr;</a></div><div style="text-align:center;margin:2rem 0;background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem"><p style="font-size:.85rem;color:var(--cream-dim)">You\'re probably paying <strong style="color:var(--rust-light)">~$'+data.total_replaces_cost+'/mo</strong> in SaaS fees</p><p style="font-family:var(--font-mono);font-size:1.3rem;margin-top:.5rem;color:var(--gold)">Save ~$'+data.savings_per_year+'/year with Stockyard</p></div><div class="bun-section-label">'+data.tools.length+' tools, built for you</div><div class="tool-grid">'+tc+'</div><div class="bun-foot"><p><strong>$299 one-time</strong>. All tools, all bundles. Your data stays.</p><a href="/desktop/" class="btn" style="margin-top:1rem">Get Stockyard Desktop</a><p style="font-size:.7rem;color:var(--cream-muted);margin-top:.8rem;font-family:var(--font-mono)"></p></div></div>';
-highlightOS();
-BR.style.display='block';
-history.replaceState(null,'','/?q='+encodeURIComponent(desc));
-gtag('event','ai_toolkit_generated',{description:desc,tools:data.tools.length,slug:slug});
-}catch(e){clearInterval(di);SP.style.display='none';showAB();doSearch(desc.split(' ')[0])}
-}
-SI.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();if(SI.value.trim().length>5)buildToolkit()}});
-SI.addEventListener('keyup',function(e){if(e.key==='Enter'){e.preventDefault();if(SI.value.trim().length>5)buildToolkit()}});
-</script>
-<script>(function(){var p=new URLSearchParams(window.location.search);var r=p.get("ref");if(r)fetch("/api/affiliate/track?code="+encodeURIComponent(r)+"&page="+encodeURIComponent(window.location.pathname))})()</script>
 </body>
 </html>

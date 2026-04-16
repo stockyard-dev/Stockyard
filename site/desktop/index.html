@@ -4,10 +4,10 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="/site-assets/assets/brand/favicon.ico" rel="icon" type="image/x-icon"/>
-<title>Stockyard Desktop — Self-hosted toolkit for your business</title>
-<meta content="Self-hosted desktop app. Every tool, every bundle, your machine. $299 one-time. Cloud sync from $49/mo." name="description"/>
-<meta content="Stockyard Desktop — Self-hosted toolkit for your business" property="og:title"/>
-<meta content="Self-hosted desktop app. $299 one-time for the local product, or $49/mo for cloud sync, $129/mo for multi-location." property="og:description"/>
+<title>Stockyard pricing — $49/month with cloud, or $299 once for local</title>
+<meta content="Pricing for Stockyard. $49/month for Cloud Single (one location), $129/month for Cloud Multi (unlimited locations), $299 once for Local. Same software on all tiers." name="description"/>
+<meta content="Stockyard pricing" property="og:title"/>
+<meta content="$49/mo with cloud backup, $129/mo for multiple locations, or $299 once for local-only. Same software on every tier." property="og:description"/>
 <meta content="https://stockyard.dev/og-pricing.png" property="og:image"/>
 <meta content="https://stockyard.dev/desktop/" property="og:url"/>
 <meta content="website" property="og:type"/>
@@ -26,11 +26,13 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .nav-links{display:flex;gap:1.5rem;font-size:.85rem;font-family:var(--font-mono)}
 .nav-links a{color:var(--cream-dim)}
 .nav-links a:hover{color:var(--rust-light)}
+.nav-links a.cta{color:var(--rust-light)}
+.nav-links a.current{color:var(--cream)}
 
 .hero{max-width:760px;margin:0 auto;padding:4rem 2rem 1.5rem;text-align:center}
-.hero-eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:1rem}
-.hero h1{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:1rem;line-height:1.25}
-.hero .sub{font-size:1rem;color:var(--cream-dim);max-width:600px;margin:0 auto}
+.hero-eyebrow{font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light);margin-bottom:1.2rem}
+.hero h1{font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:1.1rem;line-height:1.25}
+.hero .sub{font-size:1rem;color:var(--cream-dim);max-width:620px;margin:0 auto;line-height:1.75}
 
 /* Monthly/annual toggle */
 .billing-toggle{display:flex;justify-content:center;align-items:center;gap:1rem;margin:2rem auto 1rem;font-family:var(--font-mono);font-size:.78rem;letter-spacing:1px;text-transform:uppercase}
@@ -78,34 +80,46 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .promise p:last-child{margin-bottom:0}
 
 .faq-section{max-width:720px;margin:3rem auto;padding:0 2rem}
-.faq-section h2{font-size:1.3rem;text-align:center;margin-bottom:2rem;color:var(--leather-light)}
+.faq-section h2{font-size:1.4rem;text-align:center;margin-bottom:2rem;color:var(--leather-light)}
 .faq{margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--bg3)}
+.faq:last-child{border-bottom:none}
 .faq h3{font-size:1rem;margin-bottom:.5rem;color:var(--cream)}
-.faq p{color:var(--cream-dim);font-size:.9rem}
+.faq p{color:var(--cream-dim);font-size:.9rem;line-height:1.75}
 
-.foot{padding:3rem 2rem;text-align:center;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted)}
-.foot a{color:var(--leather-light)}
+.foot{max-width:720px;margin:2rem auto 3rem;padding:0 2rem;text-align:center;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-muted);line-height:1.9}
+.foot a{color:var(--rust-light)}
+
+footer{padding:2.5rem 2rem;text-align:center;font-family:var(--font-mono);font-size:.72rem;color:var(--leather)}
+footer .sig{color:var(--leather-light);font-style:italic;font-family:var(--font-serif);margin-bottom:.6rem;font-size:.9rem}
+footer nav{margin-top:.6rem}
+footer nav a{color:var(--cream-muted);margin:0 .6rem}
+footer nav a:hover{color:var(--rust-light)}
+footer .fine{font-size:.65rem;color:var(--cream-muted);margin-top:.8rem}
 </style>
 </head>
 <body>
-
 <nav class="nav">
 <a class="nav-brand" href="/">
-<svg fill="none" height="24" viewbox="0 0 64 64" width="24"><rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect><rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect><rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect></svg>Stockyard
+<svg fill="none" height="24" viewbox="0 0 64 64" width="24" aria-hidden="true">
+<rect fill="#e8753a" height="48" rx="2.5" width="8" x="8" y="8"></rect>
+<rect fill="#e8753a" height="48" rx="2.5" width="8" x="28" y="8"></rect>
+<rect fill="#e8753a" height="48" rx="2.5" width="8" x="48" y="8"></rect>
+<rect fill="#c4a87a" height="7" rx="2.5" width="48" x="8" y="27"></rect>
+</svg>
+Stockyard
 </a>
 <div class="nav-links">
-<a href="/for/">Bundles</a>
-<a href="/tools/">Tools</a>
-<a href="/desktop/" style="color:var(--rust-light)">Desktop</a>
+<a href="/#what">How it works</a>
+<a href="/desktop/" class="current">Pricing</a>
 <a href="/about/">About</a>
-<a href="https://github.com/stockyard-dev/Stockyard" rel="noopener" target="_blank">GitHub</a>
+<a href="/desktop/" class="cta">Get Stockyard</a>
 </div>
 </nav>
 
 <section class="hero">
-<div class="hero-eyebrow">STOCKYARD DESKTOP</div>
-<h1>Every tool, every bundle, your machine.</h1>
-<p class="sub">One desktop app. 164 self-hosted tools. Pick a bundle for what you do, or run them all. Your data lives on your computer, not someone else's cloud.</p>
+<div class="hero-eyebrow">Pricing</div>
+<h1>Same software on every tier. Pick your fit.</h1>
+<p class="sub">Pay once for local-only, or monthly for cloud backup. The app, the tools, and the bundles are identical across all three. The only difference is whether your data is backed up to encrypted cloud storage.</p>
 </section>
 
 <div class="billing-toggle">
@@ -116,35 +130,18 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
 <div class="tiers">
 
-<div class="tier">
-<div class="tier-name">Local</div>
-<div class="tier-price"><span class="dollar">$</span>299</div>
-<div class="tier-period one-time">one-time</div>
-<div class="tier-period-sub">Buy once, own forever</div>
-<p class="tier-desc">Your machine, your data, no account required. No subscription, no renewal.</p>
-<ul class="tier-features">
-<li>All 164 tools</li>
-<li>All 195 bundles</li>
-<li>Cross-tool automation</li>
-<li>AI-assisted edits included</li>
-<li class="muted">No cloud backup</li>
-<li class="muted">No cross-device sync</li>
-</ul>
-<button class="btn" onclick="checkout('desktop-local')">Buy Local &mdash; $299</button>
-</div>
-
 <div class="tier featured">
-<div class="tier-badge">Most Popular</div>
-<div class="tier-name">Cloud Single Site</div>
+<div class="tier-badge">Most popular</div>
+<div class="tier-name">Cloud Single</div>
 <div class="tier-price"><span class="dollar">$</span><span data-monthly="49" data-annual="490">49</span></div>
 <div class="tier-period"><span data-monthly="per month" data-annual="per year">per month</span></div>
 <div class="tier-period-sub"><span data-monthly="billed monthly" data-annual="$40.83/mo effective &middot; save ~17%">billed monthly</span></div>
-<p class="tier-desc">Everything in Local, plus encrypted backup and sync across your devices at one location.</p>
+<p class="tier-desc">Everything in Local, plus encrypted cloud backup for one business location.</p>
 <ul class="tier-features">
-<li>Everything in Local</li>
+<li>All 164 tools, all 195 bundles</li>
 <li>Encrypted cloud backup</li>
 <li>Restore to any new machine</li>
-<li>Sync across devices at one location</li>
+<li>Works offline always</li>
 <li>Email support</li>
 <li class="muted">Single business location</li>
 </ul>
@@ -152,19 +149,36 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </div>
 
 <div class="tier">
-<div class="tier-name">Cloud Multi-Site</div>
+<div class="tier-name">Cloud Multi</div>
 <div class="tier-price"><span class="dollar">$</span><span data-monthly="129" data-annual="1290">129</span></div>
 <div class="tier-period"><span data-monthly="per month" data-annual="per year">per month</span></div>
 <div class="tier-period-sub"><span data-monthly="billed monthly" data-annual="$107.50/mo effective &middot; save ~17%">billed monthly</span></div>
-<p class="tier-desc">For owners running multiple locations. Each site is a separate, isolated namespace.</p>
+<p class="tier-desc">For owners running multiple locations. Each site is a separate, isolated namespace with its own backup history.</p>
 <ul class="tier-features">
-<li>Everything in Cloud Single Site</li>
-<li>Unlimited locations</li>
+<li>Everything in Cloud Single</li>
+<li>Unlimited business locations</li>
 <li>Isolated data per site</li>
-<li>Multi-site dashboard</li>
+<li>Multi-site picker in the app</li>
 <li>Priority support</li>
 </ul>
 <button class="btn btn-outline" data-plan-monthly="desktop-cloud-multi-monthly" data-plan-annual="desktop-cloud-multi-annual" onclick="checkoutToggle(this)">Start Cloud Multi</button>
+</div>
+
+<div class="tier">
+<div class="tier-name">Local</div>
+<div class="tier-price"><span class="dollar">$</span>299</div>
+<div class="tier-period one-time">one-time</div>
+<div class="tier-period-sub">Buy once, own forever</div>
+<p class="tier-desc">Everything on your computer, no account required. No subscription, no renewal. The full product, forever.</p>
+<ul class="tier-features">
+<li>All 164 tools, all 195 bundles</li>
+<li>Works offline always</li>
+<li>Your data in a SQLite file</li>
+<li>No subscription ever</li>
+<li class="muted">No cloud backup</li>
+<li class="muted">No cross-device sync</li>
+</ul>
+<button class="btn btn-outline" onclick="checkout('desktop-local')">Buy Local &mdash; $299</button>
 </div>
 
 </div>
@@ -181,8 +195,8 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 <tr><td>Cross-tool automation</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
 <tr><td>AI-assisted edits</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
 <tr><td>Works offline</td><td class="yes">Always</td><td class="yes">Always</td><td class="yes">Always</td></tr>
-<tr><td>Cloud backup</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
-<tr><td>Cross-device sync</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Encrypted cloud backup</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+<tr><td>Restore to new machine</td><td class="no">Manual</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
 <tr><td>Multiple locations</td><td class="no">No</td><td class="no">One site</td><td class="yes">Unlimited</td></tr>
 <tr><td>Account required</td><td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
 <tr><td>Billing</td><td>One-time</td><td>Monthly or annual</td><td>Monthly or annual</td></tr>
@@ -191,9 +205,9 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 </div>
 
 <div class="promise">
-<h2>The Local tier is the full product.</h2>
-<p>Local includes every tool, every bundle, every feature that runs on your machine. Cloud Single and Cloud Multi add cloud &mdash; they don&rsquo;t add features. If you don&rsquo;t want your data leaving your machine, Local is the entire product.</p>
-<p>If your Cloud subscription ever lapses, your local features keep working. The data on your machine is yours, period. We never take it away.</p>
+<h2>Local is not a stripped-down version.</h2>
+<p>Every tool, every bundle, every feature that runs on your machine is in Local. Cloud Single and Cloud Multi add encrypted backup and multi-location support. They do not add software features.</p>
+<p>If your Cloud subscription ever lapses, every local feature keeps working. The data on your machine is yours, period. We never take it away.</p>
 </div>
 
 <section class="faq-section">
@@ -201,40 +215,64 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 
 <div class="faq">
 <h3>Can I try it before I buy?</h3>
-<p>The proxy platform is free and open-source at <a href="/proxy-only/">stockyard.dev</a>, and every bundle has a detailed tools list you can review before purchase. If you have questions before buying, email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> and we&rsquo;ll answer within a day.</p>
+<p>There's no free trial. Every bundle page on stockyard.dev lists the exact tools you'd get, with screenshots and descriptions. If you have a specific question before buying, email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> and you'll get a reply within a day, usually faster.</p>
 </div>
 
 <div class="faq">
 <h3>What happens if Stockyard the company disappears?</h3>
-<p>The Local license has no expiry. The binary keeps working. Your data stays on your machine in standard SQLite files. You can open them with any tool.</p>
+<p>The Local license has no expiry. The binary on your machine keeps running. Your data stays on your computer in standard SQLite files. You can open them with any tool that reads SQLite, back them up by copying a folder, and move them by moving that folder. No one can turn off your software.</p>
 </div>
 
 <div class="faq">
 <h3>What if my Cloud subscription lapses?</h3>
-<p>Cloud sync stops. Every local feature keeps working. Your data on your machine is never affected.</p>
+<p>Cloud backup stops. Every local feature keeps working exactly as before. Your data on your machine is never affected. You can restart your subscription later and pick up where you left off.</p>
 </div>
 
 <div class="faq">
-<h3>What&rsquo;s a &ldquo;site&rdquo;?</h3>
-<p>A site is a logical location. &ldquo;Downtown Studio&rdquo; and &ldquo;Uptown Studio&rdquo; are two sites with separate data. One business at one address running ten bundles is one site. Most customers are single-site.</p>
+<h3>What's a "site" in Cloud Multi?</h3>
+<p>A site is a logical business location. "Downtown Studio" and "Uptown Studio" are two sites with separate data. One business at one address running ten bundles is one site. Most customers are single-site.</p>
 </div>
 
 <div class="faq">
-<h3>Can I upgrade later?</h3>
-<p>Yes &mdash; email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your license key and we&rsquo;ll apply a credit for what you&rsquo;ve already paid toward the new tier.</p>
+<h3>Can I upgrade from Local to Cloud later?</h3>
+<p>Yes. Email <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a> with your license key and we'll apply a credit for what you already paid toward the new tier.</p>
 </div>
 
 <div class="faq">
-<h3>How does this compare to HoneyBook or Mindbody?</h3>
-<p>HoneyBook is $348&ndash;1,548/year. Mindbody is $1,188+/year per location. Stockyard Local is $299 once &mdash; that&rsquo;s it, no renewal. Cloud Single is $490/year for one location. Cloud Multi is $1,290/year for unlimited locations. We&rsquo;re cheaper because the software runs on your machine, not our servers.</p>
+<h3>How does this compare to HoneyBook, Mindbody, 17hats?</h3>
+<p>HoneyBook runs $348 to $1,548 per year. Mindbody is $1,188+ per year per location. 17hats is around $600 per year. Stockyard Local is $299 once, no renewal. Cloud Single is $490 per year for one location. Cloud Multi is $1,290 per year for unlimited locations. We're cheaper because the software runs on your computer, not our servers. We don't have per-customer infrastructure costs to pass to you.</p>
+</div>
+
+<div class="faq">
+<h3>Does Stockyard send my data anywhere?</h3>
+<p>Local never touches the internet. Cloud sends encrypted backup blobs to our server on your command; the encryption key is derived from your license file and never leaves your machine. Even Stockyard itself cannot read your backup contents. If you lose your license file, you also lose your backups.</p>
+</div>
+
+<div class="faq">
+<h3>What if I serve active military or veterans?</h3>
+<p>Active service members and veterans get Stockyard Local free, forever. <a href="/veterans/">Details and eligibility here</a>.</p>
 </div>
 
 </section>
 
 <div class="foot">
-Stockyard Desktop runs on macOS, Windows, and Linux.<br/>
+Stockyard runs on macOS, Windows, and Linux.<br/>
 Questions? <a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a>
 </div>
+
+<footer>
+<p class="sig">Stockyard. Your tools, your data, your hardware.</p>
+<nav>
+<a href="/">Home</a>
+<a href="/for/">Bundles</a>
+<a href="/about/">About</a>
+<a href="/constitution/">Constitution</a>
+<a href="/veterans/">Veterans</a>
+<a href="/proxy-only/">Developers</a>
+<a href="https://github.com/stockyard-dev/Stockyard" rel="noopener">GitHub</a>
+</nav>
+<p class="fine">hello@stockyard.dev &middot; Built by a solo developer in Minnesota &middot; &copy; 2026</p>
+</footer>
 
 <script>
 // Monthly/annual toggle. Updates prices, period labels, and the
@@ -250,8 +288,6 @@ function setBilling(mode) {
   billingSwitch.setAttribute('aria-checked', mode === 'annual');
   labelMonthly.classList.toggle('active', mode === 'monthly');
   labelAnnual.classList.toggle('active', mode === 'annual');
-
-  // Update every price/period span
   document.querySelectorAll('[data-monthly]').forEach(function(el) {
     el.textContent = el.getAttribute('data-' + mode);
   });
@@ -268,13 +304,11 @@ billingSwitch.addEventListener('keydown', function(e) {
 labelMonthly.addEventListener('click', function() { setBilling('monthly'); });
 labelAnnual.addEventListener('click', function() { setBilling('annual'); });
 
-// Checkout for tiers that switch on billing toggle (Cloud Single, Cloud Multi).
 function checkoutToggle(btn) {
   var plan = btn.getAttribute('data-plan-' + billingMode);
   checkout(plan);
 }
 
-// Generic checkout for fixed-plan tiers (Local).
 function checkout(plan) {
   gtag('event', 'desktop_checkout_clicked', { plan: plan });
   fetch('/api/checkout', {
