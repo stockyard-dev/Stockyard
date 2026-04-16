@@ -178,7 +178,8 @@ func (s *StripeClient) CreateCheckoutSession(product, tier, email string, priceI
 // Cloud tiers use mode=subscription (monthly or annual recurring).
 //
 // tier values: "local", "cloud-single-monthly", "cloud-single-annual",
-//              "cloud-multi-monthly", "cloud-multi-annual"
+//
+//	"cloud-multi-monthly", "cloud-multi-annual"
 //
 // CreateDesktopCheckoutSession creates a Stripe checkout for the
 // desktop app tiers. No free trial on any tier — customer pays at
@@ -432,11 +433,11 @@ func VerifyWebhookSignature(payload []byte, sigHeader, secret string) bool {
 // --- Webhook event types ---
 
 const (
-	EventCheckoutCompleted    = "checkout.session.completed"
-	EventSubscriptionCreated  = "customer.subscription.created"
-	EventSubscriptionUpdated  = "customer.subscription.updated"
-	EventSubscriptionDeleted  = "customer.subscription.deleted"
-	EventInvoicePaid          = "invoice.paid"
+	EventCheckoutCompleted       = "checkout.session.completed"
+	EventSubscriptionCreated     = "customer.subscription.created"
+	EventSubscriptionUpdated     = "customer.subscription.updated"
+	EventSubscriptionDeleted     = "customer.subscription.deleted"
+	EventInvoicePaid             = "invoice.paid"
 	EventInvoicePaymentSucceeded = "invoice.payment_succeeded"
 	EventInvoicePaymentFailed    = "invoice.payment_failed"
 )
@@ -528,7 +529,12 @@ type StripeEventData struct {
 
 // HandleWebhook processes an incoming Stripe webhook HTTP request.
 func (wh *WebhookHandler) HandleWebhook(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(io.LimitReader(r.Body, 65536))
+	// Stripe webhook bodies for checkout.session.completed with many
+	// line items + metadata can exceed 64KB. Truncation mid-JSON
+	// causes json.Unmarshal to fail, we return 400, Stripe retries.
+	// 512KB covers every realistic Stripe event body.
+	// https://stripe.com/docs/webhooks/best-practices
+	body, err := io.ReadAll(io.LimitReader(r.Body, 512*1024))
 	if err != nil {
 		http.Error(w, "read body", http.StatusBadRequest)
 		return
@@ -554,8 +560,20 @@ func (wh *WebhookHandler) HandleWebhook(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// Idempotency check
-	if wh.db.IsWebhookProcessed(event.ID) {
+	// Atomic idempotency claim. Two concurrent deliveries of the same
+	// event_id race here; only one INSERT wins, the loser sees
+	// claimed=false and returns 200 with status=already_processed.
+	// This replaces the old check-then-act pattern which had a
+	// TOCTOU race (both deliveries could pass IsWebhookProcessed
+	// before either reached MarkWebhookProcessed, double-minting
+	// licenses for one purchase).
+	claimed, claimErr := wh.db.ClaimWebhookEvent(event.ID, event.Type)
+	if claimErr != nil {
+		log.Printf("webhook: claim event %s failed: %v", event.ID, claimErr)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if !claimed {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"status": "already_processed"})
 		return
@@ -579,13 +597,19 @@ func (wh *WebhookHandler) HandleWebhook(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if processErr != nil {
+		// Release the claim so Stripe's retry can attempt processing
+		// again. If the unclaim itself fails, we log but can't do
+		// much — the customer's purchase will be stuck until an
+		// operator manually clears processed_webhooks.
+		if uerr := wh.db.UnclaimWebhookEvent(event.ID); uerr != nil {
+			log.Printf("webhook: CRITICAL: unclaim %s after process error: %v (retries will be skipped)", event.ID, uerr)
+		}
 		log.Printf("webhook: error processing %s %s: %v", event.Type, event.ID, processErr)
 		http.Error(w, processErr.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Mark as processed
-	wh.db.MarkWebhookProcessed(event.ID, event.Type)
+	// Claim stays in place as the permanent dedup record.
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
@@ -1469,6 +1493,7 @@ func issueDesktopLicenseKey(privKeyHex, tier, customerID, email string, expiresA
 		base64.RawURLEncoding.EncodeToString(payloadBytes) + "." +
 		base64.RawURLEncoding.EncodeToString(sig), nil
 }
+
 // The key can be validated offline by the tool binary using the embedded public key.
 // Format: stockyard_<base64url(payload)>.<base64url(signature)>
 func issueToolLicenseKey(privKeyHex, product, customerID string) (string, error) {

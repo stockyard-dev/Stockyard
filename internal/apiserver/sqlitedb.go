@@ -62,10 +62,10 @@ func OpenSqliteDB(path string) (*SqliteDB, error) {
 	// and these settings significantly improve throughput
 	for _, pragma := range []string{
 		"PRAGMA synchronous = NORMAL",      // WAL mode makes this safe; ~2x faster writes
-		"PRAGMA cache_size = -8000",         // 8MB page cache (default is 2MB)
-		"PRAGMA mmap_size = 268435456",      // 256MB memory-mapped I/O for reads
-		"PRAGMA temp_store = MEMORY",        // temp tables in memory
-		"PRAGMA wal_autocheckpoint = 1000",  // checkpoint WAL every 1000 pages (default, explicit)
+		"PRAGMA cache_size = -8000",        // 8MB page cache (default is 2MB)
+		"PRAGMA mmap_size = 268435456",     // 256MB memory-mapped I/O for reads
+		"PRAGMA temp_store = MEMORY",       // temp tables in memory
+		"PRAGMA wal_autocheckpoint = 1000", // checkpoint WAL every 1000 pages (default, explicit)
 	} {
 		if _, err := conn.Exec(pragma); err != nil {
 			log.Printf("sqlite pragma warning: %s: %v", pragma, err)
@@ -226,7 +226,6 @@ CREATE TABLE IF NOT EXISTS exchange_stars (
 const apiMigrationV2 = `
 ALTER TABLE cloud_tenants ADD COLUMN key_prefix TEXT DEFAULT '';
 `
-
 
 // apiMigrationV3 adds the waitlist table for tool pre-launch signups.
 const apiMigrationV3 = `
@@ -626,6 +625,79 @@ func (db *SqliteDB) IsWebhookProcessed(eventID string) bool {
 
 func (db *SqliteDB) MarkWebhookProcessed(eventID, eventType string) error {
 	_, err := db.conn.Exec("INSERT OR IGNORE INTO processed_webhooks (event_id, event_type) VALUES (?, ?)", eventID, eventType)
+	return err
+}
+
+// ClaimWebhookEvent atomically reserves the given event_id so that
+// concurrent deliveries of the same event cannot both process it.
+// Returns (true, nil) if we got the claim and should proceed with
+// processing; (false, nil) if another goroutine/process already
+// claimed it and we should skip; (false, err) on a DB error.
+//
+// The paired UnclaimWebhookEvent must be called if processing
+// subsequently fails, so Stripe retries can re-claim and retry the
+// handler. If processing succeeds, leave the claim in place — it
+// serves as the permanent dedup record.
+//
+// Replaces the older IsWebhookProcessed/MarkWebhookProcessed
+// check-then-act sequence, which had a TOCTOU race: two concurrent
+// deliveries for the same event could both pass the IsWebhookProcessed
+// check before either reached MarkWebhookProcessed, double-minting
+// licenses. This function closes that window by using the PRIMARY KEY
+// constraint on processed_webhooks.event_id as the synchronization
+// primitive — only one INSERT wins.
+//
+// Transient SQLITE_BUSY errors (another writer holds the lock) are
+// retried up to 5 times with a small linear backoff. Production is
+// configured with _busy_timeout=5000 so this almost never fires in
+// real traffic, but three concurrent Stripe deliveries for the same
+// event_id CAN happen (rare but possible via retry + manual replay
+// + relay-tool overlap), and a SQLITE_BUSY bubbling up to the
+// handler would return 500 → Stripe retry → eventual success but
+// wasted time. Retry here makes the claim path resilient.
+func (db *SqliteDB) ClaimWebhookEvent(eventID, eventType string) (bool, error) {
+	const maxAttempts = 5
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		// INSERT (not INSERT OR IGNORE): we want the error on conflict so
+		// we can distinguish "we got the claim" from "someone else has it".
+		_, err := db.conn.Exec(
+			"INSERT INTO processed_webhooks (event_id, event_type) VALUES (?, ?)",
+			eventID, eventType,
+		)
+		if err == nil {
+			return true, nil
+		}
+		msg := err.Error()
+		// SQLite returns "UNIQUE constraint failed" on event_id conflict.
+		// That's our "someone else has it" signal.
+		if strings.Contains(msg, "UNIQUE constraint failed") {
+			return false, nil
+		}
+		// Transient contention: retry. SQLITE_BUSY surfaces as
+		// "database is locked" in the driver's error text.
+		if strings.Contains(msg, "database is locked") || strings.Contains(msg, "SQLITE_BUSY") {
+			// Tiny linear backoff: 2ms, 4ms, 6ms, 8ms. Max ~20ms total
+			// across 5 attempts, well under any Stripe timeout budget.
+			time.Sleep(time.Duration(2*(attempt+1)) * time.Millisecond)
+			continue
+		}
+		// Unknown error — don't retry, bubble up.
+		return false, err
+	}
+	return false, fmt.Errorf("claim webhook event %s: too many retries under contention", eventID)
+}
+
+// UnclaimWebhookEvent removes a prior claim so Stripe retries of the
+// same event_id can be processed again. Call this ONLY when the
+// handler work after ClaimWebhookEvent fails — successful events
+// should keep their claim as the permanent dedup record.
+//
+// A DB error deleting the claim is non-fatal for correctness (the
+// retry will just be skipped), but it IS a visibility problem
+// because the customer's purchase is stuck. Log, don't return it as
+// a fatal for the caller.
+func (db *SqliteDB) UnclaimWebhookEvent(eventID string) error {
+	_, err := db.conn.Exec("DELETE FROM processed_webhooks WHERE event_id = ?", eventID)
 	return err
 }
 
