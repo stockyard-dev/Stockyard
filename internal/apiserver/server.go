@@ -243,6 +243,17 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/cloud/desktop/sites", s.cloudGuard(s.cloudHandlerSitesList))
 	s.mux.HandleFunc("POST /api/cloud/desktop/sites", s.cloudGuard(s.cloudHandlerSitesCreate))
 
+	// Admin dashboard. Gated by STOCKYARD_ADMIN_PASSWORD env var.
+	// When unset, all admin routes 404 — an attacker probing these
+	// URLs on a site without admin configured gets no signal that
+	// the endpoint exists. Uses Go 1.22 path wildcards for the
+	// drill-down account ID.
+	if s.desktopCloud != nil {
+		s.mux.HandleFunc("GET /admin/", s.desktopCloud.adminGuard(s.desktopCloud.HandleAdminIndex))
+		s.mux.HandleFunc("GET /admin/json", s.desktopCloud.adminGuard(s.desktopCloud.HandleAdminJSON))
+		s.mux.HandleFunc("GET /admin/account/{id}", s.desktopCloud.adminGuard(s.desktopCloud.HandleAdminAccount))
+	}
+
 	// Exchange API
 	s.mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
 	s.mux.HandleFunc("GET /api/exchange/featured", s.handleExchangeFeatured)
@@ -319,6 +330,13 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/cloud/desktop/backup/{id}", s.cloudGuard(s.cloudHandlerBackupByID))
 	mux.HandleFunc("GET /api/cloud/desktop/sites", s.cloudGuard(s.cloudHandlerSitesList))
 	mux.HandleFunc("POST /api/cloud/desktop/sites", s.cloudGuard(s.cloudHandlerSitesCreate))
+
+	// Admin dashboard. Gated by STOCKYARD_ADMIN_PASSWORD; 404s when unset.
+	if s.desktopCloud != nil {
+		mux.HandleFunc("GET /admin/", s.desktopCloud.adminGuard(s.desktopCloud.HandleAdminIndex))
+		mux.HandleFunc("GET /admin/json", s.desktopCloud.adminGuard(s.desktopCloud.HandleAdminJSON))
+		mux.HandleFunc("GET /admin/account/{id}", s.desktopCloud.adminGuard(s.desktopCloud.HandleAdminAccount))
+	}
 
 	// Exchange (marketplace)
 	mux.HandleFunc("GET /api/exchange", s.handleExchangeList)
