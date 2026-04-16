@@ -288,6 +288,8 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		"/billing/cancel/",
 		"/desktop/",
 		"/desktop/success/",
+		"/cloud/",
+		"/cloud/login/",
 	}
 
 	// Homepage: exact match only (GET /{$} prevents catch-all)

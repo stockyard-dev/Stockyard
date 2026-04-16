@@ -385,5 +385,12 @@ func isPublicRoute(method, path string) bool {
 	if method == "GET" && path == "/api/install/stats" {
 		return true
 	}
+	// Cloud desktop backend — public at the engine level. The handlers
+	// themselves enforce session-cookie auth (see CloudService.requireSession
+	// in internal/apiserver/cloud_handlers.go). Login/verify/logout don't
+	// need any auth; the others 401 internally without a session cookie.
+	if strings.HasPrefix(path, "/api/cloud/desktop/") {
+		return true
+	}
 	return false
 }
