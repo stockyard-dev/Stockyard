@@ -7,6 +7,7 @@ import (
 	"net/smtp"
 	"os"
 	"strings"
+	"time"
 )
 
 // ValidateEmail performs basic email validation and rejects injection attempts.
@@ -42,6 +43,9 @@ type Mailer interface {
 	SendTrialReminder(to, bundleName string, daysLeft int) error
 	SendTrialConverted(to, bundleName string) error
 	SendCancellation(to, productName string) error
+	// Desktop trial flow (added Apr 16 2026 for the 7-day card-capture trial).
+	SendDesktopTrialKey(to, tier, licenseKey string, trialEndUnix int64) error
+	SendDesktopLicenseConverted(to, tier, licenseKey string) error
 	// Send sends a plain-text email to one recipient.
 	Send(to, subject, body string) error
 }
@@ -243,6 +247,90 @@ func (m *SMTPMailer) Send(to, subject, body string) error {
 	return m.send(to, subject, body)
 }
 
+// SendDesktopTrialKey sends the activation email for a 7-day desktop trial.
+// Fired from handleCheckoutCompleted right after Stripe checkout completes.
+//
+// tier is the eventual paid tier the customer chose at checkout
+// ("local", "cloud-single", "cloud-multi"). The license itself is
+// minted with tier=trial; this string is for human-readable copy
+// ("After day 7 you'll be charged for your Cloud Single Site plan").
+func (m *SMTPMailer) SendDesktopTrialKey(to, tier, licenseKey string, trialEndUnix int64) error {
+	tierName := desktopTierDisplayName(tier)
+	trialEnd := time.Unix(trialEndUnix, 0).UTC().Format("January 2, 2006")
+
+	subject := "Your Stockyard Desktop trial is active"
+	body := fmt.Sprintf(`Hey,
+
+Welcome to Stockyard Desktop. Your 7-day free trial is live until %s.
+After that, your card will be charged for the %s plan you selected.
+
+Your license key:
+
+  %s
+
+Save this key — drop the .stockyard-license file into the app, or
+paste the key into the License panel (top-right corner of the app).
+
+If you decide it's not for you, cancel anytime before %s in your
+billing portal: https://stockyard.dev/billing/
+
+Reply to this email if anything's broken or confusing — I read every
+message myself.
+
+Michael
+hello@stockyard.dev`, trialEnd, tierName, licenseKey, trialEnd)
+
+	return m.send(to, subject, body)
+}
+
+// SendDesktopLicenseConverted sends the "you're now a customer" email
+// when the trial converts to paid on day 7. Includes the new permanent
+// license key (different key — the trial one expires).
+func (m *SMTPMailer) SendDesktopLicenseConverted(to, tier, licenseKey string) error {
+	tierName := desktopTierDisplayName(tier)
+
+	subject := "Your Stockyard Desktop license — welcome aboard"
+	body := fmt.Sprintf(`Hey,
+
+Your trial just converted. You're officially a Stockyard Desktop
+%s customer — thank you.
+
+Your permanent license key:
+
+  %s
+
+Drop this into the app to replace your trial license. Same place as
+before: License panel in the top-right corner, or save the
+.stockyard-license file to your Stockyard data directory.
+
+A few things worth knowing:
+  - Your old trial license still works until it expires; no rush.
+  - This permanent license has no expiry. If Stockyard the company
+    disappears, your binary keeps working forever.
+  - Manage billing anytime: https://stockyard.dev/billing/
+
+Reply to this email if anything's wrong.
+
+Michael
+hello@stockyard.dev`, tierName, licenseKey)
+
+	return m.send(to, subject, body)
+}
+
+// desktopTierDisplayName converts an internal tier string into the
+// customer-facing label used in trial/conversion emails.
+func desktopTierDisplayName(tier string) string {
+	switch tier {
+	case "local":
+		return "Local (one-time, $99)"
+	case "cloud-single":
+		return "Cloud Single Site"
+	case "cloud-multi":
+		return "Cloud Multi-Site"
+	}
+	return tier
+}
+
 func (m *SMTPMailer) send(to, subject, body string) error {
 	if err := ValidateEmail(to); err != nil {
 		return fmt.Errorf("invalid recipient: %w", err)
@@ -316,6 +404,21 @@ func (m *LogMailer) SendTrialConverted(to, bundleName string) error {
 // Send logs the email instead of sending it.
 func (m *LogMailer) Send(to, subject, body string) error {
 	log.Printf("📧 [dev] Email to %s: %s", to, subject)
+	return nil
+}
+
+// SendDesktopTrialKey logs the desktop trial activation email.
+func (m *LogMailer) SendDesktopTrialKey(to, tier, licenseKey string, trialEndUnix int64) error {
+	log.Printf("📧 [dev] Desktop trial activation to %s: tier=%s ends=%s",
+		to, tier, time.Unix(trialEndUnix, 0).Format("2006-01-02"))
+	log.Printf("   Key: %s", licenseKey)
+	return nil
+}
+
+// SendDesktopLicenseConverted logs the trial-to-paid conversion email.
+func (m *LogMailer) SendDesktopLicenseConverted(to, tier, licenseKey string) error {
+	log.Printf("📧 [dev] Desktop trial converted to paid for %s: tier=%s", to, tier)
+	log.Printf("   Key: %s", licenseKey)
 	return nil
 }
 
@@ -462,6 +565,61 @@ func (m *ResendMailer) SendTrialConverted(to, bundleName string) error {
 
 // Send sends a plain-text email via Resend.
 func (m *ResendMailer) Send(to, subject, body string) error {
+	return m.sendResend(to, subject, body)
+}
+
+func (m *ResendMailer) SendDesktopTrialKey(to, tier, licenseKey string, trialEndUnix int64) error {
+	tierName := desktopTierDisplayName(tier)
+	trialEnd := time.Unix(trialEndUnix, 0).UTC().Format("January 2, 2006")
+	subject := "Your Stockyard Desktop trial is active"
+	body := fmt.Sprintf(`Hey,
+
+Welcome to Stockyard Desktop. Your 7-day free trial is live until %s.
+After that, your card will be charged for the %s plan you selected.
+
+Your license key:
+
+  %s
+
+Save this key — drop the .stockyard-license file into the app, or
+paste the key into the License panel (top-right corner of the app).
+
+If you decide it's not for you, cancel anytime before %s in your
+billing portal: https://stockyard.dev/billing/
+
+Reply to this email if anything's broken or confusing.
+
+Michael
+hello@stockyard.dev`, trialEnd, tierName, licenseKey, trialEnd)
+	return m.sendResend(to, subject, body)
+}
+
+func (m *ResendMailer) SendDesktopLicenseConverted(to, tier, licenseKey string) error {
+	tierName := desktopTierDisplayName(tier)
+	subject := "Your Stockyard Desktop license — welcome aboard"
+	body := fmt.Sprintf(`Hey,
+
+Your trial just converted. You're officially a Stockyard Desktop
+%s customer — thank you.
+
+Your permanent license key:
+
+  %s
+
+Drop this into the app to replace your trial license. Same place as
+before: License panel in the top-right corner, or save the
+.stockyard-license file to your Stockyard data directory.
+
+A few things worth knowing:
+  - Your old trial license still works until it expires; no rush.
+  - This permanent license has no expiry. If Stockyard the company
+    disappears, your binary keeps working forever.
+  - Manage billing anytime: https://stockyard.dev/billing/
+
+Reply to this email if anything's wrong.
+
+Michael
+hello@stockyard.dev`, tierName, licenseKey)
 	return m.sendResend(to, subject, body)
 }
 

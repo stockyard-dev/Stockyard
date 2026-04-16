@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS trial_drip (
     trial_start TEXT NOT NULL DEFAULT (datetime('now')),
     trial_end TEXT NOT NULL,
     day3_sent INTEGER NOT NULL DEFAULT 0,
+    day6_sent INTEGER NOT NULL DEFAULT 0,
     day7_sent INTEGER NOT NULL DEFAULT 0,
     day12_sent INTEGER NOT NULL DEFAULT 0,
     day14_sent INTEGER NOT NULL DEFAULT 0,
@@ -28,6 +29,15 @@ CREATE TABLE IF NOT EXISTS trial_drip (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_trial_drip_email ON trial_drip(email, bundle_slug);
 `
+
+// trialDripMigrations is the list of ALTER statements applied at
+// startup to bring existing prod DBs up to the current schema. SQLite
+// has no IF NOT EXISTS for ADD COLUMN, so we issue each ALTER and
+// swallow "duplicate column" errors. Order matters — keep newest at
+// the end so older migrations stay stable.
+var trialDripMigrations = []string{
+	`ALTER TABLE trial_drip ADD COLUMN day6_sent INTEGER NOT NULL DEFAULT 0`, // Apr 16 2026: 7-day desktop trial reminder
+}
 
 // TrialDripRunner sends trial reminder emails on schedule.
 type TrialDripRunner struct {
@@ -43,6 +53,17 @@ func NewTrialDripRunner(db *sql.DB, mailer Mailer) *TrialDripRunner {
 		if stmt != "" {
 			if _, err := db.Exec(stmt); err != nil {
 				log.Printf("trial_drip: schema error: %v", err)
+			}
+		}
+	}
+	// Apply migrations. SQLite has no IF NOT EXISTS for ADD COLUMN,
+	// so a "duplicate column" error here just means the column
+	// already exists — that's the desired post-condition, not a
+	// failure. Logged at debug-volume only.
+	for _, m := range trialDripMigrations {
+		if _, err := db.Exec(m); err != nil {
+			if !strings.Contains(err.Error(), "duplicate column") {
+				log.Printf("trial_drip: migration %q: %v", m, err)
 			}
 		}
 	}
@@ -69,7 +90,7 @@ func (td *TrialDripRunner) EnqueueTrial(email, bundleSlug, bundleName, trialEnd 
 // send race where a previous tick's UPDATE silently failed or another runner
 // claimed concurrently.
 var trialDripColumns = map[string]bool{
-	"day3_sent": true, "day7_sent": true, "day12_sent": true, "day14_sent": true,
+	"day3_sent": true, "day6_sent": true, "day7_sent": true, "day12_sent": true, "day14_sent": true,
 }
 
 func (td *TrialDripRunner) claim(id int, col, email string) bool {
@@ -150,7 +171,7 @@ func (td *TrialDripRunner) tick() {
 	now := time.Now().UTC()
 
 	rows, err := td.db.Query(`SELECT id, email, bundle_slug, bundle_name, trial_start, trial_end, 
-		day3_sent, day7_sent, day12_sent, day14_sent 
+		day3_sent, day6_sent, day7_sent, day12_sent, day14_sent 
 		FROM trial_drip WHERE converted = 0 AND cancelled = 0`)
 	if err != nil {
 		log.Printf("trial_drip: query error: %v", err)
@@ -162,8 +183,8 @@ func (td *TrialDripRunner) tick() {
 	for rows.Next() {
 		var id int
 		var email, bundleSlug, bundleName, trialStart, trialEnd string
-		var d3, d7, d12, d14 int
-		if err := rows.Scan(&id, &email, &bundleSlug, &bundleName, &trialStart, &trialEnd, &d3, &d7, &d12, &d14); err != nil {
+		var d3, d6, d7, d12, d14 int
+		if err := rows.Scan(&id, &email, &bundleSlug, &bundleName, &trialStart, &trialEnd, &d3, &d6, &d7, &d12, &d14); err != nil {
 			continue
 		}
 
@@ -184,6 +205,25 @@ func (td *TrialDripRunner) tick() {
 		daysLeft := 0
 		if !te.IsZero() {
 			daysLeft = int(te.Sub(now).Hours() / 24)
+		}
+
+		// Desktop trial: 7-day cadence, single reminder on day 6
+		// (one day before the card is charged). Skip the bundle drip
+		// schedule entirely — desktop customers get the activation
+		// email at start, this reminder, then the conversion email
+		// from invoice.payment_succeeded on day 7.
+		if bundleSlug == "stockyard-desktop" {
+			if daysSince >= 6 && d6 == 0 {
+				if td.claim(id, "day6_sent", email) {
+					if err := td.mailer.SendTrialReminder(email, "Stockyard Desktop", daysLeft); err != nil {
+						log.Printf("trial_drip: desktop day-6 send error for %s: %v", email, err)
+						td.unclaim(id, "day6_sent", email)
+					} else {
+						sent++
+					}
+				}
+			}
+			continue
 		}
 
 		// Day 3: feature tip
