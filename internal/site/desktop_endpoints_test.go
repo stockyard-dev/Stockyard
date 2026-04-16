@@ -7,9 +7,9 @@ import (
 )
 
 // desktopEndpoints is the canonical list of stockyard.dev/desktop/*
-// endpoints. Each is expected to 404 cleanly when its backing file
-// hasn't been deployed yet (pre-first-release posture) and to serve
-// the right Content-Type when it has.
+// endpoints. Each handler serves its backing file from the embedded
+// static dir with the correct Content-Type, or 404s cleanly when the
+// file hasn't been deployed yet.
 var desktopEndpoints = []struct {
 	path        string
 	contentType string
@@ -20,11 +20,11 @@ var desktopEndpoints = []struct {
 	{"/desktop/tools-index.json.sig", "application/octet-stream"},
 }
 
-// Until release assets land in site/desktop/, the handlers should
-// return 404 cleanly — not 500, not empty 200. Desktop clients rely
-// on the 404 to decide "no release yet, stay in offline/bundled
-// mode" rather than eating a parse error on empty content.
-func TestDesktopEndpoints_404WhenBacking_FileMissing(t *testing.T) {
+// TestDesktopEndpoints_Dispatch verifies that every desktop manifest
+// handler is registered and dispatches cleanly — returning 200 with
+// the correct Content-Type when its backing file exists, or 404 when
+// it doesn't. Never 500, never 405, never empty 200.
+func TestDesktopEndpoints_Dispatch(t *testing.T) {
 	mux := http.NewServeMux()
 	Register(mux, nil)
 
@@ -33,9 +33,21 @@ func TestDesktopEndpoints_404WhenBacking_FileMissing(t *testing.T) {
 			req := httptest.NewRequest("GET", ep.path, nil)
 			rec := httptest.NewRecorder()
 			mux.ServeHTTP(rec, req)
-			if rec.Code != http.StatusNotFound {
-				t.Errorf("%s: got status %d, want 404 (pre-release posture: backing file should be absent)",
-					ep.path, rec.Code)
+
+			switch rec.Code {
+			case http.StatusOK:
+				// File exists in the embedded static dir. Verify Content-Type.
+				got := rec.Header().Get("Content-Type")
+				if got != ep.contentType {
+					t.Errorf("%s: Content-Type = %q, want %q", ep.path, got, ep.contentType)
+				}
+				if rec.Body.Len() == 0 {
+					t.Errorf("%s: 200 but empty body", ep.path)
+				}
+			case http.StatusNotFound:
+				// File not deployed yet — correct pre-release posture.
+			default:
+				t.Errorf("%s: unexpected status %d (want 200 or 404)", ep.path, rec.Code)
 			}
 		})
 	}
