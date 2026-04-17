@@ -411,7 +411,9 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 				result := personalize(cached, businessName)
 				result.Slug = slug
 				result.Cached = true
-				r.recordGeneration(slug, desc, "L1", req.RemoteAddr, len(result.Tools))
+				if !prewarm {
+					r.recordGeneration(slug, desc, "L1", req.RemoteAddr, len(result.Tools))
+				}
 				log.Printf("[recommend] L1 quick-match hit: %q → %s", normalized, slug)
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(result)
@@ -428,7 +430,9 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		if cached, ok := r.recCache.Get(normalized); ok {
 			result := personalize(cached, businessName)
 			result.Cached = true
-			r.recordGeneration(result.Slug, desc, "L2", req.RemoteAddr, len(result.Tools))
+			if !prewarm {
+				r.recordGeneration(result.Slug, desc, "L2", req.RemoteAddr, len(result.Tools))
+			}
 			log.Printf("[recommend] L2 cache hit: %q", normalized)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(result)
@@ -450,7 +454,9 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 			// Migrate to new cache for future hits
 			r.recCache.Set(normalized, oldSlug, &result)
 			result2 := personalize(&result, businessName)
-			r.recordGeneration(oldSlug, desc, "legacy", req.RemoteAddr, len(result2.Tools))
+			if !prewarm {
+				r.recordGeneration(oldSlug, desc, "legacy", req.RemoteAddr, len(result2.Tools))
+			}
 			log.Printf("[recommend] legacy cache hit (migrated): %q → %s", normalized, oldSlug)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(result2)
@@ -610,7 +616,9 @@ func (r *Recommender) HandleRecommend(w http.ResponseWriter, req *http.Request) 
 		genSlug, desc, string(resultJSON))
 
 	log.Printf("[recommend] L3 %s: %q → %s (%d tools)", modelUsed, normalized, genSlug, len(result.Tools))
-	r.recordGeneration(genSlug, desc, "L3", req.RemoteAddr, len(result.Tools))
+	if !prewarm {
+		r.recordGeneration(genSlug, desc, "L3", req.RemoteAddr, len(result.Tools))
+	}
 
 	finalResult := personalize(result, businessName)
 	w.Header().Set("Content-Type", "application/json")
