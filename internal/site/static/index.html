@@ -74,6 +74,12 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .gen-chip:hover{border-color:var(--rust);color:var(--rust-light)}
 .gen-result{max-width:780px;margin:1.5rem auto 0;text-align:left;min-height:0}
 .gen-result:empty{display:none}
+.gen-counter{text-align:center;margin:0 auto 1.8rem;font-family:var(--font-mono)}
+.gen-counter[hidden]{display:none}
+.gen-counter-num{font-size:2.2rem;font-weight:600;color:var(--gold);line-height:1;letter-spacing:-1px}
+.gen-counter-label{font-size:.68rem;color:var(--cream-muted);letter-spacing:2px;text-transform:uppercase;margin-top:.4rem}
+.gen-counter-latest{font-size:.68rem;color:var(--leather-light);letter-spacing:1px;margin-top:.35rem;font-style:italic;font-family:var(--font-serif)}
+.gen-counter-latest[hidden]{display:none}
 .gen-thinking{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center;font-family:var(--font-mono);font-size:.82rem;color:var(--cream-dim);border-radius:2px;animation:gen-pulse 1.6s ease-in-out infinite}
 .gen-thinking strong{color:var(--rust-light);font-weight:500}
 @keyframes gen-pulse{0%,100%{opacity:.7}50%{opacity:1}}
@@ -229,6 +235,11 @@ Stockyard
 <button class="gen-chip" data-chip="minecraft server">minecraft server</button>
 <button class="gen-chip" data-chip="therapist">therapist</button>
 <button class="gen-chip" data-chip="accounting firm">accounting firm</button>
+</div>
+<div class="gen-counter" id="gen-counter" hidden>
+<div class="gen-counter-num" id="gen-counter-num"></div>
+<div class="gen-counter-label">toolkits built so far</div>
+<div class="gen-counter-latest" id="gen-counter-latest" hidden></div>
 </div>
 <div class="gen-result" id="gen-result" aria-live="polite"></div>
 <div class="hero-note">Starts at $49/month with cloud backup, or $299 once for local. Mac, Windows, Linux.</div>
@@ -628,6 +639,15 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
       return r.json();
     }).then(function(data){
       renderResult(data, desc);
+      // Optimistic counter bump only when the server actually
+      // generated (not a cached hit). /api/recommend sets `cached`
+      // true on L1/L2/legacy paths and false on fresh L3. The server
+      // records L1/L2 hits in toolkit_generations too, so the count
+      // DOES climb on cached hits — the optimistic UI should match
+      // that. Bump unconditionally.
+      if (typeof window.__stockyardBumpCounter === 'function'){
+        window.__stockyardBumpCounter();
+      }
       if (typeof gtag === 'function'){
         gtag('event', 'hero_toolkit_generated', {
           layer: data.cached ? 'cached' : 'fresh',
@@ -665,6 +685,79 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
       submit(chip);
     });
   }
+
+  // Counter: fetches the running total + timestamp of last-built
+  // toolkit from /api/toolkit-count. Hidden until we have a non-zero
+  // count so a network failure or cold DB renders as nothing rather
+  // than "0 toolkits built." Format: big number + "toolkits built so
+  // far" label, plus a smaller "last built X ago" line for recency.
+  function relTime(iso){
+    // iso examples: "2026-04-17 00:20:54" (SQLite default, UTC, no TZ)
+    // or an ISO-8601 with TZ. We normalize to something Date can parse
+    // reliably: replace space with T, append Z if no TZ indicator.
+    var hasTz = iso.indexOf('Z') >= 0 || /[+-]\d\d:?\d\d$/.test(iso);
+    var t = new Date(iso.replace(' ', 'T') + (hasTz ? '' : 'Z'));
+    if (isNaN(t)) return '';
+    var s = Math.floor((Date.now() - t.getTime()) / 1000);
+    if (s < 0) s = 0;
+    if (s < 60) return 'last built just now';
+    if (s < 3600){
+      var m = Math.floor(s / 60);
+      return 'last built ' + m + ' minute' + (m === 1 ? '' : 's') + ' ago';
+    }
+    if (s < 86400){
+      var h = Math.floor(s / 3600);
+      return 'last built ' + h + ' hour' + (h === 1 ? '' : 's') + ' ago';
+    }
+    var days = Math.floor(s / 86400);
+    if (days < 7) return 'last built ' + days + ' day' + (days === 1 ? '' : 's') + ' ago';
+    return 'last built ' + t.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
+  }
+
+  var counterEl = document.getElementById('gen-counter');
+  var counterNumEl = document.getElementById('gen-counter-num');
+  var counterLatestEl = document.getElementById('gen-counter-latest');
+  function loadCounter(){
+    fetch('/api/toolkit-count').then(function(r){
+      if (!r.ok) throw new Error('status_' + r.status);
+      return r.json();
+    }).then(function(d){
+      if (!d || !d.count || d.count < 1) return;
+      counterNumEl.textContent = d.count.toLocaleString();
+      counterEl.hidden = false;
+      if (d.latest_at){
+        var rt = relTime(d.latest_at);
+        if (rt){
+          counterLatestEl.textContent = rt;
+          counterLatestEl.hidden = false;
+        }
+      }
+    }).catch(function(){
+      // Fail silently — the counter is a confidence signal, not
+      // load-bearing. A network or API failure should render as no
+      // counter, not a broken UI.
+    });
+  }
+  loadCounter();
+
+  // After every successful generation, bump the counter by 1 and
+  // refresh relTime to "just now" without a round-trip. A real server
+  // refresh would be more accurate but adds latency and a flash; the
+  // optimistic update feels immediate and the counter self-corrects
+  // on the next page load.
+  function bumpCounter(){
+    if (counterEl.hidden) return;
+    var cur = parseInt(counterNumEl.textContent.replace(/[^0-9]/g, ''), 10);
+    if (!isNaN(cur)){
+      counterNumEl.textContent = (cur + 1).toLocaleString();
+    }
+    counterLatestEl.textContent = 'last built just now';
+    counterLatestEl.hidden = false;
+  }
+  // Expose to the submit flow. Hook via a listener on the result
+  // container mutation isn't worth the complexity — just call it from
+  // the .then path where we already render the result. See submit().
+  window.__stockyardBumpCounter = bumpCounter;
 })();
 </script>
 
