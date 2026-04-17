@@ -57,6 +57,42 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .btn-outline:hover{background:var(--bg3);color:var(--cream);border-color:var(--rust)}
 .hero-note{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);letter-spacing:.5px;margin-top:.8rem}
 
+/* ── Hero generator ───────────────────────────────────────────────── */
+.hero-gen{padding-top:3rem;padding-bottom:3rem}
+.hero-gen h1{margin-bottom:1rem}
+.hero-gen .sub{margin-bottom:1.8rem}
+.gen-form{display:flex;gap:.5rem;max-width:640px;margin:0 auto 1rem;flex-wrap:wrap}
+.gen-input{flex:1 1 260px;min-width:0;padding:.95rem 1.1rem;background:var(--bg2);border:1px solid var(--bg3);color:var(--cream);font-family:var(--font-serif);font-size:1rem;border-radius:2px;outline:none;transition:border-color .15s}
+.gen-input:focus{border-color:var(--rust)}
+.gen-input::placeholder{color:var(--cream-muted);font-style:italic}
+.gen-btn{padding:.95rem 1.6rem;background:var(--rust);color:var(--cream);border:none;font-family:var(--font-mono);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .15s;white-space:nowrap}
+.gen-btn:hover{background:var(--rust-light)}
+.gen-btn:disabled{opacity:.6;cursor:wait}
+.gen-chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;align-items:center;margin-bottom:1.5rem;font-family:var(--font-mono);font-size:.75rem}
+.gen-chips-prefix{color:var(--cream-muted);letter-spacing:1px;text-transform:uppercase;font-size:.68rem}
+.gen-chip{background:transparent;border:1px solid var(--bg3);color:var(--cream-dim);padding:.4rem .75rem;font-family:var(--font-mono);font-size:.75rem;cursor:pointer;border-radius:2px;transition:all .15s}
+.gen-chip:hover{border-color:var(--rust);color:var(--rust-light)}
+.gen-result{max-width:780px;margin:1.5rem auto 0;text-align:left;min-height:0}
+.gen-result:empty{display:none}
+.gen-thinking{background:var(--bg2);border:1px solid var(--bg3);padding:1.5rem;text-align:center;font-family:var(--font-mono);font-size:.82rem;color:var(--cream-dim);border-radius:2px;animation:gen-pulse 1.6s ease-in-out infinite}
+.gen-thinking strong{color:var(--rust-light);font-weight:500}
+@keyframes gen-pulse{0%,100%{opacity:.7}50%{opacity:1}}
+.gen-card{background:var(--bg2);border:1px solid var(--bg3);padding:1.8rem;border-radius:2px}
+.gen-card-head{border-bottom:1px solid var(--bg3);padding-bottom:1rem;margin-bottom:1rem}
+.gen-card-title{font-family:var(--font-serif);font-size:1.3rem;color:var(--cream);margin-bottom:.3rem;line-height:1.3}
+.gen-card-audience{font-size:.85rem;color:var(--cream-dim);font-style:italic;line-height:1.5}
+.gen-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.6rem;margin-bottom:1.2rem}
+.gen-tool{background:var(--bg);border:1px solid var(--bg3);padding:.75rem .9rem;border-radius:2px}
+.gen-tool-name{font-family:var(--font-mono);font-size:.82rem;color:var(--leather-light);margin-bottom:.2rem;letter-spacing:.5px}
+.gen-tool-replaces{font-size:.72rem;color:var(--cream-muted);font-family:var(--font-mono)}
+.gen-savings{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid var(--bg3);font-family:var(--font-mono);font-size:.8rem;flex-wrap:wrap;gap:.8rem}
+.gen-savings-amount{color:var(--gold);font-size:1.1rem;font-weight:600}
+.gen-savings-label{color:var(--cream-muted);letter-spacing:1px;text-transform:uppercase;font-size:.68rem}
+.gen-cta{display:inline-block;padding:.75rem 1.3rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .15s}
+.gen-cta:hover{background:var(--rust-light);color:var(--cream)}
+.gen-error{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim);border-radius:2px;text-align:center}
+.gen-error a{color:var(--rust-light)}
+
 /* ── App screenshot (mocked) ──────────────────────────────────────── */
 .shot-wrap{max-width:960px;margin:2rem auto 3rem;padding:0 2rem}
 .shot{background:var(--bg2);border:1px solid var(--bg3);box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative}
@@ -151,6 +187,10 @@ footer .fine{font-size:.65rem;color:var(--cream-muted);margin-top:.8rem}
   .hero{padding-top:2.5rem}
   .hero-actions{flex-direction:column;align-items:stretch;max-width:300px;margin:0 auto 1rem}
   .nav-links{gap:.8rem;font-size:.75rem}
+  .gen-form{flex-direction:column;max-width:360px}
+  .gen-input,.gen-btn{width:100%}
+  .gen-tools{grid-template-columns:1fr}
+  .hero-gen h1{font-size:1.7rem}
 }
 </style>
 </head>
@@ -174,15 +214,24 @@ Stockyard
 </nav>
 
 <!-- ── Hero ──────────────────────────────────────────────────────── -->
-<section class="hero">
-<div class="hero-eyebrow">For small business owners</div>
-<h1>You didn't start your business to pay six SaaS bills.</h1>
-<p class="sub">Stockyard is one app on your computer that replaces your scheduling tool, your invoice tool, your member management, and your email blasts. Your data lives in a file you own. Works offline. No per-seat fees. Starts at $49/month for cloud backup, or $299 once if you want to keep it all local.</p>
-<div class="hero-actions">
-<a href="/desktop/" class="btn">See pricing</a>
-<a href="#what" class="btn btn-outline">How it works</a>
+<section class="hero hero-gen">
+<div class="hero-eyebrow">Describe your business</div>
+<h1>Type what you do. Get a tech stack you own.</h1>
+<p class="sub">Stockyard builds you a personalized toolkit from 164 self-hosted tools. Scheduling, invoicing, customer records, email — composed to fit your specific business, running on your own computer. Your data in a file you own.</p>
+<form class="gen-form" id="gen-form" autocomplete="off">
+<input class="gen-input" id="gen-input" type="text" placeholder="mobile dog groomer in Portland" maxlength="500" aria-label="Describe your business" />
+<button class="gen-btn" id="gen-btn" type="submit">Build toolkit</button>
+</form>
+<div class="gen-chips" id="gen-chips">
+<span class="gen-chips-prefix">try:</span>
+<button class="gen-chip" data-chip="yoga studio">yoga studio</button>
+<button class="gen-chip" data-chip="tattoo shop">tattoo shop</button>
+<button class="gen-chip" data-chip="minecraft server">minecraft server</button>
+<button class="gen-chip" data-chip="therapist">therapist</button>
+<button class="gen-chip" data-chip="accounting firm">accounting firm</button>
 </div>
-<div class="hero-note">Mac, Windows, Linux. Your data stays on your computer.</div>
+<div class="gen-result" id="gen-result" aria-live="polite"></div>
+<div class="hero-note">Starts at $49/month with cloud backup, or $299 once for local. Mac, Windows, Linux.</div>
 </section>
 
 <!-- ── Mocked app screenshot ────────────────────────────────────── -->
@@ -463,6 +512,161 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
 </nav>
 <p class="fine">hello@stockyard.dev · Built by a solo developer in Minnesota · © 2026</p>
 </footer>
+
+<script>
+(function(){
+  var form = document.getElementById('gen-form');
+  var input = document.getElementById('gen-input');
+  var btn = document.getElementById('gen-btn');
+  var result = document.getElementById('gen-result');
+  if (!form || !input || !btn || !result) return;
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function articleFor(word){
+    var first = (word || '').trim().charAt(0).toLowerCase();
+    return 'aeiou'.indexOf(first) !== -1 ? 'an' : 'a';
+  }
+
+  function renderThinking(desc){
+    result.innerHTML =
+      '<div class="gen-thinking">Building a toolkit for ' + articleFor(desc) + ' <strong>' +
+      escapeHtml(desc) + '</strong>…</div>';
+  }
+
+  function renderError(msg, showCategoryLink){
+    var link = showCategoryLink
+      ? ' <a href="/for/">Browse toolkits by category →</a>'
+      : '';
+    result.innerHTML = '<div class="gen-error">' + escapeHtml(msg) + link + '</div>';
+  }
+
+  function renderResult(data, userInput){
+    var tools = (data && data.tools) || [];
+    if (tools.length === 0){
+      renderError("We couldn't build a toolkit for that. Try describing it differently, or", true);
+      return;
+    }
+    var savings = data.savings_per_year || 0;
+    var replaces = data.total_replaces_cost || 0;
+    var title = data.title || 'Your Toolkit';
+    var audience = data.audience || '';
+    var cards = tools.map(function(t){
+      var replacesLine = t.replaces
+        ? 'replaces ' + escapeHtml(t.replaces) +
+          (t.replaces_cost ? ' ($' + t.replaces_cost + '/mo)' : '')
+        : '';
+      return '<div class="gen-tool">' +
+               '<div class="gen-tool-name">' + escapeHtml(t.label || t.slug) + '</div>' +
+               (replacesLine ? '<div class="gen-tool-replaces">' + replacesLine + '</div>' : '') +
+             '</div>';
+    }).join('');
+    var savingsBlock = savings > 0
+      ? '<div class="gen-savings">' +
+          '<div>' +
+            '<div class="gen-savings-label">Replaces</div>' +
+            '<div class="gen-savings-amount">$' + savings.toLocaleString() + '/yr</div>' +
+          '</div>' +
+          '<a class="gen-cta" href="/desktop/">Install Stockyard →</a>' +
+        '</div>'
+      : '<div class="gen-savings">' +
+          '<div></div>' +
+          '<a class="gen-cta" href="/desktop/">Install Stockyard →</a>' +
+        '</div>';
+    result.innerHTML =
+      '<div class="gen-card">' +
+        '<div class="gen-card-head">' +
+          '<div class="gen-card-title">' + escapeHtml(title) + '</div>' +
+          (audience ? '<div class="gen-card-audience">' + escapeHtml(audience) + '</div>' : '') +
+        '</div>' +
+        '<div class="gen-tools">' + cards + '</div>' +
+        savingsBlock +
+      '</div>';
+  }
+
+  var inFlight = false;
+
+  function submit(desc){
+    desc = (desc || '').trim();
+    if (desc.length < 3){
+      renderError('Please describe your business in a few words (at least 3 characters).', false);
+      return;
+    }
+    if (desc.length > 500){
+      renderError('That description is too long — please shorten to under 500 characters.', false);
+      return;
+    }
+    if (inFlight) return;
+    inFlight = true;
+    btn.disabled = true;
+    renderThinking(desc);
+
+    // Soft client timeout — 45s ceiling. Server has its own 60s for the
+    // LLM call; this gives the user a clear stopping point if the
+    // network itself hangs.
+    var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timeoutId = setTimeout(function(){
+      if (controller) controller.abort();
+    }, 45000);
+
+    fetch('/api/recommend', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({description: desc}),
+      signal: controller ? controller.signal : undefined
+    }).then(function(r){
+      if (!r.ok){
+        if (r.status === 429){
+          throw new Error('rate_limited');
+        }
+        throw new Error('server_' + r.status);
+      }
+      return r.json();
+    }).then(function(data){
+      renderResult(data, desc);
+      if (typeof gtag === 'function'){
+        gtag('event', 'hero_toolkit_generated', {
+          layer: data.cached ? 'cached' : 'fresh',
+          tool_count: (data.tools || []).length
+        });
+      }
+    }).catch(function(err){
+      if (err && err.name === 'AbortError'){
+        renderError("That took longer than expected. Please try again, or", true);
+      } else if (err && err.message === 'rate_limited'){
+        renderError("We're getting a lot of traffic — please try again in a minute, or", true);
+      } else {
+        renderError("Something went wrong building that toolkit. Try again, or", true);
+      }
+    }).then(function(){
+      clearTimeout(timeoutId);
+      inFlight = false;
+      btn.disabled = false;
+    });
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    submit(input.value);
+  });
+
+  // Chip click → fill input and submit
+  var chips = document.querySelectorAll('.gen-chip');
+  for (var i = 0; i < chips.length; i++){
+    chips[i].addEventListener('click', function(e){
+      e.preventDefault();
+      var chip = e.currentTarget.getAttribute('data-chip');
+      if (!chip) return;
+      input.value = chip;
+      submit(chip);
+    });
+  }
+})();
+</script>
 
 </body>
 </html>
