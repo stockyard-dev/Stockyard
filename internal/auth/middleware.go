@@ -20,6 +20,7 @@ const (
 	userKey contextKey = iota
 	apiKeyKey
 	teamKey
+	licenseTierKey
 )
 
 // WithUser adds a User to the context.
@@ -55,6 +56,23 @@ func TeamFromContext(ctx context.Context) *Team {
 	return t
 }
 
+// WithLicenseTier marks the request as authenticated by a desktop
+// license key and records the tier ("local", "cloud-single",
+// "cloud-multi"). Used by downstream billing middleware to short-
+// circuit the cap chain — paying customers get unlimited proxy use.
+func WithLicenseTier(ctx context.Context, tier string) context.Context {
+	return context.WithValue(ctx, licenseTierKey, tier)
+}
+
+// LicenseTierFromContext returns the desktop license tier that
+// authenticated this request, or "" if the request was not
+// license-authenticated. Empty string is the signal to apply normal
+// billing/cap logic.
+func LicenseTierFromContext(ctx context.Context) string {
+	t, _ := ctx.Value(licenseTierKey).(string)
+	return t
+}
+
 // ─── Proxy Auth Middleware ──────────────────────────────────────────────────
 
 // ProxyAuthMode controls how /v1/ endpoints are authenticated.
@@ -67,6 +85,17 @@ const (
 	ProxyAuthRequired
 )
 
+// LicenseVerifier validates an SY-prefixed desktop license key and
+// returns whether it grants proxy access. Returning ok=false (with
+// or without an error) means the key was a license but isn't entitled
+// to proxy use (expired, trial tier, signature failure). Returning
+// (true, "tier-string", nil) accepts the request.
+//
+// Defined as a callback to avoid an import cycle between internal/auth
+// (which doesn't know about apiserver) and internal/apiserver (which
+// owns the license-signing key). cmd/server wires the closure.
+type LicenseVerifier func(key string) (ok bool, tier string, err error)
+
 // ProxyAuthMiddleware returns HTTP middleware that authenticates /v1/ proxy requests.
 // It extracts the API key from Authorization header, validates it, and injects user context.
 //
@@ -74,7 +103,14 @@ const (
 // In Required mode: unauthenticated requests get 401.
 //
 // Authenticated requests always get user context injected regardless of mode.
-func ProxyAuthMiddleware(store *Store, mode ProxyAuthMode) func(http.Handler) http.Handler {
+//
+// Three credential shapes are recognized:
+//   - sk-sy-…  Stockyard user API key (validated against store)
+//   - SY-…     Desktop license key (validated by licenseVerifier callback,
+//     if non-nil — every paying tier gets unlimited proxy use
+//     as part of their purchase per the Apr 16 product decision)
+//   - other    Pass-through (direct provider keys, BYOK)
+func ProxyAuthMiddleware(store *Store, mode ProxyAuthMode, licenseVerifier LicenseVerifier) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Only apply to proxy routes
@@ -114,9 +150,36 @@ func ProxyAuthMiddleware(store *Store, mode ProxyAuthMode) func(http.Handler) ht
 				return
 			}
 
+			// If it's a desktop license key (SY-), and a verifier is wired,
+			// validate it. License-authenticated requests bypass the per-
+			// request billing/cap chain — paying customers get the proxy
+			// included with their Stockyard purchase.
+			if strings.HasPrefix(key, "SY-") && licenseVerifier != nil {
+				ok, tier, err := licenseVerifier(key)
+				if err != nil {
+					log.Printf("[auth] license validation error: %v", err)
+					http.Error(w, `{"error":{"message":"authentication error","type":"auth_error"}}`, 500)
+					return
+				}
+				if !ok {
+					// Distinguish "wrong/expired key" (401) from "key
+					// is valid but tier doesn't grant access" (403).
+					// Today the verifier conflates these as ok=false;
+					// the message here covers both honestly.
+					http.Error(w, `{"error":{"message":"license key not valid for proxy access (expired, revoked, or trial tier)","type":"auth_error"}}`, 401)
+					return
+				}
+				// Inject license-context marker. Downstream billing
+				// middleware checks LicenseTierFromContext and
+				// short-circuits the cap chain for paying tiers.
+				ctx := WithLicenseTier(r.Context(), tier)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+
 			// Not a Stockyard key — could be a direct provider key (pass-through)
 			if mode == ProxyAuthRequired && key == "" {
-				http.Error(w, `{"error":{"message":"API key required. Use Authorization: Bearer sk-sy-...","type":"auth_error"}}`, 401)
+				http.Error(w, `{"error":{"message":"API key required. Use Authorization: Bearer sk-sy-... or SY-... license key","type":"auth_error"}}`, 401)
 				return
 			}
 

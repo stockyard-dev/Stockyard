@@ -21,20 +21,23 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/stockyard-dev/stockyard/internal/agent"
 	"github.com/stockyard-dev/aigen"
+	"github.com/stockyard-dev/stockyard/internal/agent"
 	"github.com/stockyard-dev/stockyard/internal/api"
 	"github.com/stockyard-dev/stockyard/internal/apiserver"
 	"github.com/stockyard-dev/stockyard/internal/apps/billing"
 	"github.com/stockyard-dev/stockyard/internal/apps/observe"
 	"github.com/stockyard-dev/stockyard/internal/auth"
 	"github.com/stockyard-dev/stockyard/internal/config"
-	"github.com/stockyard-dev/stockyard/internal/discovery"
 	"github.com/stockyard-dev/stockyard/internal/connect"
 	"github.com/stockyard-dev/stockyard/internal/cortex"
+	cortexstore "github.com/stockyard-dev/stockyard/internal/cortex/store"
+	cruciblestore "github.com/stockyard-dev/stockyard/internal/crucible/store"
 	"github.com/stockyard-dev/stockyard/internal/dashboard"
+	"github.com/stockyard-dev/stockyard/internal/discovery"
 	"github.com/stockyard-dev/stockyard/internal/fabric"
 	"github.com/stockyard-dev/stockyard/internal/features"
+	fossilrecstore "github.com/stockyard-dev/stockyard/internal/fossilrec/store"
 	"github.com/stockyard-dev/stockyard/internal/integrations"
 	"github.com/stockyard-dev/stockyard/internal/license"
 	"github.com/stockyard-dev/stockyard/internal/mcp"
@@ -45,9 +48,6 @@ import (
 	"github.com/stockyard-dev/stockyard/internal/provider"
 	"github.com/stockyard-dev/stockyard/internal/proxy"
 	relicstore "github.com/stockyard-dev/stockyard/internal/relic/store"
-	cruciblestore "github.com/stockyard-dev/stockyard/internal/crucible/store"
-	fossilrecstore "github.com/stockyard-dev/stockyard/internal/fossilrec/store"
-	cortexstore "github.com/stockyard-dev/stockyard/internal/cortex/store"
 	"github.com/stockyard-dev/stockyard/internal/site"
 	"github.com/stockyard-dev/stockyard/internal/slog"
 	"github.com/stockyard-dev/stockyard/internal/storage"
@@ -234,7 +234,6 @@ func Boot(pc ProductConfig) {
 		os.Exit(0)
 	}
 
-
 	// Handle --help / -h / help
 	if len(os.Args) > 1 && (os.Args[1] == "--help" || os.Args[1] == "-h" || os.Args[1] == "help") {
 		v := pc.Version
@@ -274,7 +273,7 @@ Docs:      https://stockyard.dev/docs
 			dataDir = home + "/.stockyard"
 		}
 		dbPath := dataDir + "/stockyard.db"
-		
+
 		// Determine backup path
 		backupPath := ""
 		if len(os.Args) > 2 {
@@ -283,7 +282,7 @@ Docs:      https://stockyard.dev/docs
 			now := time.Now().Format("20060102-150405")
 			backupPath = fmt.Sprintf("stockyard-backup-%s.db", now)
 		}
-		
+
 		src, err := os.Open(dbPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot open database: %v\n", err)
@@ -291,24 +290,23 @@ Docs:      https://stockyard.dev/docs
 			os.Exit(1)
 		}
 		defer src.Close()
-		
+
 		dst, err := os.Create(backupPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create backup: %v\n", err)
 			os.Exit(1)
 		}
 		defer dst.Close()
-		
+
 		n, err := io.Copy(dst, src)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Backup failed: %v\n", err)
 			os.Exit(1)
 		}
-		
+
 		fmt.Printf("Backed up %s → %s (%d bytes)\n", dbPath, backupPath, n)
 		os.Exit(0)
 	}
-
 
 	// Handle config export/import
 	if len(os.Args) > 1 && (os.Args[1] == "config") {
@@ -702,12 +700,12 @@ Docs:      https://stockyard.dev/docs
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"version":  v,
-			"product":  pc.Product,
-			"go":       "1.22",
-			"modules":  76,
+			"version":   v,
+			"product":   pc.Product,
+			"go":        "1.22",
+			"modules":   76,
 			"providers": 16,
-			"products": 29,
+			"products":  29,
 			"endpoints": "360+",
 		})
 	})
@@ -739,11 +737,11 @@ Docs:      https://stockyard.dev/docs
 			return
 		}
 		json.NewEncoder(w).Encode(map[string]any{
-			"ok":     true,
-			"task":   taskName,
-			"output": out,
+			"ok":               true,
+			"task":             taskName,
+			"output":           out,
 			"registered_tasks": aigen.ListTasks(),
-			"hint":   "to read the captured prompt and completion: curl -H 'X-Admin-Key: $KEY' '/api/observe/traces?source=real&limit=1'",
+			"hint":             "to read the captured prompt and completion: curl -H 'X-Admin-Key: $KEY' '/api/observe/traces?source=real&limit=1'",
 		})
 	})
 
@@ -762,10 +760,10 @@ Docs:      https://stockyard.dev/docs
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"loaded_providers":    provList,
-			"count":              len(providers),
-			"anthropic_env_set":  os.Getenv("ANTHROPIC_API_KEY") != "",
-			"openai_env_set":     os.Getenv("OPENAI_API_KEY") != "",
+			"loaded_providers":  provList,
+			"count":             len(providers),
+			"anthropic_env_set": os.Getenv("ANTHROPIC_API_KEY") != "",
+			"openai_env_set":    os.Getenv("OPENAI_API_KEY") != "",
 		})
 	})
 
@@ -1077,13 +1075,13 @@ Docs:      https://stockyard.dev/docs
 
 				// ── Bus: emit request.completed event ──
 				eventBus.EmitSimple(bus.EventRequestComplete, "proxy", map[string]any{
-					"trace_id":  traceID,
-					"model":     resp.Model,
-					"provider":  resp.Provider,
-					"tokens_in": resp.Usage.PromptTokens,
+					"trace_id":   traceID,
+					"model":      resp.Model,
+					"provider":   resp.Provider,
+					"tokens_in":  resp.Usage.PromptTokens,
 					"tokens_out": resp.Usage.CompletionTokens,
 					"latency_ms": dur.Milliseconds(),
-					"cost":      float64(resp.Usage.PromptTokens)*0.002/1000 + float64(resp.Usage.CompletionTokens)*0.006/1000,
+					"cost":       float64(resp.Usage.PromptTokens)*0.002/1000 + float64(resp.Usage.CompletionTokens)*0.006/1000,
 				})
 
 				// ── Relic: certify every response ──
@@ -1123,7 +1121,7 @@ Docs:      https://stockyard.dev/docs
 						compound -= 0.1
 					}
 					crucibleDB.CreateScore(&cruciblestore.Score{
-						ID: fmt.Sprintf("cs-auto-%s", traceID[3:15]),
+						ID:                  fmt.Sprintf("cs-auto-%s", traceID[3:15]),
 						TraceID:             traceID,
 						ModelConfidence:     0.95,
 						CacheFreshness:      1.0,
@@ -1216,9 +1214,14 @@ Docs:      https://stockyard.dev/docs
 	// Must be BEFORE auth wraps (innermost) so it runs AFTER user is in context.
 	srv.WrapHandler(auth.RBACMiddleware(db.Conn()))
 
-	// Wrap with proxy auth (authenticates /v1/* requests with sk-sy- keys)
+	// Wrap with proxy auth (authenticates /v1/* requests with sk-sy-
+	// API keys OR SY- desktop license keys). License-key bearer auth
+	// is the desktop app's path: every paying customer's license key
+	// IS their proxy API key, no extra signup needed.
 	proxyAuthMode := auth.GetProxyAuthMode()
-	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode))
+	desktopPrivKey := os.Getenv("STOCKYARD_DESKTOP_PRIVATE_KEY")
+	licenseVerifier := makeLicenseVerifier(desktopPrivKey)
+	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode, licenseVerifier))
 
 	// Wrap with auto-config (detects raw provider keys, creates ephemeral providers)
 	srv.WrapHandler(auth.AutoConfigMiddleware(authStore, providerFactory))
@@ -1251,9 +1254,9 @@ Docs:      https://stockyard.dev/docs
 		current := tierWatcher.CurrentTier()
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
-			"tier":      int(current),
-			"tier_name": platform.TierName(current),
-			"boot_tier": platform.TierName(activeTier),
+			"tier":       int(current),
+			"tier_name":  platform.TierName(current),
+			"boot_tier":  platform.TierName(activeTier),
 			"hot_reload": current != activeTier,
 		})
 	})
@@ -1307,7 +1310,6 @@ Docs:      https://stockyard.dev/docs
 		json.NewEncoder(w).Encode(entries[:limit])
 	})
 
-
 	// SQLite read-only query endpoint (admin-only)
 	srv.Mux().HandleFunc("POST /api/query", func(w http.ResponseWriter, r *http.Request) {
 		// Require admin key
@@ -1324,7 +1326,7 @@ Docs:      https://stockyard.dev/docs
 			json.NewEncoder(w).Encode(map[string]string{"error": "admin key required"})
 			return
 		}
-		
+
 		var req struct {
 			SQL string `json:"sql"`
 		}
@@ -1334,7 +1336,7 @@ Docs:      https://stockyard.dev/docs
 			json.NewEncoder(w).Encode(map[string]string{"error": "sql field required"})
 			return
 		}
-		
+
 		// Block writes
 		upper := strings.ToUpper(strings.TrimSpace(req.SQL))
 		if !strings.HasPrefix(upper, "SELECT") && !strings.HasPrefix(upper, "PRAGMA") && !strings.HasPrefix(upper, "EXPLAIN") {
@@ -1342,7 +1344,7 @@ Docs:      https://stockyard.dev/docs
 			json.NewEncoder(w).Encode(map[string]string{"error": "read-only: only SELECT, PRAGMA, and EXPLAIN allowed"})
 			return
 		}
-		
+
 		rows, err := db.Conn().Query(req.SQL)
 		if err != nil {
 			w.WriteHeader(400)
@@ -1350,7 +1352,7 @@ Docs:      https://stockyard.dev/docs
 			return
 		}
 		defer rows.Close()
-		
+
 		cols, _ := rows.Columns()
 		var results []map[string]any
 		for rows.Next() {
@@ -1369,7 +1371,7 @@ Docs:      https://stockyard.dev/docs
 				break
 			}
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{
 			"columns": cols,
@@ -2932,39 +2934,39 @@ func initProviders(cfg *config.Config) map[string]provider.Provider {
 		envKey  string
 		factory func(provider.ProviderConfig) provider.Provider
 	}{
-		"openai":     {"OPENAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewOpenAI(c) }},
-		"anthropic":  {"ANTHROPIC_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAnthropic(c) }},
-		"gemini":     {"GEMINI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewGemini(c) }},
-		"groq":       {"GROQ_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewGroq(c) }},
-		"mistral":    {"MISTRAL_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewMistral(c) }},
-		"together":   {"TOGETHER_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewTogether(c) }},
-		"deepseek":   {"DEEPSEEK_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDeepSeek(c) }},
-		"fireworks":  {"FIREWORKS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewFireworks(c) }},
-		"perplexity": {"PERPLEXITY_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewPerplexity(c) }},
-		"openrouter": {"OPENROUTER_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewOpenRouter(c) }},
-		"xai":        {"XAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewXAI(c) }},
-		"cohere":     {"COHERE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCohere(c) }},
-		"replicate":  {"REPLICATE_API_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewReplicate(c) }},
-		"azure":      {"AZURE_OPENAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAzureOpenAI(c) }},
-		"deepinfra":  {"DEEPINFRA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDeepInfra(c) }},
-		"nvidia":     {"NVIDIA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNVIDIA(c) }},
-		"cerebras":   {"CEREBRAS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCerebras(c) }},
-		"sambanova":  {"SAMBANOVA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewSambaNova(c) }},
+		"openai":      {"OPENAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewOpenAI(c) }},
+		"anthropic":   {"ANTHROPIC_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAnthropic(c) }},
+		"gemini":      {"GEMINI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewGemini(c) }},
+		"groq":        {"GROQ_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewGroq(c) }},
+		"mistral":     {"MISTRAL_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewMistral(c) }},
+		"together":    {"TOGETHER_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewTogether(c) }},
+		"deepseek":    {"DEEPSEEK_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDeepSeek(c) }},
+		"fireworks":   {"FIREWORKS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewFireworks(c) }},
+		"perplexity":  {"PERPLEXITY_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewPerplexity(c) }},
+		"openrouter":  {"OPENROUTER_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewOpenRouter(c) }},
+		"xai":         {"XAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewXAI(c) }},
+		"cohere":      {"COHERE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCohere(c) }},
+		"replicate":   {"REPLICATE_API_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewReplicate(c) }},
+		"azure":       {"AZURE_OPENAI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAzureOpenAI(c) }},
+		"deepinfra":   {"DEEPINFRA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDeepInfra(c) }},
+		"nvidia":      {"NVIDIA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNVIDIA(c) }},
+		"cerebras":    {"CEREBRAS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewCerebras(c) }},
+		"sambanova":   {"SAMBANOVA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewSambaNova(c) }},
 		"huggingface": {"HF_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewHuggingFace(c) }},
-		"hyperbolic": {"HYPERBOLIC_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewHyperbolic(c) }},
-		"novita":     {"NOVITA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNovitaAI(c) }},
+		"hyperbolic":  {"HYPERBOLIC_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewHyperbolic(c) }},
+		"novita":      {"NOVITA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNovitaAI(c) }},
 		"featherless": {"FEATHERLESS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewFeatherless(c) }},
-		"lambda":     {"LAMBDA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLambda(c) }},
-		"nebius":     {"NEBIUS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNebius(c) }},
-		"lepton":     {"LEPTON_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLepton(c) }},
-		"nscale":     {"NSCALE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNscale(c) }},
-		"ai21":       {"AI21_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAI21(c) }},
-		"friendli":   {"FRIENDLI_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewFriendli(c) }},
-		"moonshot":   {"MOONSHOT_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewMoonshot(c) }},
-		"dashscope":  {"DASHSCOPE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDashScope(c) }},
-		"github":     {"GITHUB_MODELS_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewGitHubModels(c) }},
-		"baseten":    {"BASETEN_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewBaseten(c) }},
-		"yi":         {"YI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewYi(c) }},
+		"lambda":      {"LAMBDA_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLambda(c) }},
+		"nebius":      {"NEBIUS_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNebius(c) }},
+		"lepton":      {"LEPTON_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewLepton(c) }},
+		"nscale":      {"NSCALE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewNscale(c) }},
+		"ai21":        {"AI21_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewAI21(c) }},
+		"friendli":    {"FRIENDLI_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewFriendli(c) }},
+		"moonshot":    {"MOONSHOT_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewMoonshot(c) }},
+		"dashscope":   {"DASHSCOPE_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewDashScope(c) }},
+		"github":      {"GITHUB_MODELS_TOKEN", func(c provider.ProviderConfig) provider.Provider { return provider.NewGitHubModels(c) }},
+		"baseten":     {"BASETEN_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewBaseten(c) }},
+		"yi":          {"YI_API_KEY", func(c provider.ProviderConfig) provider.Provider { return provider.NewYi(c) }},
 	}
 
 	for name, ep := range envProviders {

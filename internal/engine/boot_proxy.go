@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -53,7 +53,6 @@ func BootProxy(pc ProxyConfig) {
 		fmt.Println("ok")
 		os.Exit(0)
 	}
-
 
 	// Handle --help / -h / help
 	if len(os.Args) > 1 && (os.Args[1] == "--help" || os.Args[1] == "-h" || os.Args[1] == "help") {
@@ -98,19 +97,19 @@ Docs:      https://stockyard.dev/%s/
 		if port == "" {
 			port = "9700"
 		}
-		
+
 		fmt.Printf("\n  %s Doctor\n\n", pc.Name)
-		
+
 		// Check binary
 		fmt.Printf("    ✓ Binary           %s\n", binary)
-		
+
 		// Check data dir
 		if _, err := os.Stat(dataDir); err == nil {
 			fmt.Printf("    ✓ Data directory   %s\n", dataDir)
 		} else {
 			fmt.Printf("    ! Data directory   %s (will be created on first run)\n", dataDir)
 		}
-		
+
 		// Check port
 		ln, err := net.Listen("tcp", ":"+port)
 		if err != nil {
@@ -119,7 +118,7 @@ Docs:      https://stockyard.dev/%s/
 			ln.Close()
 			fmt.Printf("    ✓ Port             :%s available\n", port)
 		}
-		
+
 		// Check disk
 		f, err := os.CreateTemp(dataDir, ".doctor-check-*")
 		if err != nil {
@@ -133,7 +132,7 @@ Docs:      https://stockyard.dev/%s/
 			os.Remove(f.Name())
 			fmt.Printf("    ✓ Disk             Writable\n")
 		}
-		
+
 		fmt.Println()
 		os.Exit(0)
 	}
@@ -150,7 +149,7 @@ Docs:      https://stockyard.dev/%s/
 			dataDir = home + "/.stockyard"
 		}
 		dbPath := dataDir + "/stockyard-" + product + ".db"
-		
+
 		// Try common DB names
 		if _, err := os.Stat(dbPath); err != nil {
 			dbPath = dataDir + "/" + product + ".db"
@@ -165,7 +164,7 @@ Docs:      https://stockyard.dev/%s/
 				}
 			}
 		}
-		
+
 		backupPath := ""
 		if len(os.Args) > 2 {
 			backupPath = os.Args[2]
@@ -173,21 +172,21 @@ Docs:      https://stockyard.dev/%s/
 			now := time.Now().Format("20060102-150405")
 			backupPath = fmt.Sprintf("%s-backup-%s.db", product, now)
 		}
-		
+
 		src, err := os.Open(dbPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot open database: %v\nExpected at: %s\n", err, dbPath)
 			os.Exit(1)
 		}
 		defer src.Close()
-		
+
 		dst, err := os.Create(backupPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create backup: %v\n", err)
 			os.Exit(1)
 		}
 		defer dst.Close()
-		
+
 		n, _ := io.Copy(dst, src)
 		fmt.Printf("Backed up %s → %s (%d bytes)\n", dbPath, backupPath, n)
 		os.Exit(0)
@@ -304,7 +303,9 @@ Docs:      https://stockyard.dev/%s/
 
 	// Auth wrappers
 	proxyAuthMode := auth.GetProxyAuthMode()
-	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode))
+	desktopPrivKey := os.Getenv("STOCKYARD_DESKTOP_PRIVATE_KEY")
+	licenseVerifier := makeLicenseVerifier(desktopPrivKey)
+	srv.WrapHandler(auth.ProxyAuthMiddleware(authStore, proxyAuthMode, licenseVerifier))
 	srv.WrapHandler(auth.AutoConfigMiddleware(authStore, providerFactory))
 	srv.WrapHandler(adminAuthMiddleware)
 	srv.WrapHandler(gzipMiddleware)
