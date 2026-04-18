@@ -99,6 +99,46 @@ a{color:var(--rust-light);text-decoration:none}a:hover{color:var(--gold)}
 .gen-error{background:var(--bg2);border:1px solid var(--bg3);padding:1rem 1.2rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-dim);border-radius:2px;text-align:center}
 .gen-error a{color:var(--rust-light)}
 
+/* ── v2 result card (commit 2 redesign port) ───────────────────── */
+/* New richer result rendering. Old .gen-card / .gen-tools / .gen-savings
+   styles above are kept defined-but-unused so reverting renderResult()
+   restores the previous card with no CSS work. */
+.gen-r2{background:var(--bg2);border:1px solid var(--bg3);border-radius:2px;padding:1.4rem 1.4rem 1.1rem;margin-top:1.25rem}
+.gen-r2-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding-bottom:1rem;border-bottom:1px solid var(--bg3);margin-bottom:1.25rem}
+.gen-r2-titlewrap{flex:1;min-width:0}
+.gen-r2-title{font-family:var(--font-serif);font-weight:400;font-size:1.35rem;color:var(--cream);line-height:1.3;margin:0;font-style:italic}
+.gen-r2-audience{font-family:var(--font-serif);font-size:.85rem;color:var(--cream-dim);font-style:italic;line-height:1.5;margin-top:.35rem}
+.gen-r2-id{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);white-space:nowrap}
+.gen-r2-body{display:grid;grid-template-columns:1fr .72fr;gap:1.4rem}
+.gen-r2-tools{display:flex;flex-direction:column;gap:0}
+.gen-r2-tool{display:grid;grid-template-columns:auto 1fr auto;gap:.85rem;align-items:center;padding:.7rem 0;border-bottom:1px dashed var(--bg3)}
+.gen-r2-tool:last-child{border-bottom:none}
+.gen-r2-toolnum{font-family:var(--font-mono);font-size:.72rem;color:var(--cream-muted);letter-spacing:1px;width:1.75rem}
+.gen-r2-toolinfo{min-width:0}
+.gen-r2-toolname{font-family:var(--font-serif);font-size:.95rem;color:var(--cream);line-height:1.3}
+.gen-r2-replaces{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);letter-spacing:.5px;display:block;margin-top:.15rem}
+.gen-r2-replaces em{color:var(--leather);font-style:normal}
+.gen-r2-cost{font-family:var(--font-mono);font-size:.82rem;color:var(--cream-dim);text-align:right;white-space:nowrap}
+.gen-r2-cost .strike{text-decoration:line-through;color:var(--cream-muted)}
+.gen-r2-cost .free{color:var(--green-light)}
+.gen-r2-savings{background:var(--bg3);border:1px solid var(--bg3);border-radius:2px;padding:1.1rem 1.1rem 1rem;display:flex;flex-direction:column;gap:.5rem}
+.gen-r2-slabel{font-family:var(--font-mono);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--cream-muted)}
+.gen-r2-svalue{font-family:var(--font-mono);font-size:2.3rem;line-height:1;color:var(--gold);letter-spacing:-.01em;font-weight:500}
+.gen-r2-ssub{font-family:var(--font-mono);font-size:.72rem;color:var(--cream-dim);letter-spacing:.5px}
+.gen-r2-breakdown{margin-top:.5rem;padding-top:.75rem;border-top:1px solid var(--bg2);display:grid;grid-template-columns:1fr auto;gap:.35rem .75rem;font-family:var(--font-mono);font-size:.72rem;color:var(--cream-dim)}
+.gen-r2-row{display:contents}
+.gen-r2-row > span:last-child{text-align:right;color:var(--cream)}
+.gen-r2-row.stock > span:last-child{color:var(--green-light)}
+.gen-r2-foot{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.gen-r2-meta{font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);letter-spacing:.5px}
+.gen-r2-cta{display:inline-block;padding:.75rem 1.3rem;background:var(--rust);color:var(--cream);font-family:var(--font-mono);font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .15s}
+.gen-r2-cta:hover{background:var(--rust-light);color:var(--cream)}
+@media (max-width: 800px){
+  .gen-r2-body{grid-template-columns:1fr;gap:1rem}
+  .gen-r2-savings{order:-1}
+  .gen-r2-svalue{font-size:1.9rem}
+}
+
 /* ── App screenshot (mocked) ──────────────────────────────────────── */
 .shot-wrap{max-width:960px;margin:2rem auto 3rem;padding:0 2rem}
 .shot{background:var(--bg2);border:1px solid var(--bg3);box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative}
@@ -556,47 +596,125 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
     result.innerHTML = '<div class="gen-error">' + escapeHtml(msg) + link + '</div>';
   }
 
-  function renderResult(data, userInput){
+  function renderResult(data, userInput, elapsedMs){
     var tools = (data && data.tools) || [];
     if (tools.length === 0){
       renderError("We couldn't build a toolkit for that. Try describing it differently, or", true);
       return;
     }
-    var savings = data.savings_per_year || 0;
-    var replaces = data.total_replaces_cost || 0;
-    var title = data.title || 'Your Toolkit';
-    var audience = data.audience || '';
-    var cards = tools.map(function(t){
-      var replacesLine = t.replaces
-        ? 'replaces ' + escapeHtml(t.replaces) +
-          (t.replaces_cost ? ' ($' + t.replaces_cost + '/mo)' : '')
-        : '';
-      return '<div class="gen-tool">' +
-               '<div class="gen-tool-name">' + escapeHtml(t.label || t.slug) + '</div>' +
-               (replacesLine ? '<div class="gen-tool-replaces">' + replacesLine + '</div>' : '') +
-             '</div>';
-    }).join('');
-    var savingsBlock = savings > 0
-      ? '<div class="gen-savings">' +
-          '<div>' +
-            '<div class="gen-savings-label">Replaces</div>' +
-            '<div class="gen-savings-amount">$' + savings.toLocaleString() + '/yr</div>' +
-          '</div>' +
-          '<a class="gen-cta" href="/desktop/">Install Stockyard →</a>' +
-        '</div>'
-      : '<div class="gen-savings">' +
-          '<div></div>' +
-          '<a class="gen-cta" href="/desktop/">Install Stockyard →</a>' +
+    try {
+      var savings = data.savings_per_year || 0;
+      var monthlyReplaces = data.total_replaces_cost || 0;
+      var annualReplaces = monthlyReplaces * 12;
+      var title = data.title || 'Your Toolkit';
+      var audience = data.audience || '';
+      var n = tools.length;
+      var elapsedStr = (elapsedMs && elapsedMs > 0)
+        ? (elapsedMs / 1000).toFixed(1) + 's'
+        : null;
+
+      // Tool rows: "01" through "0N" (or two-digit if N>=10), tool name +
+      // 'replaces X' below, strikethrough monthly cost on right. Cost of
+      // 0 renders as "free tier" instead of "$0/mo" — that's the live
+      // signal in the response data, not a workaround.
+      var toolRows = tools.map(function(t, i){
+        var num = (i + 1 < 10 ? '0' : '') + (i + 1);
+        var costCell;
+        if (t.replaces_cost && t.replaces_cost > 0){
+          costCell = '<span class="strike">$' + t.replaces_cost + '/mo</span>';
+        } else if (t.replaces){
+          costCell = '<span class="free">free tier</span>';
+        } else {
+          costCell = '';
+        }
+        var replacesLine = t.replaces
+          ? '<span class="gen-r2-replaces">replaces <em>' + escapeHtml(t.replaces) + '</em></span>'
+          : '';
+        return '<div class="gen-r2-tool">' +
+                 '<span class="gen-r2-toolnum">' + num + '</span>' +
+                 '<div class="gen-r2-toolinfo">' +
+                   '<div class="gen-r2-toolname">' + escapeHtml(t.label || t.slug) + '</div>' +
+                   replacesLine +
+                 '</div>' +
+                 '<div class="gen-r2-cost">' + costCell + '</div>' +
+               '</div>';
+      }).join('');
+
+      // Savings panel — renders even if savings is 0 or annual is 0,
+      // because the breakdown rows still tell a story (Stockyard $299
+      // once vs whatever they're paying now).
+      var savingsValue = savings > 0
+        ? '$' + savings.toLocaleString() + '/yr'
+        : 'compare';
+      var breakdownRows = '';
+      if (annualReplaces > 0){
+        breakdownRows +=
+          '<div class="gen-r2-row"><span>SaaS annual</span><span>$' + annualReplaces.toLocaleString() + '/yr</span></div>';
+      }
+      breakdownRows +=
+        '<div class="gen-r2-row"><span>Stockyard</span><span>$299 once</span></div>';
+      if (savings > 0){
+        breakdownRows +=
+          '<div class="gen-r2-row stock"><span>You keep</span><span>$' + savings.toLocaleString() + '/yr</span></div>';
+      }
+
+      var savingsPanel =
+        '<div class="gen-r2-savings">' +
+          '<span class="gen-r2-slabel">Year one savings</span>' +
+          '<div class="gen-r2-svalue">' + savingsValue + '</div>' +
+          '<span class="gen-r2-ssub">vs renting the SaaS equivalents</span>' +
+          '<div class="gen-r2-breakdown">' + breakdownRows + '</div>' +
         '</div>';
-    result.innerHTML =
-      '<div class="gen-card">' +
-        '<div class="gen-card-head">' +
-          '<div class="gen-card-title">' + escapeHtml(title) + '</div>' +
-          (audience ? '<div class="gen-card-audience">' + escapeHtml(audience) + '</div>' : '') +
-        '</div>' +
-        '<div class="gen-tools">' + cards + '</div>' +
-        savingsBlock +
-      '</div>';
+
+      // Footer meta line: timing + tool selection summary.
+      // CATALOG_TOTAL is the catalog size baked into stockyard-desktop;
+      // 164 today. Static value, not from API response.
+      var CATALOG_TOTAL = 164;
+      var metaParts = [];
+      if (elapsedStr) metaParts.push('Composed in ' + elapsedStr);
+      metaParts.push(n + ' of ' + CATALOG_TOTAL + ' tools selected');
+      metaParts.push('ready to install');
+      var metaLine = metaParts.join(' · ');
+
+      result.innerHTML =
+        '<div class="gen-r2">' +
+          '<div class="gen-r2-head">' +
+            '<div class="gen-r2-titlewrap">' +
+              '<h2 class="gen-r2-title">' + escapeHtml(title) + '</h2>' +
+              (audience ? '<div class="gen-r2-audience">' + escapeHtml(audience) + '</div>' : '') +
+            '</div>' +
+            '<span class="gen-r2-id">' + n + ' tools</span>' +
+          '</div>' +
+          '<div class="gen-r2-body">' +
+            '<div class="gen-r2-tools">' + toolRows + '</div>' +
+            savingsPanel +
+          '</div>' +
+          '<div class="gen-r2-foot">' +
+            '<span class="gen-r2-meta">' + escapeHtml(metaLine) + '</span>' +
+            '<a class="gen-r2-cta" href="/desktop/">Install Stockyard →</a>' +
+          '</div>' +
+        '</div>';
+    } catch (e) {
+      // Defensive fallback. If anything in the v2 render throws — a
+      // malformed API response, a missing field we assumed, an
+      // unexpected character that escapeHtml didn't handle — drop
+      // back to a minimal text result rather than blanking the page.
+      // This is the safety net so a render bug can't kill the page
+      // for everyone before we notice.
+      console.error('result render failed:', e);
+      var fallbackName = (data && data.title) ? data.title : 'Your Toolkit';
+      var fallbackCount = (data && data.tools) ? data.tools.length : 0;
+      result.innerHTML =
+        '<div class="gen-r2">' +
+          '<div class="gen-r2-head">' +
+            '<h2 class="gen-r2-title">' + escapeHtml(fallbackName) + '</h2>' +
+            '<span class="gen-r2-id">' + fallbackCount + ' tools</span>' +
+          '</div>' +
+          '<div class="gen-r2-foot">' +
+            '<a class="gen-r2-cta" href="/desktop/">Install Stockyard →</a>' +
+          '</div>' +
+        '</div>';
+    }
   }
 
   var inFlight = false;
@@ -615,6 +733,7 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
     inFlight = true;
     btn.disabled = true;
     renderThinking(desc);
+    var t0 = Date.now();
 
     // Soft client timeout — 45s ceiling. Server has its own 60s for the
     // LLM call; this gives the user a clear stopping point if the
@@ -638,7 +757,8 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
       }
       return r.json();
     }).then(function(data){
-      renderResult(data, desc);
+      var elapsedMs = Date.now() - t0;
+      renderResult(data, desc, elapsedMs);
       // Optimistic counter bump only when the server actually
       // generated (not a cached hit). /api/recommend sets `cached`
       // true on L1/L2/legacy paths and false on fresh L3. The server
