@@ -229,6 +229,76 @@ footer nav a{color:var(--cream-muted);margin:0 .6rem}
 footer nav a:hover{color:var(--rust-light)}
 footer .fine{font-size:.65rem;color:var(--cream-muted);margin-top:.8rem}
 
+/* ── v2 section styles (commit 3 redesign port) ─────────────────── */
+/* Additive styles for the new Own-your-data panel, three-tier pricing,
+   Q&A section, CTA band, and richer footer. Old sections (.trust,
+   .pricing-preview) retain their CSS but are replaced by new markup. */
+.section-head{margin-bottom:3rem;text-align:center}
+.section-head .mono-eyebrow{display:block;margin-bottom:.75rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light)}
+.section-head h2{font-size:clamp(1.75rem,3vw,2.4rem);max-width:28ch;margin:0 auto;font-family:var(--font-serif);font-weight:400;line-height:1.25}
+
+/* Own-your-data: two-column layout with a file-system panel on the right */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;max-width:1080px;margin:0 auto;padding:0 2rem}
+.two-col > div > p{font-size:1rem;line-height:1.7;color:var(--cream-dim);margin:0 0 1rem}
+.two-col > div > p:first-of-type{font-size:1.05rem;color:var(--cream)}
+.panel{background:var(--bg2);border:1px solid var(--bg3);border-radius:2px;padding:1.75rem}
+.panel .mono-label{color:var(--cream-muted);display:block;margin-bottom:1rem;font-family:var(--font-mono);font-size:.68rem;letter-spacing:2px;text-transform:uppercase}
+.panel h3{margin:0 0 1rem;font-weight:400;font-family:var(--font-mono);font-size:.9rem;letter-spacing:.3px;color:var(--leather-light)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1.25rem;font-family:var(--font-mono);font-size:.8rem;padding-top:.5rem}
+.kv .k{color:var(--cream-muted)}
+.kv .v{color:var(--cream);text-align:right}
+.kv .v.good{color:var(--green-light)}
+
+/* Three-tier pricing */
+.plans-three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;max-width:1080px;margin:0 auto;padding:0 2rem}
+.plan-card{background:var(--bg2);border:1px solid var(--bg3);border-radius:2px;padding:1.75rem 1.5rem;transition:border-color .15s}
+.plan-card:hover{border-color:var(--leather)}
+.plan-card.featured{border-color:var(--rust)}
+.plan-card h3{font-family:var(--font-serif);font-size:1.3rem;font-weight:400;font-style:italic;margin:0 0 .35rem}
+.plan-card .plan-sub{font-family:var(--font-mono);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-muted);margin-bottom:1.5rem;display:block}
+.plan-card .price{font-family:var(--font-mono);font-size:2.5rem;color:var(--gold);line-height:1;margin-bottom:.4rem}
+.plan-card .price .unit{font-size:1rem;color:var(--cream-muted)}
+.plan-card .price-sub{font-family:var(--font-mono);font-size:.72rem;color:var(--cream-muted);letter-spacing:.5px;margin-bottom:1.5rem}
+.plan-card ul{list-style:none;padding:0;margin:0 0 1.75rem;font-size:.9rem}
+.plan-card ul li{padding:.5rem 0;border-bottom:1px dashed var(--bg3);color:var(--cream-dim);display:flex;gap:.75rem;font-family:var(--font-serif)}
+.plan-card ul li::before{content:"+";font-family:var(--font-mono);color:var(--leather);flex-shrink:0}
+.plan-card ul li.x::before{content:"—";color:var(--cream-muted)}
+.plan-card ul li:last-child{border-bottom:none}
+.plan-card .btn{width:100%;text-align:center;box-sizing:border-box}
+
+/* Q&A */
+.qa{max-width:780px;margin:0 auto;padding:0 2rem;border-top:1px solid var(--bg3)}
+.qa-row{padding:1.5rem 0;border-bottom:1px solid var(--bg3)}
+.qa-row:last-child{border-bottom:none}
+.qa-q{font-family:var(--font-serif);font-size:1.1rem;color:var(--cream);margin:0 0 .6rem;line-height:1.35}
+.qa-a{font-family:var(--font-serif);font-size:.95rem;color:var(--cream-dim);line-height:1.7;margin:0}
+
+/* Closing CTA band */
+.cta-band{text-align:center;padding:4rem 2rem 3.5rem;border-top:1px solid var(--bg3);margin-top:3rem}
+.cta-band .mono-eyebrow{display:block;margin-bottom:1rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--rust-light)}
+.cta-band h2{font-family:var(--font-serif);font-weight:400;font-size:clamp(1.6rem,2.8vw,2.2rem);line-height:1.3;margin:0 0 1rem}
+.cta-band p{max-width:52ch;margin:0 auto 2rem;color:var(--cream-dim);font-size:1rem;line-height:1.7}
+.cta-band .cta-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem}
+.cta-band .cta-platforms{display:block;font-family:var(--font-mono);font-size:.7rem;color:var(--cream-muted);letter-spacing:.5px}
+
+/* Footer grid (richer footer, replaces simple single-row) */
+.foot-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:2.5rem;max-width:1080px;margin:0 auto 2rem;padding:0 2rem}
+.foot-grid h4{font-family:var(--font-mono);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--leather-light);margin:0 0 .85rem;font-weight:500}
+.foot-grid a{display:block;font-family:var(--font-mono);font-size:.8rem;color:var(--cream-muted);padding:.25rem 0;letter-spacing:.3px}
+.foot-grid a:hover{color:var(--rust-light)}
+.foot-grid .brand-note{font-family:var(--font-mono);font-size:.78rem;color:var(--cream-muted);max-width:28ch;line-height:1.7;margin-top:.75rem}
+.foot-bottom{max-width:1080px;margin:0 auto;padding:1.5rem 2rem;border-top:1px solid var(--bg3);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-family:var(--font-mono);font-size:.68rem;color:var(--cream-muted);letter-spacing:.3px}
+
+@media(max-width:900px){
+  .two-col{grid-template-columns:1fr;gap:2rem}
+  .plans-three{grid-template-columns:1fr;gap:1rem}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2rem}
+}
+@media(max-width:640px){
+  .foot-grid{grid-template-columns:1fr;gap:1.5rem}
+  .section-head{margin-bottom:2rem}
+}
+
 @media(max-width:640px){
   .hero{padding-top:2.5rem}
   .hero-actions{flex-direction:column;align-items:stretch;max-width:300px;margin:0 auto 1rem}
@@ -482,66 +552,134 @@ Stockyard
 <div class="browse-more"><a href="/for/">Browse all 195 bundles →</a></div>
 </section>
 
-<!-- ── Section: pricing preview ──────────────────────────────────── -->
-<section class="pricing-preview">
-<div class="section-label">Pricing</div>
-<h2>Pick your fit.</h2>
-<p class="lede">The software is the same either way. The difference is whether you want encrypted cloud backup.</p>
-
-<div class="tiers">
-<div class="tier">
-<div class="tier-name">Local</div>
-<div class="tier-price"><span class="dollar">$</span>299</div>
-<div class="tier-period one-time">one-time</div>
-<p class="tier-desc">Everything on your computer. Pay once, use forever.</p>
-<ul class="tier-features">
-<li>All 164 tools, all 195 bundles</li>
-<li>Works offline forever</li>
-<li>Your data in a SQLite file</li>
-<li>No subscription</li>
-</ul>
-<a href="/desktop/" class="btn btn-outline">See plan details</a>
+<!-- ── Section: Own your data ────────────────────────────────────── -->
+<section class="ownership" style="padding:3rem 0">
+<div class="section-head">
+<span class="mono-eyebrow">Your data, your hardware</span>
+<h2>You didn't start your business to pay six SaaS bills.</h2>
 </div>
-
-<div class="tier featured">
-<div class="tier-badge">Most popular</div>
-<div class="tier-name">Cloud Single</div>
-<div class="tier-price"><span class="dollar">$</span>49</div>
-<div class="tier-period">per month</div>
-<p class="tier-desc">Everything in Local, plus encrypted cloud backup for one location.</p>
-<ul class="tier-features">
-<li>Everything in Local</li>
-<li>Encrypted cloud backup</li>
-<li>Restore to a new machine</li>
-<li>Email support</li>
-</ul>
-<a href="/desktop/" class="btn">See plan details</a>
-</div>
-
-<div class="tier">
-<div class="tier-name">Cloud Multi</div>
-<div class="tier-price"><span class="dollar">$</span>129</div>
-<div class="tier-period">per month</div>
-<p class="tier-desc">For businesses with multiple locations. Each site has its own isolated data.</p>
-<ul class="tier-features">
-<li>Everything in Cloud Single</li>
-<li>Unlimited locations</li>
-<li>Isolated data per site</li>
-<li>Priority support</li>
-</ul>
-<a href="/desktop/" class="btn btn-outline">See plan details</a>
+<div class="two-col">
+<div>
+<p>Everything Stockyard knows about your business (clients, appointments, invoices, agreements) ends up in one folder on your computer. Your computer, not our servers. Copy it, move it, zip it up. It all works.</p>
+<p>Works offline. That's the point. Which means you're the one backing things up, unless you pay for cloud. That's a tradeoff we'd rather be honest about than hide behind the word "seamless."</p>
+<div class="kv" style="margin-top:1.5rem;border-top:1px solid var(--bg3);padding-top:1.25rem">
+<span class="k">Format</span><span class="v">folder of SQLite files</span>
+<span class="k">Schema</span><span class="v">open, documented</span>
+<span class="k">Export</span><span class="v">any time, any tool</span>
+<span class="k">Lock-in</span><span class="v good">none</span>
+<span class="k">Egress fee</span><span class="v good">$0</span>
 </div>
 </div>
-
-<div class="pricing-link"><a href="/desktop/">See full pricing page →</a></div>
+<div class="panel">
+<span class="mono-label">Right now, on a real computer</span>
+<h3>~/Documents/portland-grooming/</h3>
+<div class="kv">
+<span class="k">Folder size</span><span class="v">4.7 MB</span>
+<span class="k">Files</span><span class="v">9 sqlite + 1 bus</span>
+<span class="k">Clients</span><span class="v">142</span>
+<span class="k">Appointments</span><span class="v">1,308</span>
+<span class="k">Invoices</span><span class="v">1,284</span>
+<span class="k">Last backup</span><span class="v">6 min ago</span>
+</div>
+<p style="margin-top:1.25rem;font-family:var(--font-mono);font-size:.78rem;color:var(--cream-muted);line-height:1.6">
+$ cp -r portland-grooming/ /Volumes/USB/<br>
+<span style="color:var(--green-light)">ok</span> · 10 files · 4.7 MB · 820 ms
+</p>
+</div>
+</div>
 </section>
 
-<!-- ── Section: trust promise ────────────────────────────────────── -->
-<section class="trust">
-<h2>If Stockyard disappears tomorrow, your software keeps working.</h2>
-<p>The Local license has no expiry. The binary on your machine keeps running. Your data is in SQLite files you can open with any tool, back up by copying a folder, and move by moving a folder.</p>
-<p>We will never send you a "we've updated our pricing" email. If we raise prices, every existing customer keeps their current rate. That promise is called the <a href="/constitution/">Stockyard Constitution</a> and we've signed it publicly.</p>
-<p>Active service members and veterans get Stockyard Local free. <a href="/veterans/">Details here</a>.</p>
+<!-- ── Section: pricing preview ──────────────────────────────────── -->
+<section class="pricing-preview" id="pricing" style="padding:3rem 0">
+<div class="section-head">
+<span class="mono-eyebrow">Pricing</span>
+<h2>Pick your fit.</h2>
+</div>
+<div class="plans-three">
+<div class="plan-card">
+<h3>Local</h3>
+<span class="plan-sub">Your machine, your data</span>
+<div class="price">$299</div>
+<div class="price-sub">paid once · license works forever</div>
+<ul>
+<li>All 164 tools, all 195 bundles</li>
+<li>Data on your computer, in a folder you own</li>
+<li>No account required, no phone-home</li>
+<li>License keeps working even if we disappear</li>
+<li class="x">No cloud backup (you handle your own)</li>
+</ul>
+<a href="/desktop/" class="btn">Install Stockyard</a>
+</div>
+<div class="plan-card featured">
+<h3>Cloud Single Site</h3>
+<span class="plan-sub">One location · backup included</span>
+<div class="price">$49<span class="unit">/mo</span></div>
+<div class="price-sub">or $490/year · everything in Local, plus:</div>
+<ul>
+<li>Encrypted cloud backup of your data</li>
+<li>One location</li>
+<li>Last 30 backups kept per site</li>
+<li>Cancel any time, keep your folder</li>
+</ul>
+<a href="/desktop/" class="btn btn-outline">Choose Cloud Single</a>
+</div>
+<div class="plan-card">
+<h3>Cloud Multi-Site</h3>
+<span class="plan-sub">Unlimited locations</span>
+<div class="price">$129<span class="unit">/mo</span></div>
+<div class="price-sub">or $1,290/year · everything in Cloud Single, plus:</div>
+<ul>
+<li>Unlimited locations</li>
+<li>Isolated namespace per site</li>
+<li>Last 30 backups kept per site</li>
+<li>Same license, one bill</li>
+</ul>
+<a href="/desktop/" class="btn btn-outline">Choose Cloud Multi-Site</a>
+</div>
+</div>
+<div class="pricing-link" style="text-align:center;margin-top:2rem"><a href="/desktop/" style="font-family:var(--font-mono);font-size:.8rem;color:var(--rust-light)">See full pricing page →</a></div>
+</section>
+
+<!-- ── Section: Q&A (honest) ─────────────────────────────────────── -->
+<section class="trust" style="padding:3rem 0">
+<div class="section-head">
+<span class="mono-eyebrow">Questions we actually get asked</span>
+<h2>The honest answers, not the polished ones.</h2>
+</div>
+<div class="qa">
+<div class="qa-row">
+<div class="qa-q">Is this just a Notion template?</div>
+<p class="qa-a">No. Stockyard is a desktop application. The tools are real local subprocesses that read and write to SQLite files on your computer. You can open those files in any tool that reads SQLite. You can't do that with a Notion template.</p>
+</div>
+<div class="qa-row">
+<div class="qa-q">What happens if Stockyard, the company, goes away?</div>
+<p class="qa-a">Your data is in SQLite files. The schema is public. The tools keep running on your machine because they're installed on your machine. Updates stop. That's the worst thing that happens. We'd rather tell you that than pretend we're too big to fail. The <a href="/constitution/">Stockyard Constitution</a> makes this promise formal.</p>
+</div>
+<div class="qa-row">
+<div class="qa-q">Why serve a $299 product with an AI composer?</div>
+<p class="qa-a">Because most people don't know which 8 of 164 tools they want. The composer is how you avoid the blank-slate problem. You still get to swap, remove, or add anything. It's a starting lineup, not a contract.</p>
+</div>
+<div class="qa-row">
+<div class="qa-q">Do I need to be technical?</div>
+<p class="qa-a">If you can install software, read a pricing page, and back up a file to a USB drive, you're fine. If you want to inspect the SQLite schema or script against the event bus, that's also fine. It's the same product for both of you.</p>
+</div>
+<div class="qa-row">
+<div class="qa-q">Anything else?</div>
+<p class="qa-a">Active service members and veterans get Stockyard Local free. <a href="/veterans/">Details here</a>. We will never send you a "we've updated our pricing" email. If we raise prices, every existing customer keeps their current rate.</p>
+</div>
+</div>
+</section>
+
+<!-- ── Section: closing CTA ──────────────────────────────────────── -->
+<section class="cta-band">
+<span class="mono-eyebrow">Last thing</span>
+<h2>Stop renting the software that runs your business.</h2>
+<p>Describe the business. Get the toolkit. Own the folder. $299 once. Cloud is optional and always will be.</p>
+<div class="cta-actions">
+<a href="/desktop/" class="btn">Install Stockyard</a>
+<a href="#pricing" class="btn btn-outline">See pricing</a>
+</div>
+<span class="cta-platforms">macOS 12+ · Windows 10+ · most Linux · ~180 MB download</span>
 </section>
 
 <!-- ── Developer note ────────────────────────────────────────────── -->
@@ -551,17 +689,34 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
 </aside>
 
 <footer>
-<p class="sig">Stockyard. Your tools, your data, your hardware.</p>
-<nav>
+<div class="foot-grid">
+<div>
+<p class="sig" style="margin:0">Stockyard.</p>
+<p class="brand-note">Frontier general store software for small businesses who'd rather own than rent.</p>
+</div>
+<div>
+<h4>Product</h4>
 <a href="/desktop/">Pricing</a>
 <a href="/for/">Bundles</a>
 <a href="/about/">About</a>
-<a href="/constitution/">Constitution</a>
-<a href="/veterans/">Veterans</a>
 <a href="/proxy-only/">Developers</a>
+</div>
+<div>
+<h4>Promises</h4>
+<a href="/constitution/">Constitution</a>
+<a href="/veterans/">Veterans (free)</a>
 <a href="https://github.com/stockyard-dev/Stockyard" rel="noopener">GitHub</a>
-</nav>
-<p class="fine">hello@stockyard.dev · Built by a solo developer in Minnesota · © 2026</p>
+</div>
+<div>
+<h4>Contact</h4>
+<a href="mailto:hello@stockyard.dev">hello@stockyard.dev</a>
+<p class="brand-note" style="margin-top:.5rem">Built by a solo developer in Minnesota.</p>
+</div>
+</div>
+<div class="foot-bottom">
+<span>© 2026 Stockyard</span>
+<span>hello@stockyard.dev</span>
+</div>
 </footer>
 
 <script>
