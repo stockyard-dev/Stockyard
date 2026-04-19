@@ -163,6 +163,10 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **site: port v2 below-the-fold sections (pricing, Q&A, ownership panel, CTA band, footer)** (2026-04-18)
+- **site: port v2 result card from design redesign** (2026-04-18)
+- **site: reconcile color tokens to canonical desktop palette** (2026-04-18)
+- **design: codify v1 design system as single source of truth** (2026-04-18)
 - **recommend: prewarm requests don't bump public toolkit count** (2026-04-17)
 - **site: re-add toolkit counter beneath hero chips** (2026-04-17)
 - **site: lead homepage with LLM bundle generator** (2026-04-17)
@@ -179,10 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **cloud: accept license-key bearer auth + tests** (2026-04-16)
 - **cloud: wire routing for /cloud pages and /api/cloud/desktop/* endpoints** (2026-04-16)
 - **cloud: desktop accounts, magic-link auth, backup endpoints (feature-flagged)** (2026-04-16)
-- **desktop: $299 one-time + $49/mo + $129/mo, no trial, honest copy** (2026-04-16)
-- **site: light-mode CSS for desktop, success, pricing, veterans pages** (2026-04-16)
-- **fix: cancel_at_period_end via separate API call (not checkout)** (2026-04-16)
-- **trial: 7-day Stripe trial flow for desktop tiers** (2026-04-16)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
