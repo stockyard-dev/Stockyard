@@ -318,6 +318,44 @@ func (r *Recommender) loadBundles() {
 	log.Printf("[recommend] loaded %d static bundles for install fallback", len(r.bundles))
 }
 
+// bundleQueryOverrides maps slugs that need a custom natural-language
+// query to something different from their bundles.json Name field. Used
+// by BundleQuery for slugs where the bundle name produces ambiguous or
+// off-topic LLM output.
+//
+// `ark-rust`: the bundle Name is "ARK / Rust Server Admins". The LLM
+// reads "Rust" as the programming language and returns a dev toolkit
+// instead of a game-server toolkit. Override to disambiguate.
+//
+// Keep this map small. Most slugs should work with their bundle Name
+// verbatim. Add entries only with a verified before/after test.
+var bundleQueryOverrides = map[string]string{
+	"ark-rust": "ARK and Rust video game server administration",
+}
+
+// BundleQuery returns the natural-language query string to send to
+// /api/recommend for a given bundle slug, and whether the slug is a
+// known bundle. Returns (query, true) if the slug is in bundles.json
+// (the /for/{slug}/ redirect handler uses this to route visitors from
+// the static bundle pages to the live generator). Returns ("", false)
+// for unknown slugs.
+//
+// For most slugs, the query is the bundle's Name field from
+// bundles.json (e.g. "Breweries & Distilleries" for slug "brewery").
+// Slugs in bundleQueryOverrides get a custom query instead.
+func (r *Recommender) BundleQuery(slug string) (string, bool) {
+	if override, ok := bundleQueryOverrides[slug]; ok {
+		return override, true
+	}
+	r.mu.RLock()
+	b, ok := r.bundles[slug]
+	r.mu.RUnlock()
+	if !ok || b == nil || b.Name == "" {
+		return "", false
+	}
+	return b.Name, true
+}
+
 // synthesizeResultForBundle builds a RecommendResult from a static
 // bundles.json entry. Used by GenerateInstallScript when the slug is a
 // known catalog bundle but has no LLM-cached result yet. The synthesized

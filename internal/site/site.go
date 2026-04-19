@@ -12,6 +12,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"path"
 	"strings"
 	"sync"
@@ -20,6 +21,20 @@ import (
 
 //go:embed static
 var staticFiles embed.FS
+
+// orphanBundleSlugs are /for/{slug}/ directories with static pages
+// from a pre-pivot product shape that have no matching bundle in
+// bundles.json. They exist as directories in site/for/ because the
+// pages were left in place, but the /for/ handler redirects them to
+// /desktop/ rather than serving the stale content or attempting to
+// run them through the bundle generator (which can't produce a
+// coherent result for "self-hosters" or "startups" — those aren't
+// business descriptions).
+var orphanBundleSlugs = map[string]struct{}{
+	"self-hosters":     {},
+	"solo-developers":  {},
+	"startups":         {},
+}
 
 const affiliateSchema = `
 CREATE TABLE IF NOT EXISTS affiliates (
@@ -389,6 +404,58 @@ func Register(mux *http.ServeMux, db *sql.DB) {
 		} else {
 			path = path + "/index.html"
 		}
+
+		// Bundle slug redirect — if the path is /for/{slug}/ (or
+		// /for/{slug}) and the slug matches a bundle in bundles.json,
+		// 301 to the homepage with ?q=<natural-language-query>. This
+		// retires the 195 static pages with stale pricing (pre-pivot
+		// product shape, $7.99/mo, 14-day trial CTAs) in favor of a
+		// live generator result that matches current product reality.
+		//
+		// The homepage /?q= handler (in site/index.html) auto-submits
+		// the query and renders the result card inline. For visitors
+		// whose LLM call fails, the homepage renders its offline state.
+		//
+		// The /for/ index page itself and /for/{slug}/install.sh are
+		// intentionally NOT redirected — the index is still the
+		// canonical browse-all-bundles page, and install.sh is a real
+		// endpoint used by the desktop install flow.
+		//
+		// All 195 slugs were pre-verified against /api/recommend to
+		// produce ≥4 tools and a coherent title. See BundleQuery in
+		// recommend.go for the overrides table (currently: ark-rust).
+		//
+		// Orphan slugs (self-hosters, solo-developers, startups) are
+		// pages from a pre-pivot product shape with no matching entry
+		// in bundles.json. They redirect to /desktop/ — the generator
+		// can't produce a bundle for "self-hosters" because it isn't a
+		// business description.
+		//
+		// Using 302 (not 301) intentionally during initial rollout:
+		// 301s cache in browsers indefinitely, making any bug in the
+		// redirect logic effectively permanent for affected users
+		// until they clear their cache. 302 gives us a recoverable
+		// deploy. Upgrade to 301 after this has been running cleanly
+		// for a week and we want the SEO benefit.
+		if recommender != nil && strings.HasPrefix(path, "for/") && strings.HasSuffix(path, "/index.html") {
+			slug := strings.TrimSuffix(strings.TrimPrefix(path, "for/"), "/index.html")
+			if slug != "" && slug != "index.html" {
+				if query, ok := recommender.BundleQuery(slug); ok {
+					target := "/?q=" + url.QueryEscape(query)
+					w.Header().Set("Cache-Control", "public, max-age=3600")
+					http.Redirect(w, r, target, http.StatusFound)
+					return
+				}
+				// Orphan slug — redirect to /desktop/ rather than
+				// serve the stale static page.
+				if _, orphan := orphanBundleSlugs[slug]; orphan {
+					w.Header().Set("Cache-Control", "public, max-age=3600")
+					http.Redirect(w, r, "/desktop/", http.StatusFound)
+					return
+				}
+			}
+		}
+
 		data, err := fs.ReadFile(sub, path)
 		if err != nil && recommender != nil {
 			// Try AI-generated cached page

@@ -1033,6 +1033,45 @@ Stockyard also ships a standalone open-source LLM proxy with 38 providers and 76
   // container mutation isn't worth the complexity — just call it from
   // the .then path where we already render the result. See submit().
   window.__stockyardBumpCounter = bumpCounter;
+
+  // URL query parameter handler — lets /for/{slug}/ redirect visitors
+  // to /?q=<natural-language-description> and get a live generator
+  // result instead of a stale static page.
+  //
+  // Shape: if the page loads with ?q=<something>, prefill the input
+  // and auto-submit. Everything downstream (fetch, render, error
+  // handling, counter) runs exactly as if the user typed it.
+  //
+  // Guards:
+  //   - Same length bounds as manual submit (3..500).
+  //   - strip leading/trailing whitespace.
+  //   - Only runs on initial page load; subsequent navigation
+  //     within the SPA doesn't retrigger.
+  //   - History: replaceState to a clean URL after submit so the
+  //     visitor can share a clean link and browser back doesn't
+  //     re-trigger the auto-submit loop.
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var qParam = params.get('q');
+    if (qParam){
+      qParam = qParam.trim();
+      if (qParam.length >= 3 && qParam.length <= 500){
+        input.value = qParam;
+        // Replace the URL to remove ?q= so refreshing doesn't re-trigger
+        // and so the shared URL is clean.
+        if (window.history && window.history.replaceState){
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+        // Defer to next tick so the above render/counter setup completes.
+        setTimeout(function(){ submit(qParam); }, 0);
+      }
+    }
+  } catch (e) {
+    // URLSearchParams unavailable in ancient browsers. Not worth a
+    // polyfill for this feature — a visitor on IE11 can still use
+    // the homepage manually, they just won't get auto-submit.
+    console.warn('URL param handler skipped:', e);
+  }
 })();
 </script>
 
