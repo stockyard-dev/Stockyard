@@ -163,6 +163,7 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 <!-- SHIPPED-START -->
 **20 changes** in the last 7 days:
 
+- **site: /for/{slug}/ pages redirect to live generator, retiring stale static pricing** (2026-04-19)
 - **site: port v2 below-the-fold sections (pricing, Q&A, ownership panel, CTA band, footer)** (2026-04-18)
 - **site: port v2 result card from design redesign** (2026-04-18)
 - **site: reconcile color tokens to canonical desktop palette** (2026-04-18)
@@ -182,7 +183,6 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 - **cloud: backup history endpoints — list + fetch by id** (2026-04-16)
 - **cloud: accept license-key bearer auth + tests** (2026-04-16)
 - **cloud: wire routing for /cloud pages and /api/cloud/desktop/* endpoints** (2026-04-16)
-- **cloud: desktop accounts, magic-link auth, backup endpoints (feature-flagged)** (2026-04-16)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
