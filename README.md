@@ -161,28 +161,13 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 ## Shipped This Week
 
 <!-- SHIPPED-START -->
-**20 changes** in the last 7 days:
+**5 changes** in the last 7 days:
 
 - **site: /for/{slug}/ pages redirect to live generator, retiring stale static pricing** (2026-04-19)
 - **site: port v2 below-the-fold sections (pricing, Q&A, ownership panel, CTA band, footer)** (2026-04-18)
 - **site: port v2 result card from design redesign** (2026-04-18)
 - **site: reconcile color tokens to canonical desktop palette** (2026-04-18)
 - **design: codify v1 design system as single source of truth** (2026-04-18)
-- **recommend: prewarm requests don't bump public toolkit count** (2026-04-17)
-- **site: re-add toolkit counter beneath hero chips** (2026-04-17)
-- **site: lead homepage with LLM bundle generator** (2026-04-17)
-- **Revert "auth: accept desktop license keys (SY-) as proxy bearer tokens"** (2026-04-17)
-- **auth: accept desktop license keys (SY-) as proxy bearer tokens** (2026-04-17)
-- **apiserver: backup upload hardening — size pre-flight, key entropy, rate limiting** (2026-04-16)
-- **apiserver: fix webhook idempotency race + bump body limit** (2026-04-16)
-- **/about/: strip stale pricing, counts, and retired commitments** (2026-04-16)
-- **admin: read-only dashboard for Cloud accounts + drill-down** (2026-04-16)
-- **site: rewrite homepage + /desktop/, retire /pricing/, unify nav across all pages** (2026-04-16)
-- **cloud: retention policy — keep last 30 per site OR 7 days, whichever retains more** (2026-04-16)
-- **cloud: site list + create endpoints for multi-site Cloud Multi UX** (2026-04-16)
-- **cloud: backup history endpoints — list + fetch by id** (2026-04-16)
-- **cloud: accept license-key bearer auth + tests** (2026-04-16)
-- **cloud: wire routing for /cloud pages and /api/cloud/desktop/* endpoints** (2026-04-16)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
