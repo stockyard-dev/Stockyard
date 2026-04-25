@@ -1078,7 +1078,7 @@ func (s *Server) handleAdminIssueDesktop(w http.ResponseWriter, r *http.Request)
 	log.Printf("[admin/issue-desktop] minted tier=%s customer=%s email=%s expires=%d",
 		req.Tier, req.CustomerID, req.Email, expiresAt)
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	writeOK(w, map[string]any{
 		"key":         key,
 		"tier":        req.Tier,
 		"customer_id": req.CustomerID,
