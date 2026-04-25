@@ -307,6 +307,7 @@ func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/admin/stats", s.adminAuth(s.handleAdminStats))
 	mux.HandleFunc("GET /api/admin/licenses", s.adminAuth(s.handleAdminLicenses))
 	mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
+	mux.HandleFunc("POST /api/admin/issue-desktop", s.adminAuth(s.handleAdminIssueDesktop))
 	mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 	mux.HandleFunc("POST /api/admin/backup", s.adminAuth(s.handleAdminBackup))
 	mux.HandleFunc("GET /api/admin/trial-drip/suspects", s.adminAuth(s.handleAdminTrialDripSuspects))
