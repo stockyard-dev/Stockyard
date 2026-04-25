@@ -216,6 +216,7 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/admin/stats", s.adminAuth(s.handleAdminStats))
 	s.mux.HandleFunc("GET /api/admin/licenses", s.adminAuth(s.handleAdminLicenses))
 	s.mux.HandleFunc("POST /api/admin/issue", s.adminAuth(s.handleAdminIssue))
+	s.mux.HandleFunc("POST /api/admin/issue-desktop", s.adminAuth(s.handleAdminIssueDesktop))
 	s.mux.HandleFunc("POST /api/admin/revoke", s.adminAuth(s.handleAdminRevoke))
 	s.mux.HandleFunc("POST /api/admin/backup", s.adminAuth(s.handleAdminBackup))
 	s.mux.HandleFunc("GET /api/admin/trial-drip/suspects", s.adminAuth(s.handleAdminTrialDripSuspects))
@@ -969,6 +970,120 @@ func (s *Server) handleAdminIssue(w http.ResponseWriter, r *http.Request) {
 		"tier":        req.Tier,
 		"email":       req.Email,
 		"expires_in":  fmt.Sprintf("%d days", req.Days),
+	})
+}
+
+// handleAdminIssueDesktop mints a desktop-app license signed with the
+// dedicated desktop keypair (STOCKYARD_DESKTOP_PRIVATE_KEY), as opposed
+// to handleAdminIssue which signs with the legacy/sy-api keypair used
+// for OV/individual/pro licenses on the per-tool catalog.
+//
+// Why a separate endpoint: the desktop validates against
+// 3af8f9593b3331c27994f1eeacf111c727ff6015016b0af44ed3ca6934d40b13
+// and the legacy keypair is a different key. Trying to use the
+// regular admin/issue endpoint produces a key the desktop rejects.
+//
+// Use cases:
+//   - QA/integration testing without a real Stripe purchase
+//   - Support escalation: regenerating a key for a customer whose
+//     license file was lost or corrupted
+//   - Issuing free licenses to veterans (per the standing offer at
+//     stockyard.dev/veterans/)
+//
+// Deliberately does NOT write to the licenses table — these are
+// out-of-band keys that bypass the Stripe → license record flow.
+// If you need a real customer record, use the regular checkout path.
+//
+// Request body:
+//
+//	{
+//	  "tier":         "local" | "cloud-single" | "cloud-multi" | "trial",
+//	  "customer_id":  "<any string; defaults to admin_<email>>",
+//	  "email":        "<required>",
+//	  "expires_days": 0 | <int>  // 0 = permanent (Local default)
+//	}
+//
+// Response:
+//
+//	{
+//	  "key":         "SY-<base64url(payload)>.<base64url(sig)>",
+//	  "tier":        "<echoed>",
+//	  "customer_id": "<echoed>",
+//	  "email":       "<echoed>",
+//	  "expires_at":  <unix-ts or 0>
+//	}
+func (s *Server) handleAdminIssueDesktop(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Tier        string `json:"tier"`
+		CustomerID  string `json:"customer_id"`
+		Email       string `json:"email"`
+		ExpiresDays int    `json:"expires_days"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeErr(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+
+	if req.Email == "" {
+		writeErr(w, http.StatusBadRequest, "email required")
+		return
+	}
+	if req.Tier == "" {
+		req.Tier = "local"
+	}
+	// Allow only the four desktop tiers — no point in accepting "pro" or
+	// "enterprise" here since the desktop ignores anything outside this set.
+	switch req.Tier {
+	case "local", "cloud-single", "cloud-multi", "trial":
+		// ok
+	default:
+		writeErr(w, http.StatusBadRequest, "tier must be local|cloud-single|cloud-multi|trial")
+		return
+	}
+	if req.CustomerID == "" {
+		req.CustomerID = "admin_" + req.Email
+	}
+
+	privKey := os.Getenv("STOCKYARD_DESKTOP_PRIVATE_KEY")
+	if privKey == "" {
+		writeErr(w, http.StatusServiceUnavailable, "STOCKYARD_DESKTOP_PRIVATE_KEY not configured")
+		return
+	}
+
+	// expires_days semantics:
+	//   0       → permanent (passed through as 0 to issueDesktopLicenseKey)
+	//   N > 0   → N days from now
+	//   < 0     → reject (could trip up the trial-expired branch in the
+	//             desktop and produce a confusing UX)
+	if req.ExpiresDays < 0 {
+		writeErr(w, http.StatusBadRequest, "expires_days must be >= 0")
+		return
+	}
+	// Trials require an expiry; default to 7 days if caller omitted it.
+	if req.Tier == "trial" && req.ExpiresDays == 0 {
+		req.ExpiresDays = 7
+	}
+	var expiresAt int64
+	if req.ExpiresDays > 0 {
+		expiresAt = time.Now().Add(time.Duration(req.ExpiresDays) * 24 * time.Hour).Unix()
+	}
+
+	key, err := issueDesktopLicenseKey(privKey, req.Tier, req.CustomerID, req.Email, expiresAt)
+	if err != nil {
+		log.Printf("[admin/issue-desktop] sign: %v", err)
+		writeErr(w, http.StatusInternalServerError, "failed to sign license")
+		return
+	}
+
+	log.Printf("[admin/issue-desktop] minted tier=%s customer=%s email=%s expires=%d",
+		req.Tier, req.CustomerID, req.Email, expiresAt)
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"key":         key,
+		"tier":        req.Tier,
+		"customer_id": req.CustomerID,
+		"email":       req.Email,
+		"expires_at":  expiresAt,
 	})
 }
 
