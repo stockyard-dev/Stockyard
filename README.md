@@ -161,13 +161,12 @@ Connect MCP-compatible AI editors (Claude Desktop, Cursor, Windsurf) to Stockyar
 ## Shipped This Week
 
 <!-- SHIPPED-START -->
-**5 changes** in the last 7 days:
+**4 changes** in the last 7 days:
 
+- **admin: also register issue-desktop on RegisterOnMux** (2026-04-25)
+- **admin: fix typo in handleAdminIssueDesktop — writeOK not writeJSON** (2026-04-25)
+- **admin: add /api/admin/issue-desktop endpoint** (2026-04-25)
 - **site: /for/{slug}/ pages redirect to live generator, retiring stale static pricing** (2026-04-19)
-- **site: port v2 below-the-fold sections (pricing, Q&A, ownership panel, CTA band, footer)** (2026-04-18)
-- **site: port v2 result card from design redesign** (2026-04-18)
-- **site: reconcile color tokens to canonical desktop palette** (2026-04-18)
-- **design: codify v1 design system as single source of truth** (2026-04-18)
 
 _See [full changelog](https://stockyard.dev/changelog/) for details._
 <!-- SHIPPED-END -->
