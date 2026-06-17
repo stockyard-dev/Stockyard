@@ -1229,8 +1229,14 @@ Docs:      https://stockyard.dev/docs
 	// Gzip compression (outermost — compresses all HTML, JSON, text responses)
 	srv.WrapHandler(gzipMiddleware)
 
-	// Panic recovery (outermost — catches panics from any handler, returns clean 500)
+	// Panic recovery (catches panics from any handler, returns clean 500)
 	srv.WrapHandler(recoveryMiddleware)
+
+	// Scanner block (outermost — runs first on every request).
+	// Short-circuits known credential/exploit scanner paths (.env, phpinfo,
+	// wp-admin, etc.) with a 403 before any handler, template, or DB work.
+	// See internal/engine/scanner_block.go for pattern list and rationale.
+	srv.WrapHandler(scannerBlockMiddleware)
 
 	// Register marketing website (/, /docs/, /pricing/, etc.)
 	site.Register(srv.Mux(), db.Conn())
